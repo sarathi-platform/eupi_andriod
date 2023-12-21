@@ -379,6 +379,8 @@
     <string name="link_of_a">फॉर्म ए के लिए लिंक</string>
     <string name="link_of_b">फॉर्म बी के लिए लिंक</string>
     <string name="user_bug_report_text">बग रिपोर्ट</string>
+    <string name="vo_endorsement_not_started">वीओ अनुमोदन प्रारंभ नहीं हुआ है</string>
+    <string name="export_data_test">डेटा निर्यात करें</string>
 
 
 </resources>

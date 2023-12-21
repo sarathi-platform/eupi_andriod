@@ -4,6 +4,7 @@ import android.app.DownloadManager
 import android.content.Context
 import android.text.TextUtils
 import android.util.Log
+import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
@@ -111,6 +112,7 @@ import com.patsurvey.nudge.utils.getFileNameFromURL
 import com.patsurvey.nudge.utils.getFormPathKey
 import com.patsurvey.nudge.utils.getFormSubPath
 import com.patsurvey.nudge.utils.intToString
+import com.patsurvey.nudge.utils.json
 import com.patsurvey.nudge.utils.longToString
 import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.toWeightageRatio
@@ -135,7 +137,6 @@ class VillageSelectionRepository @Inject constructor(
     val villageListDao: VillageListDao,
     val stepsListDao: StepsListDao,
     val tolaDao: TolaDao,
-    val didiDao: DidiDao,
     val casteListDao: CasteListDao,
     val languageListDao: LanguageListDao,
     val questionDao: QuestionListDao,
@@ -907,6 +908,7 @@ class VillageSelectionRepository @Inject constructor(
                 }
                 Log.e("tola need to post","$tolaList.size")
                 val response = apiService.addCohort(jsonTola)
+                NudgeLogger.d("VillageSelectionRepository","addCohort Request=> ${Gson().toJson(jsonTola)}")
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
                         if((response.data[0].transactionId.isNullOrEmpty())) {
@@ -1050,6 +1052,7 @@ class VillageSelectionRepository @Inject constructor(
                 NudgeLogger.d("SyncHelper","deleteTolaToNetwork -> tola need to post :${tolaList.size}")
                 NudgeLogger.d("SyncHelper","deleteTolaToNetwork -> jsonTola :${jsonTola}")
                 val response = apiService.deleteCohort(jsonTola)
+                NudgeLogger.d("VillageSelectionRepository","deleteCohort Request=>${Gson().toJson(jsonTola)}")
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
                         if((response.data[0]?.transactionId.isNullOrEmpty())) {
@@ -1125,6 +1128,7 @@ class VillageSelectionRepository @Inject constructor(
                 }
                 Log.e("tola need to post","$tolaList.size")
                 val response = apiService.editCohort(jsonTola)
+                NudgeLogger.d("VillageSelectionRepository","editCohort Request=> ${Gson().toJson(jsonTola)}")
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
                         if((response.data[0].transactionId.isNullOrEmpty())) {
@@ -1198,7 +1202,7 @@ class VillageSelectionRepository @Inject constructor(
         callCrpWorkFlowAPIForStep(prefRepo, 1)
         Log.e("add didi","called")
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllDidiNeedToAdd(true,"",0)
+            val didiList = didiDao.fetchAllDidiNeedToAdd(true,"",0, DidiStatus.DIDI_ACTIVE.ordinal)
             for(didi in didiList){
                 val tola = tolaDao.fetchSingleTolaFromServerId(didi.cohortId)
                 if (tola != null) {
@@ -1211,6 +1215,7 @@ class VillageSelectionRepository @Inject constructor(
                     jsonDidi.add(AddDidiRequest.getRequestObjectForDidi(didi).toJson())
                 }
                 val response = apiService.addDidis(jsonDidi)
+                NudgeLogger.d("VillageSelectionRepository","addDidis Request=>${Gson().toJson(jsonDidi)}")
                 if (response.status.equals(SUCCESS, true)) {
                     if(response.data?.get(0)?.transactionId.isNullOrEmpty()) {
                         response.data?.let {
@@ -1299,6 +1304,7 @@ class VillageSelectionRepository @Inject constructor(
                 }
                 Log.e("tola need to post","$didiList.size")
                 val response = apiService.deleteDidi(jsonDidi)
+                NudgeLogger.d("VillageSelectionRepository","deleteDidi Request=> ${jsonDidi.json()}")
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
                         if((response.data[0].transactionId.isNullOrEmpty())) {
@@ -1376,6 +1382,7 @@ class VillageSelectionRepository @Inject constructor(
                 didiList.forEach { didi->
                     didiRequestList.add(EditDidiRequest(didi.serverId,didi.name,didi.address,didi.guardianName,didi.castId,didi.cohortId))
                 }
+                NudgeLogger.d("VillageSelectionRepository","updateDidiToNetworkForCrp updateDidis Request=> ${didiRequestList.json()}")
                 val response = apiService.updateDidis(didiRequestList)
                 if (response.status.equals(SUCCESS, true)) {
                     if(response.data?.get(0)?.transactionId.isNullOrEmpty()) {
@@ -1462,12 +1469,12 @@ class VillageSelectionRepository @Inject constructor(
     }
 
     private fun updateWealthRankingToNetwork(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
-        Log.e("add didi","called")
+        Log.e("update wealth ranking","called")
         callCrpWorkFlowAPIForStep(prefRepo, 2)
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
-                    val needToPostDidiList=didiDao.getAllNeedToPostDidiRanking(true)
+                    val needToPostDidiList=didiDao.getAllNeedToPostDidiRanking(true, 0)
                     if (needToPostDidiList.isNotEmpty()) {
                         val didiWealthRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         val didiStepRequestList = arrayListOf<EditDidiWealthRankingRequest>()
@@ -1477,6 +1484,7 @@ class VillageSelectionRepository @Inject constructor(
                         }
                         didiWealthRequestList.addAll(didiStepRequestList)
                         val updateWealthRankResponse = apiService.updateDidiRanking(didiWealthRequestList)
+                        NudgeLogger.d("VillageSelectionRepository","updateWealthRankingToNetwork Request=> ${Gson().toJson(didiStepRequestList)}")
                         if(updateWealthRankResponse.status.equals(SUCCESS,true)){
                             val didiListResponse = updateWealthRankResponse.data
                             if(!didiListResponse?.get(0)?.transactionId.isNullOrEmpty()){
@@ -1702,6 +1710,7 @@ class VillageSelectionRepository @Inject constructor(
                     if (answeredDidiList.isNotEmpty()) {
                         withContext(Dispatchers.IO) {
                             val saveAPIResponse = apiService.savePATSurveyToServer(answeredDidiList)
+                            NudgeLogger.d("VillageSelectionRepository","savePATSurveyToServer Request=>${answeredDidiList.json()}")
                             if (saveAPIResponse.status.equals(SUCCESS, true)) {
                                 if (saveAPIResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
                                     didiIDList.forEach { didiItem ->
@@ -1825,6 +1834,7 @@ class VillageSelectionRepository @Inject constructor(
     private fun savePatScoreToServer(scoreDidiList: java.util.ArrayList<EditDidiWealthRankingRequest>) {
         if(scoreDidiList.isNotEmpty()) {
             repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+                NudgeLogger.d("VillageSelectionRepository","savePatScoreToServer Request=>${scoreDidiList.json()}")
                 apiService.updateDidiScore(scoreDidiList)
             }
         }
@@ -1865,7 +1875,7 @@ class VillageSelectionRepository @Inject constructor(
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
-                    val needToPostDidiList=didiDao.fetchAllVONeedToPostStatusDidi(needsToPostVo = true, transactionId = "")
+                    val needToPostDidiList=didiDao.fetchAllVONeedToPostStatusDidi(needsToPostVo = true, transactionId = "", 0)
                     if(needToPostDidiList.isNotEmpty()){
                         val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi->
@@ -1880,6 +1890,7 @@ class VillageSelectionRepository @Inject constructor(
                             }
                         }
                         val updateWealthRankResponse=apiService.updateDidiRanking(didiRequestList)
+                        NudgeLogger.d("VillageSelectionRepository","updateVoStatusToNetwork Request=> ${Gson().toJson(didiRequestList)}")
                         if(updateWealthRankResponse.status.equals(SUCCESS,true)){
                             val didiListResponse = updateWealthRankResponse.data
                             if (didiListResponse?.get(0)?.transactionId != null) {
@@ -2095,7 +2106,7 @@ class VillageSelectionRepository @Inject constructor(
                     NudgeLogger.e("SyncHelper", "callWorkFlowAPI addWorkFlowRequest: $addWorkFlowRequest \n\n")
 
                     val addWorkFlowResponse = apiService.addWorkFlow(Collections.unmodifiableList(addWorkFlowRequest))
-
+                    NudgeLogger.d("VillageSelectionRepository","addWorkFlow Request=> ${Gson().toJson(Collections.unmodifiableList(addWorkFlowRequest))}")
                     NudgeLogger.e("SyncHelper","callWorkFlowAPI response: status: ${addWorkFlowResponse.status}, message: ${addWorkFlowResponse.message}, data: ${addWorkFlowResponse.data} \n\n")
 
                     if (addWorkFlowResponse.status.equals(SUCCESS, true)) {
@@ -2178,6 +2189,7 @@ class VillageSelectionRepository @Inject constructor(
 
             val responseForStepUpdation =
                 apiService.editWorkFlow(requestForStepUpdation)
+            NudgeLogger.d("VillageSelectionRepository","updateStepsToServer editWorkFlow Request=> ${Gson().toJson(requestForStepUpdation)}")
 
             NudgeLogger.e(
                 "SyncHelper",
@@ -2527,8 +2539,9 @@ class VillageSelectionRepository @Inject constructor(
                         }
                         if(answeredDidiList.isNotEmpty()){
                             withContext(Dispatchers.IO){
-                                NudgeLogger.d("VillageSelectionRepository", "savePATSummeryToServer answeredDidiList: $answeredDidiList")
+                                NudgeLogger.d("VillageSelectionRepository", "savePATSummeryToServer answeredDidiList: ${answeredDidiList.json()}")
                                 val saveAPIResponse= apiService.savePATSurveyToServer(answeredDidiList)
+
                                 if(saveAPIResponse.status.equals(SUCCESS,true)){
                                     if(saveAPIResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
                                         didiIDList.forEach { didiItem ->
@@ -2564,7 +2577,7 @@ class VillageSelectionRepository @Inject constructor(
                                 if(!saveAPIResponse.lastSyncTime.isNullOrEmpty()){
                                     updateLastSyncTime(prefRepo,saveAPIResponse.lastSyncTime)
                                 }
-                                NudgeLogger.d("VillageSelectionRepository", "savePATSummeryToServer scoreDidiList: $scoreDidiList")
+                                NudgeLogger.d("VillageSelectionRepository", "savePATSummeryToServer syncAndFetchDidiForBpc scoreDidiList: ${scoreDidiList.json()}")
                                 apiService.updateDidiScore(scoreDidiList)
                             }
                         }
@@ -2697,6 +2710,7 @@ class VillageSelectionRepository @Inject constructor(
                     )
                     try {
                         val updatedPatResponse = apiService.updateDidiRanking(didiRequestList)
+                        NudgeLogger.d("VillageSelectionRepository","updateBpcPatStatusToNetwork Request=> ${Gson().toJson(didiRequestList)}")
                         if (updatedPatResponse.status.equals(SUCCESS, true)) {
                             if (updatedPatResponse.data?.isNotEmpty() == true) {
                                 if (updatedPatResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
@@ -2846,7 +2860,7 @@ class VillageSelectionRepository @Inject constructor(
                     NudgeLogger.e("SyncHelper", "callWorkFlowAPI addWorkFlowRequest: $addWorkFlowRequest \n\n")
 
                     val addWorkFlowResponse = apiService.addWorkFlow(Collections.unmodifiableList(addWorkFlowRequest))
-
+                    NudgeLogger.d("VillageSelectionRepository","addWorkFlow Request=> ${Gson().toJson(Collections.unmodifiableList(addWorkFlowRequest))}")
                     NudgeLogger.e("SyncHelper","callWorkFlowAPI response: status: ${addWorkFlowResponse.status}, message: ${addWorkFlowResponse.message}, data: ${addWorkFlowResponse.data} \n\n")
 
                     if (addWorkFlowResponse.status.equals(SUCCESS, true)) {
@@ -2909,7 +2923,7 @@ class VillageSelectionRepository @Inject constructor(
                 }
                 val responseForStepUpdation =
                     apiService.editWorkFlow(requestForStepUpdation)
-
+                NudgeLogger.d("VillageSelectionRepository","updateBpcStepsToServer editWorkFlow Request=> ${Gson().toJson(requestForStepUpdation)}")
                 NudgeLogger.e(
                     "SyncHelper",
                     "callWorkFlowAPI response: status: ${responseForStepUpdation.status}, message: ${responseForStepUpdation.message}, data: ${responseForStepUpdation.data} \n\n"
@@ -3003,6 +3017,7 @@ class VillageSelectionRepository @Inject constructor(
                             }.size
                         )
                         val requestList = arrayListOf(saveMatchSummaryRequest)
+                        NudgeLogger.d("VillageSelectionRepository","sendBpcMatchScore saveMatchSummary Request=> ${requestList.json()}")
                         val saveMatchSummaryResponse = apiService.saveMatchSummary(requestList)
                         if (saveMatchSummaryResponse.status.equals(SUCCESS, true)) {
                             withContext(Dispatchers.Main) {

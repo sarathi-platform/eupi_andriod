@@ -3,6 +3,7 @@ package com.patsurvey.nudge
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.analytics.EventParams
@@ -43,6 +44,7 @@ import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DOUBLE_ZERO
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.FAIL
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PAT_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.PREF_BPC_PAT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_KEY_EMAIL
@@ -1218,6 +1220,7 @@ object RetryHelper {
             try {
                 launch {
                     val response = apiService?.validateOtp(otpRequest)
+                    NudgeLogger.d("RetryHelper","validateOtp => ${Gson().toJson(otpRequest)}")
                     if (response?.status.equals(SUCCESS, true)) {
                         response?.data?.let {
                             prefRepo?.saveAccessToken(it.token)
@@ -1247,6 +1250,7 @@ object RetryHelper {
             try {
                 launch {
                     val response = apiService?.generateOtp(loginRequest)
+                    NudgeLogger.d("RetryHelper ","generateOtp=> ${Gson().toJson(loginRequest)}")
                     if (response?.status.equals(SUCCESS, true)) {
                         withContext(Dispatchers.Main) {
                             prefRepo?.saveMobileNumber(mobileNumber)

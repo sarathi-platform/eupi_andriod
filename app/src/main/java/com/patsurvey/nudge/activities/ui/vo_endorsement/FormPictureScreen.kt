@@ -109,17 +109,12 @@ import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
 import com.patsurvey.nudge.activities.ui.theme.white
-import com.patsurvey.nudge.activities.ui.theme.yellowBg
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
-import com.patsurvey.nudge.navigation.home.SettingScreens
 import com.patsurvey.nudge.navigation.home.VoEndorsmentScreeens
-import com.patsurvey.nudge.utils.ARG_FROM_SETTING
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
-import com.patsurvey.nudge.utils.FORM_A
-import com.patsurvey.nudge.utils.FORM_B
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -154,8 +149,14 @@ fun FormPictureScreen(
         requestCameraPermission(localContext as Activity, formPictureScreenViewModel) {
             shouldRequestPermission.value = true
         }
-        formPictureScreenViewModel.isFormAAvailableForVillage(context = localContext, villageId = formPictureScreenViewModel.prefRepo.getSelectedVillage().id)
-        formPictureScreenViewModel.isFormBAvailableForVillage(context = localContext, villageId = formPictureScreenViewModel.prefRepo.getSelectedVillage().id)
+        formPictureScreenViewModel.isFormAAvailableForVillage(
+            context = localContext,
+            villageId = formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id
+        )
+        formPictureScreenViewModel.isFormBAvailableForVillage(
+            context = localContext,
+            villageId = formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id
+        )
     }
 
 
@@ -216,8 +217,7 @@ fun FormPictureScreen(
                             )
                             .then(modifier),
                         contentScale = ContentScale.FillWidth,
-                        model = imageRequest
-                        ,
+                        model = imageRequest,
                         contentDescription = "image"
                     )
                     IconButton(
@@ -254,7 +254,7 @@ fun FormPictureScreen(
                     .then(modifier)
             ) {
 
-                val (bottomActionBox, mainBox,formBox) = createRefs()
+                val (bottomActionBox, mainBox, formBox) = createRefs()
                 Box(modifier = Modifier
                     .wrapContentHeight()
                     .constrainAs(mainBox) {
@@ -303,7 +303,7 @@ fun FormPictureScreen(
                                 }
 
                                 VOAndVillageBoxView(
-                                    prefRepo = formPictureScreenViewModel.prefRepo,
+                                    prefRepo = formPictureScreenViewModel.repository.prefRepo,
                                     modifier = Modifier.fillMaxWidth(),
                                     startPadding = 0.dp
                                 )
@@ -344,7 +344,7 @@ fun FormPictureScreen(
                                                         it
                                                     )
                                                 formPictureScreenViewModel.imagePath.value =
-                                                    formPictureScreenViewModel.prefRepo.getPref(
+                                                    formPictureScreenViewModel.repository.prefRepo.getPref(
                                                         formPictureScreenViewModel.getFormPathKey(
                                                             formPictureScreenViewModel.pageItemClicked.value
                                                         ),
@@ -622,7 +622,7 @@ fun FormPictureScreen(
                                             formPictureScreenViewModel.formCImageList.value =  mutableMapOf()
                                             formPictureScreenViewModel.formsCClicked.value = --formPictureScreenViewModel.formsCClicked.value
                                             for (i in 1..5) {
-                                                formPictureScreenViewModel.prefRepo.savePref(formPictureScreenViewModel.getFormPathKey(formPictureScreenViewModel.getFormSubPath(FORM_C, i)), "")
+                                                formPictureScreenViewModel.repository.prefRepo.savePref(formPictureScreenViewModel.getFormPathKey(formPictureScreenViewModel.getFormSubPath(FORM_C, i)), "")
                                             }
                                         }
                                     )
@@ -647,7 +647,7 @@ fun FormPictureScreen(
                                                         it
                                                     )
                                                 formPictureScreenViewModel.imagePath.value =
-                                                    formPictureScreenViewModel.prefRepo.getPref(
+                                                    formPictureScreenViewModel.repository.prefRepo.getPref(
                                                         formPictureScreenViewModel.getFormPathKey(
                                                             formPictureScreenViewModel.pageItemClicked.value
                                                         ),
@@ -803,7 +803,7 @@ fun FormPictureScreen(
                                             formPictureScreenViewModel.formDImageList.value =  mutableMapOf()
                                             formPictureScreenViewModel.formsDClicked.value = --formPictureScreenViewModel.formsDClicked.value
                                             for (i in 1..5) {
-                                                formPictureScreenViewModel.prefRepo.savePref(formPictureScreenViewModel.getFormPathKey(formPictureScreenViewModel.getFormSubPath(FORM_D, i)), "")
+                                                formPictureScreenViewModel.repository.prefRepo.savePref(formPictureScreenViewModel.getFormPathKey(formPictureScreenViewModel.getFormSubPath(FORM_D, i)), "")
                                             }
                                         }
                                     )
@@ -875,21 +875,21 @@ fun FormPictureScreen(
                         positiveButtonText = stringResource(id = R.string.submit),
                         positiveButtonOnClick = {
                             NudgeLogger.d("FormPictureScreen", "submit button clicked")
-                            formPictureScreenViewModel.prefRepo.savePref(
-                                PREF_NEED_TO_POST_FORM_C_AND_D_ + formPictureScreenViewModel.prefRepo.getSelectedVillage().id,true)
+                            formPictureScreenViewModel.repository.prefRepo.savePref(
+                                PREF_NEED_TO_POST_FORM_C_AND_D_ + formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id,true)
                             formPictureScreenViewModel.updateVoEndorsementEditFlag()
                             formPictureScreenViewModel.updateDidiVoEndorsementStatus()
                             formPictureScreenViewModel.markVoEndorsementComplete(
-                                formPictureScreenViewModel.prefRepo.getSelectedVillage().id,
+                                formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id,
                                 stepId
                             )
                             formPictureScreenViewModel.saveVoEndorsementDate()
                             if ((context as MainActivity).isOnline.value ?: false) {
-                                formPictureScreenViewModel.updateVoStatusToNetwork(object :
+                                /*formPictureScreenViewModel.updateVoStatusToNetwork(object :
                                     NetworkCallbackListener {
                                     override fun onSuccess() {
                                         formPictureScreenViewModel.callWorkFlowAPI(
-                                            formPictureScreenViewModel.prefRepo.getSelectedVillage().id,
+                                            formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id,
                                             stepId,
                                             object :
                                                 NetworkCallbackListener {
@@ -905,7 +905,7 @@ fun FormPictureScreen(
                                     override fun onFailed() {
 //                                        showCustomToast(context, SYNC_FAILED)
                                     }
-                                })
+                                })*/
                                 formPictureScreenViewModel.uploadFormsCAndD(context)
 
                             }
@@ -1439,33 +1439,35 @@ fun PageItem(
     }
 }
 
-@Composable
-fun formLinkView(linkText:String,onLinkClick:()->Unit){
 
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Column {
-                    Text(
-                        text =linkText,
-                        style = TextStyle(
-                            fontFamily = NotoSans,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 14.sp,
-                            textDecoration = TextDecoration.Underline
-                        ),
-                        color = textColorDark,
-                        modifier = Modifier.clickable {
-                            onLinkClick()
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
+    @Composable
+    fun formLinkView(linkText: String, onLinkClick: () -> Unit) {
 
-                }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Column {
+                Text(
+                    text = linkText,
+                    style = TextStyle(
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp,
+                        textDecoration = TextDecoration.Underline
+                    ),
+                    color = textColorDark,
+                    modifier = Modifier.clickable {
+                        onLinkClick()
+                    }
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+
             }
-}
+        }
+    }
+
 
 @Preview(showBackground = true)
 @Composable

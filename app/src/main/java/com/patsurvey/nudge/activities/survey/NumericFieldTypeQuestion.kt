@@ -157,9 +157,9 @@ val context = LocalContext.current
                             questionFlag = questionFlag,
                             optionImageUrl = option.optionImage?: BLANK_STRING,
                             optionValue = option.optionValue,
-                            optionList = optionList.sortedBy { it.optionValue },
+                            optionList = optionList.sortedBy { it.optionValue }.filter { it.optionType == BLANK_STRING },
                             onDecrementClick = {
-                                if(viewModel?.prefRepo?.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
+                                if(viewModel?.repository?.prefRepo?.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
                                     viewModel?.updateDidiQuesSection(didiId, PatSurveyStatus.INPROGRESS.ordinal)
                                 val numericAnswerEntity = NumericAnswerEntity(
                                     optionId = option.optionId ?: 0,
@@ -177,7 +177,7 @@ val context = LocalContext.current
                                 }
                             },
                             onIncrementClick = {
-                                if(viewModel?.prefRepo?.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
+                                if(viewModel?.repository?.prefRepo?.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
                                     viewModel?.updateDidiQuesSection(didiId, PatSurveyStatus.INPROGRESS.ordinal)
                                 val numericAnswerEntity = NumericAnswerEntity(
                                     optionId = option.optionId ?: 0,
@@ -195,7 +195,7 @@ val context = LocalContext.current
                                 }
                             },
                             onValueChange = {
-                                if(viewModel?.prefRepo?.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
+                                if(viewModel?.repository?.prefRepo?.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
                                     viewModel?.updateDidiQuesSection(didiId, PatSurveyStatus.INPROGRESS.ordinal)
                                 val numericAnswerEntity = NumericAnswerEntity(
                                     optionId = option.optionId ?: 0,

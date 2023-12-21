@@ -122,7 +122,7 @@ fun BpcProgressScreen(
                                 stepId = village.stepId,
                                 statusId = village.statusId,
                                 context = context,
-                                isUserBPC = bpcProgreesScreenViewModel.prefRepo.isUserBPC()
+                                isUserBPC = bpcProgreesScreenViewModel.repository.prefRepo.isUserBPC()
                             ) {
                                 bpcProgreesScreenViewModel.showLoader.value = true
                                 bpcProgreesScreenViewModel.villageSelected.value = it
@@ -169,8 +169,8 @@ fun BpcProgressScreen(
                         },
                         actions = {
                             IconButton(onClick = {
-                                bpcProgreesScreenViewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME, true)
-                                bpcProgreesScreenViewModel.prefRepo.saveSettingOpenFrom(PageFrom.HOME_PAGE.ordinal)
+                                bpcProgreesScreenViewModel.repository.prefRepo.savePref(PREF_OPEN_FROM_HOME, true)
+                                bpcProgreesScreenViewModel.repository.prefRepo.saveSettingOpenFrom(PageFrom.HOME_PAGE.ordinal)
                                 onNavigateToSetting()
                             }) {
                                 Icon(
@@ -206,7 +206,7 @@ fun BpcProgressScreen(
                         if (!steps.isNullOrEmpty()) {
                             bpcProgreesScreenViewModel.isStepComplete(
                                 steps.sortedBy { it.orderNumber }.last().id,
-                                bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id
+                                bpcProgreesScreenViewModel.repository.prefRepo.getSelectedVillage().id
                             )?.observeAsState()?.value ?: 0
                         } else {
                             1
@@ -228,11 +228,11 @@ fun BpcProgressScreen(
                             item {
                                 UserDataView(
                                     modifier = Modifier,
-                                    name = bpcProgreesScreenViewModel.prefRepo.getPref(
+                                    name = bpcProgreesScreenViewModel.repository.prefRepo.getPref(
                                         PREF_KEY_NAME,
                                         BLANK_STRING
                                     ) ?: "",
-                                    identity = bpcProgreesScreenViewModel.prefRepo.getPref(
+                                    identity = bpcProgreesScreenViewModel.repository.prefRepo.getPref(
                                         PREF_KEY_IDENTITY_NUMBER,
                                         BLANK_STRING
                                     ) ?: "",
@@ -270,7 +270,7 @@ fun BpcProgressScreen(
                                 ) {
                                     Column(modifier = Modifier) {
                                         Text(
-                                            text = bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().federationName/*stringResource(R.string.crp_group_name_text)*/,
+                                            text = bpcProgreesScreenViewModel.repository.prefRepo.getSelectedVillage().federationName/*stringResource(R.string.crp_group_name_text)*/,
                                             textAlign = TextAlign.Start,
                                             style = mediumTextStyle,
                                             color = textColorDark,
@@ -668,7 +668,7 @@ fun BpcProgressScreen(
                                 bpcProgreesScreenViewModel.getBpcCompletedDidiCount()
                             }
 
-                            bpcProgreesScreenViewModel.isBpcVerificationComplete.value[bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id] = isStepCompleted == StepStatus.COMPLETED.ordinal
+                            bpcProgreesScreenViewModel.isBpcVerificationComplete.value[bpcProgreesScreenViewModel.repository.prefRepo.getSelectedVillage().id] = isStepCompleted == StepStatus.COMPLETED.ordinal
 
                             item {
                                 StepsBoxForBpc(
@@ -689,10 +689,10 @@ fun BpcProgressScreen(
                                                 val stepId =
                                                     steps.sortedBy { it.orderNumber }.last().id
                                                 onNavigateToStep(
-                                                    bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id,
+                                                    bpcProgreesScreenViewModel.repository.prefRepo.getSelectedVillage().id,
                                                     stepId,
                                                 )
-                                                bpcProgreesScreenViewModel.prefRepo.saveFromPage(ARG_FROM_PAT_SURVEY)
+                                                bpcProgreesScreenViewModel.repository.prefRepo.saveFromPage(ARG_FROM_PAT_SURVEY)
                                             } else {
                                                 showCustomToast(context, context.getString(R.string.something_went_wrong))
                                             }

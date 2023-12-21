@@ -18,13 +18,14 @@ import java.net.InetSocketAddress
 import javax.net.SocketFactory
 
 
-class ConnectionMonitor(context: Context) : LiveData<Boolean>() {
+class ConnectionMonitor(context: Context) : LiveData<NetworkInfo>() {
     val TAG = "ConnectionMonitor"
 
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
     private val connectivityManager =
         context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
     private val validNetworks: MutableSet<Network> = HashSet()
+    private var downLoadSpeed: Int = 0
 
     private fun checkValidNetworks() {
         NudgeLogger.d(TAG, "checkValidNetworks : ${validNetworks.toString()}")
@@ -34,7 +35,14 @@ class ConnectionMonitor(context: Context) : LiveData<Boolean>() {
                 checkValidNetworkAvailability(network)
             }
         }
-        postValue(validNetworks.size > 0)
+        //  postValue(validNetworks.size > 0)
+        postValue(
+            NetworkInfo(
+                validNetworks.size > 0,
+                downLoadSpeed,
+                getNetworkSpeed(downLoadSpeed)
+            )
+        )
     }
 
     override fun onActive() {
@@ -78,6 +86,8 @@ class ConnectionMonitor(context: Context) : LiveData<Boolean>() {
         ) {
             super.onCapabilitiesChanged(network, networkCapabilities)
             val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+            downLoadSpeed = networkCapabilities?.linkDownstreamBandwidthKbps!!
+            getNetworkSpeed(downLoadSpeed)
             val hasInternetCapability = networkCapabilities?.hasCapability(NET_CAPABILITY_INTERNET)
             NudgeLogger.d(TAG, "onCapabilitiesChanged: ${network}, $hasInternetCapability")
 
@@ -137,8 +147,22 @@ class ConnectionMonitor(context: Context) : LiveData<Boolean>() {
         }
     }
 
+    fun getNetworkSpeed(downloadSpeed: Int): String {
+        return if (downloadSpeed < 128) {
+            NetworkSpeed.POOR.toString()
+        } else if (downloadSpeed < 3600) {
+            NetworkSpeed.MODERATE.toString()
+        } else if (downloadSpeed < 23000) {
+            NetworkSpeed.GOOD.toString()
+        } else if (downloadSpeed > 23000) {
+            NetworkSpeed.EXCELLENT.toString()
+        } else {
+            NetworkSpeed.UNKNOWN.toString()
+        }
+    }
+
     object DoesNetworkHaveInternet {
-     const val TAG="DoesNetworkHaveInternet"
+        const val TAG = "DoesNetworkHaveInternet"
         fun execute(socketFactory: SocketFactory): Boolean {
             // Make sure to execute this on a background thread.
             return try {
@@ -154,5 +178,28 @@ class ConnectionMonitor(context: Context) : LiveData<Boolean>() {
             }
         }
     }
+
+    fun isOnline(refresh: Boolean): NetworkInfo {
+        /*if (refresh) {
+            synchronized(validNetworks) {
+                if (validNetworks.isNotEmpty()) {
+                    validNetworks.forEach { network ->
+                        NudgeLogger.d(TAG, "checkValidNetworks : validNetworks.forEach -> $network")
+                        checkValidNetworkAvailability(network)
+                    }
+                }
+            }
+        }*/
+        return NetworkInfo(
+            validNetworks.size > 0,
+            downLoadSpeed,
+            getNetworkSpeed(downLoadSpeed)
+        )
+
+    }
+}
+
+enum class NetworkSpeed {
+    POOR, MODERATE, GOOD, EXCELLENT, UNKNOWN
 }
 

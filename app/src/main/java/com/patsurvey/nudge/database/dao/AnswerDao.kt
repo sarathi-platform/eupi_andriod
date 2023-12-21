@@ -29,7 +29,7 @@ interface AnswerDao {
     fun updateAnswer(didiId: Int,optionId:Int ,questionId: Int,actionType:String,optionValue:Int,weight:Int,answerValue:String,type:String,totalAssetAmount:Double,summary:String,assetAmount:String,questionFlag:String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAnswer(Answer: SectionAnswerEntity)
+    fun insertAnswer(answer: SectionAnswerEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(Answers: List<SectionAnswerEntity>)
@@ -59,7 +59,7 @@ interface AnswerDao {
     @Query("select $DIDI_TABLE.id,$DIDI_TABLE.name,$DIDI_TABLE.serverId,$DIDI_TABLE.villageId,$DIDI_TABLE.patSurveyStatus,$DIDI_TABLE.section1Status,$DIDI_TABLE.section2Status,$DIDI_TABLE.forVoEndorsement,$DIDI_TABLE.score,$DIDI_TABLE.comment,$DIDI_TABLE.shgFlag, $DIDI_TABLE.patEdit, $DIDI_TABLE.patExclusionStatus, $DIDI_TABLE.ableBodiedFlag from $DIDI_TABLE LEFT join $ANSWER_TABLE on $ANSWER_TABLE.didiId = $DIDI_TABLE.id where $DIDI_TABLE.villageId = :villageId AND $DIDI_TABLE.needsToPostPAT=1 AND $DIDI_TABLE.wealth_ranking = 'POOR' AND $DIDI_TABLE.activeStatus = 1  GROUP BY $DIDI_TABLE.id")
     fun fetchPATSurveyDidiList(villageId: Int): List<PATDidiStatusModel>
 
-    @Query("select $DIDI_TABLE.id,$DIDI_TABLE.name,$DIDI_TABLE.serverId,$DIDI_TABLE.villageId,$DIDI_TABLE.patSurveyStatus,$DIDI_TABLE.section1Status,$DIDI_TABLE.section2Status,$DIDI_TABLE.forVoEndorsement,$DIDI_TABLE.score,$DIDI_TABLE.comment,$DIDI_TABLE.shgFlag, $DIDI_TABLE.patEdit, $DIDI_TABLE.patExclusionStatus, $DIDI_TABLE.ableBodiedFlag from $DIDI_TABLE LEFT join $ANSWER_TABLE on $ANSWER_TABLE.didiId = $DIDI_TABLE.id where $DIDI_TABLE.needsToPostPAT=1 AND $DIDI_TABLE.wealth_ranking = 'POOR' AND $DIDI_TABLE.activeStatus = 1 GROUP BY $DIDI_TABLE.id")
+    @Query("select $DIDI_TABLE.id,$DIDI_TABLE.name,$DIDI_TABLE.serverId,$DIDI_TABLE.villageId,$DIDI_TABLE.patSurveyStatus,$DIDI_TABLE.section1Status,$DIDI_TABLE.section2Status,$DIDI_TABLE.forVoEndorsement,$DIDI_TABLE.score,$DIDI_TABLE.comment,$DIDI_TABLE.shgFlag, $DIDI_TABLE.patEdit, $DIDI_TABLE.patExclusionStatus, $DIDI_TABLE.ableBodiedFlag from $DIDI_TABLE LEFT join $ANSWER_TABLE on $ANSWER_TABLE.didiId = $DIDI_TABLE.id where $DIDI_TABLE.needsToPostPAT=1 AND $DIDI_TABLE.wealth_ranking = 'POOR' AND $DIDI_TABLE.activeStatus = 1 AND $DIDI_TABLE.serverId != 0 GROUP BY $DIDI_TABLE.id")
     fun fetchPATSurveyDidiList(): List<PATDidiStatusModel>
 
     @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId")
@@ -68,7 +68,7 @@ interface AnswerDao {
     fun fetchAllDidisForVO(villageId: Int): List<DidiEntity>
 
     @Query("Update $ANSWER_TABLE set needsToPost = :needsToPost where didiId = :didiId AND questionId = :questionId ")
-    fun updateNeedToPost(didiId: Int,questionId: Int,needsToPost:Boolean)
+    fun updateNeedToPost(didiId: Int, questionId: Int, needsToPost: Boolean)
 
     @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND actionType = 'INCLUSION'")
     fun getAllInclusiveQues(didiId: Int): List<SectionAnswerEntity>

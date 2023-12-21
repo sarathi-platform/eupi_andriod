@@ -409,5 +409,6 @@
     <string name="do_you_want_to_exit_the_app">Do you want to exit the app?</string>
     <string name="exit">Exit</string>
     <string name="cancel">Cancel</string>
-
+    <string name="vo_endorsement_not_started">VO Endorsement is not started</string>
+    <string name="export_data_test">Export Data</string>
 </resources>

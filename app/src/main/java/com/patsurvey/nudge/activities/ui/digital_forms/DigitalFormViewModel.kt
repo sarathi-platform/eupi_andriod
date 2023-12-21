@@ -9,13 +9,9 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.patsurvey.nudge.base.BaseViewModel
-import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.PoorDidiEntity
-import com.patsurvey.nudge.database.dao.CasteListDao
-import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.PoorDidiListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -44,10 +40,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DigitalFormViewModel @Inject constructor(
-    val prefRepo: PrefRepo,
-    val didiDao: DidiDao,
-    val poorDidiListDao: PoorDidiListDao,
-    val casteListDao: CasteListDao
+    val digitalFormRepository: DigitalFormRepository
 ):BaseViewModel()  {
     private val _didiDetailList = MutableStateFlow(listOf<DidiEntity>())
     private val _didiDetailListForBpc = MutableStateFlow(listOf<PoorDidiEntity>())
@@ -57,21 +50,29 @@ class DigitalFormViewModel @Inject constructor(
     val casteList: StateFlow<List<CasteEntity>> get() = _casteList
     var villageId: Int = -1
     init {
-        villageId = prefRepo.getSelectedVillage().id
-        job= CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            withContext(Dispatchers.IO){
+        villageId = digitalFormRepository.getSelectedVillage().id
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.IO) {
                 try {
-                    _casteList.value = casteListDao.getAllCasteForLanguage(prefRepo.getAppLanguageId() ?: 2)
-                    if (prefRepo.isUserBPC()) {
-                        val didiList = poorDidiListDao.getAllPoorDidisForVillage(villageId)
+                    _casteList.value = digitalFormRepository.getAllCasteForLanguage(
+                        digitalFormRepository.getAppLanguageId() ?: 2
+                    )
+                    if (digitalFormRepository.isUserBPC()) {
+                        val didiList = digitalFormRepository.getAllPoorDidisForVillage(villageId)
                         didiList.forEach {
-                            NudgeLogger.d("DigitalFormViewModel", "init isUserBPC -> didi.id = ${it.id}, didi.name = ${it.name}")
+                            NudgeLogger.d(
+                                "DigitalFormViewModel",
+                                "init isUserBPC -> didi.id = ${it.id}, didi.name = ${it.name}"
+                            )
                         }
                         _didiDetailListForBpc.value = didiList
                     } else {
-                        val didiList = didiDao.getAllDidisForVillage(villageId)
+                        val didiList = digitalFormRepository.getAllDidisForVillage(villageId)
                         didiList.forEach {
-                            NudgeLogger.d("DigitalFormViewModel", "init -> didi.id = ${it.id}, didi.name = ${it.name}")
+                            NudgeLogger.d(
+                                "DigitalFormViewModel",
+                                "init -> didi.id = ${it.id}, didi.name = ${it.name}"
+                            )
                         }
                         _didiDetailList.value = didiList
                     }
@@ -92,11 +93,17 @@ class DigitalFormViewModel @Inject constructor(
 
     fun generateFormAPdf(context: Context, callBack: (formGenerated: Boolean, formPath: File?) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val villageEntity = prefRepo.getSelectedVillage()
-            val success = if (prefRepo.isUserBPC()) {
-                NudgeLogger.d("DigitalFormViewModel", "generateFormAPdf isBpcUser -> villageEntity: ${villageEntity.id}")
+            val villageEntity = digitalFormRepository.getSelectedVillage()
+            val success = if (digitalFormRepository.isUserBPC()) {
+                NudgeLogger.d(
+                    "DigitalFormViewModel",
+                    "generateFormAPdf isBpcUser -> villageEntity: ${villageEntity.id}"
+                )
                 didiDetailList.value.forEach {
-                    NudgeLogger.d("DigitalFormViewModel", "generateFormAPdf isBpcUser -> didi.id = ${it.id}, didi.name = ${it.name}")
+                    NudgeLogger.d(
+                        "DigitalFormViewModel",
+                        "generateFormAPdf isBpcUser -> didi.id = ${it.id}, didi.name = ${it.name}"
+                    )
                 }
                 PdfUtils.getFormAPdfForBpc(
                     context = context,
@@ -104,7 +111,7 @@ class DigitalFormViewModel @Inject constructor(
                     didiDetailList = didiDetailListForBpc.value,
                     casteList = casteList.value,
                     completionDate = changeMilliDateToDate(
-                        prefRepo.getPref(
+                        digitalFormRepository.getPref(
                             PREF_WEALTH_RANKING_COMPLETION_DATE_ + villageEntity.id, 0L
                         )
                     ) ?: BLANK_STRING
@@ -120,7 +127,7 @@ class DigitalFormViewModel @Inject constructor(
                     didiDetailList = didiDetailList.value,
                     casteList = casteList.value,
                     completionDate = changeMilliDateToDate(
-                        prefRepo.getPref(
+                        digitalFormRepository.getPref(
                             PREF_WEALTH_RANKING_COMPLETION_DATE_ + villageEntity.id, 0L
                         )
                     ) ?: BLANK_STRING
@@ -136,25 +143,51 @@ class DigitalFormViewModel @Inject constructor(
 
     fun generateFormBPdf(context: Context, callBack: (formGenerated: Boolean, formPath: File?) -> Unit)  {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val villageEntity = prefRepo.getSelectedVillage()
-            val success = if (prefRepo.isUserBPC()) {
-                NudgeLogger.d("DigitalFormViewModel", "generateFormBPdf isBpcUser -> villageEntity: ${villageEntity.id}")
+            val villageEntity = digitalFormRepository.getSelectedVillage()
+            val success = if (digitalFormRepository.isUserBPC()) {
+                NudgeLogger.d(
+                    "DigitalFormViewModel",
+                    "generateFormBPdf isBpcUser -> villageEntity: ${villageEntity.id}"
+                )
                 didiDetailList.value.forEach {
-                    NudgeLogger.d("DigitalFormViewModel", "generateFormBPdf isBpcUser -> didi.id = ${it.id}, didi.name = ${it.name}")
+                    NudgeLogger.d(
+                        "DigitalFormViewModel",
+                        "generateFormBPdf isBpcUser -> didi.id = ${it.id}, didi.name = ${it.name}"
+                    )
                 }
-                PdfUtils.getFormBPdfForBpc(context, villageEntity = prefRepo.getSelectedVillage(),
-                    didiDetailList = didiDetailListForBpc.value.filter { it.forVoEndorsement == 1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit },
+                PdfUtils.getFormBPdfForBpc(
+                    context, villageEntity = digitalFormRepository.getSelectedVillage(),
+                    didiDetailList = didiDetailListForBpc.value.filter { it.forVoEndorsement == 1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit },
                     casteList = casteList.value,
-                    completionDate = changeMilliDateToDate(prefRepo.getPref(PREF_PAT_COMPLETION_DATE_+villageEntity.id,0L)) ?: BLANK_STRING)
+                    completionDate = changeMilliDateToDate(
+                        digitalFormRepository.getPref(
+                            PREF_PAT_COMPLETION_DATE_ + villageEntity.id,
+                            0L
+                        )
+                    ) ?: BLANK_STRING
+                )
             } else {
-                NudgeLogger.d("DigitalFormViewModel", "generateFormBPdf -> villageEntity: ${villageEntity.id}")
+                NudgeLogger.d(
+                    "DigitalFormViewModel",
+                    "generateFormBPdf -> villageEntity: ${villageEntity.id}"
+                )
                 didiDetailList.value.forEach {
-                    NudgeLogger.d("DigitalFormViewModel", "generateFormBPdf -> didi.id = ${it.id}, didi.name = ${it.name}")
+                    NudgeLogger.d(
+                        "DigitalFormViewModel",
+                        "generateFormBPdf -> didi.id = ${it.id}, didi.name = ${it.name}"
+                    )
                 }
-                PdfUtils.getFormBPdf(context, villageEntity = prefRepo.getSelectedVillage(),
-                    didiDetailList = didiDetailList.value.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit },
+                PdfUtils.getFormBPdf(
+                    context, villageEntity = digitalFormRepository.getSelectedVillage(),
+                    didiDetailList = didiDetailList.value.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit },
                     casteList = casteList.value,
-                    completionDate = changeMilliDateToDate(prefRepo.getPref(PREF_PAT_COMPLETION_DATE_+villageEntity.id,0L)) ?: BLANK_STRING)
+                    completionDate = changeMilliDateToDate(
+                        digitalFormRepository.getPref(
+                            PREF_PAT_COMPLETION_DATE_ + villageEntity.id,
+                            0L
+                        )
+                    ) ?: BLANK_STRING
+                )
             }
             withContext(Dispatchers.Main) {
                 delay(500)
@@ -166,25 +199,51 @@ class DigitalFormViewModel @Inject constructor(
 
     fun generateFormCPdf(context: Context, callBack: (formGenerated: Boolean, formPath: File?) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val villageEntity = prefRepo.getSelectedVillage()
-            val success = if (prefRepo.isUserBPC()) {
-                NudgeLogger.d("DigitalFormViewModel", "generateFormCPdf isBpcUser -> villageEntity: ${villageEntity.id}")
+            val villageEntity = digitalFormRepository.getSelectedVillage()
+            val success = if (digitalFormRepository.isUserBPC()) {
+                NudgeLogger.d(
+                    "DigitalFormViewModel",
+                    "generateFormCPdf isBpcUser -> villageEntity: ${villageEntity.id}"
+                )
                 didiDetailList.value.forEach {
-                    NudgeLogger.d("DigitalFormViewModel", "generateFormCPdf isBpcUser -> didi.id = ${it.id}, didi.name = ${it.name}")
+                    NudgeLogger.d(
+                        "DigitalFormViewModel",
+                        "generateFormCPdf isBpcUser -> didi.id = ${it.id}, didi.name = ${it.name}"
+                    )
                 }
-                PdfUtils.getFormCPdfForBpc(context, villageEntity = prefRepo.getSelectedVillage(),
+                PdfUtils.getFormCPdfForBpc(
+                    context, villageEntity = digitalFormRepository.getSelectedVillage(),
                     didiDetailList = didiDetailListForBpc.value.filter { it.forVoEndorsement == 1 && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal },
                     casteList = casteList.value,
-                    completionDate = changeMilliDateToDate(prefRepo.getPref(PREF_VO_ENDORSEMENT_COMPLETION_DATE_+villageEntity.id,0L)) ?: BLANK_STRING)
+                    completionDate = changeMilliDateToDate(
+                        digitalFormRepository.getPref(
+                            PREF_VO_ENDORSEMENT_COMPLETION_DATE_ + villageEntity.id,
+                            0L
+                        )
+                    ) ?: BLANK_STRING
+                )
             } else {
-                NudgeLogger.d("DigitalFormViewModel", "generateFormCPdf -> villageEntity: ${villageEntity.id}")
+                NudgeLogger.d(
+                    "DigitalFormViewModel",
+                    "generateFormCPdf -> villageEntity: ${villageEntity.id}"
+                )
                 didiDetailList.value.forEach {
-                    NudgeLogger.d("DigitalFormViewModel", "generateFormCPdf -> didi.id = ${it.id}, didi.name = ${it.name}")
+                    NudgeLogger.d(
+                        "DigitalFormViewModel",
+                        "generateFormCPdf -> didi.id = ${it.id}, didi.name = ${it.name}"
+                    )
                 }
-                PdfUtils.getFormCPdf(context, villageEntity = prefRepo.getSelectedVillage(),
+                PdfUtils.getFormCPdf(
+                    context, villageEntity = digitalFormRepository.getSelectedVillage(),
                     didiDetailList = didiDetailList.value.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal },
                     casteList = casteList.value,
-                    completionDate = changeMilliDateToDate(prefRepo.getPref(PREF_VO_ENDORSEMENT_COMPLETION_DATE_+villageEntity.id,0L)) ?: BLANK_STRING)
+                    completionDate = changeMilliDateToDate(
+                        digitalFormRepository.getPref(
+                            PREF_VO_ENDORSEMENT_COMPLETION_DATE_ + villageEntity.id,
+                            0L
+                        )
+                    ) ?: BLANK_STRING
+                )
             }
             withContext(Dispatchers.Main) {
                 delay(500)

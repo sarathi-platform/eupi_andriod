@@ -99,7 +99,7 @@ fun SocialMappingDidiListScreen(
     }
     var filterSelected by remember {
         mutableStateOf(
-            if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
+            if (!didiViewModel.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
                 (context as MainActivity).isFilterApplied.value
             } else {
                 false
@@ -115,6 +115,9 @@ fun SocialMappingDidiListScreen(
 
     LaunchedEffect(key1 = true) {
         didiViewModel.isSocialMappingComplete(stepId)
+        if(filterSelected){
+            didiViewModel.filterList()
+        }
     }
 
     var completeTolaAdditionClicked by remember { mutableStateOf(false) }
@@ -127,7 +130,7 @@ fun SocialMappingDidiListScreen(
         if (completeTolaAdditionClicked)
             completeTolaAdditionClicked = false
         else {
-            if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
+            if (!didiViewModel.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
                 (context as MainActivity).isFilterApplied.value = false
             }
             navController.popBackStack()
@@ -169,7 +172,7 @@ fun SocialMappingDidiListScreen(
             ) {
 
                 VOAndVillageBoxView(
-                    prefRepo = didiViewModel.prefRepo,
+                    prefRepo = didiViewModel.addDidiRepository.prefRepo,
                     modifier = Modifier.fillMaxWidth(),
                 )
 
@@ -206,7 +209,7 @@ fun SocialMappingDidiListScreen(
                             .weight(1f)
                             .padding(
                                 bottom =
-                                if (!didiViewModel.prefRepo
+                                if (!didiViewModel.addDidiRepository.prefRepo
                                         .getFromPage()
                                         .equals(ARG_FROM_HOME, true)
                                 ) {
@@ -225,11 +228,11 @@ fun SocialMappingDidiListScreen(
                                 horizontalArrangement = Arrangement.SpaceAround,
                                 modifier = Modifier
                             ) {
-                                val title = if (didiViewModel.prefRepo.getFromPage()
+                                val title = if (didiViewModel.getFromPage()
                                         .equals(ARG_FROM_PAT_SURVEY, true)
                                 )
                                     stringResource(R.string.pat_survey_title)
-                                else if (!didiViewModel.prefRepo.getFromPage()
+                                else if (!didiViewModel.getFromPage()
                                         .equals(ARG_FROM_HOME, true)
                                 )
                                     stringResource(R.string.social_mapping)
@@ -237,17 +240,17 @@ fun SocialMappingDidiListScreen(
                                     stringResource(R.string.didis_item_text_plural)
                                 MainTitle(title, Modifier.weight(1f))
                                 Spacer(modifier = Modifier.padding(14.dp))
-                                if (!didiViewModel.prefRepo.getFromPage()
+                                if (!didiViewModel.getFromPage()
                                         .equals(ARG_FROM_HOME, true)
-                                    && !didiViewModel.prefRepo.getFromPage()
+                                    && !didiViewModel.getFromPage()
                                         .equals(ARG_FROM_PAT_SURVEY, true)
                                 ) {
 //                                    if (!didiViewModel.isVoEndorsementComplete.value) {
-                                        ButtonOutline(
-                                            modifier = Modifier
-                                                .weight(0.9f)
-                                                .height(45.dp),
-                                            buttonTitle = stringResource(id = R.string.add_didi),
+                                    ButtonOutline(
+                                        modifier = Modifier
+                                            .weight(0.9f)
+                                            .height(45.dp),
+                                        buttonTitle = stringResource(id = R.string.add_didi),
                                         ) {
                                             didiViewModel.resetAllFields()
                                             navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_ID") {
@@ -276,7 +279,9 @@ fun SocialMappingDidiListScreen(
                                 onFilterSelected = {
                                     if (didiList.value.isNotEmpty()) {
                                         filterSelected = !it
-                                        if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
+                                        if (!didiViewModel.getFromPage()
+                                                .equals(ARG_FROM_PAT_SURVEY, true)
+                                        ) {
                                             (context as MainActivity).isFilterApplied.value = !it
                                         }
                                         didiViewModel.filterList()
@@ -303,7 +308,7 @@ fun SocialMappingDidiListScreen(
                                             )
                                         ) {
                                             append(
-                                                if (!didiViewModel.prefRepo.getFromPage()
+                                                if (!didiViewModel.getFromPage()
                                                         .equals(ARG_FROM_PAT_SURVEY, true)
                                                 )
                                                     "${newFilteredDidiList.size}"
@@ -313,7 +318,7 @@ fun SocialMappingDidiListScreen(
                                         }
                                         append(
                                             " ${
-                                                if (!didiViewModel.prefRepo.getFromPage()
+                                                if (!didiViewModel.getFromPage()
                                                         .equals(ARG_FROM_PAT_SURVEY, true)
                                                 )
                                                     pluralStringResource(
@@ -345,12 +350,12 @@ fun SocialMappingDidiListScreen(
                                 newFilteredTolaDidiList.keys.toList()
                             ) { index, didiKey ->
                                 ShowDidisFromTola(navController = navController,
-                                    prefRepo = didiViewModel.prefRepo,
+                                    prefRepo = didiViewModel.addDidiRepository.prefRepo,
                                     addDidiViewModel = didiViewModel,
                                     didiTola = didiKey,
-                                    answerDao = didiViewModel.answerDao,
-                                    questionListDao = didiViewModel.questionListDao,
-                                    didiList = if (didiViewModel.prefRepo.getFromPage()
+                                    answerDao = didiViewModel.addDidiRepository.answerDao,
+                                    questionListDao = didiViewModel.addDidiRepository.questionListDao,
+                                    didiList = if (didiViewModel.getFromPage()
                                             .equals(ARG_FROM_PAT_SURVEY, true)
                                     )
                                         newFilteredTolaDidiList[didiKey]?.filter { it.wealth_ranking == WealthRank.POOR.rank }
@@ -366,7 +371,7 @@ fun SocialMappingDidiListScreen(
                                         }
                                     },
                                     onNavigate = {
-                                        if (!didiViewModel.prefRepo.getFromPage().equals(
+                                        if (!didiViewModel.getFromPage().equals(
                                                 ARG_FROM_PAT_SURVEY,
                                                 true
                                             ) && !didiViewModel.isSocialMappingComplete.value
@@ -374,7 +379,7 @@ fun SocialMappingDidiListScreen(
                                             navController.navigate("add_didi_graph/${it.id}") {
                                                 launchSingleTop = true
                                             }
-                                        } else if (didiViewModel.prefRepo.getFromPage().equals(
+                                        } else if (didiViewModel.getFromPage().equals(
                                                 ARG_FROM_HOME, true
                                             )
                                         ) {
@@ -424,23 +429,23 @@ fun SocialMappingDidiListScreen(
                                 item { Spacer(modifier = Modifier.height(bottomPadding)) }
                         } else {
                             itemsIndexed(
-                                if (didiViewModel.prefRepo.getFromPage()
+                                if (didiViewModel.getFromPage()
                                         .equals(ARG_FROM_PAT_SURVEY, true)
                                 ) newFilteredDidiList.filter { it.wealth_ranking == WealthRank.POOR.rank } else newFilteredDidiList) { index, didi ->
-                                if (didiViewModel.prefRepo.getFromPage()
+                                if (didiViewModel.getFromPage()
                                         .equals(ARG_FROM_PAT_SURVEY, true)
                                 ) {
                                     DidiItemCardForPat(
                                         navController = navController,
-                                        prefRepo=didiViewModel.prefRepo,
+                                        prefRepo = didiViewModel.addDidiRepository.prefRepo,
                                         didi = didi,
-                                        answerDao = didiViewModel.answerDao,
-                                        questionListDao = didiViewModel.questionListDao,
+                                        answerDao = didiViewModel.addDidiRepository.answerDao,
+                                        questionListDao = didiViewModel.addDidiRepository.questionListDao,
                                         expanded = expandedIds.contains(didi.id),
                                         modifier = modifier,
-                                        onExpendClick = {_,_->},
+                                        onExpendClick = { _, _ -> },
                                         onNotAvailableClick = { didiEntity ->
-                                             didiViewModel.setDidiAsUnavailable(didiEntity.id)
+                                            didiViewModel.setDidiAsUnavailable(didiEntity.id)
                                         },
                                         onItemClick = {}
                                         ,onCircularImageClick = { didi->
@@ -467,7 +472,7 @@ fun SocialMappingDidiListScreen(
                                             }
                                         },
                                         onItemClick = { didi ->
-                                            if (!didiViewModel.prefRepo.getFromPage().equals(
+                                            if (!didiViewModel.getFromPage().equals(
                                                     ARG_FROM_PAT_SURVEY,
                                                     true
                                                 ) && !didiViewModel.isSocialMappingComplete.value
@@ -475,7 +480,7 @@ fun SocialMappingDidiListScreen(
                                                 navController.navigate("add_didi_graph/${didi.id}") {
                                                     launchSingleTop = true
                                                 }
-                                            } else if (didiViewModel.prefRepo.getFromPage().equals(
+                                            } else if (didiViewModel.getFromPage().equals(
                                                     ARG_FROM_HOME, true
                                                 )
                                             ) {
@@ -520,8 +525,9 @@ fun SocialMappingDidiListScreen(
 
        // Didi Add\Edit and Wealth Ranking
         if (didiList.value.isNotEmpty() && !didiViewModel.isSocialMappingComplete.value) {
-            if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)
-                && !didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
+            if (!didiViewModel.getFromPage().equals(ARG_FROM_HOME, true)
+                && !didiViewModel.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)
+            ) {
                 DoubleButtonBox(
                     modifier = Modifier
                         .shadow(10.dp)
@@ -596,7 +602,9 @@ fun SocialMappingDidiListScreen(
         // Didi PAT Survey
 
         if (didiList.value.isNotEmpty() && didiViewModel.pendingDidiCount.value == 0) {
-            if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true) && didiViewModel.pendingDidiCount.value == 0) {
+            if (didiViewModel.getFromPage()
+                    .equals(ARG_FROM_PAT_SURVEY, true) && didiViewModel.pendingDidiCount.value == 0
+            ) {
                 DoubleButtonBox(
                     modifier = Modifier
                         .shadow(10.dp)
@@ -877,7 +885,7 @@ fun DidiItemCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                if (didiViewModel.prefRepo
+                if (didiViewModel
                         .getFromPage()
                         .equals(
                             ARG_FROM_PAT_SURVEY,
@@ -920,7 +928,7 @@ fun DidiItemCard(
                             ),
                         )
 
-                        if(didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
+                        if (didiViewModel.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
                             if (didi.patSurveyStatus.equals(PatSurveyStatus.COMPLETED.ordinal)) {
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_completed_tick),
@@ -971,11 +979,13 @@ fun DidiItemCard(
                       modifier = Modifier.layoutId("houseNumber_1")
                     )
 
-                    if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)) {
-                        Box(modifier = Modifier
-                            .background(languageItemActiveBg, RoundedCornerShape(6.dp))
-                            .clip(RoundedCornerShape(6.dp))
-                            .layoutId("latestStatusCollapsed")) {
+                    if (didiViewModel.getFromPage().equals(ARG_FROM_HOME, true)) {
+                        Box(
+                            modifier = Modifier
+                                .background(languageItemActiveBg, RoundedCornerShape(6.dp))
+                                .clip(RoundedCornerShape(6.dp))
+                                .layoutId("latestStatusCollapsed")
+                        ) {
                             Text(
                                 text = getLatestStatusText(context, didi),
                                 style = TextStyle(
@@ -998,7 +1008,7 @@ fun DidiItemCard(
                             .layoutId("latestStatusCollapsed"))
                     }
 
-                    if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
+                    if (!didiViewModel.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
                         if (didi.patSurveyStatus != PatSurveyStatus.COMPLETED.ordinal && didi.patEdit) {
                             IconButton(
                                 onClick = {
@@ -1006,7 +1016,7 @@ fun DidiItemCard(
                                 }, modifier = Modifier
                                     .layoutId("moreActionIcon")
                                     .visible(
-                                        !didiViewModel.prefRepo
+                                        !didiViewModel
                                             .getFromPage()
                                             .equals(
                                                 ARG_FROM_PAT_SURVEY,
@@ -1054,8 +1064,11 @@ fun DidiItemCard(
                         }
 
                         CardArrow(
-                            modifier = Modifier.layoutId(if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)
-                                && !didiViewModel.isSocialMappingComplete.value && didi.patSurveyStatus != PatSurveyStatus.COMPLETED.ordinal)"expendArrowImage" else "expendArrowImageEnd"),
+                            modifier = Modifier.layoutId(
+                                if (!didiViewModel.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)
+                                    && !didiViewModel.isSocialMappingComplete.value && didi.patSurveyStatus != PatSurveyStatus.COMPLETED.ordinal
+                                ) "expendArrowImage" else "expendArrowImageEnd"
+                            ),
                             degrees = arrowRotationDegree,
                             iconColor = animateColor,
                             onClick = { onExpendClick(expanded, didi) }
@@ -1070,7 +1083,7 @@ fun DidiItemCard(
                     }
                 }
             }
-            if (didiViewModel.prefRepo.getFromPage()
+            if (didiViewModel.getFromPage()
                     .equals(ARG_FROM_PAT_SURVEY, true)
             ) {
                 Divider(
@@ -1133,13 +1146,23 @@ fun DidiItemCard(
                         ) {
 
                             didiViewModel.validateDidiToNavigate(didiId = didi.id){ navigationValue->
-                                if(navigationValue == SummaryNavigation.SECTION_1_PAGE.ordinal){
-                                       didiViewModel.prefRepo.saveSummaryScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
-                                    navigateSocialToSummeryPage(navController,1,didi.id,didiViewModel.prefRepo)
+                                if(navigationValue == SummaryNavigation.SECTION_1_PAGE.ordinal) {
+                                    didiViewModel.saveSummaryScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
+                                    navigateSocialToSummeryPage(
+                                        navController,
+                                        1,
+                                        didi.id,
+                                        didiViewModel.addDidiRepository.prefRepo
+                                    )
 
-                                }else if(navigationValue == SummaryNavigation.SECTION_2_PAGE.ordinal){
-                                    didiViewModel.prefRepo.saveSummaryScreenOpenFrom(PageFrom.SUMMARY_TWO_PAGE.ordinal)
-                                    navigateSocialToSummeryPage(navController,2,didi.id,didiViewModel.prefRepo)
+                                }else if(navigationValue == SummaryNavigation.SECTION_2_PAGE.ordinal) {
+                                    didiViewModel.saveSummaryScreenOpenFrom(PageFrom.SUMMARY_TWO_PAGE.ordinal)
+                                    navigateSocialToSummeryPage(
+                                        navController,
+                                        2,
+                                        didi.id,
+                                        didiViewModel.addDidiRepository.prefRepo
+                                    )
 
                                 }else{
                                     if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
@@ -1150,14 +1173,20 @@ fun DidiItemCard(
                                         navController.navigate("didi_pat_summary/${didi.id}")
 
                                     } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal  ) {
-                                        val quesIndex=0
-                                        didiViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
-                                        didiViewModel.prefRepo.saveSummaryScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
+                                        val quesIndex = 0
+                                        didiViewModel.saveQuestionScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
+                                        didiViewModel.saveSummaryScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
                                         if (didi.section1Status == 0 || didi.section1Status == 1)
                                             navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION/$quesIndex")
-                                        else if ((didi.section2Status == 0 || didi.section2Status == 1) && didi.patExclusionStatus == ExclusionType.NO_EXCLUSION.ordinal) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION/$quesIndex")
-                                        else if(didi.section1Status == 2 && didi.patExclusionStatus == ExclusionType.SIMPLE_EXCLUSION.ordinal) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION/$quesIndex")
-                                        else if(didi.section1Status == 2 && didi.patExclusionStatus == ExclusionType.EDIT_PAT_EXCLUSION.ordinal) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION/$quesIndex")
+                                        else if ((didi.section2Status == 0 || didi.section2Status == 1) && didi.patExclusionStatus == ExclusionType.NO_EXCLUSION.ordinal) navController.navigate(
+                                            "yes_no_question_screen/${didi.id}/$TYPE_INCLUSION/$quesIndex"
+                                        )
+                                        else if (didi.section1Status == 2 && didi.patExclusionStatus == ExclusionType.SIMPLE_EXCLUSION.ordinal) navController.navigate(
+                                            "yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION/$quesIndex"
+                                        )
+                                        else if (didi.section1Status == 2 && didi.patExclusionStatus == ExclusionType.EDIT_PAT_EXCLUSION.ordinal) navController.navigate(
+                                            "yes_no_question_screen/${didi.id}/$TYPE_INCLUSION/$quesIndex"
+                                        )
                                     }
                                 }
 
