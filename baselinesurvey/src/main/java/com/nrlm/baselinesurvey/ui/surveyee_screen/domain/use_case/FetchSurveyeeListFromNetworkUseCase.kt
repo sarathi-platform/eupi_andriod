@@ -1,0 +1,48 @@
+package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case
+
+import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.SUCCESS
+import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
+import com.nrlm.baselinesurvey.ui.language.domain.repository.LanguageScreenRepository
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepository
+
+class FetchSurveyeeListFromNetworkUseCase(
+    private val repository: DataLoadingScreenRepository
+) {
+
+    suspend operator fun invoke(): Boolean {
+        val userId = repository.getUserId()
+        val apiResponse = repository.fetchSurveyeeListFromNetwork(userId)
+        val localSurveyeeEntityList = repository.fetchSurveyeeListFromLocalDb()
+        if (apiResponse?.status?.equals(SUCCESS, false) == true) {
+            if (apiResponse?.data?.didiList != null) {
+//                repository.deleteSurveyeeList()
+                apiResponse?.data?.didiList.forEach {
+                    if (!localSurveyeeEntityList.map { surveyeeEntity -> surveyeeEntity.didiId }.contains(it.didiId)) { //TODO Modify this if to keep backend changes as well
+                        val surveyeeEntity = SurveyeeEntity(
+                            id = 0,
+                            userId = it.userId,
+                            didiId = it.didiId,
+                            didiName = it.didiName ?: BLANK_STRING,
+                            dadaName = it.dadaName ?: BLANK_STRING,
+                            casteId = it.casteId ?: -1,
+                            cohortId = it.cohortId ?: -1,
+                            cohortName = it.cohortName ?: BLANK_STRING,
+                            houseNo = it.houseNo ?: BLANK_STRING,
+                            villageId = it.villageId ?: -1,
+                            villageName = it.villageName ?: BLANK_STRING,
+                            ableBodied = it.ableBodied ?: BLANK_STRING
+                        )
+                        repository.saveSurveyeeList(surveyeeEntity)
+                    }
+
+                }
+                return true
+            } else {
+                return false
+            }
+        } else {
+            return false
+        }
+    }
+}

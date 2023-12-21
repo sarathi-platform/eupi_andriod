@@ -1,0 +1,76 @@
+package com.nrlm.baselinesurvey.ui.splash.viewModel
+
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import com.nrlm.baselinesurvey.SPLASH_SCREEN_DURATION
+import com.nrlm.baselinesurvey.SUCCESS
+import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.splash.domain.use_case.SplashScreenUseCase
+import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
+import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.states.LoaderState
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
+
+@HiltViewModel
+class SplashScreenViewModel @Inject constructor(
+    val splashScreenUseCase: SplashScreenUseCase
+): BaseViewModel() {
+
+    private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
+    val loaderState: State<LoaderState> get() = _loaderState
+
+    private val _isLoggedIn = splashScreenUseCase.loggedInUseCase.invoke()
+    val isLoggedIn: Boolean = _isLoggedIn
+
+    override fun <T> onEvent(event: T) {
+        when (event) {
+            is LoaderEvent.UpdateLoaderState -> {
+                _loaderState.value = _loaderState.value.copy(
+                    isLoaderVisible = event.showLoader
+                )
+            }
+        }
+    }
+
+    fun checkAndAddLanguage() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            splashScreenUseCase.saveLanguageConfigUseCase.addDefaultLanguage()
+        }
+    }
+
+    fun fetchLanguageConfigDetails(callBack: () -> Unit) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val languageConfigResponse = splashScreenUseCase.fetchLanguageConfigFromNetworkUseCase.invoke()
+                if (languageConfigResponse.status.equals(SUCCESS, true)) {
+                    languageConfigResponse.data?.let { configResponseModel ->
+                        splashScreenUseCase.saveLanguageConfigUseCase.invoke(configResponseModel.languageList)
+                        BaselineCore.downloadQuestionImages(configResponseModel.image_profile_link)
+                        delay(SPLASH_SCREEN_DURATION)
+                        withContext(Dispatchers.Main) {
+                            callBack()
+                        }
+                    }
+                } else {
+                    splashScreenUseCase.saveLanguageConfigUseCase.addDefaultLanguage()
+                    withContext(Dispatchers.Main) {
+                        callBack()
+                    }
+                }
+            } catch (ex: Exception) {
+                onCatchError(ex)
+                splashScreenUseCase.saveLanguageConfigUseCase.addDefaultLanguage()
+                withContext(Dispatchers.Main) {
+                    callBack()
+                }
+            }
+        }
+    }
+
+}
