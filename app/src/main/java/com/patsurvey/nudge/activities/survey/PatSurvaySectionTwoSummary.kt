@@ -82,7 +82,7 @@ fun PatSurvaySectionTwoSummaryScreen(
     }
     BackHandler {
         if(patSectionSummaryViewModel.didiEntity.value.section2Status != PatSurveyStatus.COMPLETED.ordinal) {
-            if (patSectionSummaryViewModel.prefRepo.summaryScreenOpenFrom() == PageFrom.SUMMARY_TWO_PAGE.ordinal)
+            if (patSectionSummaryViewModel.patSectionRepository.prefRepo.summaryScreenOpenFrom() == PageFrom.SUMMARY_TWO_PAGE.ordinal)
                 navController.navigate("yes_no_question_screen/${didiId}/$TYPE_INCLUSION/0")
             else navController.popBackStack()
         }else navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
@@ -99,6 +99,14 @@ fun PatSurvaySectionTwoSummaryScreen(
     val answerSummeryList by patSectionSummaryViewModel.answerSummeryList.collectAsState()
 
     val showDialog = remember { mutableStateOf(false) }
+
+    if(patSectionSummaryViewModel.showDidiImageDialog.value){
+        patSectionSummaryViewModel.didiEntity.value?.let {
+            showDidiImageDialog(didi = it){
+                patSectionSummaryViewModel.showDidiImageDialog.value = false
+            }
+        }
+    }
 
     ConstraintLayout(
         modifier = Modifier
@@ -117,7 +125,7 @@ fun PatSurvaySectionTwoSummaryScreen(
                 patSectionSummaryViewModel.setPATSurveyComplete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
                 patSectionSummaryViewModel.updateExclusionStatus(didi.value.id,ExclusionType.NO_EXCLUSION.ordinal,
                     BLANK_STRING)
-                if(patSectionSummaryViewModel.prefRepo.isUserBPC()){
+                if(patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()){
 
                     navController.popBackStack(BpcDidiListScreens.BPC_DIDI_LIST.route, inclusive = false)
                 }else navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
@@ -143,7 +151,7 @@ fun PatSurvaySectionTwoSummaryScreen(
             ) {
 
                 VOAndVillageBoxView(
-                    prefRepo = patSectionSummaryViewModel.prefRepo,
+                    prefRepo = patSectionSummaryViewModel.patSectionRepository.prefRepo,
                     modifier = Modifier.fillMaxWidth(),
                     startPadding = 0.dp
                 )
@@ -172,7 +180,9 @@ fun PatSurvaySectionTwoSummaryScreen(
                     modifier = Modifier,
                     screenHeight = screenHeight,
                     didi = didi.value
-                )
+                ){
+                    patSectionSummaryViewModel.showDidiImageDialog.value=true
+                }
                 Spacer(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -204,8 +214,8 @@ fun PatSurvaySectionTwoSummaryScreen(
                           isArrowVisible = isArrowVisible(patSectionSummaryViewModel,didi),
                           questionFlag = answer?.questionFlag?: QUESTION_FLAG_WEIGHT)
                       {
-                          patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_TWO_PAGE.ordinal)
-                          if(patSectionSummaryViewModel.prefRepo.isUserBPC())
+                          patSectionSummaryViewModel.patSectionRepository.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_TWO_PAGE.ordinal)
+                          if(patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC())
                               navController.navigate("bpc_single_question_screen/${didiId}/$TYPE_INCLUSION/$index")
                           else navController.navigate("single_question_screen/${didiId}/$TYPE_INCLUSION/$it")
                       }
@@ -240,7 +250,8 @@ fun PatSurvaySectionTwoSummaryScreen(
 fun PatSummeryScreenDidiDetailBox(
     modifier: Modifier = Modifier,
     screenHeight: Int,
-    didi: DidiEntity
+    didi: DidiEntity,
+    onCircularImageClick:()->Unit
 ) {
     Box(
         modifier = Modifier
@@ -283,7 +294,9 @@ fun PatSummeryScreenDidiDetailBox(
 
                     )
                     .clip(CircleShape)
-                    .background(languageItemActiveBg)
+                    .background(languageItemActiveBg).clickable {
+                        onCircularImageClick()
+                    }
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -331,7 +344,7 @@ fun PatSummeryScreenDidiDetailBoxPreview(){
    val didi=DidiEntity(0,"",0,"Didi1","Hno 123", BLANK_STRING,"Husband", castId = 0,
        castName = "OBC", cohortId = 0, cohortName = "Tola1", createdDate = 457874, localPath = BLANK_STRING, villageId = 40,
        wealth_ranking = "POOR", needsToPost = false, modifiedDate = 654789, needsToPostRanking = false, patSurveyStatus = 0, shgFlag = SHGFlag.NOT_MARKED.value, ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value)
-    PatSummeryScreenDidiDetailBox(modifier = Modifier,screenHeight,didi)
+    PatSummeryScreenDidiDetailBox(modifier = Modifier,screenHeight,didi, onCircularImageClick = {})
 }
 @Preview(showBackground = true)
 @Composable
@@ -471,14 +484,14 @@ fun SectionTwoSummeryItem(
             )
 
             if (isArrowVisible){
-                IconButton(onClick = { }) {
+
                     Icon(
                         imageVector = Icons.Default.ArrowForward,
                         contentDescription = "Forward Arrow",
                         tint = textColorDark,
-                        modifier = Modifier
+                        modifier = Modifier.padding(5.dp)
                     )
-                }
+
             }
         }
         Divider(

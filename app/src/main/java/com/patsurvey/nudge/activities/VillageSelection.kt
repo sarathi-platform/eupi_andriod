@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities
 
 import android.content.Context
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -40,13 +41,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
@@ -68,16 +66,16 @@ import com.patsurvey.nudge.activities.ui.progress.VillageSelectionViewModel
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.dropDownBg
+import com.patsurvey.nudge.activities.ui.theme.greenLight
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
-import com.patsurvey.nudge.activities.ui.theme.greyBorder
 import com.patsurvey.nudge.activities.ui.theme.greyRadioButton
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
 import com.patsurvey.nudge.activities.ui.theme.stepBoxActiveColor
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
-import com.patsurvey.nudge.activities.ui.theme.yellowBg
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
+import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -87,7 +85,7 @@ import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.StepType
+import com.patsurvey.nudge.utils.showCustomDialog
 import com.patsurvey.nudge.utils.showCustomToast
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -104,7 +102,7 @@ fun VillageSelectionScreen(
         viewModel.init(context)
     }
 
-    val villages by viewModel.villageList.collectAsState()
+    val villages by viewModel.filterVillageList.collectAsState()
 
     val snackState = rememberSnackBarState()
 
@@ -115,9 +113,19 @@ fun VillageSelectionScreen(
     }
 
     BackHandler {
-        (context as? MainActivity)?.finish()
+        viewModel.showAppExitDialog.value = true
     }
-
+    if(viewModel.showAppExitDialog.value){
+        showCustomDialog(
+            title = stringResource(id = R.string.are_you_sure),
+            message =stringResource(id = R.string.do_you_want_to_exit_the_app),
+            positiveButtonTitle = stringResource(id = R.string.exit),
+            negativeButtonTitle = stringResource(id = R.string.cancel),
+            onNegativeButtonClick = {viewModel.showAppExitDialog.value =false},
+            onPositiveButtonClick = {
+                (context as? MainActivity)?.finish()
+            })
+    }
 
     LaunchedEffect(key1 = true) {
         val imagesList= (context as MainActivity).quesImageList
@@ -297,6 +305,18 @@ fun VillageSelectionScreen(
 
                         LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 //                item { Spacer(modifier = Modifier.height(4.dp)) }
+                            item {
+                                SearchWithFilterView(
+                                    placeholderString = stringResource(id = R.string.search_village),
+                                    filterSelected = false,
+                                    showFilter = false,
+                                    onFilterSelected = {
+                                    },
+                                    onSearchValueChange = {
+                                        viewModel.performQuery(it)
+                                    }
+                                )
+                            }
                             NudgeLogger.d("Village_UI_LIST","$villages :: ${villages.size}")
                             itemsIndexed(villages.distinctBy { it.id }) { index, village ->
                                 VillageAndVoBoxForBottomSheet(
@@ -311,8 +331,9 @@ fun VillageSelectionScreen(
                                     statusId = village.statusId,
                                     context = context
                                 ) {
+                                    NudgeLogger.d("VillageAndVoBoxForBottomSheet","id = $it")
                                     viewModel.villageSelected.value = it
-                                    viewModel.updateSelectedVillage()
+                                    viewModel.updateSelectedVillage(villages)
                                 }
                             }
                             item { Spacer(modifier = Modifier.height(50.dp)) }
@@ -329,7 +350,7 @@ fun VillageSelectionScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color.White)
+                            .background(White)
                             .padding(horizontal = dimensionResource(id = R.dimen.padding_16dp))
                             .padding(bottom = 16.dp)
                             .align(Alignment.BottomCenter)
@@ -343,9 +364,9 @@ fun VillageSelectionScreen(
                                val stepId= villages[viewModel.villageSelected.value].stepId
                                val statusId= villages[viewModel.villageSelected.value].statusId
                                 when (fetchBorderColorForVillage(stepId, statusId)) {
-                                    0 -> showCustomToast(context,  context.getString(R.string.village_is_not_vo_endorsed_right_now))
+                                    0,2 -> showCustomToast(context,  context.getString(R.string.village_is_not_vo_endorsed_right_now))
                                     else -> {
-                                        viewModel.updateSelectedVillage()
+                                        viewModel.updateSelectedVillage(villageList = villages)
                                         navController.popBackStack()
                                         navController.navigate(
                                             "home_graph/${
@@ -357,7 +378,7 @@ fun VillageSelectionScreen(
                                     }
                                 }
                             } else {
-                                viewModel.updateSelectedVillage()
+                                viewModel.updateSelectedVillage(villageList = villages)
                                 navController.popBackStack()
                                 navController.navigate(
                                     "home_graph/${
@@ -401,7 +422,9 @@ fun VillageAndVoBoxForBottomSheet(
             .fillMaxWidth()
             .border(
                 width = 1.dp,
-                color = if (index == selectedIndex) blueDark else greyRadioButton,
+                color = if (fetchBorderColorForVillage(stepId, statusId) == 4) greenOnline else {
+                    if (index == selectedIndex) blueDark else greyRadioButton
+                },
                 shape = RoundedCornerShape(6.dp)
             )
             .clip(RoundedCornerShape(6.dp))
@@ -414,7 +437,11 @@ fun VillageAndVoBoxForBottomSheet(
             ) {
                 if (isUserBPC) {
                     when (fetchBorderColorForVillage(stepId, statusId)) {
-                        0 -> showCustomToast(context, context.getString(R.string.village_is_not_vo_endorsed_right_now))
+                        0, 2 -> showCustomToast(
+                            context,
+                            context.getString(R.string.village_is_not_vo_endorsed_right_now)
+                        )
+
                         else -> onVillageSeleted(index)
                     }
                 } else onVillageSeleted(index)
@@ -431,8 +458,9 @@ fun VillageAndVoBoxForBottomSheet(
                     .background(
                         if (isUserBPC) {
                             when (fetchBorderColorForVillage(stepId, statusId)) {
-                                0, 2, 4 -> white
+                                0, 2 -> white
                                 1, 3 -> stepBoxActiveColor
+                                4 -> greenLight
                                 else -> white
                             }
                         } else if (index == selectedIndex) dropDownBg else White
@@ -457,7 +485,7 @@ fun VillageAndVoBoxForBottomSheet(
                     Icon(
                         painter = painterResource(id = R.drawable.home_icn),
                         contentDescription = null,
-                        tint = textColorDark,
+                        tint = if (fetchBorderColorForVillage(stepId, statusId) == 4) greenOnline else textColorDark,
                         modifier = Modifier.constrainAs(iconRef) {
                             top.linkTo(parent.top)
                             start.linkTo(parent.start)
@@ -465,7 +493,7 @@ fun VillageAndVoBoxForBottomSheet(
                     )
                     Text(
                         text = " $tolaName",
-                        color = textColorDark,
+                        color = if (fetchBorderColorForVillage(stepId, statusId) == 4) greenOnline else textColorDark,
                         fontSize = 14.sp,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.SemiBold,
@@ -474,6 +502,7 @@ fun VillageAndVoBoxForBottomSheet(
                         modifier = Modifier.constrainAs(textRef) {
                             top.linkTo(parent.top)
                             start.linkTo(iconRef.end)
+                            end.linkTo(radioRef.start)
                             width = Dimension.fillToConstraints
                         }
                     )
@@ -502,12 +531,12 @@ fun VillageAndVoBoxForBottomSheet(
                 Row(
                     modifier = Modifier
                         .absolutePadding(left = 4.dp)
-                        .padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
+                        .padding(start = 16.dp, end = 16.dp)
                 ) {
                     Text(
                         text = "VO: ",
                         modifier = Modifier,
-                        color = textColorDark,
+                        color = if (fetchBorderColorForVillage(stepId, statusId) == 4) greenOnline else textColorDark,
                         fontSize = 14.sp,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.Medium
@@ -516,7 +545,7 @@ fun VillageAndVoBoxForBottomSheet(
                         text = voName,
                         modifier = Modifier
                             .fillMaxWidth(),
-                        color = textColorDark,
+                        color = if (fetchBorderColorForVillage(stepId, statusId) == 4) greenOnline else textColorDark,
                         fontSize = 14.sp,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.Medium
@@ -531,7 +560,8 @@ fun VillageAndVoBoxForBottomSheet(
                             shape = RoundedCornerShape(bottomStart = 6.dp, bottomEnd = 6.dp)
                         )
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -547,32 +577,76 @@ fun VillageAndVoBoxForBottomSheet(
                         modifier = Modifier.absolutePadding(bottom = 3.dp)
                     )
                 }
-            }else{
-                if ((stepId == 44 && statusId == StepStatus.COMPLETED.ordinal) || stepId == 45) {
+            }
+            else if ((stepId == 44 && statusId == StepStatus.COMPLETED.ordinal) || stepId == 45) {
                     Row(
                         Modifier
                             .background(
-                                greenOnline,
+                                when (fetchBorderColorForVillage(stepId, statusId)) {
+                                    0, 2 -> white
+                                    1, 3 -> stepBoxActiveColor
+                                    4 -> greenLight
+                                    else -> white
+                                },
                                 shape = RoundedCornerShape(bottomStart = 6.dp, bottomEnd = 6.dp)
                             )
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 4.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.icon_feather_check_circle_white),
-                            contentDescription = null,
-                            tint = white
-                        )
-                        Text(
-                            text = stringResource( if(stepId == 44) R.string.vo_endorsement_completed_village_banner_text else { if(statusId==StepStatus.COMPLETED.ordinal)  R.string.bpc_verification_completed_village_banner_text else  R.string.vo_endorsement_completed_village_banner_text} ),
-                            color = white,
-                            style = smallerTextStyle,
-                            modifier = Modifier.absolutePadding(bottom = 3.dp)
-                        )
+                        Log.d("TAG", "VillageAndVoBoxForBottomSheet IconCaes:  ${fetchBorderColorForVillage(stepId,statusId)}")
+                        if(fetchBorderColorForVillage(stepId, statusId) !=2) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.icon_feather_check_circle_white),
+                                contentDescription = null,
+                                tint = if (fetchBorderColorForVillage(
+                                        stepId,
+                                        statusId
+                                    ) == 4
+                                ) greenOnline else blueDark
+                            )
+                        }
+                        if(fetchBorderColorForVillage(stepId, statusId)==2){
+                            Text(
+                                text = stringResource(id = R.string.vo_endorsement_not_started),
+                                color = textColorDark,
+                                style = smallerTextStyle,
+                                modifier = Modifier
+                                    .absolutePadding(bottom = 3.dp, left = 16.dp)
+                            )
+                        }else {
+                            Text(
+                                text = stringResource(
+                                    if (stepId == 44) R.string.vo_endorsement_completed_village_banner_text else {
+                                        if (statusId == StepStatus.COMPLETED.ordinal) R.string.bpc_verification_completed_village_banner_text else R.string.vo_endorsement_completed_village_banner_text
+                                    }
+                                ),
+                                color = if (fetchBorderColorForVillage(
+                                        stepId,
+                                        statusId
+                                    ) == 4
+                                ) greenOnline else textColorDark,
+                                style = smallerTextStyle,
+                                modifier = Modifier.absolutePadding(bottom = 3.dp)
+                            )
+                        }
                     }
-                }
+            } else {
+
+                Spacer(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(if (isUserBPC) 5.dp else 10.dp))
+                if(isUserBPC){
+                Text(
+                    text = stringResource(id = R.string.vo_endorsement_not_started),
+                    color = textColorDark,
+                    style = smallerTextStyle,
+                    modifier = Modifier
+                        .absolutePadding(bottom = 3.dp, left = 16.dp)
+                        .alpha(.5f)
+                ) }
             }
 
         }
@@ -580,6 +654,7 @@ fun VillageAndVoBoxForBottomSheet(
 }
 
 fun fetchBorderColorForVillage(stepId: Int,statusId: Int) :Int{
+    Log.d("TAG", "fetchBorderColorForVillage: stepId: $stepId :: statusId: ${StepStatus.getStepFromOrdinal(statusId)}")
     return if (stepId == 44 && (statusId == StepStatus.INPROGRESS.ordinal
                 || statusId == StepStatus.COMPLETED.ordinal)) {
         1

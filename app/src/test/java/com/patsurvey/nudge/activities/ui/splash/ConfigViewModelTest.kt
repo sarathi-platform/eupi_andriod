@@ -8,7 +8,7 @@ import com.patsurvey.nudge.model.response.ConfigResponseModel
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.SUCCESS
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -20,7 +20,7 @@ class ConfigViewModelTest {
 
     @Mock
     lateinit var configRepo: ConfigRepository
-    lateinit var configViewModel: ConfigViewModel
+    private lateinit var configViewModel: ConfigViewModel
 
     @Before
     fun setUp() {
@@ -30,15 +30,16 @@ class ConfigViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun fetchLanguageDetailsSuccess(){
-        runBlockingTest() {
-            val languageEntity: LanguageEntity = LanguageEntity(1,1,"","","")
-            val configResponseModel: ConfigResponseModel =ConfigResponseModel(listOf(languageEntity),
+    fun fetchLanguageDetailsSuccess() {
+        runTest {
+            val languageEntity = LanguageEntity(1, 1, "", "", "")
+            val configResponseModel = ConfigResponseModel(
+                listOf(languageEntity),
                 listOf(""), listOf()
-           )
-            val mockCollection = ApiResponseModel<ConfigResponseModel>(SUCCESS,"",configResponseModel,"")
-           whenever(configRepo.fetchLanguageFromAPI()).thenReturn(mockCollection);
-           configViewModel.fetchLanguageDetails({})
+            )
+            val mockCollection = ApiResponseModel(SUCCESS, "", configResponseModel, "")
+            whenever(configRepo.fetchLanguageFromAPI()).thenReturn(mockCollection);
+            configViewModel.fetchLanguageDetails {}
 
             assert(mockCollection.status == SUCCESS)
             assert(!mockCollection.data?.languageList?.isEmpty()!!)
@@ -47,11 +48,11 @@ class ConfigViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun fetchLanguageDetailsFail(){
-        runBlockingTest() {
-            val mockCollection = ApiResponseModel<ConfigResponseModel>(FAIL,"",null,"")
+    fun fetchLanguageDetailsFail() {
+        runTest {
+            val mockCollection = ApiResponseModel<ConfigResponseModel>(FAIL, "", null, "")
             whenever(configRepo.fetchLanguageFromAPI()).thenReturn(mockCollection);
-            configViewModel.fetchLanguageDetails({})
+            configViewModel.fetchLanguageDetails {}
             assert(mockCollection.status == FAIL)
             assert(mockCollection.data == null)
         }

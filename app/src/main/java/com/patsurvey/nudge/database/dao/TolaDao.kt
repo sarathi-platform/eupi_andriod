@@ -81,4 +81,7 @@ interface TolaDao {
 
     @Query("DELETE from $TOLA_TABLE where villageId= :villageId")
     fun deleteTolaForVillage(villageId: Int)
+
+    @Query("SELECT * FROM $TOLA_TABLE")
+    fun getTolaTableDump(): List<TolaEntity>
 }

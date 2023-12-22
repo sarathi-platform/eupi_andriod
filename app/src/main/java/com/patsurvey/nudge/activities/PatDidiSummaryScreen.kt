@@ -87,7 +87,7 @@ fun PatDidiSummaryScreen(
         shgFlag.value = patDidiSummaryViewModel.didiEntity.value.shgFlag
     }
 
-    if(patDidiSummaryViewModel.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_CAMERA_PAGE.ordinal) {
+    if(patDidiSummaryViewModel.patDidiSummaryRepository.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_CAMERA_PAGE.ordinal) {
         BackHandler {
             (context as MainActivity).isBackFromSummary.value=true
             navController.popBackStack()
@@ -165,7 +165,7 @@ fun PatDidiSummaryScreen(
                     }
 
                     VOAndVillageBoxView(
-                        prefRepo = patDidiSummaryViewModel.prefRepo,
+                        prefRepo = patDidiSummaryViewModel.patDidiSummaryRepository.prefRepo,
                         modifier = Modifier.fillMaxWidth(),
                         startPadding = 0.dp
                     )
@@ -909,12 +909,12 @@ fun PatDidiSummaryScreen(
                 negativeButtonRequired = false,
                 positiveButtonText = stringResource(id = R.string.next),
                 positiveButtonOnClick = {
-                    if(patDidiSummaryViewModel.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_CAMERA_PAGE.ordinal) {
-                        updateStepStatus(stepsListDao = patDidiSummaryViewModel.stepsListDao,
-                            prefRepo = patDidiSummaryViewModel.prefRepo,
+                    if(patDidiSummaryViewModel.patDidiSummaryRepository.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_CAMERA_PAGE.ordinal) {
+                        updateStepStatus(stepsListDao = patDidiSummaryViewModel.patDidiSummaryRepository.stepsListDao,
+                            prefRepo = patDidiSummaryViewModel.patDidiSummaryRepository.prefRepo,
                             printTag = "PatDidiSummaryViewModel",
                             didiId = patDidiSummaryViewModel.didiEntity.value.id,
-                            didiDao = patDidiSummaryViewModel.didiDao)
+                            didiDao = patDidiSummaryViewModel.patDidiSummaryRepository.didiDao)
                     }
                     if((localContext as MainActivity).isOnline.value) {
                         val id = if (patDidiSummaryViewModel.didiEntity.value.serverId == 0
@@ -928,9 +928,9 @@ fun PatDidiSummaryScreen(
                     } else {
                         patDidiSummaryViewModel.setNeedToPostImage(true)
                     }
-                    patDidiSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
+                    patDidiSummaryViewModel.patDidiSummaryRepository.prefRepo.saveQuestionScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
                     val questionIndex = 0
-                    if (patDidiSummaryViewModel.prefRepo.isUserBPC()){
+                    if (patDidiSummaryViewModel.patDidiSummaryRepository.prefRepo.isUserBPC()){
                         navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION/$questionIndex")
                     } else {
                         navController.navigate("yes_no_question_screen/${didi.value.id}/${TYPE_EXCLUSION}/$questionIndex")

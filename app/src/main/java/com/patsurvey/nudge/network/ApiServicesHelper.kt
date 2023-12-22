@@ -65,6 +65,8 @@ object ApiServicesHelper {
     const val SUBPATH_DIDI_IMAGE_UPLOAD = "/write-api/beneficiary/upload-image"
     const val SUBPATH_DOCUMENT_IMAGE_UPLOAD = "/write-api/form/uploadDocument"
 
+    const val SUBPATH_DATA_DUMP_UPDLOAD = "/write-api/form/uploadDocument"
+
     fun getApiSubPath (api: ApiType): String {
         return when(api) {
             STEP_LIST_API -> SUBPATH_STEP_LIST
@@ -95,6 +97,7 @@ object ApiServicesHelper {
             ApiType.LANGUAGE_API -> SUBPATH_CONFIG_GET_LANGUAGE
             ApiType.DIDI_IMAGE_UPLOAD_API -> SUBPATH_DIDI_IMAGE_UPLOAD
             ApiType.DOCUMENT_UPLOAD_API -> SUBPATH_DOCUMENT_IMAGE_UPLOAD
+            ApiType.UPDLOAD_DATA_DUMP_API -> SUBPATH_DATA_DUMP_UPDLOAD
             FETCH_ALL_DATA -> ""
 
 

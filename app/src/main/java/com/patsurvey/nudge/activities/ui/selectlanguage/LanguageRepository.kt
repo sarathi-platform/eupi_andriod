@@ -8,24 +8,31 @@ import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import javax.inject.Inject
 
-class LanguageRepository@Inject constructor(
+class LanguageRepository @Inject constructor(
     val prefRepo: PrefRepo,
     val languageListDao: LanguageListDao,
     val villageListDao: VillageListDao
 ) : BaseRepository() {
 
 
-    fun getAllLanguages(): List<LanguageEntity>{
+    fun getAllLanguages(): List<LanguageEntity> {
         return languageListDao.getAllLanguages();
     }
-    fun getSelectedVillage(): VillageEntity{
+
+    fun getSelectedVillage(): VillageEntity {
         return prefRepo.getSelectedVillage();
     }
-    fun fetchVillageDetailsForLanguage(villageId: Int, languageId: Int):VillageEntity{
-        return villageListDao.fetchVillageDetailsForLanguage(villageId, languageId);
+
+    fun fetchVillageDetailsForLanguage(languageId: Int) {
+        saveSelectedVillage(
+            villageListDao.fetchVillageDetailsForLanguage(
+                getSelectedVillage().id,
+                languageId
+            )
+        );
     }
 
-    fun saveSelectedVillage(village: VillageEntity){
+    private fun saveSelectedVillage(village: VillageEntity) {
         prefRepo.saveSelectedVillage(village)
     }
 

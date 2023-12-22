@@ -99,8 +99,8 @@ fun PatSurvaySectionSummaryScreen(
     }else{
         BackHandler {
             if(patSectionSummaryViewModel.didiEntity.value.section1Status != PatSurveyStatus.COMPLETED.ordinal) {
-                if (patSectionSummaryViewModel.prefRepo.summaryScreenOpenFrom() == PageFrom.SUMMARY_ONE_PAGE.ordinal) {
-                    if (patSectionSummaryViewModel.prefRepo.isUserBPC()) {
+                if (patSectionSummaryViewModel.patSectionRepository.prefRepo.summaryScreenOpenFrom() == PageFrom.SUMMARY_ONE_PAGE.ordinal) {
+                    if (patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()) {
                         navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION/0")
                     } else {
                         navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION/0")
@@ -108,6 +108,14 @@ fun PatSurvaySectionSummaryScreen(
                 }
                 else navController.popBackStack()
             }else navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+        }
+    }
+
+    if(patSectionSummaryViewModel.showDidiImageDialog.value){
+        patSectionSummaryViewModel.didiEntity.value?.let {
+            showDidiImageDialog(didi = it){
+                patSectionSummaryViewModel.showDidiImageDialog.value = false
+            }
         }
     }
 
@@ -136,7 +144,7 @@ fun PatSurvaySectionSummaryScreen(
             ) {
 
                 VOAndVillageBoxView(
-                    prefRepo = patSectionSummaryViewModel.prefRepo,
+                    prefRepo = patSectionSummaryViewModel.patSectionRepository.prefRepo,
                     modifier = Modifier.fillMaxWidth(),
                     startPadding = 0.dp
                 )
@@ -165,7 +173,9 @@ fun PatSurvaySectionSummaryScreen(
                     modifier = Modifier,
                     screenHeight = screenHeight,
                     didi = didi.value
-                )
+                ){
+                    patSectionSummaryViewModel.showDidiImageDialog.value = true
+                }
                 Spacer(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -211,8 +221,8 @@ fun PatSurvaySectionSummaryScreen(
                            isArrowVisible = isArrowVisible(patSectionSummaryViewModel,didi) /*if (patSectionSummaryViewModel.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_SUMMARY_PAGE.ordinal) true else (didi.value.patEdit && (patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal))*/,
                            questionImageUrl =question.questionImageUrl?: BLANK_STRING ){
 
-                           patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
-                           if(patSectionSummaryViewModel.prefRepo.isUserBPC())
+                           patSectionSummaryViewModel.patSectionRepository.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
+                           if(patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC())
                                navController.navigate("bpc_single_question_screen/${didiId}/$TYPE_EXCLUSION/$index")
                            else navController.navigate("single_question_screen/${didiId}/$TYPE_EXCLUSION/$index")
                        }
@@ -253,12 +263,13 @@ fun PatSurvaySectionSummaryScreen(
                     }
                     patSectionSummaryViewModel.updateExclusionStatus(didi.value.id,exclusionType,
                         TYPE_EXCLUSION)
+                    patSectionSummaryViewModel.updateVOEndorseAfterDidiRejected(didi.value.id,ForVOEndorsementType.REJECTED.ordinal)
                     if (showPatCompletion.value) {
                         patSectionSummaryViewModel.setPATSurveyComplete(
                             didi.value.id,
                             PatSurveyStatus.COMPLETED.ordinal
                         )
-                        if(patSectionSummaryViewModel.prefRepo.isUserBPC()){
+                        if(patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()){
                             navController.popBackStack(BpcDidiListScreens.BPC_DIDI_LIST.route, inclusive = false)
                         }else navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
                     } else {
@@ -267,7 +278,7 @@ fun PatSurvaySectionSummaryScreen(
                 } else {
                     patSectionSummaryViewModel.updateExclusionStatus(didi.value.id,ExclusionType.NO_EXCLUSION.ordinal,
                         TYPE_EXCLUSION)
-                    if(patSectionSummaryViewModel.prefRepo.isUserBPC()){
+                    if(patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()){
                         navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION/0")
                     }else navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION/0")
                 }
@@ -278,10 +289,10 @@ fun PatSurvaySectionSummaryScreen(
 }
 
 fun isArrowVisible(viewModel: PatSectionSummaryViewModel, didi: State<DidiEntity>):Boolean{
-    Log.d("TAG", "isArrowVisible: ${viewModel.prefRepo.questionScreenOpenFrom()}  ::${didi.value.id} ::${didi.value.name} :: ${viewModel.isPATStepComplete.value}")
-    return if (viewModel.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_SUMMARY_PAGE.ordinal)
+    Log.d("TAG", "isArrowVisible: ${viewModel.patSectionRepository.prefRepo.questionScreenOpenFrom()}  ::${didi.value.id} ::${didi.value.name} :: ${viewModel.isPATStepComplete.value}")
+    return if (viewModel.patSectionRepository.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_SUMMARY_PAGE.ordinal)
         true
-    else if(viewModel.prefRepo.isUserBPC() && viewModel.isBPCVerificationStepComplete.value == StepStatus.INPROGRESS.ordinal){
+    else if(viewModel.patSectionRepository.prefRepo.isUserBPC() && viewModel.isBPCVerificationStepComplete.value == StepStatus.INPROGRESS.ordinal){
         true
     }else didi.value.patEdit && (viewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal)
 }
@@ -290,7 +301,8 @@ fun isArrowVisible(viewModel: PatSectionSummaryViewModel, didi: State<DidiEntity
 fun PatSummeryScreenDidiDetailBoxForSectionOne(
     modifier: Modifier = Modifier,
     screenHeight: Int,
-    didi: DidiEntity
+    didi: DidiEntity,
+    onCircularImageClick:(DidiEntity) ->Unit
 ) {
     Box(
         modifier = Modifier
@@ -334,6 +346,9 @@ fun PatSummeryScreenDidiDetailBoxForSectionOne(
                     )
                     .clip(CircleShape)
                     .background(languageItemActiveBg)
+                    .clickable {
+                        onCircularImageClick(didi)
+                    }
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -381,7 +396,7 @@ fun PatSummeryScreenDidiDetailBoxPreview(){
    val didi=DidiEntity(0,"",0,"Didi1","Hno 123", "Dada1","Husband", castId = 0,
        castName = "OBC", cohortId = 0, cohortName = "Tola1", createdDate = 457874, localPath = BLANK_STRING, villageId = 40,
        wealth_ranking = "POOR", needsToPost = false, modifiedDate = 654789, needsToPostRanking = false, patSurveyStatus = 0, shgFlag = SHGFlag.NOT_MARKED.value, ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value)
-    PatSummeryScreenDidiDetailBoxForSectionOne(modifier = Modifier,screenHeight,didi)
+    PatSummeryScreenDidiDetailBoxForSectionOne(modifier = Modifier,screenHeight,didi, onCircularImageClick = {})
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -489,14 +504,12 @@ fun SectionOneSummeryItem(
             )
 
             if(isArrowVisible) {
-                IconButton(onClick = { }) {
                     Icon(
                         imageVector = Icons.Default.ArrowForward,
                         contentDescription = "Forward Arrow",
                         tint = textColorDark,
-                        modifier = Modifier
+                        modifier = Modifier.padding(5.dp)
                     )
-                }
             }
         }
         Divider(

@@ -70,6 +70,7 @@ import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.SummaryBox
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.showCustomToast
+import com.patsurvey.nudge.utils.showDidiImageDialog
 import com.patsurvey.nudge.utils.showToast
 
 @SuppressLint("StringFormatMatches", "StateFlowValueCalledInComposition")
@@ -109,7 +110,7 @@ fun SurveySummary(
             showDidiListForStatus =
                   Pair((context as MainActivity).isBackFromSummary.value, surveySummaryViewModel.baseSummarySecond.value)
         if(!(context).isBackFromSummary.value && fromScreen != ARG_FROM_PAT_SURVEY){
-            if (surveySummaryViewModel.prefRepo.isUserBPC()) {
+            if (surveySummaryViewModel.repository.prefRepo.isUserBPC()) {
                 surveySummaryViewModel.fetchDidisForBpcFromDB()
             } else {
                 surveySummaryViewModel.fetchDidisFromDB()
@@ -139,6 +140,13 @@ fun SurveySummary(
         }
     }
 
+    if(surveySummaryViewModel.showDidiImageDialog.value){
+        surveySummaryViewModel.dialogDidiEntity.value?.let {
+            showDidiImageDialog(didi = it){
+                surveySummaryViewModel.showDidiImageDialog.value = false
+            }
+        }
+    }
 
 
     ConstraintLayout(
@@ -159,7 +167,7 @@ fun SurveySummary(
             ShowDialog(
                 title = stringResource(id = R.string.are_you_sure),
                 list = if(fromScreen == ARG_FROM_PAT_SURVEY) surveySummaryViewModel.didiCountList.value else emptyList(),
-                message = if(surveySummaryViewModel.prefRepo.isUserBPC()){
+                message = if(surveySummaryViewModel.repository.prefRepo.isUserBPC()){
                     stringResource(id = R.string.bpc_final_pat_submition_message)
                 }else{
                     if (fromScreen == ARG_FROM_PAT_SURVEY) {
@@ -183,10 +191,10 @@ fun SurveySummary(
                 setShowDialog = {
                     showDialog.value = it
                 }) {
-                if(surveySummaryViewModel.prefRepo.isUserBPC()){
+                if(surveySummaryViewModel.repository.prefRepo.isUserBPC()){
 
                     surveySummaryViewModel.updateDidiPatStatus()
-                    surveySummaryViewModel.markBpcVerificationComplete(surveySummaryViewModel.prefRepo.getSelectedVillage().id, stepId)
+                    surveySummaryViewModel.markBpcVerificationComplete(surveySummaryViewModel.repository.prefRepo.getSelectedVillage().id, stepId)
                     surveySummaryViewModel.saveBpcPatCompletionDate()
                     surveySummaryViewModel.updatePatEditFlag()
 
@@ -215,7 +223,7 @@ fun SurveySummary(
 
                         })
                         surveySummaryViewModel.callWorkFlowAPIForBpc(
-                            surveySummaryViewModel.prefRepo.getSelectedVillage().id,
+                            surveySummaryViewModel.repository.prefRepo.getSelectedVillage().id,
                             stepId,
                             object :
                                 NetworkCallbackListener {
@@ -236,7 +244,7 @@ fun SurveySummary(
                             }
                         })
                     } else {
-                        surveySummaryViewModel.prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + surveySummaryViewModel.prefRepo.getSelectedVillage().id, false)
+                        surveySummaryViewModel.repository.prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + surveySummaryViewModel.repository.prefRepo.getSelectedVillage().id, false)
                     }
 
                     navController.navigate(
@@ -250,7 +258,7 @@ fun SurveySummary(
                             if(fromScreen == ARG_FROM_PAT_SURVEY){
                                 surveySummaryViewModel.updateDidiPatStatus()
                                 surveySummaryViewModel.markPatComplete(
-                                    surveySummaryViewModel.prefRepo.getSelectedVillage().id,
+                                    surveySummaryViewModel.repository.prefRepo.getSelectedVillage().id,
                                     stepId
                                 )
                                 surveySummaryViewModel.savePatCompletionDate()
@@ -266,7 +274,7 @@ fun SurveySummary(
                                             NetworkCallbackListener {
                                             override fun onSuccess() {
                                                 surveySummaryViewModel.callWorkFlowAPI(
-                                                    surveySummaryViewModel.prefRepo.getSelectedVillage().id,
+                                                    surveySummaryViewModel.repository.prefRepo.getSelectedVillage().id,
                                                     stepId,
                                                     object :
                                                         NetworkCallbackListener {
@@ -321,8 +329,8 @@ fun SurveySummary(
             ) {
 
                 VillageDetailView(
-                    villageName = surveySummaryViewModel.prefRepo.getSelectedVillage().name ?: "",
-                    voName = (surveySummaryViewModel.prefRepo.getSelectedVillage().federationName)
+                    villageName = surveySummaryViewModel.repository.prefRepo.getSelectedVillage().name ?: "",
+                    voName = (surveySummaryViewModel.repository.prefRepo.getSelectedVillage().federationName)
                         ?: "",
                     modifier = Modifier
                 )
@@ -398,7 +406,7 @@ fun SurveySummary(
                                             .height(6.dp)
                                     )
                                 }
-                                if (surveySummaryViewModel.prefRepo.isUserBPC()) {
+                                if (surveySummaryViewModel.repository.prefRepo.isUserBPC()) {
                                     itemsIndexed(
                                         if (showDidiListForStatus.second == PatSurveyStatus.NOT_AVAILABLE.ordinal)
                                             didids.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
@@ -409,15 +417,19 @@ fun SurveySummary(
 
                                         DidiItemCardForPat(
                                             navController = navController,
-                                            prefRepo = surveySummaryViewModel.prefRepo,
+                                            prefRepo = surveySummaryViewModel.repository.prefRepo,
                                             didi = didi,
                                             expanded = true,
                                             modifier = modifier,
-                                            answerDao = surveySummaryViewModel.answerDao,
-                                            questionListDao = surveySummaryViewModel.questionListDao,
+                                            answerDao = surveySummaryViewModel.repository.answerDao,
+                                            questionListDao = surveySummaryViewModel.repository.questionListDao,
                                             onExpendClick = {_,_->},
                                             onNotAvailableClick = {},
-                                            onItemClick = {}
+                                            onItemClick = {},
+                                            onCircularImageClick = { didi ->
+                                                surveySummaryViewModel.showDidiImageDialog.value=true
+                                                surveySummaryViewModel.dialogDidiEntity.value = didi
+                                            }
                                         )
                                     }
                                 } else {
@@ -430,16 +442,20 @@ fun SurveySummary(
                                             itemsIndexed(didiList) { index, didi ->
                                                 DidiItemCardForPat(
                                                     navController = navController,
-                                                    prefRepo = surveySummaryViewModel.prefRepo,
+                                                    prefRepo = surveySummaryViewModel.repository.prefRepo,
                                                     didi = didi,
                                                     expanded = true,
                                                     modifier = modifier,
                                                     isVoEndorsementComplete = surveySummaryViewModel.isVOEndorsementComplete.value,
-                                                    answerDao = surveySummaryViewModel.answerDao,
-                                                    questionListDao = surveySummaryViewModel.questionListDao,
+                                                    answerDao = surveySummaryViewModel.repository.answerDao,
+                                                    questionListDao = surveySummaryViewModel.repository.questionListDao,
                                                     onExpendClick = {_,_->},
                                                     onNotAvailableClick = {},
-                                                    onItemClick = {}
+                                                    onItemClick = {},
+                                                    onCircularImageClick = { didi->
+                                                        surveySummaryViewModel.showDidiImageDialog.value=true
+                                                        surveySummaryViewModel.dialogDidiEntity.value = didi
+                                                    }
                                                 )
 
                                             }
@@ -491,10 +507,14 @@ fun SurveySummary(
                                                         didi = didi,
                                                         modifier = modifier,
                                                         onItemClick = {
-                                                            surveySummaryViewModel.prefRepo.savePref(
+                                                            surveySummaryViewModel.repository.prefRepo.savePref(
                                                                 SharedPrefs.PREF_KEY_VO_SUMMARY_OPEN_FROM,
                                                                 PageFrom.VO_ENDORSEMENT_SUMMARY_PAGE.ordinal)
                                                             navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
+                                                        },
+                                                        onCircularImageClick = {
+                                                            surveySummaryViewModel.showDidiImageDialog.value=true
+                                                            surveySummaryViewModel.dialogDidiEntity.value = it
                                                         }
                                                     )
                                                 }
@@ -505,10 +525,14 @@ fun SurveySummary(
                                                         didi = didi,
                                                         modifier = modifier,
                                                         onItemClick = {
-                                                            surveySummaryViewModel.prefRepo.savePref(
+                                                            surveySummaryViewModel.repository.prefRepo.savePref(
                                                                 SharedPrefs.PREF_KEY_VO_SUMMARY_OPEN_FROM,
                                                                 PageFrom.VO_ENDORSEMENT_SUMMARY_PAGE.ordinal)
                                                             navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
+                                                        },
+                                                        onCircularImageClick = {
+                                                            surveySummaryViewModel.showDidiImageDialog.value=true
+                                                            surveySummaryViewModel.dialogDidiEntity.value = it
                                                         }
                                                     )
                                                 }
@@ -614,7 +638,7 @@ fun SurveySummary(
             }
         }
 
-        if(surveySummaryViewModel.prefRepo.isUserBPC()){
+        if(surveySummaryViewModel.repository.prefRepo.isUserBPC()){
             if (!isStepComplete || showDidiListForStatus.first) {
                 BottomButtonBox(
                     modifier = Modifier

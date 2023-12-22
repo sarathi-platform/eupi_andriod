@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.utils
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,44 +20,67 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
+import coil.compose.rememberImagePainter
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.AddDidiViewModel
 import com.patsurvey.nudge.activities.CircularDidiImage
 import com.patsurvey.nudge.activities.DidiItemCard
+import com.patsurvey.nudge.activities.MainTitle
 import com.patsurvey.nudge.activities.decoupledConstraintsForPatCard
 import com.patsurvey.nudge.activities.navigateSocialToSummeryPage
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.black100Percent
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
+import com.patsurvey.nudge.activities.ui.theme.greyBorder
+import com.patsurvey.nudge.activities.ui.theme.greyTransparentColor
 import com.patsurvey.nudge.activities.ui.theme.inprogressYellow
 import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
+import com.patsurvey.nudge.activities.ui.theme.lightGrayTranslucent
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyle
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorBlueLight
@@ -69,9 +93,10 @@ import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.reflect.KClass
+import java.io.File
 
 @Composable
 fun DidiItemCardForPat(
@@ -86,7 +111,8 @@ fun DidiItemCardForPat(
     questionListDao: QuestionListDao,
     onExpendClick: (Boolean, DidiEntity) -> Unit,
     onNotAvailableClick: (DidiEntity) -> Unit,
-    onItemClick: (DidiEntity) -> Unit
+    onItemClick: (DidiEntity) -> Unit,
+    onCircularImageClick: (DidiEntity) -> Unit
 ) {
     Log.d("TAG", "DidiItemCardForPatDetails: $isVoEndorsementComplete")
 
@@ -129,7 +155,9 @@ fun DidiItemCardForPat(
                     CircularDidiImage(
                         didi = didi,
                         modifier = Modifier.layoutId("didiImage")
-                    )
+                    ){
+                        onCircularImageClick(didi)
+                    }
                     Row(
                         modifier = Modifier
                             .layoutId("didiRow")
@@ -440,7 +468,8 @@ fun ShowDidisFromTola(
     addDidiViewModel: AddDidiViewModel?=null,
     onExpendClick: (Boolean, DidiEntity) -> Unit,
     onNavigate: (DidiEntity) -> Unit,
-    onDeleteClicked: (DidiEntity) -> Unit
+    onDeleteClicked: (DidiEntity) -> Unit,
+    onCircularImageClick:(DidiEntity) ->Unit
 ) {
     Column(modifier = Modifier) {
         Row(
@@ -521,6 +550,9 @@ fun ShowDidisFromTola(
                         },
                         onItemClick = { didi ->
                             onNavigate(didi)
+                        },
+                        onCircularImageClick = { didiEntity ->
+                            onCircularImageClick(didiEntity)
                         }
                     )
                 } else {
@@ -538,10 +570,255 @@ fun ShowDidisFromTola(
                             },
                             onDeleteClicked = { didi ->
                                 onDeleteClicked(didi)
-                            })
+                            },
+                            onCircularImageClick = { didiEntity ->
+                                onCircularImageClick(didiEntity)
+                            }
+                            )
                     }
                 }
             }
         }
     }
 }
+
+@Composable
+fun showDidiImageDialog(didi: DidiEntity,onCloseClick:()->Unit){
+    Dialog(onDismissRequest = { }, properties = DialogProperties(
+        dismissOnClickOutside = true
+    )) {
+        Surface(
+            color = Color.Transparent,
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+                Column(
+                    modifier = Modifier
+                        .background(color = greyTransparentColor,
+                            shape = RoundedCornerShape(6.dp)),
+                    verticalArrangement = Arrangement.Center
+                ) {
+
+                    Box{
+                        if (didi.localPath.isNotEmpty()) {
+                            Image(
+                                painter = rememberImagePainter(
+                                    Uri.fromFile(
+                                        File(
+                                            didi.localPath.split("|")[0]
+                                        )
+                                    )
+                                ),
+                                contentDescription = "didi image",
+                                contentScale = ContentScale.FillBounds,
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .aspectRatio(1f, matchHeightConstraintsFirst = true)
+                                    .fillMaxSize()
+                            )
+                        } else {
+                            Box(modifier = Modifier
+                                .background(white)
+                                .padding(10.dp)
+                                .aspectRatio(1f, matchHeightConstraintsFirst = true)
+                                .fillMaxSize()){
+                                Box(
+                                    modifier = Modifier
+                                        .clip(CircleShape)
+                                        .aspectRatio(1f, matchHeightConstraintsFirst = true)
+                                        .fillMaxSize()
+                                        .background(color = yellowBg),
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.didi_icon),
+                                        contentDescription = "Placeholder didi image",
+                                        contentScale = ContentScale.Fit,
+                                        modifier = Modifier
+                                            .padding(30.dp)
+                                            .align(Alignment.Center)
+                                            .aspectRatio(1f, matchHeightConstraintsFirst = true)
+                                            .fillMaxSize()
+                                    )
+                                }
+                            }
+
+                        }
+                        ConstraintLayout(modifier = Modifier
+                            .fillMaxWidth()
+                            .background(lightGrayTranslucent)) {
+                            val (titleText, closeButton) = createRefs()
+                            Text(
+                                text = didi.name,
+                                style = TextStyle(
+                                    color = white,
+                                    fontSize = 16.sp,
+                                    fontFamily = NotoSans,
+                                    fontWeight = FontWeight.SemiBold,
+                                ),
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .padding(horizontal = 5.dp)
+                                    .wrapContentWidth()
+                                    .constrainAs(titleText) {
+                                        start.linkTo(parent.start)
+                                        top.linkTo(parent.top)
+                                        bottom.linkTo(parent.bottom)
+                                    }
+                            )
+
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "close camera",
+                                tint = white,
+                                modifier = Modifier
+                                    .constrainAs(closeButton) {
+                                        end.linkTo(parent.end)
+                                        top.linkTo(parent.top)
+                                    }
+                                    .width(28.dp)
+                                    .height(28.dp)
+                                    .padding(3.dp)
+                                    .clickable {
+                                        onCloseClick()
+                                    }
+                            )
+
+
+                        }
+
+                    }
+                }
+
+
+        }
+    }
+}
+
+@Composable
+fun showCustomDialog(
+    title:String,
+    message:String,
+    positiveButtonTitle : String ?=EMPTY_STRING,
+    negativeButtonTitle : String ?=EMPTY_STRING,
+    onPositiveButtonClick:()->Unit,
+    onNegativeButtonClick:()->Unit){
+    Dialog(onDismissRequest = {  }, properties = DialogProperties(
+        dismissOnClickOutside = false
+    )) {
+        Surface(
+            color = Color.Transparent,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Column(
+                    modifier = Modifier
+                        .background(color = white, shape = RoundedCornerShape(6.dp)),
+                ) {
+                    Column(Modifier.padding(vertical = 16.dp, horizontal = 16.dp),verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        if(!title.isNullOrEmpty()) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceAround,
+                                modifier = Modifier
+                            ) {
+                                MainTitle(
+                                    title,
+                                    Modifier
+                                        .weight(1f)
+                                        .fillMaxWidth(),
+                                    align = TextAlign.Center
+                                )
+                            }
+                            Divider(thickness = 1.dp, color = greyBorder)
+                        }
+                        Text(
+                            text = message,
+                            style = TextStyle(
+                                color = black100Percent,
+                                fontSize = 16.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.Normal,
+                            ),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .padding(horizontal = 5.dp)
+                                .wrapContentWidth()
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                            Row(modifier = Modifier.fillMaxWidth()) {
+
+                                    if(!negativeButtonTitle.isNullOrEmpty()) {
+                                        ButtonNegative(
+                                            buttonTitle = stringResource(id = R.string.cancel_tola_text),
+                                            isArrowRequired = false,
+                                            modifier = Modifier.weight(1f)
+                                        ) {
+                                            onNegativeButtonClick()
+                                        }
+
+                                }else{
+                                    Spacer(modifier = Modifier.weight(2f))
+                                }
+
+                                Spacer(modifier = Modifier.width(8.dp))
+                                positiveButtonTitle?.let {
+                                    if(!it.isNullOrEmpty()) {
+                                        ButtonPositive(
+                                            buttonTitle = it,
+                                            isArrowRequired = false,
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(vertical = 2.dp)
+                                        ) {
+                                            onPositiveButtonClick()
+                                        }
+                                    }
+                                }
+
+                            }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DidiImagePreview(){
+   
+      val didi=  DidiEntity(
+            id = 0,
+            name = "Didi",
+            address = "",
+            guardianName = "",
+            relationship = "",
+            castId = 0,
+            castName = "",
+            cohortId = 0,
+            cohortName = "",
+            villageId = 0,
+            createdDate = System.currentTimeMillis(),
+            modifiedDate = System.currentTimeMillis(),
+            shgFlag = SHGFlag.NOT_MARKED.value,
+            ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value
+        )
+    showDidiImageDialog(didi = didi, onCloseClick = {})
+    
+}
+
+@Preview(showBackground = true)
+@Composable
+fun showCustomDialogPreview(){
+    showCustomDialog(
+        "Main Title",
+        message = "New Message You are submitting the wealth ranking forYou are submitting the wealth ranking for",
+        negativeButtonTitle = "Cancel",
+        positiveButtonTitle = "Exit",
+        onNegativeButtonClick = {},
+        onPositiveButtonClick = {}
+    )
+}
+
+

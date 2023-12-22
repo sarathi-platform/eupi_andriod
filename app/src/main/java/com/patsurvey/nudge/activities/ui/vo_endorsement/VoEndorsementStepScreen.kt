@@ -62,7 +62,7 @@ fun VoEndorsementStepScreen(
             ) {
                 Column(modifier = Modifier) {
                     VOAndVillageBoxView(
-                        prefRepo = viewModel.prefRepo,
+                        prefRepo = viewModel.repository.prefRepo,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Box(modifier = Modifier.fillMaxSize()) {

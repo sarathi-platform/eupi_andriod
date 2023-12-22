@@ -219,7 +219,7 @@ fun DigitalFormCScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_10))
                             )
                             Text(
-                                text = viewModel.prefRepo.getSelectedVillage().name,
+                                text = viewModel.digitalFormRepository.getSelectedVillage().name,
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -245,8 +245,12 @@ fun DigitalFormCScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = changeMilliDateToDate(viewModel.prefRepo.getPref(
-                                    PREF_VO_ENDORSEMENT_COMPLETION_DATE_ +viewModel.prefRepo.getSelectedVillage().id,0L)) ?: BLANK_STRING,
+                                text = changeMilliDateToDate(
+                                    viewModel.digitalFormRepository.getPref(
+                                        PREF_VO_ENDORSEMENT_COMPLETION_DATE_ + viewModel.digitalFormRepository.getSelectedVillage().id,
+                                        0L
+                                    )
+                                ) ?: BLANK_STRING,
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -272,7 +276,7 @@ fun DigitalFormCScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = viewModel.prefRepo.getSelectedVillage().federationName,
+                                text = viewModel.digitalFormRepository.getSelectedVillage().federationName,
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -298,7 +302,7 @@ fun DigitalFormCScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = if (viewModel.prefRepo.isUserBPC()) {
+                                text = if (viewModel.digitalFormRepository.isUserBPC()) {
                                     didiListForBpc.value.filter { it.forVoEndorsement == 1 && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size.toString()
                                 } else {
                                     didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size.toString()
@@ -355,14 +359,20 @@ fun DigitalFormCScreen(
                                     height = Dimension.fillToConstraints
                                 }
                         ) {
-                            if (viewModel.prefRepo.isUserBPC()) {
+                            if (viewModel.digitalFormRepository.isUserBPC()) {
                                 items(didiListForBpc.value.filter { it.forVoEndorsement == 1 && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }) { card ->
-                                    NudgeLogger.d("DigitalFormCScreen", "LazyColumn isUserBPC -> card.id: ${card.id}, card.name: ${card.name}")
+                                    NudgeLogger.d(
+                                        "DigitalFormCScreen",
+                                        "LazyColumn isUserBPC -> card.id: ${card.id}, card.name: ${card.name}"
+                                    )
                                     DidiVillageItem(card)
                                 }
                             } else {
                                 items(didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }) { card ->
-                                    NudgeLogger.d("DigitalFormCScreen", "LazyColumn -> card.id: ${card.id}, card.name: ${card.name}")
+                                    NudgeLogger.d(
+                                        "DigitalFormCScreen",
+                                        "LazyColumn -> card.id: ${card.id}, card.name: ${card.name}"
+                                    )
                                     DidiVillageItem(card)
                                 }
                             }
@@ -471,7 +481,8 @@ fun DigitalFormCScreen(
                             context.getExternalFilesDir(
                                 Environment.DIRECTORY_DOCUMENTS
                             )?.absolutePath
-                        }", "${FORM_C_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().id}.pdf"
+                        }",
+                        "${FORM_C_PDF_NAME}_${viewModel.digitalFormRepository.getSelectedVillage().id}.pdf"
                     )
                     viewModel.generateFormCPdf(context) { formGenerated, formPath ->
                         Log.d("DigitalFormBScreen", "Digital Form C Downloaded")
@@ -500,7 +511,7 @@ fun DigitalFormCScreen(
                     showLoader = showLoader.value,
                 ) {
                     if (formPathState.value.isFile) {
-                        navController.navigate("pdf_viewer/${FORM_C_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().id}.pdf")
+                        navController.navigate("pdf_viewer/${FORM_C_PDF_NAME}_${viewModel.digitalFormRepository.getSelectedVillage().id}.pdf")
                     } else {
                         showLoader.value = true
                         viewModel.generateFormCPdf(context) { formGenerated, formPath ->
