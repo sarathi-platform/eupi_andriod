@@ -17,6 +17,7 @@ import com.nrlm.baselinesurvey.ui.AddHouseholdMemberScreen
 import com.nrlm.baselinesurvey.ui.AddIncomScreen
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreen
 import com.nrlm.baselinesurvey.ui.section_screen.presentation.SectionListScreen
+import com.nrlm.baselinesurvey.ui.start_screen.presentation.BaseLineStartScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreen
 import com.nrlm.baselinesurvey.ui.video_player.presentation.FullscreenView
@@ -44,8 +45,11 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 type = NavType.IntType
             }
         )) {
-            SectionListScreen(navController, viewModel = hiltViewModel(), didiId = it.arguments?.getInt(
-                ARG_DIDI_ID) ?: 0)
+            SectionListScreen(
+                navController, viewModel = hiltViewModel(), didiId = it.arguments?.getInt(
+                    ARG_DIDI_ID
+                ) ?: 0
+            )
         }
 
         composable(route = HomeScreens.QUESTION_SCREEN.route, arguments = listOf(
@@ -60,9 +64,16 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 type = NavType.IntType
             }
         )) {
-            QuestionScreen(navController = navController, viewModel = hiltViewModel(), surveyeeId = it.arguments?.getInt(
-                ARG_DIDI_ID) ?: 0, sectionId = it.arguments?.getInt(
-                ARG_SECTION_ID) ?: 0)
+            QuestionScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                surveyeeId = it.arguments?.getInt(
+                    ARG_DIDI_ID
+                ) ?: 0,
+                sectionId = it.arguments?.getInt(
+                    ARG_SECTION_ID
+                ) ?: 0
+            )
         }
 
 
@@ -86,6 +97,19 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         composable(route = HomeScreens.AddHouseHoldMember_SCREEN.route) {
             AddHouseholdMemberScreen(navController = navController)
         }
+        composable(route = HomeScreens.BaseLineStartScreen.route, arguments = listOf(
+            navArgument(
+                name = ARG_DIDI_ID
+            ) {
+                type = NavType.IntType
+            }
+        )) {
+            BaseLineStartScreen(
+                navController = navController,
+                baseLineStartViewModel = hiltViewModel(),
+                it.arguments?.getInt(ARG_DIDI_ID) ?: -1
+            )
+        }
     }
 }
 
@@ -101,6 +125,7 @@ sealed class HomeScreens(val route: String) {
 
     object AddIncome_SCREEN : HomeScreens(route = AddIncome_SCREEN_ROUTE_NAME)
     object AddHouseHoldMember_SCREEN : HomeScreens(route = AddHouseHoldMember_SCREEN_ROUTE_NAME)
+    object BaseLineStartScreen : HomeScreens(route = BASELINE_START_SCREEN_ROUTE_NAME)
 
 }
 
@@ -111,4 +136,5 @@ const val SURVEYEE_LIST_SCREEN_ROUTE_NAME = "surveyee_list_screen"
 const val VIDEO_PLAYER_SCREEN_ROUTE_NAME = "video_player_screen"
 const val AddIncome_SCREEN_ROUTE_NAME = "add_income_screen"
 const val AddHouseHoldMember_SCREEN_ROUTE_NAME = "add_house_hold_member_screen"
+const val BASELINE_START_SCREEN_ROUTE_NAME = "base_line_start_screen/{$ARG_DIDI_ID}"
 

@@ -116,3 +116,8 @@ val didiDetailLabelStyle = TextStyle(
     color = textColorBlueLight,
     fontSize = 16.sp
 )
+val buttonTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 16.sp
+)

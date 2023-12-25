@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.network.interfaces
 
+import com.google.gson.JsonObject
 import com.nrlm.baselinesurvey.KEY_HEADER_MOBILE
 import com.nrlm.baselinesurvey.KEY_HEADER_TYPE
 import com.nrlm.baselinesurvey.model.request.LoginRequest
@@ -51,5 +52,8 @@ interface ApiService {
     @POST("/baseline-service/baseline/save")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun saveAnswersToServer(@Body saveSurveyRequest: List<SaveSurveyRequestModel>): ApiResponseModel<SaveSurveyResponseModel>
+
+    @POST("/read-api/custom/log")
+    suspend fun addLogs(@Body logsBody: String): JsonObject?
 
 }
