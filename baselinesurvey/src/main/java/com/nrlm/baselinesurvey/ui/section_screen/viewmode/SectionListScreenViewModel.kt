@@ -41,7 +41,7 @@ class SectionListScreenViewModel @Inject constructor(
                 if (_sectionsList.value.isEmpty()) {
                     _sectionsList.value = sectionScreenUseCase.getSectionListUseCase.invoke(didiId, selectedLanguageId)
                     val sectionProgressForDidi = sectionScreenUseCase.getSectionProgressForDidiUseCase.invoke(didiId, selectedLanguageId)
-                    sectionsList.value.forEachIndexed { index, section ->
+                    sectionsList.value.sortedBy { it.sectionOrder }.forEachIndexed { index, section ->
                         val sectionState = SectionState(
                             section,
                             sectionStatus = if (sectionProgressForDidi.map { it.sectionId }.contains(section.sectionId)) {

@@ -4,16 +4,20 @@ import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
+import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
+import com.nrlm.baselinesurvey.model.request.SectionList
 import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.QuestionScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenEvents
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nrlm.baselinesurvey.utils.sortedBySectionOrder
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -33,12 +37,21 @@ class QuestionScreenViewModel @Inject constructor(
     private val _sectionDetail = mutableStateOf<SectionListItem>(SectionListItem(contentList = listOf(ContentList(BLANK_STRING, BLANK_STRING)), languageId = 2))
     val sectionDetail: State<SectionListItem> get() = _sectionDetail
 
+    private val _sectionsList = mutableStateOf<List<SectionEntity>>(emptyList())
+    val sectionsList: State<List<SectionEntity>> get() = _sectionsList
+
     val totalQuestionCount = sectionDetail.value.questionList.size
     val answeredQuestionCount = mutableStateOf(sectionDetail.value.questionAnswerMapping.values.size)
 
     val showExpandedImage = mutableStateOf(false)
 
     val expandedImagePath = mutableStateOf("")
+
+    fun initQuestionScreenHandler(surveyeeId: Int) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            _sectionsList.value = questionScreenUseCase.getSectionsListUseCase.invoke(surveyeeId).sortedBySectionOrder()
+        }
+    }
 
     fun init(sectionId: Int, surveyeeId: Int) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -106,7 +119,9 @@ class QuestionScreenViewModel @Inject constructor(
                 )
             }
             is QuestionScreenEvents.SendAnswersToServer -> {
-//                questionScreenUseCase.
+                viewModelScope.launch(Dispatchers.IO) {
+                    questionScreenUseCase.saveSectionAnswerUseCase.saveSectionAnswersToServer(event.didiId, event.surveyId)
+                }
             }
         }
     }

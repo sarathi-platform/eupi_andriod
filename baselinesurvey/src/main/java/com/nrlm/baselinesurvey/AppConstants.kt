@@ -262,6 +262,7 @@ const val PREF_KEY_NEED_TO_SCROLL = "questions_need_to_scroll"
 
 const val NO_SECTION = "NO_SECTION"
 const val ARG_SECTION_ID = "section_id"
+const val ARG_SURVEY_ID = "survey_id"
 
 const val THIS_WEEK_TAB = "This Week"
 const val ALL_TAB = "All"

@@ -7,7 +7,7 @@ class UpdateSectionProgressUseCase(
     private val repository: QuestionScreenRepository
 ) {
 
-    operator fun invoke(surveyId: Int,
+    suspend operator fun invoke(surveyId: Int,
                         sectionId: Int,
                         didiId: Int,
                         sectionStatus: SectionStatus

@@ -109,7 +109,7 @@ fun ButtonPositive(
     modifier: Modifier = Modifier,
     buttonTitle: String,
     isArrowRequired: Boolean = true,
-    isActive: Boolean = true,
+    isActive: Boolean = false,
     textColor: Color = Color.White,
     iconTintColor: Color = Color.White,
     onClick: () -> Unit
@@ -274,7 +274,7 @@ fun DoubleButtonBox(
     negativeButtonText: String = "",
     positiveButtonOnClick: () -> Unit,
     negativeButtonOnClick: () -> Unit,
-    isActive: Boolean = true
+    isPositiveButtonActive: Boolean = true
 ) {
     Surface(
         modifier = Modifier
@@ -302,7 +302,7 @@ fun DoubleButtonBox(
                 ButtonPositive(
                     modifier = Modifier.weight(1.25f),
                     buttonTitle = positiveButtonText,
-                    isActive = isActive
+                    isActive = isPositiveButtonActive
                 ) {
                     positiveButtonOnClick()
                 }

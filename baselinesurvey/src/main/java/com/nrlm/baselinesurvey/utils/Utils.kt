@@ -23,6 +23,7 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
+import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.Sections
 import com.nrlm.baselinesurvey.model.response.ContentList
@@ -533,4 +534,16 @@ fun openSettings(context: Context) {
     }
     appSettingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     (context as MainActivity).startActivity(appSettingsIntent)
+}
+
+fun List<SectionEntity>.getSectionIndexById(sectionId: Int): Int {
+    return this.sortedBySectionOrder().map { it.sectionId }.indexOf(sectionId)
+}
+
+fun List<SectionEntity>.getSectionIndexByOrder(sectionOrder: Int): Int {
+    return this.sortedBySectionOrder().map { it.sectionOrder }.indexOf(sectionOrder)
+}
+
+fun List<SectionEntity>.sortedBySectionOrder(): List<SectionEntity> {
+    return this/*.sortedBy { it.sectionOrder }*/ //TODO Uncomment this when order numbers are received from backend
 }

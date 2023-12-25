@@ -23,6 +23,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
@@ -45,6 +46,8 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
 import com.nrlm.baselinesurvey.navigation.home.QUESTION_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
+import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
+import com.nrlm.baselinesurvey.navigation.home.navigateToQuestionScreen
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
 import com.nrlm.baselinesurvey.ui.common_components.SectionItemComponent
@@ -105,12 +108,12 @@ fun SectionListScreen(
     }
 
     BackHandler {
-        navController.popBackStack()
+        navigateBackToSurveyeeListScreen(navController)
     }
 
-    Surface(color = white) {
+    Scaffold(backgroundColor = white) {
         
-        LoaderComponent(visible = loaderState.isLoaderVisible)
+//        LoaderComponent(visible = loaderState.isLoaderVisible)
 
         if (showExpandedImage.value) {
             ImageExpanderDialogComponent(
@@ -122,7 +125,7 @@ fun SectionListScreen(
 
         if (!loaderState.isLoaderVisible) {
             if (sectionsList.size == 1 && sectionsList[0].section.sectionName.equals(NO_SECTION, true)) {
-                navController.navigate("$QUESTION_SCREEN_ROUTE_NAME/${sectionsList[0].section.sectionId}/$didiId")
+                navigateToQuestionScreen(didiId, sectionsList[0].section.sectionId, surveyId = sectionsList[0].section.surveyId, navController)
             } else {
                 ModelBottomSheetDescriptionContentComponent(
                     sheetContent = {
@@ -215,7 +218,7 @@ fun SectionListScreen(
                             SectionItemComponent(
                                 sectionStateItem = sectionStateItem,
                                 onclick = {
-                                    navController.navigate("$QUESTION_SCREEN_ROUTE_NAME/${sectionStateItem.section.sectionId}/$didiId")
+                                    navigateToQuestionScreen(didiId = didiId, sectionId = sectionStateItem.section.sectionId, sectionStateItem.section.surveyId, navController)
                                 },
                                 onDetailIconClicked = {
                                     scope.launch {

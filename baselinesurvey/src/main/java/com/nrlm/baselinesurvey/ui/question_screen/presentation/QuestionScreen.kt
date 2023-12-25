@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
@@ -69,6 +70,7 @@ import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.navigation.home.AddHouseHoldMember_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
 import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
+import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.ui.common_components.CTAButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.GridTypeComponent
 import com.nrlm.baselinesurvey.ui.common_components.ListTypeQuestion
@@ -110,7 +112,8 @@ fun QuestionScreen(
     navController: NavController,
     viewModel: QuestionScreenViewModel,
     surveyeeId: Int,
-    sectionId: Int
+    sectionId: Int,
+    nextSectionHandler: (sectionId: Int) -> Unit
 ) {
 
     val sectionDetails = viewModel.sectionDetail.value
@@ -144,6 +147,9 @@ fun QuestionScreen(
         animationSpec = tween()
     )
 
+    BackHandler {
+        navController.popBackStack()
+    }
 
     Scaffold(
         containerColor = white,
@@ -183,8 +189,9 @@ fun QuestionScreen(
                                         SectionStatus.COMPLETED
                                     )
                                 )
-//                                viewModel.onEvent(QuestionScreenEvents.SendAnswersToServer(surveyId = sectionDetails.surveyId, sectionId = sectionDetails.sectionId, surveyeeId))
-                                navController.popBackStack(HomeScreens.SURVEYEE_LIST_SCREEN.route, false)
+                                viewModel.onEvent(QuestionScreenEvents.SendAnswersToServer(surveyId = sectionDetails.surveyId, sectionId = sectionDetails.sectionId, surveyeeId))
+//                                navigateBackToSurveyeeListScreen(navController)
+                                nextSectionHandler(sectionId)
                             }
                         }
                     ) {

@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.database.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -43,8 +44,7 @@ interface SurveyeeEntityDao {
     @Query("UPDATE $SURVEYEE_TABLE SET movedToThisWeek = :moveDidisToNextWeek where didiId = :didiId")
     fun moveSurveyeeToThisWeek(didiId: Int, moveDidisToNextWeek: Boolean)
 
-    @Query("UPDATE $SURVEYEE_TABLE SET crpImageLocalPath = :path WHERE userId = :userId")
-    fun saveLocalImagePath(path: String, userId: Int)
-
+    @Query("UPDATE $SURVEYEE_TABLE SET crpImageLocalPath = :path WHERE didiId = :didiId")
+    fun saveLocalImagePath(path: String, didiId: Int)
 
 }
