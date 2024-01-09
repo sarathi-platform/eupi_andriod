@@ -60,6 +60,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.TYPE_GRID
@@ -70,13 +71,13 @@ import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.navigation.home.AddHouseHoldMember_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
 import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
-import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.ui.common_components.CTAButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.GridTypeComponent
 import com.nrlm.baselinesurvey.ui.common_components.ListTypeQuestion
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.RadioQuestionBoxComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
+import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.DescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ImageExpanderDialogComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
@@ -116,7 +117,7 @@ fun QuestionScreen(
     nextSectionHandler: (sectionId: Int) -> Unit
 ) {
 
-    val sectionDetails = viewModel.sectionDetail.value
+    val sectionDetails = viewModel.filterSectionList.value
     val loaderState = viewModel.loaderState.value
 
 
@@ -461,7 +462,14 @@ fun NestedLazyList(
                     onFilterSelected = {
 
                     },
-                    onSearchValueChange = {
+                    onSearchValueChange = { queryTerm ->
+                        viewModel.onEvent(
+                            SearchEvent.PerformSearch(
+                                queryTerm,
+                                false,
+                                BLANK_STRING
+                            )
+                        )
 
                     }
                 )
