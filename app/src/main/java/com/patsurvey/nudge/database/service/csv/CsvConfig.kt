@@ -3,11 +3,12 @@ package com.patsurvey.nudge.database.service.csv
 import android.os.Environment
 import com.patsurvey.nudge.utils.NudgeCore
 import java.text.DateFormat
+import java.util.Locale
 
 data class CsvConfig(
     private val prefix: String,
     private val suffix: String = DateFormat
-        .getDateTimeInstance()
+        .getDateTimeInstance(DateFormat.DEFAULT,DateFormat.DEFAULT,Locale.US)
         .format(System.currentTimeMillis())
         .toString()
         .replace(",","")
