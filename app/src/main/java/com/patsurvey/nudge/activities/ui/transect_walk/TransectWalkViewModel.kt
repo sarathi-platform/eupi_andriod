@@ -20,7 +20,24 @@ import com.patsurvey.nudge.model.request.AddCohortRequest
 import com.patsurvey.nudge.model.request.DeleteTolaRequest
 import com.patsurvey.nudge.model.request.EditCohortRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
+import com.patsurvey.nudge.utils.CohortType
+import com.patsurvey.nudge.utils.DidiStatus
+import com.patsurvey.nudge.utils.FORM_C
+import com.patsurvey.nudge.utils.FORM_D
+import com.patsurvey.nudge.utils.LocationCoordinates
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_FORM_PATH
+import com.patsurvey.nudge.utils.PREF_TRANSECT_WALK_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.TOLA_COUNT
+import com.patsurvey.nudge.utils.Tola
+import com.patsurvey.nudge.utils.TolaStatus
+import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
+import com.patsurvey.nudge.utils.getUniqueIdForEntity
+import com.patsurvey.nudge.utils.longToString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -59,7 +76,7 @@ class TransectWalkViewModel @Inject constructor(
             if (!isTolaExist) {
                 val tolaItem = TolaEntity(
                     id = 0,
-                    name = tola.name,
+                    name = tola.name.trim(),
                     type = CohortType.TOLA.type,
                     latitude = tola.location.lat ?: 0.0,
                     longitude = tola.location.long ?: 0.0,
@@ -585,7 +602,7 @@ class TransectWalkViewModel @Inject constructor(
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             val updatedTola = TolaEntity(
                 id = id,
-                name = newName,
+                name = newName.trim(),
                 type = CohortType.TOLA.type,
                 latitude = newLocation?.lat ?: 0.0,
                 longitude = newLocation?.long ?: 0.0,
