@@ -63,7 +63,7 @@ class PatDidiSummaryViewModel @Inject constructor(
     var shouldShowPhoto = mutableStateOf(false)
     var didiImageLocation = mutableStateOf("{0.0,0.0}")
     var updatedLocalPath = mutableStateOf(BLANK_STRING)
-    private lateinit var castList : List<CasteEntity>
+    private var castList : List<CasteEntity> = emptyList()
     var imagePath = ""
 
     private val _didiEntity = MutableStateFlow(
