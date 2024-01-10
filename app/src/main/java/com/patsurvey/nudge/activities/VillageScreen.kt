@@ -19,7 +19,7 @@ fun VillageScreen(
         BpcVillageSelectionScreen(
             navController = navController,
         ) {
-            onNavigateToSetting(  )
+            onNavigateToSetting()
         }
     } else {
         VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()) {
