@@ -267,6 +267,9 @@ const val ARG_SURVEY_ID = "survey_id"
 const val THIS_WEEK_TAB = "This Week"
 const val ALL_TAB = "All"
 
+const val QUESTION_DATA_TAB = "Questions Data"
+const val SECTION_INFORMATION_TAB = "Section Information"
+
 const val BASE_LINE = "BASE_LINE"
 const val ARG_VIDEO_PATH = "video_path"
 

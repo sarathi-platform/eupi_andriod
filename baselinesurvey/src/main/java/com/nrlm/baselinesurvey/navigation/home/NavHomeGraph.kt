@@ -18,6 +18,7 @@ import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.AddHouseholdMemberScreen
 import com.nrlm.baselinesurvey.ui.AddIncomScreen
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenHandler
+import com.nrlm.baselinesurvey.ui.search.presentation.SearchScreens
 import com.nrlm.baselinesurvey.ui.section_screen.presentation.SectionListScreen
 import com.nrlm.baselinesurvey.ui.start_screen.presentation.BaseLineStartScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
@@ -130,6 +131,10 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 it.arguments?.getInt(ARG_DIDI_ID) ?: -1
             )
         }
+
+        composable(route = HomeScreens.SearchScreen.route) {
+            SearchScreens(viewModel = hiltViewModel(), navController = navController)
+        }
     }
 }
 
@@ -147,6 +152,8 @@ sealed class HomeScreens(val route: String) {
     object AddHouseHoldMember_SCREEN : HomeScreens(route = AddHouseHoldMember_SCREEN_ROUTE_NAME)
     object BaseLineStartScreen : HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}")
 
+    object SearchScreen: HomeScreens(route = SEARCH_SCREEN_ROUTE_NAME)
+
 }
 
 const val DATA_LOADING_SCREEN_ROUTE_NAME = "data_loading_screen"
@@ -157,6 +164,7 @@ const val VIDEO_PLAYER_SCREEN_ROUTE_NAME = "video_player_screen"
 const val AddIncome_SCREEN_ROUTE_NAME = "add_income_screen"
 const val AddHouseHoldMember_SCREEN_ROUTE_NAME = "add_house_hold_member_screen"
 const val BASELINE_START_SCREEN_ROUTE_NAME = "baseline_start_screen"
+const val SEARCH_SCREEN_ROUTE_NAME = "search_screen"
 
 fun navigateToBaseLineStartScreen(surveyeeId: Int, navController: NavController) {
     navController.navigate("$BASELINE_START_SCREEN_ROUTE_NAME/$surveyeeId")
@@ -168,4 +176,8 @@ fun navigateBackToSurveyeeListScreen(navController: NavController) {
 
 fun navigateToQuestionScreen(didiId: Int, sectionId: Int, surveyId: Int, navController: NavController) {
     navController.navigate("$QUESTION_SCREEN_ROUTE_NAME/${sectionId}/$didiId/$surveyId")
+}
+
+fun navigateToSearchScreen(navController: NavController) {
+    navController.navigate(HomeScreens.SearchScreen.route)
 }
