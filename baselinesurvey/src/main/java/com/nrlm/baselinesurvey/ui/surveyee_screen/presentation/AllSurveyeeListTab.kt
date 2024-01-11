@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.navigation.home.navigateToBaseLineStartScreen
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.MoveSurveyeesUpdateBannerComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
@@ -185,7 +186,7 @@ fun AllSurveyeeListTab(
                             SurveyeeCardWithTolaFilterComponent(
                                 tolaName = key,
                                 surveyeeStateList = surveyeeListWithTolaFilter[key] ?: emptyList(),
-                                showCheckBox = isSelectionEnabled.value,
+                                showCheckBox = !isSelectionEnabled.value,
                                 fromScreen = ALL_TAB,
                                 buttonClicked = { buttonName, surveyeeId ->
                                     handleButtonClick(buttonName, surveyeeId, navController)

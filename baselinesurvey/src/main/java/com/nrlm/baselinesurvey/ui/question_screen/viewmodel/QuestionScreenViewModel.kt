@@ -3,17 +3,20 @@ package com.nrlm.baselinesurvey.ui.question_screen.viewmodel
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
+import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.model.response.ContentList
+import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.QuestionScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenEvents
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nrlm.baselinesurvey.utils.sortedBySectionOrder
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -30,23 +33,63 @@ class QuestionScreenViewModel @Inject constructor(
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
     val loaderState: State<LoaderState> get() = _loaderState
 
-    private val _sectionDetail = mutableStateOf<SectionListItem>(SectionListItem(contentList = listOf(ContentList(BLANK_STRING, BLANK_STRING)), languageId = 2))
-    val sectionDetail: State<SectionListItem> get() = _sectionDetail
+    private val _sectionDetail = mutableStateOf<SectionListItem>(
+        SectionListItem(
+            contentList = listOf(
+                ContentList(
+                    BLANK_STRING,
+                    BLANK_STRING
+                )
+            ), languageId = 2
+        )
+    )
+    private val sectionDetail: State<SectionListItem> get() = _sectionDetail
+
+    private val _sectionsList = mutableStateOf<List<SectionEntity>>(emptyList())
+    val sectionsList: State<List<SectionEntity>> get() = _sectionsList
 
     val totalQuestionCount = sectionDetail.value.questionList.size
-    val answeredQuestionCount = mutableStateOf(sectionDetail.value.questionAnswerMapping.values.size)
+    val answeredQuestionCount =
+        mutableStateOf(sectionDetail.value.questionAnswerMapping.values.size)
 
     val showExpandedImage = mutableStateOf(false)
 
     val expandedImagePath = mutableStateOf("")
 
+    private val _filterSectionList = mutableStateOf<SectionListItem>(
+        SectionListItem(
+            contentList = listOf(
+                ContentList(
+                    BLANK_STRING,
+                    BLANK_STRING
+                )
+            ), languageId = 2
+        )
+    )
+
+    val filterSectionList: State<SectionListItem> get() = _filterSectionList
+
+    fun initQuestionScreenHandler(surveyeeId: Int) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            _sectionsList.value = questionScreenUseCase.getSectionsListUseCase.invoke(surveyeeId)
+                .sortedBySectionOrder()
+        }
+    }
+
     fun init(sectionId: Int, surveyeeId: Int) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val selectedlanguageId = questionScreenUseCase.getSectionUseCase.getSelectedLanguage()
-            _sectionDetail.value = questionScreenUseCase.getSectionUseCase.invoke(sectionId, selectedlanguageId)
+            _sectionDetail.value =
+                questionScreenUseCase.getSectionUseCase.invoke(sectionId, selectedlanguageId)
+            _filterSectionList.value = sectionDetail.value
+
             val questionAnswerMap = mutableMapOf<Int, List<OptionsItem>>()
-            val localAnswerList = questionScreenUseCase.getSectionAnswersUseCase.getSectionAnswerForDidi(sectionId = sectionId, didiId = surveyeeId)
+            val localAnswerList =
+                questionScreenUseCase.getSectionAnswersUseCase.getSectionAnswerForDidi(
+                    sectionId = sectionId,
+                    didiId = surveyeeId
+                )
             Log.d("TAG", "init: localAnswerList-> $localAnswerList")
             localAnswerList.forEach {
                 if (!questionAnswerMap.containsKey(it.questionId)) {
@@ -105,8 +148,18 @@ class QuestionScreenViewModel @Inject constructor(
                     questionEntity = event.questionEntity
                 )
             }
+
             is QuestionScreenEvents.SendAnswersToServer -> {
-//                questionScreenUseCase.
+                viewModelScope.launch(Dispatchers.IO) {
+                    questionScreenUseCase.saveSectionAnswerUseCase.saveSectionAnswersToServer(
+                        event.didiId,
+                        event.surveyId
+                    )
+                }
+            }
+
+            is SearchEvent.PerformSearch -> {
+                performSearchQuery(event.searchTerm, event.isFilterApplied, event.fromScreen)
             }
         }
     }
@@ -162,6 +215,26 @@ class QuestionScreenViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    override fun performSearchQuery(
+        queryTerm: String, isFilterApplied: Boolean, fromScreen: String
+    ) {
+        val filteredList = ArrayList<QuestionEntity>()
+        if (queryTerm.isNotEmpty()) {
+            sectionDetail.value.questionList.forEach { question ->
+                if (question.questionDisplay?.lowercase()
+                        ?.contains(queryTerm.lowercase()) == true
+                ) {
+                    filteredList.add(question)
+                }
+            }
+        } else {
+            filteredList.addAll(sectionDetail.value.questionList)
+        }
+        _filterSectionList.value = filterSectionList.value.copy(
+            questionList = filteredList
+        )
     }
 
 }

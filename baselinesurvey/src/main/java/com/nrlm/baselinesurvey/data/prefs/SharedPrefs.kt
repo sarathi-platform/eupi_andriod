@@ -128,4 +128,12 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         return prefs.getFloat(key, defaultValue)
     }
 
+    override fun saveMobileNumber(mobileNumber: String) {
+
+    }
+
+    override fun getMobileNumber(): String? {
+        return ""
+    }
+
 }

@@ -73,6 +73,12 @@ val smallTextStyleWithNormalWeight = TextStyle(
     fontSize = 14.sp
 )
 
+val smallTextStyleMediumWeight2 = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.Medium,
+    fontSize = 14.sp
+)
+
 val smallTextStyleMediumWeight = TextStyle(
     fontFamily = NotoSans,
     fontWeight = FontWeight.Medium,
@@ -114,5 +120,10 @@ val didiDetailLabelStyle = TextStyle(
     fontFamily = NotoSans,
     fontWeight = FontWeight.Normal,
     color = textColorBlueLight,
+    fontSize = 16.sp
+)
+val buttonTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
     fontSize = 16.sp
 )

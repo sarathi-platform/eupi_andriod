@@ -49,4 +49,8 @@ interface PrefRepo {
 
     fun getPref(key: String, defaultValue: Float): Float
 
+    fun saveMobileNumber(mobileNumber: String)
+
+    fun getMobileNumber(): String?
+
 }

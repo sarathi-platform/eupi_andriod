@@ -29,7 +29,7 @@ enum class SectionStatus {
                 0 -> NOT_STARTED
                 1 -> INPROGRESS
                 2 -> COMPLETED
-                else -> INPROGRESS
+                else -> NOT_STARTED
             }
         }
     }

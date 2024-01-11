@@ -12,6 +12,7 @@ import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
+import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.model.request.AnswerDetailDTOList
@@ -19,6 +20,8 @@ import com.nrlm.baselinesurvey.model.request.Options
 import com.nrlm.baselinesurvey.model.request.SaveSurveyRequestModel
 import com.nrlm.baselinesurvey.model.request.SectionList
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
+import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nrlm.baselinesurvey.utils.json
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import javax.inject.Inject
 
@@ -63,7 +66,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         return prefRepo.getAppLanguageId() ?: 2
     }
 
-    override fun updateSectionProgress(
+    override suspend fun updateSectionProgress(
         surveyId: Int,
         sectionId: Int,
         didiId: Int,
@@ -84,7 +87,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         } else {
             didiSectionProgressEntityDao.updateSectionStatusForDidi(surveyId, sectionId, didiId, sectionStatus.ordinal)
         }
-        surveyeeEntityDao.updateDidiSurveyStatus(sectionStatus.ordinal, didiId)
+        updateDidiSurveyStatus(surveyId = surveyId, didiId = didiId)
     }
 
     override fun saveSectionAnswerForDidi(
@@ -149,7 +152,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
                 questionName = questionEntityList[questionEntityList.map { it.questionId }.indexOf(sectionAnswerEntity.questionId)].questionDisplay ?: BLANK_STRING,
                 questionType = sectionAnswerEntity.questionType ?: BLANK_STRING,
                 questionSummary = sectionAnswerEntity.questionSummary ?: BLANK_STRING,
-                section = sectionAnswerEntity.sectionId,
+                section = sectionEntityDao.getSurveySectionForLanguage(sectionId = sectionAnswerEntity.sectionId, surveyId = surveyId, languageId = prefRepo.getAppLanguageId() ?: 2).sectionName,
                 options = Options.getOptionsFromOptionsItems(sectionAnswerEntity.optionItems)
             )
             answerListDto.add(mAnswerListDtoItem)
@@ -161,7 +164,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
                 SectionList(
                     sectionId = it.sectionId,
                     sectionName = sectionEntityDao.getSurveySectionForLanguage(sectionId = it.sectionId, surveyId = surveyId, languageId = prefRepo.getAppLanguageId() ?: 2).sectionName,
-                    sectionStatus = SectionStatus.getSectionStatusFromOrdinal(it.sectionStatus).name
+                    sectionStatus = it.sectionStatus
                 )
             )
         }
@@ -178,7 +181,26 @@ class QuestionScreenRepositoryImpl @Inject constructor(
             sectionList = sectionList
         )
         saveSurveyRequestModel.add(saveSurveyRequestModelItem)
+
+        // TODO @Anupam Uncomment this after checking with Backend whi API is not working.
+        BaselineLogger.d("QuestionScreenRepositoryImpl", "saveSectionAnswersToServer: saveAnswersToServerApiRequest -> ${saveSurveyRequestModel.json()}")
         val saveAnswersToServerApiResponse = apiService.saveAnswersToServer(saveSurveyRequestModel)
-        Log.d("QuestionScreenRepositoryImpl", "saveSectionAnswersToServer: saveAnswersToServerApiResponse -> $saveAnswersToServerApiResponse")
+        BaselineLogger.d("QuestionScreenRepositoryImpl", "saveSectionAnswersToServer: saveAnswersToServerApiResponse -> ${saveAnswersToServerApiResponse.json()}")
+    }
+
+    override suspend fun updateDidiSurveyStatus(didiId: Int, surveyId: Int) {
+        val surveyStatusForDidiFromDb =  didiSectionProgressEntityDao.getAllSectionProgressForDidi(surveyId = surveyId, didiId = didiId)
+        val notStartedOrInProgressList = surveyStatusForDidiFromDb.filter {
+            it.sectionStatus.equals(SectionStatus.INPROGRESS.ordinal) || it.sectionStatus.equals(SectionStatus.NOT_STARTED.ordinal) }
+        if (notStartedOrInProgressList.isNotEmpty())
+            surveyeeEntityDao.updateDidiSurveyStatus(SectionStatus.INPROGRESS.ordinal, didiId)
+        else {
+            surveyeeEntityDao.updateDidiSurveyStatus(SectionStatus.COMPLETED.ordinal, didiId)
+            surveyeeEntityDao.moveSurveyeeToThisWeek(didiId = didiId, moveDidisToNextWeek = false)
+        }
+    }
+
+    override suspend fun getSectionsList(surveyId: Int, languageId: Int): List<SectionEntity> {
+        return sectionEntityDao.getAllSectionForSurveyInLanguage(surveyId, languageId)
     }
 }

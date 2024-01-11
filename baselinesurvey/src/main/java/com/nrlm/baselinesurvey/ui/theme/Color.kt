@@ -57,6 +57,8 @@ val black2 = Color(0xFF271424)
 val black20 = Color(0x33000000)
 
 val white = Color(0xFFFFFFFF)
+val searchFieldBg = Color(0xFFFFFAFE)
+
 
 val black100Percent = Color(0xFF271914)
 val lightGrayColor = Color(0xFFEAEAEA)

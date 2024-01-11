@@ -108,4 +108,28 @@ data class SurveyeeEntity(
     @ColumnInfo(name = "movedToThisWeek")
     var movedToThisWeek: Boolean = false
 
-)
+) {
+    companion object {
+        fun getEmptySurveyeeEntity() = SurveyeeEntity(
+        id = 0,
+        userId = 101,
+        didiId = 1011,
+        didiName = "",
+        dadaName = "",
+        cohortId = 1012,
+        cohortName = "",
+        houseNo = "",
+        villageId = 0,
+        villageName = "",
+        comment = "",
+        score = 0.0,
+        crpImageName = "",
+        crpImageLocalPath = "",
+        ableBodied = "",
+        casteId = 0,
+        relationship = "",
+        surveyStatus = 0,
+        movedToThisWeek = false
+        )
+    }
+}
