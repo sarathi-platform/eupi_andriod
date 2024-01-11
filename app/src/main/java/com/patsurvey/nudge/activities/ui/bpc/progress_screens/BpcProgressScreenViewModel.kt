@@ -83,9 +83,13 @@ class BpcProgressScreenViewModel @Inject constructor(
     fun init(context: Context) {
         showLoader.value = true
         selectedText.value = repository.getSelectedVillage().name
+        fetchDataFromServer()
+    }
+
+    private fun fetchDataFromServer(forceRefresh: Boolean = false) {
         appScopeLaunch(Dispatchers.IO) {
-            getBpcSummaryDataForSelectedVillage()
-            fetchBpcDataForVillage(networkCallbackListener = object : NetworkCallbackListener {
+            getBpcSummaryDataForSelectedVillage(forceRefresh)
+            fetchBpcDataForVillage(forceRefresh, networkCallbackListener = object : NetworkCallbackListener {
                 override fun onSuccess() {
                     appScopeLaunch(Dispatchers.IO) {
                         delay(100)
@@ -106,15 +110,16 @@ class BpcProgressScreenViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getBpcSummaryDataForSelectedVillage() {
+    private suspend fun getBpcSummaryDataForSelectedVillage(forceRefresh: Boolean = false) {
         val selectedVillage = repository.getSelectedVillage()
-        if (repository.isSummaryAlreadyExistsForVillage(selectedVillage.id) == 0)
-            repository.fetchBpcSummaryDataForVillageFromNetwork(selectedVillage)
+        if (repository.isSummaryAlreadyExistsForVillage(selectedVillage.id) == 0 || forceRefresh)
+            repository.fetchBpcSummaryDataForVillageFromNetwork(forceRefresh, selectedVillage)
     }
 
-    private suspend fun fetchBpcDataForVillage(networkCallbackListener: NetworkCallbackListener) {
-        if (!repository.isDataLoadTried(getSelectedVillage().id))
+    private suspend fun fetchBpcDataForVillage(forceRefresh: Boolean = false, networkCallbackListener: NetworkCallbackListener) {
+        if (!repository.isDataLoadTried(getSelectedVillage().id) || forceRefresh)
             repository.fetchBpcDataForVillage(
+                forceRefresh,
                 repository.getSelectedVillage(),
                 networkCallbackListener = networkCallbackListener
             )
@@ -338,7 +343,8 @@ class BpcProgressScreenViewModel @Inject constructor(
 
     fun getSelectedVillage(): VillageEntity = repository.getSelectedVillage()
     fun refreshDataForCurrentVillage() {
-
+        showLoader.value = true
+        fetchDataFromServer(true)
     }
 
 }

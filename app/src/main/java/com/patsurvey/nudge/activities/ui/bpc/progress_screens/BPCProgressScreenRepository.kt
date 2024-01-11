@@ -161,7 +161,7 @@ class BPCProgressScreenRepository @Inject constructor(
         return bpcSummaryDao.getBpcSummaryForVillageLiveData(prefRepo.getSelectedVillage().id)
     }
 
-    suspend fun fetchBpcSummaryDataForVillageFromNetwork(village: VillageEntity) {
+    suspend fun fetchBpcSummaryDataForVillageFromNetwork(forceRefresh: Boolean, village: VillageEntity) {
         try {
             NudgeLogger.d(
                 TAG, "fetchBpcSummaryDataForVillageFromNetwork " +
@@ -188,7 +188,8 @@ class BPCProgressScreenRepository @Inject constructor(
                                 "bpcSummaryDao.insert(bpcSummary) before"
                     )
 
-                    bpcSummaryDao.insert(bpcSummary)
+//                    bpcSummaryDao.insert(bpcSummary)
+                    bpcSummaryDao.updateBpcSummaryData(forceRefresh, village.id, bpcSummary)
                     NudgeLogger.d(
                         TAG, "fetchBpcSummaryDataForVillageFromNetwork " +
                                 "bpcSummaryDao.insert(bpcSummary) after"
@@ -235,6 +236,7 @@ class BPCProgressScreenRepository @Inject constructor(
     }
 
     fun fetchBpcDataForVillage(
+        forceRefresh: Boolean = false,
         village: VillageEntity,
         networkCallbackListener: NetworkCallbackListener
     ) {
@@ -328,7 +330,9 @@ class BPCProgressScreenRepository @Inject constructor(
                                         "fetchDataForBpc getStepsList " +
                                                 "stepsListDao.insertAll(it.stepList) before"
                                     )
-                                    stepsListDao.insertAll(it.stepList)
+//                                    stepsListDao.insertAll(it.stepList)
+                                    stepsListDao.updateStepListForVillage(forceRefresh, village.id, it.stepList)
+
                                     NudgeLogger.d(
                                         "VillageSelectionScreen",
                                         "fetchDataForBpc getStepsList " +
@@ -386,7 +390,8 @@ class BPCProgressScreenRepository @Inject constructor(
                                     "fetchDataForBpc getCohortFromNetwork " +
                                             "tolaDao.insertAll(it) before"
                                 )
-                                tolaDao.insertAll(it)
+//                                tolaDao.insertAll(it)
+                                tolaDao.updateTolaData(forceRefresh, village.id, it)
                                 NudgeLogger.d(
                                     "VillageSelectionScreen",
                                     "fetchDataForBpc getCohortFromNetwork " +
@@ -469,7 +474,7 @@ class BPCProgressScreenRepository @Inject constructor(
                                                 }
                                                 else DidiEndorsementStatus.NOT_STARTED.ordinal
 
-                                            didiDao.insertDidi(
+                                            /*didiDao.insertDidi(
                                                 DidiEntity(
                                                     id = didi.id,
                                                     serverId = didi.id,
@@ -518,7 +523,56 @@ class BPCProgressScreenRepository @Inject constructor(
                                                             ?: AbleBodiedFlag.NOT_MARKED.name
                                                     ).value
                                                 )
+                                            )*/
+                                            val didiEntity = DidiEntity(
+                                                id = didi.id,
+                                                serverId = didi.id,
+                                                name = didi.name,
+                                                address = didi.address,
+                                                guardianName = didi.guardianName,
+                                                relationship = didi.relationship,
+                                                castId = didi.castId,
+                                                castName = casteName,
+                                                cohortId = didi.cohortId,
+                                                villageId = village.id,
+                                                cohortName = tolaName,
+                                                needsToPost = false,
+                                                wealth_ranking = wealthRanking
+                                                    ?: BLANK_STRING,
+                                                forVoEndorsement = if (patSurveyAcceptedRejected.equals(
+                                                        COMPLETED_STRING, true
+                                                    )
+                                                ) 1 else 0,
+                                                voEndorsementStatus = voEndorsementStatus,
+                                                needsToPostRanking = false,
+                                                createdDate = didi.createdDate,
+                                                modifiedDate = didi.modifiedDate,
+                                                beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
+                                                shgFlag = SHGFlag.fromSting(
+                                                    intToString(didi.shgFlag)
+                                                        ?: SHGFlag.NOT_MARKED.name
+                                                ).value,
+                                                transactionId = "",
+                                                localCreatedDate = didi.localCreatedDate,
+                                                localModifiedDate = didi.localModifiedDate,
+                                                score = didi.bpcScore ?: 0.0,
+                                                comment = didi.bpcComment ?: BLANK_STRING,
+                                                crpScore = didi.crpScore,
+                                                crpComment = didi.crpComment,
+                                                bpcScore = didi.bpcScore ?: 0.0,
+                                                bpcComment = didi.bpcComment
+                                                    ?: BLANK_STRING,
+                                                crpUploadedImage = didi.crpUploadedImage,
+                                                needsToPostImage = false,
+                                                rankingEdit = didi.rankingEdit,
+                                                patEdit = didi.patEdit,
+                                                voEndorsementEdit = didi.voEndorsementEdit,
+                                                ableBodiedFlag = AbleBodiedFlag.fromSting(
+                                                    intToString(didi.ableBodiedFlag)
+                                                        ?: AbleBodiedFlag.NOT_MARKED.name
+                                                ).value
                                             )
+                                            didiDao.updateDidiAfterRefresh(forceRefresh, didi.id, didiEntity)
 //                                                    }
                                             if (!didi.crpUploadedImage.isNullOrEmpty()) {
                                                 downloadAuthorizedImageItem(
@@ -617,7 +671,7 @@ class BPCProgressScreenRepository @Inject constructor(
                                                 "fetchDataForBpc getDidisWithRankingFromNetwork " +
                                                         "poorDidiListDao.insertPoorDidi() didiId = ${didi.id} before"
                                             )
-                                            poorDidiListDao.insertPoorDidi(
+                                            /*poorDidiListDao.insertPoorDidi(
                                                 PoorDidiEntity(
                                                     id = didi.id,
                                                     serverId = didi.id,
@@ -656,7 +710,47 @@ class BPCProgressScreenRepository @Inject constructor(
                                                     rankingEdit = didi.rankingEdit,
                                                     patEdit = didi.patEdit
                                                 )
+                                            )*/
+
+                                            val poorDidi = PoorDidiEntity(
+                                                id = didi.id,
+                                                serverId = didi.id,
+                                                name = didi.name,
+                                                address = didi.address,
+                                                guardianName = didi.guardianName,
+                                                relationship = didi.relationship,
+                                                castId = didi.castId,
+                                                castName = casteName,
+                                                cohortId = didi.cohortId,
+                                                villageId = village.id,
+                                                cohortName = tolaName,
+                                                needsToPost = false,
+                                                wealth_ranking = wealthRanking,
+                                                forVoEndorsement = if (patSurveyAcceptedRejected.equals(
+                                                        COMPLETED_STRING, true
+                                                    )
+                                                ) 1 else 0,
+                                                voEndorsementStatus = voEndorsementStatus,
+                                                needsToPostRanking = false,
+                                                createdDate = didi.createdDate,
+                                                modifiedDate = didi.modifiedDate,
+                                                beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
+                                                shgFlag = SHGFlag.fromSting(
+                                                    didi.shgFlag ?: SHGFlag.NOT_MARKED.name
+                                                ).value,
+                                                transactionId = "",
+                                                localCreatedDate = didi.localCreatedDate,
+                                                localModifiedDate = didi.localModifiedDate,
+                                                score = didi.score,
+                                                crpScore = didi.crpScore,
+                                                crpComment = didi.crpComment,
+                                                comment = didi.comment,
+                                                crpUploadedImage = didi.crpUploadedImage,
+                                                needsToPostImage = false,
+                                                rankingEdit = didi.rankingEdit,
+                                                patEdit = didi.patEdit
                                             )
+                                            poorDidiListDao.updatePoorDidiAfterRefresh(forceRefresh, didi.id, poorDidi)
                                             NudgeLogger.d(
                                                 "VillageSelectionScreen",
                                                 "fetchDataForBpc getDidisWithRankingFromNetwork " +
@@ -708,8 +802,10 @@ class BPCProgressScreenRepository @Inject constructor(
                                     arrayListOf()
                                 val numAnswerList: ArrayList<NumericAnswerEntity> =
                                     arrayListOf()
+                                val didiIdList = mutableListOf<Int>()
                                 it.forEach { item ->
                                     if (item.userType.equals(USER_BPC, true)) {
+                                        didiIdList.add(item.beneficiaryId!!)
                                         didiDao.updatePATProgressStatus(
                                             patSurveyStatus = item.patSurveyStatus
                                                 ?: 0,
@@ -857,10 +953,12 @@ class BPCProgressScreenRepository @Inject constructor(
                                     }
                                 }
                                 if (answerList.isNotEmpty()) {
-                                    answerDao.insertAll(answerList)
+//                                    answerDao.insertAll(answerList)
+                                    answerDao.updateAnswersAfterRefresh(forceRefresh, village.id, answerList)
                                 }
                                 if (numAnswerList.isNotEmpty()) {
-                                    numericAnswerDao.insertAll(numAnswerList)
+//                                    numericAnswerDao.insertAll(numAnswerList)
+                                    numericAnswerDao.updateNumericAnswersAfterRefresh(forceRefresh, didiIdList, numAnswerList)
                                 }
                             }
                         } else {

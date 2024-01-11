@@ -37,6 +37,7 @@ class OtpVerificationViewModel @Inject constructor(
             if (response.status.equals(SUCCESS, true)) {
                 response.data?.let {
                     otpVerificationRepository.saveAccessToken(it.token)
+                    otpVerificationRepository.setIsUserBPC(it.typeName ?: "")
                 }
                 showLoader.value = false
                 withContext(Dispatchers.Main) {

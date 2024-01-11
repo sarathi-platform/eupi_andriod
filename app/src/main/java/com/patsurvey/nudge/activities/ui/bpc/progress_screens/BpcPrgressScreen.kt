@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -247,14 +249,7 @@ fun BpcProgressScreen(
 
 
                     Column(modifier = Modifier.pullRefresh(pullRefreshState)) {
-
-                        /*PullRefreshIndicator(
-                            refreshing = bpcProgreesScreenViewModel.showLoader.value,
-                            state = pullRefreshState,
-                            modifier = Modifier*//*.align(Alignment.TopCenter)*//*,
-                            contentColor = blueDark,
-                        )
-*/
+                        
                         LazyColumn(
                             Modifier
                                 .background(Color.White)
@@ -283,14 +278,32 @@ fun BpcProgressScreen(
                             }
 
                             item {
-                                VillageSelectorDropDown(selectedText = bpcProgreesScreenViewModel.selectedText.value, showCarrotIcon = false) {
-                                    /*scope.launch {
-                                        if (!scaffoldState.isVisible) {
-                                            scaffoldState.show()
-                                        } else {
-                                            scaffoldState.hide()
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    VillageSelectorDropDown(
+                                        modifier = Modifier.weight(1f),
+                                        selectedText = bpcProgreesScreenViewModel.selectedText.value,
+                                        showCarrotIcon = false
+                                    ) {
+                                        /*scope.launch {
+                                            if (!scaffoldState.isVisible) {
+                                                scaffoldState.show()
+                                            } else {
+                                                scaffoldState.hide()
+                                            }
+                                        }*/
+                                    }
+                                    IconButton(
+                                        onClick = {
+                                            bpcProgreesScreenViewModel.refreshDataForCurrentVillage()
                                         }
-                                    }*/
+                                    )
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Default.Refresh,
+                                            contentDescription = "Refresh Data button",
+                                            tint = blueDark
+                                        )
+                                    }
                                 }
                             }
                             item {

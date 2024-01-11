@@ -4,6 +4,7 @@ import androidx.room.*
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.utils.DIDI_TABLE
 import com.patsurvey.nudge.utils.TOLA_TABLE
+import com.patsurvey.nudge.utils.Tola
 
 @Dao
 interface TolaDao {
@@ -84,4 +85,11 @@ interface TolaDao {
 
     @Query("SELECT * FROM $TOLA_TABLE")
     fun getTolaTableDump(): List<TolaEntity>
+
+    @Transaction
+    fun updateTolaData(forceRefresh: Boolean = false, villageId: Int, tolaList: List<TolaEntity>) {
+        if (forceRefresh)
+            deleteTolaForVillage(villageId)
+        insertAll(tolaList)
+    }
 }

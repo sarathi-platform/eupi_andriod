@@ -15,7 +15,7 @@ fun VillageScreen(
     onNavigateToSetting:()->Unit
 ) {
 
-    if (/*viewModel.isUserBpc()*/true) {
+    if (viewModel.isUserBpc()) {
         BpcVillageSelectionScreen(
             navController = navController,
         ) {
