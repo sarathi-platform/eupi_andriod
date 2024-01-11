@@ -20,6 +20,8 @@ import com.nrlm.baselinesurvey.model.request.Options
 import com.nrlm.baselinesurvey.model.request.SaveSurveyRequestModel
 import com.nrlm.baselinesurvey.model.request.SectionList
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
+import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nrlm.baselinesurvey.utils.json
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import javax.inject.Inject
 
@@ -150,7 +152,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
                 questionName = questionEntityList[questionEntityList.map { it.questionId }.indexOf(sectionAnswerEntity.questionId)].questionDisplay ?: BLANK_STRING,
                 questionType = sectionAnswerEntity.questionType ?: BLANK_STRING,
                 questionSummary = sectionAnswerEntity.questionSummary ?: BLANK_STRING,
-                section = sectionAnswerEntity.sectionId,
+                section = sectionEntityDao.getSurveySectionForLanguage(sectionId = sectionAnswerEntity.sectionId, surveyId = surveyId, languageId = prefRepo.getAppLanguageId() ?: 2).sectionName,
                 options = Options.getOptionsFromOptionsItems(sectionAnswerEntity.optionItems)
             )
             answerListDto.add(mAnswerListDtoItem)
@@ -162,7 +164,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
                 SectionList(
                     sectionId = it.sectionId,
                     sectionName = sectionEntityDao.getSurveySectionForLanguage(sectionId = it.sectionId, surveyId = surveyId, languageId = prefRepo.getAppLanguageId() ?: 2).sectionName,
-                    sectionStatus = SectionStatus.getSectionStatusFromOrdinal(it.sectionStatus).name
+                    sectionStatus = it.sectionStatus
                 )
             )
         }
@@ -181,8 +183,9 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         saveSurveyRequestModel.add(saveSurveyRequestModelItem)
 
         // TODO @Anupam Uncomment this after checking with Backend whi API is not working.
-//        val saveAnswersToServerApiResponse = apiService.saveAnswersToServer(saveSurveyRequestModel)
-//        Log.d("QuestionScreenRepositoryImpl", "saveSectionAnswersToServer: saveAnswersToServerApiResponse -> $saveAnswersToServerApiResponse")
+        BaselineLogger.d("QuestionScreenRepositoryImpl", "saveSectionAnswersToServer: saveAnswersToServerApiRequest -> ${saveSurveyRequestModel.json()}")
+        val saveAnswersToServerApiResponse = apiService.saveAnswersToServer(saveSurveyRequestModel)
+        BaselineLogger.d("QuestionScreenRepositoryImpl", "saveSectionAnswersToServer: saveAnswersToServerApiResponse -> ${saveAnswersToServerApiResponse.json()}")
     }
 
     override suspend fun updateDidiSurveyStatus(didiId: Int, surveyId: Int) {

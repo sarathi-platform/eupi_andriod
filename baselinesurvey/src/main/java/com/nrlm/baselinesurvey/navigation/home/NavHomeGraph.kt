@@ -178,6 +178,10 @@ fun navigateToQuestionScreen(didiId: Int, sectionId: Int, surveyId: Int, navCont
     navController.navigate("$QUESTION_SCREEN_ROUTE_NAME/${sectionId}/$didiId/$surveyId")
 }
 
+fun navigateToSectionListScreen(surveyeeId: Int, navController: NavController) {
+    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$surveyeeId")
+}
+
 fun navigateToSearchScreen(navController: NavController) {
     navController.navigate(HomeScreens.SearchScreen.route)
 }

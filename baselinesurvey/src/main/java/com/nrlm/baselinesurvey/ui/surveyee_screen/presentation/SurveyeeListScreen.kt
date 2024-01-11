@@ -29,7 +29,9 @@ import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.THIS_WEEK_TAB
 import com.nrlm.baselinesurvey.navigation.home.SECTION_SCREEN_ROUTE_NAME
+import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToBaseLineStartScreen
+import com.nrlm.baselinesurvey.navigation.home.navigateToSectionListScreen
 import com.nrlm.baselinesurvey.ui.common_components.PrimarySecandaryButtonBoxPreFilled
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreenActions.CheckBoxClicked
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.SurveyeeScreenViewModel
@@ -219,7 +221,7 @@ fun handleButtonClick(buttonName: ButtonName, surveyeeId: Int, navController: Na
         }
 
         is ButtonName.CONTINUE_BUTTON -> {
-            navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$surveyeeId")
+            navigateToSectionListScreen(surveyeeId, navController)
         }
 
         is ButtonName.NEGATIVE_BUTTON -> {
@@ -227,7 +229,7 @@ fun handleButtonClick(buttonName: ButtonName, surveyeeId: Int, navController: Na
         }
 
         is ButtonName.SHOW_BUTTON -> {
-
+            navigateToSectionListScreen(surveyeeId, navController)
         }
 
         is ButtonName.EXPORT_BUTTON -> {

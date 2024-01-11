@@ -85,5 +85,7 @@ val sampleSearchStates = listOf<ComplexSearchState>(
     ComplexSearchState("Financial Inclusion", "Do you have a bank account?"),
     ComplexSearchState("Social Inclusion", "Are you a member of an SHG?"),
     ComplexSearchState("Social Inclusion", "Do you attend SHG meetings regularly?"),
-    ComplexSearchState("Social Inclusion", "", true)
+    ComplexSearchState("Social Inclusion", "", true),
+    ComplexSearchState("Food Security", "Did everyone in your family have at least 2 meals per day in the last 1 month?"),
+    ComplexSearchState("Food Security", "Did everyone in your family have at least 2 meals per day in the last 12 month?")
 )

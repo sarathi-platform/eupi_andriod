@@ -38,6 +38,8 @@ class SectionListScreenViewModel @Inject constructor(
     private val _sectionItemStateList = mutableStateOf(mutableListOf<SectionState>())
     val sectionItemStateList: State<List<SectionState>> get() = _sectionItemStateList
 
+    val sampleVideoPath = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6ParticipatoryWealthRanking.mp4"
+
 
     fun init(didiId: Int) {
         onEvent(LoaderEvent.UpdateLoaderState(true))

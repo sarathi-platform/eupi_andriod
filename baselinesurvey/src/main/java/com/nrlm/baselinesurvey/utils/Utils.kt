@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.core.content.FileProvider
 import androidx.core.text.isDigitsOnly
+import com.google.gson.Gson
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
@@ -547,3 +548,6 @@ fun List<SectionEntity>.getSectionIndexByOrder(sectionOrder: Int): Int {
 fun List<SectionEntity>.sortedBySectionOrder(): List<SectionEntity> {
     return this/*.sortedBy { it.sectionOrder }*/ //TODO Uncomment this when order numbers are received from backend
 }
+
+
+inline fun <reified T : Any> T.json(): String = Gson().toJson(this, T::class.java)

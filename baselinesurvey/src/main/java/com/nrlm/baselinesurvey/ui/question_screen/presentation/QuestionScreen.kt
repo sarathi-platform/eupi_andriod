@@ -69,6 +69,7 @@ import com.nrlm.baselinesurvey.TYPE_RADIO_BUTTON
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.navigation.home.AddHouseHoldMember_SCREEN_ROUTE_NAME
+import com.nrlm.baselinesurvey.navigation.home.AddIncome_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
 import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.ui.common_components.CTAButtonComponent
@@ -537,10 +538,15 @@ fun NestedLazyList(
                         .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
                         .padding(vertical = dimensionResource(id = R.dimen.dp_15))
                 ) {
-                    CTAButtonComponent(tittle = "Add Income Source", Modifier.fillMaxWidth()) {
-                        // navController.navigate(AddIncome_SCREEN_ROUTE_NAME)
-                        navController.navigate(AddHouseHoldMember_SCREEN_ROUTE_NAME)
+                    if (!sectionDetails.sectionName.equals("Food Security", true)) {
+                        CTAButtonComponent(tittle = "Add Income Source", Modifier.fillMaxWidth()) {
+                            // navController.navigate(AddIncome_SCREEN_ROUTE_NAME)
+                            if (sectionDetails.sectionName.equals("Financial Inclusion", true))
+                                navController.navigate(AddIncome_SCREEN_ROUTE_NAME)
+                            if (sectionDetails.sectionName.equals("Social Inclusion", true))
+                                navController.navigate(AddHouseHoldMember_SCREEN_ROUTE_NAME)
 
+                        }
                     }
                 }
             }

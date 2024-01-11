@@ -24,7 +24,7 @@ import com.nrlm.baselinesurvey.ui.theme.white
 
 @Composable
 fun SwitchComponent(title: String) {
-    var checked by remember { mutableStateOf(true) }
+    var checked by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,

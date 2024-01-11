@@ -188,7 +188,7 @@ fun SearchScreens(
                 )
 
                 Text(
-                    text = searchText.value,
+                    text = if (searchText.value.isNotBlank() && searchItems.value.isEmpty()) "No Data Found" else searchText.value,
                     style = smallTextStyle,
                     color = textColorDark
                 )
