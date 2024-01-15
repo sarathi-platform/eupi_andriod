@@ -158,8 +158,8 @@ fun TransectWalkScreen(
                     .padding(horizontal = 20.dp)
             ) {
                 VillageDetailView(
-                    villageName = viewModel.prefRepo.getSelectedVillage().name ?: BLANK_STRING,
-                    voName = viewModel.prefRepo.getSelectedVillage().federationName ?: BLANK_STRING,
+                    villageName = viewModel.getSelectedVillage().name ?: BLANK_STRING,
+                    voName = viewModel.getSelectedVillage().federationName ?: BLANK_STRING,
                     modifier = Modifier
                 )
                 val tolaTolaCount = tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal }.size

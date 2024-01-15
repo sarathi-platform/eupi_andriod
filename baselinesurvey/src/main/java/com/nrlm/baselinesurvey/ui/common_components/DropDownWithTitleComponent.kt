@@ -50,7 +50,7 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 
 @Composable
-fun <T : Any> DropDownWithTitleComponent(
+fun <T> DropDownWithTitleComponent(
     title: String,
     hint: String = stringResource(id = R.string.select),
     items: List<T>,

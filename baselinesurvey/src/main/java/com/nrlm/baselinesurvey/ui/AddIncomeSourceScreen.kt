@@ -110,8 +110,8 @@ fun AddIncomScreen(navController: NavHostController) {
 
 @Composable
 fun DropDownView() {
-    val screens = listOf(
-        "Setting",
+    val source = listOf(
+        "Agriculture",
         "Question",
         "SingleQuestion",
         "DigitalFormA",
@@ -121,11 +121,11 @@ fun DropDownView() {
         "Other"
     )
     var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember { mutableStateOf(screens[0]) }
+    var selectedOptionText by remember { mutableStateOf(source[0]) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
     DropDownWithTitleComponent(
         title = "Source",
-        items = screens,
+        items = source,
         modifier = Modifier.fillMaxWidth(),
         mTextFieldSize = textFieldSize,
         expanded = expanded,
@@ -139,7 +139,10 @@ fun DropDownView() {
         onGlobalPositioned = { coordinates ->
             textFieldSize = coordinates.size.toSize()
         },
-        onItemSelected = {},
+        onItemSelected = {
+                         selectedOptionText = source[source.indexOf(it)]
+            expanded = false
+        },
     )
 }
 

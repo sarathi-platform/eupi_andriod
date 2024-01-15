@@ -18,7 +18,7 @@ import com.nrlm.baselinesurvey.ui.theme.blueDark
 @Composable
 fun LoaderComponent(
     modifier: Modifier = Modifier,
-    visible: Boolean = false
+    visible: Boolean = true
 ) {
     AnimatedVisibility(visible = visible, enter = fadeIn(), exit = fadeOut(), modifier = Modifier.then(modifier)) {
         Box(

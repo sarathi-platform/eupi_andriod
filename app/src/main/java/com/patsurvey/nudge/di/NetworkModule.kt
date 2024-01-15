@@ -40,10 +40,10 @@ object NetworkModule {
   @Provides
   fun provideInterceptors():ArrayList<Interceptor>{
     val interceptors = arrayListOf<Interceptor>()
-    if(BuildConfig.DEBUG){
+//    if(BuildConfig.DEBUG){
       val loggingInterceptor=CurlLoggingInterceptor()
       interceptors.add(loggingInterceptor)
-    }
+//    }
     return interceptors
   }
 

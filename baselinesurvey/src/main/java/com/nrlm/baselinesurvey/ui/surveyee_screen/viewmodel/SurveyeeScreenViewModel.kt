@@ -60,9 +60,12 @@ class SurveyeeScreenViewModel @Inject constructor(
     fun init() {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            if (_surveyeeListState.value.isEmpty()) {
+//            if (_surveyeeListState.value.isEmpty()) {
                 val surveyeeListFromDb = surveyeeScreenUseCase.getSurveyeeListUseCase.invoke()
-                surveyeeListFromDb.forEach { surveyeeEntity ->
+            if (_surveyeeListState.value.isNotEmpty()) {
+                _surveyeeListState.value.clear()
+            }
+            surveyeeListFromDb.forEach { surveyeeEntity ->
                     val surveyeeState = SurveyeeCardState(
                         surveyeeDetails = surveyeeEntity,
                         imagePath = surveyeeEntity.crpImageName,
@@ -74,17 +77,20 @@ class SurveyeeScreenViewModel @Inject constructor(
                 }
                 _filteredSurveyeeListState.value = _surveyeeListState.value
 
-                surveyeeListFromDb.filter { it.movedToThisWeek }.forEach { surveyeeEntity ->
-                    val surveyeeState = SurveyeeCardState(
-                        surveyeeDetails = surveyeeEntity,
-                        imagePath = surveyeeEntity.crpImageName,
-                        subtitle = surveyeeEntity.dadaName,
-                        address = getSurveyeeAddress(surveyeeEntity),
-                        surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
-                    )
-                    _thisWeekSurveyeeListState.value.add(surveyeeState)
-                }
+            if (_thisWeekSurveyeeListState.value.isNotEmpty()) {
+                _thisWeekSurveyeeListState.value.clear()
             }
+            surveyeeListFromDb.filter { it.movedToThisWeek }.forEach { surveyeeEntity ->
+                val surveyeeState = SurveyeeCardState(
+                    surveyeeDetails = surveyeeEntity,
+                    imagePath = surveyeeEntity.crpImageName,
+                    subtitle = surveyeeEntity.dadaName,
+                    address = getSurveyeeAddress(surveyeeEntity),
+                    surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
+                )
+                _thisWeekSurveyeeListState.value.add(surveyeeState)
+            }
+//            }
             _thisWeekFilteredSurveyeeListState.value = _thisWeekSurveyeeListState.value
 
             withContext(Dispatchers.Main) {

@@ -29,4 +29,6 @@ interface DataLoadingScreenRepository {
     fun saveSurveyeeList(surveyeeEntity: SurveyeeEntity)
 
     suspend fun fetchSurveyeeListFromLocalDb(): List<SurveyeeEntity>
+
+    suspend fun fetchSavedSurveyFromServer()
 }

@@ -194,7 +194,7 @@ fun SurveyeeCardComponent(
                     }
                 }
 
-                if (surveyeeState.surveyeeDetails.surveyStatus != SurveyState.COMPLETED.ordinal) {
+                if (surveyeeState.surveyState != SurveyState.COMPLETED) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -219,11 +219,11 @@ fun SurveyeeCardComponent(
                         ) {
                             Text(text = "Not Available", style = smallTextStyleNormalWeight)
                         }
-                        if (surveyeeState.surveyeeDetails.surveyStatus == SurveyState.INPROGRESS.ordinal) {
+                        if (surveyeeState.surveyState == SurveyState.INPROGRESS) {
                             Button(
                                 onClick = {
                                     buttonClicked(
-                                        ButtonName.START_BUTTON,
+                                        ButtonName.CONTINUE_BUTTON,
                                         surveyeeState.surveyeeDetails.didiId ?: 0
                                     )
                                 },
@@ -237,7 +237,7 @@ fun SurveyeeCardComponent(
                             ) {
                                 Text(text = "Continue", style = smallTextStyleMediumWeight)
                             }
-                        } else if (surveyeeState.surveyeeDetails.surveyStatus == SurveyState.NOT_STARTED.ordinal) {
+                        } else if (surveyeeState.surveyState == SurveyState.NOT_STARTED) {
                             Button(
                                 onClick = {
                                     buttonClicked(
@@ -362,6 +362,7 @@ fun SurveyeeCardPreview() {
 
 sealed class ButtonName {
     object START_BUTTON : ButtonName()
+    object CONTINUE_BUTTON : ButtonName()
     object NEGATIVE_BUTTON : ButtonName()
     object SHOW_BUTTON : ButtonName()
     object EXPORT_BUTTON: ButtonName()

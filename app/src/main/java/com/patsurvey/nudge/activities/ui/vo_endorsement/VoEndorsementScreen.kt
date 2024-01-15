@@ -84,6 +84,7 @@ import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.showDidiImageDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -129,6 +130,14 @@ fun VoEndorsementScreen(
         }
     }
 
+    if(viewModel.showDidiImageDialog.value){
+        viewModel.dialogDidiEntity.value?.let {
+            showDidiImageDialog(didi = it){
+                viewModel.showDidiImageDialog.value = false
+            }
+        }
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -153,7 +162,7 @@ fun VoEndorsementScreen(
             ) {
 
                 VOAndVillageBoxView(
-                    prefRepo = viewModel.prefRepo,
+                    prefRepo = viewModel.repository.prefRepo,
                     modifier = Modifier.fillMaxWidth(),
                     startPadding = 0.dp
                 )
@@ -243,7 +252,7 @@ fun VoEndorsementScreen(
                                         ?: emptyList(),
                                     modifier = modifier,
                                     onNavigate = {
-                                        viewModel.prefRepo.savePref(PREF_KEY_VO_SUMMARY_OPEN_FROM,PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal)
+                                        viewModel.repository.prefRepo.savePref(PREF_KEY_VO_SUMMARY_OPEN_FROM,PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal)
                                         navController.navigate(
                                             "vo_endorsement_summary_screen/${
                                                 newFilteredTolaDidiList[didiKey]?.get(
@@ -252,6 +261,10 @@ fun VoEndorsementScreen(
                                             }/${newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus}"
                                         )
                                         viewModel.performQuery(BLANK_STRING, filterSelected)
+                                    },
+                                    onCircularImageClick = { didiEntity ->
+                                        viewModel.showDidiImageDialog.value=true
+                                        viewModel.dialogDidiEntity.value = didiEntity
                                     }
                                 )
                                 if (index < newFilteredTolaDidiList.keys.size - 1) {
@@ -272,9 +285,13 @@ fun VoEndorsementScreen(
                                     didi = didi,
                                     modifier = modifier,
                                     onItemClick = {
-                                        viewModel.prefRepo.savePref(PREF_KEY_VO_SUMMARY_OPEN_FROM,PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal)
+                                        viewModel.repository.prefRepo.savePref(PREF_KEY_VO_SUMMARY_OPEN_FROM,PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal)
                                         navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
                                         viewModel.performQuery(BLANK_STRING, filterSelected)
+                                    },
+                                    onCircularImageClick = { didiEntity ->
+                                        viewModel.showDidiImageDialog.value=true
+                                        viewModel.dialogDidiEntity.value = didiEntity
                                     }
                                 )
                                 Spacer(modifier = Modifier.height(10.dp))
@@ -317,7 +334,8 @@ fun DidiItemCardForVo(
     navController: NavHostController,
     didi: DidiEntity,
     modifier: Modifier,
-    onItemClick: (DidiEntity) -> Unit
+    onItemClick: (DidiEntity) -> Unit,
+    onCircularImageClick:(DidiEntity) ->Unit
 ) {
 
     Card(
@@ -344,7 +362,9 @@ fun DidiItemCardForVo(
                     CircularDidiImage(
                         didi,
                         modifier = Modifier.layoutId("didiImage")
-                    )
+                    ){
+                        onCircularImageClick(didi)
+                    }
                     Row(
                         modifier = Modifier
                             .layoutId("didiRow")
@@ -542,7 +562,8 @@ fun ShowDidisFromTolaForVo(
     didiTola: String,
     didiList: List<DidiEntity>,
     modifier: Modifier,
-    onNavigate: (String) -> Unit
+    onNavigate: (String) -> Unit,
+    onCircularImageClick: (DidiEntity) -> Unit
 ) {
     Column(modifier = Modifier) {
         Row(
@@ -612,6 +633,9 @@ fun ShowDidisFromTolaForVo(
                     modifier = modifier,
                     onItemClick = {
                         onNavigate("")
+                    },
+                    onCircularImageClick = {
+                        onCircularImageClick(didi)
                     }
                 )
             }

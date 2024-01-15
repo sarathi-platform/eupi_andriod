@@ -3,12 +3,16 @@ package com.patsurvey.nudge.navigation
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.*
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import androidx.navigation.navArgument
 import com.patsurvey.nudge.ProfileScreen
 import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.VillageSelectionScreen
+import com.patsurvey.nudge.activities.settings.BugLogggingMechanismScreen
 import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
@@ -32,13 +36,21 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
                 hiltViewModel()
             )
         }
-        composable(route = AuthScreen.LANGUAGE_SCREEN.route
+        composable(
+            route = AuthScreen.LANGUAGE_SCREEN.route
         ) {
             LanguageScreen(
                 navController = navController,
                 viewModel = hiltViewModel(),
                 modifier = Modifier.fillMaxSize(),
                 pageFrom = ARG_FROM_HOME
+            )
+        }
+        composable(
+            route = AuthScreen.BUG_LOGGING_SCREEN.route
+        ) {
+            BugLogggingMechanismScreen(
+                navController = navController
             )
         }
 
@@ -103,6 +115,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
 sealed class AuthScreen(val route: String) {
     object START_SCREEN : AuthScreen(route = "start_screen")
     object LANGUAGE_SCREEN : AuthScreen(route = "language_screen")
+    object BUG_LOGGING_SCREEN : AuthScreen(route = "Bug_Logging")
     object LOGIN : AuthScreen(route = "login_screen")
     object VILLAGE_SELECTION_SCREEN : AuthScreen(route = "village_selection_screen")
     object OTP_VERIFICATION : AuthScreen(route = "otp_verification_screen/{$ARG_MOBILE_NUMBER}")

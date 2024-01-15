@@ -167,6 +167,13 @@ interface ApiService {
                                  @Part ("villageId") villageId:RequestBody,
                                  @Part ("flowType") userType:RequestBody): ApiResponseModel<Object>
 
+    @Multipart
+    @POST("/write-api/form/uploadDocument")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun uploadDataDump(@Part dataDump: MultipartBody.Part,
+                                 @Part ("villageId") villageId:RequestBody,
+                                 @Part ("flowType") userType:RequestBody): ApiResponseModel<Object>
+
 
     @POST("/read-api/custom/log")
     suspend fun addLogs(@Body logsBody: String): JsonObject?

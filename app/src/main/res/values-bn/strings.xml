@@ -50,6 +50,7 @@
     <string name="rich_text">ধনী</string>
     <string name="search_didis">দিদির খোঁজ করুন</string>
     <string name="search_video">ভিডিও খোঁজ করুন</string>
+    <string name="search_village">গ্রাম অনুসন্ধান করুন</string>
     <string name="otp_text">OTP</string>
     <string name="count_didis_pending_plural">%1s দিদিরা বাকি আছে</string>
     <string name="count_didis_pending_singular">%1s দিদি বাকি আছে</string>
@@ -371,6 +372,15 @@
     <string name="score_comparison_section_1_text">ভাগ 1</string>
     <string name="village_is_not_vo_endorsed_right_now">এই গ্রাম এখনো VO অনুমোদিত হয়নি</string>
     <string name="refresh_failed_please_try_again">রিফ্রেশ ব্যর্থ হয়েছে, আবার চেষ্টা করুন!</string>
+    <string name="do_you_want_to_exit_the_app">আপনি কি অ্যাপ থেকে প্রস্থান করতে চান?</string>
+    <string name="exit">প্রস্থান করুন</string>
+    <string name="cancel">বাতিল করুন</string>
+    <string name="reference_of_forms">ফর্মের রেফারেন্স :</string>
+    <string name="link_of_a">ফর্ম A এর জন্য লিঙ্ক</string>
+    <string name="link_of_b">বি ফর্মের লিঙ্ক</string>
+    <string name="user_bug_report_text">বাগ রিপোর্ট</string>
+    <string name="vo_endorsement_not_started">VO অনুমোদন শুরু হয় না</string>
+    <string name="export_data_test">ডেটা এক্সপোর্ট করুন</string>
 
 
 </resources>

@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.section_screen.viewmode
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.SectionListScreenUseCase
@@ -14,6 +15,11 @@ import com.nrlm.baselinesurvey.utils.findItemBySectionId
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -32,6 +38,8 @@ class SectionListScreenViewModel @Inject constructor(
     private val _sectionItemStateList = mutableStateOf(mutableListOf<SectionState>())
     val sectionItemStateList: State<List<SectionState>> get() = _sectionItemStateList
 
+    val sampleVideoPath = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6ParticipatoryWealthRanking.mp4"
+
 
     fun init(didiId: Int) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -41,7 +49,7 @@ class SectionListScreenViewModel @Inject constructor(
                 if (_sectionsList.value.isEmpty()) {
                     _sectionsList.value = sectionScreenUseCase.getSectionListUseCase.invoke(didiId, selectedLanguageId)
                     val sectionProgressForDidi = sectionScreenUseCase.getSectionProgressForDidiUseCase.invoke(didiId, selectedLanguageId)
-                    sectionsList.value.forEachIndexed { index, section ->
+                    sectionsList.value.sortedBy { it.sectionOrder }.forEachIndexed { index, section ->
                         val sectionState = SectionState(
                             section,
                             sectionStatus = if (sectionProgressForDidi.map { it.sectionId }.contains(section.sectionId)) {

@@ -14,7 +14,7 @@ data class AnswerDetailDTOList(
 
     @SerializedName("section")
     @Expose
-    var section: Int?,
+    var section: String?,
 
     @SerializedName("questionName")
     @Expose

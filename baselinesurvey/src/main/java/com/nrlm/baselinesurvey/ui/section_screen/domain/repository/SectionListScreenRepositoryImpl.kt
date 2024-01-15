@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.section_screen.domain.repository
 
+import com.nrlm.baselinesurvey.BASE_LINE
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
@@ -19,7 +20,7 @@ class SectionListScreenRepositoryImpl(
     private val didiSectionProgressEntityDao: DidiSectionProgressEntityDao
 ): SectionListScreenRepository {
     override fun getSectionsListForDidi(didiId: Int, languageId: Int): List<SectionListItem> {
-        val survey = surveyEntityDao.getSurveyDetailForLanguage("BASE_LINE", languageId)
+        val survey = surveyEntityDao.getSurveyDetailForLanguage(BASE_LINE, languageId)
         val sectionEntityList = sectionEntityDao.getAllSectionForSurveyInLanguage(survey?.surveyId ?: 0, languageId)
         val sectionList = mutableListOf<SectionListItem>()
         sectionEntityList.forEach { sectionEntity ->
@@ -28,6 +29,7 @@ class SectionListScreenRepositoryImpl(
                 SectionListItem(
                     sectionId = sectionEntity.sectionId,
                     sectionName = sectionEntity.sectionName,
+                    surveyId = sectionEntity.surveyId,
                     sectionIcon = sectionEntity.sectionIcon,
                     sectionDetails = sectionEntity.sectionDetails,
                     sectionOrder = sectionEntity.sectionOrder,

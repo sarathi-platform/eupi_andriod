@@ -38,14 +38,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuestionScreenViewModel @Inject constructor(
-    val prefRepo: PrefRepo,
-    val didiDao: DidiDao,
-    val villageListDao: VillageListDao,
-    val questionListDao: QuestionListDao,
-    val answerDao: AnswerDao,
-    val apiService: ApiService,
-    val numericAnswerDao: NumericAnswerDao,
-    val stepsListDao: StepsListDao
+    val repository: QuestionScreenRepository
 ) : BaseViewModel() {
     val totalAmount = mutableStateOf(0.0)
     val enteredAmount = mutableStateOf("")
@@ -79,16 +72,16 @@ class QuestionScreenViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             NudgeLogger.d("QuestionScreenViewModel", "getAllQuestionsAnswers called")
             try {
-                val questionList = questionListDao.getQuestionForType(
-                    sectionType.value,
-                    prefRepo.getAppLanguageId() ?: 2
+                val questionList = repository.getQuestionForSection(sectionType = sectionType.value)
+                val localAnswerList = repository.getSectionAnswersForDidi(
+                    actionType = sectionType.value,
+                    didiId = didiId
                 )
-                val localAnswerList = answerDao.getAnswerForDidi(sectionType.value, didiId = didiId)
-                val localNumAnswerList = numericAnswerDao.getAllAnswersForDidi(didiId)
+                val localNumAnswerList = repository.getAllAnswerForDidi(didiId = didiId)
 
                 try {
-                    if (localNumAnswerList.isNotEmpty()) {
-                        questionList.forEach { que ->
+                    if (localNumAnswerList?.isNotEmpty() == true) {
+                        questionList?.forEach { que ->
                             if (que.type == QuestionType.Numeric_Field.name) {
                                 que.options.forEach { optionsItem ->
                                     val cIndex = localNumAnswerList.map { it.optionId }
@@ -102,18 +95,26 @@ class QuestionScreenViewModel @Inject constructor(
                                 }
 
                                 // Calculate Total Asset Amount
-                                val aIndex = localAnswerList.map { it.questionId }
-                                    .indexOf(que.questionId)
+                                val aIndex = que.questionId?.let {
+                                    localAnswerList?.map { it.questionId }
+                                        ?.indexOf(it) ?: -1
+                                }
                                 if (aIndex != -1) {
                                     _totalAssetAmount.value =
-                                        localAnswerList[aIndex].totalAssetAmount ?: 0.0
+                                        aIndex?.let { localAnswerList?.get(it)?.totalAssetAmount }
+                                            ?: 0.0
                                 }
                             }
                         }
                     }
-                    _questionList.value = questionList
-                    _answerList.value = localAnswerList
-                    maxQuesCount.value = questionList.size
+                    questionList?.let {
+                        _questionList.value = it
+                    }
+                    localAnswerList?.let {
+                        _answerList.value = it
+                    }
+
+                    maxQuesCount.value = questionList?.size ?: 0
                     updateAnswerOptions(0, didiId)
                 } catch (ex: Exception) {
                     NudgeLogger.e("QuestionScreenViewModel", "inner catch getAllQuestionsAnswers ->", ex)
@@ -142,8 +143,8 @@ class QuestionScreenViewModel @Inject constructor(
 
     fun setDidiDetails(didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didi = didiDao.getDidi(didiId)
-            if(prefRepo.questionScreenOpenFrom() == PageFrom.DIDI_LIST_PAGE.ordinal)
+            val didi = repository.getDidiFromDB(didiId = didiId)
+            if(repository.prefRepo.questionScreenOpenFrom() == PageFrom.DIDI_LIST_PAGE.ordinal)
                 updateDidiQuesSection(didiId, PatSurveyStatus.INPROGRESS.ordinal)
             withContext(Dispatchers.Main) {
                 didiName.value = didi.name
@@ -154,19 +155,11 @@ class QuestionScreenViewModel @Inject constructor(
 
     fun updateDidiQuesSection(didiId: Int, status: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            if(prefRepo.isUserBPC()){
-                didiDao.updateQuesSectionStatus(didiId, status)
-                if (sectionType.value.equals(TYPE_EXCLUSION, true)) {
-                    didiDao.updatePatSection1Status(didiId, status)
-                    didiDao.updatePATEditStatus(didiId,true)
-                } else didiDao.updatePatSection2Status(didiId, status)
-
-            } else {
-                didiDao.updateQuesSectionStatus(didiId, status)
-                if (sectionType.value.equals(TYPE_EXCLUSION, true)) {
-                    didiDao.updatePatSection1Status(didiId, status)
-                } else didiDao.updatePatSection2Status(didiId, status)
-            }
+            repository.updateDidiQuestionSection(
+                didiId = didiId,
+                status = status,
+                sectionType = sectionType.value
+            )
         }
     }
 
@@ -184,27 +177,28 @@ class QuestionScreenViewModel @Inject constructor(
     ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
-                if(prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_PAGE.ordinal) {
-                    updateStepStatus(stepsListDao = stepsListDao,
-                        prefRepo = prefRepo,
+                if(repository.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_PAGE.ordinal) {
+                    updateStepStatus(stepsListDao = repository.stepsListDao,
+                        prefRepo = repository.prefRepo,
                         printTag = "QuestionScreenViewModel",
-                        didiDao = didiDao,
+                        didiDao = repository.didiDao,
                         didiId = didiId)
                 }
-                didiDao.updateNeedToPostPAT(true,didiId, villageId = prefRepo.getSelectedVillage().id)
-                val alreadyAnsweredModel = answerDao.isAlreadyAnswered(
+                repository.updateNeedToPostPAT(didiId=didiId)
+                val alreadyAnsweredModel = repository.isAlreadyAnswered(
                     didiId = didiId,
                     questionId = questionId,
-                    actionType = sectionType.value
+                    sectionType = sectionType.value
                 )
                 try {
                     if (alreadyAnsweredModel > 0) {
-                        answerDao.updateAnswer(
-                            didiId = didiId, questionId = questionId,
+                        repository.updateDidiAnswer(
+                            didiId = didiId,
+                            questionId = questionId,
                             actionType = sectionType.value,
-                            answerValue = answerOptionModel.display?: BLANK_STRING,
+                            answerValue = answerOptionModel.display ?: BLANK_STRING,
                             optionValue = answerOptionModel.optionValue ?: 0,
-                            optionId = answerOptionModel.optionId?:0,
+                            optionId = answerOptionModel.optionId ?: 0,
                             weight = answerOptionModel.weight ?: 0,
                             type = quesType,
                             totalAssetAmount = assetAmount,
@@ -212,31 +206,35 @@ class QuestionScreenViewModel @Inject constructor(
                             assetAmount = enteredAssetAmount,
                             questionFlag = questionFlag
                         )
-                        answerDao.updateNeedToPost(didiId, questionId, true)
-                        answerDao.updateAllAnswersNeedToPost(didiId, true)
+                        repository.updateAnswerNeedToPost(
+                            didiId = didiId,
+                            questionId = questionId,
+                            needsToPost = true
+                        )
+                        repository.updateAllAnswerNeedToPost(didiId = didiId, needsToPost = true)
                         withContext(Dispatchers.Main) {
                             onAnswerSave()
                         }
                     } else {
-                        answerDao.insertAnswer(
+                        repository.insertAnswer(
                             SectionAnswerEntity(
                                 id = 0,
-                                optionId = answerOptionModel.optionId?:0,
+                                optionId = answerOptionModel.optionId ?: 0,
                                 didiId = didiId,
                                 optionValue = answerOptionModel.optionValue ?: 0,
-                                answerValue = answerOptionModel.display?: BLANK_STRING,
+                                answerValue = answerOptionModel.display ?: BLANK_STRING,
                                 questionId = questionId,
                                 actionType = sectionType.value,
                                 totalAssetAmount = assetAmount,
                                 type = quesType,
                                 summary = summary,
-                                villageId = prefRepo.getSelectedVillage().id,
-                                weight=answerOptionModel.weight ?: 0,
+                                villageId = repository.prefRepo.getSelectedVillage().id,
+                                weight = answerOptionModel.weight ?: 0,
                                 assetAmount = enteredAssetAmount,
                                 questionFlag = questionFlag
                             )
                         )
-                        answerDao.updateAllAnswersNeedToPost(didiId, true)
+                        repository.updateAllAnswerNeedToPost(didiId = didiId, needsToPost = true)
                         withContext(Dispatchers.Main) {
                             onAnswerSave()
                         }
@@ -245,8 +243,14 @@ class QuestionScreenViewModel @Inject constructor(
                     ex.printStackTrace()
                 }
 
-                val localAnswerList = answerDao.getAnswerForDidi(sectionType.value, didiId = didiId)
-                _answerList.emit(localAnswerList)
+                val localAnswerList = repository.getSectionAnswersForDidi(
+                    didiId = didiId,
+                    actionType = sectionType.value
+                )
+                localAnswerList?.let {
+                    _answerList.emit(it)
+                }
+
 //            }
             }
         }
@@ -260,24 +264,25 @@ class QuestionScreenViewModel @Inject constructor(
     ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
-                val optionDetails = numericAnswerDao.getOptionDetails(
-                    numericAnswer.optionId,
-                    numericAnswer.questionId, numericAnswer.didiId
+                val optionDetails = repository.getAnswerOptionDetails(
+                    optionId = numericAnswer.optionId,
+                    questionId = numericAnswer.questionId,
+                    didiId = numericAnswer.didiId
                 )
+
                 if (optionDetails != null) {
-                    numericAnswerDao.updateAnswer(
-                        numericAnswer.didiId,
+                    repository.updateNumericAnswer( numericAnswer.didiId,
                         numericAnswer.optionId,
                         numericAnswer.questionId,
                         numericAnswer.count,
-                        numericAnswer.optionValue
-                    )
+                        numericAnswer.optionValue)
                 } else {
-                    numericAnswerDao.insertNumericOption(numericAnswer)
+                    repository.insertNumericAnswer(numericAnswer = numericAnswer)
                 }
+           val formattedOptionList= optionList.sortedBy { it.optionValue }.filter { it.optionType == BLANK_STRING }
                  if(numericAnswer.questionFlag.equals(QUESTION_FLAG_RATIO,true)){
-                    val earningMemberCount=calculateCountWeight(optionList[1])
-                    val totalMemberCount=calculateCountWeight(optionList[0])
+                    val earningMemberCount=calculateCountWeight(formattedOptionList[1])
+                    val totalMemberCount=calculateCountWeight(formattedOptionList[0])
                     if(earningMemberCount>0 && totalMemberCount>0){
                         totalAmount.value = roundOffDecimal(earningMemberCount/totalMemberCount)?:0.00
                         onUpdateTotalAmount()
@@ -286,7 +291,10 @@ class QuestionScreenViewModel @Inject constructor(
                         onUpdateTotalAmount()
                     }
                 }else{
-                    val amountList = numericAnswerDao.getTotalAssetAmount(numericAnswer.questionId,numericAnswer.didiId)
+                     val amountList = repository.getTotalAssetAmountFromDB(
+                         questionId = numericAnswer.questionId,
+                         didiId = numericAnswer.didiId
+                     )
                     if(amountList.isNotEmpty() && amountList.size>0){
                         var amt=0
                         amountList.forEach {
@@ -295,7 +303,6 @@ class QuestionScreenViewModel @Inject constructor(
                         totalAmount.value = amt.toDouble()
                         onUpdateTotalAmount()
                     }
-                     Log.d("TAG", "updateNumericAnswer totalAmount: ${totalAmount.value}")
                 }
 
 
@@ -308,16 +315,18 @@ class QuestionScreenViewModel @Inject constructor(
 
     fun updateAnswerOptions(questionIndex: Int, didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val localAnswerList = answerDao.getAnswerForDidi(sectionType.value, didiId = didiId)
-            _answerList.emit(localAnswerList)
+            val localAnswerList =
+                repository.getSectionAnswersForDidi(actionType = sectionType.value, didiId = didiId)
+            _answerList.emit(localAnswerList?: emptyList())
             withContext(Dispatchers.IO) {
                 if (questionList.value.size > questionIndex) {
                     val alreadyAnsweredModel = questionList.value[questionIndex].questionId?.let {
-                        answerDao.isAlreadyAnswered(
+                        repository.isAlreadyAnswered(
                             didiId = didiId,
                             questionId = it,
-                            sectionType.value
+                            sectionType = sectionType.value
                         )
+
                     }
                 }
             }
@@ -328,26 +337,28 @@ class QuestionScreenViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
 
-                val answerCount= answerDao.isQuestionAnswered(didiId,questionList.value[quesIndex].questionId?:0)
+                val answerCount= repository.isQuestionAnswered(didiId = didiId, questionId = questionList.value[quesIndex].questionId?:0)
                 isClickEnable.value = answerCount>0
-                val optionId = answerDao.fetchOptionID(
-                    didiId,
-                    questionList.value[quesIndex].questionId ?: 0,
-                    sectionType.value
+
+                val optionId = repository.fetchOptionIdFromDB(
+                    didiId=didiId,
+                    questionId = questionList.value[quesIndex].questionId ?: 0,
+                    actionType=sectionType.value
                 )
+
                 if(optionId>0){
-                    val index = questionList.value[quesIndex].options.map { it.optionId }.indexOf(optionId)
+                    val index = questionList.value[quesIndex].options.sortedBy { it.optionValue }.map { it.optionId }.indexOf(optionId)
                     listTypeAnswerIndex.value = index
                     _selIndValue.value = index
                     totalAmount.value =0.0
                     enteredAmount.value= BLANK_STRING
                 } else if(optionId == 0 && (questionList.value[quesIndex].type == QuestionType.Numeric_Field.name)){
                     nextCTAVisibility.value=(quesIndex < questionList.value.size - 1 && quesIndex< answerList.value.size)
-                    val totalDBAmount= numericAnswerDao.fetchTotalAmount(questionList.value[quesIndex].questionId?:0,didiId)
+                    val totalDBAmount= repository.fetchTotalAmount(questionList.value[quesIndex].questionId?:0,didiId)
                    if( questionList.value[quesIndex].questionFlag.equals(QUESTION_FLAG_WEIGHT,true)){
                        totalAmount.value =  totalDBAmount.toDouble()
                    }else{
-                       val optionList = questionList.value[quesIndex].options
+                       val optionList = questionList.value[quesIndex].options.sortedBy { it.optionValue }.filter { it.optionType == BLANK_STRING }
                        optionList?.let {option->
                            val option1Count = option.filter { it.optionValue==1 }[0].count?.toDouble() ?: 0.0
                            val option2Count = option.filter { it.optionValue==2 }[0].count?.toDouble() ?: 0.0

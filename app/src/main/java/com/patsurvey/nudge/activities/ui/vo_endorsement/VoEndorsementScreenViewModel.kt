@@ -30,13 +30,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class VoEndorsementScreenViewModel @Inject constructor(
-    val prefRepo: PrefRepo,
-    val didiDao: DidiDao,
-    val tolaDao: TolaDao,
-    val questionListDao: QuestionListDao,
-    val answerDao: AnswerDao,
-    val numericAnswerDao: NumericAnswerDao,
-    val stepsListDao: StepsListDao
+    val repository: VoEndorsementScreenRepository
 ): BaseViewModel() {
 
     val pendingDidiCount = mutableStateOf(0)
@@ -61,14 +55,14 @@ class VoEndorsementScreenViewModel @Inject constructor(
     val showLoader = mutableStateOf(false)
 
     init {
-        villageId = prefRepo.getSelectedVillage().id
+        villageId = repository.prefRepo.getSelectedVillage().id
         fetchDidisFromDB()
     }
 
     fun fetchDidisFromDB() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                _didiList.value = didiDao.fetchVOEndorseStatusDidi(prefRepo.getSelectedVillage().id)
+                _didiList.value = repository.fetchVOEndorseStatusDidi()
                 _filterDidiList.value = didiList.value
 
             } catch (ex: Exception) {
@@ -80,7 +74,7 @@ class VoEndorsementScreenViewModel @Inject constructor(
     fun updateFilterDidiList() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _filterDidiList.value.forEach {
-                val didiDetails = didiDao.fetchDidiDetails(it.id)
+                val didiDetails = repository.getDidiFromDB(it.id)
                 if (didiDetails != null)
                     it.voEndorsementStatus = didiDetails.voEndorsementStatus
             }
@@ -149,7 +143,7 @@ class VoEndorsementScreenViewModel @Inject constructor(
 
     fun getVoEndorsementStepStatus(stepId: Int, callBack: (isComplete: Boolean) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val stepStatus = stepsListDao.isStepComplete(stepId, villageId)
+            val stepStatus = repository.checkVoEndorsementStepStatus(stepId, villageId)
             withContext(Dispatchers.Main) {
                 if (stepStatus == StepStatus.COMPLETED.ordinal) {
                     delay(100)

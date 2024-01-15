@@ -14,5 +14,5 @@ data class SectionList(
 
     @SerializedName("sectionStatus")
     @Expose
-    var sectionStatus: String
+    var sectionStatus: Int
 )

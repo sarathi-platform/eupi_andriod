@@ -1,8 +1,12 @@
 package com.patsurvey.nudge.base
 
 import com.google.gson.JsonSyntaxException
+import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.analytics.AnalyticsHelper
+import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.di.DatabaseModule
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.network.NetworkResult
@@ -41,12 +45,18 @@ abstract class BaseRepository{
     @Inject
     lateinit var apiInterface: ApiService
 
-     open fun onServerError(error: ErrorModel?){
+    @Inject
+    lateinit var didiDao:DidiDao
+
+    open fun onServerError(error: ErrorModel?){
 
      }
     open fun onServerError(errorModel: ErrorModelWithApi?){
 
      }
+    open fun getDidiFromDB(didiId:Int):DidiEntity{
+      return didiDao.getDidi(didiId)
+    }
     suspend fun <T> safeApiCall(apiCall:suspend ()->Response<T>):NetworkResult<T>{
         try {
             val response=apiCall()

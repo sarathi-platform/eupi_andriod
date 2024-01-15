@@ -33,6 +33,9 @@ import com.nrlm.baselinesurvey.ui.auth.use_case.ResendOtpUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.SaveAccessTokenUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.SaveMobileNumberUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.ValidateOtpUseCase
+import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.SurveyStateRepository
+import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.SurveyStateRepositoryImpl
+import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.UpdateSurveyStateUserCase
 import com.nrlm.baselinesurvey.ui.language.domain.repository.LanguageScreenRepository
 import com.nrlm.baselinesurvey.ui.language.domain.repository.LanguageScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.GetLanguageListFromDbUseCase
@@ -45,6 +48,7 @@ import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScre
 import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.GetSectionAnswersUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.GetSectionUseCase
+import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.GetSectionsListUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.QuestionScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.SaveSectionAnswerUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.UpdateSectionProgressUseCase
@@ -53,6 +57,11 @@ import com.nrlm.baselinesurvey.ui.section_screen.domain.repository.SectionListSc
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSectionListUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSectionProgressForDidiUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.SectionListScreenUseCase
+import com.nrlm.baselinesurvey.ui.start_screen.domain.repository.StartScreenRepository
+import com.nrlm.baselinesurvey.ui.start_screen.domain.repository.StartScreenRepositoryImpl
+import com.nrlm.baselinesurvey.ui.start_screen.domain.use_case.GetSurveyeeDetailsUserCase
+import com.nrlm.baselinesurvey.ui.start_screen.domain.use_case.SaveSurveyeeImagePathUseCase
+import com.nrlm.baselinesurvey.ui.start_screen.domain.use_case.StartSurveyScreenUserCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepository
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeListScreenRepository
@@ -221,6 +230,7 @@ object BaselineModule {
     ): QuestionScreenUseCase {
         return QuestionScreenUseCase(
             getSectionUseCase = GetSectionUseCase(questionScreenRepository),
+            getSectionsListUseCase = GetSectionsListUseCase(questionScreenRepository),
             updateSectionProgressUseCase = UpdateSectionProgressUseCase(questionScreenRepository),
             saveSectionAnswerUseCase = SaveSectionAnswerUseCase(questionScreenRepository),
             getSectionAnswersUseCase = GetSectionAnswersUseCase(questionScreenRepository)
@@ -270,6 +280,38 @@ object BaselineModule {
             fetchUserDetailFromNetworkUseCase = FetchUserDetailFromNetworkUseCase(repository),
             fetchSurveyFromNetworkUseCase = FetchSurveyFromNetworkUseCase(repository)
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideStartSurveyScreenRepository(
+        prefRepo: PrefRepo,
+        surveyeeEntityDao: SurveyeeEntityDao
+    ): StartScreenRepository {
+        return StartScreenRepositoryImpl(prefRepo, surveyeeEntityDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStartSurveyScreenUseCase(
+        repository: StartScreenRepository,
+        surveyStateRepository: SurveyStateRepository
+    ): StartSurveyScreenUserCase {
+        return StartSurveyScreenUserCase(
+            getSurveyeeDetailsUserCase = GetSurveyeeDetailsUserCase(repository),
+            saveSurveyeeImagePathUseCase = SaveSurveyeeImagePathUseCase(repository),
+            updateSurveyStateUseCase = UpdateSurveyStateUserCase(surveyStateRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSurveyStateRepository(
+        prefRepo: PrefRepo,
+        surveyeeEntityDao: SurveyeeEntityDao,
+        didiSectionProgressEntityDao: DidiSectionProgressEntityDao
+    ): SurveyStateRepository {
+        return SurveyStateRepositoryImpl(prefRepo, surveyeeEntityDao, didiSectionProgressEntityDao)
     }
 
 }

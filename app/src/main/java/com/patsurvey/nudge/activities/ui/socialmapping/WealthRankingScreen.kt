@@ -69,8 +69,6 @@ fun WealthRankingScreen(
     val _pendingDidiCount = remember {
         mutableStateOf(newFilteredDidiList.value.size)
     }
-    val pendingCount: State<Int> = _pendingDidiCount
-
 
     val localDensity = LocalDensity.current
 
@@ -93,6 +91,14 @@ fun WealthRankingScreen(
 
     var filterSelected by remember {
         mutableStateOf(false)
+    }
+
+    if(viewModel.showDidiImageDialog.value){
+        viewModel.dialogDidiEntity.value?.let {
+            showDidiImageDialog(didi = it){
+                viewModel.showDidiImageDialog.value = false
+            }
+        }
     }
 
     ConstraintLayout(
@@ -125,14 +131,12 @@ fun WealthRankingScreen(
                 LazyColumn(
                     modifier =
                     Modifier
-//                        .padding(bottom = bottomPadding)
                         .fillMaxWidth()
                         .background(color = white)
                         .padding(horizontal = 4.dp)
                         .weight(1f),
                     state = listState,
-                    contentPadding = PaddingValues(vertical = 10.dp),/*
-                    verticalArrangement = Arrangement.spacedBy(10.dp)*/
+                    contentPadding = PaddingValues(vertical = 10.dp),
                 ) {
                     item {
                         Text(
@@ -225,7 +229,6 @@ fun WealthRankingScreen(
                                                 viewModel.onCardArrowClicked(didis[nextIndex].id,coroutineScope, listState,nextIndex)
                                             } else if (nextIndex == didis.size){
                                                 viewModel.closeLastCard(didi.id)
-//                                                viewModel.onCardArrowClicked(didi.id)
                                             }
                                             _pendingDidiCount.value = newFilteredDidiList.value.size - index
                                             if (!didis.any { it.wealth_ranking == WealthRank.NOT_RANKED.rank })
@@ -237,6 +240,10 @@ fun WealthRankingScreen(
                                         }
                                     },
                                     expanded = expandedCardIds.contains(didi.id),
+                                    onCircularImageClick = { didi->
+                                        viewModel.dialogDidiEntity.value = didi
+                                        viewModel.showDidiImageDialog.value = true
+                                    }
                                 )
                             }
                         }
@@ -278,6 +285,7 @@ fun ExpandableCard(
     viewModel: WealthRankingViewModel,
     onCardArrowClick: (fromArrow: Boolean) -> Unit,
     expanded: Boolean,
+    onCircularImageClick:(DidiEntity) -> Unit
 ) {
     val transitionState = remember {
         MutableTransitionState(expanded).apply {
@@ -360,7 +368,9 @@ fun ExpandableCard(
                             backgroundColor = colorResource(id = R.color.placeholder_color),
                             shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_50)),
                         ) {
-                            CircularDidiImage(didi = didiEntity, modifier = Modifier)
+                            CircularDidiImage(didi = didiEntity, modifier = Modifier){
+                                onCircularImageClick(didiEntity)
+                            }
                         }
 
                         Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.dp_10)))
@@ -766,20 +776,6 @@ fun ShowDidisFromTola(
                     fontFamily = NotoSans,
                 )
             }
-            /*Text(
-                text = "${didiList.size}",
-                style = TextStyle(
-                    color = greenOnline,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    fontFamily = NotoSans
-                ),
-                modifier = Modifier
-                    .background(yellowBg, shape = CircleShape)
-                    .circleLayout()
-                    .padding(3.dp),
-                textAlign = TextAlign.Start
-            )*/
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -809,6 +805,10 @@ fun ShowDidisFromTola(
                             }
                         },
                         expanded = expandedIds.contains(didi.id),
+                        onCircularImageClick = { didi->
+                            viewModel.dialogDidiEntity.value = didi
+                            viewModel.showDidiImageDialog.value = true
+                        }
                     )
                 }
             }
