@@ -17,6 +17,8 @@ import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.AddHouseholdMemberScreen
 import com.nrlm.baselinesurvey.ui.AddIncomScreen
+import com.nrlm.baselinesurvey.ui.HomeScreen
+import com.nrlm.baselinesurvey.ui.SearchScreen
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenHandler
 import com.nrlm.baselinesurvey.ui.search.presentation.SearchScreens
 import com.nrlm.baselinesurvey.ui.section_screen.presentation.SectionListScreen
@@ -72,7 +74,8 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 type = NavType.IntType
             }
         )) {
-            QuestionScreenHandler(navController = navController,
+            QuestionScreenHandler(
+                navController = navController,
                 viewModel = hiltViewModel(),
                 didiId = it.arguments?.getInt(
                     ARG_DIDI_ID
@@ -135,6 +138,18 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         composable(route = HomeScreens.SearchScreen.route) {
             SearchScreens(viewModel = hiltViewModel(), navController = navController)
         }
+
+        composable(route = HomeScreens.Home_SCREEN.route) {
+            HomeScreen()
+        }
+
+        composable(route = HomeScreens.MISSION_SCREEN.route) {
+            SearchScreen()
+        }
+
+        composable(route = HomeScreens.DIDI_SCREEN.route) {
+            SurveyeeListScreen(viewModel = hiltViewModel(), navController = navController)
+        }
     }
 }
 
@@ -150,9 +165,13 @@ sealed class HomeScreens(val route: String) {
 
     object AddIncome_SCREEN : HomeScreens(route = AddIncome_SCREEN_ROUTE_NAME)
     object AddHouseHoldMember_SCREEN : HomeScreens(route = AddHouseHoldMember_SCREEN_ROUTE_NAME)
-    object BaseLineStartScreen : HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}")
+    object BaseLineStartScreen :
+        HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}")
 
-    object SearchScreen: HomeScreens(route = SEARCH_SCREEN_ROUTE_NAME)
+    object SearchScreen : HomeScreens(route = SEARCH_SCREEN_ROUTE_NAME)
+    object Home_SCREEN : HomeScreens(route = HOME_SCREEN_ROUTE_NAME)
+    object MISSION_SCREEN : HomeScreens(route = MISSION_SCREEN_ROUTE_NAME)
+    object DIDI_SCREEN : HomeScreens(route = DIDI_SCREEN_ROUTE_NAME)
 
 }
 
@@ -165,6 +184,9 @@ const val AddIncome_SCREEN_ROUTE_NAME = "add_income_screen"
 const val AddHouseHoldMember_SCREEN_ROUTE_NAME = "add_house_hold_member_screen"
 const val BASELINE_START_SCREEN_ROUTE_NAME = "baseline_start_screen"
 const val SEARCH_SCREEN_ROUTE_NAME = "search_screen"
+const val HOME_SCREEN_ROUTE_NAME = "home_screen"
+const val MISSION_SCREEN_ROUTE_NAME = "mission_screen"
+const val DIDI_SCREEN_ROUTE_NAME = "didi_screen"
 
 fun navigateToBaseLineStartScreen(surveyeeId: Int, navController: NavController) {
     navController.navigate("$BASELINE_START_SCREEN_ROUTE_NAME/$surveyeeId")
@@ -174,7 +196,16 @@ fun navigateBackToSurveyeeListScreen(navController: NavController) {
     navController.popBackStack(HomeScreens.SURVEYEE_LIST_SCREEN.route, false)
 }
 
-fun navigateToQuestionScreen(didiId: Int, sectionId: Int, surveyId: Int, navController: NavController) {
+fun navigateBackToDidiScreen(navController: NavController) {
+    navController.popBackStack(HomeScreens.DIDI_SCREEN.route, false)
+}
+
+fun navigateToQuestionScreen(
+    didiId: Int,
+    sectionId: Int,
+    surveyId: Int,
+    navController: NavController
+) {
     navController.navigate("$QUESTION_SCREEN_ROUTE_NAME/${sectionId}/$didiId/$surveyId")
 }
 
