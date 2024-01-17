@@ -118,6 +118,26 @@ fun BpcProgressScreen(
         }
     }
 
+    val isOnline  = remember {
+        mutableStateOf(true)
+    }
+
+    DisposableEffect(key1 = context) {
+        val connectionLiveData = ConnectionMonitor(context)
+        connectionLiveData.observe(lifecycleOwner) { isNetworkAvailable ->
+
+            NudgeLogger.d("SettingScreen",
+                "DisposableEffect: connectionLiveData.observe isNetworkAvailable -> isNetworkAvailable.isOnline = ${isNetworkAvailable.isOnline}, isNetworkAvailable.connectionSpeed = ${isNetworkAvailable.connectionSpeed}, isNetworkAvailable.speedType = ${isNetworkAvailable.speedType}")
+            isOnline.value = isNetworkAvailable.isOnline
+                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR.toString() || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN.toString())
+            NudgeCore.updateIsOnline(isNetworkAvailable.isOnline
+                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR.toString() || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN.toString()))
+        }
+        onDispose {
+            connectionLiveData.removeObservers(lifecycleOwner)
+        }
+    }
+
     val pullRefreshState = rememberPullRefreshState(
         bpcProgreesScreenViewModel.showLoader.value,
         {
@@ -294,7 +314,11 @@ fun BpcProgressScreen(
                                     }
                                     IconButton(
                                         onClick = {
-                                            bpcProgreesScreenViewModel.refreshDataForCurrentVillage()
+                                            if (isOnline.value)
+                                                bpcProgreesScreenViewModel.refreshDataForCurrentVillage()
+                                            else
+                                                showCustomToast(context,
+                                                    context.getString(R.string.network_not_available_message))
                                         }
                                     )
                                     {
