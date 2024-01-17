@@ -102,7 +102,7 @@ class SurveySummaryViewModel @Inject constructor(
         job= CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO){
                 _didiList.emit(repository.getAllDidisForVillage())
-                CheckDBStatus(this@SurveySummaryViewModel).isFirstStepNeedToBeSync() {
+                CheckDBStatus(this@SurveySummaryViewModel).isFirstStepNeedToBeSync(repository.tolaDao) {
                     isTolaSynced.value = it
                 }
                 CheckDBStatus(this@SurveySummaryViewModel).isSecondStepNeedToBeSync(repository.didiDao) {

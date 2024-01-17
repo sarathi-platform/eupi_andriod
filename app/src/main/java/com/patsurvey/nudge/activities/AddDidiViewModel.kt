@@ -139,7 +139,7 @@ class AddDidiViewModel @Inject constructor(
 
         validateDidiDetails()
         getSocialMappingStepId()
-        CheckDBStatus(this@AddDidiViewModel).isFirstStepNeedToBeSync() {
+        CheckDBStatus(this@AddDidiViewModel).isFirstStepNeedToBeSync(addDidiRepository.tolaDao) {
             isTolaSynced.value = it
         }
 
