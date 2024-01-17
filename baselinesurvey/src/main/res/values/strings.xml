@@ -408,6 +408,8 @@
     <string name="save_next_section_button_text"><![CDATA[Save & Next Section]]></string>
     <string name="ok_text">Ok</string>
     <string name="home" translatable="false">Home</string>
-    <string name="mssions" translatable="false">Missions</string>
+    <string name="mission" translatable="false">Missions</string>
+    <string name="day_tab" translatable="false">Day</string>
+    <string name="search" translatable="false">Search</string>
 
 </resources>

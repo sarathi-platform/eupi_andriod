@@ -51,7 +51,6 @@ import coil.compose.AsyncImage
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.navigation.home.SECTION_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToDidiScreen
-import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.ui.common_components.BlueButtonWithIcon
 import com.nrlm.baselinesurvey.ui.common_components.ButtonOutline
 import com.nrlm.baselinesurvey.ui.common_components.DialogComponent
@@ -91,7 +90,7 @@ fun BaseLineStartScreen(
     }
 
     BackHandler {
-        navigateBackToSurveyeeListScreen(navController)
+        navigateBackToDidiScreen(navController)
     }
 
     Scaffold(modifier = Modifier

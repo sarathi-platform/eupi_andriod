@@ -6,12 +6,12 @@ import com.nrlm.baselinesurvey.activity.domain.use_case.IsLoggedInUseCase
 import com.nrlm.baselinesurvey.activity.domain.use_case.MainActivityUseCase
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
-import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionAnswerEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
+import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.dao.VillageListDao
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.splash.domain.repository.SplashScreenRepository
@@ -44,6 +44,8 @@ import com.nrlm.baselinesurvey.ui.language.domain.use_case.GetVillageDetailUseCa
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.LanguageScreenUseCase
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.SaveSelectedLanguageUseCase
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.SaveSelectedVillageUseCase
+import com.nrlm.baselinesurvey.ui.mission_screen.domain.repository.MissionScreenRepository
+import com.nrlm.baselinesurvey.ui.mission_screen.domain.repository.MissionScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepository
 import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.GetSectionAnswersUseCase
@@ -312,6 +314,12 @@ object BaselineModule {
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao
     ): SurveyStateRepository {
         return SurveyStateRepositoryImpl(prefRepo, surveyeeEntityDao, didiSectionProgressEntityDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMissionRepository(surveyeeEntityDao: SurveyEntityDao): MissionScreenRepository {
+        return MissionScreenRepositoryImpl(surveyeeEntityDao)
     }
 
 }

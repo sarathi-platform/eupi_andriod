@@ -17,8 +17,7 @@ import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.AddHouseholdMemberScreen
 import com.nrlm.baselinesurvey.ui.AddIncomScreen
-import com.nrlm.baselinesurvey.ui.HomeScreen
-import com.nrlm.baselinesurvey.ui.SearchScreen
+import com.nrlm.baselinesurvey.ui.mission_screen.presentation.MissionScreen
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenHandler
 import com.nrlm.baselinesurvey.ui.search.presentation.SearchScreens
 import com.nrlm.baselinesurvey.ui.section_screen.presentation.SectionListScreen
@@ -140,11 +139,12 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         }
 
         composable(route = HomeScreens.Home_SCREEN.route) {
-            HomeScreen()
+            //  HomeScreen(navController=navController)
+            MissionScreen(navController = navController, viewModel = hiltViewModel())
         }
 
         composable(route = HomeScreens.MISSION_SCREEN.route) {
-            SearchScreen()
+            MissionScreen(navController = navController, viewModel = hiltViewModel())
         }
 
         composable(route = HomeScreens.DIDI_SCREEN.route) {

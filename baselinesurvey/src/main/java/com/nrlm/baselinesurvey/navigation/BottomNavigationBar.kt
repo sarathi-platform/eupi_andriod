@@ -42,9 +42,9 @@ fun BottomNavigationBar(navController: NavHostController) {
             painterResource(R.drawable.home_icn)
         ),
         BottomNavItem(
-            stringResource(R.string.mssions),
+            stringResource(R.string.mission),
             "mission_screen",
-            painterResource(R.drawable.more_icon)
+            painterResource(R.drawable.ic_mission_icon)
         ),
         BottomNavItem(
             stringResource(R.string.didi),
