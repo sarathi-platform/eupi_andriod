@@ -65,4 +65,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideSectionAnswerEntityDao(db: NudgeBaselineDatabase) = db.sectionAnswerEntityDao()
+
+    @Provides
+    @Singleton
+    fun providesEventsDao(syncDb: SyncManagerDatabase) = syncDb.eventsDao()
 }
