@@ -318,8 +318,8 @@ object BaselineModule {
 
     @Provides
     @Singleton
-    fun provideMissionRepository(surveyeeEntityDao: SurveyEntityDao): MissionScreenRepository {
-        return MissionScreenRepositoryImpl(surveyeeEntityDao)
+    fun provideMissionRepository(apiService: ApiService): MissionScreenRepository {
+        return MissionScreenRepositoryImpl(apiService)
     }
 
 }

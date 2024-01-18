@@ -1,7 +1,7 @@
 package com.nrlm.baselinesurvey.ui.mission_screen.domain.repository
 
-import com.nrlm.baselinesurvey.database.entity.SurveyEntity
+import com.nrlm.baselinesurvey.model.datamodel.MissionResponseModel
 
 interface MissionScreenRepository {
-    suspend fun getSectionsList(): List<SurveyEntity>
+    suspend fun getMissions(): List<MissionResponseModel>
 }

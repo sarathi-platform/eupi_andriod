@@ -3,7 +3,7 @@ package com.nrlm.baselinesurvey.ui.mission_screen.viewmodel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.database.entity.SurveyEntity
+import com.nrlm.baselinesurvey.model.datamodel.MissionResponseModel
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.MissionScreenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -15,8 +15,8 @@ import javax.inject.Inject
 class MissionViewModel @Inject constructor(
     private val missionScreenUseCase: MissionScreenUseCase
 ) : BaseViewModel() {
-    private val _sectionsList = mutableStateOf<List<SurveyEntity>>(emptyList())
-    val sectionsList: State<List<SurveyEntity>> get() = _sectionsList
+    private val _missionList = mutableStateOf<List<MissionResponseModel>>(emptyList())
+    val missionList: State<List<MissionResponseModel>> get() = _missionList
 
     override fun <T> onEvent(event: T) {
     }
@@ -27,7 +27,7 @@ class MissionViewModel @Inject constructor(
 
     private fun initMissionScreenList() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            _sectionsList.value = missionScreenUseCase.getSectionUseCase.invoke()
+            _missionList.value = missionScreenUseCase.getMissionsUseCase.invoke()
         }
     }
 }

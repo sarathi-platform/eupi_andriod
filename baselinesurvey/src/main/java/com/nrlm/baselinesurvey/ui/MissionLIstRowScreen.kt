@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.ui
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -8,7 +7,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -33,15 +34,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.model.datamodel.MissionActivityModel
+import com.nrlm.baselinesurvey.model.datamodel.MissionResponseModel
 import com.nrlm.baselinesurvey.ui.common_components.CircularImageViewComponent
 import com.nrlm.baselinesurvey.ui.theme.bgGreyLight
 import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.borderGrey
 import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
 import com.nrlm.baselinesurvey.ui.theme.brownDark
-import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.didiDetailItemStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_3_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_5_dp
 import com.nrlm.baselinesurvey.ui.theme.progressIndicatorColor
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.sectionIconNotStartedBg
@@ -51,127 +55,148 @@ import com.nrlm.baselinesurvey.ui.theme.white
 
 
 @Composable
-fun MissionListRowScreen(title: String, clickListener: () -> Unit) {
+fun MissionListRowScreen(mission: MissionResponseModel, clickListener: () -> Unit) {
     var expanded by remember { mutableStateOf(true) }
 
-    Card(elevation = CardDefaults.cardElevation(
-        defaultElevation = defaultCardElevation
-    ),
-        shape = RoundedCornerShape(roundedCornerRadiusDefault),
+    Column(
         modifier = Modifier
-            .fillMaxWidth()
             .background(white)
-            .padding(10.dp)
-            .clickable {
-
-            }) {
-        Column(
-            modifier = Modifier
-                .background(white)
-                .animateContentSize()
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                TextComponent(
-                    modifier = Modifier
-                        .weight(0.85F)
-                        .padding(horizontal = 10.dp),
-                    text = "$title",
-                    textAlign = TextAlign.Start,
-                    style = didiDetailItemStyle
-                )
+            TextComponent(
+                modifier = Modifier
+                    .weight(0.85F)
+                    .padding(horizontal = 10.dp),
+                text = mission.missionName,
+                textAlign = TextAlign.Start,
+                style = didiDetailItemStyle
+            )
 
-                IconButton(modifier = Modifier
-                    .weight(0.15f)
-                    .padding(10.dp),
-                    onClick = { expanded = !expanded }) {
-                    Icon(
-                        imageVector = if (expanded) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
-                        contentDescription = if (expanded) {
-                            "show less"
-                        } else {
-                            "show more"
-                        }
-                    )
+            IconButton(modifier = Modifier
+                .weight(0.15f)
+                .padding(10.dp),
+                onClick = { expanded = !expanded }) {
+                Icon(
+                    imageVector = if (expanded) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
+                    contentDescription = if (expanded) {
+                        "show less"
+                    } else {
+                        "show more"
+                    }
+                )
+            }
+        }
+        Column(modifier = Modifier.background(white)) {
+            if (expanded) {
+                for (activity in mission.activities) {
+                    MissionActivityRow(missionActivityModel = activity) {
+                        clickListener()
+                    }
                 }
             }
-            if (expanded) {
-                Column(modifier = Modifier.clickable {
+        }
+
+    }
+
+}
+
+@Composable
+private fun MissionActivityRow(
+    missionActivityModel: MissionActivityModel,
+    clickListener: () -> Unit
+) {
+    Column {
+        Card(elevation = CardDefaults.cardElevation(
+            defaultElevation = dimen_5_dp
+        ),
+            shape = RoundedCornerShape(roundedCornerRadiusDefault),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(white)
+                .padding(10.dp)
+                .clickable {
+
+                }) {
+            Column(modifier = Modifier
+                .background(white)
+                .clickable {
                     clickListener()
                 }) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 10.dp)
-                            .border(
-                                dimen_1_dp,
-                                borderGreyLight,
-                                RoundedCornerShape(roundedCornerRadiusDefault)
-                            )
-                            .background(
-                                bgGreyLight,
-                                RoundedCornerShape(roundedCornerRadiusDefault)
-                            ),
-                        verticalAlignment = Alignment.CenterVertically,
-
-                        ) {
-                        TextComponent(
-                            modifier = Modifier
-                                .weight(0.75F)
-                                .padding(10.dp),
-                            textAlign = TextAlign.Start,
-                            text = "$title",
-                            color = brownDark,
-                            style = didiDetailItemStyle
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                        .border(
+                            dimen_1_dp,
+                            borderGreyLight,
+                            RoundedCornerShape(roundedCornerRadiusDefault)
                         )
+                        .background(
+                            bgGreyLight,
+                            RoundedCornerShape(roundedCornerRadiusDefault)
+                        ),
+                    verticalAlignment = Alignment.CenterVertically,
 
-                        TextComponent(
-                            modifier = Modifier
-                                .weight(0.25F)
-                                .padding(10.dp)
-                                .border(
-                                    dimen_1_dp, borderGrey, RectangleShape
-                                )
-                                .background(sectionIconNotStartedBg, RectangleShape),
-                            textAlign = TextAlign.Center,
-                            text = "10 Didis",
-                            color = progressIndicatorColor
-                        )
-                    }
+                    ) {
                     TextComponent(
-                        modifier = Modifier.padding(start = 10.dp, top = 10.dp),
+                        modifier = Modifier
+                            .weight(0.75F)
+                            .padding(10.dp),
                         textAlign = TextAlign.Start,
-                        text = "Tola 1 small group",
-                        color = textColorDark,
+                        text = "${missionActivityModel.activityName}",
+                        color = brownDark,
+                        style = didiDetailItemStyle
                     )
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
+                    TextComponent(
+                        modifier = Modifier
+                            .weight(0.25F)
+                            .padding(10.dp)
+                            .border(
+                                dimen_1_dp, borderGrey, RectangleShape
+                            )
+                            .background(sectionIconNotStartedBg, RectangleShape),
+                        textAlign = TextAlign.Center,
+                        text = "10 Didis",
+                        color = progressIndicatorColor
+                    )
+                }
+                TextComponent(
+                    modifier = Modifier.padding(start = 10.dp, top = 10.dp),
+                    textAlign = TextAlign.Start,
+                    text = "Tola 1 small group",
+                    color = textColorDark,
+                )
 
-                        ) {
-                        TextComponent(
-                            modifier = Modifier
-                                .weight(0.85F)
-                                .padding(horizontal = 10.dp),
-                            textAlign = TextAlign.Start,
-                            text = "Demand request by didi",
-                            color = textColorDark
-                        )
-                        Icon(
-                            modifier = Modifier
-                                .weight(0.15F)
-                                .padding(10.dp),
-                            imageVector = Icons.Default.ArrowForward,
-                            contentDescription = "Person Icon"
-                        )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
 
-                    }
+                    ) {
+                    TextComponent(
+                        modifier = Modifier
+                            .weight(0.85F)
+                            .padding(horizontal = 10.dp),
+                        textAlign = TextAlign.Start,
+                        text = "Demand request by didi",
+                        color = textColorDark
+                    )
+                    Icon(
+                        modifier = Modifier
+                            .weight(0.15F)
+                            .padding(10.dp),
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = "Person Icon"
+                    )
                 }
             }
+        }
 
+        for (task in missionActivityModel.tasks) {
+            EntityRowComponent()
         }
     }
 }
@@ -180,7 +205,7 @@ fun MissionListRowScreen(title: String, clickListener: () -> Unit) {
 @Composable
 fun EntityRowComponent() {
     Card(elevation = CardDefaults.cardElevation(
-        defaultElevation = defaultCardElevation
+        defaultElevation = dimen_3_dp
     ),
         shape = RoundedCornerShape(roundedCornerRadiusDefault),
         modifier = Modifier
@@ -196,9 +221,16 @@ fun EntityRowComponent() {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box(
-                    modifier = Modifier.weight(0.30F)
+                    modifier = Modifier
+                        .weight(0.30F)
+                        .padding(10.dp)
                 ) {
-                    CircularImageViewComponent(modifier = Modifier, BLANK_STRING)
+                    CircularImageViewComponent(
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(50.dp),
+                        BLANK_STRING
+                    )
                 }
                 Column(modifier = Modifier.weight(0.70f)) {
                     TextComponent(modifier = Modifier, text = "Form A Details Collection")
@@ -215,11 +247,8 @@ fun EntityRowComponent() {
                             contentDescription = "Person Icon"
                         )
                     }
-
                 }
-
             }
-
         }
     }
 }

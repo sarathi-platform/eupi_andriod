@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,7 +34,6 @@ fun MissionScreen(
     LaunchedEffect(key1 = true) {
         viewModel.init()
     }
-
     val listModifier = Modifier
         .fillMaxSize()
         .padding(10.dp)
@@ -55,11 +55,18 @@ fun MissionScreen(
                 showFilter = false,
                 onFilterSelected = {},
                 onSearchValueChange = {})
-            LazyColumn(modifier = listModifier) {
-                items(viewModel.sectionsList.value) { section ->
-                    MissionListRowScreen(section.surveyName) {
+            LazyColumn(
+                modifier = listModifier.padding(bottom = 50.dp)
+            ) {
+                items(viewModel.missionList.value) { mission ->
+                    MissionListRowScreen(mission) {
                         navController.navigate(HomeScreens.DIDI_SCREEN.route)
                     }
+                    Divider(
+                        modifier = Modifier.padding(vertical = 5.dp),
+                        thickness = .5.dp,
+                        color = black100Percent
+                    )
                 }
             }
         }
