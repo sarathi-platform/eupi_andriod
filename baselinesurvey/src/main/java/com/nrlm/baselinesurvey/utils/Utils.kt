@@ -2,25 +2,29 @@ package com.nrlm.baselinesurvey.utils
 
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.provider.Settings
 import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.core.content.FileProvider
 import androidx.core.text.isDigitsOnly
+import com.google.gson.Gson
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_NAME
-import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
+import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.Sections
 import com.nrlm.baselinesurvey.model.response.ContentList
@@ -521,3 +525,29 @@ fun Context.findActivity(): ComponentActivity? = when (this) {
     is ContextWrapper -> baseContext.findActivity()
     else -> null
 }
+
+fun openSettings(context: Context) {
+    val appSettingsIntent = Intent(
+        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+        Uri.parse("package:${context.packageName}")
+    ).apply {
+        addCategory(Intent.CATEGORY_DEFAULT)
+    }
+    appSettingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    (context as MainActivity).startActivity(appSettingsIntent)
+}
+
+fun List<SectionEntity>.getSectionIndexById(sectionId: Int): Int {
+    return this.sortedBySectionOrder().map { it.sectionId }.indexOf(sectionId)
+}
+
+fun List<SectionEntity>.getSectionIndexByOrder(sectionOrder: Int): Int {
+    return this.sortedBySectionOrder().map { it.sectionOrder }.indexOf(sectionOrder)
+}
+
+fun List<SectionEntity>.sortedBySectionOrder(): List<SectionEntity> {
+    return this/*.sortedBy { it.sectionOrder }*/ //TODO Uncomment this when order numbers are received from backend
+}
+
+
+inline fun <reified T : Any> T.json(): String = Gson().toJson(this, T::class.java)

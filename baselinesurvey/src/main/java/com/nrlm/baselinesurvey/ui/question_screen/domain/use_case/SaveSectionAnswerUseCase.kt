@@ -49,8 +49,8 @@ class SaveSectionAnswerUseCase(
         return repository.isQuestionAlreadyAnswered(didiId, questionId, sectionId)
     }
 
-    fun saveSectionAnswersToServer(didiId: Int, surveyId: Int) {
-//        repository.sa
+    suspend fun saveSectionAnswersToServer(didiId: Int, surveyId: Int) {
+        repository.saveSectionAnswersToServer(didiId, surveyId)
     }
 
 }

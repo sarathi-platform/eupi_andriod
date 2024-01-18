@@ -185,7 +185,7 @@ fun LoginScreenComponent(
                     },
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent,
-                        textColor = blueDark,
+                        focusedTextColor = blueDark,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                         disabledIndicatorColor = Color.Transparent,

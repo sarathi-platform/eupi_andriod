@@ -125,5 +125,11 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         return surveyeeEntityDao.getAllDidis()
     }
 
+    override suspend fun fetchSavedSurveyFromServer() {
+        val savedSurveyAnswersRequest: List<Int> = emptyList()
+//        surveyeeEntityDao
+//        apiService.fetchSavedSurveyAnswersFromServer()
+    }
+
 
 }

@@ -29,6 +29,9 @@ import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.THIS_WEEK_TAB
 import com.nrlm.baselinesurvey.navigation.home.SECTION_SCREEN_ROUTE_NAME
+import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
+import com.nrlm.baselinesurvey.navigation.home.navigateToBaseLineStartScreen
+import com.nrlm.baselinesurvey.navigation.home.navigateToSectionListScreen
 import com.nrlm.baselinesurvey.ui.common_components.PrimarySecandaryButtonBoxPreFilled
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreenActions.CheckBoxClicked
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.SurveyeeScreenViewModel
@@ -213,7 +216,12 @@ fun SurveyeeListScreen(
 fun handleButtonClick(buttonName: ButtonName, surveyeeId: Int, navController: NavController) {
     when (buttonName) {
         is ButtonName.START_BUTTON -> {
-            navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$surveyeeId")
+            navigateToBaseLineStartScreen(surveyeeId, navController)
+//            navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$surveyeeId")
+        }
+
+        is ButtonName.CONTINUE_BUTTON -> {
+            navigateToSectionListScreen(surveyeeId, navController)
         }
 
         is ButtonName.NEGATIVE_BUTTON -> {
@@ -221,7 +229,7 @@ fun handleButtonClick(buttonName: ButtonName, surveyeeId: Int, navController: Na
         }
 
         is ButtonName.SHOW_BUTTON -> {
-
+            navigateToSectionListScreen(surveyeeId, navController)
         }
 
         is ButtonName.EXPORT_BUTTON -> {

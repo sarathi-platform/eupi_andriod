@@ -144,22 +144,23 @@ fun AddHouseholdMemberScreen(navController: NavHostController) {
 
 @Composable
 fun RationDropDown() {
-    val screens = listOf(
-        "Setting",
-        "Question",
-        "SingleQuestion",
-        "DigitalFormA",
-        "DigitalFormB",
-        "DigitalFormC",
-        "Login",
-        "Other"
+    val relations = listOf(
+        "Husband",
+        "Father",
+        "Mother",
+        "Son",
+        "Daughter",
+        "Brother",
+        "Sister",
+        "Father-in-Law",
+        "Mother-in-Law"
     )
     var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember { mutableStateOf(screens[0]) }
+    var selectedOptionText by remember { mutableStateOf(relations[0]) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
     DropDownWithTitleComponent(
         title = "Relation",
-        items = screens,
+        items = relations,
         modifier = Modifier.fillMaxWidth(),
         mTextFieldSize = textFieldSize,
         expanded = expanded,
@@ -179,22 +180,21 @@ fun RationDropDown() {
 
 @Composable
 fun EducationDropDown() {
-    val screens = listOf(
-        "Setting",
-        "Question",
-        "SingleQuestion",
-        "DigitalFormA",
-        "DigitalFormB",
-        "DigitalFormC",
-        "Login",
-        "Other"
+    val educationStatus = listOf(
+        "10th Pass",
+        "12th Pass",
+        "Graduate",
+        "Post-Graduate",
+        "Doctorate",
+        "Diploma",
+        "Uneducated"
     )
     var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember { mutableStateOf(screens[0]) }
+    var selectedOptionText by remember { mutableStateOf(educationStatus[0]) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
     DropDownWithTitleComponent(
         title = "Highest education",
-        items = screens,
+        items = educationStatus,
         modifier = Modifier.fillMaxWidth(),
         mTextFieldSize = textFieldSize,
         expanded = expanded,
