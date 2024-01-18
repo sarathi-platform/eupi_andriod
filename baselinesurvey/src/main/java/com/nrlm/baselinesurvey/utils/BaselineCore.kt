@@ -5,12 +5,15 @@ import android.content.Context
 import android.content.Intent
 import android.net.Network
 import android.util.Log
+import android.util.SparseArray
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.util.forEach
 import com.nrlm.baselinesurvey.BaselineApplication
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.download.AndroidDownloader
 import com.nrlm.baselinesurvey.download.utils.FileType
+import com.nudge.communicationModule.EventObserverInterface
 
 object BaselineCore {
 
@@ -21,12 +24,26 @@ object BaselineCore {
 
     private var downloader: AndroidDownloader? = null
 
+    private var eventObservations = SparseArray<EventObserverInterface>()
+
     val autoReadOtp = mutableStateOf("")
 
     fun init() {
         downloader = AndroidDownloader(BaselineApplication.applicationContext())
         connectionLiveData = ConnectionMonitor(BaselineApplication.applicationContext())
     }
+
+    fun addCommunicationObserver(observer: EventObserverInterface, name: String) {
+        val id = System.identityHashCode(observer)
+        eventObservations.put(id, observer)
+    }
+
+    fun <T> notifyEventObservers(event: T) {
+        eventObservations.forEach { id, observer ->
+            observer.onEventCallback(event)
+        }
+    }
+
 
     fun getAndroidDownloader(): AndroidDownloader {
         return downloader ?: AndroidDownloader(BaselineApplication.applicationContext())

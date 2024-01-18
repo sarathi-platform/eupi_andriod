@@ -50,5 +50,8 @@ dependencies {
     kapt "androidx.room:room-compiler:$roomVersion"
     androidTestImplementation "androidx.room:room-testing:$roomVersion"
 
+    //Communication Module
+    implementation(project(":CommunicationModule"))
+
 
 }
