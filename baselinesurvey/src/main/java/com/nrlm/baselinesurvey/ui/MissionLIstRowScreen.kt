@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -35,7 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.model.datamodel.MissionActivityModel
-import com.nrlm.baselinesurvey.model.datamodel.MissionResponseModel
+import com.nrlm.baselinesurvey.model.response.MissionResponseModel
 import com.nrlm.baselinesurvey.ui.common_components.CircularImageViewComponent
 import com.nrlm.baselinesurvey.ui.theme.bgGreyLight
 import com.nrlm.baselinesurvey.ui.theme.black100Percent
@@ -61,6 +62,7 @@ fun MissionListRowScreen(mission: MissionResponseModel, clickListener: () -> Uni
     Column(
         modifier = Modifier
             .background(white)
+            .animateContentSize()
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

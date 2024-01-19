@@ -1,4 +1,6 @@
-package com.nrlm.baselinesurvey.model.datamodel
+package com.nrlm.baselinesurvey.model.response
+
+import com.nrlm.baselinesurvey.model.datamodel.MissionActivityModel
 
 data class MissionResponseModel(
     val activities: List<MissionActivityModel>,

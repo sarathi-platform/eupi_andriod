@@ -1,12 +1,15 @@
 package com.nrlm.baselinesurvey.navigation.home
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nrlm.baselinesurvey.ARG_DIDI_ID
 import com.nrlm.baselinesurvey.ARG_SECTION_ID
@@ -27,8 +30,9 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScree
 import com.nrlm.baselinesurvey.ui.video_player.presentation.FullscreenView
 
 @Composable
-fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
+fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier: Modifier) {
     NavHost(
+        modifier = Modifier.then(modifier),
         navController = navController,
         route = Graph.HOME,
         startDestination = HomeScreens.DATA_LOADING_SCREEN.route
@@ -150,7 +154,24 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         composable(route = HomeScreens.DIDI_SCREEN.route) {
             SurveyeeListScreen(viewModel = hiltViewModel(), navController = navController)
         }
+        addDidiNavGraph(navController = navController)
     }
+
+}
+
+fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
+    navigation(
+        route = Graph.ADD_DIDI,
+        startDestination = HomeScreens.SURVEYEE_LIST_SCREEN.route
+    ) {
+        composable(
+            route = HomeScreens.SURVEYEE_LIST_SCREEN.route
+        ) {
+            SurveyeeListScreen(viewModel = hiltViewModel(), navController = navController)
+        }
+
+    }
+
 }
 
 sealed class HomeScreens(val route: String) {

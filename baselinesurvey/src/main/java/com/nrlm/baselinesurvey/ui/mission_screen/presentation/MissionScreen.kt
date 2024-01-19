@@ -17,10 +17,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.navigation.home.HomeScreens
+import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.MissionListRowScreen
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
+import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.mission_screen.viewmodel.MissionViewModel
 import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
@@ -54,13 +56,21 @@ fun MissionScreen(
                 modifier = Modifier.padding(horizontal = 10.dp),
                 showFilter = false,
                 onFilterSelected = {},
-                onSearchValueChange = {})
+                onSearchValueChange = { queryTerm ->
+                    viewModel.onEvent(
+                        SearchEvent.PerformSearch(
+                            queryTerm,
+                            false,
+                            BLANK_STRING
+                        )
+                    )
+                })
             LazyColumn(
                 modifier = listModifier.padding(bottom = 50.dp)
             ) {
-                items(viewModel.missionList.value) { mission ->
+                items(viewModel.filterMissionList.value) { mission ->
                     MissionListRowScreen(mission) {
-                        navController.navigate(HomeScreens.DIDI_SCREEN.route)
+                        navController.navigate(Graph.ADD_DIDI)
                     }
                     Divider(
                         modifier = Modifier.padding(vertical = 5.dp),

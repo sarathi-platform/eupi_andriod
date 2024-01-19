@@ -2,7 +2,6 @@ package com.nrlm.baselinesurvey.network.interfaces
 
 import com.nrlm.baselinesurvey.KEY_HEADER_MOBILE
 import com.nrlm.baselinesurvey.KEY_HEADER_TYPE
-import com.nrlm.baselinesurvey.model.datamodel.MissionResponseModel
 import com.nrlm.baselinesurvey.model.request.FetchSavedSurveyAnswersRequest
 import com.nrlm.baselinesurvey.model.request.LoginRequest
 import com.nrlm.baselinesurvey.model.request.MissionRequest
@@ -12,6 +11,7 @@ import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.model.response.BeneficiaryApiResponse
 import com.nrlm.baselinesurvey.model.response.ConfigResponseModel
+import com.nrlm.baselinesurvey.model.response.MissionResponseModel
 import com.nrlm.baselinesurvey.model.response.OtpVerificationModel
 import com.nrlm.baselinesurvey.model.response.SavedSurveyAnswersResponse
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
