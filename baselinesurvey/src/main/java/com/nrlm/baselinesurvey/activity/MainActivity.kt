@@ -23,6 +23,8 @@ import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.ConnectionMonitor
 import com.nrlm.baselinesurvey.navigation.navgraph.RootNavigationGraph
 import com.nrlm.baselinesurvey.ui.common_components.NetworkBanner
+import com.nudge.syncmanager.TestEvent
+import com.nudge.syncmanager.getSampleEvent
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 import javax.inject.Inject
@@ -39,6 +41,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     private lateinit var connectionLiveData: ConnectionMonitor
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mViewModel.onEvent(TestEvent.SampleEvent(getSampleEvent()))
         setContent {
             The_nudgeTheme {
                 // A surface container using the 'background' color from the theme

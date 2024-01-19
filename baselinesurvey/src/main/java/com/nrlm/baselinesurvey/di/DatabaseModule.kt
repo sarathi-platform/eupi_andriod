@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
+import com.nudge.syncmanager.SYNC_MANAGER_DATABASE
+import com.nudge.syncmanager.database.SyncManagerDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,6 +23,14 @@ object DatabaseModule {
         Room.databaseBuilder(context, NudgeBaselineDatabase::class.java, NUDGE_BASELINE_DATABASE)
             // Add Migrations for each migration object created.
             /*.addMigrations(NudgeBaselineDatabase.MIGRATION_1_2).addCallback(NudgeBaselineDatabase.NudgeBaselineDatabaseCallback())*/
+            .fallbackToDestructiveMigration()
+            .build()
+
+
+    @Provides
+    @Singleton
+    fun provideSyncDatabase(@ApplicationContext context: Context) =
+        Room.databaseBuilder(context, SyncManagerDatabase::class.java, SYNC_MANAGER_DATABASE)
             .fallbackToDestructiveMigration()
             .build()
 
@@ -55,4 +65,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideSectionAnswerEntityDao(db: NudgeBaselineDatabase) = db.sectionAnswerEntityDao()
+
+    @Provides
+    @Singleton
+    fun providesEventsDao(syncDb: SyncManagerDatabase) = syncDb.eventsDao()
 }
