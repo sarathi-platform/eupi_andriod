@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.nudge.syncmanager.database.converters.DateConverter
+import com.nudge.syncmanager.database.converters.StringJsonConverter
 import java.util.Date
 import java.util.UUID
 
@@ -34,10 +35,12 @@ data class Events(
     @ColumnInfo("request_status")
     val request_status: String,
 
-    @ColumnInfo("request_payload") //TODO write convertor to save json as string
+    @ColumnInfo("request_payload")
+    @TypeConverters(StringJsonConverter::class)
     val request_payload: String,
 
-    @ColumnInfo("reponse_payload") //TODO write convertor to save json as string
+    @ColumnInfo("reponse_payload")
+    @TypeConverters(StringJsonConverter::class)
     val reponse_payload: String,
 
     @ColumnInfo("response_status")
@@ -49,7 +52,8 @@ data class Events(
     @ColumnInfo("error_message")
     val error_message: String?,
 
-    @ColumnInfo("metadata") //TODO write convertor to save json as string
+    @ColumnInfo("metadata")
+    @TypeConverters(StringJsonConverter::class)
     val metadata: String
 
 )
