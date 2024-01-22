@@ -3,6 +3,7 @@ package com.nrlm.baselinesurvey.di
 import android.app.Application
 import android.content.Context
 import android.os.Build
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.nrlm.baselinesurvey.BuildConfig
@@ -17,6 +18,8 @@ import com.nrlm.baselinesurvey.KEY_SOURCE_PLATFORM
 import com.nrlm.baselinesurvey.KEY_SOURCE_TYPE
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.network.ErrorInterceptor
+import com.nrlm.baselinesurvey.network.GzipInterceptor
+import com.nrlm.baselinesurvey.network.GzipRequestInterceptor
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.utils.CurlLoggingInterceptor
 import com.nrlm.baselinesurvey.utils.DeviceInfoUtils
@@ -50,10 +53,10 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideInterceptors():ArrayList<Interceptor>{
+    fun provideInterceptors(): ArrayList<Interceptor> {
         val interceptors = arrayListOf<Interceptor>()
-        if(BuildConfig.DEBUG){
-            val loggingInterceptor= CurlLoggingInterceptor()
+        if (BuildConfig.DEBUG) {
+            val loggingInterceptor = CurlLoggingInterceptor()
             interceptors.add(loggingInterceptor)
         }
         return interceptors
@@ -87,6 +90,9 @@ object NetworkModule {
                 .connectTimeout(timeout, TimeUnit.SECONDS)
                 .readTimeout(timeout, TimeUnit.SECONDS)
 //        .cache(cache)
+        clientBuilder.addInterceptor(ChuckerInterceptor(context = application.applicationContext))
+        clientBuilder.addInterceptor(GzipRequestInterceptor())
+        clientBuilder.addInterceptor(GzipInterceptor())
         clientBuilder.addNetworkInterceptor(getNetworkInterceptor(application.applicationContext))
         clientBuilder.addInterceptor(
             getHeaderInterceptor(

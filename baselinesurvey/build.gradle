@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId "com.nrlm.baselinesurvey"
-        minSdk 23
+        minSdk 24
         targetSdk 33
         versionCode 1
         versionName version
@@ -172,7 +172,9 @@ dependencies {
     implementation "androidx.media3:media3-ui:1.1.1"
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.30.1"
 
-    implementation (project(":syncManager"))
+    implementation(project(":syncManager"))
     implementation(project(":CommunicationModule"))
+    debugImplementation "com.github.chuckerteam.chucker:library:4.0.0"
+    releaseImplementation "com.github.chuckerteam.chucker:library-no-op:4.0.0"
 
 }
