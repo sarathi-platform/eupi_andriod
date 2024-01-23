@@ -1,4 +1,4 @@
-package com.nudge.syncmanager.database.converters
+package com.nudge.core.database.converters
 
 import androidx.room.TypeConverter
 import java.util.Date

@@ -2,6 +2,7 @@ package com.patsurvey.nudge.di
 
 import android.content.Context
 import androidx.room.Room
+import com.nudge.core.database.SyncManagerDatabase
 import com.patsurvey.nudge.database.NudgeDatabase
 import com.patsurvey.nudge.utils.NUDGE_DATABASE
 import dagger.Module
@@ -24,6 +25,12 @@ object DatabaseModule {
             .fallbackToDestructiveMigration()
             .build()
 
+    @Provides
+    @Singleton
+    fun provideSyncDatabase(@ApplicationContext context: Context) =
+        Room.databaseBuilder(context, SyncManagerDatabase::class.java, com.nudge.core.SYNC_MANAGER_DATABASE)
+            .fallbackToDestructiveMigration()
+            .build()
 
     @Provides
     @Singleton
@@ -84,5 +91,13 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun providePoorDidiListDao(db: NudgeDatabase) = db.poorDidiListDao()
+
+    @Provides
+    @Singleton
+    fun providesEventsDao(syncDb: SyncManagerDatabase) = syncDb.eventsDao()
+
+    @Provides
+    @Singleton
+    fun providesEventDependencyDao(syncDb: SyncManagerDatabase) = syncDb.eventsDependencyDao()
 
 }

@@ -1,10 +1,10 @@
-package com.nudge.syncmanager.database.dao
+package com.nudge.core.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.nudge.syncmanager.database.entities.Events
+import com.nudge.core.database.entities.Events
 
 @Dao
 interface EventsDao {
