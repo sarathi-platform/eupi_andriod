@@ -333,7 +333,7 @@ class SettingViewModel @Inject constructor(
                         "\n\n fetchAllDidiNeedToUpdateList -> ${fetchAllDidiNeedToUpdateList.json()};; \n\n fetchAllPendingDidiNeedToUpdateList -> ${fetchAllPendingDidiNeedToUpdateList.json()}"
             )
             NudgeLogger.d(
-                "\n\nSettingViewModel",
+                "SettingViewModel",
                 "isSecondStepNeedToBeSync -> \n" +
                         "            fetchAllDidiNeedToPostList.isEmpty() -> ${fetchAllDidiNeedToPostList.isEmpty()}\n" +
                         "            && fetchPendingDidiList.isEmpty() -> ${fetchPendingDidiList.isEmpty()}\n" +
@@ -412,9 +412,26 @@ class SettingViewModel @Inject constructor(
     fun isFourthStepNeedToBeSync(isNeedToBeSync: MutableState<Int>) {
         stepFourSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            if (answerDao.fetchPATSurveyDidiList().isEmpty()
-                && didiDao.fetchPendingPatStatusDidi(true, "").isEmpty()
-                && didiDao.fetchAllDidiNeedsToPostImage(true).isEmpty()
+            val fetchPATSurveyDidiList = answerDao.fetchPATSurveyDidiList()
+            val fetchPendingPatStatusDidi = didiDao.fetchPendingPatStatusDidi(true, "")
+            val fetchAllDidiNeedsToPostImage = didiDao.fetchAllDidiNeedsToPostImage(true)
+
+            NudgeLogger.d(
+                "SettingViewModel",
+                "isFourthStepNeedToBeSync -> fetchPATSurveyDidiList -> ${fetchPATSurveyDidiList.json()};;" +
+                        "\n\n fetchPendingPatStatusDidi -> ${fetchPendingPatStatusDidi.json()};; " +
+                        "\n\n fetchAllDidiNeedsToPostImage -> ${fetchAllDidiNeedsToPostImage.json()};; "
+            )
+
+            NudgeLogger.d("SettingViewModel",
+                "isFourthStepNeedToBeSync -> fetchPATSurveyDidiList.isEmpty() -> ${fetchPATSurveyDidiList.isEmpty()};;" +
+                        "\n\n fetchPendingPatStatusDidi.isEmpty() -> ${fetchPendingPatStatusDidi.isEmpty()};; " +
+                        "\n\n fetchAllDidiNeedsToPostImage.isEmpty() -> ${fetchAllDidiNeedsToPostImage.isEmpty()};; "
+            )
+
+            if (fetchPATSurveyDidiList.isEmpty()
+                && fetchPendingPatStatusDidi.isEmpty()
+                && fetchAllDidiNeedsToPostImage.isEmpty()
                 && isStepStatusSync(4)
             ) {
                 NudgeLogger.d(
@@ -437,8 +454,23 @@ class SettingViewModel @Inject constructor(
     fun isFifthStepNeedToBeSync(isNeedToBeSync: MutableState<Int>) {
         stepFifthSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            if (didiDao.getAllNeedToPostVoDidis(true, "").isEmpty()
-                && didiDao.fetchPendingVOStatusStatusDidi(true,"").isEmpty()
+            val getAllNeedToPostVoDidis = didiDao.getAllNeedToPostVoDidis(true, "")
+            val fetchPendingVOStatusStatusDidi = didiDao.fetchPendingVOStatusStatusDidi(true,"")
+            NudgeLogger.d(
+                "SettingViewModel",
+                "isFifthStepNeedToBeSync -> getAllNeedToPostVoDidis -> ${getAllNeedToPostVoDidis.json()};;" +
+                        "\n\n fetchPendingVOStatusStatusDidi -> ${getAllNeedToPostVoDidis.json()};; "
+            )
+            NudgeLogger.d(
+                "SettingViewModel",
+                "isFifthStepNeedToBeSync -> getAllNeedToPostVoDidis.isEmpty() -> ${getAllNeedToPostVoDidis.isEmpty()};;" +
+                        "\n\n fetchPendingVOStatusStatusDidi.isEmpty() -> ${getAllNeedToPostVoDidis.isEmpty()};; " +
+                        "\n\n isStepStatusSync(5) -> ${isStepStatusSync(5)}" +
+                        "\n\n !isFormNeedToBeUpload() -> ${!isFormNeedToBeUpload()}"
+            )
+
+            if (getAllNeedToPostVoDidis.isEmpty()
+                && fetchPendingVOStatusStatusDidi.isEmpty()
                 && isStepStatusSync(5)
                 && !isFormNeedToBeUpload()
             ) {
@@ -462,14 +494,19 @@ class SettingViewModel @Inject constructor(
     private fun isFormNeedToBeUpload(): Boolean {
         val languageId = prefRepo.getAppLanguageId() ?: 2
         val villageList = villegeListDao.getAllVillages(languageId)
+        val isFormUploadedList = mutableListOf<Boolean>()
         for (village in villageList) {
-            if (prefRepo.getPref(
-                    PREF_NEED_TO_POST_FORM_C_AND_D_ + prefRepo.getSelectedVillage().id, false
-                )
+            val isFormUploadedForVillage = prefRepo.getPref(
+                PREF_NEED_TO_POST_FORM_C_AND_D_ + prefRepo.getSelectedVillage().id, false
             )
-                return true
+            NudgeLogger.d("SettingViewModel", "isFormNeedToBeUpload: village.id -> ${village.id}, isFormUploadedForVillage -> $isFormUploadedForVillage")
+
+            isFormUploadedList.add(isFormUploadedForVillage)
         }
-        return false
+        if (isFormUploadedList.contains(false))
+            return false
+
+        return true
     }
 
     override fun onServerError(error: ErrorModel?) {

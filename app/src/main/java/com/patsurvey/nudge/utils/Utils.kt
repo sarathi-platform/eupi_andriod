@@ -89,11 +89,13 @@ import com.patsurvey.nudge.activities.video.VideoItem
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.LanguageEntity
+import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.download.FileType
 import com.patsurvey.nudge.model.dataModel.WeightageRatioModal
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -1148,3 +1150,25 @@ fun getFormPathKey(subPath: String,villageId: Int): String {
 }
 
 inline fun <reified T : Any> T.json(): String = Gson().toJson(this, T::class.java)
+
+fun getVideoPath(context: Context, videoItemId: Int, fileType: FileType): File {
+    return File("${context.getExternalFilesDir(if (fileType == FileType.VIDEO) Environment.DIRECTORY_MOVIES else if (fileType == FileType.IMAGE) Environment.DIRECTORY_DCIM else Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${videoItemId}.mp4")
+}
+
+fun getEmitLanguageList(defaultLanguageVillageList: List<VillageEntity>, localLanguageVillageList: List<VillageEntity>, localLanguageId: Int): List<VillageEntity> {
+    val listToEmit = mutableListOf<VillageEntity>()
+    val tempList = mutableListOf<VillageEntity>()
+    tempList.addAll(defaultLanguageVillageList)
+    tempList.addAll(localLanguageVillageList)
+    tempList.forEach {
+        if (it.languageId == localLanguageId)
+            listToEmit.add(it)
+        else
+            listToEmit.add(getVillageItemById(defaultLanguageVillageList, id = it.id))
+    }
+    return listToEmit
+}
+
+fun getVillageItemById(villageList: List<VillageEntity>, id: Int): VillageEntity {
+    return villageList[villageList.map { it.id }.indexOf(id)]
+}

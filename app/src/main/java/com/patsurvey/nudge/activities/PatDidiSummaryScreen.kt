@@ -917,14 +917,17 @@ fun PatDidiSummaryScreen(
                             didiDao = patDidiSummaryViewModel.patDidiSummaryRepository.didiDao)
                     }
                     if((localContext as MainActivity).isOnline.value) {
-                        val id = if (patDidiSummaryViewModel.didiEntity.value.serverId == 0
-                        ) patDidiSummaryViewModel.didiEntity.value.id else patDidiSummaryViewModel.didiEntity.value.serverId
-                        patDidiSummaryViewModel.uploadDidiImage(
-                            localContext,
-                            patDidiSummaryViewModel.updatedLocalPath.value,
-                            id,
-                            patDidiSummaryViewModel.didiImageLocation.value
-                        )
+                        if (patDidiSummaryViewModel.didiEntity.value.serverId != 0) {
+                            val id = patDidiSummaryViewModel.didiEntity.value.serverId
+                            patDidiSummaryViewModel.uploadDidiImage(
+                                localContext,
+                                patDidiSummaryViewModel.updatedLocalPath.value,
+                                id,
+                                patDidiSummaryViewModel.didiImageLocation.value
+                            )
+                        } else {
+                            patDidiSummaryViewModel.setNeedToPostImage(true)
+                        }
                     } else {
                         patDidiSummaryViewModel.setNeedToPostImage(true)
                     }

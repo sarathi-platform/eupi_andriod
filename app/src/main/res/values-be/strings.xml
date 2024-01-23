@@ -372,4 +372,5 @@
     <string name="user_bug_report_text">বাগ রিপোর্ট</string>
     <string name="vo_endorsement_not_started">वीओ अनुमोदन प्रारंभ नहीं हुआ है</string>
     <string name="export_data_test">Export Data</string>
+    <string name="network_not_available_message">नेटवर्क गैया, अन्नानै उनाव आरोबाव नाजा!</string>
 </resources>

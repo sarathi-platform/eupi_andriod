@@ -290,4 +290,11 @@ interface DidiDao {
     @Query("SELECT * from $DIDI_TABLE")
     fun getDidiTableDump(): List<DidiEntity>
 
+    @Transaction
+    fun updateDidiAfterRefresh(forceRefresh: Boolean = false, didiId: Int, didi: DidiEntity) {
+        if (forceRefresh)
+            deleteDidi(didiId)
+        insertDidi(didi)
+    }
+
 }

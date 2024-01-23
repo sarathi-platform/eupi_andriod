@@ -139,7 +139,7 @@ class AddDidiViewModel @Inject constructor(
 
         validateDidiDetails()
         getSocialMappingStepId()
-        CheckDBStatus(this@AddDidiViewModel).isFirstStepNeedToBeSync() {
+        CheckDBStatus(this@AddDidiViewModel).isFirstStepNeedToBeSync(addDidiRepository.tolaDao) {
             isTolaSynced.value = it
         }
 
@@ -471,9 +471,9 @@ class AddDidiViewModel @Inject constructor(
                 addDidiRepository.insertDidi(
                     DidiEntity(
                         newId + 1,
-                        name = didiName.value,
-                        guardianName = dadaName.value,
-                        address = houseNumber.value,
+                        name = didiName.value.trim(),
+                        guardianName = dadaName.value.trim(),
+                        address = houseNumber.value.trim(),
                         castId = selectedCast.value.first,
                         castName = selectedCast.value.second,
                         cohortId = selectedTolaFromDb?.id ?: selectedTola.value.first,
@@ -533,9 +533,9 @@ class AddDidiViewModel @Inject constructor(
             if (ifDidiExist == 0) {
                 val updatedDidi = DidiEntity(
                     id = didiId,
-                    name = didiName.value,
-                    guardianName = dadaName.value,
-                    address = houseNumber.value,
+                    name = didiName.value.trim(),
+                    guardianName = dadaName.value.trim(),
+                    address = houseNumber.value.trim(),
                     castId = selectedCast.value.first,
                     castName = selectedCast.value.second,
                     cohortId = selectedTola.value.first,

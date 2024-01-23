@@ -239,26 +239,28 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     val villageId = village.id
                     val stepList =
                         stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
-                    val bpcStep = stepList.last()
-                    if (bpcStep.workFlowId > 0) {
-                        if (bpcStep.needToPost) {
-                            editWorkFlowRequest.add(
-                                (EditWorkFlowRequest(
-                                    bpcStep.workFlowId,
-                                    StepStatus.getStepFromOrdinal(bpcStep.isComplete)
-                                ))
-                            )
-                            needToEditStep.add(bpcStep)
-                        }
-                    } else {
-                        if (bpcStep.needToPost) {
-                            needToAddStep.add(bpcStep)
-                            addWorkFlowRequest.add(
-                                (AddWorkFlowRequest(
-                                    StepStatus.INPROGRESS.name, bpcStep.villageId,
-                                    bpcStep.programId, bpcStep.id
-                                ))
-                            )
+                    if (stepList.isNotEmpty()) {
+                        val bpcStep = stepList.last()
+                        if (bpcStep.workFlowId > 0) {
+                            if (bpcStep.needToPost) {
+                                editWorkFlowRequest.add(
+                                    (EditWorkFlowRequest(
+                                        bpcStep.workFlowId,
+                                        StepStatus.getStepFromOrdinal(bpcStep.isComplete)
+                                    ))
+                                )
+                                needToEditStep.add(bpcStep)
+                            }
+                        } else {
+                            if (bpcStep.needToPost) {
+                                needToAddStep.add(bpcStep)
+                                addWorkFlowRequest.add(
+                                    (AddWorkFlowRequest(
+                                        StepStatus.INPROGRESS.name, bpcStep.villageId,
+                                        bpcStep.programId, bpcStep.id
+                                    ))
+                                )
+                            }
                         }
                     }
                 }
@@ -413,24 +415,31 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     val passingScore = questionDao.getPassingScore()
                     val requestList = arrayListOf<SaveMatchSummaryRequest>()
                     villageList.forEach { village ->
-                        val bpcStep =
-                            stepsListDao.getAllStepsForVillage(village.id).sortedBy { it.orderNumber }.last()
-                        if (bpcStep.isComplete == StepStatus.COMPLETED.ordinal && !prefRepo.getPref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + village.id, false)) {
-                            val didiList = didiDao.getAllDidisForVillage(village.id)
-                            val matchPercentage = calculateMatchPercentage(
-                                didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal },
-                                passingScore
-                            )
-                            val saveMatchSummaryRequest = SaveMatchSummaryRequest(
-                                programId = bpcStep.programId,
-                                score = matchPercentage,
-                                villageId = village.id,
-                                didiNotAvailableCountBPC = didiList.filter {
-                                    it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
-                                            || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal
-                                }.size
-                            )
-                            requestList.add(saveMatchSummaryRequest)
+                        val bpcStepList =
+                            stepsListDao.getAllStepsForVillage(village.id).sortedBy { it.orderNumber }
+                        if (bpcStepList.isNotEmpty()) {
+                            val bpcStep = bpcStepList.last()
+                            if (bpcStep.isComplete == StepStatus.COMPLETED.ordinal && !prefRepo.getPref(
+                                    PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + village.id,
+                                    false
+                                )
+                            ) {
+                                val didiList = didiDao.getAllDidisForVillage(village.id)
+                                val matchPercentage = calculateMatchPercentage(
+                                    didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal },
+                                    passingScore
+                                )
+                                val saveMatchSummaryRequest = SaveMatchSummaryRequest(
+                                    programId = bpcStep.programId,
+                                    score = matchPercentage,
+                                    villageId = village.id,
+                                    didiNotAvailableCountBPC = didiList.filter {
+                                        it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
+                                                || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal
+                                    }.size
+                                )
+                                requestList.add(saveMatchSummaryRequest)
+                            }
                         }
                     }
                     NudgeLogger.d("SyncBPCDataOnServer","sendBpcMatchScore saveMatchSummary Request=> ${requestList.json()}")
