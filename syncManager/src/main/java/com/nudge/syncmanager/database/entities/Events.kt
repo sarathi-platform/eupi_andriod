@@ -10,7 +10,7 @@ import java.util.Date
 import java.util.UUID
 
 @Entity(tableName = "Events_table")
-data class Events(
+data class Events <T> (
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = false)
     val id: String = UUID.randomUUID().toString(),
@@ -37,14 +37,14 @@ data class Events(
 
     @ColumnInfo("request_payload")
     @TypeConverters(StringJsonConverter::class)
-    val request_payload: String,
+    val request_payload: T,
 
-    @ColumnInfo("reponse_payload")
+    @ColumnInfo("consumer_response_payload")
     @TypeConverters(StringJsonConverter::class)
-    val reponse_payload: String,
+    val consumer_response_payload: T,
 
-    @ColumnInfo("response_status")
-    val response_status: String,
+    @ColumnInfo("consumer_status")
+    val consumer_status: String,
 
     @ColumnInfo("retry_count")
     val retry_count: Int,
@@ -54,7 +54,7 @@ data class Events(
 
     @ColumnInfo("metadata")
     @TypeConverters(StringJsonConverter::class)
-    val metadata: String
+    val metadata: T
 
 )
 
