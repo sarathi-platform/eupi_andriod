@@ -6,6 +6,8 @@ import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
+import com.nudge.core.database.dao.EventsDao
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.SyncBPCDataOnServer
@@ -29,6 +31,7 @@ import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
+import com.patsurvey.nudge.model.request.AddCohortRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
 import com.patsurvey.nudge.utils.ApiType
@@ -47,8 +50,10 @@ import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
 import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.Tola
 import com.patsurvey.nudge.utils.TolaStatus
 import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.getSampleEvent
 import com.patsurvey.nudge.utils.json
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -79,7 +84,8 @@ class SettingViewModel @Inject constructor(
     val questionDao: QuestionListDao,
     val bpcSummaryDao: BpcSummaryDao,
     val poorDidiListDao: PoorDidiListDao,
-    val exportHelper: ExportHelper
+    val exportHelper: ExportHelper,
+    val eventDao: EventsDao
 ) : BaseViewModel() {
     val formAAvailabe = mutableStateOf(false)
     val formBAvailabe = mutableStateOf(false)
@@ -572,26 +578,6 @@ class SettingViewModel @Inject constructor(
             }
         }
     }
-
-    /*    fun getStepOneSize(stepOneSize : MutableState<String>) {
-            syncHelper.getStepOneDataSizeInSync(stepOneSize)
-        }
-
-        fun getStepTwoSize(stepTwoSize : MutableState<String>) {
-            syncHelper.getStepTwoDataSizeInSync(stepTwoSize)
-        }
-
-        fun getStepThreeSize(stepThreeSize : MutableState<String>) {
-            syncHelper.getStepThreeDataSizeInSync(stepThreeSize)
-        }
-
-        fun getStepFourSize(stepFourSize : MutableState<String>) {
-            syncHelper.getStepFourDataSizeInSync(stepFourSize)
-        }
-
-        fun getStepFiveSize(stepFiveSize : MutableState<String>) {
-            syncHelper.getStepFiveDataSizeInSync(stepFiveSize)
-        }*/
 
     fun syncDataOnServer(cxt: Context, syncDialog: MutableState<Boolean>) {
         NudgeLogger.e("SettingViewModel", "syncDataOnServer -> start")

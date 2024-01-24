@@ -1,4 +1,4 @@
-package com.nudge.syncmanager.database.converters
+package com.nudge.core.database.converters
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson
@@ -8,15 +8,14 @@ import java.lang.reflect.Type
 class StringJsonConverter {
 
     @TypeConverter
-    fun <T> fromQuestionOptions(item: T): String {
-        val type: Type = object : TypeToken<List<T?>?>() {}.type
+    fun <Any> fromQuestionOptions(item: Any): String {
+        val type: Type = object : TypeToken<kotlin.Any?>() {}.type
         return Gson().toJson(item, type)
     }
 
     @TypeConverter
-    fun <T> toQuestionOptions(listInString: String): T {
-        val type =
-            object : TypeToken<List<T?>?>() {}.type
+    fun <Any> toQuestionOptions(listInString: String): Any {
+        val type = object : TypeToken<Any?>() {}.type
         return Gson().fromJson(listInString, type)
     }
 

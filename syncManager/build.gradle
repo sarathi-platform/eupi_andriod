@@ -53,7 +53,11 @@ dependencies {
     //Communication Module
     implementation(project(":CommunicationModule"))
 
+    //Core Module
+    implementation(project(":core"))
 
+
+    //Gson
     implementation "com.google.code.gson:gson:2.9.0"
 
 }

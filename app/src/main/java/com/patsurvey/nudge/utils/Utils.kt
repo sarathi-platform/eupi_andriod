@@ -77,7 +77,11 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import com.nudge.core.EventSyncStatus
+import com.nudge.core.database.entities.Events
+import com.nudge.core.toDate
 import com.patsurvey.nudge.BuildConfig
+import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper.exceptionHandler
 import com.patsurvey.nudge.activities.MainActivity
@@ -89,6 +93,7 @@ import com.patsurvey.nudge.activities.video.VideoItem
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.LanguageEntity
+import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.DidiDao
@@ -97,6 +102,7 @@ import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.download.FileType
 import com.patsurvey.nudge.model.dataModel.WeightageRatioModal
+import com.patsurvey.nudge.model.request.AddCohortRequest
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -1171,4 +1177,50 @@ fun getEmitLanguageList(defaultLanguageVillageList: List<VillageEntity>, localLa
 
 fun getVillageItemById(villageList: List<VillageEntity>, id: Int): VillageEntity {
     return villageList[villageList.map { it.id }.indexOf(id)]
+}
+
+
+fun getSampleEvent(): Events {
+    return Events(
+        name = "TEST_EVENT",
+        type = "notification",
+        created_date = System.currentTimeMillis().toDate(),
+        modified_date = System.currentTimeMillis().toDate(),
+        created_by = "123",
+        request_status = EventSyncStatus.OPEN.name,
+        request_payload = AddCohortRequest.getRequestObjectForTola(
+            TolaEntity(
+            id = 0,
+            name = EMPTY_TOLA_NAME,
+            type = CohortType.TOLA.type,
+            latitude = 0.0,
+            longitude = 0.0,
+            villageId = 1000,
+            status = 1,
+            localCreatedDate = System.currentTimeMillis(),
+            localModifiedDate = System.currentTimeMillis(),
+            transactionId = "",
+            localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
+        )
+        ).json(),
+        consumer_status = EventSyncStatus.OPEN.name,
+        consumer_response_payload = AddCohortRequest.getRequestObjectForTola(
+            TolaEntity(
+                id = 1,
+                name = EMPTY_TOLA_NAME,
+                type = CohortType.TOLA.type,
+                latitude = 0.0,
+                longitude = 0.0,
+                villageId = 1000,
+                status = 1,
+                localCreatedDate = System.currentTimeMillis(),
+                localModifiedDate = System.currentTimeMillis(),
+                transactionId = "",
+                localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
+            )
+        ).json(),
+        retry_count = 0,
+        error_message = null,
+        metadata = Tola(EMPTY_TOLA_NAME, LocationCoordinates(0.0, 0.0)).json()
+    )
 }
