@@ -2,9 +2,10 @@ package com.patsurvey.nudge.di
 
 import android.content.Context
 import androidx.room.Room
-import com.nudge.core.database.SyncManagerDatabase
+import com.nudge.core.NUDGE_DATABASE
+import com.nudge.core.SYNC_MANAGER_DATABASE
+import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.database.NudgeDatabase
-import com.patsurvey.nudge.utils.NUDGE_DATABASE
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,7 +29,7 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideSyncDatabase(@ApplicationContext context: Context) =
-        Room.databaseBuilder(context, SyncManagerDatabase::class.java, com.nudge.core.SYNC_MANAGER_DATABASE)
+        Room.databaseBuilder(context, SyncManagerDatabase::class.java, SYNC_MANAGER_DATABASE)
             .fallbackToDestructiveMigration()
             .build()
 

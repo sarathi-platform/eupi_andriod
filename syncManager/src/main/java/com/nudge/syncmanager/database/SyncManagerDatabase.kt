@@ -1,12 +1,11 @@
-package com.nudge.core.database
+package com.nudge.syncmanager.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.nudge.core.EventDependencyTable
+import com.nudge.core.SYNC_MANAGER_DB_VERSION
 import com.nudge.core.database.converters.DateConverter
 import com.nudge.core.database.converters.ListConvertor
-import com.nudge.core.database.converters.StringJsonConverter
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
@@ -17,11 +16,11 @@ import com.nudge.core.database.entities.Events
         Events::class,
         EventDependencyEntity::class
     ],
-    version = 1,
+    version = SYNC_MANAGER_DB_VERSION,
     exportSchema = false
 )
 @TypeConverters(DateConverter::class, ListConvertor::class)
-abstract class SyncManagerDatabase: RoomDatabase() {
+abstract class SyncManagerDatabase : RoomDatabase() {
 
     abstract fun eventsDao(): EventsDao
 

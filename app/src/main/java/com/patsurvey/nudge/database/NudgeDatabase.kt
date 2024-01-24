@@ -6,6 +6,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.nudge.core.NUDGE_DATABASE_VERSION
 import com.patsurvey.nudge.database.converters.BeneficiaryStepConverter
 import com.patsurvey.nudge.database.converters.IntConverter
 import com.patsurvey.nudge.database.converters.QuestionsOptionsConverter
@@ -28,14 +29,20 @@ import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.VILLAGE_TABLE_NAME
 import java.sql.SQLException
 
-// Increase DB Version everytime any change is made to any table or a new table is added.
-const val NUDGE_DATABASE_VERSION = 2
 
-@Database(entities = [VillageEntity::class, UserEntity::class, LanguageEntity::class, StepListEntity::class, CasteEntity::class,
-    TolaEntity::class, DidiEntity::class, LastTolaSelectedEntity::class,QuestionEntity::class,SectionAnswerEntity::class,NumericAnswerEntity::class, TrainingVideoEntity::class,
-    BpcSummaryEntity::class, BpcScorePercentageEntity::class, PoorDidiEntity::class], version = NUDGE_DATABASE_VERSION, exportSchema = false)
-@TypeConverters(IntConverter::class, BeneficiaryStepConverter::class,QuestionsOptionsConverter::class)
-abstract class NudgeDatabase: RoomDatabase()  {
+@Database(
+    entities = [VillageEntity::class, UserEntity::class, LanguageEntity::class, StepListEntity::class, CasteEntity::class,
+        TolaEntity::class, DidiEntity::class, LastTolaSelectedEntity::class, QuestionEntity::class, SectionAnswerEntity::class, NumericAnswerEntity::class, TrainingVideoEntity::class,
+        BpcSummaryEntity::class, BpcScorePercentageEntity::class, PoorDidiEntity::class],
+    version = NUDGE_DATABASE_VERSION,
+    exportSchema = false
+)
+@TypeConverters(
+    IntConverter::class,
+    BeneficiaryStepConverter::class,
+    QuestionsOptionsConverter::class
+)
+abstract class NudgeDatabase : RoomDatabase() {
 
     abstract fun villageListDao(): VillageListDao
     abstract fun userDao(): UserDao
@@ -61,9 +68,9 @@ abstract class NudgeDatabase: RoomDatabase()  {
 
         // CREATE MIGRATION OBJECT FOR MIGRATION 1 to 2.
         val MIGRATION_1_2 = object : Migration(1, 2) {
-            override fun migrate(database: SupportSQLiteDatabase) {
+            override fun migrate(db: SupportSQLiteDatabase) {
                 NudgeLogger.d("NudgeDatabase",  "MIGRATION_1_2")
-                migration(database, listOf(ALTER_VILLAGE_TABLE))
+                migration(db, listOf(ALTER_VILLAGE_TABLE))
             }
         }
 

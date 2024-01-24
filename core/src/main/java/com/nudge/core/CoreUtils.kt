@@ -1,6 +1,6 @@
 package com.nudge.core
 
-import com.nudge.core.database.entities.Events
+import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -24,3 +24,6 @@ fun Long.toTimeDateString(): String {
     val format = SimpleDateFormat("HH:mm:ss dd/MM/yyyy", Locale.getDefault())
     return format.format(dateTime)
 }
+
+
+inline fun <reified T : Any> T.json(): String = Gson().toJson(this, T::class.java)
