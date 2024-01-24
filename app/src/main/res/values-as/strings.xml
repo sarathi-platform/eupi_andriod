@@ -382,6 +382,7 @@
     <string name="user_bug_report_text">বাগ প্ৰতিবেদন</string>
     <string name="vo_endorsement_not_started">VO Endorsement আৰম্ভ কৰা হোৱা নাই</string>
     <string name="export_data_test">তথ্য ৰপ্তানি কৰক</string>
+    <string name="network_not_available_message">নেটৱৰ্ক উপলব্ধ নহয়, অনুগ্ৰহ কৰি পিছত পুনৰ চেষ্টা কৰক!</string>
 
 
 </resources>

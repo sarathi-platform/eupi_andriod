@@ -701,6 +701,7 @@ fun UserDataView(
 fun VillageSelectorDropDown(
     modifier: Modifier = Modifier,
     selectedText: String,
+    showCarrotIcon: Boolean = true,
     onClick: () -> Unit
 ) {
     Box(
@@ -734,13 +735,14 @@ fun VillageSelectorDropDown(
                 color = blueDark,
                 style = mediumTextStyle,
             )
-            Icon(
-                painterResource(id = R.drawable.baseline_keyboard_arrow_down),
-                contentDescription = "drop down menu icon",
-                tint = blueDark
-            )
+            if (showCarrotIcon) {
+                Icon(
+                    painterResource(id = R.drawable.baseline_keyboard_arrow_down),
+                    contentDescription = "drop down menu icon",
+                    tint = blueDark
+                )
+            }
         }
-
     }
 }
 

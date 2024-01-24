@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.model.dataModel.PATDidiStatusModel
@@ -92,5 +93,15 @@ interface AnswerDao {
 
     @Query("DELETE from $ANSWER_TABLE where villageId = :villageId")
     fun deleteAllAnswersForVillage(villageId: Int)
+
+    @Query("DELETE from $ANSWER_TABLE where didiId = :didiId")
+    fun deleteAnswersForDidi(didiId: Int)
+
+    @Transaction
+    fun updateAnswersAfterRefresh(forceRefresh: Boolean = false, villageId: Int, answersList: List<SectionAnswerEntity>) {
+        if (forceRefresh)
+            deleteAllAnswersForVillage(villageId)
+        insertAll(answersList)
+    }
 
 }
