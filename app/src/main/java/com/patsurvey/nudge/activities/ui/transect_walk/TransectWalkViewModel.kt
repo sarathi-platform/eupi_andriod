@@ -5,6 +5,9 @@ import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.nudge.core.enums.EventName
+import com.nudge.core.localbackup.BackupWriter
+import com.nudge.core.localbackup.entities.LocalBackupRequestEntity
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
@@ -22,12 +25,12 @@ import com.patsurvey.nudge.model.request.EditCohortRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
-import com.patsurvey.nudge.utils.BackupWriter
 import com.patsurvey.nudge.utils.CohortType
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.LocationCoordinates
+import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
 import com.patsurvey.nudge.utils.PREF_TRANSECT_WALK_COMPLETION_DATE_
@@ -91,10 +94,15 @@ class TransectWalkViewModel @Inject constructor(
                     localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
                 )
                 transectWalkRepository.tolaInsert(tolaItem)
-                var jsonObject= JsonObject()
-                jsonObject.addProperty("event_topic","COHORT_SAVE_TOPIC")
-                jsonObject.addProperty("payload", AddCohortRequest.getRequestObjectForTola(tolaItem).json())
-                BackupWriter.writeEventInFile(content =jsonObject.toString())
+                val localBackupRequestEntity = LocalBackupRequestEntity(
+                    eventTopic = EventName.ADD_TOLA.topicName,
+                    payLoad = AddCohortRequest.getRequestObjectForTola(tolaItem).json()
+                )
+
+                BackupWriter.writeEventInFile(
+                    content = localBackupRequestEntity.json(),
+                    context = NudgeCore.getAppContext()
+                )
                 val updatedTolaList =
                     transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
                 withContext(Dispatchers.Main) {
@@ -624,10 +632,8 @@ class TransectWalkViewModel @Inject constructor(
                 localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
             )
             transectWalkRepository.updateTolaName(id, newName)
-            var jsonObject= JsonObject()
-            jsonObject.addProperty("event_topic","COHORT_EDIT_TOPIC")
-            jsonObject.addProperty("payload", EditCohortRequest.getRequestObjectForTola(updatedTola).json())
-            BackupWriter.writeEventInFile(content =jsonObject.toString())
+          var localBackupRequestEntity=  LocalBackupRequestEntity(eventTopic = EventName.UPDATE_TOLA.topicName, payLoad = EditCohortRequest.getRequestObjectForTola(updatedTola).json())
+                BackupWriter.writeEventInFile(content =localBackupRequestEntity.json(), context = NudgeCore.getAppContext())
             val updatedTolaList = transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
             withContext(Dispatchers.Main) {
                 _tolaList.value = updatedTolaList

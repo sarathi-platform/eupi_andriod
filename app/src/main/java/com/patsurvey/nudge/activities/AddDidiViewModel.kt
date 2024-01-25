@@ -6,6 +6,9 @@ import android.util.Log
 import androidx.compose.runtime.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.nudge.core.enums.EventName
+import com.nudge.core.localbackup.BackupWriter
+import com.nudge.core.localbackup.entities.LocalBackupRequestEntity
 import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
@@ -489,10 +492,14 @@ class AddDidiViewModel @Inject constructor(
                 )
 
                 addDidiRepository.insertDidi(didiEntity)
-                var jsonObject= JsonObject()
-                jsonObject.addProperty("event_topic","BENEFICIARY_SAVE_TOPIC")
-                jsonObject.addProperty("payload", AddDidiRequest.getRequestObjectForDidi(didiEntity).json())
-                BackupWriter.writeEventInFile(content =jsonObject.toString())
+                val localBackupRequestEntity = LocalBackupRequestEntity(eventTopic = EventName.ADD_DIDI.topicName,
+                    payLoad = AddDidiRequest.getRequestObjectForDidi(didiEntity).json()
+                )
+
+                BackupWriter.writeEventInFile(
+                    content = localBackupRequestEntity.json(),
+                    context = NudgeCore.getAppContext()
+                )
 
                 _didiList.value = addDidiRepository.getAllDidisForVillage(villageId)
                 filterDidiList = addDidiRepository.getAllDidisForVillage(villageId)

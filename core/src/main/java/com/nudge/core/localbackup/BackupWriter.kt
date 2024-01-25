@@ -1,4 +1,4 @@
-package com.patsurvey.nudge.utils
+package com.nudge.core.localbackup
 
 import android.content.ContentUris
 import android.content.ContentValues
@@ -8,29 +8,28 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import androidx.annotation.RequiresApi
-import androidx.media3.common.MimeTypes
+import com.nudge.core.LOCAL_BACKUP_DIRECTORY_NAME
+import com.nudge.core.LOCAL_BACKUP_EXTENSION
+import com.nudge.core.LOCAL_BACKUP_FILE_NAME
 import java.io.File
-import java.io.FileOutputStream
-import java.net.URL
+
 
 
 object BackupWriter {
 
-    fun writeEventInFile(context: Context=NudgeCore.getAppContext(), content: String, fileName: String="Sarathi_backup") {
-        var fileNameWithExtension=fileName+".txt"
+    fun writeEventInFile(context: Context, content: String) {
+        val fileNameWithExtension= LOCAL_BACKUP_FILE_NAME+ LOCAL_BACKUP_EXTENSION
 
         val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+            put(MediaStore.MediaColumns.DISPLAY_NAME, LOCAL_BACKUP_FILE_NAME)
             put(MediaStore.MediaColumns.MIME_TYPE, "text/plain")
             put(
                 MediaStore.MediaColumns.RELATIVE_PATH,
-                Environment.DIRECTORY_DOCUMENTS+"/Sarathi"
+                Environment.DIRECTORY_DOCUMENTS+ LOCAL_BACKUP_DIRECTORY_NAME
             )
         }
 
-        val extVolumeUri: Uri
-        extVolumeUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        val extVolumeUri: Uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // Use MediaStore API for Android 10 and higher
 
             MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
@@ -88,14 +87,14 @@ object BackupWriter {
 
 
     fun compressData(): String {
-        var error = "";
+        var error = ""
         try {
 
             val path: File =
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
 
             val s = getBackupDir().listFiles()?.map {
-                it.absolutePath;
+                it.absolutePath
             }
             if (s != null) {
                 ZipManager.zip(s, path.absolutePath + "/Sarathi_backup.zip")
@@ -105,7 +104,7 @@ object BackupWriter {
             error = e.message!!
 
         }
-        return error;
+        return error
 
     }
 
@@ -113,16 +112,14 @@ object BackupWriter {
 
         val path: File =
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-        var backupDir = File("$path/sarathi");
-        if (!backupDir.exists()) {
+        val backupDir = File("$path/sarathi");        if (!backupDir.exists()) {
             backupDir.mkdirs()
         }
 
-        return backupDir;
+        return backupDir
 
     }
 
     private fun getBackupFile(): File {
-        return File("${getBackupDir()}/sarathi_log.txt");
-    }
+        return File("${getBackupDir()}/sarathi_log.txt");    }
 }
