@@ -22,6 +22,7 @@ import com.patsurvey.nudge.model.request.EditCohortRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
+import com.patsurvey.nudge.utils.BackupWriter
 import com.patsurvey.nudge.utils.CohortType
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_C
@@ -37,6 +38,7 @@ import com.patsurvey.nudge.utils.Tola
 import com.patsurvey.nudge.utils.TolaStatus
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.getUniqueIdForEntity
+import com.patsurvey.nudge.utils.json
 import com.patsurvey.nudge.utils.longToString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -89,6 +91,10 @@ class TransectWalkViewModel @Inject constructor(
                     localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
                 )
                 transectWalkRepository.tolaInsert(tolaItem)
+                var jsonObject= JsonObject()
+                jsonObject.addProperty("event_topic","COHORT_SAVE_TOPIC")
+                jsonObject.addProperty("payload", AddCohortRequest.getRequestObjectForTola(tolaItem).json())
+                BackupWriter.writeEventInFile(content =jsonObject.toString())
                 val updatedTolaList =
                     transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
                 withContext(Dispatchers.Main) {
@@ -617,8 +623,11 @@ class TransectWalkViewModel @Inject constructor(
                 localModifiedDate=System.currentTimeMillis(),
                 localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
             )
-            transectWalkRepository.tolaInsert(updatedTola)
             transectWalkRepository.updateTolaName(id, newName)
+            var jsonObject= JsonObject()
+            jsonObject.addProperty("event_topic","COHORT_EDIT_TOPIC")
+            jsonObject.addProperty("payload", EditCohortRequest.getRequestObjectForTola(updatedTola).json())
+            BackupWriter.writeEventInFile(content =jsonObject.toString())
             val updatedTolaList = transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
             withContext(Dispatchers.Main) {
                 _tolaList.value = updatedTolaList

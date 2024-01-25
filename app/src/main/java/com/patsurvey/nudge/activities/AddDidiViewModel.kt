@@ -21,6 +21,7 @@ import com.patsurvey.nudge.intefaces.LocalDbListener
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.model.request.AddCohortRequest
 import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
@@ -467,28 +468,31 @@ class AddDidiViewModel @Inject constructor(
                 if (lastDidi != null) {
                     newId = lastDidi.id
                 }
-
-                addDidiRepository.insertDidi(
-                    DidiEntity(
-                        newId + 1,
-                        name = didiName.value.trim(),
-                        guardianName = dadaName.value.trim(),
-                        address = houseNumber.value.trim(),
-                        castId = selectedCast.value.first,
-                        castName = selectedCast.value.second,
-                        cohortId = selectedTolaFromDb?.id ?: selectedTola.value.first,
-                        cohortName = selectedTolaFromDb?.name ?: selectedTola.value.second,
-                        relationship = HUSBAND_STRING,
-                        villageId = addDidiRepository.getSelectedVillage().id,
-                        localCreatedDate = System.currentTimeMillis(),
-                        localModifiedDate = System.currentTimeMillis(),
-                        shgFlag = SHGFlag.NOT_MARKED.value,
-                        transactionId = "",
-                        needsToPostRanking = false,
-                        localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext()),
-                        ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value
-                    )
+              var didiEntity=  DidiEntity(
+                    newId + 1,
+                    name = didiName.value.trim(),
+                    guardianName = dadaName.value.trim(),
+                    address = houseNumber.value.trim(),
+                    castId = selectedCast.value.first,
+                    castName = selectedCast.value.second,
+                    cohortId = selectedTolaFromDb?.id ?: selectedTola.value.first,
+                    cohortName = selectedTolaFromDb?.name ?: selectedTola.value.second,
+                    relationship = HUSBAND_STRING,
+                    villageId = addDidiRepository.getSelectedVillage().id,
+                    localCreatedDate = System.currentTimeMillis(),
+                    localModifiedDate = System.currentTimeMillis(),
+                    shgFlag = SHGFlag.NOT_MARKED.value,
+                    transactionId = "",
+                    needsToPostRanking = false,
+                    localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext()),
+                    ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value
                 )
+
+                addDidiRepository.insertDidi(didiEntity)
+                var jsonObject= JsonObject()
+                jsonObject.addProperty("event_topic","BENEFICIARY_SAVE_TOPIC")
+                jsonObject.addProperty("payload", AddDidiRequest.getRequestObjectForDidi(didiEntity).json())
+                BackupWriter.writeEventInFile(content =jsonObject.toString())
 
                 _didiList.value = addDidiRepository.getAllDidisForVillage(villageId)
                 filterDidiList = addDidiRepository.getAllDidisForVillage(villageId)
