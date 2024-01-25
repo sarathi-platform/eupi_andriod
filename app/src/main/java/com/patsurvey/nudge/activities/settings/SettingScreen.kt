@@ -84,6 +84,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.localbackup.BackupWriter
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
@@ -442,13 +443,19 @@ fun SettingScreen(
                                 }
 
                                 3 -> {
-                                    if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
-                                        navController.navigate(SettingScreens.VIDEO_LIST_SCREEN.route)
-                                    else
-                                    //navController.navigate(SettingScreens.BUG_LOGGING_SCREEN.route)
 
-                                        viewModel.buildAndShareLogs()
 
+//                                    if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
+//                                        navController.navigate(SettingScreens.VIDEO_LIST_SCREEN.route)
+//                                    else
+//                                    //navController.navigate(SettingScreens.BUG_LOGGING_SCREEN.route)
+//
+//                                        viewModel.buildAndShareLogs()
+//
+//
+//
+
+                                BackupWriter.compressData(NudgeCore.getAppContext())
                                 }
 
                                 4 -> {

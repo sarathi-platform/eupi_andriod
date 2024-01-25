@@ -492,6 +492,7 @@ class AddDidiViewModel @Inject constructor(
                 )
 
                 addDidiRepository.insertDidi(didiEntity)
+
                 val localBackupRequestEntity = LocalBackupRequestEntity(eventTopic = EventName.ADD_DIDI.topicName,
                     payLoad = AddDidiRequest.getRequestObjectForDidi(didiEntity).json()
                 )
