@@ -9,3 +9,9 @@ dependencyResolutionManagement {
 }
 rootProject.name = "the_nudge"
 include ':app'
+include ':syncManager'
+include ':baselinesurvey'
+include ':baselinesurvey'
+include ':CommunicationModule'
+include ':CoreModule'
+include ':core'

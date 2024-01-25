@@ -33,7 +33,6 @@ const val SPLASH_SCREEN_DURATION = 2000L
 const val ONE_SECOND = 2000L
 const val STEP_COMPLETION_DELAY = 900L
 const val FINAL_STEP_COMPLETION_DELAY = 3000L
-const val NUDGE_DATABASE = "NudgeDatabase"
 const val VILLAGE_TABLE_NAME = "village_table"
 const val LANGUAGE_TABLE_NAME = "language_table"
 const val NUMERIC_TABLE_NAME = "numeric_table"
@@ -235,4 +234,7 @@ const val DEFAULT_LANGUAGE_ID = 2
 const val BPC_VERIFICATION_STEP_ORDER = 6
 const val VO_ENDORSEMENT_STEP_ORDER = 5
 const val EMPTY_STRING="";
+
+const val MIN_PROGRESS_COUNT_INT = 0
+const val MIN_PROGRESS_COUNT_FLOAT = 0F
 

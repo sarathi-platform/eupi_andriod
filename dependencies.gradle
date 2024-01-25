@@ -25,5 +25,5 @@ ext {
   hilt = '2.40.1'
   compose_version='1.4.1'
 
-  roomVersion = '2.5.0'
+  roomVersion = '2.5.2'
 }
