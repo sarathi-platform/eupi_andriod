@@ -6,9 +6,13 @@ import android.util.Log
 import androidx.compose.runtime.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.nudge.core.enums.EventFormatterName
 import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventWriterName
 import com.nudge.core.localbackup.BackupWriter
-import com.nudge.core.localbackup.entities.LocalBackupRequestEntity
+import com.nudge.core.localbackup.EventWriterFactory
+import com.nudge.core.localbackup.IEventFormatter
+import com.nudge.core.localbackup.entities.EventV1
 import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
@@ -19,12 +23,10 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.LastTolaSelectedEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.VillageEntity
-import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.LocalDbListener
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
-import com.patsurvey.nudge.model.request.AddCohortRequest
 import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
@@ -493,14 +495,20 @@ class AddDidiViewModel @Inject constructor(
 
                 addDidiRepository.insertDidi(didiEntity)
 
-                val localBackupRequestEntity = LocalBackupRequestEntity(eventTopic = EventName.ADD_DIDI.topicName,
+                val eventV1 = EventV1(eventTopic = EventName.ADD_DIDI.topicName,
                     payLoad = AddDidiRequest.getRequestObjectForDidi(didiEntity).json()
                 )
-
-                BackupWriter.writeEventInFile(
-                    content = localBackupRequestEntity.json(),
-                    context = NudgeCore.getAppContext()
+                val  eventFormatter: IEventFormatter = EventWriterFactory().createEventWriter(
+                    NudgeCore.getAppContext(),
+                    EventFormatterName.JSON_FORMAT_EVENT
                 )
+                eventFormatter.saveAndFormatEvent(
+                    event = eventV1,
+                    listOf(
+                        EventWriterName.FILE_EVENT_WRITER,
+                        EventWriterName.DB_EVENT_WRITER,
+                        EventWriterName.LOG_EVENT_WRITER
+                    ))
 
                 _didiList.value = addDidiRepository.getAllDidisForVillage(villageId)
                 filterDidiList = addDidiRepository.getAllDidisForVillage(villageId)
