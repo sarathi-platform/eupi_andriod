@@ -1,4 +1,4 @@
-package com.nudge.core.localbackup
+package com.nudge.core.compression
 
 import android.content.Context
 import android.net.Uri
@@ -13,7 +13,7 @@ import java.util.zip.ZipOutputStream
 object ZipManager {
     private const val BUFFER_SIZE = 6 * 1024
     @Throws(IOException::class)
-    fun zip(files: ArrayList<Pair<String,Uri?>>, zipFile: Uri?,context:Context) {
+    fun zip(files: List<Pair<String,Uri?>>, zipFile: Uri?,context:Context) {
         var origin: BufferedInputStream? = null
         val out = ZipOutputStream(BufferedOutputStream(context.contentResolver.openOutputStream(zipFile!!, "wa")))
         try {

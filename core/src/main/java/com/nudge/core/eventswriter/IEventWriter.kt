@@ -1,11 +1,11 @@
-package com.nudge.core.localbackup
+package com.nudge.core.eventswriter
 
 import android.content.Context
-import com.nudge.core.database.entities.Events
+import android.net.Uri
 import com.nudge.core.enums.EventWriterName
 
 interface IEventWriter {
-suspend fun addEvent(context: Context, event:String)
+suspend fun addEvent(context: Context, event:String,uri: Uri?)
 
 suspend fun getEventWriteType(): EventWriterName
 

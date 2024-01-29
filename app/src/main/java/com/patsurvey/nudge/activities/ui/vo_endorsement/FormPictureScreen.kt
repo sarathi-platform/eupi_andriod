@@ -884,31 +884,9 @@ fun FormPictureScreen(
                                 stepId
                             )
                             formPictureScreenViewModel.saveVoEndorsementDate()
-                            if ((context as MainActivity).isOnline.value ?: false) {
-                                /*formPictureScreenViewModel.updateVoStatusToNetwork(object :
-                                    NetworkCallbackListener {
-                                    override fun onSuccess() {
-                                        formPictureScreenViewModel.callWorkFlowAPI(
-                                            formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id,
-                                            stepId,
-                                            object :
-                                                NetworkCallbackListener {
-                                                override fun onSuccess() {
-                                                }
+                                formPictureScreenViewModel.uploadFormsCAndD(context,(context as MainActivity).isOnline.value)
 
-                                                override fun onFailed() {
-                                                    NudgeLogger.e("FormPictureScreen","")
-                                                }
-                                            })
-                                    }
 
-                                    override fun onFailed() {
-//                                        showCustomToast(context, SYNC_FAILED)
-                                    }
-                                })*/
-                                formPictureScreenViewModel.uploadFormsCAndD(context)
-
-                            }
                             navController.navigate(
                                 "vo_endorsement_step_completion_screen/${
                                     localContext.getString(R.string.vo_endorsement_completed_message)

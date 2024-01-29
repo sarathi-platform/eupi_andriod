@@ -8,10 +8,9 @@ import com.google.gson.JsonObject
 import com.nudge.core.enums.EventFormatterName
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventWriterName
-import com.nudge.core.localbackup.BackupWriter
-import com.nudge.core.localbackup.EventWriterFactory
-import com.nudge.core.localbackup.IEventFormatter
-import com.nudge.core.localbackup.entities.EventV1
+import com.nudge.core.eventswriter.EventWriterFactory
+import com.nudge.core.eventswriter.IEventFormatter
+import com.nudge.core.eventswriter.entities.EventV1
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
@@ -853,7 +852,8 @@ class TransectWalkViewModel @Inject constructor(
                     EventWriterName.FILE_EVENT_WRITER,
                     EventWriterName.DB_EVENT_WRITER,
                     EventWriterName.LOG_EVENT_WRITER
-                ))
+                )
+            )
             val updatedTolaList =
                 transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
             withContext(Dispatchers.Main) {

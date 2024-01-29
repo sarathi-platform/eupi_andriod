@@ -51,7 +51,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.nudge.core.localbackup.BackupWriter
+import com.nudge.core.eventswriter.BackupWriter
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.*
@@ -1124,10 +1124,8 @@ fun handleImageCapture(
     NudgeLogger.d("PatDidiSummaryScreen", "handleImageCapture -> viewModal.saveFilePathInDb called")
 
 
-    viewModal.saveFilePathInDb(photoPath, location, didiEntity = didiEntity)
-    BackupWriter.saveImageToMediaStore(
-        context = NudgeCore.getAppContext(),
-        contentImageUri = uri,)
+    viewModal.saveFilePathInDb(uri,photoPath, location, didiEntity = didiEntity,)
+
 }
 
 private fun requestCameraPermission(

@@ -5,33 +5,34 @@ import android.net.Uri
 import android.os.Environment
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
+import com.nudge.core.enums.EventFormatterName
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventWriterName
+import com.nudge.core.eventswriter.EventWriterFactory
+import com.nudge.core.eventswriter.IEventFormatter
+import com.nudge.core.eventswriter.entities.EventV1
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.survey.PatDidiSummaryRepository
 import com.patsurvey.nudge.base.BaseViewModel
-import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.CasteListDao
-import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
-import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.model.request.DidiImageUploadRequest
 import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.LocationCoordinates
+import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.SUCCESS
-import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.compressImage
 import com.patsurvey.nudge.utils.getFileNameFromURL
+import com.patsurvey.nudge.utils.json
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -114,6 +115,7 @@ class PatDidiSummaryViewModel @Inject constructor(
     }
 
     fun saveFilePathInDb(
+        uri: Uri,
         photoPath: String,
         locationCoordinates: LocationCoordinates,
         didiEntity: DidiEntity
@@ -128,6 +130,22 @@ class PatDidiSummaryViewModel @Inject constructor(
             NudgeLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> didiDao.saveLocalImagePath before = didiId: ${didiEntity.id}, finalPathWithCoordinates: $finalPathWithCoordinates")
             patDidiSummaryRepository.saveDidiLocalImagePath(finalPathWithCoordinates,didiEntity.id)
             NudgeLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> didiDao.saveLocalImagePath after")
+            val  eventFormatter: IEventFormatter = EventWriterFactory().createEventWriter(
+                NudgeCore.getAppContext(),
+                EventFormatterName.JSON_FORMAT_EVENT
+            )
+            val eventV1 = EventV1(eventTopic = EventName.UPLOAD_DIDI_IMAGE.topicName,
+                payLoad =DidiImageUploadRequest(didiId = didiEntity.id.toString(), location =didiImageLocation.value, filePath =photoPath, userType = if (patDidiSummaryRepository.prefRepo.isUserBPC()) USER_BPC else USER_CRP).json()
+            )
+            eventFormatter.saveAndFormatEvent(
+                event = eventV1,
+                listOf(
+                    EventWriterName.FILE_EVENT_WRITER,
+                    EventWriterName.IMAGE_EVENT_WRITER,
+                    EventWriterName.DB_EVENT_WRITER,
+                    EventWriterName.LOG_EVENT_WRITER
+                ),uri)
+
 
         }
     }

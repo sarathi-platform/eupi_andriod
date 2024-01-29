@@ -1,10 +1,10 @@
 package com.nudge.core
 
-import com.nudge.core.enums.EventWriterName
-import com.nudge.core.localbackup.DbEventWrite
-import com.nudge.core.localbackup.FileEventWriter
-import com.nudge.core.localbackup.IEventWriter
-import com.nudge.core.localbackup.LogEventWriter
+import com.nudge.core.eventswriter.DbEventWrite
+import com.nudge.core.eventswriter.TextFileEventWriter
+import com.nudge.core.eventswriter.IEventWriter
+import com.nudge.core.eventswriter.LogEventWriter
+import com.nudge.core.eventswriter.entities.ImageEventWriter
 
 
 const val BLANK_STRING = ""
@@ -21,7 +21,8 @@ const val SYNC_MANAGER_DB_VERSION = 1
 const val NUDGE_DATABASE = "NudgeDatabase"
 const val NUDGE_DATABASE_VERSION = 2
 const val LOCAL_BACKUP_FILE_NAME="Sarathi_backup"
-const val LOCAL_BACKUP_DIRECTORY_NAME="/SARATHI"
+const val SARATHI_DIRECTORY_NAME="/SARATHI"
 const val LOCAL_BACKUP_EXTENSION=".txt"
+const val EVENT_DELIMETER="~||~||~||~"
 
- val eventWriters = listOf<IEventWriter>(FileEventWriter(), DbEventWrite(),LogEventWriter())
+ val eventWriters = listOf<IEventWriter>(TextFileEventWriter(), DbEventWrite(),LogEventWriter(),ImageEventWriter())

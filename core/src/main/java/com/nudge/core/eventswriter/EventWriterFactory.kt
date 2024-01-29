@@ -1,9 +1,7 @@
-package com.nudge.core.localbackup
+package com.nudge.core.eventswriter
 
 import android.content.Context
-import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventFormatterName
-import com.nudge.core.enums.EventWriterName
 
 interface IEventWriterFactory {
     fun createEventWriter(
