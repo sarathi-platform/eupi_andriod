@@ -83,6 +83,7 @@ import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.BPCVillageStatus
 import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidthWithoutIcon
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -357,7 +358,10 @@ fun BpcVillageSelectionScreen(
                                 val stepId= villages[viewModel.villageSelected.value].stepId
                                 val statusId= villages[viewModel.villageSelected.value].statusId
                                 when (fetchBPCVillageStatus(stepId, statusId)) {
-                                    0, 1 -> showCustomToast(context,  context.getString(R.string.village_is_not_vo_endorsed_right_now))
+                                    BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal, BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal -> showCustomToast(
+                                        context,
+                                        context.getString(R.string.village_is_not_vo_endorsed_right_now)
+                                    )
                                     else -> {
                                         viewModel.updateSelectedVillage(villageList = villages)
                                         navController.popBackStack()
@@ -414,7 +418,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
             .fillMaxWidth()
             .border(
                 width = 1.dp,
-                color = if (bpcVillageStatus == 5) greenOnline else {
+                color = if (bpcVillageStatus == BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal) greenOnline else {
                     if (index == selectedIndex) blueDark else greyRadioButton
                 },
                 shape = RoundedCornerShape(6.dp)
@@ -428,7 +432,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                 )
             ) {
                 when (bpcVillageStatus) {
-                    0, 1 -> showCustomToast(
+                    BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal, BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal -> showCustomToast(
                         context,
                         context.getString(R.string.village_is_not_vo_endorsed_right_now)
                     )
@@ -445,15 +449,15 @@ fun BpcVillageAndVoBoxForBottomSheet(
                 modifier = Modifier
                     .background(
                         when (bpcVillageStatus) {
-                            0,1 -> white
-                            2, 3, 4 -> stepBoxActiveColor
-                            5 -> greenLight
+                            BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal, BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal -> white
+                            BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal, BPCVillageStatus.BPC_VERIFICATION_NOT_STARTED.ordinal, BPCVillageStatus.BPC_VERIFICATION_IN_PROGRESS.ordinal -> stepBoxActiveColor
+                            BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal -> greenLight
                             else -> white
                         }
                     )
                     .alpha(
                         when (bpcVillageStatus) {
-                            0,1 -> .5f
+                            BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal, BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal -> .5f
                             else -> 1f
                         }
                     )
@@ -469,7 +473,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                     Icon(
                         painter = painterResource(id = R.drawable.home_icn),
                         contentDescription = null,
-                        tint = if (bpcVillageStatus == 5) greenOnline else textColorDark,
+                        tint = if (bpcVillageStatus == BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal) greenOnline else textColorDark,
                         modifier = Modifier.constrainAs(iconRef) {
                             top.linkTo(parent.top)
                             start.linkTo(parent.start)
@@ -477,7 +481,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                     )
                     Text(
                         text = " ${villageEntity.name}",
-                        color = if (bpcVillageStatus == 5) greenOnline else textColorDark,
+                        color = if (bpcVillageStatus == BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal) greenOnline else textColorDark,
                         fontSize = 14.sp,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.SemiBold,
@@ -520,7 +524,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                     Text(
                         text = "VO: ",
                         modifier = Modifier,
-                        color = if (bpcVillageStatus == 5) greenOnline else textColorDark,
+                        color = if (bpcVillageStatus == BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal) greenOnline else textColorDark,
                         fontSize = 14.sp,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.Medium
@@ -529,7 +533,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                         text = villageEntity.federationName,
                         modifier = Modifier
                             .fillMaxWidth(),
-                        color = if (bpcVillageStatus == 5) greenOnline else textColorDark,
+                        color = if (bpcVillageStatus == BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal) greenOnline else textColorDark,
                         fontSize = 14.sp,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.Medium
@@ -541,9 +545,9 @@ fun BpcVillageAndVoBoxForBottomSheet(
                     Modifier
                         .background(
                             when (bpcVillageStatus) {
-                                0,1 -> white
-                                2, 3, 4 -> stepBoxActiveColor
-                                5 -> greenLight
+                                BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal, BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal -> white
+                                BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal, BPCVillageStatus.BPC_VERIFICATION_NOT_STARTED.ordinal, BPCVillageStatus.BPC_VERIFICATION_IN_PROGRESS.ordinal -> stepBoxActiveColor
+                                BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal -> greenLight
                                 else -> white
                             },
                             shape = RoundedCornerShape(bottomStart = 6.dp, bottomEnd = 6.dp)
@@ -555,7 +559,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Log.d("TAG", "VillageAndVoBoxForBottomSheet IconCaes:  ${bpcVillageStatus}")
-                    if(bpcVillageStatus>1) {
+                    if(bpcVillageStatus>BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal) {
                         Icon(
                             painter = painterResource(id = R.drawable.icon_feather_check_circle_white),
                             contentDescription = null,
@@ -563,7 +567,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                             ) greenOnline else blueDark
                         )
                     }
-                    if(bpcVillageStatus < 2){
+                    if(bpcVillageStatus < BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal){
                         Text(
                             text = stringResource(id = R.string.vo_endorsement_not_started),
                             color = textColorDark,
@@ -578,7 +582,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                                     if (villageEntity.statusId == StepStatus.COMPLETED.ordinal) R.string.bpc_verification_completed_village_banner_text else R.string.vo_endorsement_completed_village_banner_text
                                 }
                             ),
-                            color = if (bpcVillageStatus == 5
+                            color = if (bpcVillageStatus == BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal
                             ) greenOnline else textColorDark,
                             style = smallerTextStyle,
                             modifier = Modifier.absolutePadding(bottom = 3.dp)
@@ -641,16 +645,16 @@ fun BpcVillageAndVoBoxForBottomSheetPreview(
 
 private fun fetchBPCVillageStatus(stepId: Int,statusId: Int):Int{
     return if(stepId == 44 && statusId == StepStatus.NOT_STARTED.ordinal){
-        0
+        BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal
     }else if(stepId == 44 && statusId == StepStatus.INPROGRESS.ordinal){
-        1
+        BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal
     }else if(stepId == 44 && statusId == StepStatus.COMPLETED.ordinal){
-        2
+        BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal
     }else if(stepId == 45 && statusId == StepStatus.NOT_STARTED.ordinal){
-        3
+        BPCVillageStatus.BPC_VERIFICATION_NOT_STARTED.ordinal
     }else if(stepId == 45 && statusId == StepStatus.INPROGRESS.ordinal){
-        4
+        BPCVillageStatus.BPC_VERIFICATION_IN_PROGRESS.ordinal
     }else if(stepId == 45 && statusId == StepStatus.COMPLETED.ordinal){
-        5
+        BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal
     }else 0
 }
