@@ -23,6 +23,7 @@ import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddCohortRequest
+import com.patsurvey.nudge.model.request.DeleteDidiRequest
 import com.patsurvey.nudge.model.request.DeleteTolaRequest
 import com.patsurvey.nudge.model.request.EditCohortRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
@@ -107,7 +108,7 @@ class TransectWalkViewModel @Inject constructor(
                     eventTopic = EventName.ADD_TOLA.topicName,
                     payLoad = AddCohortRequest.getRequestObjectForTola(tolaItem).json()
                 )
-                writeEventIntoLogFile(eventV1)
+                transectWalkRepository.writeEventIntoLogFile(eventV1)
                 val updatedTolaList =
                     transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
                 withContext(Dispatchers.Main) {
@@ -143,7 +144,7 @@ class TransectWalkViewModel @Inject constructor(
                 eventTopic = EventName.ADD_TOLA.topicName,
                 payLoad = AddCohortRequest.getRequestObjectForTola(tolaItem).json()
             )
-            writeEventIntoLogFile(eventV1)
+            transectWalkRepository.writeEventIntoLogFile(eventV1)
 
             val updatedTolaList =
                 transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
@@ -372,10 +373,7 @@ class TransectWalkViewModel @Inject constructor(
                 if (tolaList.isNotEmpty()) {
                     for (tola in tolaList) {
                         jsonTola.add(
-                            DeleteTolaRequest(
-                                tola.serverId,
-                                localModifiedDate = System.currentTimeMillis()
-                            ).toJson()
+                            DeleteTolaRequest.getRequestObjectForDeleteTola(tola).toJson()
                         )
                     }
                     NudgeLogger.d(
@@ -699,9 +697,9 @@ class TransectWalkViewModel @Inject constructor(
 
                     val eventV1 = EventV1(
                         eventTopic = EventName.DELETE_TOLA.topicName,
-                        payLoad = DeleteTolaRequest(tolaId,System.currentTimeMillis()).json()
+                        payLoad = DeleteTolaRequest.getRequestObjectForDeleteTola(localTola).json()
                     )
-                    writeEventIntoLogFile(eventV1)
+                    transectWalkRepository.writeEventIntoLogFile(eventV1)
                     val updatedTolaList =
                         transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
                     withContext(Dispatchers.Main) {
@@ -742,10 +740,7 @@ class TransectWalkViewModel @Inject constructor(
                         if (tolaToBeDeleted?.serverId != 0) {
                             val jsonArray = JsonArray()
                             jsonArray.add(
-                                DeleteTolaRequest(
-                                    tolaId,
-                                    localModifiedDate = System.currentTimeMillis()
-                                ).toJson()
+                                DeleteTolaRequest.getRequestObjectForDeleteTola(localTola).toJson()
                             )
                             val response = transectWalkRepository.deleteCohort(jsonArray)
                             if (response.status.equals(SUCCESS)) {
@@ -789,6 +784,14 @@ class TransectWalkViewModel @Inject constructor(
                     activeStatus = DidiStatus.DIID_DELETED.ordinal,
                     needsToPostDeleteStatus = true
                 )
+                didiList.forEach { didi ->
+                    val eventV1 = EventV1(
+                        eventTopic = EventName.DELETE_DIDI.topicName,
+                        payLoad = DeleteDidiRequest.getDeleteDidiDetailsRequest(didi).json()
+                    )
+                    transectWalkRepository.writeEventIntoLogFile(eventV1)
+                }
+
                 if (isOnline) {
                     val jsonArray = JsonArray()
                     didiList.forEach {
@@ -846,18 +849,9 @@ class TransectWalkViewModel @Inject constructor(
                 eventTopic = EventName.UPDATE_TOLA.topicName,
                 payLoad = EditCohortRequest.getRequestObjectForTola(updatedTola).json()
             )
-              val  eventFormatter:IEventFormatter = EventWriterFactory().createEventWriter(
-                NudgeCore.getAppContext(),
-                EventFormatterName.JSON_FORMAT_EVENT
-            )
-            eventFormatter.saveAndFormatEvent(
-                event = eventV1,
-                listOf(
-                    EventWriterName.FILE_EVENT_WRITER,
-                    EventWriterName.DB_EVENT_WRITER,
-                    EventWriterName.LOG_EVENT_WRITER
-                )
-            )
+
+            transectWalkRepository.writeEventIntoLogFile(eventV1)
+
             val updatedTolaList =
                 transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
             withContext(Dispatchers.Main) {
@@ -1262,19 +1256,5 @@ class TransectWalkViewModel @Inject constructor(
         return transectWalkRepository.getSelectedVillage()
     }
 
-   suspend fun writeEventIntoLogFile(eventV1: EventV1){
-        val  eventFormatter:IEventFormatter = EventWriterFactory().createEventWriter(
-            NudgeCore.getAppContext(),
-            EventFormatterName.JSON_FORMAT_EVENT
-        )
-        eventFormatter.saveAndFormatEvent(
-            event = eventV1,
-            listOf(
-                EventWriterName.FILE_EVENT_WRITER,
-                EventWriterName.DB_EVENT_WRITER,
-                EventWriterName.LOG_EVENT_WRITER
-            )
-        )
-    }
 
 }

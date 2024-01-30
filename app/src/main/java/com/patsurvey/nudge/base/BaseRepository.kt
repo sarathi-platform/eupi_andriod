@@ -1,6 +1,11 @@
 package com.patsurvey.nudge.base
 
 import com.google.gson.JsonSyntaxException
+import com.nudge.core.enums.EventFormatterName
+import com.nudge.core.enums.EventWriterName
+import com.nudge.core.eventswriter.EventWriterFactory
+import com.nudge.core.eventswriter.IEventFormatter
+import com.nudge.core.eventswriter.entities.EventV1
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.analytics.AnalyticsHelper
@@ -18,6 +23,7 @@ import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.COMMON_ERROR_MSG
 import com.patsurvey.nudge.utils.HEADING_QUESTION_TYPE
+import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PAT_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
@@ -185,6 +191,21 @@ abstract class BaseRepository{
             }
             else -> onServerError(ErrorModel(-1, e.message))
         }
+    }
+
+    open suspend fun writeEventIntoLogFile(eventV1: EventV1){
+        val  eventFormatter: IEventFormatter = EventWriterFactory().createEventWriter(
+            NudgeCore.getAppContext(),
+            EventFormatterName.JSON_FORMAT_EVENT
+        )
+        eventFormatter.saveAndFormatEvent(
+            event = eventV1,
+            listOf(
+                EventWriterName.FILE_EVENT_WRITER,
+                EventWriterName.DB_EVENT_WRITER,
+                EventWriterName.LOG_EVENT_WRITER
+            )
+        )
     }
 
 }

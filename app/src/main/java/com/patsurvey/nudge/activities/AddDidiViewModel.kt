@@ -472,7 +472,7 @@ class AddDidiViewModel @Inject constructor(
                 if (lastDidi != null) {
                     newId = lastDidi.id
                 }
-              var didiEntity=  DidiEntity(
+                var didiEntity = DidiEntity(
                     newId + 1,
                     name = didiName.value.trim(),
                     guardianName = dadaName.value.trim(),
@@ -494,21 +494,12 @@ class AddDidiViewModel @Inject constructor(
 
                 addDidiRepository.insertDidi(didiEntity)
 
-                val eventV1 = EventV1(eventTopic = EventName.ADD_DIDI.topicName,
+                val eventV1 = EventV1(
+                    eventTopic = EventName.ADD_DIDI.topicName,
                     payLoad = AddDidiRequest.getRequestObjectForDidi(didiEntity).json()
                 )
-                val  eventFormatter: IEventFormatter = EventWriterFactory().createEventWriter(
-                    NudgeCore.getAppContext(),
-                    EventFormatterName.JSON_FORMAT_EVENT
-                )
-                eventFormatter.saveAndFormatEvent(
-                    event = eventV1,
-                    listOf(
-                        EventWriterName.FILE_EVENT_WRITER,
-                        EventWriterName.DB_EVENT_WRITER,
-                        EventWriterName.LOG_EVENT_WRITER
-                    ),
-                )
+
+                addDidiRepository.writeEventIntoLogFile(eventV1)
 
                 _didiList.value = addDidiRepository.getAllDidisForVillage(villageId)
                 filterDidiList = addDidiRepository.getAllDidisForVillage(villageId)
