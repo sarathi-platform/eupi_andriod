@@ -648,6 +648,7 @@ class TransectWalkViewModel @Inject constructor(
             )
             // TODO handle empty event case.
             updatedTolaEvent?.let { NudgeCore.getEventObserver()?.addEvent(it) }
+            NudgeCore.getEventObserver()?.syncPendingEvent(NudgeCore.getAppContext())
             val updatedTolaList = transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
             withContext(Dispatchers.Main) {
                 _tolaList.value = updatedTolaList

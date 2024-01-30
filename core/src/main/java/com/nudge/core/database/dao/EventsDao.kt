@@ -4,9 +4,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.nudge.core.EventSyncStatus
 import com.nudge.core.EventsTable
 import com.nudge.core.database.entities.Events
-import com.nudge.core.enums.EventName
 
 @Dao
 interface EventsDao {
@@ -23,4 +23,12 @@ interface EventsDao {
     @Query("SELECT * from $EventsTable where name = :eventName")
     fun getAllEventsForEventName(eventName: String): List<Events>
 
+    @Query("SELECT * from $EventsTable where request_status in (:status)  ORDER BY id DESC LIMIT 10")
+    fun getAllPendingEvent(status:List<EventSyncStatus> ): List<Events>
+
+    @Query("SELECT  COUNT(*) from $EventsTable where request_status in (:status)")
+    fun getTotalPendingEventCount(status:List<EventSyncStatus> ): Int
+
+    @Query("UPDATE $EventsTable SET request_status = :newStatus WHERE id = :eventId")
+    fun updateEventStatus(eventId: String, newStatus: EventSyncStatus?)
 }

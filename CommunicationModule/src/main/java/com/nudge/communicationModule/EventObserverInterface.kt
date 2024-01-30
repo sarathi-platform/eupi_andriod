@@ -1,5 +1,6 @@
 package com.nudge.communicationModule
 
+import android.content.Context
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 
@@ -15,4 +16,5 @@ interface EventObserverInterface {
 
     suspend fun addEventDependencies(eventDependencies: List<EventDependencyEntity>)
 
+    suspend fun syncPendingEvent(context: Context)
 }

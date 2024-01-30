@@ -1,12 +1,24 @@
 package com.nudge.syncmanager
 
+import android.content.Context
+import androidx.work.BackoffPolicy
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
 import com.nudge.communicationModule.EventObserverInterface
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
+import java.util.concurrent.TimeUnit
 
-class EventObserverInterfaceImpl(val eventsDao: EventsDao, val eventDependencyDao: EventDependencyDao): EventObserverInterface {
+class EventObserverInterfaceImpl(
+    val eventsDao: EventsDao,
+    val eventDependencyDao: EventDependencyDao
+) : EventObserverInterface {
 
     override fun <T> onEventCallback(event: T) {
 
@@ -26,6 +38,27 @@ class EventObserverInterfaceImpl(val eventsDao: EventsDao, val eventDependencyDa
 
     override suspend fun addEventDependencies(eventDependencies: List<EventDependencyEntity>) {
         eventDependencyDao.insertAll(eventDependencies)
+    }
+
+    override suspend fun syncPendingEvent(context: Context) {
+
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .setRequiresBatteryNotLow(true)
+            .build()
+        val uploadWorkRequest: WorkRequest =
+            OneTimeWorkRequestBuilder<SyncUploadWorker>().setConstraints(constraints)
+                .setBackoffCriteria(
+                    BackoffPolicy.LINEAR,
+        10000,
+        TimeUnit.MILLISECONDS)
+                .build()
+
+        WorkManager
+            .getInstance(context)
+            .enqueue(uploadWorkRequest)
+
+
     }
 
 
