@@ -151,8 +151,10 @@ class WealthRankingSurveyRepository @Inject constructor(
         didiDao.updateDidiNeedToPostWealthRank(didiId, needsToPostRanking)
     }
 
-    fun updateWealthRankingInDb(didiId: Int, wealthRank: String) {
+    suspend fun updateWealthRankingInDb(didiId: Int, wealthRank: String) {
         didiDao.updateDidiRank(didiId, wealthRank)
+        val didiEntity = didiDao.getDidi(didiId)
+        insertEventIntoDb(didiEntity, EventName.SAVE_WEALTH_RANKING, EventType.STATEFUL)
     }
 
     override suspend fun <T> createEvent(
