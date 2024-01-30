@@ -4,6 +4,9 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.nudge.core.enums.EventName
+import com.nudge.core.eventswriter.entities.EventV1
+import com.patsurvey.nudge.activities.WealthRankingSurveyRepository
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -16,6 +19,7 @@ import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,7 +36,8 @@ class WealthRankingViewModel @Inject constructor(
     val stepsListDao: StepsListDao,
     val villageListDao: VillageListDao,
     val lastSelectedTolaDao: LastSelectedTolaDao,
-    val apiService: ApiService
+    val apiService: ApiService,
+    val repository: WealthRankingSurveyRepository
 ) : BaseViewModel() {
     private val _expandedCardIdsList = MutableStateFlow(listOf<Int>())
     private val _didiList = MutableStateFlow(listOf<DidiEntity>())
@@ -145,6 +150,14 @@ class WealthRankingViewModel @Inject constructor(
                 if(didiEntity.serverId == 0) {
                     NudgeLogger.d("WealthRankingViewModel","updateDidiRankInDb -> didiEntity: $didiEntity, rank: $rank, didiEntity.serverId: ${didiEntity.serverId}")
                     didiDao.updateDidiRank(didiEntity.id, rank)
+
+                    val event = EventV1(
+                        eventTopic = EventName.SAVE_WEALTH_RANKING.topicName,
+                        payLoad = EditDidiWealthRankingRequest.getRequestPayloadForWealthRanking(didiEntity).json()
+                    )
+
+                    repository.writeEventIntoLogFile(event)
+
                     didiDao.updateDidiNeedToPostWealthRank(didiEntity.id,true)
                     didiDao.updateModifiedDate(System.currentTimeMillis(),didiEntity.id)
                     didiDao.updateBeneficiaryProcessStatus(

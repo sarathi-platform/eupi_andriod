@@ -6,11 +6,7 @@ import android.util.Log
 import androidx.compose.runtime.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.nudge.core.enums.EventFormatterName
 import com.nudge.core.enums.EventName
-import com.nudge.core.enums.EventWriterName
-import com.nudge.core.eventswriter.EventWriterFactory
-import com.nudge.core.eventswriter.IEventFormatter
 import com.nudge.core.eventswriter.entities.EventV1
 import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.MyApplication
@@ -27,6 +23,7 @@ import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddDidiRequest
+import com.patsurvey.nudge.model.request.DeleteDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.utils.*
@@ -584,6 +581,13 @@ class AddDidiViewModel @Inject constructor(
                 )
                 updatedDidi.guardianName
                 addDidiRepository.insertDidi(updatedDidi)
+
+                val eventV1 = EventV1(
+                    eventTopic = EventName.UPDATE_DIDI.topicName,
+                    payLoad = EditDidiRequest.getUpdateDidiDetailsRequest(updatedDidi).json()
+                )
+
+                addDidiRepository.writeEventIntoLogFile(eventV1)
 
                 _didiList.value = addDidiRepository.getAllDidisForVillage(villageId)
                 filterDidiList = addDidiRepository.getAllDidisForVillage(villageId)
@@ -1305,6 +1309,14 @@ class AddDidiViewModel @Inject constructor(
                 activeStatus = DidiStatus.DIID_DELETED.ordinal,
                 needsToPostDeleteStatus = if (didi.serverId != 0) true else false
             )
+
+            val eventV1 = EventV1(
+                eventTopic = EventName.DELETE_DIDI.topicName,
+                payLoad = DeleteDidiRequest.getDeleteDidiDetailsRequest(didi).json()
+            )
+
+            addDidiRepository.writeEventIntoLogFile(eventV1)
+
             if (didi.serverId == 0)
                 addDidiRepository.updateNeedToPost(id = didi.id, needsToPost = false)
 
