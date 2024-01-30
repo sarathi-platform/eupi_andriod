@@ -12,6 +12,7 @@ import com.patsurvey.nudge.utils.ARG_PAGE_FROM
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_CODE
 import com.patsurvey.nudge.utils.ONLINE_STATUS
+import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_MOBILE_NUMBER
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -99,8 +100,8 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         prefs.edit().putString(PREF_MOBILE_NUMBER, mobileNumber).apply()
     }
 
-    override fun getMobileNumber(): String? {
-        return prefs.getString(PREF_MOBILE_NUMBER, "")
+    override fun getMobileNumber(): String {
+        return prefs.getString(PREF_MOBILE_NUMBER, "") ?: ""
     }
 
     override fun savePref(key: String, value: String) {
@@ -225,5 +226,9 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
 
     override fun isNeedQuestionToScroll(): Boolean {
         return prefs.getBoolean(PREF_KEY_NEED_TO_SCROLL,false)
+    }
+
+    override fun getUserId(): String {
+        return prefs.getString(PREF_KEY_USER_NAME, "") ?: ""
     }
 }

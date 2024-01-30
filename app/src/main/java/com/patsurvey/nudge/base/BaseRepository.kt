@@ -1,27 +1,22 @@
 package com.patsurvey.nudge.base
 
 import com.google.gson.JsonSyntaxException
-import com.patsurvey.nudge.MyApplication
+import com.nudge.core.database.entities.EventDependencyEntity
+import com.nudge.core.database.entities.Events
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.di.DatabaseModule
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
-import com.patsurvey.nudge.model.request.GetQuestionListRequest
 import com.patsurvey.nudge.network.NetworkResult
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.ApiResponseFailException
 import com.patsurvey.nudge.utils.ApiType
-import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.COMMON_ERROR_MSG
-import com.patsurvey.nudge.utils.HEADING_QUESTION_TYPE
 import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PAT_SURVEY_CONSTANT
-import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
-import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.RESPONSE_CODE_500
 import com.patsurvey.nudge.utils.RESPONSE_CODE_BAD_GATEWAY
 import com.patsurvey.nudge.utils.RESPONSE_CODE_CONFLICT
@@ -32,7 +27,6 @@ import com.patsurvey.nudge.utils.RESPONSE_CODE_NO_DATA
 import com.patsurvey.nudge.utils.RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE
 import com.patsurvey.nudge.utils.RESPONSE_CODE_TIMEOUT
 import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
-import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.TIMEOUT_ERROR_MSG
 import com.patsurvey.nudge.utils.UNAUTHORISED_MESSAGE
 import com.patsurvey.nudge.utils.UNREACHABLE_ERROR_MSG
@@ -65,6 +59,23 @@ abstract class BaseRepository{
     open fun getDidiFromDB(didiId:Int):DidiEntity{
       return didiDao.getDidi(didiId)
     }
+
+    open suspend fun <T> createEvent(eventItem: T, eventName: EventName, eventType: EventType): Events? {
+        return Events.getEmptyEvent()
+    }
+
+    open suspend fun <T> createEventDependency(eventItem: T, eventName: EventName, dependentEvents: Events): List<EventDependencyEntity> {
+        return emptyList()
+    }
+
+    open suspend fun <T> insertEventIntoDb(
+        eventItem: T,
+        eventName: EventName,
+        eventType: EventType
+    ) {
+
+    }
+
     suspend fun <T> safeApiCall(apiCall:suspend ()->Response<T>):NetworkResult<T>{
         try {
             val response=apiCall()

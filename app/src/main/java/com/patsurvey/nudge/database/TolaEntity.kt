@@ -136,3 +136,7 @@ data class TolaEntity(
         return TolaEntity(id, localUniqueId, tolaEntity.id, tolaEntity.name, type, tolaEntity.latitude, tolaEntity.longitude, villageId, status, createdDate, modifiedDate, localCreatedDate, localModifiedDate, needsToPost, transactionId)
     }
 }
+
+fun TolaEntity.getTolaId(): Int {
+    return if (this.serverId != 0) this.serverId else this.id
+}

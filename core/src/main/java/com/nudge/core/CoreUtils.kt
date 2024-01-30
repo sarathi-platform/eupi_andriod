@@ -1,6 +1,8 @@
 package com.nudge.core
 
 import com.google.gson.Gson
+import com.nudge.core.database.entities.EventDependencyEntity
+import com.nudge.core.database.entities.Events
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -27,3 +29,13 @@ fun Long.toTimeDateString(): String {
 
 
 inline fun <reified T : Any> T.json(): String = Gson().toJson(this, T::class.java)
+
+fun String.getSizeInLong() = this.toByteArray().size.toLong()
+
+fun List<Events>.getEventDependencyEntityListFromEvents(dependentEvents: Events): List<EventDependencyEntity> {
+    val eventDependencyList = mutableListOf<EventDependencyEntity>()
+    this.forEach { dependsOnEvent ->
+        eventDependencyList.add(EventDependencyEntity(dependentEvents.id, dependsOnEvent.id))
+    }
+    return eventDependencyList
+}

@@ -15,3 +15,12 @@ const val SYNC_MANAGER_DB_VERSION = 1
 // Increase DB Version everytime any change is made to any table or a new table is added.
 const val NUDGE_DATABASE = "NudgeDatabase"
 const val NUDGE_DATABASE_VERSION = 2
+
+const val SELECTION_MISSION = "Selection"
+const val KEY_PARENT_ENTITY_TOLA_ID = "tolaId"
+const val KEY_PARENT_ENTITY_DIDI_ID = "didiId"
+const val KEY_PARENT_ENTITY_TOLA_NAME = "tolaName"
+const val KEY_PARENT_ENTITY_VILLAGE_ID = "villageId"
+const val KEY_PARENT_ENTITY_DIDI_NAME = "didiName"
+const val KEY_PARENT_ENTITY_DADA_NAME = "dadaName"
+const val KEY_PARENT_ENTITY_ADDRESS = "didiAddress"

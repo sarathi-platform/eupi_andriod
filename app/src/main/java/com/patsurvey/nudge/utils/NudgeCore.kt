@@ -2,15 +2,35 @@ package com.patsurvey.nudge.utils
 
 import android.content.Context
 import android.content.Intent
+import com.nudge.communicationModule.EventObserverInterface
+import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventsDao
+import com.nudge.syncmanager.SyncManager
 import com.patsurvey.nudge.MyApplication
-import java.util.ArrayList
 
 object NudgeCore {
 
     private val TAG = NudgeCore::class.java.simpleName
 
-    fun init (context: Context) {
+    private var eventObserver: EventObserverInterface? = null
 
+    private var syncManager: SyncManager? = null
+
+    fun init (context: Context) {
+        syncManager = SyncManager()
+    }
+
+    fun initEventObserver(eventsDao: EventsDao, eventDependencyDao: EventDependencyDao) {
+        eventObserver = syncManager?.init(eventsDao, eventDependencyDao)
+    }
+
+    fun getEventObserver(): EventObserverInterface? {
+        return eventObserver
+    }
+
+    fun removeEventObserver() {
+        eventObserver = null
+        syncManager?.removeObserver()
     }
 
     fun getAppContext(): Context {
@@ -38,6 +58,7 @@ object NudgeCore {
     }
 
     fun cleanUp() {
+        removeEventObserver()
     }
 
     fun preRequestCheck(): Boolean {

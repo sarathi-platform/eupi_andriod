@@ -78,7 +78,14 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.nudge.core.EventSyncStatus
+import com.nudge.core.KEY_PARENT_ENTITY_ADDRESS
+import com.nudge.core.KEY_PARENT_ENTITY_DADA_NAME
+import com.nudge.core.KEY_PARENT_ENTITY_DIDI_ID
+import com.nudge.core.KEY_PARENT_ENTITY_DIDI_NAME
+import com.nudge.core.KEY_PARENT_ENTITY_TOLA_NAME
+import com.nudge.core.KEY_PARENT_ENTITY_VILLAGE_ID
 import com.nudge.core.database.entities.Events
+import com.nudge.core.enums.EventName
 import com.nudge.core.toDate
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.MyApplication
@@ -100,6 +107,7 @@ import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.database.getDidiId
 import com.patsurvey.nudge.download.FileType
 import com.patsurvey.nudge.model.dataModel.WeightageRatioModal
 import com.patsurvey.nudge.model.request.AddCohortRequest
@@ -1180,6 +1188,32 @@ fun getVillageItemById(villageList: List<VillageEntity>, id: Int): VillageEntity
 }
 
 
+fun <T> getParentEntityMapForEvent(eventItem: T, eventName: EventName): Map<String, Any> {
+    return when(eventName) {
+        EventName.ADD_DIDI -> {
+            val didiEntity = (eventItem as DidiEntity)
+            mapOf(KEY_PARENT_ENTITY_TOLA_NAME to didiEntity.cohortName, KEY_PARENT_ENTITY_VILLAGE_ID to didiEntity.villageId)
+        }
+        EventName.UPDATE_DIDI -> {
+            val didiEntity = (eventItem as DidiEntity)
+            mapOf(KEY_PARENT_ENTITY_DIDI_ID to didiEntity.serverId, KEY_PARENT_ENTITY_VILLAGE_ID to didiEntity.villageId)
+        }
+        EventName.DELETE_DIDI, EventName.SAVE_WEALTH_RANKING -> {
+            val didiEntity = (eventItem as DidiEntity)
+            mapOf(
+                KEY_PARENT_ENTITY_DIDI_NAME to didiEntity.name,
+                KEY_PARENT_ENTITY_DADA_NAME to didiEntity.guardianName,
+                KEY_PARENT_ENTITY_ADDRESS to didiEntity.address,
+                KEY_PARENT_ENTITY_TOLA_NAME to didiEntity.cohortName
+            )
+        }
+        else -> {
+            emptyMap()
+        }
+    }
+}
+
+/*
 fun getSampleEvent(): Events {
     return Events(
         name = "TEST_EVENT",
@@ -1223,4 +1257,4 @@ fun getSampleEvent(): Events {
         error_message = null,
         metadata = Tola(EMPTY_TOLA_NAME, LocationCoordinates(0.0, 0.0)).json()
     )
-}
+}*/

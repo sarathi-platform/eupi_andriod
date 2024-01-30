@@ -2,6 +2,18 @@ package com.patsurvey.nudge.activities.ui.transect_walk
 
 import com.google.gson.Gson
 import com.google.gson.JsonArray
+import com.nudge.core.EventSyncStatus
+import com.nudge.core.KEY_PARENT_ENTITY_TOLA_ID
+import com.nudge.core.KEY_PARENT_ENTITY_TOLA_NAME
+import com.nudge.core.KEY_PARENT_ENTITY_VILLAGE_ID
+import com.nudge.core.SELECTION_MISSION
+import com.nudge.core.database.entities.Events
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
+import com.nudge.core.getSizeInLong
+import com.nudge.core.json
+import com.nudge.core.model.MetadataDto
+import com.nudge.core.toDate
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponse
 import com.patsurvey.nudge.base.BaseRepository
@@ -10,10 +22,13 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.VillageEntity
-import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
+import com.patsurvey.nudge.database.getTolaId
+import com.patsurvey.nudge.model.request.AddCohortRequest
+import com.patsurvey.nudge.model.request.DeleteTolaRequest
+import com.patsurvey.nudge.model.request.EditCohortRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.TolaApiResponse
@@ -68,6 +83,94 @@ class TransectWalkRepository @Inject constructor(
 
     fun tolaInsert(tola: TolaEntity) {
         this.tolaDao.insert(tola)
+    }
+
+    override suspend fun <T> createEvent(eventItem: T, eventName: EventName, eventType: EventType): Events? {
+        if (eventType != EventType.STATEFUL)
+            return super.createEvent(eventItem, eventName, eventType)
+
+        if (eventItem !is TolaEntity)
+            return super.createEvent(eventItem, eventName, eventType)
+
+        when (eventName) {
+            EventName.ADD_TOLA -> {
+
+                val requestPayload = AddCohortRequest.getRequestObjectForTola(eventItem as TolaEntity).json()
+                val addTolaEvent = Events(
+                    name = eventName.name,
+                    type = eventType.name,
+                    createdBy = prefRepo.getUserId(),
+                    mobile_number = prefRepo.getMobileNumber(),
+                    modified_date = System.currentTimeMillis().toDate(),
+                    request_payload = requestPayload,
+                    request_status = EventSyncStatus.OPEN.name,
+                    metadata = MetadataDto(
+                        mission = SELECTION_MISSION,
+                        depends_on = emptyList(),
+                        request_payload_size = requestPayload.getSizeInLong(),
+                    ).json(),
+                    consumer_status = BLANK_STRING,
+                    consumer_response_payload = null
+                )
+                return addTolaEvent
+            }
+
+            EventName.UPDATE_TOLA ->  {
+                val requestPayload = EditCohortRequest.getRequestObjectForTola(eventItem as TolaEntity).json()
+                val updateTolaEvent = Events(
+                    name = eventName.name,
+                    type = eventName.name,
+                    createdBy = prefRepo.getUserId(),
+                    mobile_number = prefRepo.getMobileNumber(),
+                    modified_date = System.currentTimeMillis().toDate(),
+                    request_payload = requestPayload,
+                    request_status = EventSyncStatus.OPEN.name,
+                    metadata = MetadataDto(
+                        mission = SELECTION_MISSION,
+                        depends_on = emptyList(),
+                        request_payload_size = requestPayload.getSizeInLong(),
+                        parentEntity = mapOf(KEY_PARENT_ENTITY_TOLA_ID to  eventItem.serverId, KEY_PARENT_ENTITY_VILLAGE_ID to eventItem.villageId)
+                    ).json(),
+                    consumer_status = BLANK_STRING,
+                    consumer_response_payload = null
+                )
+                return updateTolaEvent
+            }
+            EventName.DELETE_TOLA -> {
+
+                val requestPayload = DeleteTolaRequest.getRequestObjectForDeleteTola(eventItem as TolaEntity).json()
+                val deleteTolaEvent = Events(
+                    name = eventName.name,
+                    type = eventName.name,
+                    createdBy = prefRepo.getUserId(),
+                    mobile_number = prefRepo.getMobileNumber(),
+                    modified_date = System.currentTimeMillis().toDate(),
+                    request_payload = requestPayload,
+                    request_status = EventSyncStatus.OPEN.name,
+                    metadata = MetadataDto(
+                        mission = SELECTION_MISSION,
+                        depends_on = emptyList(),
+                        request_payload_size = requestPayload.getSizeInLong(),
+                        parentEntity = mapOf(KEY_PARENT_ENTITY_TOLA_NAME to  eventItem.name, KEY_PARENT_ENTITY_VILLAGE_ID to eventItem.villageId)
+                    ).json(),
+                    consumer_status = BLANK_STRING,
+                    consumer_response_payload = null
+                )
+
+                return deleteTolaEvent
+            }
+            else -> {
+                return null
+            }
+        }
+    }
+
+    override suspend fun <T> insertEventIntoDb(
+        eventItem: T,
+        eventName: EventName,
+        eventType: EventType
+    ) {
+        // TODO("Not yet implemented")
     }
 
     fun getAllTolasForVillage(villageId: Int): List<TolaEntity> {

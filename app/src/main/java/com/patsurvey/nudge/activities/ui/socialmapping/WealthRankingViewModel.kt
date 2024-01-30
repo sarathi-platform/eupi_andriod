@@ -4,6 +4,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.patsurvey.nudge.activities.WealthRankingSurveyRepository
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -32,7 +33,8 @@ class WealthRankingViewModel @Inject constructor(
     val stepsListDao: StepsListDao,
     val villageListDao: VillageListDao,
     val lastSelectedTolaDao: LastSelectedTolaDao,
-    val apiService: ApiService
+    val apiService: ApiService,
+    val wealthRankingRepository: WealthRankingSurveyRepository,
 ) : BaseViewModel() {
     private val _expandedCardIdsList = MutableStateFlow(listOf<Int>())
     private val _didiList = MutableStateFlow(listOf<DidiEntity>())
@@ -144,7 +146,8 @@ class WealthRankingViewModel @Inject constructor(
                 val updatedDidiList = didiList.value
                 if(didiEntity.serverId == 0) {
                     NudgeLogger.d("WealthRankingViewModel","updateDidiRankInDb -> didiEntity: $didiEntity, rank: $rank, didiEntity.serverId: ${didiEntity.serverId}")
-                    didiDao.updateDidiRank(didiEntity.id, rank)
+//                    didiDao.updateDidiRank(didiEntity.id, rank)
+                    wealthRankingRepository.updateWealthRankingInDb(didiEntity.id, rank)
                     didiDao.updateDidiNeedToPostWealthRank(didiEntity.id,true)
                     didiDao.updateModifiedDate(System.currentTimeMillis(),didiEntity.id)
                     didiDao.updateBeneficiaryProcessStatus(
@@ -180,6 +183,8 @@ class WealthRankingViewModel @Inject constructor(
                         )
                     )
                 }
+                val updatedDidiEntity = didiDao.getDidi(didiId)
+
 
 
                 /*updatedDidiList[updatedDidiList.map { it.serverId }.indexOf(didiId)].wealth_ranking = rank

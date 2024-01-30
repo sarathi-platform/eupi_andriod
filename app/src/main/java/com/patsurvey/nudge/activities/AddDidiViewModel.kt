@@ -6,6 +6,8 @@ import android.util.Log
 import androidx.compose.runtime.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
 import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
@@ -468,28 +470,32 @@ class AddDidiViewModel @Inject constructor(
                     newId = lastDidi.id
                 }
 
-                addDidiRepository.insertDidi(
-                    DidiEntity(
-                        newId + 1,
-                        name = didiName.value.trim(),
-                        guardianName = dadaName.value.trim(),
-                        address = houseNumber.value.trim(),
-                        castId = selectedCast.value.first,
-                        castName = selectedCast.value.second,
-                        cohortId = selectedTolaFromDb?.id ?: selectedTola.value.first,
-                        cohortName = selectedTolaFromDb?.name ?: selectedTola.value.second,
-                        relationship = HUSBAND_STRING,
-                        villageId = addDidiRepository.getSelectedVillage().id,
-                        localCreatedDate = System.currentTimeMillis(),
-                        localModifiedDate = System.currentTimeMillis(),
-                        shgFlag = SHGFlag.NOT_MARKED.value,
-                        transactionId = "",
-                        needsToPostRanking = false,
-                        localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext()),
-                        ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value
-                    )
+                val didiEntity = DidiEntity(
+                    newId + 1,
+                    name = didiName.value.trim(),
+                    guardianName = dadaName.value.trim(),
+                    address = houseNumber.value.trim(),
+                    castId = selectedCast.value.first,
+                    castName = selectedCast.value.second,
+                    cohortId = selectedTolaFromDb?.id ?: selectedTola.value.first,
+                    cohortName = selectedTolaFromDb?.name ?: selectedTola.value.second,
+                    relationship = HUSBAND_STRING,
+                    villageId = addDidiRepository.getSelectedVillage().id,
+                    localCreatedDate = System.currentTimeMillis(),
+                    localModifiedDate = System.currentTimeMillis(),
+                    shgFlag = SHGFlag.NOT_MARKED.value,
+                    transactionId = "",
+                    needsToPostRanking = false,
+                    localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext()),
+                    ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value
                 )
+                addDidiRepository.insertDidi(didiEntity)
 
+                addDidiRepository.insertEventIntoDb(
+                    didiEntity,
+                    EventName.ADD_DIDI,
+                    EventType.STATEFUL
+                )
                 _didiList.value = addDidiRepository.getAllDidisForVillage(villageId)
                 filterDidiList = addDidiRepository.getAllDidisForVillage(villageId)
                 setSocialMappingINProgress(
@@ -573,6 +579,12 @@ class AddDidiViewModel @Inject constructor(
                 )
                 updatedDidi.guardianName
                 addDidiRepository.insertDidi(updatedDidi)
+
+                addDidiRepository.insertEventIntoDb(
+                    updatedDidi,
+                    EventName.UPDATE_DIDI,
+                    EventType.STATEFUL
+                )
 
                 _didiList.value = addDidiRepository.getAllDidisForVillage(villageId)
                 filterDidiList = addDidiRepository.getAllDidisForVillage(villageId)
@@ -1294,6 +1306,13 @@ class AddDidiViewModel @Inject constructor(
                 activeStatus = DidiStatus.DIID_DELETED.ordinal,
                 needsToPostDeleteStatus = if (didi.serverId != 0) true else false
             )
+
+            addDidiRepository.insertEventIntoDb(
+                didi,
+                EventName.DELETE_DIDI,
+                EventType.STATEFUL
+            )
+
             if (didi.serverId == 0)
                 addDidiRepository.updateNeedToPost(id = didi.id, needsToPost = false)
 

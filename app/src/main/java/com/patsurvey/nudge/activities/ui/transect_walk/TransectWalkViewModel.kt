@@ -5,6 +5,8 @@ import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
@@ -27,6 +29,7 @@ import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.LocationCoordinates
+import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
 import com.patsurvey.nudge.utils.PREF_TRANSECT_WALK_COMPLETION_DATE_
@@ -89,6 +92,8 @@ class TransectWalkViewModel @Inject constructor(
                     localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
                 )
                 transectWalkRepository.tolaInsert(tolaItem)
+                val addTolaEvent = transectWalkRepository.createEvent(tolaItem, EventName.ADD_TOLA, EventType.STATEFUL)
+                addTolaEvent?.let { NudgeCore.getEventObserver()?.addEvent(it) }
                 val updatedTolaList =
                     transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
                 withContext(Dispatchers.Main) {
@@ -116,6 +121,8 @@ class TransectWalkViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val tolaItem = TolaEntity.createEmptyTolaForVillageId(villageEntity.value?.id ?: 0)
             transectWalkRepository.tolaInsert(tolaItem)
+            val addTolaEvent = transectWalkRepository.createEvent(tolaItem, EventName.ADD_TOLA, EventType.STATEFUL)
+            addTolaEvent?.let { NudgeCore.getEventObserver()?.addEvent(it) }
             val updatedTolaList =
                 transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
             withContext(Dispatchers.Main) {
@@ -498,7 +505,18 @@ class TransectWalkViewModel @Inject constructor(
                 val localTola = transectWalkRepository.getTola(tolaId)
                 val didiListForTola = transectWalkRepository.getDidisForTola(if (localTola.serverId == 0) localTola.id else localTola.serverId)
                 if (didiListForTola.isEmpty()) {
-                    transectWalkRepository.deleteTolaOffline(tolaId, TolaStatus.TOLA_DELETED.ordinal)
+                    transectWalkRepository.deleteTolaOffline(
+                        tolaId,
+                        TolaStatus.TOLA_DELETED.ordinal
+                    )
+
+                    val deleteTolaEvent = transectWalkRepository.createEvent(
+                        localTola,
+                        EventName.DELETE_TOLA,
+                        EventType.STATEFUL
+                    )
+                    deleteTolaEvent?.let { NudgeCore.getEventObserver()?.addEvent(it) }
+
                     val updatedTolaList = transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
                     withContext(Dispatchers.Main) {
                         _tolaList.value = updatedTolaList
@@ -570,6 +588,10 @@ class TransectWalkViewModel @Inject constructor(
                     activeStatus = DidiStatus.DIID_DELETED.ordinal,
                     needsToPostDeleteStatus = true
                 )
+                didList.forEach {
+                    // TODO Handle tola deletion for beneficiaries assigned to that tola.
+//                    transectWalkRepository.createEvent()
+                }
                 if (isOnline) {
                     val jsonArray = JsonArray()
                     didList.forEach {
@@ -617,8 +639,15 @@ class TransectWalkViewModel @Inject constructor(
                 localModifiedDate=System.currentTimeMillis(),
                 localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
             )
-            transectWalkRepository.tolaInsert(updatedTola)
+//            transectWalkRepository.tolaInsert(updatedTola)
             transectWalkRepository.updateTolaName(id, newName)
+            val updatedTolaEvent = transectWalkRepository.createEvent(
+                updatedTola,
+                EventName.UPDATE_TOLA,
+                EventType.STATEFUL
+            )
+            // TODO handle empty event case.
+            updatedTolaEvent?.let { NudgeCore.getEventObserver()?.addEvent(it) }
             val updatedTolaList = transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
             withContext(Dispatchers.Main) {
                 _tolaList.value = updatedTolaList

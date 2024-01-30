@@ -8,6 +8,8 @@ import android.net.Network
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
 import com.akexorcist.localizationactivity.core.LocalizationApplicationDelegate
+import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventsDao
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.NudgeLogger.e
@@ -20,14 +22,22 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.Locale
+import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 @HiltAndroidApp
 class MyApplication: Application() {
 
+    @Inject
+    lateinit var eventsDao: EventsDao
+
+    @Inject
+    lateinit var eventDependencyDao: EventDependencyDao
+
     private fun init() {
         instance = this
-        NudgeCore.init(applicationContext)
+        NudgeCore.init(this)
+        NudgeCore.initEventObserver(eventsDao, eventDependencyDao)
     }
 
     override fun onCreate() {
