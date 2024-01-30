@@ -101,22 +101,13 @@ class TransectWalkViewModel @Inject constructor(
                     localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
                 )
                 transectWalkRepository.tolaInsert(tolaItem)
+
+
                 val eventV1 = EventV1(
                     eventTopic = EventName.ADD_TOLA.topicName,
                     payLoad = AddCohortRequest.getRequestObjectForTola(tolaItem).json()
                 )
-                val  eventFormatter:IEventFormatter = EventWriterFactory().createEventWriter(
-                    NudgeCore.getAppContext(),
-                    EventFormatterName.JSON_FORMAT_EVENT
-                )
-                eventFormatter.saveAndFormatEvent(
-                    event = eventV1,
-                    listOf(
-                        EventWriterName.FILE_EVENT_WRITER,
-                        EventWriterName.DB_EVENT_WRITER,
-                        EventWriterName.LOG_EVENT_WRITER
-                    )
-                )
+                writeEventIntoLogFile(eventV1)
                 val updatedTolaList =
                     transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
                 withContext(Dispatchers.Main) {
@@ -147,6 +138,13 @@ class TransectWalkViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val tolaItem = TolaEntity.createEmptyTolaForVillageId(villageEntity.value?.id ?: 0)
             transectWalkRepository.tolaInsert(tolaItem)
+
+            val eventV1 = EventV1(
+                eventTopic = EventName.ADD_TOLA.topicName,
+                payLoad = AddCohortRequest.getRequestObjectForTola(tolaItem).json()
+            )
+            writeEventIntoLogFile(eventV1)
+
             val updatedTolaList =
                 transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
             withContext(Dispatchers.Main) {
@@ -698,6 +696,12 @@ class TransectWalkViewModel @Inject constructor(
                         tolaId,
                         TolaStatus.TOLA_DELETED.ordinal
                     )
+
+                    val eventV1 = EventV1(
+                        eventTopic = EventName.DELETE_TOLA.topicName,
+                        payLoad = DeleteTolaRequest(tolaId,System.currentTimeMillis()).json()
+                    )
+                    writeEventIntoLogFile(eventV1)
                     val updatedTolaList =
                         transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
                     withContext(Dispatchers.Main) {
@@ -779,7 +783,7 @@ class TransectWalkViewModel @Inject constructor(
     private fun deleteDidisForTola(tolaId: Int, isOnline: Boolean) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             try {
-                val didList = transectWalkRepository.getDidisForTola(tolaId)
+                val didiList = transectWalkRepository.getDidisForTola(tolaId)
                 transectWalkRepository.deleteDidisForTola(
                     tolaId,
                     activeStatus = DidiStatus.DIID_DELETED.ordinal,
@@ -787,7 +791,7 @@ class TransectWalkViewModel @Inject constructor(
                 )
                 if (isOnline) {
                     val jsonArray = JsonArray()
-                    didList.forEach {
+                    didiList.forEach {
                         val jsonObject = JsonObject()
                         jsonObject.addProperty("id", it.id)
                         jsonObject.addProperty("localModifiedDate", System.currentTimeMillis())
@@ -1256,6 +1260,21 @@ class TransectWalkViewModel @Inject constructor(
 
     fun getSelectedVillage(): VillageEntity {
         return transectWalkRepository.getSelectedVillage()
+    }
+
+   suspend fun writeEventIntoLogFile(eventV1: EventV1){
+        val  eventFormatter:IEventFormatter = EventWriterFactory().createEventWriter(
+            NudgeCore.getAppContext(),
+            EventFormatterName.JSON_FORMAT_EVENT
+        )
+        eventFormatter.saveAndFormatEvent(
+            event = eventV1,
+            listOf(
+                EventWriterName.FILE_EVENT_WRITER,
+                EventWriterName.DB_EVENT_WRITER,
+                EventWriterName.LOG_EVENT_WRITER
+            )
+        )
     }
 
 }
