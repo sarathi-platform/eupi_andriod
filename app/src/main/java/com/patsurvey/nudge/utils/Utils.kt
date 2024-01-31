@@ -1179,6 +1179,21 @@ fun getVillageItemById(villageList: List<VillageEntity>, id: Int): VillageEntity
     return villageList[villageList.map { it.id }.indexOf(id)]
 }
 
+fun calculateMatchPercentage(didiList: List<DidiEntity>, questionPassingScore: Int): Int {
+    val matchedCount = didiList.filter {
+        (it.score ?: 0.0) >= questionPassingScore.toDouble()
+                && (it.crpScore ?: 0.0) >= questionPassingScore.toDouble() }.size
+
+    return if (didiList.isNotEmpty() && matchedCount != 0) ((matchedCount.toFloat()/didiList.size.toFloat()) * 100).toInt() else 0
+
+}
+
+fun List<DidiEntity>.getNotAvailableDidiCount(): Int {
+    return this.filter {
+        it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
+                || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal
+    }.size
+}
 
 fun getSampleEvent(): Events {
     return Events(

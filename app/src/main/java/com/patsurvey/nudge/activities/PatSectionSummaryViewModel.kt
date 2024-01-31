@@ -211,82 +211,90 @@ class PatSectionSummaryViewModel @Inject constructor(
         }
     }
 
-    fun calculateDidiScore(didiId: Int) {
+    private suspend fun calculateDidiScore(didiId: Int) {
         var passingMark = 0
         var isDidiAccepted = false
         var comment = LOW_SCORE
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            withContext(Dispatchers.IO) {
-                _inclusiveQueList.value = patSectionRepository.getAllInclusiveQues(didiId)
-                if (_inclusiveQueList.value.isNotEmpty()) {
-                    var totalWightWithoutNumQue = patSectionRepository.getTotalWeightWithoutNumQues(didiId)
-                    NudgeLogger.d("PatSectionSummaryViewModel", "calculateDidiScore: $totalWightWithoutNumQue")
-                    val numQueList =
-                        _inclusiveQueList.value.filter { it.type == QuestionType.Numeric_Field.name }
-                    if (numQueList.isNotEmpty()) {
-                        numQueList.forEach { answer ->
-                            val numQue = patSectionRepository.getQuestion(answer.questionId)
-                            passingMark = numQue.surveyPassingMark ?: 0
-                            if (numQue.questionFlag?.equals(FLAG_WEIGHT, true) == true) {
-                                val weightList = toWeightageRatio(numQue.json.toString())
-                                if (weightList.isNotEmpty()) {
-                                    val newScore = calculateScore(
-                                        weightList,
-                                        answer.totalAssetAmount?.toDouble() ?: 0.0,
-                                        false
-                                    )
-                                    totalWightWithoutNumQue += newScore
-                                    NudgeLogger.d("PatSectionSummaryViewModel", "calculateDidiScore: totalWightWithoutNumQue += newScore -> $totalWightWithoutNumQue")
-                                }
-                            } else if (numQue.questionFlag?.equals(FLAG_RATIO, true) == true) {
-                                val ratioList = toWeightageRatio(numQue.json.toString())
-                                val newScore = calculateScore(
-                                    ratioList,
-                                    answer.totalAssetAmount?.toDouble() ?: 0.0,
-                                    true
-                                )
-                                totalWightWithoutNumQue += newScore
-                                NudgeLogger.d("PatSectionSummaryViewModel", "calculateDidiScore: for Flag FLAG_RATIO totalWightWithoutNumQue += newScore -> $totalWightWithoutNumQue")
-                            }
+        _inclusiveQueList.value = patSectionRepository.getAllInclusiveQues(didiId)
+        if (_inclusiveQueList.value.isNotEmpty()) {
+            var totalWightWithoutNumQue = patSectionRepository.getTotalWeightWithoutNumQues(didiId)
+            NudgeLogger.d(
+                "PatSectionSummaryViewModel",
+                "calculateDidiScore: $totalWightWithoutNumQue"
+            )
+            val numQueList =
+                _inclusiveQueList.value.filter { it.type == QuestionType.Numeric_Field.name }
+            if (numQueList.isNotEmpty()) {
+                numQueList.forEach { answer ->
+                    val numQue = patSectionRepository.getQuestion(answer.questionId)
+                    passingMark = numQue.surveyPassingMark ?: 0
+                    if (numQue.questionFlag?.equals(FLAG_WEIGHT, true) == true) {
+                        val weightList = toWeightageRatio(numQue.json.toString())
+                        if (weightList.isNotEmpty()) {
+                            val newScore = calculateScore(
+                                weightList,
+                                answer.totalAssetAmount?.toDouble() ?: 0.0,
+                                false
+                            )
+                            totalWightWithoutNumQue += newScore
+                            NudgeLogger.d(
+                                "PatSectionSummaryViewModel",
+                                "calculateDidiScore: totalWightWithoutNumQue += newScore -> $totalWightWithoutNumQue"
+                            )
                         }
-                    }
-                    // TotalScore
-                    if (totalWightWithoutNumQue >= passingMark) {
-                        isDidiAccepted = true
-                        comment = BLANK_STRING
-                        patSectionRepository.updateVOEndorsementDidiStatus(
-                            didiId = didiId,
-                            status = ForVOEndorsementType.ACCEPTED.ordinal
+                    } else if (numQue.questionFlag?.equals(FLAG_RATIO, true) == true) {
+                        val ratioList = toWeightageRatio(numQue.json.toString())
+                        val newScore = calculateScore(
+                            ratioList,
+                            answer.totalAssetAmount?.toDouble() ?: 0.0,
+                            true
                         )
-                    } else {
-                        isDidiAccepted = false
-                        patSectionRepository.updateVOEndorsementDidiStatus(
-                            didiId = didiId,
-                            status = ForVOEndorsementType.REJECTED.ordinal
+                        totalWightWithoutNumQue += newScore
+                        NudgeLogger.d(
+                            "PatSectionSummaryViewModel",
+                            "calculateDidiScore: for Flag FLAG_RATIO totalWightWithoutNumQue += newScore -> $totalWightWithoutNumQue"
                         )
                     }
-                    Log.d("TAG", "calculateDidiScorePATSection:  $totalWightWithoutNumQue  :: $didiId :: $isDidiAccepted")
-
-                    patSectionRepository.updateDidiScoreInDB(
-                        score = totalWightWithoutNumQue,
-                        comment = comment,
-                        didiId = didiId,
-                        isDidiAccepted = isDidiAccepted
-                    )
                 }
-                else {
-                    Log.d("TAG", "calculateDidiScorePATSection else :  0.0  :: $didiId :: $isDidiAccepted")
-
-                    patSectionRepository.updateDidiScoreInDB(
-                        score = 0.0,
-                        comment = TYPE_EXCLUSION,
-                        didiId = didiId,
-                        isDidiAccepted = false
-                    )
-                }
-                patSectionRepository.updateModifiedDateServerId(didiId)
             }
+            // TotalScore
+            if (totalWightWithoutNumQue >= passingMark) {
+                isDidiAccepted = true
+                comment = BLANK_STRING
+                patSectionRepository.updateVOEndorsementDidiStatus(
+                    didiId = didiId,
+                    status = ForVOEndorsementType.ACCEPTED.ordinal
+                )
+            } else {
+                isDidiAccepted = false
+                patSectionRepository.updateVOEndorsementDidiStatus(
+                    didiId = didiId,
+                    status = ForVOEndorsementType.REJECTED.ordinal
+                )
+            }
+            Log.d(
+                "TAG",
+                "calculateDidiScorePATSection:  $totalWightWithoutNumQue  :: $didiId :: $isDidiAccepted"
+            )
+
+            patSectionRepository.updateDidiScoreInDB(
+                score = totalWightWithoutNumQue,
+                comment = comment,
+                didiId = didiId,
+                isDidiAccepted = isDidiAccepted
+            )
+        } else {
+            Log.d("TAG", "calculateDidiScorePATSection else :  0.0  :: $didiId :: $isDidiAccepted")
+
+            patSectionRepository.updateDidiScoreInDB(
+                score = 0.0,
+                comment = TYPE_EXCLUSION,
+                didiId = didiId,
+                isDidiAccepted = false
+            )
         }
+        patSectionRepository.updateModifiedDateServerId(didiId)
+
     }
 
     fun updateVOEndorseAfterDidiRejected(didiId:Int,forVoEndorsementStatus:Int){
@@ -299,6 +307,14 @@ class PatSectionSummaryViewModel @Inject constructor(
                 didiId = didiId,
                 status = forVoEndorsementStatus
             )
+        }
+    }
+
+    fun writePatEvents() {
+        CoroutineScope(Dispatchers.IO).launch {
+            calculateDidiScore(didiEntity.value.id)
+            patSectionRepository.writePatSummarySaveEvent(didiEntity.value)
+            patSectionRepository.writePatScoreSaveEvent(didiEntity.value)
         }
     }
 }

@@ -829,7 +829,9 @@ class SyncHelper (
                         jsonTola.add(
                             DeleteTolaRequest(
                                 tola.serverId,
-                                localModifiedDate = System.currentTimeMillis()
+                                localModifiedDate = System.currentTimeMillis(),
+                                tola.name,
+                                tola.villageId
                             ).toJson()
                         )
                     }

@@ -135,7 +135,7 @@ class PatDidiSummaryViewModel @Inject constructor(
                 EventFormatterName.JSON_FORMAT_EVENT
             )
             val eventV1 = EventV1(eventTopic = EventName.UPLOAD_DIDI_IMAGE.topicName,
-                payLoad =DidiImageUploadRequest(didiId = didiEntity.id.toString(), location =didiImageLocation.value, filePath =photoPath, userType = if (patDidiSummaryRepository.prefRepo.isUserBPC()) USER_BPC else USER_CRP).json()
+                payload =DidiImageUploadRequest(didiId = didiEntity.id.toString(), location =didiImageLocation.value, filePath =photoPath, userType = if (patDidiSummaryRepository.prefRepo.isUserBPC()) USER_BPC else USER_CRP).json()
             )
             eventFormatter.saveAndFormatEvent(
                 event = eventV1,

@@ -1,15 +1,28 @@
 package com.patsurvey.nudge.activities.survey
 
+import com.nudge.core.enums.EventName
+import com.nudge.core.eventswriter.entities.EventV1
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.model.request.AnswerDetailDTOListItem
+import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
+import com.patsurvey.nudge.model.request.PATSummarySaveRequest
+import com.patsurvey.nudge.utils.BPC_USER_TYPE
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.USER_BPC
+import com.patsurvey.nudge.utils.USER_CRP
+import com.patsurvey.nudge.utils.json
 import com.patsurvey.nudge.utils.updateStepStatus
 import javax.inject.Inject
 
@@ -17,6 +30,7 @@ class PatSectionSummaryRepository @Inject constructor(
     val prefRepo: PrefRepo,
     private val questionListDao: QuestionListDao,
     private val answerDao: AnswerDao,
+    private val numericAnswerDao: NumericAnswerDao,
     private val stepsListDao: StepsListDao
 ):BaseRepository() {
 
@@ -107,7 +121,51 @@ class PatSectionSummaryRepository @Inject constructor(
 
     }
 
+    private fun getAllAnswersForDidi(didiId: Int): List<SectionAnswerEntity> {
+        return answerDao.getAllNeedToPostQuesForDidi(didiId)
+    }
 
+    private fun getAllNumericAnswersForDidi(didiId: Int): List<NumericAnswerEntity> {
+        return numericAnswerDao.getAllAnswersForDidi(didiId)
+    }
 
+    private fun getSurveyId(questionId: Int): Int {
+        return questionListDao.getQuestion(questionId).surveyId ?: 0
+    }
+
+    suspend fun writePatSummarySaveEvent(didiEntity: DidiEntity) {
+        val sectionAnswerEntityList = getAllAnswersForDidi(didiEntity.id)
+        val numericAnswerEntityList = getAllNumericAnswersForDidi(didiEntity.id)
+        val answerDetailDTOListItem = AnswerDetailDTOListItem.getAnswerDetailDtoListItem(sectionAnswerEntityList, numericAnswerEntityList)
+        val patSummarySaveRequest = PATSummarySaveRequest.getPatSummarySaveRequest(
+            didiEntity = didiEntity,
+            answerDetailDTOList = answerDetailDTOListItem,
+            languageId = (prefRepo.getAppLanguageId() ?: 2),
+            surveyId = getSurveyId(sectionAnswerEntityList.first().questionId),
+            villageEntity = prefRepo.getSelectedVillage(),
+            userType = if((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true)) USER_BPC else USER_CRP
+        ).json()
+
+        val event = EventV1(
+            eventTopic = EventName.SAVE_PAT_ANSWERS.topicName,
+            payload = patSummarySaveRequest
+        )
+
+        writeEventIntoLogFile(event)
+
+    }
+
+    suspend fun writePatScoreSaveEvent(didiEntity: DidiEntity) {
+        val passingMark = questionListDao.getPassingScore()
+        val patScoreSaveRequest = EditDidiWealthRankingRequest.getRequestPayloadForPatScoreSave(didiEntity, passingMark, isBpcUserType = prefRepo.isUserBPC()).json()
+
+        val event = EventV1(
+            eventTopic = EventName.SAVE_PAT_SCORE.topicName,
+            payload = patScoreSaveRequest
+        )
+
+        writeEventIntoLogFile(event)
+
+    }
 
 }

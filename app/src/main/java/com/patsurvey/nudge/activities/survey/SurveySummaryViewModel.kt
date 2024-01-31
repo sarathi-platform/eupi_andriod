@@ -697,6 +697,9 @@ class SurveySummaryViewModel @Inject constructor(
                 val villageId = repository.prefRepo.getSelectedVillage().id
                 val passingScore = repository.getPassingScore()
                 val bpcStep = repository.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }.last()
+
+                repository.writeBpcMatchScoreEvent(villageId, passingScore, bpcStep, didiList.value)
+
                 val matchPercentage = calculateMatchPercentage(didiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }, passingScore)
                 val saveMatchSummaryRequest = SaveMatchSummaryRequest(
                     programId = bpcStep.programId,

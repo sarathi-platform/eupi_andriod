@@ -255,6 +255,7 @@ fun PatSurvaySectionSummaryScreen(
                     didi.value.id,
                     PatSurveyStatus.COMPLETED.ordinal
                 )
+                patSectionSummaryViewModel.writePatEvents()
                 if (patSectionSummaryViewModel.isYesSelected.value) {
                     var exclusionType = ExclusionType.SIMPLE_EXCLUSION.ordinal
 

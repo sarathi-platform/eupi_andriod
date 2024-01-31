@@ -1,6 +1,8 @@
 package com.patsurvey.nudge.activities.survey
 
 import com.google.gson.Gson
+import com.nudge.core.enums.EventName
+import com.nudge.core.eventswriter.entities.EventV1
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponseForPatStatus
 import com.patsurvey.nudge.base.BaseRepository
@@ -33,7 +35,6 @@ import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
 import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.getFormSubPath
 import com.patsurvey.nudge.utils.json
@@ -258,6 +259,23 @@ class SurveySummaryRepository @Inject constructor(
 
     fun updatePatEditFlag(villageId: Int, patEdit: Boolean){
         didiDao.updatePatEditFlag(villageId, patEdit)
+    }
+
+    suspend fun writeBpcMatchScoreEvent(
+        villageId: Int,
+        passingScore: Int,
+        bpcStep: StepListEntity,
+        didiList: List<DidiEntity>
+    ) {
+        val event = EventV1(eventTopic = EventName.SAVE_BPC_MATCH_SCORE.topicName, payload = SaveMatchSummaryRequest.getSaveMatchSummaryRequestForBpc(
+            villageId = villageId,
+            stepListEntity = bpcStep,
+            didiList = didiList,
+            questionPassionScore = passingScore
+        ).json())
+
+        writeEventIntoLogFile(event)
+
     }
 
 }

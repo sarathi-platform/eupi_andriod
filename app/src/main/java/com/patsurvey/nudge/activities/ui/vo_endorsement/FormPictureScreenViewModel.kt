@@ -18,15 +18,10 @@ import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
-import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.PoorDidiListDao
-import com.patsurvey.nudge.database.dao.StepsListDao
-import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
-import com.patsurvey.nudge.model.request.DidiImageUploadRequest
 import com.patsurvey.nudge.model.request.DocumentUploadRequest
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
@@ -51,7 +46,6 @@ import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
-import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.compressImage
 import com.patsurvey.nudge.utils.getFileNameFromURL
@@ -572,7 +566,7 @@ class FormPictureScreenViewModel @Inject constructor(
 
                             val eventV1 = EventV1(
                                 eventTopic = EventName.UPLOAD_FORM_IMAGE.topicName,
-                                payLoad = DocumentUploadRequest(
+                                payload = DocumentUploadRequest(
                                     villageId = repository.prefRepo.getSelectedVillage().id.toString(),
                                     userType = if (repository.prefRepo.isUserBPC()) USER_BPC else USER_CRP,
                                     filePath = it.value,
@@ -617,7 +611,7 @@ class FormPictureScreenViewModel @Inject constructor(
                             formList.add(formDFilePart)
                             val eventV1 = EventV1(
                                 eventTopic = EventName.UPLOAD_FORM_IMAGE.topicName,
-                                payLoad = DocumentUploadRequest(
+                                payload = DocumentUploadRequest(
                                     villageId = repository.prefRepo.getSelectedVillage().id.toString(),
                                     userType = if (repository.prefRepo.isUserBPC()) USER_BPC else USER_CRP,
                                     filePath = it.value,

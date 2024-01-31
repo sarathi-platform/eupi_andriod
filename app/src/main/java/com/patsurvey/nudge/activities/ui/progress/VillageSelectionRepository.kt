@@ -1068,7 +1068,9 @@ class VillageSelectionRepository @Inject constructor(
                         jsonTola.add(
                             DeleteTolaRequest(
                                 tola.serverId,
-                                localModifiedDate = System.currentTimeMillis()
+                                localModifiedDate = System.currentTimeMillis(),
+                                tola.name,
+                                tola.villageId
                             ).toJson()
                         )
                     }

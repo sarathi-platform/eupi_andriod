@@ -493,7 +493,7 @@ class AddDidiViewModel @Inject constructor(
 
                 val eventV1 = EventV1(
                     eventTopic = EventName.ADD_DIDI.topicName,
-                    payLoad = AddDidiRequest.getRequestObjectForDidi(didiEntity).json()
+                    payload = AddDidiRequest.getRequestObjectForDidi(didiEntity).json()
                 )
 
                 addDidiRepository.writeEventIntoLogFile(eventV1)
@@ -584,7 +584,7 @@ class AddDidiViewModel @Inject constructor(
 
                 val eventV1 = EventV1(
                     eventTopic = EventName.UPDATE_DIDI.topicName,
-                    payLoad = EditDidiRequest.getUpdateDidiDetailsRequest(updatedDidi).json()
+                    payload = EditDidiRequest.getUpdateDidiDetailsRequest(updatedDidi).json()
                 )
 
                 addDidiRepository.writeEventIntoLogFile(eventV1)
@@ -1312,7 +1312,7 @@ class AddDidiViewModel @Inject constructor(
 
             val eventV1 = EventV1(
                 eventTopic = EventName.DELETE_DIDI.topicName,
-                payLoad = DeleteDidiRequest.getDeleteDidiDetailsRequest(didi).json()
+                payload = DeleteDidiRequest.getDeleteDidiDetailsRequest(didi).json()
             )
 
             addDidiRepository.writeEventIntoLogFile(eventV1)

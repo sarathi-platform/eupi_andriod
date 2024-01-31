@@ -153,7 +153,7 @@ class WealthRankingViewModel @Inject constructor(
 
                     val event = EventV1(
                         eventTopic = EventName.SAVE_WEALTH_RANKING.topicName,
-                        payLoad = EditDidiWealthRankingRequest.getRequestPayloadForWealthRanking(didiEntity).json()
+                        payload = EditDidiWealthRankingRequest.getRequestPayloadForWealthRanking(didiEntity).json()
                     )
 
                     repository.writeEventIntoLogFile(event)
