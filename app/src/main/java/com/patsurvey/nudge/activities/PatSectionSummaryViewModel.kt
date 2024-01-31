@@ -313,8 +313,9 @@ class PatSectionSummaryViewModel @Inject constructor(
     fun writePatEvents() {
         CoroutineScope(Dispatchers.IO).launch {
             calculateDidiScore(didiEntity.value.id)
-            patSectionRepository.writePatSummarySaveEvent(didiEntity.value)
-            patSectionRepository.writePatScoreSaveEvent(didiEntity.value)
+            val updatedDidiEntity = patSectionRepository.getDidiFromDB(didiEntity.value.id)
+            patSectionRepository.writePatSummarySaveEvent(updatedDidiEntity)
+            patSectionRepository.writePatScoreSaveEvent(updatedDidiEntity)
         }
     }
 }

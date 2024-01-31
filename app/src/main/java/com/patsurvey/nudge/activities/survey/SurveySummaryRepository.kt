@@ -30,6 +30,7 @@ import com.patsurvey.nudge.model.response.SaveMatchSummaryResponse
 import com.patsurvey.nudge.model.response.TransactionResponseModel
 import com.patsurvey.nudge.model.response.WorkFlowResponse
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -272,7 +273,9 @@ class SurveySummaryRepository @Inject constructor(
             stepListEntity = bpcStep,
             didiList = didiList,
             questionPassionScore = passingScore
-        ).json())
+        ).json(),
+            mobileNumber = prefRepo.getMobileNumber() ?: BLANK_STRING
+        )
 
         writeEventIntoLogFile(event)
 

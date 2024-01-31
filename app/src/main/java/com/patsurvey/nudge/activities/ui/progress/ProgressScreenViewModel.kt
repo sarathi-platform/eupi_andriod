@@ -15,6 +15,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
@@ -337,6 +338,23 @@ class ProgressScreenViewModel @Inject constructor(
 
     fun saveFromPage(pageFrom: String) {
         progressScreenRepository.saveFromPage(pageFrom)
+    }
+
+    override fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val stepListEntity = progressScreenRepository.getStepForVillage(
+                stepId,
+                progressScreenRepository.prefRepo.getSelectedVillage().id
+            )
+            if (stepListEntity.workFlowId == 0) {
+                val updateWorkflowEvent = progressScreenRepository.createStepUpdateEvent(
+                    stepStatus,
+                    stepListEntity,
+                    progressScreenRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
+                )
+                progressScreenRepository.writeEventIntoLogFile(updateWorkflowEvent)
+            }
+        }
     }
 
 }

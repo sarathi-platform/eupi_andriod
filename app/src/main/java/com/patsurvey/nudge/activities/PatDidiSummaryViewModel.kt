@@ -130,22 +130,18 @@ class PatDidiSummaryViewModel @Inject constructor(
             NudgeLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> didiDao.saveLocalImagePath before = didiId: ${didiEntity.id}, finalPathWithCoordinates: $finalPathWithCoordinates")
             patDidiSummaryRepository.saveDidiLocalImagePath(finalPathWithCoordinates,didiEntity.id)
             NudgeLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> didiDao.saveLocalImagePath after")
-            val  eventFormatter: IEventFormatter = EventWriterFactory().createEventWriter(
-                NudgeCore.getAppContext(),
-                EventFormatterName.JSON_FORMAT_EVENT
-            )
-            val eventV1 = EventV1(eventTopic = EventName.UPLOAD_DIDI_IMAGE.topicName,
-                payload =DidiImageUploadRequest(didiId = didiEntity.id.toString(), location =didiImageLocation.value, filePath =photoPath, userType = if (patDidiSummaryRepository.prefRepo.isUserBPC()) USER_BPC else USER_CRP).json()
-            )
-            eventFormatter.saveAndFormatEvent(
-                event = eventV1,
-                listOf(
-                    EventWriterName.FILE_EVENT_WRITER,
-                    EventWriterName.IMAGE_EVENT_WRITER,
-                    EventWriterName.DB_EVENT_WRITER,
-                    EventWriterName.LOG_EVENT_WRITER
-                ),uri)
 
+            val eventV1 = EventV1(eventTopic = EventName.UPLOAD_DIDI_IMAGE.topicName,
+                payload = DidiImageUploadRequest(
+                    didiId = didiEntity.id.toString(),
+                    location = didiImageLocation.value,
+                    filePath = photoPath,
+                    userType = if (patDidiSummaryRepository.prefRepo.isUserBPC()) USER_BPC else USER_CRP
+                ).json(),
+                mobileNumber = patDidiSummaryRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
+            )
+            patDidiSummaryRepository.uri = uri
+            patDidiSummaryRepository.writeImageEventIntoLogFile(eventV1)
 
         }
     }

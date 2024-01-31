@@ -73,6 +73,7 @@ import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
 import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.utils.LocationUtil
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.Tola
 import com.patsurvey.nudge.utils.TolaStatus
 import com.patsurvey.nudge.utils.showCustomToast
@@ -487,6 +488,7 @@ fun TransectWalkScreen(
 //                            viewModel.updateTolaNeedTOPostList(villageId)
                         }
                         viewModel.markTransectWalkComplete(villageId, stepId)
+                        viewModel.updateWorkflowStatus(StepStatus.COMPLETED.name, stepId)
                         navController.navigate(
                             "step_completion_screen/${
                                 context.getString(R.string.transect_walk_completed_message).replace(

@@ -161,7 +161,8 @@ class VoEndorsementSummaryViewModel @Inject constructor(
             val updatedDidi = repository.getDidiFromDB(didiId)
             val event = EventV1(
                 eventTopic = EventName.SAVE_VO_ENDORSEMENT.topicName,
-                payload = EditDidiWealthRankingRequest.getRequestPayloadForVoEndorsement(updatedDidi).json()
+                payload = EditDidiWealthRankingRequest.getRequestPayloadForVoEndorsement(updatedDidi).json(),
+                mobileNumber = repository.prefRepo.getMobileNumber() ?: BLANK_STRING
             )
 
             repository.writeEventIntoLogFile(event)

@@ -352,6 +352,7 @@ fun ProgressScreen(
                                     if (mainActivity?.isOnline?.value == true) {
                                        viewModel.callWorkFlowAPI(villageId,step.id,step.programId)
                                     }
+                                    viewModel.updateWorkflowStatus(StepStatus.INPROGRESS.name, step.id)
                                     when (index) {
                                         0 -> {
 //                                            onNavigateToTransWalk(villageId,stepId,index)

@@ -22,6 +22,7 @@ import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -386,6 +387,21 @@ class WealthRankingSurveyViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val villageId = repository.prefRepo.getSelectedVillage().id
             repository.updateRankEditFlag(villageId, false)
+        }
+    }
+
+    override fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val stepListEntity = repository.getStepForVillage(
+                stepId,
+                repository.prefRepo.getSelectedVillage().id
+            )
+            val updateWorkflowEvent = repository.createStepUpdateEvent(
+                stepStatus,
+                stepListEntity,
+                repository.prefRepo.getMobileNumber() ?: BLANK_STRING
+            )
+            repository.writeEventIntoLogFile(updateWorkflowEvent)
         }
     }
 

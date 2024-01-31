@@ -1,7 +1,9 @@
 package com.patsurvey.nudge.base
 
+import android.net.Uri
 import com.google.gson.JsonSyntaxException
 import com.nudge.core.enums.EventFormatterName
+import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventWriterName
 import com.nudge.core.eventswriter.EventWriterFactory
 import com.nudge.core.eventswriter.IEventFormatter
@@ -11,11 +13,15 @@ import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.QuestionEntity
+import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.di.DatabaseModule
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.model.request.AddWorkFlowRequest
+import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.model.request.GetQuestionListRequest
+import com.patsurvey.nudge.model.request.UpdateWorkflowRequest
 import com.patsurvey.nudge.network.NetworkResult
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.ApiResponseFailException
@@ -42,6 +48,7 @@ import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.TIMEOUT_ERROR_MSG
 import com.patsurvey.nudge.utils.UNAUTHORISED_MESSAGE
 import com.patsurvey.nudge.utils.UNREACHABLE_ERROR_MSG
+import com.patsurvey.nudge.utils.json
 import kotlinx.coroutines.*
 import retrofit2.HttpException
 import retrofit2.Response
@@ -193,11 +200,15 @@ abstract class BaseRepository{
         }
     }
 
-    open suspend fun writeEventIntoLogFile(eventV1: EventV1){
-        val  eventFormatter: IEventFormatter = EventWriterFactory().createEventWriter(
+    private fun getEventFormatter(): IEventFormatter {
+        return EventWriterFactory().createEventWriter(
             NudgeCore.getAppContext(),
             EventFormatterName.JSON_FORMAT_EVENT
         )
+    }
+
+    open suspend fun writeEventIntoLogFile(eventV1: EventV1){
+        val  eventFormatter: IEventFormatter = getEventFormatter()
         eventFormatter.saveAndFormatEvent(
             event = eventV1,
             listOf(
@@ -205,6 +216,32 @@ abstract class BaseRepository{
                 EventWriterName.DB_EVENT_WRITER,
                 EventWriterName.LOG_EVENT_WRITER
             )
+        )
+    }
+
+    open suspend fun writeImageEventIntoLogFile(eventV1: EventV1) {
+        val  eventFormatter: IEventFormatter = getEventFormatter()
+        eventFormatter.saveAndFormatEvent(
+            event = eventV1,
+            listOf(
+                EventWriterName.FILE_EVENT_WRITER,
+                EventWriterName.IMAGE_EVENT_WRITER,
+                EventWriterName.DB_EVENT_WRITER,
+                EventWriterName.LOG_EVENT_WRITER
+            ),
+            uri
+        )
+        uri = null
+    }
+
+    var uri: Uri? = null
+
+    fun createStepUpdateEvent(stepStatus: String, stepListEntity: StepListEntity, mobileNumber: String): EventV1 {
+        val payload = UpdateWorkflowRequest.getUpdateWorkflowRequest(stepListEntity, stepStatus).json()
+        return EventV1(
+            eventTopic = EventName.WORKFLOW_STATUS_UPDATE.topicName,
+            payload = payload,
+            mobileNumber = mobileNumber
         )
     }
 

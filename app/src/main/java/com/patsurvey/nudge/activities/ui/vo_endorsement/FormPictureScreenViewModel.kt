@@ -27,6 +27,7 @@ import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.utils.ACCEPTED
 import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
@@ -564,16 +565,19 @@ class FormPictureScreenViewModel @Inject constructor(
 //                              prefRepo.savePref(pageKey,File(compressedFormC).absolutePath)
                             formList.add(formCFilePart)
 
-                            val eventV1 = EventV1(
+                            val eventFormC = EventV1(
                                 eventTopic = EventName.UPLOAD_FORM_IMAGE.topicName,
                                 payload = DocumentUploadRequest(
                                     villageId = repository.prefRepo.getSelectedVillage().id.toString(),
                                     userType = if (repository.prefRepo.isUserBPC()) USER_BPC else USER_CRP,
                                     filePath = it.value,
                                     formName = "formC"
-                                ).json()
+                                ).json(),
+                                mobileNumber = repository.prefRepo.getMobileNumber() ?: BLANK_STRING
                             )
-                            val eventFormatter: IEventFormatter =
+                            repository.uri = File(it.value).toUri()
+                            repository.writeImageEventIntoLogFile(eventFormC)
+                            /*val eventFormatter: IEventFormatter =
                                 EventWriterFactory().createEventWriter(
                                     NudgeCore.getAppContext(),
                                     EventFormatterName.JSON_FORMAT_EVENT
@@ -587,7 +591,7 @@ class FormPictureScreenViewModel @Inject constructor(
                                     EventWriterName.DB_EVENT_WRITER,
                                     EventWriterName.LOG_EVENT_WRITER
                                 ), File(it.value).toUri()
-                            )
+                            )*/
                         }
 
                     }
@@ -609,16 +613,21 @@ class FormPictureScreenViewModel @Inject constructor(
                             )
 //                                prefRepo.savePref(pageKey,File(compressedFormD).absolutePath)
                             formList.add(formDFilePart)
-                            val eventV1 = EventV1(
+                            val eventFormD = EventV1(
                                 eventTopic = EventName.UPLOAD_FORM_IMAGE.topicName,
                                 payload = DocumentUploadRequest(
                                     villageId = repository.prefRepo.getSelectedVillage().id.toString(),
                                     userType = if (repository.prefRepo.isUserBPC()) USER_BPC else USER_CRP,
                                     filePath = it.value,
                                     formName = "formD"
-                                ).json()
+                                ).json(),
+                                mobileNumber = repository.prefRepo.getMobileNumber() ?: BLANK_STRING
                             )
-                            val eventFormatter: IEventFormatter =
+
+                            repository.uri = File(it.value).toUri()
+                            repository.writeImageEventIntoLogFile(eventFormD)
+
+                            /*val eventFormatter: IEventFormatter =
                                 EventWriterFactory().createEventWriter(
                                     NudgeCore.getAppContext(),
                                     EventFormatterName.JSON_FORMAT_EVENT
@@ -632,7 +641,7 @@ class FormPictureScreenViewModel @Inject constructor(
                                     EventWriterName.DB_EVENT_WRITER,
                                     EventWriterName.LOG_EVENT_WRITER
                                 ), File(it.value).toUri()
-                            )
+                            )*/
                         }
 
                     }

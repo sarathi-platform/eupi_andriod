@@ -192,6 +192,10 @@ abstract class BaseViewModel : ViewModel(){
         }
     }
 
+    open fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
+
+    }
+
 
 }
 

@@ -493,7 +493,8 @@ class AddDidiViewModel @Inject constructor(
 
                 val eventV1 = EventV1(
                     eventTopic = EventName.ADD_DIDI.topicName,
-                    payload = AddDidiRequest.getRequestObjectForDidi(didiEntity).json()
+                    payload = AddDidiRequest.getRequestObjectForDidi(didiEntity).json(),
+                    mobileNumber = addDidiRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
                 )
 
                 addDidiRepository.writeEventIntoLogFile(eventV1)
@@ -584,7 +585,8 @@ class AddDidiViewModel @Inject constructor(
 
                 val eventV1 = EventV1(
                     eventTopic = EventName.UPDATE_DIDI.topicName,
-                    payload = EditDidiRequest.getUpdateDidiDetailsRequest(updatedDidi).json()
+                    payload = EditDidiRequest.getUpdateDidiDetailsRequest(updatedDidi).json(),
+                    mobileNumber = addDidiRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
                 )
 
                 addDidiRepository.writeEventIntoLogFile(eventV1)
@@ -1095,11 +1097,13 @@ class AddDidiViewModel @Inject constructor(
                         "isComplete = StepStatus.INPROGRESS.ordinal,\n" +
                         "villageId = $villageId \n")
 
+                val socialMappingStep = stepList[stepList.map { it.orderNumber }.indexOf(2)]
                 addDidiRepository.markStepAsCompleteOrInProgress(
-                    stepId = stepList[stepList.map { it.orderNumber }.indexOf(2)].id,
+                    stepId = socialMappingStep.id,
                     isComplete = StepStatus.INPROGRESS.ordinal,
                     villageId = villageId
                 )
+                updateWorkflowStatus(StepStatus.INPROGRESS.name, socialMappingStep.id)
                 NudgeLogger.d(
                     "AddDidiViewModel",
                     "setSocialMappingINProgress -> stepsListDao.markStepAsCompleteOrInProgress after " +
@@ -1126,16 +1130,18 @@ class AddDidiViewModel @Inject constructor(
                             )
                             if (filterDidiList.isEmpty()) {
                                 addDidiRepository.markStepAsCompleteOrInProgress(
-                                    newStep.stepId,
+                                    newStep.id,
                                     StepStatus.NOT_STARTED.ordinal,
                                     villageId = villageId
                                 )
+                                updateWorkflowStatus(StepStatus.NOT_STARTED.name, newStep.id)
                             } else {
                                 addDidiRepository.markStepAsCompleteOrInProgress(
                                     newStep.id,
                                     StepStatus.INPROGRESS.ordinal,
                                     villageId
                                 )
+                                updateWorkflowStatus(StepStatus.INPROGRESS.name, newStep.id)
                             }
                             addDidiRepository.updateNeedToPost(newStep.id, villageId, true)
                         } else {
@@ -1312,7 +1318,8 @@ class AddDidiViewModel @Inject constructor(
 
             val eventV1 = EventV1(
                 eventTopic = EventName.DELETE_DIDI.topicName,
-                payload = DeleteDidiRequest.getDeleteDidiDetailsRequest(didi).json()
+                payload = DeleteDidiRequest.getDeleteDidiDetailsRequest(didi).json(),
+                mobileNumber = addDidiRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
             )
 
             addDidiRepository.writeEventIntoLogFile(eventV1)
@@ -1550,6 +1557,21 @@ class AddDidiViewModel @Inject constructor(
 
     fun saveQuestionScreenOpenFrom(openFrom: Int) {
         addDidiRepository.saveQuestionScreenOpenFrom(openFrom)
+    }
+
+    override fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val stepListEntity = addDidiRepository.getStepForVillage(
+                stepId,
+                addDidiRepository.prefRepo.getSelectedVillage().id
+            )
+            val updateWorkflowEvent = addDidiRepository.createStepUpdateEvent(
+                stepStatus,
+                stepListEntity,
+                addDidiRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
+            )
+            addDidiRepository.writeEventIntoLogFile(updateWorkflowEvent)
+        }
     }
 
 }

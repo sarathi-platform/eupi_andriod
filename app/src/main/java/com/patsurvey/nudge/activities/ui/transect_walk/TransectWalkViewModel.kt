@@ -24,6 +24,7 @@ import com.patsurvey.nudge.model.request.DeleteTolaRequest
 import com.patsurvey.nudge.model.request.EditCohortRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
 import com.patsurvey.nudge.utils.CohortType
 import com.patsurvey.nudge.utils.DidiStatus
@@ -101,7 +102,8 @@ class TransectWalkViewModel @Inject constructor(
 
                 val eventV1 = EventV1(
                     eventTopic = EventName.ADD_TOLA.topicName,
-                    payload = AddCohortRequest.getRequestObjectForTola(tolaItem).json()
+                    payload = AddCohortRequest.getRequestObjectForTola(tolaItem).json(),
+                    mobileNumber = transectWalkRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
                 )
                 transectWalkRepository.writeEventIntoLogFile(eventV1)
                 val updatedTolaList =
@@ -137,7 +139,9 @@ class TransectWalkViewModel @Inject constructor(
 
             val eventV1 = EventV1(
                 eventTopic = EventName.ADD_TOLA.topicName,
-                payload = AddCohortRequest.getRequestObjectForTola(tolaItem).json()
+                payload = AddCohortRequest.getRequestObjectForTola(tolaItem).json(),
+                mobileNumber = transectWalkRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
+
             )
             transectWalkRepository.writeEventIntoLogFile(eventV1)
 
@@ -692,7 +696,8 @@ class TransectWalkViewModel @Inject constructor(
 
                     val eventV1 = EventV1(
                         eventTopic = EventName.DELETE_TOLA.topicName,
-                        payload = DeleteTolaRequest.getRequestObjectForDeleteTola(localTola).json()
+                        payload = DeleteTolaRequest.getRequestObjectForDeleteTola(localTola).json(),
+                        mobileNumber = transectWalkRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
                     )
                     transectWalkRepository.writeEventIntoLogFile(eventV1)
                     val updatedTolaList =
@@ -782,7 +787,8 @@ class TransectWalkViewModel @Inject constructor(
                 didiList.forEach { didi ->
                     val eventV1 = EventV1(
                         eventTopic = EventName.DELETE_DIDI.topicName,
-                        payload = DeleteDidiRequest.getDeleteDidiDetailsRequest(didi).json()
+                        payload = DeleteDidiRequest.getDeleteDidiDetailsRequest(didi).json(),
+                        mobileNumber = transectWalkRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
                     )
                     transectWalkRepository.writeEventIntoLogFile(eventV1)
                 }
@@ -842,7 +848,8 @@ class TransectWalkViewModel @Inject constructor(
             transectWalkRepository.updateTolaName(id, newName)
             val eventV1 = EventV1(
                 eventTopic = EventName.UPDATE_TOLA.topicName,
-                payload = EditCohortRequest.getRequestObjectForTola(updatedTola).json()
+                payload = EditCohortRequest.getRequestObjectForTola(updatedTola).json(),
+                mobileNumber = transectWalkRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
             )
 
             transectWalkRepository.writeEventIntoLogFile(eventV1)
@@ -978,6 +985,7 @@ class TransectWalkViewModel @Inject constructor(
                 "TransectWalkViewModel",
                 "markTransectWalkIncomplete -> stepsListDao.markStepAsCompleteOrInProgress($stepId, StepStatus.INPROGRESS.ordinal, $villageId)"
             )
+            updateWorkflowStatus(StepStatus.INPROGRESS.name, stepList[stepList.map { it.orderNumber }.indexOf(1)].id)
             transectWalkRepository.updateNeedToPost(stepId, villageId, true)
             val completeStepList = transectWalkRepository.getAllCompleteStepsForVillage(villageId)
             completeStepList.let {
@@ -989,6 +997,7 @@ class TransectWalkViewModel @Inject constructor(
                             StepStatus.INPROGRESS.ordinal,
                             villageId
                         )
+                        updateWorkflowStatus(StepStatus.INPROGRESS.name, newStep.id)
                         NudgeLogger.d(
                             "TransectWalkViewModel",
                             "markTransectWalkIncomplete -> stepsListDao.markStepAsCompleteOrInProgress(${newStep.id}, StepStatus.INPROGRESS.ordinal, $villageId)"
@@ -1249,6 +1258,21 @@ class TransectWalkViewModel @Inject constructor(
 
     fun getSelectedVillage(): VillageEntity {
         return transectWalkRepository.getSelectedVillage()
+    }
+
+    override fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val stepListEntity = transectWalkRepository.getStepForVillage(
+                stepId,
+                transectWalkRepository.prefRepo.getSelectedVillage().id
+            )
+            val updateWorkflowEvent = transectWalkRepository.createStepUpdateEvent(
+                stepStatus,
+                stepListEntity,
+                transectWalkRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
+            )
+            transectWalkRepository.writeEventIntoLogFile(updateWorkflowEvent)
+        }
     }
 
 

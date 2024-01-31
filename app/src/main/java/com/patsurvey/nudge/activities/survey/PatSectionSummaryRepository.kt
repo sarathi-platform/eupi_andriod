@@ -16,6 +16,7 @@ import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.model.request.AnswerDetailDTOListItem
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.PATSummarySaveRequest
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.QuestionType
@@ -148,7 +149,8 @@ class PatSectionSummaryRepository @Inject constructor(
 
         val event = EventV1(
             eventTopic = EventName.SAVE_PAT_ANSWERS.topicName,
-            payload = patSummarySaveRequest
+            payload = patSummarySaveRequest,
+            mobileNumber = prefRepo.getMobileNumber() ?: BLANK_STRING
         )
 
         writeEventIntoLogFile(event)
@@ -161,7 +163,8 @@ class PatSectionSummaryRepository @Inject constructor(
 
         val event = EventV1(
             eventTopic = EventName.SAVE_PAT_SCORE.topicName,
-            payload = patScoreSaveRequest
+            payload = patScoreSaveRequest,
+            mobileNumber = prefRepo.getMobileNumber() ?: BLANK_STRING
         )
 
         writeEventIntoLogFile(event)
