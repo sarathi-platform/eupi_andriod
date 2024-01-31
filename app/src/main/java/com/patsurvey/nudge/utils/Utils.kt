@@ -1192,11 +1192,11 @@ fun <T> getParentEntityMapForEvent(eventItem: T, eventName: EventName): Map<Stri
     return when(eventName) {
         EventName.ADD_DIDI -> {
             val didiEntity = (eventItem as DidiEntity)
-            mapOf(KEY_PARENT_ENTITY_TOLA_NAME to didiEntity.cohortName, KEY_PARENT_ENTITY_VILLAGE_ID to didiEntity.villageId)
+            mapOf(KEY_PARENT_ENTITY_TOLA_NAME to didiEntity.cohortName, KEY_PARENT_ENTITY_VILLAGE_ID to didiEntity.villageId.toString())
         }
         EventName.UPDATE_DIDI -> {
             val didiEntity = (eventItem as DidiEntity)
-            mapOf(KEY_PARENT_ENTITY_DIDI_ID to didiEntity.serverId, KEY_PARENT_ENTITY_VILLAGE_ID to didiEntity.villageId)
+            mapOf(KEY_PARENT_ENTITY_DIDI_ID to didiEntity.serverId, KEY_PARENT_ENTITY_VILLAGE_ID to didiEntity.villageId.toString())
         }
         EventName.DELETE_DIDI, EventName.SAVE_WEALTH_RANKING -> {
             val didiEntity = (eventItem as DidiEntity)

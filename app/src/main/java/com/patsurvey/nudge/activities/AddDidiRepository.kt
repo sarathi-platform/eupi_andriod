@@ -15,6 +15,7 @@ import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.getDependentEventsId
+import com.nudge.core.database.entities.getPayloadFromString
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
 import com.nudge.core.enums.getDependentEventNameForEvent
@@ -45,12 +46,14 @@ import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.database.getDidiId
+import com.patsurvey.nudge.model.request.AddCohortRequest
 import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.model.request.DeleteDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.DidiApiResponse
+import com.patsurvey.nudge.model.response.TolaApiResponse
 import com.patsurvey.nudge.model.response.WorkFlowResponse
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiStatus
@@ -290,7 +293,7 @@ class AddDidiRepository @Inject constructor(
 
     }
 
-    override suspend fun <T> createEventDependency(
+     override suspend fun <T> createEventDependency(
         eventItem: T,
         eventName: EventName,
         dependentEvents: Events
@@ -303,15 +306,17 @@ class AddDidiRepository @Inject constructor(
             when (eventName) {
                 EventName.ADD_DIDI -> {
                     filteredList = eventList.filter {
-                        it.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_TOLA_NAME) == (eventItem as DidiEntity).cohortName
-                                && it.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_VILLAGE_ID) == (eventItem as DidiEntity).villageId
+                        val eventPayload = it.request_payload?.getPayloadFromString<AddCohortRequest>()
+                        dependentEvents.metadata?.getMetaDataDtoFromString()?.parentEntity
+                            ?.get(KEY_PARENT_ENTITY_TOLA_NAME) == eventPayload?.name
+                                && dependentEvents.metadata?.getMetaDataDtoFromString()?.parentEntity
+                            ?.get(KEY_PARENT_ENTITY_VILLAGE_ID) == eventPayload?.villageId
                     }
                 }
                 EventName.UPDATE_DIDI -> {
                     filteredList = eventList.filter {
-                        it.metadata?.getMetaDataDtoFromString()?.parentEntity
+//                        val eventPayload = it.request_payload?.getPayloadFromString<AddDidiRequest>()
+                        dependentEvents.metadata?.getMetaDataDtoFromString()?.parentEntity
                             ?.get(KEY_PARENT_ENTITY_DIDI_ID) == (eventItem as DidiEntity).getDidiId()
                                 && it.metadata?.getMetaDataDtoFromString()?.parentEntity
                             ?.get(KEY_PARENT_ENTITY_VILLAGE_ID) == (eventItem as DidiEntity).villageId

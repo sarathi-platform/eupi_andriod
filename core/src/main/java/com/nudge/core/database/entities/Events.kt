@@ -4,6 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventsTable
 import com.nudge.core.database.converters.DateConverter
@@ -84,5 +86,9 @@ data class Events (
     }
 }
 
+fun <T> String.getPayloadFromString(): T? {
+    val type = object : TypeToken<T?>() {}.type
+    return Gson().fromJson(this, type)
+}
 
 
