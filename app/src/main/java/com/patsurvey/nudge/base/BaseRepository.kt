@@ -64,7 +64,7 @@ abstract class BaseRepository{
         return Events.getEmptyEvent()
     }
 
-    open suspend fun <T> createEventDependency(eventItem: T, eventName: EventName, dependentEvents: Events): List<EventDependencyEntity> {
+    open suspend fun <T> createEventDependency(eventItem: T, eventName: EventName, dependentEvent: Events): List<EventDependencyEntity> {
         return emptyList()
     }
 

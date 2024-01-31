@@ -3,16 +3,25 @@ package com.patsurvey.nudge.activities.ui.transect_walk
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.nudge.core.EventSyncStatus
+import com.nudge.core.KEY_PARENT_ENTITY_ADDRESS
+import com.nudge.core.KEY_PARENT_ENTITY_DADA_NAME
+import com.nudge.core.KEY_PARENT_ENTITY_DIDI_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_TOLA_ID
 import com.nudge.core.KEY_PARENT_ENTITY_TOLA_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_VILLAGE_ID
 import com.nudge.core.SELECTION_MISSION
+import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
+import com.nudge.core.database.entities.getDependentEventsId
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
+import com.nudge.core.enums.getDependsOnEventNameForEvent
+import com.nudge.core.getEventDependencyEntityListFromEvents
 import com.nudge.core.getSizeInLong
 import com.nudge.core.json
 import com.nudge.core.model.MetadataDto
+import com.nudge.core.model.getMetaDataDtoFromString
 import com.nudge.core.toDate
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponse
@@ -25,7 +34,6 @@ import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
-import com.patsurvey.nudge.database.getTolaId
 import com.patsurvey.nudge.model.request.AddCohortRequest
 import com.patsurvey.nudge.model.request.DeleteTolaRequest
 import com.patsurvey.nudge.model.request.EditCohortRequest
@@ -41,7 +49,8 @@ class TransectWalkRepository @Inject constructor(
     val prefRepo: PrefRepo,
     val tolaDao: TolaDao,
     val stepsListDao: StepsListDao,
-    val villageListDao: VillageListDao
+    val villageListDao: VillageListDao,
+    val eventsDao: EventsDao
 ) : BaseRepository() {
 
     fun getSelectedVillage(): VillageEntity {
@@ -117,7 +126,7 @@ class TransectWalkRepository @Inject constructor(
 
             EventName.UPDATE_TOLA ->  {
                 val requestPayload = EditCohortRequest.getRequestObjectForTola(eventItem as TolaEntity).json()
-                val updateTolaEvent = Events(
+                var updateTolaEvent = Events(
                     name = eventName.name,
                     type = eventName.name,
                     createdBy = prefRepo.getUserId(),
@@ -129,10 +138,16 @@ class TransectWalkRepository @Inject constructor(
                         mission = SELECTION_MISSION,
                         depends_on = emptyList(),
                         request_payload_size = requestPayload.getSizeInLong(),
-                        parentEntity = mapOf(KEY_PARENT_ENTITY_TOLA_ID to  eventItem.serverId, KEY_PARENT_ENTITY_VILLAGE_ID to eventItem.villageId)
+                        parentEntity = getParentEntityMapForEvent(eventItem, EventName.UPDATE_TOLA)
                     ).json(),
                     consumer_status = BLANK_STRING,
                     consumer_response_payload = null
+                )
+                val dependsOn = createEventDependency(eventItem, eventName, updateTolaEvent)
+                val metadata = updateTolaEvent.metadata?.getMetaDataDtoFromString()
+                val updatedMetaData = metadata?.copy(depends_on = dependsOn.getDependentEventsId())
+                updateTolaEvent = updateTolaEvent.copy(
+                    metadata = updatedMetaData?.json()
                 )
                 return updateTolaEvent
             }
@@ -151,7 +166,7 @@ class TransectWalkRepository @Inject constructor(
                         mission = SELECTION_MISSION,
                         depends_on = emptyList(),
                         request_payload_size = requestPayload.getSizeInLong(),
-                        parentEntity = mapOf(KEY_PARENT_ENTITY_TOLA_NAME to  eventItem.name, KEY_PARENT_ENTITY_VILLAGE_ID to eventItem.villageId)
+                        parentEntity = getParentEntityMapForEvent(eventItem, eventName)
                     ).json(),
                     consumer_status = BLANK_STRING,
                     consumer_response_payload = null
@@ -165,12 +180,72 @@ class TransectWalkRepository @Inject constructor(
         }
     }
 
+    override suspend fun <T> createEventDependency(
+        eventItem: T,
+        eventName: EventName,
+        dependentEvent: Events
+    ): List<EventDependencyEntity> {
+        val eventDependencyList = mutableListOf<EventDependencyEntity>()
+        var filteredList = listOf<Events>()
+
+        eventName.getDependsOnEventNameForEvent().forEach { dependsOnEvent ->
+            val eventList = eventsDao.getAllEventsForEventName(dependsOnEvent.name)
+            when (eventName) {
+                EventName.ADD_TOLA -> {
+                    filteredList = emptyList()
+                }
+                EventName.UPDATE_DIDI -> {
+                    filteredList = eventList.filter {
+                        val eventPayload = (eventItem as TolaEntity)
+                        dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
+                            ?.get(KEY_PARENT_ENTITY_TOLA_ID)?.equals(eventPayload.id.toString(), true)!!
+                                &&dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
+                            ?.get(KEY_PARENT_ENTITY_VILLAGE_ID)?.equals(eventPayload.villageId.toString(), true)!!
+                    }
+                }
+                EventName.DELETE_DIDI -> {
+                    filteredList = eventList.filter {
+                        val eventPayload = (eventItem as TolaEntity)
+                        dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
+                            ?.get(KEY_PARENT_ENTITY_TOLA_NAME)?.equals(eventPayload.name, true)!!
+                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
+                            ?.get(KEY_PARENT_ENTITY_VILLAGE_ID)?.equals(eventPayload.villageId.toString(), true)!!
+
+                    }
+                }
+                else -> {
+                    filteredList = emptyList()
+                }
+            }
+        }
+
+        eventDependencyList.addAll(filteredList.getEventDependencyEntityListFromEvents(dependentEvent))
+
+        return eventDependencyList
+    }
+
     override suspend fun <T> insertEventIntoDb(
         eventItem: T,
         eventName: EventName,
         eventType: EventType
     ) {
-        // TODO("Not yet implemented")
+        val eventObserver = NudgeCore.getEventObserver()
+
+        val event = this.createEvent(
+            eventItem,
+            eventName,
+            eventType
+        )
+
+        if (event?.id?.equals(BLANK_STRING) != true) {
+            event?.let {
+                eventObserver?.addEvent(it)
+                val eventDependencies = this.createEventDependency(eventItem, eventName, it)
+                if (eventDependencies.isNotEmpty()) {
+                    eventObserver?.addEventDependencies(eventDependencies)
+                }
+            }
+        }
     }
 
     fun getAllTolasForVillage(villageId: Int): List<TolaEntity> {

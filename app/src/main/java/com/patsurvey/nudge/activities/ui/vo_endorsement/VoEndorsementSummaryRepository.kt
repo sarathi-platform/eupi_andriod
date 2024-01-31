@@ -12,8 +12,7 @@ import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.getDependentEventsId
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
-import com.nudge.core.enums.getDependentEventNameForEvent
-import com.nudge.core.getEventDependencyEntityListFromEvents
+import com.nudge.core.enums.getDependsOnEventNameForEvent
 import com.nudge.core.getSizeInLong
 import com.nudge.core.json
 import com.nudge.core.model.MetadataDto
@@ -26,13 +25,11 @@ import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.NudgeCore
-import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.getParentEntityMapForEvent
 import javax.inject.Inject
 
@@ -146,24 +143,25 @@ class VoEndorsementSummaryRepository @Inject constructor(
     override suspend fun <T> createEventDependency(
         eventItem: T,
         eventName: EventName,
-        dependentEvents: Events
+        dependentEvent: Events
     ): List<EventDependencyEntity> {
         val eventDependencyList = mutableListOf<EventDependencyEntity>()
         var filteredList = listOf<Events>()
 
-        eventName.getDependentEventNameForEvent().forEach { dependentEvent ->
-            val eventList = eventsDao.getAllEventsForEventName(dependentEvent.name)
+        eventName.getDependsOnEventNameForEvent().forEach { dependsOnEvent ->
+            val eventList = eventsDao.getAllEventsForEventName(dependsOnEvent.name)
             when (eventName) {
                 EventName.SAVE_VO_ENDORSEMENT -> {
                     filteredList = eventList.filter {
-                        it.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_DIDI_NAME) == (eventItem as DidiEntity).name
-                                && it.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_DADA_NAME) == (eventItem as DidiEntity).guardianName
-                                && it.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_ADDRESS) == (eventItem as DidiEntity).address
-                                && it.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_TOLA_NAME) == (eventItem as DidiEntity).cohortName
+                        val eventPayload = (eventItem as DidiEntity)
+                        dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
+                            ?.get(KEY_PARENT_ENTITY_DIDI_NAME)?.equals(eventPayload.name, true)!!
+                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
+                            ?.get(KEY_PARENT_ENTITY_DADA_NAME)?.equals(eventPayload.guardianName, true)!!
+                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
+                            ?.get(KEY_PARENT_ENTITY_ADDRESS).equals(eventPayload.address, true)
+                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
+                            ?.get(KEY_PARENT_ENTITY_TOLA_NAME)?.equals(eventPayload.cohortName, true)!!
                     }
                 }
                 else -> {

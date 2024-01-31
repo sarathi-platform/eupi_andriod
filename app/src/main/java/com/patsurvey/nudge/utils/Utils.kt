@@ -82,6 +82,7 @@ import com.nudge.core.KEY_PARENT_ENTITY_ADDRESS
 import com.nudge.core.KEY_PARENT_ENTITY_DADA_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_DIDI_ID
 import com.nudge.core.KEY_PARENT_ENTITY_DIDI_NAME
+import com.nudge.core.KEY_PARENT_ENTITY_TOLA_ID
 import com.nudge.core.KEY_PARENT_ENTITY_TOLA_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_VILLAGE_ID
 import com.nudge.core.database.entities.Events
@@ -1187,18 +1188,46 @@ fun getVillageItemById(villageList: List<VillageEntity>, id: Int): VillageEntity
     return villageList[villageList.map { it.id }.indexOf(id)]
 }
 
+fun calculateMatchPercentage(didiList: List<DidiEntity>, questionPassingScore: Int): Int {
+    val matchedCount = didiList.filter {
+        (it.score ?: 0.0) >= questionPassingScore.toDouble()
+                && (it.crpScore ?: 0.0) >= questionPassingScore.toDouble() }.size
 
-fun <T> getParentEntityMapForEvent(eventItem: T, eventName: EventName): Map<String, Any> {
+    return if (didiList.isNotEmpty() && matchedCount != 0) ((matchedCount.toFloat()/didiList.size.toFloat()) * 100).toInt() else 0
+
+}
+
+fun List<DidiEntity>.getNotAvailableDidiCount(): Int {
+    return this.filter {
+        it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
+                || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal
+    }.size
+}
+
+fun <T> getParentEntityMapForEvent(eventItem: T, eventName: EventName): Map<String, String> {
     return when(eventName) {
+
+        EventName.ADD_TOLA -> {
+            emptyMap()
+        }
+        EventName.UPDATE_TOLA -> {
+            val tolaEntity = (eventItem as TolaEntity)
+            mapOf(KEY_PARENT_ENTITY_TOLA_ID to  eventItem.serverId.toString(), KEY_PARENT_ENTITY_VILLAGE_ID to eventItem.villageId.toString())
+        }
+        EventName.DELETE_TOLA -> {
+            val tolaEntity = (eventItem as TolaEntity)
+            mapOf(KEY_PARENT_ENTITY_TOLA_NAME to  tolaEntity.name, KEY_PARENT_ENTITY_VILLAGE_ID to tolaEntity.villageId.toString())
+        }
+
         EventName.ADD_DIDI -> {
             val didiEntity = (eventItem as DidiEntity)
             mapOf(KEY_PARENT_ENTITY_TOLA_NAME to didiEntity.cohortName, KEY_PARENT_ENTITY_VILLAGE_ID to didiEntity.villageId.toString())
         }
         EventName.UPDATE_DIDI -> {
             val didiEntity = (eventItem as DidiEntity)
-            mapOf(KEY_PARENT_ENTITY_DIDI_ID to didiEntity.serverId, KEY_PARENT_ENTITY_VILLAGE_ID to didiEntity.villageId.toString())
+            mapOf(KEY_PARENT_ENTITY_DIDI_ID to didiEntity.id.toString(), KEY_PARENT_ENTITY_VILLAGE_ID to didiEntity.villageId.toString())
         }
-        EventName.DELETE_DIDI, EventName.SAVE_WEALTH_RANKING -> {
+        EventName.DELETE_DIDI, EventName.SAVE_WEALTH_RANKING, EventName.SAVE_PAT_SCORE, EventName.SAVE_PAT_ANSWERS, EventName.SAVE_VO_ENDORSEMENT -> {
             val didiEntity = (eventItem as DidiEntity)
             mapOf(
                 KEY_PARENT_ENTITY_DIDI_NAME to didiEntity.name,
