@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nrlm.baselinesurvey.ARG_DIDI_ID
+import com.nrlm.baselinesurvey.ARG_MISSION_ID
 import com.nrlm.baselinesurvey.ARG_SECTION_ID
 import com.nrlm.baselinesurvey.ARG_SURVEY_ID
 import com.nrlm.baselinesurvey.ARG_VIDEO_PATH
@@ -20,7 +21,8 @@ import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.AddHouseholdMemberScreen
 import com.nrlm.baselinesurvey.ui.AddIncomScreen
-import com.nrlm.baselinesurvey.ui.mission_screen.presentation.MissionScreen
+import com.nrlm.baselinesurvey.ui.mission_screen.presentation.MissionScreen_1
+import com.nrlm.baselinesurvey.ui.mission_screen.presentation.MissionSummaryScreen
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenHandler
 import com.nrlm.baselinesurvey.ui.search.presentation.SearchScreens
 import com.nrlm.baselinesurvey.ui.section_screen.presentation.SectionListScreen
@@ -41,16 +43,28 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
         composable(route = HomeScreens.DATA_LOADING_SCREEN.route) {
             DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
         }
+        composable(route = HomeScreens.MISSION_SUMMARY_SCREEN.route, arguments = listOf(
+            navArgument(name = ARG_MISSION_ID) {
+                type = NavType.IntType
+            }
+        )) {
+            MissionSummaryScreen(
+                navController = navController, missionId = it.arguments?.getInt(
+                    ARG_MISSION_ID
+                ) ?: 0
+            )
+        }
 
         composable(route = HomeScreens.SURVEYEE_LIST_SCREEN.route) {
             SurveyeeListScreen(viewModel = hiltViewModel(), navController = navController)
         }
 
-        composable(route = HomeScreens.SECTION_SCREEN.route, arguments = listOf(
-            navArgument(
-                name = ARG_DIDI_ID
-            ) {
-                type = NavType.IntType
+        composable(
+            route = HomeScreens.SECTION_SCREEN.route, arguments = listOf(
+                navArgument(
+                    name = ARG_DIDI_ID
+                ) {
+                    type = NavType.IntType
             }
         )) {
             SectionListScreen(
@@ -144,11 +158,14 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
 
         composable(route = HomeScreens.Home_SCREEN.route) {
             //  HomeScreen(navController=navController)
-            MissionScreen(navController = navController, viewModel = hiltViewModel())
+            //   MissionScreen(navController = navController, viewModel = hiltViewModel())
+            MissionScreen_1(navController = navController, viewModel = hiltViewModel())
         }
 
         composable(route = HomeScreens.MISSION_SCREEN.route) {
-            MissionScreen(navController = navController, viewModel = hiltViewModel())
+            // MissionScreen(navController = navController, viewModel = hiltViewModel())
+            MissionScreen_1(navController = navController, viewModel = hiltViewModel())
+
         }
 
         composable(route = HomeScreens.DIDI_SCREEN.route) {
@@ -193,7 +210,8 @@ sealed class HomeScreens(val route: String) {
     object Home_SCREEN : HomeScreens(route = HOME_SCREEN_ROUTE_NAME)
     object MISSION_SCREEN : HomeScreens(route = MISSION_SCREEN_ROUTE_NAME)
     object DIDI_SCREEN : HomeScreens(route = DIDI_SCREEN_ROUTE_NAME)
-
+    object MISSION_SUMMARY_SCREEN :
+        HomeScreens(route = "$MISSION_SUMMARY_SCREEN_ROUTE_NAME/{$ARG_MISSION_ID}")
 }
 
 const val DATA_LOADING_SCREEN_ROUTE_NAME = "data_loading_screen"
@@ -208,6 +226,7 @@ const val SEARCH_SCREEN_ROUTE_NAME = "search_screen"
 const val HOME_SCREEN_ROUTE_NAME = "home_screen"
 const val MISSION_SCREEN_ROUTE_NAME = "mission_screen"
 const val DIDI_SCREEN_ROUTE_NAME = "didi_screen"
+const val MISSION_SUMMARY_SCREEN_ROUTE_NAME = "mission_summary_screen"
 
 fun navigateToBaseLineStartScreen(surveyeeId: Int, navController: NavController) {
     navController.navigate("$BASELINE_START_SCREEN_ROUTE_NAME/$surveyeeId")

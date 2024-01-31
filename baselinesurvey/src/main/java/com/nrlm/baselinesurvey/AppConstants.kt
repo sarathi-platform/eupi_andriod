@@ -272,4 +272,5 @@ const val SECTION_INFORMATION_TAB = "Section Information"
 
 const val BASE_LINE = "BASE_LINE"
 const val ARG_VIDEO_PATH = "video_path"
+const val ARG_MISSION_ID = "mission_id"
 
