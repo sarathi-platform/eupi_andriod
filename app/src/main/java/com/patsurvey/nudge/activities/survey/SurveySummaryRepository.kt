@@ -174,6 +174,7 @@ class SurveySummaryRepository @Inject constructor(
             StepStatus.COMPLETED.ordinal,
             villageId
         )
+
         stepsListDao.updateNeedToPost(stepId, villageId, true)
         val stepDetails = stepsListDao.getStepForVillage(villageId, stepId)
         if (stepDetails.orderNumber < stepsListDao.getAllSteps().size) {

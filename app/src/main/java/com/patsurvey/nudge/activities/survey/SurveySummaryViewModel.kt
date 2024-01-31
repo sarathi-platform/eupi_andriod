@@ -497,7 +497,8 @@ class SurveySummaryViewModel @Inject constructor(
                 }
             }
             updatedCompletedStepsList.add(stepId)
-            repository.markStepComplete(villageId = villageId, stepId = stepId,updatedCompletedStepsList)
+            repository.markStepComplete(villageId = villageId, stepId = stepId, updatedCompletedStepsList)
+            updateWorkflowStatus(StepStatus.COMPLETED.name, stepId)
 
         }
     }
@@ -510,6 +511,7 @@ class SurveySummaryViewModel @Inject constructor(
                 isComplete = StepStatus.COMPLETED.ordinal,
                 villageId = villageId
             )
+            updateWorkflowStatus(StepStatus.COMPLETED.name, bpcStepId)
         }
     }
 
@@ -893,6 +895,21 @@ class SurveySummaryViewModel @Inject constructor(
     fun updateNeedsToPostBPCProcessStatus(didiId: Int, status: Boolean) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             repository.updateNeedsToPostBPCProcessStatus(status, didiId)
+        }
+    }
+
+    override fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val stepListEntity = repository.getStepForVillage(
+                stepId,
+                repository.prefRepo.getSelectedVillage().id
+            )
+            val updateWorkflowEvent = repository.createStepUpdateEvent(
+                stepStatus,
+                stepListEntity,
+                repository.prefRepo.getMobileNumber() ?: BLANK_STRING
+            )
+            repository.writeEventIntoLogFile(updateWorkflowEvent)
         }
     }
 

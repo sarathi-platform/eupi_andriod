@@ -203,6 +203,7 @@ class FormPictureScreenViewModel @Inject constructor(
                 stepId = stepId,
                 updatedCompletedStepsList = updatedCompletedStepsList
             )
+            updateWorkflowStatus(StepStatus.COMPLETED.name, stepId)
         }
     }
 
@@ -786,5 +787,19 @@ class FormPictureScreenViewModel @Inject constructor(
         },time)
     }
 
+    override fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val stepListEntity = repository.getStepForVillage(
+                stepId,
+                repository.prefRepo.getSelectedVillage().id
+            )
+            val updateWorkflowEvent = repository.createStepUpdateEvent(
+                stepStatus,
+                stepListEntity,
+                repository.prefRepo.getMobileNumber() ?: BLANK_STRING
+            )
+            repository.writeEventIntoLogFile(updateWorkflowEvent)
+        }
+    }
 
 }
