@@ -31,6 +31,8 @@ class SyncUploadWorker @AssistedInject constructor(
                         pendingEvent.forEach {
                             Log.d("WorkManager", it.toString())
                         }
+
+                    totalPendingEventCount--;
                     }
                 } else {
                 }

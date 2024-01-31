@@ -18,10 +18,4 @@ class SncManagerModule {
     fun provideSyncApi(retrofit: Retrofit): SyncApiService {
         return retrofit.create(SyncApiService::class.java)
     }
-
-    @Singleton
-    @Provides
-    fun provideSyncRepository(syncApiService: SyncApiService,eventDao: EventsDao): SyncApiRepository {
-        return SyncApiRepository(syncApiService,eventDao)
-    }
 }
