@@ -4,12 +4,15 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
 import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.database.dao.*
@@ -697,6 +700,9 @@ class SurveySummaryViewModel @Inject constructor(
                 val villageId = repository.prefRepo.getSelectedVillage().id
                 val passingScore = repository.getPassingScore()
                 val bpcStep = repository.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }.last()
+
+                insertBpcMatchScoreEvent(villageId, passingScore, bpcStep, didiList.value)
+
                 val matchPercentage = calculateMatchPercentage(didiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }, passingScore)
                 val saveMatchSummaryRequest = SaveMatchSummaryRequest(
                     programId = bpcStep.programId,
@@ -891,6 +897,23 @@ class SurveySummaryViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             repository.updateNeedsToPostBPCProcessStatus(status, didiId)
         }
+    }
+
+    private suspend fun insertBpcMatchScoreEvent(
+        villageId: Int,
+        passingScore: Int,
+        bpcStep: StepListEntity,
+        didiList: List<DidiEntity>
+    ) {
+        val eventItem = SaveMatchSummaryRequest.getSaveMatchSummaryRequestForBpc(
+            villageId = villageId,
+            stepListEntity = bpcStep,
+            didiList = didiList,
+            questionPassionScore = passingScore
+        )
+
+        repository.insertEventIntoDb(eventItem, EventName.SAVE_BPC_MATCH_SCORE, EventType.STATEFUL)
+
     }
 
 }
