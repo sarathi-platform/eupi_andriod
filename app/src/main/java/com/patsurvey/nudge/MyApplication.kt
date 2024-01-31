@@ -5,8 +5,10 @@ import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.net.Network
+import androidx.hilt.work.HiltWorkerFactory
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
+import androidx.work.WorkerFactory
 import com.akexorcist.localizationactivity.core.LocalizationApplicationDelegate
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
@@ -26,8 +28,9 @@ import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 @HiltAndroidApp
-class MyApplication: Application() {
-
+class MyApplication: Application(), androidx.work.Configuration.Provider {
+    @Inject
+    lateinit var workerFactory : HiltWorkerFactory
     @Inject
     lateinit var eventsDao: EventsDao
 
@@ -138,5 +141,10 @@ class MyApplication: Application() {
 
     override fun getResources(): Resources {
         return localizationDelegate.getResources(baseContext, super.getResources())
+    }
+
+    override fun getWorkManagerConfiguration(): androidx.work.Configuration {
+       return androidx.work.Configuration.Builder()
+            .setWorkerFactory(workerFactory).build()
     }
 }
