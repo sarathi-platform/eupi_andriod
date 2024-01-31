@@ -17,10 +17,8 @@ import javax.inject.Inject
 
 class CheckDBStatus(val viewModel: BaseViewModel) {
 
-    @Inject
-    lateinit var tolaDao: TolaDao
 
-    fun isFirstStepNeedToBeSync(onResult: (Int) -> Unit) {
+    fun isFirstStepNeedToBeSync(tolaDao: TolaDao, onResult: (Int) -> Unit) {
         viewModel.job = CoroutineScope(Dispatchers.IO + viewModel.exceptionHandler).launch {
             if (tolaDao.fetchTolaNeedToPost(true, "", 0).isEmpty()
                 && tolaDao.fetchPendingTola(true, "").isEmpty()

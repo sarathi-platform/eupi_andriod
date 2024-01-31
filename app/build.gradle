@@ -9,8 +9,8 @@ plugins {
     id 'com.google.firebase.crashlytics'
 
 }
-def version = "0.1.43"
-def prodVersion = "1.0.4"
+def version = "0.1.44"
+def prodVersion = "1.0.5"
 android {
     compileSdk 34
 
@@ -18,7 +18,7 @@ android {
         applicationId "com.nrlm.sarathi"
         minSdk 24
         targetSdk 33
-        versionCode 3
+        versionCode 4
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

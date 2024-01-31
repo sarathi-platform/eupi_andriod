@@ -20,6 +20,7 @@ import com.patsurvey.nudge.activities.PatDidiSummaryScreen
 import com.patsurvey.nudge.activities.PatSurvaySectionSummaryScreen
 import com.patsurvey.nudge.activities.PatSurveyCompleteSummary
 import com.patsurvey.nudge.activities.StepCompletionScreen
+import com.patsurvey.nudge.activities.VillageScreen
 import com.patsurvey.nudge.activities.VillageSelectionScreen
 import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.survey.PatSuccessScreen
@@ -104,9 +105,12 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         }
 
         composable(route = HomeScreens.VILLAGE_SELECTION_SCREEN.route) {
-            VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()){
+            VillageScreen(navController = navController) {
                 navController.navigate(AuthScreen.AUTH_SETTING_SCREEN.route)
             }
+            /*VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()){
+                navController.navigate(AuthScreen.AUTH_SETTING_SCREEN.route)
+            }*/
         }
 
 
@@ -868,9 +872,12 @@ fun NavGraphBuilder.logoutGraph(navController: NavHostController){
         }
 
         composable(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route) {
-            VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()){
+            VillageScreen(navController = navController) {
                 navController.navigate(Graph.SETTING_GRAPH)
             }
+            /*VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()){
+                navController.navigate(Graph.SETTING_GRAPH)
+            }*/
         }
     }
 }

@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.utils.STEPS_LIST_TABLE
@@ -84,5 +85,15 @@ interface StepsListDao {
 
     @Query("UPDATE $STEPS_LIST_TABLE SET needToPost = :needsToPost WHERE orderNumber =:orderNumber and villageId = :villageId")
     fun updateNeedToPostByOrderNumber(orderNumber: Int, villageId: Int, needsToPost: Boolean)
+
+    @Query("SELECT * FROM $STEPS_LIST_TABLE WHERE villageId = :villageId  ORDER BY orderNumber ASC")
+    fun getAllStepsForVillageLive(villageId: Int): LiveData<List<StepListEntity>>
+
+    @Transaction
+    fun updateStepListForVillage(forceRefresh: Boolean = false, villageId: Int, stepList: List<StepListEntity>) {
+        if (forceRefresh)
+            deleteAllStepsForVillage(villageId)
+        insertAll(stepList)
+    }
 
 }

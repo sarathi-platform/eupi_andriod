@@ -77,6 +77,9 @@ class MainActivityTest {
     private lateinit var poorDidiListDao: PoorDidiListDao
 
     @Mock
+    private lateinit var languageListDao: LanguageListDao
+
+    @Mock
     private lateinit var context: Context
 
     private lateinit var viewModel: MainActivityViewModel
@@ -97,7 +100,8 @@ class MainActivityTest {
             trainingVideoDao = trainingVideoDao,
             bpcSummaryDao = bpcSummaryDao,
             poorDidiListDao = poorDidiListDao,
-            stepsListDao = stepsListDao
+            stepsListDao = stepsListDao,
+            languageListDao = languageListDao
         )
         launchActivity<MainActivity>().use { scenario ->
             scenario.moveToState(Lifecycle.State.CREATED)
