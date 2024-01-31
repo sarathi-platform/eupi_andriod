@@ -8,10 +8,10 @@ import android.net.Network
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
-import androidx.work.WorkerFactory
 import com.akexorcist.localizationactivity.core.LocalizationApplicationDelegate
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.syncmanager.SyncManager
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.NudgeLogger.e
@@ -36,11 +36,13 @@ class MyApplication: Application(), androidx.work.Configuration.Provider {
 
     @Inject
     lateinit var eventDependencyDao: EventDependencyDao
+    @Inject
+    lateinit var syncManager: SyncManager
+
 
     private fun init() {
         instance = this
-        NudgeCore.init(this)
-        NudgeCore.initEventObserver(eventsDao, eventDependencyDao)
+        NudgeCore.initEventObserver(syncManager)
     }
 
     override fun onCreate() {
@@ -61,7 +63,7 @@ class MyApplication: Application(), androidx.work.Configuration.Provider {
     }
 
     private fun cleanUp() {
-        NudgeCore.cleanUp()
+        NudgeCore.cleanUp(syncManager)
     }
 
 

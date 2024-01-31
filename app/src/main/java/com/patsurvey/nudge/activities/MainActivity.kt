@@ -81,7 +81,6 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
             setTheme(R.style.Android_starter_project_blow_lollipop)
         }
         super.onCreate(savedInstanceState)
-        SyncManager()
         setContent {
             Nudge_Theme {
                 val snackState = rememberSnackBarState()

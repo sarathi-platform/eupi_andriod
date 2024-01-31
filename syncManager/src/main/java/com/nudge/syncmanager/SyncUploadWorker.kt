@@ -1,9 +1,11 @@
 package com.nudge.syncmanager
 
+import android.app.Notification
 import android.content.Context
 import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -24,17 +26,20 @@ class SyncUploadWorker @AssistedInject constructor(
 
                 var totalPendingEventCount = syncApiRepository.getPendingEventCount()
                 if (totalPendingEventCount > 0) {
-                    while (totalPendingEventCount>0) {
-                        val pendingEvent = syncApiRepository.getPendingEventFromDb()
-                        totalPendingEventCount =  syncApiRepository.getPendingEventCount()
-
-                        pendingEvent.forEach {
-                            Log.d("WorkManager", it.toString())
-                        }
-
-                    totalPendingEventCount--;
-                    }
+                    val pendingEvents = syncApiRepository.getPendingEventFromDb()
+                    syncApiRepository.syncEventInNetwork(pendingEvents)
+//                    while (totalPendingEventCount>0) {
+//                        val pendingEvent = syncApiRepository.getPendingEventFromDb()
+//                        totalPendingEventCount =  syncApiRepository.getPendingEventCount()
+//
+//                        pendingEvent.forEach {
+//                            Log.d("WorkManager", it.toString())
+//                        }
+//
+//                    totalPendingEventCount--;
+//                    }
                 } else {
+
                 }
 
                 // do long running work

@@ -4,15 +4,16 @@ import android.util.Log
 import com.nudge.communicationModule.EventObserverInterface
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
+import javax.inject.Inject
 
-class SyncManager {
+class SyncManager@Inject constructor(val eventsDao: EventsDao,val eventDependencyDao: EventDependencyDao ){
     init {
         Log.d("SyncManager", " SyncManager:init ")
     }
 
     private var eventObserverInterface: EventObserverInterface? = null
 
-    fun init(eventsDao: EventsDao, eventDependencyDao: EventDependencyDao): EventObserverInterface? {
+    fun init(): EventObserverInterface? {
          eventObserverInterface = EventObserverInterfaceImpl(eventsDao, eventDependencyDao)
         return eventObserverInterface
     }

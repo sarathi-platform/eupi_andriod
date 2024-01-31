@@ -3,8 +3,6 @@ package com.patsurvey.nudge.utils
 import android.content.Context
 import android.content.Intent
 import com.nudge.communicationModule.EventObserverInterface
-import com.nudge.core.database.dao.EventDependencyDao
-import com.nudge.core.database.dao.EventsDao
 import com.nudge.syncmanager.SyncManager
 import com.patsurvey.nudge.MyApplication
 
@@ -14,23 +12,19 @@ object NudgeCore {
 
     private var eventObserver: EventObserverInterface? = null
 
-    private var syncManager: SyncManager? = null
 
-    fun init (context: Context) {
-        syncManager = SyncManager()
-    }
 
-    fun initEventObserver(eventsDao: EventsDao, eventDependencyDao: EventDependencyDao) {
-        eventObserver = syncManager?.init(eventsDao, eventDependencyDao)
+    fun initEventObserver(syncManager:SyncManager) {
+        eventObserver = syncManager.init()
     }
 
     fun getEventObserver(): EventObserverInterface? {
         return eventObserver
     }
 
-    fun removeEventObserver() {
+    fun removeEventObserver(syncManager:SyncManager) {
         eventObserver = null
-        syncManager?.removeObserver()
+        syncManager.removeObserver()
     }
 
     fun getAppContext(): Context {
@@ -57,8 +51,8 @@ object NudgeCore {
         isOnline = online
     }
 
-    fun cleanUp() {
-        removeEventObserver()
+    fun cleanUp(syncManager: SyncManager) {
+        removeEventObserver(syncManager)
     }
 
     fun preRequestCheck(): Boolean {

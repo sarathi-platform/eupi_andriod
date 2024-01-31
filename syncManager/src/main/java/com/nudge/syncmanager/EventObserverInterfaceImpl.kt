@@ -14,8 +14,9 @@ import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-class EventObserverInterfaceImpl(
+class EventObserverInterfaceImpl @Inject constructor(
     val eventsDao: EventsDao,
     val eventDependencyDao: EventDependencyDao
 ) : EventObserverInterface {
