@@ -48,7 +48,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         return apiService.getDidisFromNetwork(userId)
     }
 
-    override suspend fun fetchSurveyFromNetwork(surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<SurveyResponseModel> {
+    override suspend fun fetchSurveyFromNetwork(surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<List<SurveyResponseModel>> {
         return apiService.getSurveyFromNetwork(surveyRequestBodyModel)
     }
 

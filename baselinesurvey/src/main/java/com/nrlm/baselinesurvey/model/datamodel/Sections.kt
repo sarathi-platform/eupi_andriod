@@ -16,7 +16,7 @@ data class Sections(
     @Expose
     val sectionName: String = NO_SECTION,
 
-    @SerializedName("sectionOrder")
+    @SerializedName("order")
     @Expose
     val sectionOrder: Int = 1,
 
@@ -29,11 +29,21 @@ data class Sections(
     val sectionIcon: String = BLANK_STRING,
 //    val sectionIcon: Int = 0,
 
-    @SerializedName("contentList")
+    @SerializedName("contents")
     @Expose
     val contentList: List<ContentList>,
 
-    @SerializedName("questionList")
+    @SerializedName("questions")
     @Expose
-    val questionList: List<QuestionList?> = listOf()
+    val questionList: List<QuestionList?> = listOf(),
+
+    @SerializedName("imageIcon")
+    @Expose
+    val imageIcon: String = BLANK_STRING,
+    @SerializedName("languageCode")
+    @Expose
+    val languageCode: String = BLANK_STRING,
+    @SerializedName("paraphrase")
+    @Expose
+    val paraphrase: String = BLANK_STRING,
 )
