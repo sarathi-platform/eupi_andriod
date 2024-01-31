@@ -18,7 +18,7 @@ import java.util.UUID
 data class Events (
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = false)
-    val id: String = UUID.randomUUID().toString(),
+    val id: String = UUID.randomUUID().toString(), // TODO add mobile number and timestamp
 
     @ColumnInfo("name")
     val name: String,
@@ -43,18 +43,21 @@ data class Events (
     @ColumnInfo("request_payload")
     val request_payload: String?,
 
+    //TODO change name to status and use it as a common status for both producer and consumer status
     @ColumnInfo("request_status")
     val request_status: String,
 
-    @ColumnInfo("consumer_response_payload")
+    @ColumnInfo("consumer_response_payload") //TODO change name to result.
     val consumer_response_payload: String?,
 
-    @ColumnInfo("consumer_status")
+    @ColumnInfo("consumer_status") //TODO Remove this
     val consumer_status: String,
 
-    @ColumnInfo("retry_count")
+    // TODO Move this to other table
+    @ColumnInfo("retry_count") // TODO
     val retry_count: Int = 0,
 
+    // TODO Move this to other table
     @ColumnInfo("error_message")
     val error_message: String? = BLANK_STRING,
 
