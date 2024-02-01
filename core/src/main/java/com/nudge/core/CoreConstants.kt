@@ -23,6 +23,7 @@ const val NUDGE_DATABASE_VERSION = 2
 const val LOCAL_BACKUP_FILE_NAME="Sarathi_backup"
 const val SARATHI_DIRECTORY_NAME="/SARATHI"
 const val LOCAL_BACKUP_EXTENSION=".txt"
-const val EVENT_DELIMETER="~||~||~||~"
+const val EVENT_DELIMETER="~@-"
+const val ZIP_MIME_TYPE="application/zip"
 
  val eventWriters = listOf<IEventWriter>(TextFileEventWriter(), DbEventWrite(),LogEventWriter(),ImageEventWriter())

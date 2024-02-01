@@ -1263,8 +1263,8 @@ class TransectWalkViewModel @Inject constructor(
     override fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             val stepListEntity = transectWalkRepository.getStepForVillage(
+                transectWalkRepository.prefRepo.getSelectedVillage().id,
                 stepId,
-                transectWalkRepository.prefRepo.getSelectedVillage().id
             )
             val updateWorkflowEvent = transectWalkRepository.createStepUpdateEvent(
                 stepStatus,

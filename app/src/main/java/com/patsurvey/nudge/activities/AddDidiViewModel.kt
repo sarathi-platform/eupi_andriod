@@ -68,7 +68,7 @@ class AddDidiViewModel @Inject constructor(
     var filterDidiList by mutableStateOf(listOf<DidiEntity>())
         private set
 
-    private lateinit var castList : List<CasteEntity>
+    private lateinit var castList: List<CasteEntity>
 
     var villageId: Int = -1
     var stepId: Int = -1
@@ -147,10 +147,10 @@ class AddDidiViewModel @Inject constructor(
 
     }
 
-    fun getCastName(castId : Int) : String{
+    fun getCastName(castId: Int): String {
         var castName = ""
-        for(cast in castList){
-            if(castId == cast.id)
+        for (cast in castList) {
+            if (castId == cast.id)
                 castName = cast.casteName
         }
         return castName
@@ -168,7 +168,7 @@ class AddDidiViewModel @Inject constructor(
         }
     }
 
-    fun fetchLastSelectedTola(){
+    fun fetchLastSelectedTola() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             if (addDidiRepository.getTolaCountForVillage(villageId = villageId) > 0) {
                 val selectedDBTola = addDidiRepository.getTolaForVillage(villageId)
@@ -182,7 +182,7 @@ class AddDidiViewModel @Inject constructor(
     }
 
     private fun deleteDidisToNetwork(networkCallbackListener: NetworkCallbackListener) {
-        job = appScopeLaunch (Dispatchers.IO + exceptionHandler) {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("AddDidiViewModel", "deleteDidisToNetwork -> called")
             try {
                 val didiList = addDidiRepository.getDidisToBeDeletedForVillage(
@@ -207,13 +207,13 @@ class AddDidiViewModel @Inject constructor(
                     )
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let {
-                            if((response.data[0].transactionId.isNullOrEmpty())) {
+                            if ((response.data[0].transactionId.isNullOrEmpty())) {
                                 didiList.forEach { tola ->
                                     addDidiRepository.deleteDidi(tola.id)
                                 }
                                 checkDeleteDidiStatus(networkCallbackListener)
                             } else {
-                                for (i in 0 until response.data.size){
+                                for (i in 0 until response.data.size) {
                                     didiList[i].transactionId = response.data[i].transactionId
                                     didiList[i].transactionId?.let { it1 ->
                                         addDidiRepository.updateDidiTransactionId(
@@ -230,7 +230,7 @@ class AddDidiViewModel @Inject constructor(
                         NudgeLogger.d("AddDidiViewModel", "deleteDidisToNetwork -> onFailed")
                         networkCallbackListener.onFailed()
                     }
-                    if(!response.lastSyncTime.isNullOrEmpty()){
+                    if (!response.lastSyncTime.isNullOrEmpty()) {
                         addDidiRepository.updateLastSyncTime(response.lastSyncTime)
                     }
                 } else {
@@ -239,7 +239,10 @@ class AddDidiViewModel @Inject constructor(
             } catch (ex: Exception) {
                 networkCallbackListener.onFailed()
                 NudgeLogger.d("AddDidiViewModel", "deleteDidisToNetwork -> onFailed")
-                onError(tag = "AddDidiViewModel", "deleteDidisToNetwork -> Error : ${ex.localizedMessage}")
+                onError(
+                    tag = "AddDidiViewModel",
+                    "deleteDidisToNetwork -> Error : ${ex.localizedMessage}"
+                )
                 onCatchError(ex, ApiType.DIDI_DELETE_API)
             }
         }
@@ -254,14 +257,20 @@ class AddDidiViewModel @Inject constructor(
                     "",
                     0
                 )
-                if(didiList.isNotEmpty()) {
+                if (didiList.isNotEmpty()) {
                     val ids: ArrayList<String> = arrayListOf()
                     didiList.forEach { didi ->
                         didi.transactionId?.let { ids.add(it) }
                     }
-                    NudgeLogger.d("AddDidiViewModel", "checkDeleteDidiStatus -> didiList: $didiList")
+                    NudgeLogger.d(
+                        "AddDidiViewModel",
+                        "checkDeleteDidiStatus -> didiList: $didiList"
+                    )
                     val response = addDidiRepository.getPendingStatus(TransactionIdRequest("", ids))
-                    NudgeLogger.d("AddDidiViewModel", "checkDeleteDidiStatus ->  response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
+                    NudgeLogger.d(
+                        "AddDidiViewModel",
+                        "checkDeleteDidiStatus ->  response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}"
+                    )
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.forEach { transactionIdResponse ->
                             didiList.forEach { didi ->
@@ -276,7 +285,7 @@ class AddDidiViewModel @Inject constructor(
                         networkCallbackListener.onFailed()
                     }
 
-                    if(!response.lastSyncTime.isNullOrEmpty()){
+                    if (!response.lastSyncTime.isNullOrEmpty()) {
                         addDidiRepository.updateLastSyncTime(response.lastSyncTime)
                     }
 
@@ -286,27 +295,42 @@ class AddDidiViewModel @Inject constructor(
             } catch (ex: Exception) {
                 networkCallbackListener.onFailed()
                 NudgeLogger.d("AddDidiViewModel", "checkDeleteDidiStatus -> onFailed")
-                onError(tag = "AddDidiViewModel", "checkDeleteDidiStatus -> Error : ${ex.localizedMessage}")
+                onError(
+                    tag = "AddDidiViewModel",
+                    "checkDeleteDidiStatus -> Error : ${ex.localizedMessage}"
+                )
                 onCatchError(ex, ApiType.STATUS_CALL_BACK_API)
             }
         }
     }
 
-    fun updateDidiToNetwork(networkCallbackListener: NetworkCallbackListener){
+    fun updateDidiToNetwork(networkCallbackListener: NetworkCallbackListener) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("AddDidiViewModel", "updateDidiToNetwork -> called")
             try {
                 val didiList = addDidiRepository.fetchAllDidiNeedToUpdate(true, "", 0)
                 if (didiList.isNotEmpty()) {
                     val didiRequestList = arrayListOf<EditDidiRequest>()
-                    didiList.forEach { didi->
-                        didiRequestList.add(EditDidiRequest(didi.serverId,didi.name,didi.address,didi.guardianName,didi.castId,didi.cohortId))
+                    didiList.forEach { didi ->
+                        didiRequestList.add(
+                            EditDidiRequest(
+                                didi.serverId,
+                                didi.name,
+                                didi.address,
+                                didi.guardianName,
+                                didi.castId,
+                                didi.cohortId
+                            )
+                        )
                     }
                     NudgeLogger.d("AddDidiViewModel", "updateDidiToNetwork -> didiList: $didiList")
                     val response = addDidiRepository.updateDidis(didiRequestList)
-                    NudgeLogger.d("AddDidiViewModel", "updateDidiToNetwork ->  response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
+                    NudgeLogger.d(
+                        "AddDidiViewModel",
+                        "updateDidiToNetwork ->  response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}"
+                    )
                     if (response.status.equals(SUCCESS, true)) {
-                        if(response.data?.get(0)?.transactionId.isNullOrEmpty()) {
+                        if (response.data?.get(0)?.transactionId.isNullOrEmpty()) {
                             response.data?.let {
                                 response.data.forEach { _ ->
                                     didiList.forEach { didi ->
@@ -314,7 +338,7 @@ class AddDidiViewModel @Inject constructor(
                                     }
                                 }
                             }
-                            didiList.forEach(){ didiEntity ->
+                            didiList.forEach() { didiEntity ->
                                 didiEntity.needsToPost = false
                                 didiEntity.transactionId = ""
                                 addDidiRepository.updateDidiDetailAfterSync(
@@ -328,7 +352,7 @@ class AddDidiViewModel @Inject constructor(
                             }
                             checkUpdateDidiStatus(networkCallbackListener)
                         } else {
-                            for (i in 0..(response.data?.size?.minus(1) ?: 0)){
+                            for (i in 0..(response.data?.size?.minus(1) ?: 0)) {
                                 didiList[i].transactionId = response.data?.get(i)?.transactionId
                                 didiList[i].transactionId?.let {
                                     addDidiRepository.updateDidiTransactionId(
@@ -342,9 +366,9 @@ class AddDidiViewModel @Inject constructor(
                         }
                     } else {
                         NudgeLogger.d("AddDidiViewModel", "updateDidiToNetwork ->onFailed")
-                       networkCallbackListener.onFailed()
+                        networkCallbackListener.onFailed()
                     }
-                    if(!response.lastSyncTime.isNullOrEmpty()){
+                    if (!response.lastSyncTime.isNullOrEmpty()) {
                         addDidiRepository.updateLastSyncTime(response.lastSyncTime)
                     }
                 } else {
@@ -353,7 +377,10 @@ class AddDidiViewModel @Inject constructor(
             } catch (ex: Exception) {
                 networkCallbackListener.onFailed()
                 NudgeLogger.d("AddDidiViewModel", "updateDidiToNetwork -> onFailed")
-                onError(tag = "AddDidiViewModel", "updateDidiToNetwork -> Error : ${ex.localizedMessage}")
+                onError(
+                    tag = "AddDidiViewModel",
+                    "updateDidiToNetwork -> Error : ${ex.localizedMessage}"
+                )
                 onCatchError(ex, ApiType.DIDI_EDIT_API)
             }
         }
@@ -364,14 +391,20 @@ class AddDidiViewModel @Inject constructor(
             NudgeLogger.d("AddDidiViewModel", "checkUpdateDidiStatus -> called")
             try {
                 val didiList = addDidiRepository.fetchAllPendingDidiNeedToUpdate(true, "", 0)
-                if(didiList.isNotEmpty()) {
+                if (didiList.isNotEmpty()) {
                     val ids: ArrayList<String> = arrayListOf()
                     didiList.forEach { tola ->
                         tola.transactionId?.let { ids.add(it) }
                     }
-                    NudgeLogger.d("AddDidiViewModel", "checkUpdateDidiStatus -> didiList: $didiList")
+                    NudgeLogger.d(
+                        "AddDidiViewModel",
+                        "checkUpdateDidiStatus -> didiList: $didiList"
+                    )
                     val response = addDidiRepository.getPendingStatus(TransactionIdRequest("", ids))
-                    NudgeLogger.d("AddDidiViewModel", "checkUpdateDidiStatus ->  response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
+                    NudgeLogger.d(
+                        "AddDidiViewModel",
+                        "checkUpdateDidiStatus ->  response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}"
+                    )
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.forEach { transactionIdResponse ->
                             didiList.forEach { didi ->
@@ -395,7 +428,10 @@ class AddDidiViewModel @Inject constructor(
             } catch (ex: Exception) {
                 networkCallbackListener.onFailed()
                 NudgeLogger.d("AddDidiViewModel", "checkUpdateDidiStatus -> onFailed")
-                onError(tag = "AddDidiViewModel", "checkUpdateDidiStatus -> Error : ${ex.localizedMessage}")
+                onError(
+                    tag = "AddDidiViewModel",
+                    "checkUpdateDidiStatus -> Error : ${ex.localizedMessage}"
+                )
                 onCatchError(ex, ApiType.STATUS_CALL_BACK_API)
             }
         }
@@ -528,9 +564,11 @@ class AddDidiViewModel @Inject constructor(
         }
     }
 
-    fun updateDidiIntoDatabase(didiId: Int, isOnline: Boolean,
-                               networkCallbackListener: NetworkCallbackListener,
-                               localDbListener: LocalDbListener) {
+    fun updateDidiIntoDatabase(
+        didiId: Int, isOnline: Boolean,
+        networkCallbackListener: NetworkCallbackListener,
+        localDbListener: LocalDbListener
+    ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _didiList.value
             filterDidiList
@@ -617,8 +655,8 @@ class AddDidiViewModel @Inject constructor(
                     localDbListener.onInsertionSuccess()
 
                 }
-            }else{
-                withContext(Dispatchers.Main){
+            } else {
+                withContext(Dispatchers.Main) {
                     localDbListener.onInsertionFailed()
                 }
             }
@@ -755,10 +793,21 @@ class AddDidiViewModel @Inject constructor(
             val stepList =
                 addDidiRepository.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
             val isComplete = stepList[stepList.map { it.orderNumber }.indexOf(5)].isComplete
-            Log.d("DidiItemCard-isVoEndorsementCompleteForVillage: ", "step: ${stepList[stepList.map { it.orderNumber }.indexOf(5)].name}")
-            Log.d("DidiItemCard-isVoEndorsementCompleteForVillage: ", "step isComplete: ${stepList[stepList.map { it.orderNumber }.indexOf(5)].isComplete}")
+            Log.d(
+                "DidiItemCard-isVoEndorsementCompleteForVillage: ",
+                "step: ${stepList[stepList.map { it.orderNumber }.indexOf(5)].name}"
+            )
+            Log.d(
+                "DidiItemCard-isVoEndorsementCompleteForVillage: ",
+                "step isComplete: ${
+                    stepList[stepList.map { it.orderNumber }.indexOf(5)].isComplete
+                }"
+            )
             isVoEndorsementComplete.value = isComplete == StepStatus.COMPLETED.ordinal
-            Log.d("DidiItemCard-isVoEndorsementCompleteForVillage: ", "isVoEndorsementComplete.valuee: ${isVoEndorsementComplete.value}")
+            Log.d(
+                "DidiItemCard-isVoEndorsementCompleteForVillage: ",
+                "isVoEndorsementComplete.valuee: ${isVoEndorsementComplete.value}"
+            )
         }
     }
 
@@ -770,7 +819,7 @@ class AddDidiViewModel @Inject constructor(
                 val jsonDidi = JsonArray()
                 val filteredDidiList = addDidiRepository.fetchAllDidiNeedToAdd(true, "", 0)
                 if (filteredDidiList.isNotEmpty()) {
-                    for(didi in filteredDidiList){
+                    for (didi in filteredDidiList) {
                         val tola = addDidiRepository.fetchSingleTolaFromServerId(didi.cohortId)
                         if (tola != null) {
                             didi.cohortId = tola.serverId
@@ -779,11 +828,14 @@ class AddDidiViewModel @Inject constructor(
                     }
                     NudgeLogger.d("AddDidiViewModel", "addDidisToNetwork: didiList: $jsonDidi")
                     val response = addDidiRepository.addDidis(jsonDidi)
-                    NudgeLogger.d("AddDidiViewModel", "addDidisToNetwork: response:  response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
+                    NudgeLogger.d(
+                        "AddDidiViewModel",
+                        "addDidisToNetwork: response:  response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}"
+                    )
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let {
-                            if(response.data[0].transactionId.isNullOrEmpty()) {
-                                for(i in filteredDidiList.indices){
+                            if (response.data[0].transactionId.isNullOrEmpty()) {
+                                for (i in filteredDidiList.indices) {
                                     val didiFromNetwork = response.data[i]
                                     val didi = filteredDidiList[i]
                                     addDidiRepository.updateDidiDetailAfterSync(
@@ -796,7 +848,7 @@ class AddDidiViewModel @Inject constructor(
                                     )
                                 }
                                 response.data.forEach { didiFromNetwork ->
-                                    didiList.value.forEach{ didi ->
+                                    didiList.value.forEach { didi ->
                                         if (TextUtils.equals(didiFromNetwork.name, didi.name)) {
                                             didi.serverId = didiFromNetwork.id
                                             didi.createdDate = didiFromNetwork.createdDate
@@ -806,7 +858,7 @@ class AddDidiViewModel @Inject constructor(
                                 }
                                 checkAddDidiStatus(networkCallbackListener)
                             } else {
-                                for(i in filteredDidiList.indices){
+                                for (i in filteredDidiList.indices) {
                                     response.data[i].transactionId.let { it1 ->
                                         addDidiRepository.updateDidiTransactionId(
                                             filteredDidiList[i].id,
@@ -822,7 +874,7 @@ class AddDidiViewModel @Inject constructor(
                         NudgeLogger.d("AddDidiViewModel", "addDidisToNetwork: onFailed")
                         networkCallbackListener.onFailed()
                     }
-                    if(!response.lastSyncTime.isNullOrEmpty()){
+                    if (!response.lastSyncTime.isNullOrEmpty()) {
                         addDidiRepository.updateLastSyncTime(response.lastSyncTime)
                     }
                 } else {
@@ -831,37 +883,42 @@ class AddDidiViewModel @Inject constructor(
             } catch (ex: Exception) {
                 networkCallbackListener.onFailed()
                 NudgeLogger.d("AddDidiViewModel", "addDidisToNetwork -> onFailed")
-                onError(tag = "AddDidiViewModel", "addDidisToNetwork -> Error : ${ex.localizedMessage}")
+                onError(
+                    tag = "AddDidiViewModel",
+                    "addDidisToNetwork -> Error : ${ex.localizedMessage}"
+                )
                 onCatchError(ex, ApiType.DIDI_EDIT_API)
             }
         }
     }
 
-    private fun startSyncTimerForDidiStatus(networkCallbackListener: NetworkCallbackListener){
+    private fun startSyncTimerForDidiStatus(networkCallbackListener: NetworkCallbackListener) {
         val timer = Timer()
-        timer.schedule(object : TimerTask(){
+        timer.schedule(object : TimerTask() {
             override fun run() {
-                when (isPending){
-                    1 ->{
+                when (isPending) {
+                    1 -> {
                         checkAddDidiStatus(networkCallbackListener)
                     }
-                    2 ->{
+
+                    2 -> {
                         checkDeleteDidiStatus(networkCallbackListener)
                     }
-                    3 ->{
+
+                    3 -> {
                         checkUpdateDidiStatus(networkCallbackListener)
                     }
                 }
             }
-        },10000)
+        }, 10000)
     }
 
-    private fun checkAddDidiStatus(networkCallbackListener: NetworkCallbackListener){
+    private fun checkAddDidiStatus(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             NudgeLogger.d("AddDidiViewModel", "checkAddDidiStatus: called")
             try {
                 val didiList = addDidiRepository.fetchPendingDidi(true, "")
-                if(didiList.isNotEmpty()) {
+                if (didiList.isNotEmpty()) {
                     val ids: ArrayList<String> = arrayListOf()
                     didiList.forEach { tola ->
                         tola.transactionId?.let { ids.add(it) }
@@ -877,7 +934,7 @@ class AddDidiViewModel @Inject constructor(
                                 }
                             }
                         }
-                        didiList.forEach{ didiEntity ->
+                        didiList.forEach { didiEntity ->
                             didiEntity.needsToPost = false
                             didiEntity.transactionId = ""
                             addDidiRepository.updateDidiDetailAfterSync(
@@ -900,7 +957,10 @@ class AddDidiViewModel @Inject constructor(
             } catch (ex: Exception) {
                 networkCallbackListener.onFailed()
                 NudgeLogger.d("AddDidiViewModel", "checkAddDidiStatus -> onFailed")
-                onError(tag = "AddDidiViewModel", "checkAddDidiStatus -> Error : ${ex.localizedMessage}")
+                onError(
+                    tag = "AddDidiViewModel",
+                    "checkAddDidiStatus -> Error : ${ex.localizedMessage}"
+                )
                 onCatchError(ex, ApiType.STATUS_CALL_BACK_API)
             }
         }
@@ -962,12 +1022,13 @@ class AddDidiViewModel @Inject constructor(
             currentTime
         )
     }
+
     fun callWorkFlowAPI(
         villageId: Int,
         stepId: Int,
         networkCallbackListener: NetworkCallbackListener
     ) {
-        job = appScopeLaunch (Dispatchers.IO + exceptionHandler) {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> called")
             try {
                 val dbResponse = addDidiRepository.getStepForVillage(villageId, stepId)
@@ -988,11 +1049,17 @@ class AddDidiViewModel @Inject constructor(
                             )
                         )
                     )
-                    NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
+                    NudgeLogger.d(
+                        "AddDidiViewModel",
+                        "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest"
+                    )
                     val response = addDidiRepository.editWorkFlow(
                         primaryWorkFlowRequest
                     )
-                    NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
+                    NudgeLogger.d(
+                        "AddDidiViewModel",
+                        "callWorkFlowAPI -> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}"
+                    )
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let {
                             addDidiRepository.updateWorkflowId(
@@ -1011,7 +1078,10 @@ class AddDidiViewModel @Inject constructor(
                             addDidiRepository.updateNeedToPost(stepList[stepList.map { it.orderNumber }
                                 .indexOf(2)].id, villageId, false)
 
-                            NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost after \n")
+                            NudgeLogger.d(
+                                "AddDidiViewModel",
+                                "callWorkFlowAPI -> stepsListDao.updateNeedToPost after \n"
+                            )
                         }
                         networkCallbackListener.onSuccess()
                     } else {
@@ -1026,10 +1096,12 @@ class AddDidiViewModel @Inject constructor(
                     NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> second try = called")
                     stepList.forEach { step ->
                         NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> step = $step")
-                        NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> " +
-                                "step.orderNumber > 2 && step.workFlowId > 0: " +
-                                "${step.orderNumber > 2} && ${step.workFlowId > 0}")
-                        if (step.orderNumber > 2 &&  step.workFlowId > 0) {
+                        NudgeLogger.d(
+                            "AddDidiViewModel", "callWorkFlowAPI -> " +
+                                    "step.orderNumber > 2 && step.workFlowId > 0: " +
+                                    "${step.orderNumber > 2} && ${step.workFlowId > 0}"
+                        )
+                        if (step.orderNumber > 2 && step.workFlowId > 0) {
                             val inProgressStepRequest = listOf(
                                 EditWorkFlowRequest(
                                     step.workFlowId,
@@ -1037,12 +1109,18 @@ class AddDidiViewModel @Inject constructor(
                                 )
                             )
 
-                            NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> inProgressStepRequest = $inProgressStepRequest")
+                            NudgeLogger.d(
+                                "AddDidiViewModel",
+                                "callWorkFlowAPI -> inProgressStepRequest = $inProgressStepRequest"
+                            )
 
                             val inProgressStepResponse =
                                 addDidiRepository.editWorkFlow(inProgressStepRequest)
 
-                            NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> inProgressStepResponse: status = ${inProgressStepResponse.status}, message = ${inProgressStepResponse.message}, data = ${inProgressStepResponse.data.toString()}")
+                            NudgeLogger.d(
+                                "AddDidiViewModel",
+                                "callWorkFlowAPI -> inProgressStepResponse: status = ${inProgressStepResponse.status}, message = ${inProgressStepResponse.message}, data = ${inProgressStepResponse.data.toString()}"
+                            )
 
                             if (inProgressStepResponse.status.equals(SUCCESS, true)) {
                                 inProgressStepResponse.data?.let {
@@ -1056,11 +1134,14 @@ class AddDidiViewModel @Inject constructor(
                                 addDidiRepository.updateNeedToPost(stepId, villageId, false)
                                 networkCallbackListener.onSuccess()
                             } else {
-                                NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> inProgressStepResponse = FAIL")
+                                NudgeLogger.d(
+                                    "AddDidiViewModel",
+                                    "callWorkFlowAPI -> inProgressStepResponse = FAIL"
+                                )
                                 networkCallbackListener.onFailed()
                             }
 
-                            if(!inProgressStepResponse.lastSyncTime.isNullOrEmpty()){
+                            if (!inProgressStepResponse.lastSyncTime.isNullOrEmpty()) {
                                 addDidiRepository.updateLastSyncTime(inProgressStepResponse.lastSyncTime)
                             }
                         }
@@ -1073,7 +1154,10 @@ class AddDidiViewModel @Inject constructor(
             } catch (ex: Exception) {
                 NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> onFailed()")
                 networkCallbackListener.onFailed()
-                onError(tag = "AddDidiViewModel", "callWorkFlowAPI -> Error : ${ex.localizedMessage}")
+                onError(
+                    tag = "AddDidiViewModel",
+                    "callWorkFlowAPI -> Error : ${ex.localizedMessage}"
+                )
                 onCatchError(ex, ApiType.WORK_FLOW_API)
             }
         }
@@ -1090,12 +1174,20 @@ class AddDidiViewModel @Inject constructor(
             try {
                 val stepList =
                     addDidiRepository.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
-                NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> stepsList: $stepList \n\n")
+                NudgeLogger.d(
+                    "AddDidiViewModel",
+                    "setSocialMappingINProgress -> stepsList: $stepList \n\n"
+                )
 
-                NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> stepsListDao.markStepAsCompleteOrInProgress before " +
-                        "stepId = ${stepList[stepList.map { it.orderNumber }.indexOf(2)].id},\n" +
-                        "isComplete = StepStatus.INPROGRESS.ordinal,\n" +
-                        "villageId = $villageId \n")
+                NudgeLogger.d(
+                    "AddDidiViewModel",
+                    "setSocialMappingINProgress -> stepsListDao.markStepAsCompleteOrInProgress before " +
+                            "stepId = ${
+                                stepList[stepList.map { it.orderNumber }.indexOf(2)].id
+                            },\n" +
+                            "isComplete = StepStatus.INPROGRESS.ordinal,\n" +
+                            "villageId = $villageId \n"
+                )
 
                 val socialMappingStep = stepList[stepList.map { it.orderNumber }.indexOf(2)]
                 addDidiRepository.markStepAsCompleteOrInProgress(
@@ -1145,7 +1237,10 @@ class AddDidiViewModel @Inject constructor(
                             }
                             addDidiRepository.updateNeedToPost(newStep.id, villageId, true)
                         } else {
-                            NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> newStep.orderNumber > stepList[stepList.map { steps -> steps.orderNumber }.indexOf(2)].orderNumber: false, newStep.orderNumber: ${newStep.orderNumber}")
+                            NudgeLogger.d(
+                                "AddDidiViewModel",
+                                "setSocialMappingINProgress -> newStep.orderNumber > stepList[stepList.map { steps -> steps.orderNumber }.indexOf(2)].orderNumber: false, newStep.orderNumber: ${newStep.orderNumber}"
+                            )
                         }
                     }
                 }
@@ -1173,9 +1268,15 @@ class AddDidiViewModel @Inject constructor(
                                 }
                             }
                             if (apiRequest.isNotEmpty()) {
-                                NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> apiRequest: $apiRequest")
+                                NudgeLogger.d(
+                                    "AddDidiViewModel",
+                                    "setSocialMappingINProgress -> apiRequest: $apiRequest"
+                                )
                                 val response = addDidiRepository.editWorkFlow(apiRequest)
-                                NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
+                                NudgeLogger.d(
+                                    "AddDidiViewModel",
+                                    "setSocialMappingINProgress -> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}"
+                                )
                                 if (response.status.equals(SUCCESS)) {
                                     response.data?.let { response ->
                                         response.forEach {
@@ -1191,12 +1292,18 @@ class AddDidiViewModel @Inject constructor(
                                                 false
                                             )
                                         }
-                                        NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> onSuccess")
+                                        NudgeLogger.d(
+                                            "AddDidiViewModel",
+                                            "setSocialMappingINProgress -> onSuccess"
+                                        )
                                         networkCallbackListener.onSuccess()
                                     }
 
                                 } else {
-                                    NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> onFailed")
+                                    NudgeLogger.d(
+                                        "AddDidiViewModel",
+                                        "setSocialMappingINProgress -> onFailed"
+                                    )
                                     networkCallbackListener.onFailed()
                                 }
 
@@ -1283,7 +1390,7 @@ class AddDidiViewModel @Inject constructor(
             val tola = addDidiRepository.fetchSingleTola(selectedTolaId)
             if (tola != null && tola.name != selectedTola.value.second) {
                 selectedTola.value = Pair(tola.id ?: -1, tola.name ?: "")
-            } else if (tola == null){
+            } else if (tola == null) {
                 selectedTola.value = Pair(-1, "")
             }
         }
@@ -1405,7 +1512,7 @@ class AddDidiViewModel @Inject constructor(
                             } else {
                                 networkCallbackListener.onSuccess()
                             }
-                            if(!deleteDidiApiResponse.lastSyncTime.isNullOrEmpty()){
+                            if (!deleteDidiApiResponse.lastSyncTime.isNullOrEmpty()) {
                                 addDidiRepository.updateLastSyncTime(deleteDidiApiResponse.lastSyncTime)
                             }
                         } else {
@@ -1420,15 +1527,15 @@ class AddDidiViewModel @Inject constructor(
     }
 
 
-    fun fetchDidiDetails(didiId: Int){
-            job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-                val didi = addDidiRepository.getDidi(didiId)
-               didiName.value=didi.name
-               dadaName.value=didi.guardianName
-               houseNumber.value=didi.address
-               selectedTola.value= Pair(didi.cohortId, didi.cohortName)
-               selectedCast.value= Pair(didi.castId, didi.castName)
-            }
+    fun fetchDidiDetails(didiId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val didi = addDidiRepository.getDidi(didiId)
+            didiName.value = didi.name
+            dadaName.value = didi.guardianName
+            houseNumber.value = didi.address
+            selectedTola.value = Pair(didi.cohortId, didi.cohortName)
+            selectedCast.value = Pair(didi.castId, didi.castName)
+        }
     }
 
     fun getFormPathKey(subPath: String): String {
@@ -1441,7 +1548,10 @@ class AddDidiViewModel @Inject constructor(
         return "${formName}_page_$pageNumber"
     }
 
-    fun checkIfLastStepIsComplete(currentStepId: Int, callBack: (isPreviousStepComplete: Boolean) -> Unit) {
+    fun checkIfLastStepIsComplete(
+        currentStepId: Int,
+        callBack: (isPreviousStepComplete: Boolean) -> Unit
+    ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList =
                 addDidiRepository.getAllStepsForVillage(addDidiRepository.getSelectedVillage().id)
@@ -1469,34 +1579,52 @@ class AddDidiViewModel @Inject constructor(
                         )
                     )
                     val response = addDidiRepository.updateDidis(didiRequestList)
-                    NudgeLogger.d("AddDidiViewModel", "updateDidiToNetwork-> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
+                    NudgeLogger.d(
+                        "AddDidiViewModel",
+                        "updateDidiToNetwork-> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}"
+                    )
                     if (response.status.equals(SUCCESS, true)) {
                         addDidiRepository.updateNeedToPost(didi.id, false)
                         networkCallbackListener.onSuccess()
-                        NudgeLogger.d("AddDidiViewModel", "updateDidiToNetwork(didi: DidiEntity, networkCallbackListener: NetworkCallbackListener) -> onSuccess")
+                        NudgeLogger.d(
+                            "AddDidiViewModel",
+                            "updateDidiToNetwork(didi: DidiEntity, networkCallbackListener: NetworkCallbackListener) -> onSuccess"
+                        )
                     } else {
                         networkCallbackListener.onFailed()
-                        NudgeLogger.d("AddDidiViewModel", "updateDidiToNetwork(didi: DidiEntity, networkCallbackListener: NetworkCallbackListener) -> onFailed")
+                        NudgeLogger.d(
+                            "AddDidiViewModel",
+                            "updateDidiToNetwork(didi: DidiEntity, networkCallbackListener: NetworkCallbackListener) -> onFailed"
+                        )
                     }
-                    if(!response.lastSyncTime.isNullOrEmpty()){
+                    if (!response.lastSyncTime.isNullOrEmpty()) {
                         addDidiRepository.updateLastSyncTime(response.lastSyncTime)
                     }
 
                 } else {
                     networkCallbackListener.onSuccess()
-                    NudgeLogger.d("AddDidiViewModel", "updateDidiToNetwork(didi: DidiEntity, networkCallbackListener: NetworkCallbackListener) -> onSuccess")
+                    NudgeLogger.d(
+                        "AddDidiViewModel",
+                        "updateDidiToNetwork(didi: DidiEntity, networkCallbackListener: NetworkCallbackListener) -> onSuccess"
+                    )
                 }
             } catch (ex: Exception) {
                 networkCallbackListener.onFailed()
-                NudgeLogger.d("AddDidiViewModel", "updateDidiToNetwork(didi: DidiEntity, networkCallbackListener: NetworkCallbackListener) -> onFailed")
-                onError(tag = "AddDidiViewModel", "updateDidiToNetwork(didi: DidiEntity, networkCallbackListener: NetworkCallbackListener) -> Error : ${ex.localizedMessage}")
+                NudgeLogger.d(
+                    "AddDidiViewModel",
+                    "updateDidiToNetwork(didi: DidiEntity, networkCallbackListener: NetworkCallbackListener) -> onFailed"
+                )
+                onError(
+                    tag = "AddDidiViewModel",
+                    "updateDidiToNetwork(didi: DidiEntity, networkCallbackListener: NetworkCallbackListener) -> Error : ${ex.localizedMessage}"
+                )
                 onCatchError(ex, ApiType.DIDI_EDIT_API)
             }
         }
     }
 
-    fun validateDidiToNavigate(didiId: Int,onNavigateToSummary:(Int)->Unit){
-        job = CoroutineScope(Dispatchers.IO +exceptionHandler).launch {
+    fun validateDidiToNavigate(didiId: Int, onNavigateToSummary: (Int) -> Unit) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val questionExclusionAnswered =
                 addDidiRepository.getAnswerForDidi(didiId = didiId, actionType = TYPE_EXCLUSION)
             val questionInclusionAnswered =
@@ -1519,18 +1647,18 @@ class AddDidiViewModel @Inject constructor(
                         } else onNavigateToSummary(SummaryNavigation.SECTION_2_PAGE.ordinal)
                     }
                 } else {
-                    withContext(Dispatchers.Main){
+                    withContext(Dispatchers.Main) {
                         onNavigateToSummary(SummaryNavigation.DIDI_CAMERA_PAGE.ordinal)
                     }
                 }
-            }else{
-                if(questionExclusionAnswered.isNotEmpty()){
-                    if(exclusiveQuesCount.value == questionExclusionAnswered.size){
-                        withContext(Dispatchers.Main){
+            } else {
+                if (questionExclusionAnswered.isNotEmpty()) {
+                    if (exclusiveQuesCount.value == questionExclusionAnswered.size) {
+                        withContext(Dispatchers.Main) {
                             onNavigateToSummary(SummaryNavigation.SECTION_1_PAGE.ordinal)
                         }
-                    }else{
-                        withContext(Dispatchers.Main){
+                    } else {
+                        withContext(Dispatchers.Main) {
                             onNavigateToSummary(SummaryNavigation.DIDI_CAMERA_PAGE.ordinal)
                         }
                     }
@@ -1562,8 +1690,8 @@ class AddDidiViewModel @Inject constructor(
     override fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             val stepListEntity = addDidiRepository.getStepForVillage(
-                stepId,
-                addDidiRepository.prefRepo.getSelectedVillage().id
+                addDidiRepository.prefRepo.getSelectedVillage().id,
+                stepId
             )
             val updateWorkflowEvent = addDidiRepository.createStepUpdateEvent(
                 stepStatus,

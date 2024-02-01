@@ -393,9 +393,9 @@ class WealthRankingSurveyViewModel @Inject constructor(
     override fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             val stepListEntity = repository.getStepForVillage(
-                stepId,
-                repository.prefRepo.getSelectedVillage().id
-            )
+                repository.prefRepo.getSelectedVillage().id,
+                stepId
+                )
             val updateWorkflowEvent = repository.createStepUpdateEvent(
                 stepStatus,
                 stepListEntity,

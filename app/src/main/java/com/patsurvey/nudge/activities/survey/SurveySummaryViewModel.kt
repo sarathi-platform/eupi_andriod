@@ -901,9 +901,10 @@ class SurveySummaryViewModel @Inject constructor(
     override fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             val stepListEntity = repository.getStepForVillage(
+                repository.prefRepo.getSelectedVillage().id,
                 stepId,
-                repository.prefRepo.getSelectedVillage().id
-            )
+
+                )
             val updateWorkflowEvent = repository.createStepUpdateEvent(
                 stepStatus,
                 stepListEntity,

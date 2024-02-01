@@ -207,6 +207,7 @@ fun SettingScreen(
         list.add(SettingOptionModel(4, context.getString(R.string.training_videos), BLANK_STRING))
         list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
         list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
+        list.add(SettingOptionModel(7, stringResource(id = R.string.export_file), BLANK_STRING))
 //        list.add(SettingOptionModel(7, stringResource(R.string.export_data_test), BLANK_STRING))
         /*if (BuildConfig.DEBUG) *//*list.add(
             SettingOptionModel(
@@ -413,7 +414,6 @@ fun SettingScreen(
                                 0 -> {
                                     viewModel.syncErrorMessage.value = ""
                                     if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
-                                       viewModel.compressEventAndImageData()
                                         if (!viewModel.prefRepo.isUserBPC()) {
                                             viewModel.showSyncDialog.value = true
                                         } else {
@@ -456,6 +456,9 @@ fun SettingScreen(
                                 5 -> {
 //                                    navController.navigate(SettingScreens.BUG_LOGGING_SCREEN.route)
                                     viewModel.buildAndShareLogs()
+                                }
+                                6 -> {
+                                    viewModel.compressEventAndImageData(context.getString(R.string.share_export_file))
                                 }
 
                                 else -> {

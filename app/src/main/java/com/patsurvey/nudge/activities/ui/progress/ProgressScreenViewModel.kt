@@ -245,6 +245,7 @@ class ProgressScreenViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val dbResponse = progressScreenRepository.getStepForVillage(villageId, stepId)
+
                 NudgeLogger.d(
                     "ProgressScreenViewModel",
                     "callWorkFlowAPI -> dbResponse: ${dbResponse.toString()}"
@@ -340,12 +341,14 @@ class ProgressScreenViewModel @Inject constructor(
         progressScreenRepository.saveFromPage(pageFrom)
     }
 
-    override fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
-        CoroutineScope(Dispatchers.IO).launch {
+     override fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
+
+     job=   CoroutineScope(Dispatchers.IO).launch {
             val stepListEntity = progressScreenRepository.getStepForVillage(
+                progressScreenRepository.prefRepo.getSelectedVillage().id,
                 stepId,
-                progressScreenRepository.prefRepo.getSelectedVillage().id
-            )
+
+                )
             if (stepListEntity.workFlowId == 0) {
                 val updateWorkflowEvent = progressScreenRepository.createStepUpdateEvent(
                     stepStatus,

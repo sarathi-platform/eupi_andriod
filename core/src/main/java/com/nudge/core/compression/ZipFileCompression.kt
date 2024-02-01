@@ -10,24 +10,25 @@ import android.os.Environment
 import android.provider.MediaStore
 import androidx.core.net.toUri
 import com.nudge.core.SARATHI_DIRECTORY_NAME
+import com.nudge.core.ZIP_MIME_TYPE
 import java.io.File
 
 class ZipFileCompression : IFileCompressor {
-    val mimeType = "application/zip"
     val extension = ".zip"
-    override suspend fun compressBackupFiles(context: Context, mobileNo: String) {
+    override suspend fun compressBackupFiles(context: Context, mobileNo: String):Uri? {
 
         val zipFileName = "${mobileNo}_sarathi_${System.currentTimeMillis()}_"
-        compressData(
+      val imageUri=  compressData(
             context,
             zipFileName + "image",
             Environment.DIRECTORY_PICTURES + SARATHI_DIRECTORY_NAME
         )
-        compressData(
+       val fileUri= compressData(
             context,
             zipFileName + "file",
             Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME
         )
+        return fileUri;
     }
 
     override fun getCompressionType(): String {
@@ -39,11 +40,11 @@ class ZipFileCompression : IFileCompressor {
         context: Context,
         zipFileName: String,
         filePathToZipped: String
-    ) {
+    ) :Uri?{
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val contentValues = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, zipFileName)
-                put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
+                put(MediaStore.MediaColumns.MIME_TYPE, ZIP_MIME_TYPE)
                 put(
                     MediaStore.MediaColumns.RELATIVE_PATH,
                     Environment.DIRECTORY_DOCUMENTS
@@ -91,7 +92,7 @@ class ZipFileCompression : IFileCompressor {
 
             ZipManager.zip(fileUris, zipfileUri, context)
 
-
+return  zipfileUri;
         } else {
             try {
 
@@ -113,10 +114,13 @@ class ZipFileCompression : IFileCompressor {
                 if (s != null) {
                     ZipManager.zip(context = context, files = s, zipFile = zippedFilePath.toUri())
                 }
+                return  zippedFilePath.toUri();
             } catch (e: Exception) {
                 e.printStackTrace()
 
             }
+        return  null;
         }
+
     }
 }
