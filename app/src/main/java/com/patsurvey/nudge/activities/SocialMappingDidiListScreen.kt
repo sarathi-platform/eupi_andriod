@@ -575,6 +575,7 @@ fun SocialMappingDidiListScreen(
                                         }
                                     }
                                     didiViewModel.markSocialMappingComplete(villageId, stepId)
+                                    didiViewModel.saveWorkflowEventIntoDb(stepStatus = StepStatus.COMPLETED, villageId = villageId, stepId = stepId)
                                     (context as MainActivity).isFilterApplied.value = false
                                     navController.navigate(
                                         "sm_step_completion_screen/${

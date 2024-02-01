@@ -111,9 +111,9 @@ class VoEndorsementSummaryRepository @Inject constructor(
                     createdBy = prefRepo.getUserId(),
                     mobile_number = prefRepo.getMobileNumber(),
                     request_payload = requestPayload,
-                    request_status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.name,
                     modified_date = System.currentTimeMillis().toDate(),
-                    consumer_response_payload = null,
+                    result = null,
                     consumer_status = BLANK_STRING,
                     metadata = MetadataDto(
                         mission = SELECTION_MISSION,

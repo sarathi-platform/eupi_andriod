@@ -5,13 +5,11 @@ import com.nudge.core.EventSyncStatus
 import com.nudge.core.SELECTION_MISSION
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
-import com.nudge.core.database.entities.getDependentEventsId
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
 import com.nudge.core.getSizeInLong
 import com.nudge.core.json
 import com.nudge.core.model.MetadataDto
-import com.nudge.core.model.getMetaDataDtoFromString
 import com.nudge.core.toDate
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponseForPatStatus
@@ -47,7 +45,6 @@ import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
 import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.getFormSubPath
 import com.patsurvey.nudge.utils.getParentEntityMapForEvent
@@ -151,6 +148,7 @@ class SurveySummaryRepository @Inject constructor(
         return stepsListDao.getAllStepsForVillage(villageId)
     }
 
+    fun getSelectedVillage() = prefRepo.getSelectedVillage()
    suspend fun editWorkFlow(addWorkFlowRequest: List<EditWorkFlowRequest>):ApiResponseModel<List<WorkFlowResponse>>{
        NudgeLogger.d("SurveySummaryRepository","editWorkFlow Request=> ${Gson().toJson(addWorkFlowRequest)}")
         return apiService.editWorkFlow(
@@ -287,15 +285,15 @@ class SurveySummaryRepository @Inject constructor(
 
                 val requestPayload = (eventItem as SaveMatchSummaryRequest).json()
 
-                var saveWealthRankingEvent = Events(
+                var saveBpcMatchScoreEvent = Events(
                     name = eventName.name,
                     type = eventType.name,
                     createdBy = prefRepo.getUserId(),
                     mobile_number = prefRepo.getMobileNumber(),
                     request_payload = requestPayload,
-                    request_status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.name,
                     modified_date = System.currentTimeMillis().toDate(),
-                    consumer_response_payload = null,
+                    result = null,
                     consumer_status = BLANK_STRING,
                     metadata = MetadataDto(
                         mission = SELECTION_MISSION,
@@ -305,7 +303,7 @@ class SurveySummaryRepository @Inject constructor(
                     ).json()
                 )
 
-                return saveWealthRankingEvent
+                return saveBpcMatchScoreEvent
 
             }
             else -> {

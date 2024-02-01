@@ -3,9 +3,6 @@ package com.patsurvey.nudge.activities.ui.transect_walk
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.nudge.core.EventSyncStatus
-import com.nudge.core.KEY_PARENT_ENTITY_ADDRESS
-import com.nudge.core.KEY_PARENT_ENTITY_DADA_NAME
-import com.nudge.core.KEY_PARENT_ENTITY_DIDI_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_TOLA_ID
 import com.nudge.core.KEY_PARENT_ENTITY_TOLA_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_VILLAGE_ID
@@ -112,14 +109,14 @@ class TransectWalkRepository @Inject constructor(
                     mobile_number = prefRepo.getMobileNumber(),
                     modified_date = System.currentTimeMillis().toDate(),
                     request_payload = requestPayload,
-                    request_status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.name,
                     metadata = MetadataDto(
                         mission = SELECTION_MISSION,
                         depends_on = emptyList(),
                         request_payload_size = requestPayload.getSizeInLong(),
                     ).json(),
                     consumer_status = BLANK_STRING,
-                    consumer_response_payload = null
+                    result = null
                 )
                 return addTolaEvent
             }
@@ -133,7 +130,7 @@ class TransectWalkRepository @Inject constructor(
                     mobile_number = prefRepo.getMobileNumber(),
                     modified_date = System.currentTimeMillis().toDate(),
                     request_payload = requestPayload,
-                    request_status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.name,
                     metadata = MetadataDto(
                         mission = SELECTION_MISSION,
                         depends_on = emptyList(),
@@ -141,7 +138,7 @@ class TransectWalkRepository @Inject constructor(
                         parentEntity = getParentEntityMapForEvent(eventItem, EventName.UPDATE_TOLA)
                     ).json(),
                     consumer_status = BLANK_STRING,
-                    consumer_response_payload = null
+                    result = null
                 )
                 val dependsOn = createEventDependency(eventItem, eventName, updateTolaEvent)
                 val metadata = updateTolaEvent.metadata?.getMetaDataDtoFromString()
@@ -161,7 +158,7 @@ class TransectWalkRepository @Inject constructor(
                     mobile_number = prefRepo.getMobileNumber(),
                     modified_date = System.currentTimeMillis().toDate(),
                     request_payload = requestPayload,
-                    request_status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.name,
                     metadata = MetadataDto(
                         mission = SELECTION_MISSION,
                         depends_on = emptyList(),
@@ -169,7 +166,7 @@ class TransectWalkRepository @Inject constructor(
                         parentEntity = getParentEntityMapForEvent(eventItem, eventName)
                     ).json(),
                     consumer_status = BLANK_STRING,
-                    consumer_response_payload = null
+                    result = null
                 )
 
                 return deleteTolaEvent

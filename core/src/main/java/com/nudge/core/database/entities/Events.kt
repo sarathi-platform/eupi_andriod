@@ -9,9 +9,6 @@ import com.google.gson.reflect.TypeToken
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventsTable
 import com.nudge.core.database.converters.DateConverter
-import com.nudge.core.database.converters.MetadataDtoConverter
-import com.nudge.core.database.converters.StringJsonConverter
-import com.nudge.core.model.MetadataDto
 import com.nudge.core.toDate
 import java.util.Date
 import java.util.UUID
@@ -46,11 +43,11 @@ data class Events (
     val request_payload: String?,
 
     //TODO change name to status and use it as a common status for both producer and consumer status
-    @ColumnInfo("request_status")
-    val request_status: String,
+    @ColumnInfo("status")
+    val status: String,
 
-    @ColumnInfo("consumer_response_payload") //TODO change name to result.
-    val consumer_response_payload: String?,
+    @ColumnInfo("result")
+    val result: String?,
 
     @ColumnInfo("consumer_status") //TODO Remove this
     val consumer_status: String,
@@ -76,8 +73,8 @@ data class Events (
                 createdBy = BLANK_STRING,
                 modified_date = System.currentTimeMillis().toDate(),
                 request_payload = BLANK_STRING,
-                request_status = BLANK_STRING,
-                consumer_response_payload = BLANK_STRING,
+                status = BLANK_STRING,
+                result = BLANK_STRING,
                 consumer_status = BLANK_STRING,
                 metadata = null,
                 mobile_number = BLANK_STRING
@@ -86,9 +83,5 @@ data class Events (
     }
 }
 
-fun <T> String.getPayloadFromString(): T? {
-    val type = object : TypeToken<T?>() {}.type
-    return Gson().fromJson(this, type)
-}
 
 

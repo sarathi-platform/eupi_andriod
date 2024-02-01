@@ -5,6 +5,8 @@ import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
@@ -119,7 +121,7 @@ class FormPictureScreenViewModel @Inject constructor(
 
     init {
         cameraExecutor = Executors.newSingleThreadExecutor()
-        setVillage(repository.prefRepo.getSelectedVillage().id)
+        setVillage(getSelectedVillage().id)
         for (i in 1..5) {
             formCPageList.value = formCPageList.value.also {
                 Log.d("FormPictureScreenViewModel", "init: ${getFormPathKey(getFormSubPath(FORM_C, i))}")
@@ -150,6 +152,8 @@ class FormPictureScreenViewModel @Inject constructor(
             }
         }
     }
+
+    fun getSelectedVillage(): VillageEntity = repository.getSelectedVillage()
 
     fun setUri(context: Context) {
         uri.value = uriFromFile(context, File(imagePath.value))
@@ -710,6 +714,23 @@ class FormPictureScreenViewModel @Inject constructor(
                 }
             }
         },time)
+    }
+
+    fun saveWorkflowEventIntoDb(stepStatus: StepStatus, villageId: Int, stepId: Int) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepEntity =
+                repository.getStepForVillage(villageId = villageId, stepId = stepId)
+            val updateWorkflowEvent = repository.createWorkflowEvent(
+                eventItem = stepEntity,
+                stepStatus = stepStatus,
+                eventName = EventName.WORKFLOW_STATUS_UPDATE,
+                eventType = EventType.STATEFUL,
+                prefRepo = repository.prefRepo
+            )
+            updateWorkflowEvent?.let { event ->
+                repository.insertEventIntoDb(event, emptyList())
+            }
+        }
     }
 
 

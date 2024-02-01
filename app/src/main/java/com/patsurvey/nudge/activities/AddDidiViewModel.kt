@@ -1092,11 +1092,19 @@ class AddDidiViewModel @Inject constructor(
                         "isComplete = StepStatus.INPROGRESS.ordinal,\n" +
                         "villageId = $villageId \n")
 
+                val socialMappingStep = stepList[stepList.map { it.orderNumber }.indexOf(2)]
                 addDidiRepository.markStepAsCompleteOrInProgress(
-                    stepId = stepList[stepList.map { it.orderNumber }.indexOf(2)].id,
+                    stepId = socialMappingStep.id,
                     isComplete = StepStatus.INPROGRESS.ordinal,
                     villageId = villageId
                 )
+                if (socialMappingStep.isComplete == StepStatus.COMPLETED.ordinal) {
+                    saveWorkflowEventIntoDb(
+                        stepStatus = StepStatus.INPROGRESS,
+                        villageId = villageId,
+                        stepId = socialMappingStep.id
+                    )
+                }
                 NudgeLogger.d(
                     "AddDidiViewModel",
                     "setSocialMappingINProgress -> stepsListDao.markStepAsCompleteOrInProgress after " +
@@ -1123,16 +1131,18 @@ class AddDidiViewModel @Inject constructor(
                             )
                             if (filterDidiList.isEmpty()) {
                                 addDidiRepository.markStepAsCompleteOrInProgress(
-                                    newStep.stepId,
+                                    newStep.id,
                                     StepStatus.NOT_STARTED.ordinal,
                                     villageId = villageId
                                 )
+                                saveWorkflowEventIntoDb(stepStatus = StepStatus.NOT_STARTED, villageId = villageId, stepId = newStep.id)
                             } else {
                                 addDidiRepository.markStepAsCompleteOrInProgress(
                                     newStep.id,
                                     StepStatus.INPROGRESS.ordinal,
                                     villageId
                                 )
+                                saveWorkflowEventIntoDb(stepStatus = StepStatus.INPROGRESS, villageId = villageId, stepId = newStep.id)
                             }
                             addDidiRepository.updateNeedToPost(newStep.id, villageId, true)
                         } else {
@@ -1230,12 +1240,16 @@ class AddDidiViewModel @Inject constructor(
                     PatSurveyStatus.NOT_AVAILABLE.ordinal
                 )
             }
+            val updatedDidiEntity = addDidiRepository.getDidi(didiId)
             addDidiRepository.updateModifiedDate(System.currentTimeMillis(), didiId)
             addDidiRepository.updateNeedToPostPAT(
                 true,
                 didiId,
                 addDidiRepository.getSelectedVillage().id
             )
+            //TODO @Anupam check why not available case is not working.
+            addDidiRepository.insertEventIntoDb(eventItem = updatedDidiEntity, eventName = EventName.SAVE_PAT_ANSWERS, eventType = EventType.STATEFUL)
+            addDidiRepository.insertEventIntoDb(eventItem = updatedDidiEntity, eventName = EventName.SAVE_PAT_SCORE, EventType.STATEFUL)
             pendingDidiCount.value =
                 addDidiRepository.getAllPendingPATDidisCount(addDidiRepository.getSelectedVillage().id)
         }
@@ -1546,6 +1560,23 @@ class AddDidiViewModel @Inject constructor(
 
     fun saveQuestionScreenOpenFrom(openFrom: Int) {
         addDidiRepository.saveQuestionScreenOpenFrom(openFrom)
+    }
+
+    fun saveWorkflowEventIntoDb(stepStatus: StepStatus, villageId: Int, stepId: Int) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepEntity =
+                addDidiRepository.getStepForVillage(villageId = villageId, stepId = stepId)
+            val updateWorkflowEvent = addDidiRepository.createWorkflowEvent(
+                eventItem = stepEntity,
+                stepStatus = stepStatus,
+                eventName = EventName.WORKFLOW_STATUS_UPDATE,
+                eventType = EventType.STATEFUL,
+                prefRepo = addDidiRepository.prefRepo
+            )
+            updateWorkflowEvent?.let { event ->
+                addDidiRepository.insertEventIntoDb(event, emptyList())
+            }
+        }
     }
 
 }

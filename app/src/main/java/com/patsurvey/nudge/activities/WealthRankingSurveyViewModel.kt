@@ -1,6 +1,8 @@
 package com.patsurvey.nudge.activities
 
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
 import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
@@ -386,6 +388,23 @@ class WealthRankingSurveyViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val villageId = repository.prefRepo.getSelectedVillage().id
             repository.updateRankEditFlag(villageId, false)
+        }
+    }
+
+    fun saveWorkflowEventIntoDb(stepStatus: StepStatus, villageId: Int, stepId: Int) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepEntity =
+                repository.getStepForVillage(villageId = villageId, stepId = stepId)
+            val updateWorkflowEvent = repository.createWorkflowEvent(
+                eventItem = stepEntity,
+                stepStatus = stepStatus,
+                eventName = EventName.WORKFLOW_STATUS_UPDATE,
+                eventType = EventType.STATEFUL,
+                prefRepo = repository.prefRepo
+            )
+            updateWorkflowEvent?.let { event ->
+                repository.insertEventIntoDb(event, emptyList())
+            }
         }
     }
 

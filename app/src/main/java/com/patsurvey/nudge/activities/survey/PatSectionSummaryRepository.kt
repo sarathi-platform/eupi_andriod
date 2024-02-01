@@ -42,6 +42,8 @@ import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.getParentEntityMapForEvent
+import com.patsurvey.nudge.utils.getPatScoreSaveEvent
+import com.patsurvey.nudge.utils.getPatSummarySaveEventPayload
 import com.patsurvey.nudge.utils.updateStepStatus
 import javax.inject.Inject
 
@@ -141,44 +143,6 @@ class PatSectionSummaryRepository @Inject constructor(
 
     }
 
-    private fun getAllAnswersForDidi(didiId: Int): List<SectionAnswerEntity> {
-        return answerDao.getAllNeedToPostQuesForDidi(didiId)
-    }
-
-    private fun getAllNumericAnswersForDidi(didiId: Int): List<NumericAnswerEntity> {
-        return numericAnswerDao.getAllAnswersForDidi(didiId)
-    }
-
-    private fun getSurveyId(questionId: Int): Int {
-        return questionListDao.getQuestion(questionId).surveyId ?: 0
-    }
-
-    suspend fun getPatSummarySaveEventPayload(didiEntity: DidiEntity): PATSummarySaveRequest {
-        val sectionAnswerEntityList = getAllAnswersForDidi(didiEntity.id)
-        val numericAnswerEntityList = getAllNumericAnswersForDidi(didiEntity.id)
-        val answerDetailDTOListItem = AnswerDetailDTOListItem.getAnswerDetailDtoListItem(sectionAnswerEntityList, numericAnswerEntityList)
-        val patSummarySaveRequest = PATSummarySaveRequest.getPatSummarySaveRequest(
-            didiEntity = didiEntity,
-            answerDetailDTOList = answerDetailDTOListItem,
-            languageId = (prefRepo.getAppLanguageId() ?: 2),
-            surveyId = getSurveyId(sectionAnswerEntityList.first().questionId),
-            villageEntity = prefRepo.getSelectedVillage(),
-            userType = if((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true)) USER_BPC else USER_CRP
-        )
-
-        return patSummarySaveRequest
-    }
-
-    suspend fun getPatScoreSaveEvent(didiEntity: DidiEntity): EditDidiWealthRankingRequest {
-        val passingMark = questionListDao.getPassingScore()
-        val patScoreSaveRequest = EditDidiWealthRankingRequest.getRequestPayloadForPatScoreSave(
-            didiEntity,
-            passingMark,
-            isBpcUserType = prefRepo.isUserBPC()
-        )
-        return patScoreSaveRequest
-    }
-
     override suspend fun <T> createEvent(
         eventItem: T,
         eventName: EventName,
@@ -192,25 +156,15 @@ class PatSectionSummaryRepository @Inject constructor(
 
         when (eventName) {
             EventName.SAVE_PAT_ANSWERS -> {
-                val requestPayload = getPatSummarySaveEventPayload((eventItem as DidiEntity)).json()
-
-                var savePatSummeryEvent = Events(
-                    name = eventName.name,
-                    type = eventType.name,
-                    createdBy = prefRepo.getUserId(),
-                    mobile_number = prefRepo.getMobileNumber(),
-                    request_payload = requestPayload,
-                    request_status = EventSyncStatus.OPEN.name,
-                    modified_date = System.currentTimeMillis().toDate(),
-                    consumer_response_payload = null,
-                    consumer_status = BLANK_STRING,
-                    metadata = MetadataDto(
-                        mission = SELECTION_MISSION,
-                        depends_on = listOf(),
-                        request_payload_size = requestPayload.getSizeInLong(),
-                        parentEntity = getParentEntityMapForEvent(eventItem, eventName)
-                    ).json()
+                val requestPayload = getPatSummarySaveEventPayload(
+                    didiEntity = (eventItem as DidiEntity),
+                    answerDao = answerDao,
+                    numericAnswerDao = numericAnswerDao,
+                    questionListDao = questionListDao,
+                    prefRepo= prefRepo
                 )
+
+                var savePatSummeryEvent = getPatSaveAnswersEvent(eventItem = eventItem, eventName = eventName, eventType = eventType, patSummarySaveRequest = requestPayload, prefRepo = prefRepo)
 
                 val dependsOn = createEventDependency(eventItem, eventName, savePatSummeryEvent)
                 val metadata = savePatSummeryEvent.metadata?.getMetaDataDtoFromString()
@@ -222,25 +176,9 @@ class PatSectionSummaryRepository @Inject constructor(
                 return savePatSummeryEvent
             }
             EventName.SAVE_PAT_SCORE -> {
-                val requestPayload = getPatScoreSaveEvent((eventItem as DidiEntity)).json()
+                val requestPayload = getPatScoreSaveEvent(didiEntity = (eventItem as DidiEntity), questionListDao = questionListDao, prefRepo = prefRepo)
 
-                var savePatScoreEvent = Events(
-                    name = eventName.name,
-                    type = eventType.name,
-                    createdBy = prefRepo.getUserId(),
-                    mobile_number = prefRepo.getMobileNumber(),
-                    request_payload = requestPayload,
-                    request_status = EventSyncStatus.OPEN.name,
-                    modified_date = System.currentTimeMillis().toDate(),
-                    consumer_response_payload = null,
-                    consumer_status = BLANK_STRING,
-                    metadata = MetadataDto(
-                        mission = SELECTION_MISSION,
-                        depends_on = listOf(),
-                        request_payload_size = requestPayload.getSizeInLong(),
-                        parentEntity = getParentEntityMapForEvent(eventItem, eventName)
-                    ).json()
-                )
+                var savePatScoreEvent = getPatSaveScoreEvent(eventItem = eventItem, eventName = eventName, eventType = eventType, patScoreSaveEvent = requestPayload, prefRepo = prefRepo)
 
                 val dependsOn = createEventDependency(eventItem, eventName, savePatScoreEvent)
                 val metadata = savePatScoreEvent.metadata?.getMetaDataDtoFromString()
@@ -269,7 +207,7 @@ class PatSectionSummaryRepository @Inject constructor(
         eventName.getDependsOnEventNameForEvent().forEach { dependsOnEvent ->
             val eventList = eventsDao.getAllEventsForEventName(dependsOnEvent.name)
             when (eventName) {
-                EventName.SAVE_PAT_ANSWERS -> {
+                EventName.SAVE_PAT_ANSWERS, EventName.SAVE_PAT_SCORE -> {
                     filteredList = eventList.filter {
                         val eventPayload = (eventItem as DidiEntity)
                         dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity

@@ -6,12 +6,12 @@ import com.nudge.core.KEY_PARENT_ENTITY_ADDRESS
 import com.nudge.core.KEY_PARENT_ENTITY_DADA_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_DIDI_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_TOLA_NAME
+import com.nudge.core.KEY_PARENT_ENTITY_VILLAGE_ID
 import com.nudge.core.SELECTION_MISSION
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.getDependentEventsId
-import com.nudge.core.database.entities.getPayloadFromString
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
 import com.nudge.core.enums.getDependsOnEventNameForEvent
@@ -34,9 +34,9 @@ import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
-import com.patsurvey.nudge.model.request.DeleteDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
+import com.patsurvey.nudge.model.request.getAddCohortRequestPayloadFromString
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.WorkFlowResponse
 import com.patsurvey.nudge.network.interfaces.ApiService
@@ -152,8 +152,6 @@ class WealthRankingSurveyRepository @Inject constructor(
 
     suspend fun updateWealthRankingInDb(didiId: Int, wealthRank: String) {
         didiDao.updateDidiRank(didiId, wealthRank)
-        val didiEntity = didiDao.getDidi(didiId)
-        insertEventIntoDb(didiEntity, EventName.SAVE_WEALTH_RANKING, EventType.STATEFUL)
     }
 
     override suspend fun <T> createEvent(
@@ -179,9 +177,9 @@ class WealthRankingSurveyRepository @Inject constructor(
                     createdBy = prefRepo.getUserId(),
                     mobile_number = prefRepo.getMobileNumber(),
                     request_payload = requestPayload,
-                    request_status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.name,
                     modified_date = System.currentTimeMillis().toDate(),
-                    consumer_response_payload = null,
+                    result = null,
                     consumer_status = BLANK_STRING,
                     metadata = MetadataDto(
                         mission = SELECTION_MISSION,

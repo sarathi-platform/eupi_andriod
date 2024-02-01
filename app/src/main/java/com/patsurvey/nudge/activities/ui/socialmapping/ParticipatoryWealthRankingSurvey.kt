@@ -114,6 +114,7 @@ import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.showDidiImageDialog
 import com.patsurvey.nudge.utils.showToast
@@ -197,6 +198,9 @@ fun ParticipatoryWealthRankingSurvey(
                 viewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
                     if (isPreviousStepComplete) {
                         viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
+
+                        viewModel.saveWorkflowEventIntoDb(stepStatus = StepStatus.COMPLETED, villageId = viewModel.villageId, stepId = stepId)
+
                         viewModel.updateWealthRankingFlagForDidis()
                         viewModel.saveWealthRankingCompletionDate()
                         if ((context as MainActivity).isOnline.value ?: false) {

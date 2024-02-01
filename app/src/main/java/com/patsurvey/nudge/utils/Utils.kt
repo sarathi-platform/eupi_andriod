@@ -101,17 +101,23 @@ import com.patsurvey.nudge.activities.video.VideoItem
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.LanguageEntity
+import com.patsurvey.nudge.database.NumericAnswerEntity
+import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
+import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.getDidiId
 import com.patsurvey.nudge.download.FileType
 import com.patsurvey.nudge.model.dataModel.WeightageRatioModal
 import com.patsurvey.nudge.model.request.AddCohortRequest
+import com.patsurvey.nudge.model.request.AnswerDetailDTOListItem
+import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
+import com.patsurvey.nudge.model.request.PATSummarySaveRequest
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -1241,6 +1247,45 @@ fun <T> getParentEntityMapForEvent(eventItem: T, eventName: EventName): Map<Stri
         }
     }
 }
+
+private fun getAllAnswersForDidi(didiId: Int, answerDao: AnswerDao): List<SectionAnswerEntity> {
+    return answerDao.getAllNeedToPostQuesForDidi(didiId)
+}
+
+private fun getAllNumericAnswersForDidi(didiId: Int, numericAnswerDao: NumericAnswerDao): List<NumericAnswerEntity> {
+    return numericAnswerDao.getAllAnswersForDidi(didiId)
+}
+
+private fun getSurveyId(questionId: Int, questionListDao: QuestionListDao): Int {
+    return questionListDao.getQuestion(questionId).surveyId ?: 0
+}
+
+suspend fun getPatSummarySaveEventPayload(didiEntity: DidiEntity, answerDao: AnswerDao, numericAnswerDao: NumericAnswerDao, questionListDao: QuestionListDao, prefRepo: PrefRepo): PATSummarySaveRequest {
+    val sectionAnswerEntityList = getAllAnswersForDidi(didiEntity.id, answerDao)
+    val numericAnswerEntityList = getAllNumericAnswersForDidi(didiEntity.id, numericAnswerDao)
+    val answerDetailDTOListItem = AnswerDetailDTOListItem.getAnswerDetailDtoListItem(sectionAnswerEntityList, numericAnswerEntityList)
+    val patSummarySaveRequest = PATSummarySaveRequest.getPatSummarySaveRequest(
+        didiEntity = didiEntity,
+        answerDetailDTOList = answerDetailDTOListItem,
+        languageId = (prefRepo.getAppLanguageId() ?: 2),
+        surveyId = getSurveyId(sectionAnswerEntityList.first().questionId, questionListDao),
+        villageEntity = prefRepo.getSelectedVillage(),
+        userType = if((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true)) USER_BPC else USER_CRP
+    )
+
+    return patSummarySaveRequest
+}
+
+suspend fun getPatScoreSaveEvent(didiEntity: DidiEntity, questionListDao: QuestionListDao, prefRepo: PrefRepo): EditDidiWealthRankingRequest {
+    val passingMark = questionListDao.getPassingScore()
+    val patScoreSaveRequest = EditDidiWealthRankingRequest.getRequestPayloadForPatScoreSave(
+        didiEntity,
+        passingMark,
+        isBpcUserType = prefRepo.isUserBPC()
+    )
+    return patScoreSaveRequest
+}
+
 
 /*
 fun getSampleEvent(): Events {

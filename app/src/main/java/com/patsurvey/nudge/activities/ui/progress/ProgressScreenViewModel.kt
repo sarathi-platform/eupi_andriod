@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.DidiEntity
@@ -337,6 +339,26 @@ class ProgressScreenViewModel @Inject constructor(
 
     fun saveFromPage(pageFrom: String) {
         progressScreenRepository.saveFromPage(pageFrom)
+    }
+
+    fun saveWorkflowEventIntoDb(villageId: Int, stepId: Int) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepEntity = progressScreenRepository.getStepForVillage(villageId = villageId, stepId = stepId)
+            if (stepEntity.workFlowId == 0) {
+
+                val updateWorkflowEvent = progressScreenRepository.createWorkflowEvent(
+                    eventItem = stepEntity,
+                    StepStatus.INPROGRESS,
+                    EventName.WORKFLOW_STATUS_UPDATE,
+                    EventType.STATEFUL,
+                    progressScreenRepository.prefRepo
+                )
+                updateWorkflowEvent?.let { event ->
+                    progressScreenRepository.insertEventIntoDb(event, emptyList())
+                }
+
+            }
+        }
     }
 
 }

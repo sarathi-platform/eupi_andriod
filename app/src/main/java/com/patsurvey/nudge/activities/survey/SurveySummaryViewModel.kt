@@ -81,6 +81,8 @@ class SurveySummaryViewModel @Inject constructor(
         }
     }
 
+    fun getSelectedVillage() = repository.getSelectedVillage()
+
     private fun setVillage(villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch{
             try {
@@ -914,6 +916,23 @@ class SurveySummaryViewModel @Inject constructor(
 
         repository.insertEventIntoDb(eventItem, EventName.SAVE_BPC_MATCH_SCORE, EventType.STATEFUL)
 
+    }
+
+    fun saveWorkflowEventIntoDb(stepStatus: StepStatus, villageId: Int, stepId: Int) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepEntity =
+                repository.getStepForVillage(villageId = villageId, stepId = stepId)
+            val updateWorkflowEvent = repository.createWorkflowEvent(
+                eventItem = stepEntity,
+                stepStatus = stepStatus,
+                eventName = EventName.WORKFLOW_STATUS_UPDATE,
+                eventType = EventType.STATEFUL,
+                prefRepo = repository.prefRepo
+            )
+            updateWorkflowEvent?.let { event ->
+                repository.insertEventIntoDb(event, emptyList())
+            }
+        }
     }
 
 }
