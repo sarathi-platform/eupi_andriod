@@ -5,7 +5,6 @@ import com.nrlm.baselinesurvey.activity.domain.use_case.MainActivityUseCase
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nudge.syncmanager.TestEvent
 import com.nudge.syncmanager.database.dao.EventsDao
-import com.nudge.syncmanager.database.entities.Events
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

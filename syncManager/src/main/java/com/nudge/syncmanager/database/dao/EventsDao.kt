@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.nudge.syncmanager.database.entities.Events
+import com.nudge.core.database.entities.Events
 
 @Dao
 interface EventsDao {
