@@ -9,7 +9,7 @@ data class QuestionList (
     @Expose
     var questionId: Int? = null,
 
-    @SerializedName("questionDisplay")
+    @SerializedName("description")
     @Expose
     var questionDisplay: String? = null,
 
@@ -21,7 +21,7 @@ data class QuestionList (
     @Expose
     var type: String? = null,
 
-    @SerializedName("gotoQuestionId")
+    @SerializedName("questionId")
     @Expose
     var gotoQuestionId: Int? = null,
 
@@ -29,16 +29,19 @@ data class QuestionList (
     @Expose
     var options: List<OptionsItem> = listOf(),
 
-    @SerializedName("questionSummary")
+    @SerializedName("paraphrase")
     @Expose
     var questionSummary: String? = null,
 
-    @SerializedName("attributeTag")
+    @SerializedName("tag")
     @Expose
     var attributeTag: String? = null,
 
-    @SerializedName("contentList")
+    @SerializedName("contents")
     @Expose
-    var contentList: List<ContentList> = listOf()
+    var contentList: List<ContentList> = listOf(),
 
+    val imageIcon: String,
+    val languageCode: String,
+    //val values: Any
 )
