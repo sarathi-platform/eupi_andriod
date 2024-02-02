@@ -63,15 +63,11 @@ import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.TYPE_GRID
-import com.nrlm.baselinesurvey.TYPE_LIST
-import com.nrlm.baselinesurvey.TYPE_RADIO_BUTTON
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
-import com.nrlm.baselinesurvey.navigation.home.AddHouseHoldMember_SCREEN_ROUTE_NAME
-import com.nrlm.baselinesurvey.navigation.home.AddIncome_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
 import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
+import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.CTAButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.GridTypeComponent
 import com.nrlm.baselinesurvey.ui.common_components.ListTypeQuestion
@@ -125,7 +121,7 @@ fun QuestionScreen(
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.init(sectionId, surveyeeId)
-        delay(100)
+        delay(200)
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
     }
 
@@ -532,23 +528,23 @@ fun NestedLazyList(
                     )
             }
             item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
-                        .padding(vertical = dimensionResource(id = R.dimen.dp_15))
-                ) {
-                    if (!sectionDetails.sectionName.equals("Food Security", true)) {
-                        CTAButtonComponent(tittle = "Add Income Source", Modifier.fillMaxWidth()) {
-                            // navController.navigate(AddIncome_SCREEN_ROUTE_NAME)
-                            if (sectionDetails.sectionName.equals("Financial Inclusion", true))
-                                navController.navigate(AddIncome_SCREEN_ROUTE_NAME)
-                            if (sectionDetails.sectionName.equals("Social Inclusion", true))
-                                navController.navigate(AddHouseHoldMember_SCREEN_ROUTE_NAME)
-
-                        }
-                    }
-                }
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
+//                        .padding(vertical = dimensionResource(id = R.dimen.dp_15))
+//                ) {
+//                    if (!sectionDetails.sectionName.equals("Food Security", true)) {
+//                        CTAButtonComponent(tittle = "Add Income Source", Modifier.fillMaxWidth()) {
+//                            // navController.navigate(AddIncome_SCREEN_ROUTE_NAME)
+//                            if (sectionDetails.sectionName.equals("Financial Inclusion", true))
+//                                navController.navigate(AddIncome_SCREEN_ROUTE_NAME)
+//                            if (sectionDetails.sectionName.equals("Social Inclusion", true))
+//                                navController.navigate(AddHouseHoldMember_SCREEN_ROUTE_NAME)
+//
+//                        }
+//                    }
+//                }
             }
 
             item {
@@ -591,16 +587,22 @@ fun NestedLazyList(
                     ) { index, question ->
 
                         when (question?.type) {
-                            TYPE_RADIO_BUTTON -> {
-                                val selectedOption = sectionDetails.questionAnswerMapping[question.questionId]?.first()
+                            QuestionType.RadioButton.name -> {
+                                val selectedOption =
+                                    sectionDetails.questionAnswerMapping[question.questionId]?.first()
+                                val optionList = sectionDetails.optionsItemMap[question.questionId]
                                 RadioQuestionBoxComponent(
                                     questionIndex = index, question = question,
                                     maxCustomHeight = maxHeight,
-                                    selectedOptionIndex = question.options.indexOf(selectedOption) ?: -1,
+                                    optionItemEntityList = optionList,
+                                    selectedOptionIndex = optionList?.indexOf(selectedOption)
+                                        ?: -1,
                                     onAnswerSelection = { questionIndex, optionItem ->
                                         if (!answeredQuestionIndices.value.contains(questionIndex)) {
                                             answeredQuestionIndices.value.add(questionIndex)
-                                            answeredQuestionCount.value = answeredQuestionCount.value.inc().coerceIn(0, sectionDetails.questionList.size)
+                                            answeredQuestionCount.value =
+                                                answeredQuestionCount.value.inc()
+                                                    .coerceIn(0, sectionDetails.questionList.size)
                                             answeredQuestionCountIncreased(answeredQuestionCount.value)
                                         }
                                         questionScreenViewModel.onEvent(
@@ -617,8 +619,9 @@ fun NestedLazyList(
                                                 sectionId = sectionDetails.sectionId,
                                                 didiId = surveyeeId,
                                                 questionId = question.questionId ?: 0,
-                                                optionsItem = optionItem,
-                                                questionEntity = question
+                                                optionItemId = optionItem.optionId ?: 0,
+                                                questionEntity = question,
+                                                optionItemEntity = optionItem
                                             )
                                         )
                                     },
@@ -628,22 +631,34 @@ fun NestedLazyList(
                                         }
                                     },
                                     onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
-                                        handleOnMediaTypeDescriptionActions(viewModel, navController, descriptionContentType, contentLink)
+                                        handleOnMediaTypeDescriptionActions(
+                                            viewModel,
+                                            navController,
+                                            descriptionContentType,
+                                            contentLink
+                                        )
                                     }
-                                ) 
+                                )
                             }
 
-                            TYPE_LIST -> {
-                                val selectedOption = sectionDetails.questionAnswerMapping[question.questionId]?.first()
+                            QuestionType.SingleSelect.name -> {
+                                val selectedOption =
+                                    sectionDetails.questionAnswerMapping[question.questionId]?.first()
+                                val optionList = sectionDetails.optionsItemMap[question.questionId]
+
                                 ListTypeQuestion(
                                     question = question,
-                                    selectedOptionIndex = question.options.indexOf(selectedOption) ?: -1,
+                                    optionItemEntityList = optionList ?: listOf(),
+                                    selectedOptionIndex = optionList?.indexOf(selectedOption)
+                                        ?: -1,
                                     questionIndex = index,
                                     maxCustomHeight = maxHeight,
                                     onAnswerSelection = { questionIndex, optionItem ->
                                         if (!answeredQuestionIndices.value.contains(questionIndex)) {
                                             answeredQuestionIndices.value.add(questionIndex)
-                                            answeredQuestionCount.value = answeredQuestionCount.value.inc().coerceIn(0, sectionDetails.questionList.size)
+                                            answeredQuestionCount.value =
+                                                answeredQuestionCount.value.inc()
+                                                    .coerceIn(0, sectionDetails.questionList.size)
                                             answeredQuestionCountIncreased(answeredQuestionCount.value)
                                         }
 
@@ -661,7 +676,8 @@ fun NestedLazyList(
                                                 sectionId = sectionDetails.sectionId,
                                                 didiId = surveyeeId,
                                                 questionId = question.questionId ?: 0,
-                                                optionsItem = optionItem,
+                                                optionItemId = optionItem.optionId ?: 0,
+                                                optionItemEntity = optionItem,
                                                 questionEntity = question
                                             )
                                         )
@@ -673,27 +689,40 @@ fun NestedLazyList(
                                         }
                                     },
                                     onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
-                                        handleOnMediaTypeDescriptionActions(viewModel, navController, descriptionContentType, contentLink)
+                                        handleOnMediaTypeDescriptionActions(
+                                            viewModel,
+                                            navController,
+                                            descriptionContentType,
+                                            contentLink
+                                        )
                                     }
                                 )
                             }
 
-                            TYPE_GRID -> {
-                                val selectedOption = sectionDetails.questionAnswerMapping[question.questionId]
+                            QuestionType.MultiSelect.name -> {
+                                val selectedOption =
+                                    sectionDetails.questionAnswerMapping[question.questionId]
+                                val optionList =
+                                    sectionDetails.optionsItemMap[question.questionId] ?: listOf()
                                 val selectedIndices = mutableListOf<Int>()
                                 selectedOption?.forEach {
-                                    selectedIndices.add(question.options.indexOf(it))
+                                    selectedIndices.add(optionList?.indexOf(it) ?: -1)
                                 }
                                 GridTypeComponent(
                                     question = question,
                                     questionIndex = index,
+                                    optionItemEntityList = optionList,
                                     selectedOptionIndices = selectedIndices,
                                     maxCustomHeight = maxHeight,
                                     onAnswerSelection = { questionIndex, optionItems, selectedIndeciesCount ->
                                         if (!answeredQuestionIndices.value.contains(questionIndex)) {
                                             answeredQuestionIndices.value.add(questionIndex)
                                             if (selectedIndeciesCount.size <= 1) {
-                                                answeredQuestionCount.value = answeredQuestionCount.value.inc().coerceIn(0, sectionDetails.questionList.size)
+                                                answeredQuestionCount.value =
+                                                    answeredQuestionCount.value.inc().coerceIn(
+                                                        0,
+                                                        sectionDetails.questionList.size
+                                                    )
                                                 answeredQuestionCountIncreased(answeredQuestionCount.value)
                                             }
                                         }
@@ -713,7 +742,8 @@ fun NestedLazyList(
                                                 sectionId = sectionDetails.sectionId,
                                                 didiId = surveyeeId,
                                                 questionId = question.questionId ?: 0,
-                                                optionsItems = optionItems,
+                                                optionItemList = sectionDetails.optionsItemMap[question.questionId]
+                                                    ?: listOf(),
                                                 questionEntity = question
                                             )
                                         )
@@ -724,9 +754,41 @@ fun NestedLazyList(
                                         }
                                     },
                                     onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
-                                        handleOnMediaTypeDescriptionActions(viewModel, navController, descriptionContentType, contentLink)
+                                        handleOnMediaTypeDescriptionActions(
+                                            viewModel,
+                                            navController,
+                                            descriptionContentType,
+                                            contentLink
+                                        )
                                     }
                                 )
+                            }
+
+                            QuestionType.Form.name -> {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
+                                        .padding(vertical = dimensionResource(id = R.dimen.dp_15))
+                                ) {
+                                    CTAButtonComponent(
+                                        tittle = question.questionDisplay,
+                                        Modifier.fillMaxWidth()
+                                    ) {
+
+                                    }
+//                                    if (!sectionDetails.sectionName.equals("Food Security", true)) {
+//                                        CTAButtonComponent(tittle = "Add Income Source", Modifier.fillMaxWidth()) {
+//                                            // navController.navigate(AddIncome_SCREEN_ROUTE_NAME)
+//                                            if (sectionDetails.sectionName.equals("Financial Inclusion", true))
+//                                                navController.navigate(AddIncome_SCREEN_ROUTE_NAME)
+//                                            if (sectionDetails.sectionName.equals("Social Inclusion", true))
+//                                                navController.navigate(AddHouseHoldMember_SCREEN_ROUTE_NAME)
+//
+//                                        }
+//                                    }
+                                }
+
                             }
                         }
                     }
