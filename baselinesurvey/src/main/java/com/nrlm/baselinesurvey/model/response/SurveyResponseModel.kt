@@ -14,7 +14,7 @@ data class SurveyResponseModel(
     @Expose
     val surveyName: String,
 
-    @SerializedName("surveyPassingMark")
+    @SerializedName("passingMark")
     @Expose
     val surveyPassingMark: Int,
 
@@ -22,19 +22,48 @@ data class SurveyResponseModel(
     @Expose
     val thresholdScore: Int,
 
-   /* @SerializedName("surveyDescription")
-    @Expose
-    val surveyDescription: String,
+    /* @SerializedName("surveyDescription")
+     @Expose
+     val surveyDescription: String,
 
-    @SerializedName("surveyDescriptionType")
-    @Expose
-    val surveyDescriptionType: String,*/
+     @SerializedName("surveyDescriptionType")
+     @Expose
+     val surveyDescriptionType: String,*/
 
-    @SerializedName("contentList")
+    @SerializedName("contents")
     @Expose
     val contentList: List<ContentList>,
 
-    @SerializedName("surveyList")
+    @SerializedName("sections")
     @Expose
-    val surveyList: List<Sections>
+    val surveyList: List<Sections>,
+
+
+    @SerializedName("approver")
+    @Expose
+    val approver: String,
+    @SerializedName("endDate")
+    @Expose
+    val endDate: String,
+    @SerializedName("languageCode")
+    @Expose
+    val languageCode: String,
+    @SerializedName("owner")
+    @Expose
+    val owner: String,
+    @SerializedName("publish")
+    @Expose
+    val publish: String,
+    @SerializedName("referenceId")
+    @Expose
+    val referenceId: Int,
+    @SerializedName("referenceType")
+    @Expose
+    val referenceType: String,
+    @SerializedName("startDate")
+    @Expose
+    val startDate: String,
+    @SerializedName("subject")
+    @Expose
+    val subject: String,
 )

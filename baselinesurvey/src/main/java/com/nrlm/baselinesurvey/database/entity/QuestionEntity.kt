@@ -3,14 +3,10 @@ package com.nrlm.baselinesurvey.database.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
-import androidx.room.TypeConverters
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.QUESTION_TABLE
-import com.nrlm.baselinesurvey.database.converters.QuestionsOptionsConverter
-import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 
 @Entity(tableName = QUESTION_TABLE)
 data class QuestionEntity(
@@ -35,11 +31,11 @@ data class QuestionEntity(
     @ColumnInfo(name = "surveyId")
     val surveyId: Int,
 
-    @SerializedName("options")
-    @Expose
-    @ColumnInfo(name = "options")
-    @TypeConverters(QuestionsOptionsConverter::class)
-    var options: List<OptionsItem> = emptyList(),
+//    @SerializedName("options")
+//    @Expose
+//    @ColumnInfo(name = "options")
+//    @TypeConverters(QuestionsOptionsConverter::class)
+//    var options: List<OptionsItem> = emptyList(),
 
     @SerializedName("questionImageUrl")
     @Expose

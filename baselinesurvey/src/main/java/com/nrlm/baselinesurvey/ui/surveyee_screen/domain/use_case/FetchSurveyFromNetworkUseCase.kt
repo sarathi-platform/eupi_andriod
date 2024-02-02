@@ -15,7 +15,9 @@ class FetchSurveyFromNetworkUseCase(
             val surveyApiResponse = repository.fetchSurveyFromNetwork(surveyRequestBodyModel)
             if (surveyApiResponse.status.equals(SUCCESS, true)) {
                 surveyApiResponse.data?.let { surveyApiResponse ->
-                    repository.saveSurveyToDb(surveyApiResponse, languageId = 2)
+                    for (survey in surveyApiResponse) {
+                        repository.saveSurveyToDb(survey, languageId = 2)
+                    }
                     return true
                 }
                 return false

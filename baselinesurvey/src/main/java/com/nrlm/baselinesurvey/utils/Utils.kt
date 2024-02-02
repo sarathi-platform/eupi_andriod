@@ -20,7 +20,6 @@ import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_NAME
-import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
@@ -170,7 +169,8 @@ val sampleSetcion1 = Sections(
                     weight = 1,
                     summary = "YES",
                     optionValue = 1,
-                    optionImage = R.drawable.icon_check,
+                    // optionImage = R.drawable.icon_check,
+                    optionImage = "",
                     optionType = ""
                 ),
                 OptionsItem(
@@ -179,7 +179,8 @@ val sampleSetcion1 = Sections(
                     weight = 0,
                     summary = "NO",
                     optionValue = 0,
-                    optionImage = R.drawable.icon_close,
+                    //  optionImage = R.drawable.icon_close,
+                    optionImage = "",
                     optionType = ""
                 )
             ),
@@ -207,8 +208,9 @@ val sampleSetcion1 = Sections(
                     "YES",
                     optionValue =
                     1,
-                    optionImage =
-                    R.drawable.icon_check,
+//                    optionImage =
+//                    R.drawable.icon_check,
+                    optionImage = "",
                     optionType =
                     ""
                 ),
@@ -223,8 +225,9 @@ val sampleSetcion1 = Sections(
                     "NO",
                     optionValue =
                     0,
-                    optionImage =
-                    R.drawable.icon_close,
+//                    optionImage =
+//                    R.drawable.icon_close,
+                    optionImage = "",
                     optionType =
                     ""
                 )
@@ -246,7 +249,9 @@ val sampleSetcion1 = Sections(
                     weight = 1,
                     summary = "YES",
                     optionValue = 1,
-                    optionImage = R.drawable.icon_check,
+                    //  optionImage = R.drawable.icon_check,
+//                    optionImage =R.drawable.icon_check,
+                    optionImage = "",
                     optionType = ""
                 ),
                 OptionsItem(
@@ -255,7 +260,9 @@ val sampleSetcion1 = Sections(
                     weight = 0,
                     summary = "NO",
                     optionValue = 0,
-                    optionImage = R.drawable.icon_close,
+                    // optionImage = R.drawable.icon_close,
+//                    optionImage = R.drawable.icon_close,
+                    optionImage = "",
                     optionType = ""
                 )
             )
@@ -287,7 +294,8 @@ val sampleSection2 = Sections(
                     weight = 0,
                     summary = "NO",
                     optionValue = 0,
-                    optionImage = R.drawable.icon_close,
+//                    optionImage = R.drawable.icon_close,
+                    optionImage = "",
                     optionType = ""
                 ),
                 OptionsItem(
@@ -296,7 +304,8 @@ val sampleSection2 = Sections(
                     weight = 2,
                     summary = "YES",
                     optionValue = 1,
-                    optionImage = R.drawable.icon_check,
+//                    optionImage = R.drawable.icon_check,
+                    optionImage = "",
                     optionType = ""
                 )
             )/*,
@@ -324,7 +333,7 @@ val sampleSection2 = Sections(
                     optionValue =
                     1,
                     optionImage =
-                    0,
+                    "",
                     optionType =
                     ""
                 ),
@@ -340,7 +349,7 @@ val sampleSection2 = Sections(
                     optionValue =
                     2,
                     optionImage =
-                    0,
+                    "",
                     optionType =
                     ""
                 ),
@@ -356,7 +365,7 @@ val sampleSection2 = Sections(
                     optionValue =
                     3,
                     optionImage =
-                    0,
+                    "",
                     optionType =
                     ""
                 )
@@ -378,7 +387,7 @@ val sampleSection2 = Sections(
                     weight = 1,
                     summary = "Bank",
                     optionValue = 0,
-                    optionImage = 0,
+                    optionImage = "",
                     optionType = ""
                 ),
                 OptionsItem(
@@ -387,7 +396,7 @@ val sampleSection2 = Sections(
                     weight = 2,
                     summary = "Cash at home",
                     optionValue = 1,
-                    optionImage = 0,
+                    optionImage = "",
                     optionType = ""
                 ),
                 OptionsItem(
@@ -396,7 +405,7 @@ val sampleSection2 = Sections(
                     weight = 3,
                     summary = "General",
                     optionValue = 3,
-                    optionImage = 0,
+                    optionImage = "",
                     optionType = ""
                 ),
                 OptionsItem(
@@ -405,7 +414,7 @@ val sampleSection2 = Sections(
                     weight = 4,
                     summary = "Other",
                     optionValue = 4,
-                    optionImage = 0,
+                    optionImage = "",
                     optionType = ""
                 )
             )/*,

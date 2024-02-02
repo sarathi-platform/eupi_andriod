@@ -28,7 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
@@ -64,10 +65,11 @@ import kotlinx.coroutines.launch
 fun ListTypeQuestion(
     modifier: Modifier = Modifier,
     question: QuestionEntity,
+    optionItemEntityList: List<OptionItemEntity>,
     questionIndex: Int,
     selectedOptionIndex: Int = -1,
     maxCustomHeight: Dp,
-    onAnswerSelection: (questionIndex: Int, optionItem: OptionsItem) -> Unit,
+    onAnswerSelection: (questionIndex: Int, optionItem: OptionItemEntity) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
 ) {
@@ -81,7 +83,7 @@ fun ListTypeQuestion(
         }
     }
 
-    val selectedIndex = remember { mutableStateOf(selectedOptionIndex) }
+    val selectedIndex = remember { mutableIntStateOf(selectedOptionIndex) }
 
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
@@ -147,11 +149,13 @@ fun ListTypeQuestion(
                                 )
                             }
                         }
-                        
+
                         item {
-                            Spacer(modifier = Modifier
-                                .fillMaxWidth()
-                                .height(dimen_16_dp))
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(dimen_16_dp)
+                            )
                         }
 
                         item {
@@ -164,8 +168,8 @@ fun ListTypeQuestion(
                                     .heightIn(min = 110.dp, max = maxCustomHeight)
                             ) {
                                 itemsIndexed(
-                                    question.options ?: emptyList()
-                                ) { _index: Int, optionsItem: OptionsItem ->
+                                    optionItemEntityList
+                                ) { _index: Int, optionsItem: OptionItemEntity ->
                                     OptionCard(
                                         buttonTitle = optionsItem.display ?: BLANK_STRING,
                                         index = _index,
@@ -195,10 +199,16 @@ fun ListTypeQuestion(
                                 questionIndex,
                                 question,
                                 imageClickListener = { imageTypeDescriptionContent ->
-                                    onMediaTypeDescriptionAction(DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT, imageTypeDescriptionContent)
+                                    onMediaTypeDescriptionAction(
+                                        DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
+                                        imageTypeDescriptionContent
+                                    )
                                 },
                                 videoLinkClicked = { videoTypeDescriptionContent ->
-                                    onMediaTypeDescriptionAction(DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT, videoTypeDescriptionContent)
+                                    onMediaTypeDescriptionAction(
+                                        DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
+                                        videoTypeDescriptionContent
+                                    )
                                 }
                             )
                         }
@@ -212,7 +222,7 @@ fun ListTypeQuestion(
 
 @Preview(showBackground = true)
 @Composable
- fun ListTypeQuestionPreview() {
+fun ListTypeQuestionPreview() {
     val optionList = mutableListOf<OptionsItem>()
     for (i in 1..5) {
         optionList.add(OptionsItem("Option Value $i", i + 1, i, 1, "Summery"))
@@ -228,74 +238,52 @@ fun ListTypeQuestion(
         "List",
         gotoQuestionId =
         22,
-        options = listOf(
-            OptionsItem(
-                optionId =
-                30,
-                display =
-                "At least <b>1 adult </b> literate member who has <b> Passed Class 10</b>",
-                weight =
-                0,
-                summary =
-                "At least 1 adult > Class 10",
-                optionValue =
-                1,
-                optionImage =
-                0,
-                optionType =
-                ""
-            ),
-            OptionsItem(
-                optionId =
-                31,
-                display =
-                "At least <b>1 adult</b> literate member who can read, write Bangle/ Kok Book but has <b>not Passed Class 10</b>",
-                weight =
-                1,
-                summary =
-                "At least 1 literate adult < Class 10",
-                optionValue =
-                2,
-                optionImage =
-                0,
-                optionType =
-                ""
-            ),
-            OptionsItem(
-                optionId =
-                32,
-                display =
-                "\"<b>No adult</b> in the family is literate (cannot read or write Bangle / Kok-Bangle)",
-                weight =
-                2,
-                summary =
-                "No literate adult",
-                optionValue =
-                3,
-                optionImage =
-                0,
-                optionType =
-                ""
-            )
-        ),
         questionImageUrl = "Section1_2wheeler.webp",
         surveyId = 1
     )
-    BoxWithConstraints() {
+
+    val option1 = OptionItemEntity(
+        optionId = 1,
+        display = "YES",
+        weight = 1,
+        summary = "YES",
+        optionValue = 1,
+        // optionImage = R.drawable.icon_check,
+        optionImage = "",
+        optionType = "",
+        surveyId = 1,
+        questionId = 1,
+        id = 1
+    )
+
+    val option2 = OptionItemEntity(
+        optionId = 2,
+        display = "NO",
+        weight = 0,
+        summary = "NO",
+        optionValue = 0,
+        // optionImage = R.drawable.icon_close,
+        optionImage = "",
+        optionType = "",
+        surveyId = 1,
+        questionId = 1,
+        id = 1
+    )
+    val optionItemEntity = listOf(option1, option2)
+    BoxWithConstraints {
 
         ListTypeQuestion(
             modifier = Modifier.padding(10.dp),
             question = question,
-            onAnswerSelection = {
-                                questionIndex, optionItem ->
-            },
-            questionDetailExpanded = {},
             questionIndex = 1,
             maxCustomHeight = maxHeight,
+            optionItemEntityList = optionItemEntity,
+            onAnswerSelection = { questionIndex, optionItem ->
+            },
             onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
 
             }
-        )
+        ) {}
     }
 }
 

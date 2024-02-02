@@ -6,12 +6,13 @@ import com.nrlm.baselinesurvey.activity.domain.use_case.IsLoggedInUseCase
 import com.nrlm.baselinesurvey.activity.domain.use_case.MainActivityUseCase
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
-import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
+import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionAnswerEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
+import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.dao.VillageListDao
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.splash.domain.repository.SplashScreenRepository
@@ -192,9 +193,18 @@ object BaselineModule {
         surveyEntityDao: SurveyEntityDao,
         sectionEntityDao: SectionEntityDao,
         questionEntityDao: QuestionEntityDao,
-        didiSectionProgressEntityDao: DidiSectionProgressEntityDao
+        didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
+        optionItemDao: OptionItemDao
     ): SectionListScreenRepository {
-        return SectionListScreenRepositoryImpl(prefRepo, apiService, surveyEntityDao, sectionEntityDao, questionEntityDao, didiSectionProgressEntityDao)
+        return SectionListScreenRepositoryImpl(
+            prefRepo,
+            apiService,
+            surveyEntityDao,
+            sectionEntityDao,
+            questionEntityDao,
+            didiSectionProgressEntityDao,
+            optionItemDao
+        )
     }
 
     @Provides
@@ -218,9 +228,20 @@ object BaselineModule {
         sectionEntityDao: SectionEntityDao,
         questionEntityDao: QuestionEntityDao,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
-        sectionAnswerEntityDao: SectionAnswerEntityDao
+        sectionAnswerEntityDao: SectionAnswerEntityDao,
+        optionItemDao: OptionItemDao
     ): QuestionScreenRepository {
-        return QuestionScreenRepositoryImpl(prefRepo, apiService, surveyeeEntityDao, surveyEntityDao, sectionEntityDao, questionEntityDao, didiSectionProgressEntityDao, sectionAnswerEntityDao)
+        return QuestionScreenRepositoryImpl(
+            prefRepo,
+            apiService,
+            surveyeeEntityDao,
+            surveyEntityDao,
+            sectionEntityDao,
+            questionEntityDao,
+            didiSectionProgressEntityDao,
+            sectionAnswerEntityDao,
+            optionItemDao
+        )
     }
 
     @Provides
@@ -265,9 +286,19 @@ object BaselineModule {
         surveyeeEntityDao: SurveyeeEntityDao,
         surveyEntityDao: SurveyEntityDao,
         sectionEntityDao: SectionEntityDao,
-        questionEntityDao: QuestionEntityDao
+        questionEntityDao: QuestionEntityDao,
+        optionItemDao: OptionItemDao
     ): DataLoadingScreenRepository {
-        return DataLoadingScreenRepositoryImpl(prefRepo, apiService, languageListDao, surveyeeEntityDao, surveyEntityDao, sectionEntityDao, questionEntityDao)
+        return DataLoadingScreenRepositoryImpl(
+            prefRepo,
+            apiService,
+            languageListDao,
+            surveyeeEntityDao,
+            surveyEntityDao,
+            sectionEntityDao,
+            questionEntityDao,
+            optionItemDao
+        )
     }
 
     @Provides

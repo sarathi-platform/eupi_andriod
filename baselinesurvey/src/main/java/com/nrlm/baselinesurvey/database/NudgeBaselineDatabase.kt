@@ -7,22 +7,26 @@ import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.nrlm.baselinesurvey.database.converters.BeneficiaryStepConverter
 import com.nrlm.baselinesurvey.database.converters.IntConverter
+import com.nrlm.baselinesurvey.database.converters.OptionQuestionConverter
 import com.nrlm.baselinesurvey.database.converters.QuestionsOptionsConverter
+import com.nrlm.baselinesurvey.database.converters.StringConverter
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
-import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
+import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionAnswerEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
+import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.dao.VillageListDao
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
-import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyEntity
+import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.database.entity.VillageEntity
 import java.sql.SQLException
 
@@ -37,13 +41,17 @@ const val NUDGE_BASELINE_DATABASE_VERSION = 1
         SurveyEntity::class,
         SectionEntity::class,
         QuestionEntity::class,
+        OptionItemEntity::class,
         DidiSectionProgressEntity::class,
         SectionAnswerEntity::class
     ],
     version = NUDGE_BASELINE_DATABASE_VERSION,
     exportSchema = false
 )
-@TypeConverters(IntConverter::class, BeneficiaryStepConverter::class, QuestionsOptionsConverter::class)
+@TypeConverters(
+    IntConverter::class, BeneficiaryStepConverter::class, QuestionsOptionsConverter::class,
+    OptionQuestionConverter::class, StringConverter::class
+)
 abstract class NudgeBaselineDatabase: RoomDatabase()  {
 
     abstract fun villageListDao(): VillageListDao
@@ -57,6 +65,7 @@ abstract class NudgeBaselineDatabase: RoomDatabase()  {
     abstract fun sectionEntityDao(): SectionEntityDao
 
     abstract fun questionEntityDao(): QuestionEntityDao
+    abstract fun optionItemDao(): OptionItemDao
 
     abstract fun didiSectionProgressEntityDao(): DidiSectionProgressEntityDao
 

@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.model.response
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 
 data class QuestionList (
@@ -9,7 +10,7 @@ data class QuestionList (
     @Expose
     var questionId: Int? = null,
 
-    @SerializedName("questionDisplay")
+    @SerializedName("description")
     @Expose
     var questionDisplay: String? = null,
 
@@ -27,18 +28,29 @@ data class QuestionList (
 
     @SerializedName("options")
     @Expose
-    var options: List<OptionsItem> = listOf(),
+    var options: List<OptionsItem?> = listOf(),
 
-    @SerializedName("questionSummary")
+    @SerializedName("paraphrase")
     @Expose
     var questionSummary: String? = null,
 
-    @SerializedName("attributeTag")
+    @SerializedName("tag")
     @Expose
     var attributeTag: String? = null,
 
-    @SerializedName("contentList")
+    @SerializedName("contents")
     @Expose
-    var contentList: List<ContentList> = listOf()
+    var contentList: List<ContentList> = listOf(),
+
+    @SerializedName("imageIcon")
+    @Expose
+    val imageIcon: String = BLANK_STRING,
+    @SerializedName("languageCode")
+    @Expose
+    val languageCode: String = BLANK_STRING,
+
+//    @SerializedName("values")
+//    @Expose
+//    val values: Any
 
 )

@@ -1,7 +1,6 @@
 package com.nrlm.baselinesurvey.ui.question_screen.domain.use_case
 
-import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
-import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepository
 
 class SaveSectionAnswerUseCase(
@@ -12,7 +11,7 @@ class SaveSectionAnswerUseCase(
         sectionId: Int,
         questionId: Int,
         surveyId: Int,
-        optionItems: List<OptionsItem>,
+        optionItems: List<OptionItemEntity>,
         questionType: String,
         questionSummary: String
     ) {
@@ -31,7 +30,7 @@ class SaveSectionAnswerUseCase(
         didiId: Int,
         sectionId: Int,
         questionId: Int,
-        optionItems: List<OptionsItem>,
+        optionItems: List<OptionItemEntity>,
         questionType: String,
         questionSummary: String
     ) {

@@ -5,8 +5,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.nrlm.baselinesurvey.ANSWER_TABLE
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
-import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 
 @Dao
 interface SectionAnswerEntityDao {
@@ -31,7 +31,7 @@ interface SectionAnswerEntityDao {
         didiId: Int,
         sectionId: Int,
         questionId: Int,
-        optionItems: List<OptionsItem>,
+        optionItems: List<OptionItemEntity>,
         questionType: String,
         questionSummary: String
     )

@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
@@ -67,10 +68,11 @@ import kotlinx.coroutines.launch
 fun GridTypeComponent(
     modifier: Modifier = Modifier,
     question: QuestionEntity,
+    optionItemEntityList: List<OptionItemEntity>,
     questionIndex: Int,
     selectedOptionIndices: List<Int>,
     maxCustomHeight: Dp,
-    onAnswerSelection: (questionIndex: Int, optionItems: List<OptionsItem>, selectedIndeciesCount: List<Int>) -> Unit,
+    onAnswerSelection: (questionIndex: Int, optionItems: List<OptionItemEntity>, selectedIndeciesCount: List<Int>) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
 ) {
@@ -87,7 +89,7 @@ fun GridTypeComponent(
     val selectedIndices = remember { mutableStateListOf<Int>() }
     selectedIndices.addAll(selectedOptionIndices)
 
-    val selectedOptionsItem = remember { mutableListOf<OptionsItem>() }
+    val selectedOptionsItem = remember { mutableListOf<OptionItemEntity>() }
 
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
@@ -159,7 +161,7 @@ fun GridTypeComponent(
                         }
 
                         item {
-                            if (question.options?.isNotEmpty() == true) {
+                            if (optionItemEntityList?.isNotEmpty() == true) {
                                 LazyVerticalGrid(
                                     userScrollEnabled = false,
                                     state = innerState,
@@ -169,7 +171,7 @@ fun GridTypeComponent(
                                         .padding(horizontal = dimen_16_dp)
                                         .heightIn(min = 110.dp, max = maxCustomHeight)
                                 ) {
-                                    itemsIndexed(question.options?.sortedBy { it.optionValue }
+                                    itemsIndexed(optionItemEntityList?.sortedBy { it.optionValue }
                                         ?: emptyList()) { _index, optionItem ->
                                         GridOptionCard(
                                             buttonTitle = optionItem.display ?: BLANK_STRING,
@@ -285,52 +287,43 @@ fun GridTypeQuestionPreview() {
         order = 12,
         type = "Grid",
         gotoQuestionId = 13,
-        options = listOf(
-            OptionsItem(
-                optionId = 1,
-                display = "Bank",
-                weight = 1,
-                summary = "Bank",
-                optionValue = 0,
-                optionImage = 0,
-                optionType = ""
-            ),
-            OptionsItem(
-                optionId = 2,
-                display = "Cash at home",
-                weight = 2,
-                summary = "Cash at home",
-                optionValue = 1,
-                optionImage = 0,
-                optionType = ""
-            ),
-            OptionsItem(
-                optionId = 3,
-                display = "General",
-                weight = 3,
-                summary = "General",
-                optionValue = 3,
-                optionImage = 0,
-                optionType = ""
-            ),
-            OptionsItem(
-                optionId = 4,
-                display = "Other",
-                weight = 4,
-                summary = "Other",
-                optionValue = 4,
-                optionImage = 0,
-                optionType = ""
-            )
-        ),
         questionImageUrl = "Section1_ColourTV.webp",
         surveyId = 1
     )
+    val option1 = OptionItemEntity(
+        optionId = 1,
+        display = "YES",
+        weight = 1,
+        summary = "YES",
+        optionValue = 1,
+        // optionImage = R.drawable.icon_check,
+        optionImage = "",
+        optionType = "",
+        surveyId = 1,
+        questionId = 1,
+        id = 1
+    )
+
+    val option2 = OptionItemEntity(
+        optionId = 2,
+        display = "NO",
+        weight = 0,
+        summary = "NO",
+        optionValue = 0,
+        // optionImage = R.drawable.icon_close,
+        optionImage = "",
+        optionType = "",
+        surveyId = 1,
+        questionId = 1,
+        id = 1
+    )
+    val optionItemEntity = listOf(option1, option2)
 
     BoxWithConstraints() {
         GridTypeComponent(
             modifier = Modifier.padding(16.dp),
             question = question,
+            optionItemEntityList = optionItemEntity,
             onAnswerSelection = { questionIndex, optionsItem, selectedIndeciesCount ->
 
             },
@@ -338,8 +331,7 @@ fun GridTypeQuestionPreview() {
             questionIndex = 1,
             maxCustomHeight = maxHeight,
             selectedOptionIndices = listOf(),
-            onMediaTypeDescriptionAction = {
-                descriptionContentType, contentLink ->
+            onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
             }
         )
     }

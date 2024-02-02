@@ -9,7 +9,6 @@ import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.ANSWER_TABLE
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.database.converters.QuestionsOptionsConverter
-import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 
 @Entity(tableName = ANSWER_TABLE)
 data class SectionAnswerEntity(
@@ -58,7 +57,7 @@ data class SectionAnswerEntity(
     @Expose
     @ColumnInfo("optionItems")
     @TypeConverters(QuestionsOptionsConverter::class)
-    var optionItems: List<OptionsItem>,
+    var optionItems: List<OptionItemEntity>,
 
     @SerializedName("questionSummary")
     @Expose
@@ -68,9 +67,9 @@ data class SectionAnswerEntity(
     @Expose
     @ColumnInfo(name = "needsToPost")
     var needsToPost: Boolean = true,
-/*
-    @SerializedName("questionFlag")
-    @Expose
-    @ColumnInfo(name = "questionFlag")
-    var questionFlag: String? = BLANK_STRING*/
+    /*
+        @SerializedName("questionFlag")
+        @Expose
+        @ColumnInfo(name = "questionFlag")
+        var questionFlag: String? = BLANK_STRING*/
 )

@@ -1,19 +1,21 @@
 package com.nrlm.baselinesurvey.ui.question_screen.domain.repository
 
 import android.util.Log
+import com.nrlm.baselinesurvey.BASE_LINE
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
+import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionAnswerEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
-import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.model.request.AnswerDetailDTOList
 import com.nrlm.baselinesurvey.model.request.Options
@@ -33,11 +35,12 @@ class QuestionScreenRepositoryImpl @Inject constructor(
     private val sectionEntityDao: SectionEntityDao,
     private val questionEntityDao: QuestionEntityDao,
     private val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
-    private val sectionAnswerEntityDao: SectionAnswerEntityDao
+    private val sectionAnswerEntityDao: SectionAnswerEntityDao,
+    private val optionItemDao: OptionItemDao
 ): QuestionScreenRepository {
 
     override suspend fun getSections(sectionId: Int, languageId: Int): SectionListItem {
-        val survey = surveyEntityDao.getSurveyDetailForLanguage("BASE_LINE", languageId)
+        val survey = surveyEntityDao.getSurveyDetailForLanguage(BASE_LINE, languageId)
         val sectionEntity = sectionEntityDao.getSurveySectionForLanguage(
             sectionId,
             survey?.surveyId ?: 0,
@@ -48,6 +51,20 @@ class QuestionScreenRepositoryImpl @Inject constructor(
             survey?.surveyId ?: 0,
             languageId
         )
+        val optionList = optionItemDao.getSurveySectionQuestionOptionForLanguage(
+            sectionEntity.sectionId,
+            survey?.surveyId ?: 0,
+            languageId
+        )
+        val questionOptionMap = mutableMapOf<Int, List<OptionItemEntity>>()
+        if (questionList.isNotEmpty()) {
+            for (question in questionList) {
+                val options = optionList.filter { it.questionId == question.questionId }
+                if (!questionOptionMap.containsKey(question.questionId)) {
+                    questionOptionMap[question.questionId!!] = options
+                }
+            }
+        }
 
         return SectionListItem(
             sectionId = sectionEntity.sectionId,
@@ -58,7 +75,8 @@ class QuestionScreenRepositoryImpl @Inject constructor(
             sectionOrder = sectionEntity.sectionOrder,
             contentList = emptyList(),
             languageId = languageId,
-            questionList = questionList
+            questionList = questionList,
+            optionsItemMap = questionOptionMap
         )
     }
 
@@ -95,7 +113,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         sectionId: Int,
         questionId: Int,
         surveyId: Int,
-        optionItems: List<OptionsItem>,
+        optionItems: List<OptionItemEntity>,
         questionType: String,
         questionSummary: String
     ) {
@@ -118,7 +136,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         didiId: Int,
         sectionId: Int,
         questionId: Int,
-        optionItems: List<OptionsItem>,
+        optionItems: List<OptionItemEntity>,
         questionType: String,
         questionSummary: String
     ) {

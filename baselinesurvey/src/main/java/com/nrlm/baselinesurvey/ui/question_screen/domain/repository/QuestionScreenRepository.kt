@@ -1,8 +1,8 @@
 package com.nrlm.baselinesurvey.ui.question_screen.domain.repository
 
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
-import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 
@@ -18,7 +18,7 @@ interface QuestionScreenRepository {
         sectionId: Int,
         questionId: Int,
         surveyId: Int,
-        optionItems: List<OptionsItem>,
+        optionItems: List<OptionItemEntity>,
         questionType: String,
         questionSummary: String
     )
@@ -27,7 +27,7 @@ interface QuestionScreenRepository {
         didiId: Int,
         sectionId: Int,
         questionId: Int,
-        optionItems: List<OptionsItem>,
+        optionItems: List<OptionItemEntity>,
         questionType: String,
         questionSummary: String
     )

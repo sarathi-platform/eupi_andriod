@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -11,9 +12,8 @@ import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
-import com.nrlm.baselinesurvey.utils.getSectionIndexById
-import com.nrlm.baselinesurvey.utils.getSectionIndexByOrder
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnrememberedMutableState")
 @Composable
 fun QuestionScreenHandler(
     navController: NavController,
@@ -47,7 +47,7 @@ fun QuestionScreenHandler(
                     selectedSectionId.value = sectionsList[sectionsList.getSectionIndexByOrder(currentSection.sectionOrder + 1)].sectionId*/
 
                     // TODO @Anupam Temp Solution only until order number is not received from backend
-                        navigateBackToSurveyeeListScreen(navController)
+                    navigateBackToSurveyeeListScreen(navController)
                 } catch (ex: Exception) {
                     navigateBackToSurveyeeListScreen(navController)
                 }

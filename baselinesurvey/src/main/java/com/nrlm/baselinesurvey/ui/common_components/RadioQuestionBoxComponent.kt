@@ -41,9 +41,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
-import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
@@ -63,9 +62,10 @@ fun RadioQuestionBoxComponent(
     modifier: Modifier = Modifier,
     questionIndex: Int,
     question: QuestionEntity,
+    optionItemEntityList: List<OptionItemEntity>?,
     selectedOptionIndex: Int = -1,
     maxCustomHeight: Dp,
-    onAnswerSelection: (questionIndex: Int, optionItem: OptionsItem) -> Unit,
+    onAnswerSelection: (questionIndex: Int, optionItem: OptionItemEntity) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit
 ) {
@@ -139,7 +139,7 @@ fun RadioQuestionBoxComponent(
                             }
                         }
                         item {
-                            if (question.options?.isNotEmpty() == true) {
+                            if (optionItemEntityList?.isNotEmpty() == true) {
                                 LazyVerticalGrid(
                                     userScrollEnabled = false,
                                     state = innerState,
@@ -150,8 +150,8 @@ fun RadioQuestionBoxComponent(
                                         .heightIn(min = 110.dp, max = maxCustomHeight)
                                 ) {
                                     itemsIndexed(
-                                        question.options ?: emptyList()
-                                    ) { _index: Int, optionsItem: OptionsItem ->
+                                        optionItemEntityList ?: emptyList()
+                                    ) { _index: Int, optionsItem: OptionItemEntity ->
                                         RadioButtonOptionComponent(
                                             index = _index,
                                             optionsItem = optionsItem,
@@ -210,39 +210,50 @@ fun RadioQuestionBoxComponentPreview(
     val question = QuestionEntity(
         id = 1,
         questionId = 1,
-        questionDisplay = "Did everyone in your family have at least 2 meals per day in the last 1 month?",
+        // questionDisplay = "Did everyone in your family have at least 2 meals per day in the last 1 month?",
+        questionDisplay = "Does {Name1 of child <6 years old} go to the anganwadi?",
         questionSummary = "Please check if the family is getting ration through the public distribution system (PDS) of the government or not? \n\nPlease check the granary/ where they store their grain and also check with neighbors also to understand the food security of the family",
         order = 1,
         type = "RadioButton",
         gotoQuestionId = 2,
-        options = listOf(
-            OptionsItem(
-                optionId = 1,
-                display = "YES",
-                weight = 1,
-                summary = "YES",
-                optionValue = 1,
-                optionImage = R.drawable.icon_check,
-                optionType = ""
-            ),
-            OptionsItem(
-                optionId = 2,
-                display = "NO",
-                weight = 0,
-                summary = "NO",
-                optionValue = 0,
-                optionImage = R.drawable.icon_close,
-                optionType = ""
-            )
-        ),
         questionImageUrl = "Section1_GovtService.webp",
         surveyId = 1
     )
+
+    val option1 = OptionItemEntity(
+        optionId = 1,
+        display = "YES",
+        weight = 1,
+        summary = "YES",
+        optionValue = 1,
+        // optionImage = R.drawable.icon_check,
+        optionImage = "",
+        optionType = "",
+        surveyId = 1,
+        questionId = 1,
+        id = 1
+    )
+
+    val option2 = OptionItemEntity(
+        optionId = 2,
+        display = "NO",
+        weight = 0,
+        summary = "NO",
+        optionValue = 0,
+        // optionImage = R.drawable.icon_close,
+        optionImage = "",
+        optionType = "",
+        surveyId = 1,
+        questionId = 1,
+        id = 1
+    )
+    val optionItemEntity = listOf(option1, option2)
     Surface {
         BoxWithConstraints(Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
             RadioQuestionBoxComponent(
                 questionIndex = 0,
                 question = question,
+                optionItemEntityList = optionItemEntity,
                 maxCustomHeight = maxHeight,
                 onAnswerSelection = { questionIndex, optionItem ->
                 },

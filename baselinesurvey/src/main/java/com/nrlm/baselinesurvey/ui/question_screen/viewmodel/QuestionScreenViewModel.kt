@@ -6,9 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
-import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
@@ -82,9 +82,9 @@ class QuestionScreenViewModel @Inject constructor(
             val selectedlanguageId = questionScreenUseCase.getSectionUseCase.getSelectedLanguage()
             _sectionDetail.value =
                 questionScreenUseCase.getSectionUseCase.invoke(sectionId, selectedlanguageId)
-            _filterSectionList.value = sectionDetail.value
+            _filterSectionList.value = _sectionDetail.value
 
-            val questionAnswerMap = mutableMapOf<Int, List<OptionsItem>>()
+            val questionAnswerMap = mutableMapOf<Int, List<OptionItemEntity>>()
             val localAnswerList =
                 questionScreenUseCase.getSectionAnswersUseCase.getSectionAnswerForDidi(
                     sectionId = sectionId,
@@ -124,7 +124,7 @@ class QuestionScreenViewModel @Inject constructor(
                     sectionId = event.sectionId,
                     didiId = event.didiId,
                     questionId = event.questionId,
-                    optionsItem = listOf(event.optionsItem),
+                    optionsItem = listOf(event.optionItemEntity),
                     questionEntity = event.questionEntity
                 )
             }
@@ -134,7 +134,7 @@ class QuestionScreenViewModel @Inject constructor(
                     sectionId = event.sectionId,
                     didiId = event.didiId,
                     questionId = event.questionId,
-                    optionsItem = listOf(event.optionsItem),
+                    optionsItem = listOf(event.optionItemEntity),
                     questionEntity = event.questionEntity
                 )
             }
@@ -144,7 +144,7 @@ class QuestionScreenViewModel @Inject constructor(
                     sectionId = event.sectionId,
                     didiId = event.didiId,
                     questionId = event.questionId,
-                    optionsItem = event.optionsItems,
+                    optionsItem = event.optionItemList,
                     questionEntity = event.questionEntity
                 )
             }
@@ -169,7 +169,7 @@ class QuestionScreenViewModel @Inject constructor(
         sectionId: Int,
         didiId: Int,
         questionId: Int,
-        optionsItem: List<OptionsItem>,
+        optionsItem: List<OptionItemEntity>,
         questionEntity: QuestionEntity
     ) {
         CoroutineScope(Dispatchers.IO).launch {
