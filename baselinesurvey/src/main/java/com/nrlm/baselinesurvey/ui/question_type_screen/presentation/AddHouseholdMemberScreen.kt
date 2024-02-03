@@ -1,4 +1,4 @@
-package com.nrlm.baselinesurvey.ui
+package com.nrlm.baselinesurvey.ui.question_type_screen.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures

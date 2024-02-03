@@ -3,12 +3,13 @@ package com.nrlm.baselinesurvey.database.converters
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.nrlm.baselinesurvey.BLANK_STRING
 
 class StringConverter {
     @TypeConverter
     fun fromOptionValuesList(optionValues: List<String?>?): String? {
         if (optionValues == null) {
-            return null
+            return BLANK_STRING
         }
         val gson = Gson()
         val type = object :
@@ -19,7 +20,7 @@ class StringConverter {
     @TypeConverter
     fun toOptionValuesList(optionValuesString: String?): List<String>? {
         if (optionValuesString == null) {
-            return null
+            return listOf()
         }
         val gson = Gson()
         val type = object :

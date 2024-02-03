@@ -65,6 +65,7 @@ import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
+import com.nrlm.baselinesurvey.navigation.home.AddIncome_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
 import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
@@ -121,7 +122,7 @@ fun QuestionScreen(
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.init(sectionId, surveyeeId)
-        delay(200)
+        delay(300)
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
     }
 
@@ -641,7 +642,8 @@ fun NestedLazyList(
                                 )
                             }
 
-                            QuestionType.SingleSelect.name -> {
+                            QuestionType.SingleSelect.name,
+                            QuestionType.List.name -> {
                                 val selectedOption =
                                     sectionDetails.questionAnswerMapping[question.questionId]?.first()
                                 val optionList = sectionDetails.optionsItemMap[question.questionId]
@@ -699,7 +701,8 @@ fun NestedLazyList(
                                 )
                             }
 
-                            QuestionType.MultiSelect.name -> {
+                            QuestionType.MultiSelect.name,
+                            QuestionType.Grid.name -> {
                                 val selectedOption =
                                     sectionDetails.questionAnswerMapping[question.questionId]
                                 val optionList =
@@ -775,7 +778,7 @@ fun NestedLazyList(
                                         tittle = question.questionDisplay,
                                         Modifier.fillMaxWidth()
                                     ) {
-
+                                        navController.navigate("$AddIncome_SCREEN_ROUTE_NAME/${sectionDetails.surveyId}/${sectionDetails.sectionId}/${question.questionId}")
                                     }
 //                                    if (!sectionDetails.sectionName.equals("Food Security", true)) {
 //                                        CTAButtonComponent(tittle = "Add Income Source", Modifier.fillMaxWidth()) {

@@ -27,6 +27,13 @@ interface OptionItemDao {
         languageId: Int
     ): List<OptionItemEntity>
 
+    @Query("Select * from $OPTION_TABLE where  sectionId = :sectionId and surveyId = :surveyId and questionId = :questionId")
+    fun getSurveySectionQuestionOptions(
+        sectionId: Int,
+        surveyId: Int,
+        questionId: Int,
+    ): List<OptionItemEntity>
+
 //    @Query("Select * from $OPTION_TABLE where surveyId = :surveyId and languageId = :languageId")
 //    fun getAllOptionForLanguage(surveyId: Int, languageId: Int): List<OptionItemEntity>
 

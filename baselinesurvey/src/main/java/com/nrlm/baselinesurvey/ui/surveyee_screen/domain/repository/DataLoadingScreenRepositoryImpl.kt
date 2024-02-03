@@ -122,10 +122,10 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                                 count = optionsItem.count,
                                 optionImage = optionsItem.optionImage,
                                 optionType = optionsItem.optionType,
-                                //  questionList = optionsItem.questionList,
+                                questionList = optionsItem.questionList,
                                 conditional = optionsItem.conditional,
                                 order = optionsItem.order,
-                                // values = optionsItem.values,
+                                values = optionsItem.values,
                                 languageId = languageId
                             )
                             optionItemDao.insertOption(optionItemEntity)

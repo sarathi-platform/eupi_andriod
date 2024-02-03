@@ -1,5 +1,5 @@
 package com.nrlm.baselinesurvey.ui.Constants
 
 enum class QuestionType {
-    RadioButton, SingleSelect, MultiSelect, Form,
+    RadioButton, SingleSelect, MultiSelect, Form, List, Grid, Input, SingleSelectDropdown, Toggle,
 }

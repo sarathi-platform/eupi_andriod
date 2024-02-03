@@ -63,7 +63,7 @@ data class OptionItemEntity(
     @SerializedName("questions")
     @Expose
     @TypeConverters(OptionQuestionConverter::class)
-    val questionList: List<QuestionList?> = listOf(),
+    val questionList: List<QuestionList?>? = listOf(),
     @SerializedName("conditional")
     @Expose
     val conditional: Boolean = false,
@@ -73,7 +73,7 @@ data class OptionItemEntity(
     @SerializedName("values")
     @Expose
     @TypeConverters(StringConverter::class)
-    val values: List<String> = listOf(),
+    val values: List<String>? = listOf(),
     @SerializedName("languageId")
     @Expose
     @ColumnInfo(name = "languageId")

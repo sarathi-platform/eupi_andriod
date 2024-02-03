@@ -9,15 +9,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.nrlm.baselinesurvey.ARG_DIDI_ID
+import com.nrlm.baselinesurvey.ARG_QUESTION_ID
 import com.nrlm.baselinesurvey.ARG_SECTION_ID
 import com.nrlm.baselinesurvey.ARG_SURVEY_ID
 import com.nrlm.baselinesurvey.ARG_VIDEO_PATH
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
-import com.nrlm.baselinesurvey.ui.AddHouseholdMemberScreen
-import com.nrlm.baselinesurvey.ui.AddIncomScreen
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenHandler
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.AddHouseholdMemberScreen
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.AddIncomScreen
 import com.nrlm.baselinesurvey.ui.search.presentation.SearchScreens
 import com.nrlm.baselinesurvey.ui.section_screen.presentation.SectionListScreen
 import com.nrlm.baselinesurvey.ui.start_screen.presentation.BaseLineStartScreen
@@ -112,18 +113,35 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 videoPath = it.arguments?.getString(ARG_VIDEO_PATH) ?: BLANK_STRING
             )
         }
-        composable(route = HomeScreens.AddIncome_SCREEN.route) {
-            AddIncomScreen(navController = navController)
+        composable(route = HomeScreens.AddIncome_SCREEN.route, arguments = listOf(
+            navArgument(name = ARG_SURVEY_ID) {
+                type = NavType.IntType
+            },
+            navArgument(name = ARG_SECTION_ID) {
+                type = NavType.IntType
+            },
+            navArgument(name = ARG_QUESTION_ID) {
+                type = NavType.IntType
+            }
+        )) {
+            AddIncomScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                it.arguments?.getInt(ARG_SURVEY_ID) ?: 0,
+                it.arguments?.getInt(ARG_SECTION_ID) ?: 0,
+                it.arguments?.getInt(ARG_QUESTION_ID) ?: 0
+            )
         }
         composable(route = HomeScreens.AddHouseHoldMember_SCREEN.route) {
             AddHouseholdMemberScreen(navController = navController)
         }
-        composable(route = HomeScreens.BaseLineStartScreen.route, arguments = listOf(
-            navArgument(
-                name = ARG_DIDI_ID
-            ) {
-                type = NavType.IntType
-            }
+        composable(
+            route = HomeScreens.BaseLineStartScreen.route, arguments = listOf(
+                navArgument(
+                    name = ARG_DIDI_ID
+                ) {
+                    type = NavType.IntType
+                }
         )) {
             BaseLineStartScreen(
                 navController = navController,
@@ -148,7 +166,9 @@ sealed class HomeScreens(val route: String) {
     object VIDEO_PLAYER_SCREEN :
         HomeScreens(route = "$VIDEO_PLAYER_SCREEN_ROUTE_NAME/{$ARG_VIDEO_PATH}")
 
-    object AddIncome_SCREEN : HomeScreens(route = AddIncome_SCREEN_ROUTE_NAME)
+    object AddIncome_SCREEN :
+        HomeScreens(route = "${AddIncome_SCREEN_ROUTE_NAME}/{$ARG_SURVEY_ID}/{$ARG_SECTION_ID}/{$ARG_QUESTION_ID}")
+
     object AddHouseHoldMember_SCREEN : HomeScreens(route = AddHouseHoldMember_SCREEN_ROUTE_NAME)
     object BaseLineStartScreen : HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}")
 

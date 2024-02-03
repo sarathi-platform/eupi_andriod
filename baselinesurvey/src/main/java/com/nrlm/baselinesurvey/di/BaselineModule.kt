@@ -53,6 +53,10 @@ import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.GetSectionsLis
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.QuestionScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.SaveSectionAnswerUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.UpdateSectionProgressUseCase
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.repository.QuestionTypeRepository
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.repository.QuestionTypeRepositoryImpl
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.GetQuestionTypeFormOptionUseCase
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.QuestionTypeScreenUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.repository.SectionListScreenRepository
 import com.nrlm.baselinesurvey.ui.section_screen.domain.repository.SectionListScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSectionListUseCase
@@ -345,4 +349,23 @@ object BaselineModule {
         return SurveyStateRepositoryImpl(prefRepo, surveyeeEntityDao, didiSectionProgressEntityDao)
     }
 
+    @Provides
+    @Singleton
+    fun provideQuestionTypeRepository(
+        optionItemDao: OptionItemDao
+    ): QuestionTypeRepository {
+        return QuestionTypeRepositoryImpl(optionItemDao)
+    }
+
+    @Provides
+    @Singleton
+    fun providesQuestionTypeScreenUseCase(
+        questionTypeRepository: QuestionTypeRepository
+    ): QuestionTypeScreenUseCase {
+        return QuestionTypeScreenUseCase(
+            getQuestionTypeFormOptionUseCase = GetQuestionTypeFormOptionUseCase(
+                questionTypeRepository
+            ),
+        )
+    }
 }

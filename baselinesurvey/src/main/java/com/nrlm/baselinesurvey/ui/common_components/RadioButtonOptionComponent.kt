@@ -54,12 +54,14 @@ fun RadioButtonOptionComponent(
                 iconTintColor = if (selectedIndex == index) {
                     white
                 } else {
-                    if (optionsItem.optionValue == 1)
+                    //TODO need to remove this condition when get image from backend
+                    if (optionsItem.display.equals("YES", false))
                         greenActiveIcon
                     else
                         redOffline
                 },
-                icon = if (optionsItem.optionValue == 1)
+                //TODO need to remove this condition when get image from backend
+                icon = if (optionsItem.display.equals("YES", false))
                     painterResource(id = R.drawable.icon_check)
                 else
                     painterResource(id = R.drawable.icon_close)

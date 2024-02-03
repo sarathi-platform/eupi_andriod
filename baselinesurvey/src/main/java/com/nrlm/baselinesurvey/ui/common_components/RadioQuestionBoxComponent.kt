@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
+import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
@@ -152,13 +153,15 @@ fun RadioQuestionBoxComponent(
                                     itemsIndexed(
                                         optionItemEntityList ?: emptyList()
                                     ) { _index: Int, optionsItem: OptionItemEntity ->
-                                        RadioButtonOptionComponent(
-                                            index = _index,
-                                            optionsItem = optionsItem,
-                                            selectedIndex = selectedIndex
-                                        ) {
-                                            selectedIndex = _index
-                                            onAnswerSelection(questionIndex, optionsItem)
+                                        if (optionsItem.optionType.equals(QuestionType.RadioButton.name)) {
+                                            RadioButtonOptionComponent(
+                                                index = _index,
+                                                optionsItem = optionsItem,
+                                                selectedIndex = selectedIndex
+                                            ) {
+                                                selectedIndex = _index
+                                                onAnswerSelection(questionIndex, optionsItem)
+                                            }
                                         }
                                     }
                                 }
