@@ -82,8 +82,6 @@ class QuestionScreenViewModel @Inject constructor(
             val selectedlanguageId = questionScreenUseCase.getSectionUseCase.getSelectedLanguage()
             _sectionDetail.value =
                 questionScreenUseCase.getSectionUseCase.invoke(sectionId, selectedlanguageId)
-            _filterSectionList.value = _sectionDetail.value
-
             val questionAnswerMap = mutableMapOf<Int, List<OptionItemEntity>>()
             val localAnswerList =
                 questionScreenUseCase.getSectionAnswersUseCase.getSectionAnswerForDidi(
@@ -100,6 +98,7 @@ class QuestionScreenViewModel @Inject constructor(
             _sectionDetail.value = _sectionDetail.value.copy(
                 questionAnswerMapping = questionAnswerMap
             )
+            _filterSectionList.value = _sectionDetail.value
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }

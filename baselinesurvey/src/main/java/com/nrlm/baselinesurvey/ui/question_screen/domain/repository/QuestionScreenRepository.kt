@@ -43,5 +43,11 @@ interface QuestionScreenRepository {
     suspend fun updateDidiSurveyStatus(didiId: Int, surveyId: Int)
 
     suspend fun getSectionsList(surveyId: Int, languageId: Int): List<SectionEntity>
+    suspend fun updateOptionItem(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        optionItem: OptionItemEntity,
+    )
 
 }

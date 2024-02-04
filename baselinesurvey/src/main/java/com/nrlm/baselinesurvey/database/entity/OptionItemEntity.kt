@@ -78,4 +78,6 @@ data class OptionItemEntity(
     @Expose
     @ColumnInfo(name = "languageId")
     var languageId: Int? = 1,
+    @SerializedName("isSelected")
+    var isSelected: Boolean? = false
 )

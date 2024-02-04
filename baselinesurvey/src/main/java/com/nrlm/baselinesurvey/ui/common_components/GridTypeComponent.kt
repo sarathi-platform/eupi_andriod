@@ -185,6 +185,7 @@ fun GridTypeComponent(
                                             }
 
                                             if (!selectedOptionsItem.contains(optionItem)) {
+                                                optionItem.isSelected = !optionItem.isSelected!!
                                                 selectedOptionsItem.add(optionItem)
                                             } else {
                                                 selectedOptionsItem.remove(optionItem)

@@ -18,12 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
@@ -31,14 +26,12 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.toSize
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.CTAButtonComponent
-import com.nrlm.baselinesurvey.ui.common_components.DropDownWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.NestedLazyList
 import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScreenViewModel
@@ -48,9 +41,10 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import kotlinx.coroutines.delay
 
 @Composable
-fun AddIncomScreen(
+fun FormTypeQuestionScreen(
     navController: NavHostController,
     viewModel: QuestionTypeScreenViewModel = hiltViewModel(),
+    questionName: String = "",
     surveyID: Int = 0,
     sectionId: Int = 0,
     questionId: Int = 0
@@ -68,7 +62,7 @@ fun AddIncomScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Add Income Source",
+                        text = questionName,
                         color = textColorDark,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Start,
@@ -91,7 +85,7 @@ fun AddIncomScreen(
                     .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
                     .padding(vertical = dimensionResource(id = R.dimen.dp_15))
             ) {
-                CTAButtonComponent(tittle = "Add Income Source", Modifier.fillMaxWidth()) {
+                CTAButtonComponent(tittle = questionName, Modifier.fillMaxWidth()) {
                 }
             }
         }
@@ -111,6 +105,7 @@ fun AddIncomScreen(
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
                     .padding(top = it.calculateTopPadding() + 20.dp)
+                    .padding(bottom = it.calculateTopPadding() + 70.dp)
                     .constrainAs(mainBox) {
                         start.linkTo(parent.start)
                         top.linkTo(parent.top)
@@ -123,61 +118,18 @@ fun AddIncomScreen(
                 )
                 if (!viewModel.loaderState.value.isLoaderVisible) {
                     NestedLazyList(
-                        navController = navController,
-                        optionList = viewModel.optionList.value
+                        optionList = viewModel.optionList.value,
                     )
                 }
-//                DropDownView()
-//                EditTextWithTitleComponent(title = "Quantity (in Kg)")
-//                EditTextWithTitleComponent(title = "Price per Kg")
-//                EditTextWithTitleComponent(title = "Total expenses")
             }
 
         }
     }
 }
 
-@Composable
-fun DropDownView() {
-    val source = listOf(
-        "Agriculture",
-        "Question",
-        "SingleQuestion",
-        "DigitalFormA",
-        "DigitalFormB",
-        "DigitalFormC",
-        "Login",
-        "Other"
-    )
-    var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember { mutableStateOf(source[0]) }
-    var textFieldSize by remember { mutableStateOf(Size.Zero) }
-    DropDownWithTitleComponent(
-        title = "Source",
-        items = source,
-        modifier = Modifier.fillMaxWidth(),
-        mTextFieldSize = textFieldSize,
-        expanded = expanded,
-        selectedItem = selectedOptionText,
-        onExpandedChange = {
-            expanded = !it
-        },
-        onDismissRequest = {
-            expanded = false
-        },
-        onGlobalPositioned = { coordinates ->
-            textFieldSize = coordinates.size.toSize()
-        },
-        onItemSelected = {
-            selectedOptionText = source[source.indexOf(it)]
-            expanded = false
-        },
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
-private fun AddIncomPreview() {
-    MaterialTheme { AddIncomScreen(rememberNavController()) }
+private fun FormTypeQuestionScreenPreview() {
+    MaterialTheme { FormTypeQuestionScreen(rememberNavController()) }
 
 }

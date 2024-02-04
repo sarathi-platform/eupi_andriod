@@ -18,7 +18,7 @@ class OptionQuestionConverter {
 
     @TypeConverter
     fun toOptionsQuestions(listInString: String?): List<QuestionList?>? {
-        if (listInString == null)
+        if (listInString == null || listInString.equals("null", false))
             return listOf()
         val type =
             object : TypeToken<List<QuestionList?>?>() {}.type

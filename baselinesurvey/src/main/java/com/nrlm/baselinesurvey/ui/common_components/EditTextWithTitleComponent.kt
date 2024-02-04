@@ -20,13 +20,13 @@ import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 
 @Composable
-fun EditTextWithTitleComponent(title: String) {
+fun EditTextWithTitleComponent(title: String? = "select") {
     val txt: MutableState<String> = remember {
         mutableStateOf(BLANK_STRING)
     }
-    Column() {
+    Column {
         Text(
-            text = title,
+            text = title ?: "select",
             style = largeTextStyle,
             color = textColorDark
         )

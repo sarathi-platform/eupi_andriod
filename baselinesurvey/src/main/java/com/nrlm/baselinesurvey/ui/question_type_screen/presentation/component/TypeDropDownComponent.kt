@@ -12,23 +12,13 @@ import androidx.compose.ui.unit.toSize
 import com.nrlm.baselinesurvey.ui.common_components.DropDownWithTitleComponent
 
 @Composable
-fun TypeDropDownComponent() {
-    val source = listOf(
-        "Agriculture",
-        "Question",
-        "SingleQuestion",
-        "DigitalFormA",
-        "DigitalFormB",
-        "DigitalFormC",
-        "Login",
-        "Other"
-    )
+fun TypeDropDownComponent(title: String?, sources: List<String>?) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember { mutableStateOf(source[0]) }
+    var selectedOptionText by remember { mutableStateOf(sources?.get(0) ?: "") }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
     DropDownWithTitleComponent(
-        title = "Source",
-        items = source,
+        title = title ?: "",
+        items = sources ?: listOf(),
         modifier = Modifier.fillMaxWidth(),
         mTextFieldSize = textFieldSize,
         expanded = expanded,
@@ -43,7 +33,7 @@ fun TypeDropDownComponent() {
             textFieldSize = coordinates.size.toSize()
         },
         onItemSelected = {
-            selectedOptionText = source[source.indexOf(it)]
+            selectedOptionText = sources?.get(sources.indexOf(it)) ?: ""
             expanded = false
         },
     )

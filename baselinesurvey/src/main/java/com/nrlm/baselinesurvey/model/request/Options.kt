@@ -48,7 +48,7 @@ data class Options(
                         weight = it.weight ?: 0,
                         display = it.display ?: BLANK_STRING,
                         count = it.count ?: 0,
-                        selected = false
+                        selected = it.isSelected ?: false
                     )
                 )
             }

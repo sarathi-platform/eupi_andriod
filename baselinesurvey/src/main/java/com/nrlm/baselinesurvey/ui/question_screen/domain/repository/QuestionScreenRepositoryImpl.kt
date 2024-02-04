@@ -154,13 +154,21 @@ class QuestionScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getSectionAnswerForDidi(sectionId: Int, didiId: Int): List<SectionAnswerEntity> {
-       return sectionAnswerEntityDao.getSectionAnswerForDidi(sectionId, didiId)
+        return sectionAnswerEntityDao.getSectionAnswerForDidi(sectionId, didiId)
+    }
+
+    private suspend fun getOptionsFromOptionsItems(answer: SectionAnswerEntity): List<Options> {
+        for (option in answer.optionItems)
+            updateOptionItem(answer.surveyId, answer.sectionId, answer.questionId, option)
+        return Options.getOptionsFromOptionsItems(answer.optionItems)
+
     }
 
     override suspend fun saveSectionAnswersToServer(didiId: Int, surveyId: Int) {
         val saveSurveyRequestModel = mutableListOf<SaveSurveyRequestModel>()
         val villageId = surveyeeEntityDao.getVillageIdForDidi(didiId)
-        val questionEntityList = questionEntityDao.getAllQuestionsForLanguage(surveyId, prefRepo.getAppLanguageId() ?: 2)
+        val questionEntityList =
+            questionEntityDao.getAllQuestionsForLanguage(surveyId, prefRepo.getAppLanguageId() ?: 2)
         val localSectionAnswersList = sectionAnswerEntityDao.getAllAnswerForDidi(didiId)
         val answerListDto = mutableListOf<AnswerDetailDTOList>()
 
@@ -171,7 +179,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
                 questionType = sectionAnswerEntity.questionType ?: BLANK_STRING,
                 questionSummary = sectionAnswerEntity.questionSummary ?: BLANK_STRING,
                 section = sectionEntityDao.getSurveySectionForLanguage(sectionId = sectionAnswerEntity.sectionId, surveyId = surveyId, languageId = prefRepo.getAppLanguageId() ?: 2).sectionName,
-                options = Options.getOptionsFromOptionsItems(sectionAnswerEntity.optionItems)
+                options = getOptionsFromOptionsItems(sectionAnswerEntity)
             )
             answerListDto.add(mAnswerListDtoItem)
         }
@@ -201,9 +209,12 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         saveSurveyRequestModel.add(saveSurveyRequestModelItem)
 
         // TODO @Anupam Uncomment this after checking with Backend whi API is not working.
-        BaselineLogger.d("QuestionScreenRepositoryImpl", "saveSectionAnswersToServer: saveAnswersToServerApiRequest -> ${saveSurveyRequestModel.json()}")
-        val saveAnswersToServerApiResponse = apiService.saveAnswersToServer(saveSurveyRequestModel)
-        BaselineLogger.d("QuestionScreenRepositoryImpl", "saveSectionAnswersToServer: saveAnswersToServerApiResponse -> ${saveAnswersToServerApiResponse.json()}")
+        BaselineLogger.d(
+            "QuestionScreenRepositoryImpl",
+            "saveSectionAnswersToServer: saveAnswersToServerApiRequest -> ${saveSurveyRequestModel.json()}"
+        )
+        // val saveAnswersToServerApiResponse = apiService.saveAnswersToServer(saveSurveyRequestModel)
+        //  BaselineLogger.d("QuestionScreenRepositoryImpl", "saveSectionAnswersToServer: saveAnswersToServerApiResponse -> ${saveAnswersToServerApiResponse.json()}")
     }
 
     override suspend fun updateDidiSurveyStatus(didiId: Int, surveyId: Int) {
@@ -220,5 +231,20 @@ class QuestionScreenRepositoryImpl @Inject constructor(
 
     override suspend fun getSectionsList(surveyId: Int, languageId: Int): List<SectionEntity> {
         return sectionEntityDao.getAllSectionForSurveyInLanguage(surveyId, languageId)
+    }
+
+    override suspend fun updateOptionItem(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        optionItem: OptionItemEntity
+    ) {
+        optionItemDao.updateOptionItem(
+            surveyId,
+            sectionId,
+            questionId,
+            optionItem.optionId ?: 0,
+            optionItem.isSelected ?: false
+        )
     }
 }

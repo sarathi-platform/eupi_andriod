@@ -23,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
@@ -37,7 +36,6 @@ fun NestedLazyList(
     modifier: Modifier = Modifier,
     outerState: LazyListState = rememberLazyListState(),
     innerState: LazyListState = rememberLazyListState(),
-    navController: NavController,
     optionList: List<OptionItemEntity?>?,
 ) {
     val scope = rememberCoroutineScope()
@@ -129,15 +127,15 @@ fun NestedLazyList(
                     ) { index, option ->
                         when (option?.optionType) {
                             QuestionType.SingleSelectDropdown.name -> {
-                                TypeDropDownComponent()
+                                TypeDropDownComponent(option.display, option.values)
                             }
 
                             QuestionType.Input.name -> {
-                                EditTextWithTitleComponent("Select")
+                                EditTextWithTitleComponent(option.display)
                             }
 
                             QuestionType.Toggle.name -> {
-                                SwitchComponent("Select")
+                                SwitchComponent(option.display)
                             }
                         }
                     }
@@ -147,3 +145,5 @@ fun NestedLazyList(
     }
 
 }
+
+

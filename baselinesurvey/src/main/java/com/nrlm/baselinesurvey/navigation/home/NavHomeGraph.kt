@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.nrlm.baselinesurvey.ARG_DIDI_ID
 import com.nrlm.baselinesurvey.ARG_QUESTION_ID
+import com.nrlm.baselinesurvey.ARG_QUESTION_NAME
 import com.nrlm.baselinesurvey.ARG_SECTION_ID
 import com.nrlm.baselinesurvey.ARG_SURVEY_ID
 import com.nrlm.baselinesurvey.ARG_VIDEO_PATH
@@ -17,8 +18,7 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenHandler
-import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.AddHouseholdMemberScreen
-import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.AddIncomScreen
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.FormTypeQuestionScreen
 import com.nrlm.baselinesurvey.ui.search.presentation.SearchScreens
 import com.nrlm.baselinesurvey.ui.section_screen.presentation.SectionListScreen
 import com.nrlm.baselinesurvey.ui.start_screen.presentation.BaseLineStartScreen
@@ -113,8 +113,10 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 videoPath = it.arguments?.getString(ARG_VIDEO_PATH) ?: BLANK_STRING
             )
         }
-        composable(route = HomeScreens.AddIncome_SCREEN.route, arguments = listOf(
-            navArgument(name = ARG_SURVEY_ID) {
+        composable(route = HomeScreens.FormTypeQuestionScreen.route, arguments = listOf(
+            navArgument(name = ARG_QUESTION_NAME) {
+                type = NavType.StringType
+            }, navArgument(name = ARG_SURVEY_ID) {
                 type = NavType.IntType
             },
             navArgument(name = ARG_SECTION_ID) {
@@ -124,16 +126,14 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 type = NavType.IntType
             }
         )) {
-            AddIncomScreen(
+            FormTypeQuestionScreen(
                 navController = navController,
                 viewModel = hiltViewModel(),
+                it.arguments?.getString(ARG_QUESTION_NAME) ?: "",
                 it.arguments?.getInt(ARG_SURVEY_ID) ?: 0,
                 it.arguments?.getInt(ARG_SECTION_ID) ?: 0,
                 it.arguments?.getInt(ARG_QUESTION_ID) ?: 0
             )
-        }
-        composable(route = HomeScreens.AddHouseHoldMember_SCREEN.route) {
-            AddHouseholdMemberScreen(navController = navController)
         }
         composable(
             route = HomeScreens.BaseLineStartScreen.route, arguments = listOf(
@@ -166,13 +166,13 @@ sealed class HomeScreens(val route: String) {
     object VIDEO_PLAYER_SCREEN :
         HomeScreens(route = "$VIDEO_PLAYER_SCREEN_ROUTE_NAME/{$ARG_VIDEO_PATH}")
 
-    object AddIncome_SCREEN :
-        HomeScreens(route = "${AddIncome_SCREEN_ROUTE_NAME}/{$ARG_SURVEY_ID}/{$ARG_SECTION_ID}/{$ARG_QUESTION_ID}")
+    object FormTypeQuestionScreen :
+        HomeScreens(route = "${FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME}/{$ARG_QUESTION_NAME}/{$ARG_SURVEY_ID}/{$ARG_SECTION_ID}/{$ARG_QUESTION_ID}")
 
-    object AddHouseHoldMember_SCREEN : HomeScreens(route = AddHouseHoldMember_SCREEN_ROUTE_NAME)
-    object BaseLineStartScreen : HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}")
+    object BaseLineStartScreen :
+        HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}")
 
-    object SearchScreen: HomeScreens(route = SEARCH_SCREEN_ROUTE_NAME)
+    object SearchScreen : HomeScreens(route = SEARCH_SCREEN_ROUTE_NAME)
 
 }
 
@@ -181,8 +181,7 @@ const val SECTION_SCREEN_ROUTE_NAME = "section_screen"
 const val QUESTION_SCREEN_ROUTE_NAME = "question_screen"
 const val SURVEYEE_LIST_SCREEN_ROUTE_NAME = "surveyee_list_screen"
 const val VIDEO_PLAYER_SCREEN_ROUTE_NAME = "video_player_screen"
-const val AddIncome_SCREEN_ROUTE_NAME = "add_income_screen"
-const val AddHouseHoldMember_SCREEN_ROUTE_NAME = "add_house_hold_member_screen"
+const val FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME = "form_type_question_screen"
 const val BASELINE_START_SCREEN_ROUTE_NAME = "baseline_start_screen"
 const val SEARCH_SCREEN_ROUTE_NAME = "search_screen"
 

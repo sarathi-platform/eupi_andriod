@@ -65,7 +65,7 @@ import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
-import com.nrlm.baselinesurvey.navigation.home.AddIncome_SCREEN_ROUTE_NAME
+import com.nrlm.baselinesurvey.navigation.home.FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
 import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
@@ -79,6 +79,7 @@ import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.DescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ImageExpanderDialogComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
+import com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponent.MiscQuestionBoxComponent
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
@@ -709,7 +710,7 @@ fun NestedLazyList(
                                     sectionDetails.optionsItemMap[question.questionId] ?: listOf()
                                 val selectedIndices = mutableListOf<Int>()
                                 selectedOption?.forEach {
-                                    selectedIndices.add(optionList?.indexOf(it) ?: -1)
+                                    selectedIndices.add(selectedOption?.indexOf(it) ?: -1)
                                 }
                                 GridTypeComponent(
                                     question = question,
@@ -745,8 +746,7 @@ fun NestedLazyList(
                                                 sectionId = sectionDetails.sectionId,
                                                 didiId = surveyeeId,
                                                 questionId = question.questionId ?: 0,
-                                                optionItemList = sectionDetails.optionsItemMap[question.questionId]
-                                                    ?: listOf(),
+                                                optionItemList = optionItems,
                                                 questionEntity = question
                                             )
                                         )
@@ -778,20 +778,30 @@ fun NestedLazyList(
                                         tittle = question.questionDisplay,
                                         Modifier.fillMaxWidth()
                                     ) {
-                                        navController.navigate("$AddIncome_SCREEN_ROUTE_NAME/${sectionDetails.surveyId}/${sectionDetails.sectionId}/${question.questionId}")
+                                        navController.navigate("$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/${question.questionDisplay}/${sectionDetails.surveyId}/${sectionDetails.sectionId}/${question.questionId}")
                                     }
-//                                    if (!sectionDetails.sectionName.equals("Food Security", true)) {
-//                                        CTAButtonComponent(tittle = "Add Income Source", Modifier.fillMaxWidth()) {
-//                                            // navController.navigate(AddIncome_SCREEN_ROUTE_NAME)
-//                                            if (sectionDetails.sectionName.equals("Financial Inclusion", true))
-//                                                navController.navigate(AddIncome_SCREEN_ROUTE_NAME)
-//                                            if (sectionDetails.sectionName.equals("Social Inclusion", true))
-//                                                navController.navigate(AddHouseHoldMember_SCREEN_ROUTE_NAME)
-//
-//                                        }
-//                                    }
                                 }
 
+                            }
+
+                            QuestionType.Input.name,
+                            QuestionType.SingleSelectDropdown.name -> {
+                                val selectedOption =
+                                    sectionDetails.questionAnswerMapping[question.questionId]?.first()
+                                val optionList = sectionDetails.optionsItemMap[question.questionId]
+                                MiscQuestionBoxComponent(
+                                    question = question,
+                                    questionIndex = index,
+                                    selectedOptionIndex = optionList?.indexOf(selectedOption)
+                                        ?: -1,
+                                    maxCustomHeight = maxHeight,
+                                    optionItemEntityList = sectionDetails.optionsItemMap[question.questionId],
+                                    onAnswerSelection = { questionIndex, optionItem ->
+                                    },
+                                    onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
+
+                                    }
+                                ) {}
                             }
                         }
                     }
