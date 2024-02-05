@@ -7,7 +7,7 @@ import com.nudge.core.enums.EventWriterName
 class DbEventWrite():IEventWriter {
 
 
-    override suspend fun addEvent(context: Context, event: String,uri: Uri?) {
+    override suspend fun addEvent(context: Context, event: String, mobileNo: String, uri: Uri?) {
 
     }
 

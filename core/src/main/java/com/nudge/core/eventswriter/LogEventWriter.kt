@@ -7,12 +7,10 @@ import com.nudge.core.utils.CoreLogger
 
 class LogEventWriter():IEventWriter {
 
-
-    override suspend fun addEvent(context: Context, event: String,uri: Uri?) {
+    override suspend fun addEvent(context: Context, event: String, mobileNo: String, uri: Uri?) {
         CoreLogger.d(context, EventWriterName.LOG_EVENT_WRITER.name, event)
         if (uri != null)
-            CoreLogger.d(context, EventWriterName.LOG_EVENT_WRITER.name, uri.path.toString())
-    }
+            CoreLogger.d(context, EventWriterName.LOG_EVENT_WRITER.name, uri.path.toString())    }
 
     override suspend fun getEventWriteType(): EventWriterName {
         return  EventWriterName.LOG_EVENT_WRITER

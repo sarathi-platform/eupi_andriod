@@ -22,6 +22,6 @@ class JsonEventWriter(val context:Context):IEventFormatter{
                 it.getEventWriteType() == eventName
             }
 
-            eventWriter.firstOrNull()?.addEvent(context =context, event = event.json(),uri)
+            eventWriter.firstOrNull()?.addEvent(context =context, event = event.json(),event.mobileNumber,uri)
         }    }
 }

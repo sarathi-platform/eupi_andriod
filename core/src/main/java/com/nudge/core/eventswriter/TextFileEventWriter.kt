@@ -20,16 +20,15 @@ import java.io.FileWriter
 open class TextFileEventWriter() : IEventWriter {
 
 val textMimeType="text/plain"
-    override suspend fun addEvent(context: Context, event: String,uri: Uri?) {
-        writeEventInFile(context, event)
-
+    override suspend fun addEvent(context: Context, event: String, mobileNo: String, uri: Uri?) {
+        writeEventInFile(context, event,mobileNo)
     }
 
     override suspend fun getEventWriteType(): EventWriterName {
         return EventWriterName.FILE_EVENT_WRITER
     }
 
-    private fun writeEventInFile(context: Context, content: String) {
+    private fun writeEventInFile(context: Context, content: String, mobileNo: String) {
 
         val fileNameWithExtension = LOCAL_BACKUP_FILE_NAME + LOCAL_BACKUP_EXTENSION
 
@@ -39,7 +38,7 @@ val textMimeType="text/plain"
                 put(MediaStore.MediaColumns.MIME_TYPE, textMimeType)
                 put(
                     MediaStore.MediaColumns.RELATIVE_PATH,
-                    Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME
+                    Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME+"/"+mobileNo
                 )
             }
 
@@ -100,7 +99,7 @@ val textMimeType="text/plain"
             try {
                 val fileDirectory = File(
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                    SARATHI_DIRECTORY_NAME
+                    "$SARATHI_DIRECTORY_NAME/$mobileNo"
                 )
                 if (!fileDirectory.exists()) {
                     fileDirectory.mkdirs()

@@ -14,21 +14,20 @@ import com.nudge.core.ZIP_MIME_TYPE
 import java.io.File
 
 class ZipFileCompression : IFileCompressor {
-    val extension = ".zip"
-    override suspend fun compressBackupFiles(context: Context, mobileNo: String):Uri? {
+    private val extension = ".zip"
+    override suspend fun compressBackupFiles(context: Context, mobileNo: String): Uri? {
 
         val zipFileName = "${mobileNo}_sarathi_${System.currentTimeMillis()}_"
-      val imageUri=  compressData(
+        compressData(
             context,
             zipFileName + "image",
-            Environment.DIRECTORY_PICTURES + SARATHI_DIRECTORY_NAME
+            Environment.DIRECTORY_PICTURES + SARATHI_DIRECTORY_NAME + "/" + mobileNo
         )
-       val fileUri= compressData(
+        return compressData(
             context,
             zipFileName + "file",
-            Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME
-        )
-        return fileUri;
+            Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + mobileNo
+        );
     }
 
     override fun getCompressionType(): String {
@@ -40,14 +39,14 @@ class ZipFileCompression : IFileCompressor {
         context: Context,
         zipFileName: String,
         filePathToZipped: String
-    ) :Uri?{
+    ): Uri? {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val contentValues = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, zipFileName)
                 put(MediaStore.MediaColumns.MIME_TYPE, ZIP_MIME_TYPE)
                 put(
                     MediaStore.MediaColumns.RELATIVE_PATH,
-                    Environment.DIRECTORY_DOCUMENTS
+                    Environment.DIRECTORY_DOCUMENTS+ SARATHI_DIRECTORY_NAME
                 )
             }
 
@@ -88,18 +87,18 @@ class ZipFileCompression : IFileCompressor {
                 cursor.close()
             }
 
-            val zipfileUri = context.contentResolver.insert(extVolumeUri, contentValues)
+            val zipFileUri = context.contentResolver.insert(extVolumeUri, contentValues)
 
-            ZipManager.zip(fileUris, zipfileUri, context)
+            ZipManager.zip(fileUris, zipFileUri, context)
 
-return  zipfileUri;
+            return zipFileUri;
         } else {
             try {
 
                 val commonFilePath: File = Environment.getExternalStoragePublicDirectory("")
 
                 val zippedFileDirectoryPath =
-                    File(commonFilePath.path + "/" + Environment.DIRECTORY_DOCUMENTS)
+                    File(commonFilePath.path + "/" + Environment.DIRECTORY_DOCUMENTS+ SARATHI_DIRECTORY_NAME)
 
                 if (!zippedFileDirectoryPath.exists()) {
                     zippedFileDirectoryPath.mkdirs()
@@ -114,12 +113,12 @@ return  zipfileUri;
                 if (s != null) {
                     ZipManager.zip(context = context, files = s, zipFile = zippedFilePath.toUri())
                 }
-                return  zippedFilePath.toUri();
+                return zippedFilePath.toUri();
             } catch (e: Exception) {
                 e.printStackTrace()
 
             }
-        return  null;
+            return null;
         }
 
     }

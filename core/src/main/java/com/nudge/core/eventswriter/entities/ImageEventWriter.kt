@@ -18,8 +18,8 @@ import java.io.IOException
 
 class ImageEventWriter : IEventWriter {
     val mimeType = "image/png"
-    override suspend fun addEvent(context: Context, event: String, uri: Uri?) {
-        uri?.let { saveImageToMediaStore(context, it) }
+    override suspend fun addEvent(context: Context, event: String, mobileNo: String, uri: Uri?) {
+        uri?.let { saveImageToMediaStore(context, it,mobileNo) }
     }
 
 
@@ -30,13 +30,14 @@ class ImageEventWriter : IEventWriter {
     private fun saveImageToMediaStore(
         context: Context,
         contentImageUri: Uri,
+        mobileNo: String,
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val values = ContentValues()
             values.put(MediaStore.Images.Media.MIME_TYPE, mimeType)
             values.put(
                 MediaStore.Images.Media.RELATIVE_PATH,
-                Environment.DIRECTORY_PICTURES + SARATHI_DIRECTORY_NAME
+                Environment.DIRECTORY_PICTURES + SARATHI_DIRECTORY_NAME+"/"+mobileNo
             )
             values.put(
                 MediaStore.Images.Media.DISPLAY_NAME,
@@ -68,7 +69,7 @@ class ImageEventWriter : IEventWriter {
         } else {
             val fileDirectory = File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                SARATHI_DIRECTORY_NAME
+                SARATHI_DIRECTORY_NAME+"/"+mobileNo
             )
             if (!fileDirectory.exists()) {
                 fileDirectory.mkdirs()

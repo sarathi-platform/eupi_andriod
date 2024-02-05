@@ -20,7 +20,7 @@ const val SYNC_MANAGER_DB_VERSION = 1
 // Increase DB Version everytime any change is made to any table or a new table is added.
 const val NUDGE_DATABASE = "NudgeDatabase"
 const val NUDGE_DATABASE_VERSION = 2
-const val LOCAL_BACKUP_FILE_NAME="Sarathi_backup"
+const val LOCAL_BACKUP_FILE_NAME="Sarathi_event_backup"
 const val SARATHI_DIRECTORY_NAME="/SARATHI"
 const val LOCAL_BACKUP_EXTENSION=".txt"
 const val EVENT_DELIMETER="~@-"
