@@ -12,9 +12,15 @@ import androidx.compose.ui.unit.toSize
 import com.nrlm.baselinesurvey.ui.common_components.DropDownWithTitleComponent
 
 @Composable
-fun TypeDropDownComponent(title: String?, sources: List<String>?) {
+fun TypeDropDownComponent(
+    title: String?,
+    hintText: String = "Select",
+    sources: List<String>?,
+    onAnswerSelection: (selectValue: String) -> Unit,
+
+    ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember { mutableStateOf(sources?.get(0) ?: "") }
+    var selectedOptionText by remember { mutableStateOf(hintText) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
     DropDownWithTitleComponent(
         title = title ?: "",
@@ -34,6 +40,7 @@ fun TypeDropDownComponent(title: String?, sources: List<String>?) {
         },
         onItemSelected = {
             selectedOptionText = sources?.get(sources.indexOf(it)) ?: ""
+            onAnswerSelection(selectedOptionText)
             expanded = false
         },
     )

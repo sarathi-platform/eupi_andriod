@@ -160,6 +160,18 @@ class QuestionScreenViewModel @Inject constructor(
             is SearchEvent.PerformSearch -> {
                 performSearchQuery(event.searchTerm, event.isFilterApplied, event.fromScreen)
             }
+
+            is QuestionScreenEvents.FormTypeQuestionAnswered -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    questionScreenUseCase.saveSectionAnswerUseCase.updateOptionItemValue(
+                        event.surveyId,
+                        event.sectionId,
+                        event.questionId,
+                        event.optionItemId,
+                        event.selectedValue
+                    )
+                }
+            }
         }
     }
 

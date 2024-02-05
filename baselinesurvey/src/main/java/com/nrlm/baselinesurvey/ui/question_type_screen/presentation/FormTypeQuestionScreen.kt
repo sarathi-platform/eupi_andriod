@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -16,8 +17,11 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -31,13 +35,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.ui.common_components.CTAButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.NestedLazyList
 import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScreenViewModel
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
+import com.nrlm.baselinesurvey.ui.theme.blueDark
+import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
+import com.nrlm.baselinesurvey.ui.theme.inactiveLightBlue
+import com.nrlm.baselinesurvey.ui.theme.inactiveTextBlue
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
+import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
+import com.nrlm.baselinesurvey.ui.theme.white
 import kotlinx.coroutines.delay
 
 @Composable
@@ -49,6 +59,9 @@ fun FormTypeQuestionScreen(
     sectionId: Int = 0,
     questionId: Int = 0
 ) {
+    val totalOptionSize = viewModel.optionList.value.size
+    val answeredOptionCount = remember { mutableIntStateOf(0) }
+
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.init(sectionId, surveyID, questionId)
@@ -85,7 +98,25 @@ fun FormTypeQuestionScreen(
                     .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
                     .padding(vertical = dimensionResource(id = R.dimen.dp_15))
             ) {
-                CTAButtonComponent(tittle = questionName, Modifier.fillMaxWidth()) {
+                ExtendedFloatingActionButton(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+//                        shape = RoundedCornerShape(bottomStart = roundedCornerRadiusDefault, bottomEnd = roundedCornerRadiusDefault),
+                    shape = RoundedCornerShape(roundedCornerRadiusDefault),
+                    // containerColor = if (answeredOptionCount.value == totalOptionSize) blueDark else inactiveLightBlue,
+                    containerColor = blueDark,
+                    //contentColor = if (answeredOptionCount.value == totalOptionSize) white else inactiveTextBlue,
+                    contentColor = white,
+                    onClick = {
+                        navController.popBackStack()
+                    }
+                ) {
+                    Text(
+                        text = questionName,
+                        style = defaultTextStyle,
+                        //color = if (answeredOptionCount.value == totalOptionSize) white else inactiveTextBlue
+                        color = white
+                    )
                 }
             }
         }
@@ -117,8 +148,16 @@ fun FormTypeQuestionScreen(
                     modifier = Modifier.padding(it)
                 )
                 if (!viewModel.loaderState.value.isLoaderVisible) {
+                    var fromTypeOption = FormTypeOption.getOptionItem(
+                        surveyID,
+                        0,
+                        sectionId,
+                        questionId,
+                        viewModel.optionList.value
+                    )
                     NestedLazyList(
-                        optionList = viewModel.optionList.value,
+                        formTypeOption = fromTypeOption,
+                        viewModel = viewModel
                     )
                 }
             }

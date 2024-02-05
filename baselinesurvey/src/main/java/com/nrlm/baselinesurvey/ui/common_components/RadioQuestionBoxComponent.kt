@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.common_components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -23,7 +24,6 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Surface
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -33,6 +33,8 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -43,7 +45,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
+import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
+import com.nrlm.baselinesurvey.model.request.Options
+import com.nrlm.baselinesurvey.model.response.QuestionList
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponent.SubQuestionComponent
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
@@ -58,6 +64,7 @@ import com.nrlm.baselinesurvey.utils.DescriptionContentType
 import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun RadioQuestionBoxComponent(
     modifier: Modifier = Modifier,
@@ -75,6 +82,10 @@ fun RadioQuestionBoxComponent(
     var selectedIndex by remember { mutableIntStateOf(selectedOptionIndex) }
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyGridState = rememberLazyGridState()
+    var optionItem: OptionItemEntity
+    var isVisibleSubTask by remember {
+        mutableStateOf(false)
+    }
     val innerFirstVisibleItemIndex by remember {
         derivedStateOf {
             innerState.firstVisibleItemIndex
@@ -85,6 +96,13 @@ fun RadioQuestionBoxComponent(
             scope.launch { outerState.scrollToItem(outerState.layoutInfo.totalItemsCount) }
         println("outer ${outerState.layoutInfo.visibleItemsInfo.map { it.index }}")
         println("inner ${innerState.layoutInfo.visibleItemsInfo.map { it.index }}")
+    }
+
+    if (isVisibleSubTask) {
+        SubQuestionComponent(
+            maxCustomHeight = maxCustomHeight,
+            questionList = optionItemEntityList?.get(0)?.questionList
+        )
     }
 
     BoxWithConstraints(
@@ -159,6 +177,9 @@ fun RadioQuestionBoxComponent(
                                                 optionsItem = optionsItem,
                                                 selectedIndex = selectedIndex
                                             ) {
+                                                if (optionsItem.questionList != null) {
+                                                    isVisibleSubTask = true
+                                                }
                                                 selectedIndex = _index
                                                 onAnswerSelection(questionIndex, optionsItem)
                                             }
@@ -189,10 +210,16 @@ fun RadioQuestionBoxComponent(
                                 questionIndex,
                                 question,
                                 imageClickListener = { imageTypeDescriptionContent ->
-                                    onMediaTypeDescriptionAction(DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT, imageTypeDescriptionContent)
+                                    onMediaTypeDescriptionAction(
+                                        DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
+                                        imageTypeDescriptionContent
+                                    )
                                 },
                                 videoLinkClicked = { videoTypeDescriptionContent ->
-                                    onMediaTypeDescriptionAction(DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT, videoTypeDescriptionContent)
+                                    onMediaTypeDescriptionAction(
+                                        DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
+                                        videoTypeDescriptionContent
+                                    )
                                 }
                             )
                         }
@@ -202,7 +229,6 @@ fun RadioQuestionBoxComponent(
         }
     }
 }
-
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
@@ -251,22 +277,23 @@ fun RadioQuestionBoxComponentPreview(
         id = 1
     )
     val optionItemEntity = listOf(option1, option2)
-    Surface {
-        BoxWithConstraints(Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
-            RadioQuestionBoxComponent(
-                questionIndex = 0,
-                question = question,
-                optionItemEntityList = optionItemEntity,
-                maxCustomHeight = maxHeight,
-                onAnswerSelection = { questionIndex, optionItem ->
-                },
-                onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
-
-                },
-                questionDetailExpanded = {
-
-                }
-            )
-        }
-    }
+//    Surface {
+//        BoxWithConstraints(Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
+//            RadioQuestionBoxComponent(
+//                questionIndex = 0,
+//                question = question,
+//                optionItemEntityList = optionItemEntity,
+//                sectionListItem = null,
+//                maxCustomHeight = maxHeight,
+//                onAnswerSelection = { questionIndex, optionItem ->
+//                },
+//                onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
+//
+//                },
+//                questionDetailExpanded = {
+//
+//                }
+//            )
+//        }
+//    }
 }

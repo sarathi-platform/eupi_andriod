@@ -21,10 +21,14 @@ import com.nrlm.baselinesurvey.ui.theme.switchColor
 import com.nrlm.baselinesurvey.ui.theme.white
 
 @Composable
-fun SwitchComponent(title: String?) {
-    var checked by remember { mutableStateOf(false) }
-    Row(
-    ) {
+fun SwitchComponent(
+    title: String?,
+    defaultValue: String = "No",
+    onAnswerSelection: (selectValue: String) -> Unit
+) {
+    var defaultChecked = defaultValue.equals("Yes", false)
+    var checked by remember { mutableStateOf(defaultChecked) }
+    Row {
         Text(
             modifier = Modifier.weight(0.7F),
             text = title ?: "Sectect",
@@ -34,7 +38,11 @@ fun SwitchComponent(title: String?) {
         )
         Switch(
             checked = checked,
-            onCheckedChange = { checked = it },
+            onCheckedChange = {
+                checked = it
+                val selectedValue = if (checked) "Yes" else "No"
+                onAnswerSelection(selectedValue)
+            },
             modifier = Modifier
                 .padding(1.dp)
                 .weight(0.3f),
@@ -57,5 +65,5 @@ fun SwitchComponent(title: String?) {
 @Preview(showBackground = true)
 @Composable
 fun SwitchComponentPreview() {
-    SwitchComponent("Married")
+    SwitchComponent("Married") {}
 }

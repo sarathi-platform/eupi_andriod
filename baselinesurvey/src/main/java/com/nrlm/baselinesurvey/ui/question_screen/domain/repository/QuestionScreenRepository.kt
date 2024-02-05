@@ -50,4 +50,12 @@ interface QuestionScreenRepository {
         optionItem: OptionItemEntity,
     )
 
+    suspend fun updateOptionItemValue(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        optionId: Int,
+        selectedValue: String
+    )
+
 }

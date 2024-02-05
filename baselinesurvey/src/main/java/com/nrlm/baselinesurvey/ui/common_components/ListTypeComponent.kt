@@ -288,22 +288,23 @@ fun ListTypeQuestionPreview() {
 }
 
 @Composable
-private fun OptionCard(
+public fun OptionCard(
     modifier: Modifier = Modifier,
     buttonTitle: String,
     index: Int,
     selectedIndex: Int,
     onOptionSelected: (Int) -> Unit
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .clip(RoundedCornerShape(6.dp))
-        .background(if (selectedIndex == index) blueDark else languageItemActiveBg)
-        .clickable {
-            onOptionSelected(index)
-        }
-        .padding(horizontal = 10.dp)
-        .then(modifier)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(6.dp))
+            .background(if (selectedIndex == index) blueDark else languageItemActiveBg)
+            .clickable {
+                onOptionSelected(index)
+            }
+            .padding(horizontal = 10.dp)
+            .then(modifier)) {
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.TopStart,

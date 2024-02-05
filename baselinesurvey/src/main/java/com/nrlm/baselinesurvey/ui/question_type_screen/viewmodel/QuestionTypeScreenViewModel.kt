@@ -3,9 +3,11 @@ package com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.QuestionTypeScreenUseCase
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,6 +49,19 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 _loaderState.value = _loaderState.value.copy(
                     isLoaderVisible = event.showLoader
                 )
+            }
+
+            is QuestionTypeEvent.FormTypeQuestionAnswered -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    questionTypeScreenUseCase.getQuestionTypeFormOptionUseCase.updateOptionItemValue(
+                        event.surveyId,
+                        event.sectionId,
+                        event.questionId,
+                        event.optionItemId,
+                        event.selectedValue
+                    )
+                }
+
             }
         }
     }

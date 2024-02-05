@@ -247,4 +247,20 @@ class QuestionScreenRepositoryImpl @Inject constructor(
             optionItem.isSelected ?: false
         )
     }
+
+    override suspend fun updateOptionItemValue(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        optionId: Int,
+        selectedValue: String
+    ) {
+        return optionItemDao.updateOptionItemValue(
+            surveyId = surveyId,
+            sectionId = sectionId,
+            questionId = questionId,
+            optionId = optionId,
+            selectValue = selectedValue
+        )
+    }
 }

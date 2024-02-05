@@ -23,10 +23,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
+import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.SwitchComponent
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
+import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import kotlinx.coroutines.launch
@@ -36,9 +39,11 @@ fun NestedLazyList(
     modifier: Modifier = Modifier,
     outerState: LazyListState = rememberLazyListState(),
     innerState: LazyListState = rememberLazyListState(),
-    optionList: List<OptionItemEntity?>?,
+    formTypeOption: FormTypeOption?,
+    viewModel: BaseViewModel
 ) {
     val scope = rememberCoroutineScope()
+    val questionTypeScreenViewModel = (viewModel as QuestionTypeScreenViewModel)
 
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
@@ -123,19 +128,47 @@ fun NestedLazyList(
                         Spacer(modifier = Modifier.width(dimen_24_dp))
                     }
                     itemsIndexed(
-                        items = optionList ?: emptyList()
+                        items = formTypeOption?.options ?: emptyList()
                     ) { index, option ->
-                        when (option?.optionType) {
+                        when (option.optionType) {
                             QuestionType.SingleSelectDropdown.name -> {
-                                TypeDropDownComponent(option.display, option.values)
+                                TypeDropDownComponent(
+                                    option.display,
+                                    option.selectedValue ?: "Select",
+                                    option.values
+                                ) {
+                                    formTypeOption?.let { it1 ->
+                                        storeGivenAnswered(
+                                            questionTypeScreenViewModel,
+                                            it1, option.optionId ?: 0, it
+                                        )
+                                    }
+                                }
                             }
 
                             QuestionType.Input.name -> {
-                                EditTextWithTitleComponent(option.display)
+                                EditTextWithTitleComponent(
+                                    option.display,
+                                    option.selectedValue ?: ""
+                                ) {
+                                    formTypeOption?.let { it1 ->
+                                        storeGivenAnswered(
+                                            questionTypeScreenViewModel,
+                                            it1, option.optionId ?: 0, it
+                                        )
+                                    }
+                                }
                             }
 
                             QuestionType.Toggle.name -> {
-                                SwitchComponent(option.display)
+                                SwitchComponent(option.display, option.selectedValue ?: "No") {
+                                    formTypeOption?.let { it1 ->
+                                        storeGivenAnswered(
+                                            questionTypeScreenViewModel,
+                                            it1, option.optionId ?: 0, it
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
@@ -144,6 +177,24 @@ fun NestedLazyList(
         }
     }
 
+}
+
+private fun storeGivenAnswered(
+    questionTypeScreenViewModel: QuestionTypeScreenViewModel,
+    formTypeOption: FormTypeOption,
+    optionId: Int,
+    selectedValue: String
+) {
+    questionTypeScreenViewModel.onEvent(
+        QuestionTypeEvent.FormTypeQuestionAnswered(
+            surveyId = formTypeOption.surveyId,
+            sectionId = formTypeOption.sectionId,
+            didiId = formTypeOption.didiId,
+            questionId = formTypeOption.questionId,
+            optionItemId = optionId,
+            selectedValue = selectedValue
+        )
+    )
 }
 
 

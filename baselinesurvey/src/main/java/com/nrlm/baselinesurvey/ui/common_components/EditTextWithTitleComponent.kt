@@ -20,9 +20,13 @@ import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 
 @Composable
-fun EditTextWithTitleComponent(title: String? = "select") {
+fun EditTextWithTitleComponent(
+    title: String? = "select",
+    defaultValue: String = BLANK_STRING,
+    onAnswerSelection: (selectValue: String) -> Unit,
+) {
     val txt: MutableState<String> = remember {
-        mutableStateOf(BLANK_STRING)
+        mutableStateOf(defaultValue)
     }
     Column {
         Text(
@@ -37,6 +41,7 @@ fun EditTextWithTitleComponent(title: String? = "select") {
             value = txt.value,
             onValueChange = {
                 txt.value = it
+                onAnswerSelection(txt.value)
             },
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color.Black,
@@ -51,5 +56,5 @@ fun EditTextWithTitleComponent(title: String? = "select") {
 @Composable
 @Preview(showBackground = true)
 fun EditTextWithTitleComponentPreview() {
-    EditTextWithTitleComponent(title = "select")
+    EditTextWithTitleComponent(title = "select") {}
 }

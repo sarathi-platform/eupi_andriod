@@ -41,6 +41,15 @@ sealed class QuestionScreenEvents {
         val sectionStatus: SectionStatus
     ) : QuestionScreenEvents()
 
+    data class FormTypeQuestionAnswered(
+        val surveyId: Int,
+        val sectionId: Int,
+        val didiId: Int,
+        val questionId: Int,
+        val optionItemId: Int,
+        val selectedValue: String,
+    ) : QuestionScreenEvents()
+
     data class SendAnswersToServer(val surveyId: Int, val sectionId: Int, val didiId: Int) :
         QuestionScreenEvents()
 }

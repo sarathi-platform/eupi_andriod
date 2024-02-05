@@ -43,6 +43,14 @@ interface OptionItemDao {
         isSelected: Boolean,
     )
 
+    @Query("Update $OPTION_TABLE set selectedValue = :selectValue where surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND optionId = :optionId")
+    fun updateOptionItemValue(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        optionId: Int,
+        selectValue: String,
+    )
 //    @Query("Select * from $OPTION_TABLE where surveyId = :surveyId and languageId = :languageId")
 //    fun getAllOptionForLanguage(surveyId: Int, languageId: Int): List<OptionItemEntity>
 

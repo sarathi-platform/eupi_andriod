@@ -179,13 +179,15 @@ fun GridTypeComponent(
                                             selectedIndex = selectedIndices
                                         ) {
                                             if (!selectedIndices.contains(it)) {
+                                                //optionItem.isSelected=true
                                                 selectedIndices.add(it)
                                             } else {
+                                                // optionItem.isSelected=false
                                                 selectedIndices.remove(it)
                                             }
 
                                             if (!selectedOptionsItem.contains(optionItem)) {
-                                                optionItem.isSelected = !optionItem.isSelected!!
+                                                // optionItem.isSelected = !optionItem.isSelected!!
                                                 selectedOptionsItem.add(optionItem)
                                             } else {
                                                 selectedOptionsItem.remove(optionItem)
@@ -228,22 +230,23 @@ fun GridTypeComponent(
 }
 
 @Composable
-private fun GridOptionCard(
+public fun GridOptionCard(
     modifier: Modifier = Modifier,
     buttonTitle: String,
     index: Int,
     selectedIndex: List<Int>,
     onOptionSelected: (Int) -> Unit
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = dimen_5_dp, vertical = dimen_5_dp)
-        .clip(RoundedCornerShape(6.dp))
-        .background(if (selectedIndex.contains(index)) blueDark else languageItemActiveBg)
-        .clickable {
-            onOptionSelected(index)
-        }
-        .then(modifier)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = dimen_5_dp, vertical = dimen_5_dp)
+            .clip(RoundedCornerShape(6.dp))
+            .background(if (selectedIndex.contains(index)) blueDark else languageItemActiveBg)
+            .clickable {
+                onOptionSelected(index)
+            }
+            .then(modifier)) {
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center,

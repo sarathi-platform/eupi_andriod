@@ -52,4 +52,21 @@ class SaveSectionAnswerUseCase(
         repository.saveSectionAnswersToServer(didiId, surveyId)
     }
 
+    suspend fun updateOptionItemValue(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        optionId: Int,
+        selectedValue: String
+    ) {
+        return repository.updateOptionItemValue(
+            surveyId = surveyId,
+            sectionId = sectionId,
+            questionId = questionId,
+            optionId = optionId,
+            selectedValue = selectedValue
+        )
+    }
+
+
 }

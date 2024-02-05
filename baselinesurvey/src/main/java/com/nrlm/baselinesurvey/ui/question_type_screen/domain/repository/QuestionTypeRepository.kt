@@ -8,4 +8,12 @@ interface QuestionTypeRepository {
         sectionId: Int,
         questionId: Int
     ): List<OptionItemEntity>
+
+    suspend fun updateOptionItemValue(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        optionId: Int,
+        selectedValue: String
+    )
 }
