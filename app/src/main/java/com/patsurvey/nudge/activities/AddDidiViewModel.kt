@@ -521,7 +521,7 @@ class AddDidiViewModel @Inject constructor(
                     shgFlag = SHGFlag.NOT_MARKED.value,
                     transactionId = "",
                     needsToPostRanking = false,
-                    localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext()),
+                    localUniqueId = getUniqueIdForEntity(),
                     ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value
                 )
 
@@ -614,18 +614,17 @@ class AddDidiViewModel @Inject constructor(
                     needsToPostRanking = _didiList.value.get(_didiList.value.map { it.id }
                         .indexOf(didiId)).needsToPostRanking,
                     needsToPost = true,
-                    localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext()),
+                    localUniqueId = _didiList.value.get(_didiList.value.map { it.id }
+                        .indexOf(didiId)).localUniqueId,
                     ableBodiedFlag = didiList.value.get(_didiList.value.map { it.id }
                         .indexOf(didiId)).ableBodiedFlag
                 )
-                updatedDidi.guardianName
                 addDidiRepository.insertDidi(updatedDidi)
-
                 val eventV1 = EventV1(
-                    eventTopic = EventName.UPDATE_DIDI.topicName,
-                    payload = EditDidiRequest.getUpdateDidiDetailsRequest(updatedDidi).json(),
-                    mobileNumber = addDidiRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
-                )
+                    eventTopic = EventName.ADD_DIDI.topicName,
+                    payload = AddDidiRequest.getRequestObjectForDidi(updatedDidi).json(),
+                    mobileNumber = addDidiRepository.prefRepo.getMobileNumber() ?: BLANK_STRING)
+
 
                 addDidiRepository.writeEventIntoLogFile(eventV1)
 

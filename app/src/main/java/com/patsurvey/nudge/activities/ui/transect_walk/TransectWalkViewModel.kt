@@ -95,7 +95,7 @@ class TransectWalkViewModel @Inject constructor(
                     localModifiedDate = System.currentTimeMillis(),
                     transactionId = "",
                     needsToPost = true,
-                    localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
+                    localUniqueId = getUniqueIdForEntity()
                 )
                 transectWalkRepository.tolaInsert(tolaItem)
 
@@ -697,7 +697,8 @@ class TransectWalkViewModel @Inject constructor(
                     val eventV1 = EventV1(
                         eventTopic = EventName.DELETE_TOLA.topicName,
                         payload = DeleteTolaRequest.getRequestObjectForDeleteTola(localTola).json(),
-                        mobileNumber = transectWalkRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
+                        mobileNumber = transectWalkRepository.prefRepo.getMobileNumber()
+                            ?: BLANK_STRING
                     )
                     transectWalkRepository.writeEventIntoLogFile(eventV1)
                     val updatedTolaList =
@@ -713,27 +714,31 @@ class TransectWalkViewModel @Inject constructor(
                     if (updatedTolaList.isEmpty()) {
                         transectWalkRepository.getAllStepsForVillage(villageId)
                             .sortedBy { it.orderNumber }.forEach { newStep ->
-                            if (newStep.orderNumber == stepDetails.orderNumber) {
-                                transectWalkRepository.markStepAsInProgress(
-                                    (stepDetails.orderNumber),
-                                    StepStatus.INPROGRESS.ordinal,
-                                    villageId
-                                )
-                                transectWalkRepository.updateNeedToPost(
-                                    stepDetails.id,
-                                    villageId,
-                                    true
-                                )
+                                if (newStep.orderNumber == stepDetails.orderNumber) {
+                                    transectWalkRepository.markStepAsInProgress(
+                                        (stepDetails.orderNumber),
+                                        StepStatus.INPROGRESS.ordinal,
+                                        villageId
+                                    )
+                                    transectWalkRepository.updateNeedToPost(
+                                        stepDetails.id,
+                                        villageId,
+                                        true
+                                    )
+                                }
+                                if (newStep.orderNumber > stepDetails.orderNumber) {
+                                    transectWalkRepository.markStepAsInProgress(
+                                        (newStep.orderNumber),
+                                        StepStatus.NOT_STARTED.ordinal,
+                                        villageId
+                                    )
+                                    transectWalkRepository.updateNeedToPost(
+                                        newStep.id,
+                                        villageId,
+                                        true
+                                    )
+                                }
                             }
-                            if (newStep.orderNumber > stepDetails.orderNumber) {
-                                transectWalkRepository.markStepAsInProgress(
-                                    (newStep.orderNumber),
-                                    StepStatus.NOT_STARTED.ordinal,
-                                    villageId
-                                )
-                                transectWalkRepository.updateNeedToPost(newStep.id, villageId, true)
-                            }
-                        }
                     }
                     if (isOnline) {
                         val tolaToBeDeleted = transectWalkRepository.fetchSingleTola(tolaId)
@@ -788,7 +793,8 @@ class TransectWalkViewModel @Inject constructor(
                     val eventV1 = EventV1(
                         eventTopic = EventName.DELETE_DIDI.topicName,
                         payload = DeleteDidiRequest.getDeleteDidiDetailsRequest(didi).json(),
-                        mobileNumber = transectWalkRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
+                        mobileNumber = transectWalkRepository.prefRepo.getMobileNumber()
+                            ?: BLANK_STRING
                     )
                     transectWalkRepository.writeEventIntoLogFile(eventV1)
                 }
@@ -843,15 +849,17 @@ class TransectWalkViewModel @Inject constructor(
                 serverId = tolaList.value[getIndexOfTola(id)].serverId,
                 localCreatedDate = tolaList.value[getIndexOfTola(id)].localCreatedDate,
                 localModifiedDate = System.currentTimeMillis(),
-                localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
+                localUniqueId = getUniqueIdForEntity()
             )
             transectWalkRepository.updateTolaName(id, newName)
+            val localTola = transectWalkRepository.getTola(id)
+
+
             val eventV1 = EventV1(
-                eventTopic = EventName.UPDATE_TOLA.topicName,
-                payload = EditCohortRequest.getRequestObjectForTola(updatedTola).json(),
+                eventTopic = EventName.ADD_TOLA.topicName,
+                payload = AddCohortRequest.getRequestObjectForTola(localTola).json(),
                 mobileNumber = transectWalkRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
             )
-
             transectWalkRepository.writeEventIntoLogFile(eventV1)
 
             val updatedTolaList =
@@ -985,7 +993,10 @@ class TransectWalkViewModel @Inject constructor(
                 "TransectWalkViewModel",
                 "markTransectWalkIncomplete -> stepsListDao.markStepAsCompleteOrInProgress($stepId, StepStatus.INPROGRESS.ordinal, $villageId)"
             )
-            updateWorkflowStatus(StepStatus.INPROGRESS.name, stepList[stepList.map { it.orderNumber }.indexOf(1)].id)
+            updateWorkflowStatus(
+                StepStatus.INPROGRESS.name,
+                stepList[stepList.map { it.orderNumber }.indexOf(1)].id
+            )
             transectWalkRepository.updateNeedToPost(stepId, villageId, true)
             val completeStepList = transectWalkRepository.getAllCompleteStepsForVillage(villageId)
             completeStepList.let {

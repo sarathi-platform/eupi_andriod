@@ -111,7 +111,7 @@ data class TolaEntity(
                 localCreatedDate = System.currentTimeMillis(),
                 localModifiedDate = System.currentTimeMillis(),
                 transactionId = "",
-                localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
+                localUniqueId = getUniqueIdForEntity()
             )
         }
 

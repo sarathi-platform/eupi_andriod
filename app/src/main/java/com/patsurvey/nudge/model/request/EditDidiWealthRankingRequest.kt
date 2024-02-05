@@ -36,17 +36,19 @@ data class EditDidiWealthRankingRequest(
     @SerializedName("name") var name: String = "",
     @SerializedName("guardianName") var guardianName: String = "",
     @SerializedName("address") var address: String = "",
-    @SerializedName("cohortId") var cohortId: Int = -1
+    @SerializedName("cohortId") var cohortId: Int = -1,
+    @SerializedName("villageId") var villageId: Int = -1
 ) {
 
     companion object {
         fun getRequestPayloadForWealthRanking(didiEntity: DidiEntity): EditDidiWealthRankingRequest {
             return EditDidiWealthRankingRequest(
-                id = didiEntity.id,
+                id = didiEntity.serverId,
                 name = didiEntity.name,
                 guardianName = didiEntity.guardianName,
                 address = didiEntity.address,
                 cohortId = didiEntity.cohortId,
+                villageId = didiEntity.villageId,
                 type = StepType.WEALTH_RANKING.name,
                 result = didiEntity.wealth_ranking,
                 rankingEdit = didiEntity.rankingEdit,
@@ -56,11 +58,12 @@ data class EditDidiWealthRankingRequest(
 
         fun getRequestPayloadForVoEndorsement(didiEntity: DidiEntity): EditDidiWealthRankingRequest {
             return EditDidiWealthRankingRequest(
-                id = didiEntity.id,
+                id = didiEntity.serverId,
                 name = didiEntity.name,
                 guardianName = didiEntity.guardianName,
                 address = didiEntity.address,
                 cohortId = didiEntity.cohortId,
+                villageId = didiEntity.villageId,
                 type = StepType.VO_ENDROSEMENT.name,
                 result = DidiEndorsementStatus.fromIntToString(didiEntity.voEndorsementStatus),
                 rankingEdit = didiEntity.rankingEdit,
@@ -99,7 +102,12 @@ data class EditDidiWealthRankingRequest(
                 }
             }
             return EditDidiWealthRankingRequest(
-                id = if (didi.serverId == 0) didi.id else didi.serverId,
+                id =  didi.serverId,
+                name = didi.name,
+                guardianName = didi.guardianName,
+                address = didi.address,
+                cohortId = didi.cohortId,
+                villageId = didi.villageId,
                 score = didi.score,
                 comment = comment,
                 type = if (isBpcUserType) BPC_SURVEY_CONSTANT else PAT_SURVEY,
