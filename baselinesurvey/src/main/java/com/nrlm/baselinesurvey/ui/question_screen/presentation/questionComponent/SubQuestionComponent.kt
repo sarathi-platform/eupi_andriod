@@ -19,20 +19,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
-import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
-import com.nrlm.baselinesurvey.model.request.Options
 import com.nrlm.baselinesurvey.model.response.QuestionList
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.white
 import kotlinx.coroutines.launch
-
 
 @Composable
 fun SubQuestionComponent(
@@ -46,6 +41,7 @@ fun SubQuestionComponent(
     val scope = rememberCoroutineScope()
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyListState = rememberLazyListState()
+    val tempHeight: Int = 170 * questionList?.size!!
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0) scope.launch {
             outerState.scrollToItem(
@@ -71,7 +67,7 @@ fun SubQuestionComponent(
                 LazyColumn(
                     state = innerState,
                     userScrollEnabled = false,
-                    modifier = Modifier.height(maxCustomHeight),
+                    modifier = Modifier.height(tempHeight.dp),
                     verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
                 ) {
                     itemsIndexed(
@@ -86,7 +82,7 @@ fun SubQuestionComponent(
                                 1,
                                 2
                             ),
-                            maxCustomHeight = maxCustomHeight,
+                            maxCustomHeight = tempHeight.dp,
                             onAnswerSelection = { questionIndex, optionItem -> },
                             questionDetailExpanded = {},
                             onMediaTypeDescriptionAction = { descriptionContentType, contentLink -> })

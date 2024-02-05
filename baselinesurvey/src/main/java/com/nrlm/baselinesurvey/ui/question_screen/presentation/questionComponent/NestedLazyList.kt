@@ -291,7 +291,6 @@ fun NestedLazyList(
                                 RadioQuestionBoxComponent(
                                     questionIndex = index, question = question,
                                     maxCustomHeight = maxHeight,
-                                    sectionListItem = sectionDetails,
                                     optionItemEntityList = optionList,
                                     selectedOptionIndex = optionList?.indexOf(selectedOption)
                                         ?: -1,

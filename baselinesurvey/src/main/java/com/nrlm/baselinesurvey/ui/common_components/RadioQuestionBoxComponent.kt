@@ -33,7 +33,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -45,8 +44,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
-import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
-import com.nrlm.baselinesurvey.model.request.Options
 import com.nrlm.baselinesurvey.model.response.QuestionList
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponent.SubQuestionComponent
@@ -86,6 +83,7 @@ fun RadioQuestionBoxComponent(
     var isVisibleSubTask by remember {
         mutableStateOf(false)
     }
+    var questionList: List<QuestionList?>? = listOf()
     val innerFirstVisibleItemIndex by remember {
         derivedStateOf {
             innerState.firstVisibleItemIndex
@@ -98,12 +96,7 @@ fun RadioQuestionBoxComponent(
         println("inner ${innerState.layoutInfo.visibleItemsInfo.map { it.index }}")
     }
 
-    if (isVisibleSubTask) {
-        SubQuestionComponent(
-            maxCustomHeight = maxCustomHeight,
-            questionList = optionItemEntityList?.get(0)?.questionList
-        )
-    }
+
 
     BoxWithConstraints(
         modifier = modifier
@@ -178,11 +171,13 @@ fun RadioQuestionBoxComponent(
                                                 selectedIndex = selectedIndex
                                             ) {
                                                 if (optionsItem.questionList != null) {
+                                                    questionList = optionsItem.questionList
                                                     isVisibleSubTask = true
                                                 }
                                                 selectedIndex = _index
                                                 onAnswerSelection(questionIndex, optionsItem)
                                             }
+
                                         }
                                     }
                                 }
@@ -191,6 +186,14 @@ fun RadioQuestionBoxComponent(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(dimen_10_dp)
+                                )
+                            }
+                        }
+                        item {
+                            if (isVisibleSubTask) {
+                                SubQuestionComponent(
+                                    maxCustomHeight = maxCustomHeight,
+                                    questionList = optionItemEntityList?.get(0)?.questionList
                                 )
                             }
                         }
