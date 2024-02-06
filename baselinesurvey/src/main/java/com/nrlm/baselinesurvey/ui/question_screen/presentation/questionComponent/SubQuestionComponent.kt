@@ -6,9 +6,9 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -41,7 +41,6 @@ fun SubQuestionComponent(
     val scope = rememberCoroutineScope()
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyListState = rememberLazyListState()
-    val tempHeight: Int = 170 * questionList?.size!!
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0) scope.launch {
             outerState.scrollToItem(
@@ -67,7 +66,7 @@ fun SubQuestionComponent(
                 LazyColumn(
                     state = innerState,
                     userScrollEnabled = false,
-                    modifier = Modifier.height(tempHeight.dp),
+                    modifier = Modifier.wrapContentHeight(),
                     verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
                 ) {
                     itemsIndexed(
@@ -82,7 +81,7 @@ fun SubQuestionComponent(
                                 1,
                                 2
                             ),
-                            maxCustomHeight = tempHeight.dp,
+                            maxCustomHeight = maxCustomHeight,
                             onAnswerSelection = { questionIndex, optionItem -> },
                             questionDetailExpanded = {},
                             onMediaTypeDescriptionAction = { descriptionContentType, contentLink -> })

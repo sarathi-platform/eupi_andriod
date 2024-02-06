@@ -12,8 +12,7 @@ import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToDidiScreen
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
-import com.nrlm.baselinesurvey.utils.getSectionIndexById
-import com.nrlm.baselinesurvey.utils.getSectionIndexByOrder
+
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnrememberedMutableState")
 @Composable

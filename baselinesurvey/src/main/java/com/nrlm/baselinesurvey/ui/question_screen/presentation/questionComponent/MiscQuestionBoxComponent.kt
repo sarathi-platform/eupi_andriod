@@ -68,7 +68,7 @@ fun MiscQuestionBoxComponent(
     optionItemEntityList: List<OptionItemEntity>?,
     selectedOptionIndex: Int = -1,
     maxCustomHeight: Dp,
-    onAnswerSelection: (optionId: Int, selectedValue: String) -> Unit,
+    onAnswerSelection: (questionIndex: Int, optionId: Int, selectedValue: String) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
 ) {
@@ -159,7 +159,11 @@ fun MiscQuestionBoxComponent(
                                                 optionsItem.display,
                                                 optionsItem.selectedValue ?: ""
                                             ) {
-                                                onAnswerSelection(optionsItem.optionId ?: 0, it)
+                                                onAnswerSelection(
+                                                    questionIndex,
+                                                    optionsItem.optionId ?: 0,
+                                                    it
+                                                )
                                             }
                                             Spacer(modifier = Modifier.height(dimen_8_dp))
                                         }
@@ -170,7 +174,11 @@ fun MiscQuestionBoxComponent(
                                                 optionsItem.selectedValue ?: "Select",
                                                 optionsItem.values
                                             ) {
-                                                onAnswerSelection(optionsItem.optionId ?: 0, it)
+                                                onAnswerSelection(
+                                                    questionIndex,
+                                                    optionsItem.optionId ?: 0,
+                                                    it
+                                                )
                                             }
                                             Spacer(modifier = Modifier.height(dimen_8_dp))
                                         }

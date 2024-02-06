@@ -232,6 +232,10 @@ fun navigateBackToSurveyeeListScreen(navController: NavController) {
     navController.popBackStack(HomeScreens.SURVEYEE_LIST_SCREEN.route, false)
 }
 
+fun navigateBackToDidiScreen(navController: NavController) {
+    navController.popBackStack(HomeScreens.DIDI_SCREEN.route, false)
+}
+
 fun navigateToQuestionScreen(didiId: Int, sectionId: Int, surveyId: Int, navController: NavController) {
     navController.navigate("$QUESTION_SCREEN_ROUTE_NAME/${sectionId}/$didiId/$surveyId")
 }

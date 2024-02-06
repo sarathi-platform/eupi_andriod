@@ -52,7 +52,7 @@ fun FormTypeQuestionComponent(
     questionIndex: Int,
     question: QuestionEntity,
     maxCustomHeight: Dp,
-    onAnswerSelection: () -> Unit,
+    onAnswerSelection: (questionIndex: Int) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
 ) {
@@ -132,7 +132,7 @@ fun FormTypeQuestionComponent(
                                     Modifier
                                         .fillMaxWidth()
                                 ) {
-                                    onAnswerSelection()
+                                    onAnswerSelection(questionIndex)
                                 }
                             }
                         }

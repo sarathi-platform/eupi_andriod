@@ -467,8 +467,15 @@ fun NestedLazyList(
                                     question = question,
                                     questionIndex = index,
                                     maxCustomHeight = maxHeight,
-                                    onAnswerSelection = {
+                                    onAnswerSelection = { questionIndex ->
                                         navController.navigate("$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/${question.questionDisplay}/${sectionDetails.surveyId}/${sectionDetails.sectionId}/${question.questionId}")
+                                        if (!answeredQuestionIndices.value.contains(questionIndex)) {
+                                            answeredQuestionIndices.value.add(questionIndex)
+                                            answeredQuestionCount.value =
+                                                answeredQuestionCount.value.inc()
+                                                    .coerceIn(0, sectionDetails.questionList.size)
+                                            answeredQuestionCountIncreased(answeredQuestionCount.value)
+                                        }
                                     },
                                     questionDetailExpanded = {
 
@@ -489,7 +496,14 @@ fun NestedLazyList(
                                         ?: -1,
                                     maxCustomHeight = maxHeight,
                                     optionItemEntityList = sectionDetails.optionsItemMap[question.questionId],
-                                    onAnswerSelection = { optionId, selectedValue ->
+                                    onAnswerSelection = { questionIndex, optionId, selectedValue ->
+                                        if (!answeredQuestionIndices.value.contains(questionIndex)) {
+                                            answeredQuestionIndices.value.add(questionIndex)
+                                            answeredQuestionCount.value =
+                                                answeredQuestionCount.value.inc()
+                                                    .coerceIn(0, sectionDetails.questionList.size)
+                                            answeredQuestionCountIncreased(answeredQuestionCount.value)
+                                        }
                                         questionScreenViewModel.onEvent(
                                             QuestionScreenEvents.FormTypeQuestionAnswered(
                                                 surveyId = sectionDetails.surveyId,

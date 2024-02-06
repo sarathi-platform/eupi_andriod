@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.common_components
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -80,10 +81,10 @@ fun RadioQuestionBoxComponent(
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyGridState = rememberLazyGridState()
     var optionItem: OptionItemEntity
-    var isVisibleSubTask by remember {
-        mutableStateOf(false)
-    }
-    var questionList: List<QuestionList?>? = listOf()
+    val queLazyState: LazyListState = rememberLazyListState()
+
+    val questionList = ArrayList<QuestionList?>()
+
     val innerFirstVisibleItemIndex by remember {
         derivedStateOf {
             innerState.firstVisibleItemIndex
@@ -94,6 +95,9 @@ fun RadioQuestionBoxComponent(
             scope.launch { outerState.scrollToItem(outerState.layoutInfo.totalItemsCount) }
         println("outer ${outerState.layoutInfo.visibleItemsInfo.map { it.index }}")
         println("inner ${innerState.layoutInfo.visibleItemsInfo.map { it.index }}")
+    }
+    val optionDetailVisibilityState = remember {
+        mutableStateOf(false)
     }
 
 
@@ -170,9 +174,15 @@ fun RadioQuestionBoxComponent(
                                                 optionsItem = optionsItem,
                                                 selectedIndex = selectedIndex
                                             ) {
-                                                if (optionsItem.questionList != null) {
-                                                    questionList = optionsItem.questionList
-                                                    isVisibleSubTask = true
+                                                if (!optionsItem.questionList?.isEmpty()!!) {
+                                                    questionList.clear()
+                                                    optionsItem.questionList.let { it1 ->
+                                                        questionList.addAll(
+                                                            it1
+                                                        )
+                                                    }
+                                                    optionDetailVisibilityState.value =
+                                                        !optionDetailVisibilityState.value
                                                 }
                                                 selectedIndex = _index
                                                 onAnswerSelection(questionIndex, optionsItem)
@@ -190,11 +200,13 @@ fun RadioQuestionBoxComponent(
                             }
                         }
                         item {
-                            if (isVisibleSubTask) {
-                                SubQuestionComponent(
-                                    maxCustomHeight = maxCustomHeight,
-                                    questionList = optionItemEntityList?.get(0)?.questionList
-                                )
+                            if (optionDetailVisibilityState.value) {
+                                AnimatedVisibility(visible = optionDetailVisibilityState.value) {
+                                    SubQuestionComponent(
+                                        maxCustomHeight = maxCustomHeight,
+                                        questionList = questionList
+                                    )
+                                }
                             }
                         }
                         item {

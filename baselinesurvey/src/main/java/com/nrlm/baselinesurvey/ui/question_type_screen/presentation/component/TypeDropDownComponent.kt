@@ -19,12 +19,13 @@ fun TypeDropDownComponent(
     onAnswerSelection: (selectValue: String) -> Unit,
 
     ) {
+    val defaultList = if (sources == null) listOf("Yes", "No") else sources
     var expanded by remember { mutableStateOf(false) }
     var selectedOptionText by remember { mutableStateOf(hintText) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
     DropDownWithTitleComponent(
         title = title ?: "",
-        items = sources ?: listOf(),
+        items = defaultList ?: listOf(),
         modifier = Modifier.fillMaxWidth(),
         mTextFieldSize = textFieldSize,
         expanded = expanded,
@@ -39,7 +40,7 @@ fun TypeDropDownComponent(
             textFieldSize = coordinates.size.toSize()
         },
         onItemSelected = {
-            selectedOptionText = sources?.get(sources.indexOf(it)) ?: ""
+            selectedOptionText = defaultList?.get(defaultList.indexOf(it)) ?: ""
             onAnswerSelection(selectedOptionText)
             expanded = false
         },
