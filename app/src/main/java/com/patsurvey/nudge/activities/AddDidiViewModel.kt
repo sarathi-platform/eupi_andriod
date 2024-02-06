@@ -619,10 +619,11 @@ class AddDidiViewModel @Inject constructor(
                     ableBodiedFlag = didiList.value.get(_didiList.value.map { it.id }
                         .indexOf(didiId)).ableBodiedFlag
                 )
+                 val selectedTolaEntity=  addDidiRepository.fetchSingleTolaFromServerId( selectedTola.value.first)
                 addDidiRepository.insertDidi(updatedDidi)
                 val eventV1 = EventV1(
                     eventTopic = EventName.ADD_DIDI.topicName,
-                    payload = AddDidiRequest.getRequestObjectForDidi(updatedDidi).json(),
+                    payload = AddDidiRequest.getRequestObjectForDidi(updatedDidi,selectedTolaEntity?.serverId).json(),
                     mobileNumber = addDidiRepository.prefRepo.getMobileNumber() ?: BLANK_STRING)
 
 

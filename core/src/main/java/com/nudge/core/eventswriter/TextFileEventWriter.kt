@@ -32,6 +32,8 @@ open class TextFileEventWriter() : IEventWriter {
     private fun writeEventInFile(context: Context, content: String, mobileNo: String) {
         if (TextUtils.isEmpty(content.trim())) return
         val fileNameWithExtension = LOCAL_BACKUP_FILE_NAME + LOCAL_BACKUP_EXTENSION
+        val  finalContent= content+"\n"+ EVENT_DELIMETER+"\n"
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val contentValues = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, LOCAL_BACKUP_FILE_NAME)
@@ -85,10 +87,8 @@ open class TextFileEventWriter() : IEventWriter {
             if (fileUri != null) {
                 val os = context.contentResolver.openOutputStream(fileUri, "wa")
                 if (os != null) {
-                    os.write(content.toByteArray())
-                    os.write("\n".toByteArray())
-                    os.write(EVENT_DELIMETER.toByteArray())
-                    os.write("\n".toByteArray())
+                    os.write(finalContent.toByteArray())
+
                     os.close()
                 }
             }
@@ -106,9 +106,7 @@ open class TextFileEventWriter() : IEventWriter {
                 }
                 val filePath = File(fileDirectory, fileNameWithExtension)
                 val fw = FileWriter(filePath, true)
-                fw.write(content + "\n")
-                fw.write(EVENT_DELIMETER)
-                fw.write("\n")
+                fw.write(finalContent)
                 fw.close()
             } catch (exception: Exception) {
                 throw exception
