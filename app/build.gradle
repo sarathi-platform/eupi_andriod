@@ -270,8 +270,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage:20.3.0'
     implementation (project(":syncManager"))
     implementation (project(":core"))
+    implementation (project(":internetSpeedChecker"))
     implementation (project(":CommunicationModule"))
     implementation 'androidx.work:work-runtime-ktx:2.7.1'
     kapt ("androidx.hilt:hilt-compiler:1.0.0")
-    implementation 'com.facebook.network.connectionclass:connectionclass:1.0.1'
 }
