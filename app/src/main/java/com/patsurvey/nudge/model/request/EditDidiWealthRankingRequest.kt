@@ -37,7 +37,8 @@ data class EditDidiWealthRankingRequest(
     @SerializedName("guardianName") var guardianName: String = "",
     @SerializedName("address") var address: String = "",
     @SerializedName("cohortId") var cohortId: Int = -1,
-    @SerializedName("villageId") var villageId: Int = -1
+    @SerializedName("villageId") var villageId: Int = -1,
+    @SerializedName("cohortName") var cohortName: String = ""
 ) {
 
     companion object {
@@ -48,6 +49,7 @@ data class EditDidiWealthRankingRequest(
                 guardianName = didiEntity.guardianName,
                 address = didiEntity.address,
                 cohortId = didiEntity.cohortId,
+                cohortName = didiEntity.cohortName,
                 villageId = didiEntity.villageId,
                 type = StepType.WEALTH_RANKING.name,
                 result = didiEntity.wealth_ranking,
@@ -63,6 +65,7 @@ data class EditDidiWealthRankingRequest(
                 guardianName = didiEntity.guardianName,
                 address = didiEntity.address,
                 cohortId = didiEntity.cohortId,
+                cohortName = didiEntity.cohortName,
                 villageId = didiEntity.villageId,
                 type = StepType.VO_ENDROSEMENT.name,
                 result = DidiEndorsementStatus.fromIntToString(didiEntity.voEndorsementStatus),
@@ -107,6 +110,7 @@ data class EditDidiWealthRankingRequest(
                 guardianName = didi.guardianName,
                 address = didi.address,
                 cohortId = didi.cohortId,
+                cohortName = didi.cohortName,
                 villageId = didi.villageId,
                 score = didi.score,
                 comment = comment,
