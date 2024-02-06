@@ -641,13 +641,16 @@ class TransectWalkViewModel @Inject constructor(
             )
 //            transectWalkRepository.tolaInsert(updatedTola)
             transectWalkRepository.updateTolaName(id, newName)
+            // TODO Move to repository
             val updatedTolaEvent = transectWalkRepository.createEvent(
                 updatedTola,
                 EventName.UPDATE_TOLA,
                 EventType.STATEFUL
             )
             // TODO handle empty event case.
+
             updatedTolaEvent?.let { NudgeCore.getEventObserver()?.addEvent(it) }
+//            NudgeCore.getEventObserver()?.syncPendingEvent(NudgeCore.getAppContext())
             val updatedTolaList = transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
             withContext(Dispatchers.Main) {
                 _tolaList.value = updatedTolaList
@@ -749,12 +752,17 @@ class TransectWalkViewModel @Inject constructor(
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> called")
             val stepList = transectWalkRepository.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
+            val transectWalkStep = stepList[stepList.map { it.orderNumber }.indexOf(1)]
             transectWalkRepository.markStepAsCompleteOrInProgress(
-                stepId = stepList[stepList.map { it.orderNumber }.indexOf(1)].id,
+                stepId = transectWalkStep.id,
                 isComplete = StepStatus.INPROGRESS.ordinal,
                 villageId = villageId
             )
             NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> stepsListDao.markStepAsCompleteOrInProgress($stepId, StepStatus.INPROGRESS.ordinal, $villageId)")
+
+            if (transectWalkStep.isComplete == StepStatus.COMPLETED.ordinal)
+                saveWorkflowEventIntoDb(stepStatus = StepStatus.INPROGRESS, villageId = villageId, stepId = stepId)
+
             transectWalkRepository.updateNeedToPost(stepId, villageId, true)
             val completeStepList = transectWalkRepository.getAllCompleteStepsForVillage(villageId)
             completeStepList.let {
@@ -770,6 +778,7 @@ class TransectWalkViewModel @Inject constructor(
                             "TransectWalkViewModel",
                             "markTransectWalkIncomplete -> stepsListDao.markStepAsCompleteOrInProgress(${newStep.id}, StepStatus.INPROGRESS.ordinal, $villageId)"
                         )
+                        saveWorkflowEventIntoDb(stepStatus = StepStatus.INPROGRESS, villageId = villageId, stepId = newStep.id)
                         transectWalkRepository.updateNeedToPost(newStep.id, villageId, true)
                     }
                 }
@@ -961,6 +970,23 @@ class TransectWalkViewModel @Inject constructor(
     }
     fun getSelectedVillage(): VillageEntity {
         return transectWalkRepository.getSelectedVillage()
+    }
+
+    fun saveWorkflowEventIntoDb(stepStatus: StepStatus, villageId: Int, stepId: Int) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepEntity =
+                transectWalkRepository.getStepForVillage(villageId = villageId, stepId = stepId)
+            val updateWorkflowEvent = transectWalkRepository.createWorkflowEvent(
+                eventItem = stepEntity,
+                stepStatus = stepStatus,
+                eventName = EventName.WORKFLOW_STATUS_UPDATE,
+                eventType = EventType.STATEFUL,
+                prefRepo = transectWalkRepository.prefRepo
+            )
+            updateWorkflowEvent?.let { event ->
+                transectWalkRepository.insertEventIntoDb(event, emptyList())
+            }
+        }
     }
 
 }

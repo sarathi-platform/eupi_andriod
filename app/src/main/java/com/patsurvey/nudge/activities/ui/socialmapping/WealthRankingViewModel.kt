@@ -4,6 +4,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
 import com.patsurvey.nudge.activities.WealthRankingSurveyRepository
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -183,8 +185,9 @@ class WealthRankingViewModel @Inject constructor(
                         )
                     )
                 }
-                val updatedDidiEntity = didiDao.getDidi(didiId)
 
+                val updatedDidiEntity = didiDao.getDidi(didiEntity.id)
+                wealthRankingRepository.insertEventIntoDb(updatedDidiEntity, EventName.SAVE_WEALTH_RANKING, EventType.STATEFUL)
 
 
                 /*updatedDidiList[updatedDidiList.map { it.serverId }.indexOf(didiId)].wealth_ranking = rank

@@ -7,7 +7,6 @@ import com.nudge.core.KEY_PARENT_ENTITY_ADDRESS
 import com.nudge.core.KEY_PARENT_ENTITY_DADA_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_DIDI_ID
 import com.nudge.core.KEY_PARENT_ENTITY_DIDI_NAME
-import com.nudge.core.KEY_PARENT_ENTITY_TOLA_ID
 import com.nudge.core.KEY_PARENT_ENTITY_TOLA_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_VILLAGE_ID
 import com.nudge.core.SELECTION_MISSION
@@ -15,10 +14,9 @@ import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.getDependentEventsId
-import com.nudge.core.database.entities.getPayloadFromString
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
-import com.nudge.core.enums.getDependentEventNameForEvent
+import com.nudge.core.enums.getDependsOnEventNameForEvent
 import com.nudge.core.getEventDependencyEntityListFromEvents
 import com.nudge.core.getSizeInLong
 import com.nudge.core.json
@@ -41,25 +39,27 @@ import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
+import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
-import com.patsurvey.nudge.database.getDidiId
 import com.patsurvey.nudge.model.request.AddCohortRequest
 import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.model.request.DeleteDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
+import com.patsurvey.nudge.model.request.getAddCohortRequestPayloadFromString
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.DidiApiResponse
-import com.patsurvey.nudge.model.response.TolaApiResponse
 import com.patsurvey.nudge.model.response.WorkFlowResponse
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.getParentEntityMapForEvent
+import com.patsurvey.nudge.utils.getPatScoreSaveEvent
+import com.patsurvey.nudge.utils.getPatSummarySaveEventPayload
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import javax.inject.Inject
 
@@ -73,6 +73,7 @@ class AddDidiRepository @Inject constructor(
     val lastSelectedTolaDao: LastSelectedTolaDao,
     val questionListDao: QuestionListDao,
     val answerDao: AnswerDao,
+    val numericAnswerDao: NumericAnswerDao,
     val eventsDao: EventsDao,
 ) : BaseRepository() {
     fun getSelectedVillage(): VillageEntity {
@@ -208,9 +209,9 @@ class AddDidiRepository @Inject constructor(
                     createdBy = prefRepo.getUserId(),
                     mobile_number = prefRepo.getMobileNumber(),
                     request_payload = requestPayload,
-                    request_status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.name,
                     modified_date = System.currentTimeMillis().toDate(),
-                    consumer_response_payload = null,
+                    result = null,
                     consumer_status = BLANK_STRING,
                     metadata = MetadataDto(
                         mission = SELECTION_MISSION,
@@ -237,9 +238,9 @@ class AddDidiRepository @Inject constructor(
                     createdBy = prefRepo.getUserId(),
                     mobile_number = prefRepo.getMobileNumber(),
                     request_payload = requestPayload,
-                    request_status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.name,
                     modified_date = System.currentTimeMillis().toDate(),
-                    consumer_response_payload = null,
+                    result = null,
                     consumer_status = BLANK_STRING,
                     metadata = MetadataDto(
                         mission = SELECTION_MISSION,
@@ -266,9 +267,9 @@ class AddDidiRepository @Inject constructor(
                     createdBy = prefRepo.getUserId(),
                     mobile_number = prefRepo.getMobileNumber(),
                     request_payload = requestPayload,
-                    request_status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.name,
                     modified_date = System.currentTimeMillis().toDate(),
-                    consumer_response_payload = null,
+                    result = null,
                     consumer_status = BLANK_STRING,
                     metadata = MetadataDto(
                         mission = SELECTION_MISSION,
@@ -286,6 +287,40 @@ class AddDidiRepository @Inject constructor(
 
                 return deleteDidiRequest
             }
+            EventName.SAVE_PAT_ANSWERS -> {
+                val requestPayload = getPatSummarySaveEventPayload(
+                    didiEntity = (eventItem as DidiEntity),
+                    answerDao = answerDao,
+                    numericAnswerDao = numericAnswerDao,
+                    questionListDao = questionListDao,
+                    prefRepo= prefRepo
+                )
+
+                var savePatSummeryEvent = getPatSaveAnswersEvent(eventItem = eventItem, eventName = eventName, eventType = eventType, patSummarySaveRequest = requestPayload, prefRepo = prefRepo)
+
+                val dependsOn = createEventDependency(eventItem, eventName, savePatSummeryEvent)
+                val metadata = savePatSummeryEvent.metadata?.getMetaDataDtoFromString()
+                val updatedMetaData = metadata?.copy(depends_on = dependsOn.getDependentEventsId())
+                savePatSummeryEvent = savePatSummeryEvent.copy(
+                    metadata = updatedMetaData?.json()
+                )
+
+                return savePatSummeryEvent
+            }
+            EventName.SAVE_PAT_SCORE -> {
+                val requestPayload = getPatScoreSaveEvent(didiEntity = (eventItem as DidiEntity), questionListDao = questionListDao, prefRepo = prefRepo)
+
+                var savePatScoreEvent = getPatSaveScoreEvent(eventItem = eventItem, eventName = eventName, eventType = eventType, patScoreSaveEvent = requestPayload, prefRepo = prefRepo)
+
+                val dependsOn = createEventDependency(eventItem, eventName, savePatScoreEvent)
+                val metadata = savePatScoreEvent.metadata?.getMetaDataDtoFromString()
+                val updatedMetaData = metadata?.copy(depends_on = dependsOn.getDependentEventsId())
+                savePatScoreEvent = savePatScoreEvent.copy(
+                    metadata = updatedMetaData?.json()
+                )
+
+                return savePatScoreEvent
+            }
             else -> {
                 return null
             }
@@ -294,44 +329,45 @@ class AddDidiRepository @Inject constructor(
     }
 
      override suspend fun <T> createEventDependency(
-        eventItem: T,
-        eventName: EventName,
-        dependentEvents: Events
+         eventItem: T,
+         eventName: EventName,
+         dependentEvent: Events
     ): List<EventDependencyEntity> {
         val eventDependencyList = mutableListOf<EventDependencyEntity>()
         var filteredList = listOf<Events>()
 
-        eventName.getDependentEventNameForEvent().forEach { dependentEvent ->
-            val eventList = eventsDao.getAllEventsForEventName(dependentEvent.name)
+        eventName.getDependsOnEventNameForEvent().forEach { dependsOnEvent ->
+            val eventList = eventsDao.getAllEventsForEventName(dependsOnEvent.name)
             when (eventName) {
                 EventName.ADD_DIDI -> {
                     filteredList = eventList.filter {
-                        val eventPayload = it.request_payload?.getPayloadFromString<AddCohortRequest>()
-                        dependentEvents.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_TOLA_NAME) == eventPayload?.name
-                                && dependentEvents.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_VILLAGE_ID) == eventPayload?.villageId
+                        val eventPayload = it.request_payload?.getAddCohortRequestPayloadFromString()
+                        dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
+                            ?.get(KEY_PARENT_ENTITY_TOLA_NAME)?.equals(eventPayload?.name, true)!!
+                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
+                            ?.get(KEY_PARENT_ENTITY_VILLAGE_ID)?.equals(eventPayload?.villageId?.toString(), true)!!
                     }
                 }
                 EventName.UPDATE_DIDI -> {
                     filteredList = eventList.filter {
-//                        val eventPayload = it.request_payload?.getPayloadFromString<AddDidiRequest>()
-                        dependentEvents.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_DIDI_ID) == (eventItem as DidiEntity).getDidiId()
-                                && it.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_VILLAGE_ID) == (eventItem as DidiEntity).villageId
+                        val eventPayload = (eventItem as DidiEntity)
+                        dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
+                            ?.get(KEY_PARENT_ENTITY_DIDI_ID)?.equals(eventPayload.id.toString(), true)!!
+                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
+                            ?.get(KEY_PARENT_ENTITY_VILLAGE_ID)?.equals(eventPayload.villageId.toString(), true)!!
                     }
                 }
-                EventName.DELETE_DIDI -> {
+                EventName.DELETE_DIDI, EventName.SAVE_PAT_ANSWERS, EventName.SAVE_PAT_SCORE -> {
                     filteredList = eventList.filter {
-                        it.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_DIDI_NAME) == (eventItem as DidiEntity).name
-                                && it.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_DADA_NAME) == (eventItem as DidiEntity).guardianName
-                                && it.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_ADDRESS) == (eventItem as DidiEntity).address
-                                && it.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_TOLA_NAME) == (eventItem as DidiEntity).cohortName
+                        val eventPayload = (eventItem as DidiEntity)
+                        dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
+                            ?.get(KEY_PARENT_ENTITY_DIDI_NAME)?.equals(eventPayload?.name, true)!!
+                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
+                            ?.get(KEY_PARENT_ENTITY_DADA_NAME)?.equals(eventPayload?.guardianName, true)!!
+                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
+                            ?.get(KEY_PARENT_ENTITY_ADDRESS).equals(eventPayload?.address, true)
+                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
+                            ?.get(KEY_PARENT_ENTITY_TOLA_NAME)?.equals(eventPayload?.cohortName, true)!!
                     }
                 }
                 else -> {
@@ -340,7 +376,7 @@ class AddDidiRepository @Inject constructor(
             }
         }
 
-        eventDependencyList.addAll(filteredList.getEventDependencyEntityListFromEvents(dependentEvents))
+        eventDependencyList.addAll(filteredList.getEventDependencyEntityListFromEvents(dependentEvent))
 
         return eventDependencyList
     }
@@ -652,7 +688,7 @@ class AddDidiRepository @Inject constructor(
     }
 
     fun getStepForVillage(villageId: Int, stepId: Int): StepListEntity {
-        return this.stepsListDao.getStepForVillage(villageId, stepId)
+        return this.stepsListDao.getStepForVillage(villageId = villageId, stepId = stepId)
     }
 
 

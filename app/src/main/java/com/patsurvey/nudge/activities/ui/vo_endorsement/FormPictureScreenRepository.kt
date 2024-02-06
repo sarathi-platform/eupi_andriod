@@ -40,6 +40,8 @@ class FormPictureScreenRepository @Inject constructor(
        return villageListDao.getVillage(villageId)
     }
 
+    fun getSelectedVillage() = prefRepo.getSelectedVillage()
+
     fun markVOEndorsementStatusComplete(
         villageId: Int,
         stepId: Int,

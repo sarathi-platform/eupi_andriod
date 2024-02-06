@@ -119,6 +119,7 @@ import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_FORM_C_AND_D_
+import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.openSettings
 import com.patsurvey.nudge.utils.showToast
 import com.patsurvey.nudge.utils.uriFromFile
@@ -882,6 +883,11 @@ fun FormPictureScreen(
                             formPictureScreenViewModel.markVoEndorsementComplete(
                                 formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id,
                                 stepId
+                            )
+                            formPictureScreenViewModel.saveWorkflowEventIntoDb(
+                                stepStatus = StepStatus.COMPLETED,
+                                villageId = formPictureScreenViewModel.getSelectedVillage().id,
+                                stepId = stepId
                             )
                             formPictureScreenViewModel.saveVoEndorsementDate()
                             if ((context as MainActivity).isOnline.value ?: false) {

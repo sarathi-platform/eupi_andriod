@@ -1,7 +1,9 @@
 package com.patsurvey.nudge.model.request
 
+import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
+import com.google.gson.reflect.TypeToken
 import com.patsurvey.nudge.database.TolaEntity
 
 data class AddCohortRequest(
@@ -43,4 +45,9 @@ data class AddCohortRequest(
         return jsonObject
     }
 
+}
+
+fun String.getAddCohortRequestPayloadFromString(): AddCohortRequest? {
+    val type = object : TypeToken<AddCohortRequest?>() {}.type
+    return Gson().fromJson(this, type)
 }

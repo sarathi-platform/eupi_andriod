@@ -1,21 +1,36 @@
 package com.patsurvey.nudge.base
 
 import com.google.gson.JsonSyntaxException
+import com.nudge.core.EventSyncStatus
+import com.nudge.core.SELECTION_MISSION
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
+import com.nudge.core.database.entities.getDependentEventsId
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
+import com.nudge.core.getSizeInLong
+import com.nudge.core.json
+import com.nudge.core.model.MetadataDto
+import com.nudge.core.model.getMetaDataDtoFromString
+import com.nudge.core.toDate
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.analytics.AnalyticsHelper
+import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
+import com.patsurvey.nudge.model.request.PATSummarySaveRequest
+import com.patsurvey.nudge.model.request.UpdateWorkflowRequest
 import com.patsurvey.nudge.network.NetworkResult
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.ApiResponseFailException
 import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.COMMON_ERROR_MSG
+import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.RESPONSE_CODE_500
 import com.patsurvey.nudge.utils.RESPONSE_CODE_BAD_GATEWAY
@@ -27,9 +42,11 @@ import com.patsurvey.nudge.utils.RESPONSE_CODE_NO_DATA
 import com.patsurvey.nudge.utils.RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE
 import com.patsurvey.nudge.utils.RESPONSE_CODE_TIMEOUT
 import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
+import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TIMEOUT_ERROR_MSG
 import com.patsurvey.nudge.utils.UNAUTHORISED_MESSAGE
 import com.patsurvey.nudge.utils.UNREACHABLE_ERROR_MSG
+import com.patsurvey.nudge.utils.getParentEntityMapForEvent
 import kotlinx.coroutines.*
 import retrofit2.HttpException
 import retrofit2.Response
@@ -64,7 +81,7 @@ abstract class BaseRepository{
         return Events.getEmptyEvent()
     }
 
-    open suspend fun <T> createEventDependency(eventItem: T, eventName: EventName, dependentEvents: Events): List<EventDependencyEntity> {
+    open suspend fun <T> createEventDependency(eventItem: T, eventName: EventName, dependentEvent: Events): List<EventDependencyEntity> {
         return emptyList()
     }
 
@@ -73,6 +90,106 @@ abstract class BaseRepository{
         eventName: EventName,
         eventType: EventType
     ) {
+
+    }
+
+    suspend fun <T> getPatSaveAnswersEvent(eventItem: T, eventName: EventName, eventType: EventType, patSummarySaveRequest: PATSummarySaveRequest, prefRepo: PrefRepo): Events {
+        val requestPayload = patSummarySaveRequest.json()
+
+        var savePatSummeryEvent = Events(
+            name = eventName.name,
+            type = eventType.name,
+            createdBy = prefRepo.getUserId(),
+            mobile_number = prefRepo.getMobileNumber(),
+            request_payload = requestPayload,
+            status = EventSyncStatus.OPEN.name,
+            modified_date = System.currentTimeMillis().toDate(),
+            result = null,
+            consumer_status = BLANK_STRING,
+            metadata = MetadataDto(
+                mission = SELECTION_MISSION,
+                depends_on = listOf(),
+                request_payload_size = requestPayload.getSizeInLong(),
+                parentEntity = getParentEntityMapForEvent((eventItem as DidiEntity), eventName)
+            ).json()
+        )
+
+        return savePatSummeryEvent
+    }
+
+    suspend fun <T> getPatSaveScoreEvent(eventItem: T, eventName: EventName, eventType: EventType, patScoreSaveEvent: EditDidiWealthRankingRequest, prefRepo: PrefRepo): Events {
+        val requestPayload = patScoreSaveEvent.json()
+        var savePatScoreEvent = Events(
+            name = eventName.name,
+            type = eventType.name,
+            createdBy = prefRepo.getUserId(),
+            mobile_number = prefRepo.getMobileNumber(),
+            request_payload = requestPayload,
+            status = EventSyncStatus.OPEN.name,
+            modified_date = System.currentTimeMillis().toDate(),
+            result = null,
+            consumer_status = BLANK_STRING,
+            metadata = MetadataDto(
+                mission = SELECTION_MISSION,
+                depends_on = listOf(),
+                request_payload_size = requestPayload.getSizeInLong(),
+                parentEntity = getParentEntityMapForEvent(eventItem, eventName)
+            ).json()
+        )
+
+        return savePatScoreEvent
+    }
+
+    open suspend fun insertEventIntoDb(event: Events?, eventDependencies: List<EventDependencyEntity>) {
+        val eventObserver = NudgeCore.getEventObserver()
+
+        if (event == null)
+            return
+        if (event.id == BLANK_STRING)
+            return
+
+        eventObserver?.addEvent(event)
+        if (eventDependencies.isNotEmpty()) {
+            eventObserver?.addEventDependencies(eventDependencies)
+        }
+
+    }
+
+    fun <T> createWorkflowEvent(eventItem: T, stepStatus: StepStatus, eventName: EventName, eventType: EventType, prefRepo: PrefRepo): Events? {
+
+        if (eventType != EventType.STATEFUL)
+            return null
+
+        if (eventItem !is StepListEntity)
+            return null
+
+        if (eventName != EventName.WORKFLOW_STATUS_UPDATE)
+            return null
+
+        val requestPayload = UpdateWorkflowRequest.getUpdateWorkflowRequest(
+            stepListEntity = (eventItem as StepListEntity),
+            status = stepStatus.name
+        ).json()
+
+        val updateWorkflowEvent = Events(
+            name = eventName.name,
+            type = eventType.name,
+            createdBy = prefRepo.getUserId(),
+            mobile_number = prefRepo.getMobileNumber(),
+            request_payload = requestPayload,
+            status = EventSyncStatus.OPEN.name,
+            modified_date = System.currentTimeMillis().toDate(),
+            result = null,
+            consumer_status = BLANK_STRING,
+            metadata = MetadataDto(
+                mission = SELECTION_MISSION,
+                depends_on = listOf(),
+                request_payload_size = requestPayload.getSizeInLong(),
+                parentEntity = getParentEntityMapForEvent(eventItem, eventName)
+            ).json()
+        )
+
+        return updateWorkflowEvent
 
     }
 
