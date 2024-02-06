@@ -31,7 +31,6 @@ val textMimeType="text/plain"
     private fun writeEventInFile(context: Context, content: String, mobileNo: String) {
 
         val fileNameWithExtension = LOCAL_BACKUP_FILE_NAME + LOCAL_BACKUP_EXTENSION
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val contentValues = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, LOCAL_BACKUP_FILE_NAME)

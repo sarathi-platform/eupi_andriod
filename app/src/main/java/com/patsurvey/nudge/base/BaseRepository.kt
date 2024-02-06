@@ -208,19 +208,29 @@ abstract class BaseRepository{
     }
 
     open suspend fun writeEventIntoLogFile(eventV1: EventV1){
-        val  eventFormatter: IEventFormatter = getEventFormatter()
-        eventFormatter.saveAndFormatEvent(
-            event = eventV1,
-            listOf(
-                EventWriterName.FILE_EVENT_WRITER,
-                EventWriterName.DB_EVENT_WRITER,
-                EventWriterName.LOG_EVENT_WRITER
-            )
-        )
+     try {
+
+
+         val eventFormatter: IEventFormatter = getEventFormatter()
+         eventFormatter.saveAndFormatEvent(
+             event = eventV1,
+             listOf(
+                 EventWriterName.FILE_EVENT_WRITER,
+                 EventWriterName.DB_EVENT_WRITER,
+                 EventWriterName.LOG_EVENT_WRITER
+             )
+         )
+     }   catch (exception:Exception)
+     {
+         NudgeLogger.e("ImageEventWriter",exception.message?:"")
+     }
     }
 
     open suspend fun writeImageEventIntoLogFile(eventV1: EventV1) {
         val  eventFormatter: IEventFormatter = getEventFormatter()
+        try {
+
+
         eventFormatter.saveAndFormatEvent(
             event = eventV1,
             listOf(
@@ -232,6 +242,11 @@ abstract class BaseRepository{
             uri
         )
         uri = null
+        }
+        catch (exception:Exception){
+            NudgeLogger.e("ImageEventWriter",exception.message?:"")
+        }
+
     }
 
     var uri: Uri? = null
