@@ -15,12 +15,13 @@ import java.net.SocketTimeoutException
 @HiltWorker
 class SyncUploadWorker @AssistedInject constructor(
     @Assisted appContext: Context,
-    @Assisted workerParams: WorkerParameters,
+    @Assisted val workerParams: WorkerParameters,
     val syncApiRepository: SyncApiRepository
 ) :
 
-    CoroutineWorker(appContext, workerParams) {;
+    CoroutineWorker(appContext, workerParams) {
     override suspend fun doWork(): Result {
+        Log.d("WorkManager","batchCountL "+workerParams.inputData.getInt("batchCount",0).toString())
         return if (runAttemptCount < 5) { // runAttemptCount starts from 0
             try {
 
@@ -38,15 +39,18 @@ class SyncUploadWorker @AssistedInject constructor(
 //
 //                    totalPendingEventCount--;
 //                    }
+
+                    Result.success()
+
                 } else {
 
                 }
+                throw  SocketTimeoutException()
 
                 // do long running work
             } catch (ex: SocketTimeoutException) {
                 Result.retry()
             }
-            Result.success()
         } else {
             Result.failure()
         }

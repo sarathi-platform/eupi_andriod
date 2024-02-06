@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.enums.NetworkSpeed
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.SyncBPCDataOnServer
@@ -838,5 +839,11 @@ class SettingViewModel @Inject constructor(
 
     suspend fun exportLocalData(context: Context) {
         exportHelper.exportAllData(context)
+    }
+
+    fun syncAllPending(networkSpeed: NetworkSpeed) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            NudgeCore.getEventObserver()?.syncPendingEvent(NudgeCore.getAppContext(),networkSpeed)
+        }
     }
 }
