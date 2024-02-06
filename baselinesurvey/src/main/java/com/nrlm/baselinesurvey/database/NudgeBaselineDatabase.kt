@@ -7,11 +7,13 @@ import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.nrlm.baselinesurvey.database.converters.BeneficiaryStepConverter
 import com.nrlm.baselinesurvey.database.converters.IntConverter
+import com.nrlm.baselinesurvey.database.converters.MissionActivityConverter
 import com.nrlm.baselinesurvey.database.converters.OptionQuestionConverter
 import com.nrlm.baselinesurvey.database.converters.QuestionsOptionsConverter
 import com.nrlm.baselinesurvey.database.converters.StringConverter
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
+import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionAnswerEntityDao
@@ -21,6 +23,7 @@ import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.dao.VillageListDao
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
+import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
@@ -42,6 +45,7 @@ const val NUDGE_BASELINE_DATABASE_VERSION = 1
         SectionEntity::class,
         QuestionEntity::class,
         OptionItemEntity::class,
+        MissionEntity::class,
         DidiSectionProgressEntity::class,
         SectionAnswerEntity::class
     ],
@@ -50,7 +54,7 @@ const val NUDGE_BASELINE_DATABASE_VERSION = 1
 )
 @TypeConverters(
     IntConverter::class, BeneficiaryStepConverter::class, QuestionsOptionsConverter::class,
-    OptionQuestionConverter::class, StringConverter::class
+    OptionQuestionConverter::class, StringConverter::class, MissionActivityConverter::class
 )
 abstract class NudgeBaselineDatabase: RoomDatabase()  {
 
@@ -66,6 +70,7 @@ abstract class NudgeBaselineDatabase: RoomDatabase()  {
 
     abstract fun questionEntityDao(): QuestionEntityDao
     abstract fun optionItemDao(): OptionItemDao
+    abstract fun missionEntityDao(): MissionEntityDao
 
     abstract fun didiSectionProgressEntityDao(): DidiSectionProgressEntityDao
 

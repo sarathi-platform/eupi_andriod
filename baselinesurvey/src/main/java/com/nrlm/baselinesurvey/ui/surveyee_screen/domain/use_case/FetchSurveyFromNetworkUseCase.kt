@@ -11,7 +11,8 @@ class FetchSurveyFromNetworkUseCase(
     suspend operator fun invoke(): Boolean {
         try {
             //TODO Run a loop on language id later
-            val surveyRequestBodyModel = SurveyRequestBodyModel(languageId = 2, surveyName = "BASE_LINE", stateId = 4)
+            val surveyRequestBodyModel =
+                SurveyRequestBodyModel(languageId = 2, surveyName = "BASELINE", stateId = 4)
             val surveyApiResponse = repository.fetchSurveyFromNetwork(surveyRequestBodyModel)
             if (surveyApiResponse.status.equals(SUCCESS, true)) {
                 surveyApiResponse.data?.let { surveyApiResponse ->

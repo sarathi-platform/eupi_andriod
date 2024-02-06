@@ -36,6 +36,7 @@ const val FINAL_STEP_COMPLETION_DELAY = 3000L
 const val NUDGE_BASELINE_DATABASE = "NudgeBaselineDatabase"
 const val VILLAGE_TABLE_NAME = "village_table"
 const val LANGUAGE_TABLE_NAME = "language_table"
+const val MISSION_TABLE_NAME = "mission_table"
 const val NUMERIC_TABLE_NAME = "numeric_table"
 const val OPTION_TABLE_NAME = "option_table"
 const val USER_TABLE_NAME = "user_table"
@@ -275,5 +276,6 @@ const val SECTION_INFORMATION_TAB = "Section Information"
 
 const val BASE_LINE = "BASELINE"
 const val ARG_VIDEO_PATH = "video_path"
+const val ARG_ACTIVITY_ID = "activity_id"
 const val ARG_MISSION_ID = "mission_id"
 

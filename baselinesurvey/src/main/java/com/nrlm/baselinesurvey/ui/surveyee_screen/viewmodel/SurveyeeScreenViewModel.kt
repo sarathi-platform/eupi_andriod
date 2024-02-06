@@ -57,22 +57,24 @@ class SurveyeeScreenViewModel @Inject constructor(
 
     val showMoveDidisBanner = mutableStateOf(false)
 
-    fun init() {
+    fun init(missionId: Int, activityId: Int) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 //            if (_surveyeeListState.value.isEmpty()) {
-                val surveyeeListFromDb = surveyeeScreenUseCase.getSurveyeeListUseCase.invoke()
+            val surveyeeListFromDb =
+                surveyeeScreenUseCase.getSurveyeeListUseCase.invoke(missionId, activityId)
             if (_surveyeeListState.value.isNotEmpty()) {
                 _surveyeeListState.value.clear()
             }
             surveyeeListFromDb.forEach { surveyeeEntity ->
-                    val surveyeeState = SurveyeeCardState(
-                        surveyeeDetails = surveyeeEntity,
+                val surveyeeState = SurveyeeCardState(
+                    surveyeeDetails = surveyeeEntity,
                         imagePath = surveyeeEntity.crpImageName,
                         subtitle = surveyeeEntity.dadaName,
                         address = getSurveyeeAddress(surveyeeEntity),
                         surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
                     )
+
                     _surveyeeListState.value.add(surveyeeState)
                 }
                 _filteredSurveyeeListState.value = _surveyeeListState.value
@@ -101,7 +103,7 @@ class SurveyeeScreenViewModel @Inject constructor(
 
     fun getThisWeekSurveyeeList() {
         CoroutineScope(Dispatchers.IO).launch {
-            val surveyeeListFromDb = surveyeeScreenUseCase.getSurveyeeListUseCase.invoke()
+            val surveyeeListFromDb = surveyeeScreenUseCase.getSurveyeeListUseCase.invoke(0, 0)
             surveyeeListFromDb.filter { it.movedToThisWeek }.forEach { surveyeeEntity ->
                 val surveyeeState = SurveyeeCardState(
                     surveyeeDetails = surveyeeEntity,

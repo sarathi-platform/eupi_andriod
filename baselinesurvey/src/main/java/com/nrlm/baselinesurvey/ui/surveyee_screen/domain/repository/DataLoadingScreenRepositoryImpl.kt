@@ -10,20 +10,24 @@ import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
+import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
+import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
+import com.nrlm.baselinesurvey.model.request.MissionRequest
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.model.response.BeneficiaryApiResponse
+import com.nrlm.baselinesurvey.model.response.MissionResponseModel
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
@@ -37,7 +41,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     val surveyEntityDao: SurveyEntityDao,
     val sectionEntityDao: SectionEntityDao,
     val questionEntityDao: QuestionEntityDao,
-    val optionItemDao: OptionItemDao
+    val optionItemDao: OptionItemDao,
+    val missionEntityDao: MissionEntityDao
 ) : DataLoadingScreenRepository {
     override suspend fun fetchLocalLanguageList(): List<LanguageEntity> {
         return languageListDao.getAllLanguages()
@@ -170,5 +175,20 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
 //        apiService.fetchSavedSurveyAnswersFromServer()
     }
 
+    override suspend fun fetchMissionDataFromServer(
+        languageCode: String,
+        missionName: String
+    ): ApiResponseModel<List<MissionResponseModel>> {
+        val missionRequest = MissionRequest(languageCode, missionName)
+        return apiService.getBaseLineMission(missionRequest)
+    }
+
+    override suspend fun saveAllMissionToDB(missions: List<MissionEntity>) {
+        missionEntityDao.insertMissionAll(missions)
+    }
+
+    override suspend fun deleteAllMissionToDB() {
+        missionEntityDao.deleteMissions()
+    }
 
 }

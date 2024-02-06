@@ -19,7 +19,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.StepsBox
 import com.nrlm.baselinesurvey.ui.mission_screen.viewmodel.MissionViewModel
@@ -85,7 +84,7 @@ fun MissionSummaryScreen(
                             index = 1,
                             iconResourceId = R.drawable.ic_group_icon,
                             onclick = {
-                                navController.navigate(Graph.ADD_DIDI)
+                                navController.navigate("add_didi_graph/${activity.activityId}/${missionId}")
                             })
                     }
 

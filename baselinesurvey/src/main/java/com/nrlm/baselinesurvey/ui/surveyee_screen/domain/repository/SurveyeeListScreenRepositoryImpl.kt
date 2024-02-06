@@ -11,26 +11,35 @@ import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
 import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
-import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
-import com.nrlm.baselinesurvey.database.entity.LanguageEntity
+import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
+import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
+import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.utils.createMultiLanguageVillageRequest
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.count
-import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 class SurveyeeListScreenRepositoryImpl @Inject constructor(
     private val prefRepo: PrefRepo,
     private val apiService: ApiService,
     private val surveyeeEntityDao: SurveyeeEntityDao,
-    private val languageListDao: LanguageListDao
+    private val languageListDao: LanguageListDao,
+    private val missionEntityDao: MissionEntityDao
 ): SurveyeeListScreenRepository {
 
-    override suspend fun getSurveyeeList(): List<SurveyeeEntity> {
-        return surveyeeEntityDao.getAllDidis()
+    override suspend fun getSurveyeeList(missionId: Int, activityId: Int): List<SurveyeeEntity> {
+        val didiList = mutableListOf<SurveyeeEntity>()
+        getMission(missionId).activities.forEach { activity ->
+            if (activityId == activity.activityId) {
+                activity.tasks.forEach { task ->
+                    didiList.add(surveyeeEntityDao.getDidi(task.didiId))
+                }
+            }
+
+        }
+        return didiList
+        //return surveyeeEntityDao.getAllDidis()
     }
 
     override suspend fun getSurveyeeListFromNetwork(): Boolean {
@@ -100,6 +109,10 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
         moveDidisToNextWeek: Boolean
     ) {
         surveyeeEntityDao.moveSurveyeeToThisWeek(didiId, moveDidisToNextWeek)
+    }
+
+    override suspend fun getMission(missionId: Int): MissionEntity {
+        return missionEntityDao.getMission(missionId)
     }
 
 }

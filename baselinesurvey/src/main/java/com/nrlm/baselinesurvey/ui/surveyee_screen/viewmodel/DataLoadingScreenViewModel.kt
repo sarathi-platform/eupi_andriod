@@ -40,6 +40,7 @@ class DataLoadingScreenViewModel @Inject constructor(
                 if (fetchUserDetailFromNetworkUseCaseSuccess) {
                     fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
                     fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke()
+                    fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
                 } else {
                     withContext(Dispatchers.Main) {
                         onEvent(LoaderEvent.UpdateLoaderState(false))

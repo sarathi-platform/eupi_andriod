@@ -64,6 +64,10 @@ object DatabaseModule {
 
     @Provides
     @Singleton
+    fun provideMissionEntityDao(db: NudgeBaselineDatabase) = db.missionEntityDao()
+
+    @Provides
+    @Singleton
     fun provideDidiSectionProgressEntityDao(db: NudgeBaselineDatabase) =
         db.didiSectionProgressEntityDao()
 

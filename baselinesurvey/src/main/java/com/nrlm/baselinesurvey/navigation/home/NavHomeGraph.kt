@@ -11,7 +11,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
+import com.nrlm.baselinesurvey.ARG_ACTIVITY_ID
 import com.nrlm.baselinesurvey.ARG_DIDI_ID
+import com.nrlm.baselinesurvey.ARG_MISSION_ID
 import com.nrlm.baselinesurvey.ARG_QUESTION_ID
 import com.nrlm.baselinesurvey.ARG_QUESTION_NAME
 import com.nrlm.baselinesurvey.ARG_SECTION_ID
@@ -20,9 +22,8 @@ import com.nrlm.baselinesurvey.ARG_VIDEO_PATH
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
-import com.nrlm.baselinesurvey.ui.AddHouseholdMemberScreen
-import com.nrlm.baselinesurvey.ui.AddIncomScreen
-import com.nrlm.baselinesurvey.ui.mission_screen.presentation.MissionScreen
+import com.nrlm.baselinesurvey.ui.mission_screen.presentation.MissionScreen_1
+import com.nrlm.baselinesurvey.ui.mission_screen.presentation.MissionSummaryScreen
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenHandler
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.FormTypeQuestionScreen
 import com.nrlm.baselinesurvey.ui.search.presentation.SearchScreens
@@ -57,7 +58,12 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
         }
 
         composable(route = HomeScreens.SURVEYEE_LIST_SCREEN.route) {
-            SurveyeeListScreen(viewModel = hiltViewModel(), navController = navController)
+            SurveyeeListScreen(
+                viewModel = hiltViewModel(),
+                navController = navController,
+                activityId = 0,
+                missionId = 0
+            )
         }
 
         composable(
@@ -185,7 +191,12 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
         }
 
         composable(route = HomeScreens.DIDI_SCREEN.route) {
-            SurveyeeListScreen(viewModel = hiltViewModel(), navController = navController)
+            SurveyeeListScreen(
+                viewModel = hiltViewModel(),
+                navController = navController,
+                activityId = 0,
+                missionId = 0
+            )
         }
         addDidiNavGraph(navController = navController)
     }
@@ -194,12 +205,29 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
 fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.ADD_DIDI,
-        startDestination = HomeScreens.SURVEYEE_LIST_SCREEN.route
+        startDestination = HomeScreens.SURVEYEE_LIST_SCREEN.route, arguments = listOf(
+            navArgument(
+                name = ARG_ACTIVITY_ID
+            ) {
+                type = NavType.IntType
+            }, navArgument(
+                name = ARG_MISSION_ID
+            ) {
+                type = NavType.IntType
+            }
+        )
     ) {
         composable(
             route = HomeScreens.SURVEYEE_LIST_SCREEN.route
         ) {
-            SurveyeeListScreen(viewModel = hiltViewModel(), navController = navController)
+            SurveyeeListScreen(
+                viewModel = hiltViewModel(),
+                navController = navController,
+                activityId = it.arguments?.getInt(
+                    ARG_ACTIVITY_ID
+                ) ?: 0,
+                missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: 0
+            )
         }
 
     }
@@ -212,7 +240,9 @@ sealed class HomeScreens(val route: String) {
     object QUESTION_SCREEN :
         HomeScreens(route = "$QUESTION_SCREEN_ROUTE_NAME/{$ARG_SECTION_ID}/{$ARG_DIDI_ID}/{$ARG_SURVEY_ID}")
 
-    object SURVEYEE_LIST_SCREEN : HomeScreens(route = SURVEYEE_LIST_SCREEN_ROUTE_NAME)
+    object SURVEYEE_LIST_SCREEN :
+        HomeScreens(route = "$SURVEYEE_LIST_SCREEN_ROUTE_NAME/{$ARG_ACTIVITY_ID}")
+
     object VIDEO_PLAYER_SCREEN :
         HomeScreens(route = "$VIDEO_PLAYER_SCREEN_ROUTE_NAME/{$ARG_VIDEO_PATH}")
 

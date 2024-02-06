@@ -7,6 +7,7 @@ import com.nrlm.baselinesurvey.activity.domain.use_case.MainActivityUseCase
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
+import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionAnswerEntityDao
@@ -47,6 +48,9 @@ import com.nrlm.baselinesurvey.ui.language.domain.use_case.SaveSelectedLanguageU
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.SaveSelectedVillageUseCase
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.repository.MissionScreenRepository
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.repository.MissionScreenRepositoryImpl
+import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.FetchMissionDataFromNetworkUseCase
+import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.GetMissionListFromDbUseCase
+import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.MissionScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepository
 import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.GetSectionAnswersUseCase
@@ -124,6 +128,20 @@ object BaselineModule {
 
     @Provides
     @Singleton
+    fun provideMissionScreenUseCase(
+        missionScreenRepository: MissionScreenRepository,
+        dataLoadingScreenRepository: DataLoadingScreenRepository
+    ): MissionScreenUseCase {
+        return MissionScreenUseCase(
+            fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(
+                dataLoadingScreenRepository
+            ),
+            getMissionListFromDbUseCase = GetMissionListFromDbUseCase(missionScreenRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
     fun provideLanguageScreenRepository(
         prefRepo: PrefRepo,
         apiService: ApiService,
@@ -177,9 +195,16 @@ object BaselineModule {
         prefRepo: PrefRepo,
         apiService: ApiService,
         surveyeeEntityDao: SurveyeeEntityDao,
-        languageListDao: LanguageListDao
+        languageListDao: LanguageListDao,
+        missionEntityDao: MissionEntityDao
     ): SurveyeeListScreenRepository {
-        return SurveyeeListScreenRepositoryImpl(prefRepo, apiService, surveyeeEntityDao, languageListDao)
+        return SurveyeeListScreenRepositoryImpl(
+            prefRepo,
+            apiService,
+            surveyeeEntityDao,
+            languageListDao,
+            missionEntityDao
+        )
     }
 
     @Provides
@@ -293,7 +318,9 @@ object BaselineModule {
         surveyEntityDao: SurveyEntityDao,
         sectionEntityDao: SectionEntityDao,
         questionEntityDao: QuestionEntityDao,
-        optionItemDao: OptionItemDao
+        optionItemDao: OptionItemDao,
+        missionEntityDao: MissionEntityDao
+
     ): DataLoadingScreenRepository {
         return DataLoadingScreenRepositoryImpl(
             prefRepo,
@@ -303,7 +330,8 @@ object BaselineModule {
             surveyEntityDao,
             sectionEntityDao,
             questionEntityDao,
-            optionItemDao
+            optionItemDao,
+            missionEntityDao
         )
     }
 
@@ -315,7 +343,8 @@ object BaselineModule {
         return FetchDataUseCase(
             fetchSurveyeeListFromNetworkUseCase = FetchSurveyeeListFromNetworkUseCase(repository),
             fetchUserDetailFromNetworkUseCase = FetchUserDetailFromNetworkUseCase(repository),
-            fetchSurveyFromNetworkUseCase = FetchSurveyFromNetworkUseCase(repository)
+            fetchSurveyFromNetworkUseCase = FetchSurveyFromNetworkUseCase(repository),
+            fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository)
         )
     }
 
@@ -370,10 +399,11 @@ object BaselineModule {
             ),
         )
     }
+
     @Provides
     @Singleton
-    fun provideMissionRepository(apiService: ApiService): MissionScreenRepository {
-        return MissionScreenRepositoryImpl(apiService)
+    fun provideMissionRepository(missionEntityDao: MissionEntityDao): MissionScreenRepository {
+        return MissionScreenRepositoryImpl(missionEntityDao)
     }
 
 }

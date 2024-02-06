@@ -6,44 +6,29 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.THIS_WEEK_TAB
-import com.nrlm.baselinesurvey.navigation.home.SECTION_SCREEN_ROUTE_NAME
-import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToBaseLineStartScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToSectionListScreen
 import com.nrlm.baselinesurvey.ui.common_components.PrimarySecandaryButtonBoxPreFilled
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreenActions.CheckBoxClicked
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.SurveyeeScreenViewModel
-import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
-import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
-import com.nrlm.baselinesurvey.ui.theme.smallTextStyleWithNormalWeight
-import com.nrlm.baselinesurvey.ui.theme.textColorDark
-import com.nrlm.baselinesurvey.ui.theme.unselectedTabColor
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
-import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.showCustomToast
+import com.nrlm.baselinesurvey.utils.states.FilterListState
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -51,12 +36,14 @@ import com.nrlm.baselinesurvey.utils.showCustomToast
 fun SurveyeeListScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: SurveyeeScreenViewModel
+    viewModel: SurveyeeScreenViewModel,
+    missionId: Int,
+    activityId: Int
 ) {
     val context = LocalContext.current
 
     LaunchedEffect(key1 = true) {
-        viewModel.init()
+        viewModel.init(missionId, activityId)
     }
 
     val loaderState = viewModel.loaderState.value
@@ -77,11 +64,11 @@ fun SurveyeeListScreen(
         loaderState.isLoaderVisible,
         {
             if (BaselineCore.isOnline.value) {
-                if (selectedTabIndex.intValue == tabs.indexOf(THIS_WEEK_TAB)) {
-                    //Handle API Call
-                } else {
-                    //Handle API/DB Call
-                }
+//                if (selectedTabIndex.intValue == tabs.indexOf(THIS_WEEK_TAB)) {
+//                    //Handle API Call
+//                } else {
+//                    //Handle API/DB Call
+//                }
             } else {
                 showCustomToast(
                     context,
@@ -92,34 +79,34 @@ fun SurveyeeListScreen(
         })
 
     Scaffold(
-        topBar = {
-            TabRow(
-                selectedTabIndex = selectedTabIndex.intValue,
-                containerColor = Color.White,
-                contentColor = textColorDark,
-                modifier = Modifier
-                    .shadow(defaultCardElevation)
-                    .zIndex(1f),
-            ) {
-                tabs.forEachIndexed { tabIndex, tab ->
-                    Tab(
-                        selected = tabIndex == selectedTabIndex.intValue,
-                        onClick = { selectedTabIndex.intValue = tabIndex },
-                        text = {
-                            Text(
-                                text = if (tab == THIS_WEEK_TAB) stringResource(R.string.this_week_tab_title) else stringResource(
-                                    R.string.all_tab_title
-                                ),
-                                style = if (tabIndex == selectedTabIndex.intValue) smallTextStyle else smallTextStyleWithNormalWeight
-                            )
-                        },
-                        selectedContentColor = textColorDark,
-                        unselectedContentColor = unselectedTabColor
-                    )
-                }
-
-            }
-        },
+//        topBar = {
+//            TabRow(
+//                selectedTabIndex = selectedTabIndex.intValue,
+//                containerColor = Color.White,
+//                contentColor = textColorDark,
+//                modifier = Modifier
+//                    .shadow(defaultCardElevation)
+//                    .zIndex(1f),
+//            ) {
+//                tabs.forEachIndexed { tabIndex, tab ->
+//                    Tab(
+//                        selected = tabIndex == selectedTabIndex.intValue,
+//                        onClick = { selectedTabIndex.intValue = tabIndex },
+//                        text = {
+//                            Text(
+//                                text = if (tab == THIS_WEEK_TAB) stringResource(R.string.this_week_tab_title) else stringResource(
+//                                    R.string.all_tab_title
+//                                ),
+//                                style = if (tabIndex == selectedTabIndex.intValue) smallTextStyle else smallTextStyleWithNormalWeight
+//                            )
+//                        },
+//                        selectedContentColor = textColorDark,
+//                        unselectedContentColor = unselectedTabColor
+//                    )
+//                }
+//
+//            }
+//        },
         floatingActionButton = {
             if (!isSelectionEnabled.value && !loaderState.isLoaderVisible && selectedTabIndex.intValue != 0) {
                 androidx.compose.material.FloatingActionButton(
@@ -163,53 +150,82 @@ fun SurveyeeListScreen(
         },
         containerColor = white
     ) {
-
-        when (selectedTabIndex.intValue) {
-            0 -> {
-                ThisWeekSurvyeeListTab(
-                    paddingValues = it,
-                    loaderState = loaderState,
-                    pullRefreshState = pullRefreshState,
-                    viewModel = viewModel,
-                    navController = navController,
-                    onActionEvent = { surveyeeListScreenActions ->
-
-                    }
-                )
-            }
-
-            1 -> {
-                AllSurveyeeListTab(
-                    paddingValues = it,
-                    loaderState = loaderState,
-                    pullRefreshState = pullRefreshState,
-                    viewModel = viewModel,
-                    isSelectionEnabled = isSelectionEnabled,
-                    navController = navController,
-                    onActionEvent = { surveyeeListScreenActions ->
-                        when (surveyeeListScreenActions) {
-                            is CheckBoxClicked -> {
-                                if (surveyeeListScreenActions.isChecked) {
-                                    viewModel.checkedItemsState.value.add(
-                                        surveyeeListScreenActions.surveyeeEntity.didiId ?: -1
-                                    )
-                                } else {
-                                    viewModel.checkedItemsState.value.remove(
-                                        surveyeeListScreenActions.surveyeeEntity.didiId
-                                    )
-                                }
-                            }
-
-                            is SurveyeeListScreenActions.IsFilterApplied -> {
-                                isFilterAppliedState.value = isFilterAppliedState.value.copy(
-                                    isFilterApplied = surveyeeListScreenActions.isFilterAppliedState.isFilterApplied
-                                )
-                            }
+        AllSurveyeeListTab(
+            paddingValues = it,
+            loaderState = loaderState,
+            pullRefreshState = pullRefreshState,
+            viewModel = viewModel,
+            isSelectionEnabled = isSelectionEnabled,
+            navController = navController,
+            onActionEvent = { surveyeeListScreenActions ->
+                when (surveyeeListScreenActions) {
+                    is CheckBoxClicked -> {
+                        if (surveyeeListScreenActions.isChecked) {
+                            viewModel.checkedItemsState.value.add(
+                                surveyeeListScreenActions.surveyeeEntity.didiId ?: -1
+                            )
+                        } else {
+                            viewModel.checkedItemsState.value.remove(
+                                surveyeeListScreenActions.surveyeeEntity.didiId
+                            )
                         }
                     }
-                )
+
+                    is SurveyeeListScreenActions.IsFilterApplied -> {
+                        isFilterAppliedState.value = isFilterAppliedState.value.copy(
+                            isFilterApplied = surveyeeListScreenActions.isFilterAppliedState.isFilterApplied
+                        )
+                    }
+                }
             }
-        }
+        )
+
+//        when (selectedTabIndex.intValue) {
+//            0 -> {
+//                ThisWeekSurvyeeListTab(
+//                    paddingValues = it,
+//                    loaderState = loaderState,
+//                    pullRefreshState = pullRefreshState,
+//                    viewModel = viewModel,
+//                    navController = navController,
+//                    onActionEvent = { surveyeeListScreenActions ->
+//
+//                    }
+//                )
+//            }
+//
+//            1 -> {
+//                AllSurveyeeListTab(
+//                    paddingValues = it,
+//                    loaderState = loaderState,
+//                    pullRefreshState = pullRefreshState,
+//                    viewModel = viewModel,
+//                    isSelectionEnabled = isSelectionEnabled,
+//                    navController = navController,
+//                    onActionEvent = { surveyeeListScreenActions ->
+//                        when (surveyeeListScreenActions) {
+//                            is CheckBoxClicked -> {
+//                                if (surveyeeListScreenActions.isChecked) {
+//                                    viewModel.checkedItemsState.value.add(
+//                                        surveyeeListScreenActions.surveyeeEntity.didiId ?: -1
+//                                    )
+//                                } else {
+//                                    viewModel.checkedItemsState.value.remove(
+//                                        surveyeeListScreenActions.surveyeeEntity.didiId
+//                                    )
+//                                }
+//                            }
+//
+//                            is SurveyeeListScreenActions.IsFilterApplied -> {
+//                                isFilterAppliedState.value = isFilterAppliedState.value.copy(
+//                                    isFilterApplied = surveyeeListScreenActions.isFilterAppliedState.isFilterApplied
+//                                )
+//                            }
+//                        }
+//                    }
+//                )
+//            }
+//        }
     }
 }
 
@@ -244,5 +260,5 @@ fun handleButtonClick(buttonName: ButtonName, surveyeeId: Int, navController: Na
 fun SurveyeeListScreenPreview(
     modifier: Modifier = Modifier
 ) {
-    SurveyeeListScreen(navController = rememberNavController(), viewModel = hiltViewModel())
+    // SurveyeeListScreen(navController = rememberNavController(), viewModel = hiltViewModel())
 }

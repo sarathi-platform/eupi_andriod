@@ -35,8 +35,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.model.datamodel.MissionActivityModel
-import com.nrlm.baselinesurvey.model.response.MissionResponseModel
 import com.nrlm.baselinesurvey.ui.common_components.CircularImageViewComponent
 import com.nrlm.baselinesurvey.ui.theme.bgGreyLight
 import com.nrlm.baselinesurvey.ui.theme.black100Percent
@@ -56,7 +56,7 @@ import com.nrlm.baselinesurvey.ui.theme.white
 
 
 @Composable
-fun MissionListRowScreen(mission: MissionResponseModel, clickListener: () -> Unit) {
+fun MissionListRowScreen(mission: MissionEntity, clickListener: () -> Unit) {
     var expanded by remember { mutableStateOf(true) }
 
     Column(

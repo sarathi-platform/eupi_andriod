@@ -56,7 +56,7 @@ import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
-import com.nrlm.baselinesurvey.navigation.home.navigateBackToDidiScreen
+import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToQuestionScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToSearchScreen
 import com.nrlm.baselinesurvey.ui.common_components.SectionItemComponent
@@ -121,7 +121,7 @@ fun SectionListScreen(
     }
 
     BackHandler {
-        navigateBackToDidiScreen(navController)
+        navigateBackToSurveyeeListScreen(navController)
     }
 
     Scaffold(
@@ -131,7 +131,7 @@ fun SectionListScreen(
                 backgroundColor = white,
             ) {
                 IconButton(
-                    onClick = { navigateBackToDidiScreen(navController) },
+                    onClick = { navigateBackToSurveyeeListScreen(navController) },
                     modifier = Modifier
                 ) {
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back Button")

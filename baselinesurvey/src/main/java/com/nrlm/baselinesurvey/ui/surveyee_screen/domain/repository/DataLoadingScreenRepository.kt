@@ -1,10 +1,12 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository
 
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
+import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.model.response.BeneficiaryApiResponse
+import com.nrlm.baselinesurvey.model.response.MissionResponseModel
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
 
@@ -31,4 +33,12 @@ interface DataLoadingScreenRepository {
     suspend fun fetchSurveyeeListFromLocalDb(): List<SurveyeeEntity>
 
     suspend fun fetchSavedSurveyFromServer()
+    suspend fun fetchMissionDataFromServer(
+        languageCode: String,
+        missionName: String
+    ): ApiResponseModel<List<MissionResponseModel>>
+
+    suspend fun saveAllMissionToDB(missions: List<MissionEntity>)
+    suspend fun deleteAllMissionToDB()
+
 }
