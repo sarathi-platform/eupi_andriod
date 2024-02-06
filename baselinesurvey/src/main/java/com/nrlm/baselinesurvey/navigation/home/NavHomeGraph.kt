@@ -1,12 +1,15 @@
 package com.nrlm.baselinesurvey.navigation.home
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nrlm.baselinesurvey.ARG_DIDI_ID
 import com.nrlm.baselinesurvey.ARG_QUESTION_ID
@@ -17,6 +20,7 @@ import com.nrlm.baselinesurvey.ARG_VIDEO_PATH
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
+import com.nrlm.baselinesurvey.ui.mission_screen.presentation.MissionScreen
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenHandler
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.FormTypeQuestionScreen
 import com.nrlm.baselinesurvey.ui.search.presentation.SearchScreens
@@ -27,8 +31,9 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScree
 import com.nrlm.baselinesurvey.ui.video_player.presentation.FullscreenView
 
 @Composable
-fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
+fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier: Modifier) {
     NavHost(
+        modifier = Modifier.then(modifier),
         navController = navController,
         route = Graph.HOME,
         startDestination = HomeScreens.DATA_LOADING_SCREEN.route
@@ -135,13 +140,12 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 it.arguments?.getInt(ARG_QUESTION_ID) ?: 0
             )
         }
-        composable(
-            route = HomeScreens.BaseLineStartScreen.route, arguments = listOf(
-                navArgument(
-                    name = ARG_DIDI_ID
-                ) {
-                    type = NavType.IntType
-                }
+        composable(route = HomeScreens.BaseLineStartScreen.route, arguments = listOf(
+            navArgument(
+                name = ARG_DIDI_ID
+            ) {
+                type = NavType.IntType
+            }
         )) {
             BaseLineStartScreen(
                 navController = navController,
@@ -153,7 +157,36 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         composable(route = HomeScreens.SearchScreen.route) {
             SearchScreens(viewModel = hiltViewModel(), navController = navController)
         }
+
+        composable(route = HomeScreens.Home_SCREEN.route) {
+            //  HomeScreen(navController=navController)
+            MissionScreen(navController = navController, viewModel = hiltViewModel())
+        }
+
+        composable(route = HomeScreens.MISSION_SCREEN.route) {
+            MissionScreen(navController = navController, viewModel = hiltViewModel())
+        }
+
+        composable(route = HomeScreens.DIDI_SCREEN.route) {
+            SurveyeeListScreen(viewModel = hiltViewModel(), navController = navController)
+        }
+        addDidiNavGraph(navController = navController)
     }
+}
+
+fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
+    navigation(
+        route = Graph.ADD_DIDI,
+        startDestination = HomeScreens.SURVEYEE_LIST_SCREEN.route
+    ) {
+        composable(
+            route = HomeScreens.SURVEYEE_LIST_SCREEN.route
+        ) {
+            SurveyeeListScreen(viewModel = hiltViewModel(), navController = navController)
+        }
+
+    }
+
 }
 
 sealed class HomeScreens(val route: String) {
@@ -173,6 +206,9 @@ sealed class HomeScreens(val route: String) {
         HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}")
 
     object SearchScreen : HomeScreens(route = SEARCH_SCREEN_ROUTE_NAME)
+    object Home_SCREEN : HomeScreens(route = HOME_SCREEN_ROUTE_NAME)
+    object MISSION_SCREEN : HomeScreens(route = MISSION_SCREEN_ROUTE_NAME)
+    object DIDI_SCREEN : HomeScreens(route = DIDI_SCREEN_ROUTE_NAME)
 
 }
 
@@ -184,6 +220,9 @@ const val VIDEO_PLAYER_SCREEN_ROUTE_NAME = "video_player_screen"
 const val FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME = "form_type_question_screen"
 const val BASELINE_START_SCREEN_ROUTE_NAME = "baseline_start_screen"
 const val SEARCH_SCREEN_ROUTE_NAME = "search_screen"
+const val HOME_SCREEN_ROUTE_NAME = "home_screen"
+const val MISSION_SCREEN_ROUTE_NAME = "mission_screen"
+const val DIDI_SCREEN_ROUTE_NAME = "didi_screen"
 
 fun navigateToBaseLineStartScreen(surveyeeId: Int, navController: NavController) {
     navController.navigate("$BASELINE_START_SCREEN_ROUTE_NAME/$surveyeeId")

@@ -45,6 +45,8 @@ import com.nrlm.baselinesurvey.ui.language.domain.use_case.GetVillageDetailUseCa
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.LanguageScreenUseCase
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.SaveSelectedLanguageUseCase
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.SaveSelectedVillageUseCase
+import com.nrlm.baselinesurvey.ui.mission_screen.domain.repository.MissionScreenRepository
+import com.nrlm.baselinesurvey.ui.mission_screen.domain.repository.MissionScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepository
 import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.GetSectionAnswersUseCase
@@ -368,4 +370,10 @@ object BaselineModule {
             ),
         )
     }
+    @Provides
+    @Singleton
+    fun provideMissionRepository(apiService: ApiService): MissionScreenRepository {
+        return MissionScreenRepositoryImpl(apiService)
+    }
+
 }

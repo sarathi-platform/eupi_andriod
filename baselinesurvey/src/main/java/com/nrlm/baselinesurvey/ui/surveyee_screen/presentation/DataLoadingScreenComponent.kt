@@ -24,7 +24,7 @@ fun DataLoadingScreenComponent(
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.fetchAllData() {
-            navController.navigate(HomeScreens.SURVEYEE_LIST_SCREEN.route)
+            navController.navigate(HomeScreens.Home_SCREEN.route)
         }
     }
 

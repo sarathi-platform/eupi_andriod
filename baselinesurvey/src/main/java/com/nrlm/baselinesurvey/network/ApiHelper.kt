@@ -19,3 +19,4 @@ const val SUBPATH_FETCH_SURVEY_FROM_NETWORK = "/survey-engine/survey/view"
 const val SUBPATH_SAVE_SURVEY_ANSWES = "/baseline-service/baseline/save"
 
 const val SUBPATH_GET_SAVED_SURVEY = "/baseline-service/baseline/summary"
+const val SUBPATH_GET_MISSION = "/baseline-service/mission/view"
