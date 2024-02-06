@@ -898,8 +898,8 @@ class SurveySummaryViewModel @Inject constructor(
         }
     }
 
-    override fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
-        CoroutineScope(Dispatchers.IO).launch {
+    override  suspend fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
+
             val stepListEntity = repository.getStepForVillage(
                 repository.prefRepo.getSelectedVillage().id,
                 stepId,
@@ -912,6 +912,6 @@ class SurveySummaryViewModel @Inject constructor(
             )
             repository.writeEventIntoLogFile(updateWorkflowEvent)
         }
-    }
+
 
 }

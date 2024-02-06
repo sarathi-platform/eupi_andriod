@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.text.TextUtils
 import com.nudge.core.EVENT_DELIMETER
 import com.nudge.core.LOCAL_BACKUP_EXTENSION
 import com.nudge.core.LOCAL_BACKUP_FILE_NAME
@@ -19,9 +20,9 @@ import java.io.FileWriter
 
 open class TextFileEventWriter() : IEventWriter {
 
-val textMimeType="text/plain"
+    val textMimeType = "text/plain"
     override suspend fun addEvent(context: Context, event: String, mobileNo: String, uri: Uri?) {
-        writeEventInFile(context, event,mobileNo)
+        writeEventInFile(context, event, mobileNo)
     }
 
     override suspend fun getEventWriteType(): EventWriterName {
@@ -29,7 +30,7 @@ val textMimeType="text/plain"
     }
 
     private fun writeEventInFile(context: Context, content: String, mobileNo: String) {
-
+        if (TextUtils.isEmpty(content.trim())) return
         val fileNameWithExtension = LOCAL_BACKUP_FILE_NAME + LOCAL_BACKUP_EXTENSION
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val contentValues = ContentValues().apply {
@@ -37,7 +38,7 @@ val textMimeType="text/plain"
                 put(MediaStore.MediaColumns.MIME_TYPE, textMimeType)
                 put(
                     MediaStore.MediaColumns.RELATIVE_PATH,
-                    Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME+"/"+mobileNo
+                    Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + mobileNo
                 )
             }
 

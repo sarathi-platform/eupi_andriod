@@ -1270,9 +1270,13 @@ class TransectWalkViewModel @Inject constructor(
     fun getSelectedVillage(): VillageEntity {
         return transectWalkRepository.getSelectedVillage()
     }
+    fun updateWorkflowStatusInEvent(stepStatus: String, stepId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            updateWorkflowStatus(stepStatus,stepId)
+        }
+    }
+    override suspend fun  updateWorkflowStatus(stepStatus: String, stepId: Int) {
 
-    override fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
-        CoroutineScope(Dispatchers.IO).launch {
             val stepListEntity = transectWalkRepository.getStepForVillage(
                 transectWalkRepository.prefRepo.getSelectedVillage().id,
                 stepId,
@@ -1283,7 +1287,7 @@ class TransectWalkViewModel @Inject constructor(
                 transectWalkRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
             )
             transectWalkRepository.writeEventIntoLogFile(updateWorkflowEvent)
-        }
+
     }
 
 

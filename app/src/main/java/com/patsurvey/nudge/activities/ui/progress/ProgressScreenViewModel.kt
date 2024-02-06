@@ -340,10 +340,14 @@ class ProgressScreenViewModel @Inject constructor(
     fun saveFromPage(pageFrom: String) {
         progressScreenRepository.saveFromPage(pageFrom)
     }
+    fun updateWorkflowStatusInEvent(stepStatus: String, stepId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            updateWorkflowStatus(stepStatus,stepId)
+        }
+    }
+     override suspend fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
 
-     override fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
 
-     job=   CoroutineScope(Dispatchers.IO).launch {
             val stepListEntity = progressScreenRepository.getStepForVillage(
                 progressScreenRepository.prefRepo.getSelectedVillage().id,
                 stepId,
@@ -357,7 +361,7 @@ class ProgressScreenViewModel @Inject constructor(
                 )
                 progressScreenRepository.writeEventIntoLogFile(updateWorkflowEvent)
             }
-        }
+
     }
 
 }

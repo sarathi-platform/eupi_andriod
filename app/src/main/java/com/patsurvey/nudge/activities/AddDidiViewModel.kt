@@ -1685,9 +1685,13 @@ class AddDidiViewModel @Inject constructor(
     fun saveQuestionScreenOpenFrom(openFrom: Int) {
         addDidiRepository.saveQuestionScreenOpenFrom(openFrom)
     }
+    fun updateWorkflowStatusInEvent(stepStatus: String, stepId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            updateWorkflowStatus(stepStatus,stepId)
+        }
+    }
+    override suspend fun  updateWorkflowStatus(stepStatus: String, stepId: Int) {
 
-    override fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
-        CoroutineScope(Dispatchers.IO).launch {
             val stepListEntity = addDidiRepository.getStepForVillage(
                 addDidiRepository.prefRepo.getSelectedVillage().id,
                 stepId
@@ -1698,7 +1702,7 @@ class AddDidiViewModel @Inject constructor(
                 addDidiRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
             )
             addDidiRepository.writeEventIntoLogFile(updateWorkflowEvent)
-        }
+
     }
 
 }

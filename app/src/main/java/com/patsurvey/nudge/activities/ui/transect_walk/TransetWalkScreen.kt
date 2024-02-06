@@ -488,7 +488,7 @@ fun TransectWalkScreen(
 //                            viewModel.updateTolaNeedTOPostList(villageId)
                         }
                         viewModel.markTransectWalkComplete(villageId, stepId)
-                        viewModel.updateWorkflowStatus(StepStatus.COMPLETED.name, stepId)
+                        viewModel.updateWorkflowStatusInEvent(StepStatus.COMPLETED.name, stepId)
                         navController.navigate(
                             "step_completion_screen/${
                                 context.getString(R.string.transect_walk_completed_message).replace(

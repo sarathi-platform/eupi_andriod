@@ -390,9 +390,13 @@ class WealthRankingSurveyViewModel @Inject constructor(
         }
     }
 
-    override fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val stepListEntity = repository.getStepForVillage(
+    fun updateWorkflowStatusInEvent(stepStatus: String, stepId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            updateWorkflowStatus(stepStatus,stepId)
+        }
+    }
+    override suspend fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
+        val stepListEntity = repository.getStepForVillage(
                 repository.prefRepo.getSelectedVillage().id,
                 stepId
                 )
@@ -405,4 +409,4 @@ class WealthRankingSurveyViewModel @Inject constructor(
         }
     }
 
-}
+
