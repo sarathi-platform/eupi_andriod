@@ -13,6 +13,7 @@ data class QuestionList (
     @SerializedName("description")
     @Expose
     var questionDisplay: String? = null,
+    // replace with dec
 
     @SerializedName("order")
     @Expose
@@ -33,6 +34,7 @@ data class QuestionList (
     @SerializedName("paraphrase")
     @Expose
     var questionSummary: String? = null,
+    //paraphase
 
     @SerializedName("tag")
     @Expose
