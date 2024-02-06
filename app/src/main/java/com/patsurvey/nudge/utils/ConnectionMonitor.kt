@@ -8,6 +8,8 @@ import android.net.NetworkCapabilities
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkRequest
 import androidx.lifecycle.LiveData
+import com.facebook.network.connectionclass.ConnectionClassManager
+import com.facebook.network.connectionclass.ConnectionQuality
 import com.nudge.core.enums.NetworkSpeed
 import com.patsurvey.nudge.MyApplication
 import kotlinx.coroutines.CoroutineScope
@@ -164,6 +166,20 @@ class ConnectionMonitor(context: Context) : LiveData<NetworkInfo>() {
 
     object DoesNetworkHaveInternet {
         const val TAG = "DoesNetworkHaveInternet"
+
+        fun getNetworkStrength():NetworkSpeed
+        {
+            val cq = ConnectionClassManager.getInstance().currentBandwidthQuality
+            return when(cq){
+                ConnectionQuality.EXCELLENT -> NetworkSpeed.EXCELLENT
+                ConnectionQuality.POOR -> NetworkSpeed.POOR
+                ConnectionQuality.MODERATE -> NetworkSpeed.MODERATE
+                ConnectionQuality.GOOD -> NetworkSpeed.GOOD
+                ConnectionQuality.UNKNOWN -> NetworkSpeed.UNKNOWN
+            }
+
+
+        }
         fun execute(socketFactory: SocketFactory): Boolean {
             // Make sure to execute this on a background thread.
             return try {
@@ -198,6 +214,12 @@ class ConnectionMonitor(context: Context) : LiveData<NetworkInfo>() {
         )
 
     }
+
+
+
+
+
+
 }
 
 

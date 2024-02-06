@@ -423,7 +423,7 @@ fun SettingScreen(
                                             isBPCDataNeedToBeSynced.value = false
                                             viewModel.showBPCSyncDialog.value = true
                                         }
-                                   viewModel.syncAllPending(networkSpeed)
+                                   viewModel.syncAllPending(ConnectionMonitor.DoesNetworkHaveInternet.getNetworkStrength())
                                     } else navController.navigate(AuthScreen.PROFILE_SCREEN.route)
                                 }
 
