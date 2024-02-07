@@ -1,7 +1,6 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.presentation
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +23,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -53,11 +51,8 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_3_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_4_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_5_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_6_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.greenDark
-import com.nrlm.baselinesurvey.ui.theme.languageItemActiveBg
 import com.nrlm.baselinesurvey.ui.theme.mediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleMediumWeight
@@ -110,18 +105,19 @@ fun SurveyeeCardComponent(
                                 bottomStart = dimen_6_dp
                             )
                         ) {
-                            IconButton(
-                                onClick = {
-                                    moveDidiToThisWeek(surveyeeState, true)
-                                },
-                                modifier = Modifier
-                                    .background(Color.White)
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.convert_check_box),
-                                    contentDescription = ""
-                                )
-                            }
+
+//                            IconButton(
+//                                onClick = {
+//                                    moveDidiToThisWeek(surveyeeState, true)
+//                                },
+//                                modifier = Modifier
+//                                    .background(Color.White)
+//                            ) {
+//                                Image(
+//                                    painter = painterResource(id = R.drawable.convert_check_box),
+//                                    contentDescription = ""
+//                                )
+//                            }
                         }
                     } else {
                         Surface(
@@ -207,24 +203,25 @@ fun SurveyeeCardComponent(
                             .padding(top = dimen_18_dp),
                         horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
                     ) {
-                        Button(
-                            onClick = {
-                                buttonClicked(
-                                    ButtonName.NEGATIVE_BUTTON,
-                                    surveyeeState.surveyeeDetails.didiId ?: 0
-                                )
-                            },
-                            enabled = true,
-                            shape = RoundedCornerShape(roundedCornerRadiusDefault),
-                            border = BorderStroke(dimen_1_dp, borderGreyLight),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = languageItemActiveBg,
-                                contentColor = blueDark
-                            ),
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(text = "Not Available", style = smallTextStyleNormalWeight)
-                        }
+                        Spacer(modifier = Modifier.weight(1f))
+//                        Button(
+//                            onClick = {
+//                                buttonClicked(
+//                                    ButtonName.NEGATIVE_BUTTON,
+//                                    surveyeeState.surveyeeDetails.didiId ?: 0
+//                                )
+//                            },
+//                            enabled = true,
+//                            shape = RoundedCornerShape(roundedCornerRadiusDefault),
+//                            border = BorderStroke(dimen_1_dp, borderGreyLight),
+//                            colors = ButtonDefaults.buttonColors(
+//                                containerColor = languageItemActiveBg,
+//                                contentColor = blueDark
+//                            ),
+//                            modifier = Modifier.weight(1f)
+//                        ) {
+//                            Text(text = "Not Available", style = smallTextStyleNormalWeight)
+//                        }
                         if (surveyeeState.surveyState == SurveyState.INPROGRESS) {
                             Button(
                                 onClick = {

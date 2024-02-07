@@ -5,6 +5,7 @@ import com.nrlm.baselinesurvey.activity.domain.repository.MainActivityRepository
 import com.nrlm.baselinesurvey.activity.domain.use_case.IsLoggedInUseCase
 import com.nrlm.baselinesurvey.activity.domain.use_case.MainActivityUseCase
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.database.dao.DidiInfoDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
@@ -352,9 +353,10 @@ object BaselineModule {
     @Singleton
     fun provideStartSurveyScreenRepository(
         prefRepo: PrefRepo,
-        surveyeeEntityDao: SurveyeeEntityDao
+        surveyeeEntityDao: SurveyeeEntityDao,
+        didiInfoDao: DidiInfoDao
     ): StartScreenRepository {
-        return StartScreenRepositoryImpl(prefRepo, surveyeeEntityDao)
+        return StartScreenRepositoryImpl(prefRepo, surveyeeEntityDao, didiInfoDao)
     }
 
     @Provides
@@ -375,9 +377,15 @@ object BaselineModule {
     fun provideSurveyStateRepository(
         prefRepo: PrefRepo,
         surveyeeEntityDao: SurveyeeEntityDao,
-        didiSectionProgressEntityDao: DidiSectionProgressEntityDao
+        didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
+        didiInfoDao: DidiInfoDao
     ): SurveyStateRepository {
-        return SurveyStateRepositoryImpl(prefRepo, surveyeeEntityDao, didiSectionProgressEntityDao)
+        return SurveyStateRepositoryImpl(
+            prefRepo,
+            surveyeeEntityDao,
+            didiSectionProgressEntityDao,
+            didiInfoDao
+        )
     }
 
     @Provides

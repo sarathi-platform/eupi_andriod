@@ -11,6 +11,7 @@ import com.nrlm.baselinesurvey.database.converters.MissionActivityConverter
 import com.nrlm.baselinesurvey.database.converters.OptionQuestionConverter
 import com.nrlm.baselinesurvey.database.converters.QuestionsOptionsConverter
 import com.nrlm.baselinesurvey.database.converters.StringConverter
+import com.nrlm.baselinesurvey.database.dao.DidiInfoDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
@@ -21,6 +22,7 @@ import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.dao.VillageListDao
+import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
@@ -46,6 +48,7 @@ const val NUDGE_BASELINE_DATABASE_VERSION = 1
         QuestionEntity::class,
         OptionItemEntity::class,
         MissionEntity::class,
+        DidiIntoEntity::class,
         DidiSectionProgressEntity::class,
         SectionAnswerEntity::class
     ],
@@ -71,6 +74,7 @@ abstract class NudgeBaselineDatabase: RoomDatabase()  {
     abstract fun questionEntityDao(): QuestionEntityDao
     abstract fun optionItemDao(): OptionItemDao
     abstract fun missionEntityDao(): MissionEntityDao
+    abstract fun didiInfoEntityDao(): DidiInfoDao
 
     abstract fun didiSectionProgressEntityDao(): DidiSectionProgressEntityDao
 

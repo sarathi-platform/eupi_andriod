@@ -4,12 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
@@ -28,6 +30,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.R
@@ -40,6 +43,7 @@ import com.nrlm.baselinesurvey.ui.theme.white
 
 @Composable
 fun YesNoButtonComponent(
+    defaultValue: Int = -1,
     title: String = "Select", isMandatory: Boolean = false,
     onOptionSelected: (Int) -> Unit
 ) {
@@ -48,7 +52,7 @@ fun YesNoButtonComponent(
     }
     val localDensity = LocalDensity.current
     val shgFlag = remember {
-        mutableStateOf(-1)
+        mutableStateOf(defaultValue)
     }
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -56,6 +60,7 @@ fun YesNoButtonComponent(
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
+            modifier = Modifier.widthIn(0.dp, 200.dp),
             text = buildAnnotatedString {
                 withStyle(
                     style = SpanStyle(
@@ -184,6 +189,14 @@ enum class SHGFlag(val value: Int) {
                 else -> NOT_MARKED
             }
         }
+
+        fun fromBoolean(shgFlag: Boolean): SHGFlag {
+            return when (shgFlag) {
+                true -> YES
+                false -> NO
+                else -> NOT_MARKED
+            }
+        }
     }
 
     override fun toString(): String {
@@ -191,6 +204,20 @@ enum class SHGFlag(val value: Int) {
             YES -> "YES"
             NO -> "NO"
             NOT_MARKED -> "NOT MARKED"
+        }
+    }
+
+}
+
+@Composable
+@Preview(showBackground = true, showSystemUi = true)
+fun YesNoButtonComponentPreview() {
+    Column {
+        YesNoButtonComponent(title = "Does Didi have aadhar card?") {
+
+        }
+        YesNoButtonComponent(title = "Does didi have voter card?") {
+
         }
     }
 
