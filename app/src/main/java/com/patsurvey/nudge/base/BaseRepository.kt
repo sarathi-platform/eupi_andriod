@@ -97,7 +97,7 @@ abstract class BaseRepository{
         val requestPayload = patSummarySaveRequest.json()
 
         var savePatSummeryEvent = Events(
-            name = eventName.name,
+            name = eventName.topicName,
             type = eventType.name,
             createdBy = prefRepo.getUserId(),
             mobile_number = prefRepo.getMobileNumber(),

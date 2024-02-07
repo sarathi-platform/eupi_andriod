@@ -201,7 +201,8 @@ class AddDidiRepository @Inject constructor(
 
         when(eventName) {
             EventName.ADD_DIDI -> {
-                val requestPayload = AddDidiRequest.getRequestObjectForDidi(eventItem as DidiEntity).json()
+                val selectedTolaEntity= fetchSingleTolaFromServerId( (eventItem as  DidiEntity).cohortId)
+                val requestPayload = AddDidiRequest.getRequestObjectForDidi(eventItem as DidiEntity,selectedTolaEntity?.serverId).json()
 
                 var addDidiEvent = Events(
                     name = eventName.name,

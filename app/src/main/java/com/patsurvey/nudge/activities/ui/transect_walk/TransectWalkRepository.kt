@@ -387,8 +387,8 @@ class TransectWalkRepository @Inject constructor(
     }
 
     fun updateTolaName(id: Int, newName: String) {
-        this.didiDao.updateTolaName(id, newName)
-    }
+        this.didiDao.updateTolaName(id,newName)
+        this.tolaDao.updateTolaName(id, newName)    }
 
     fun fetchVillageDetailsForLanguage(villageId: Int, languageId: Int): VillageEntity {
         return this.villageListDao.fetchVillageDetailsForLanguage(villageId, languageId)
