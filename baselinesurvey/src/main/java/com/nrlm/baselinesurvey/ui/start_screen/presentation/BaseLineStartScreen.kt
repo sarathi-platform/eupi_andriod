@@ -51,15 +51,20 @@ import coil.compose.AsyncImage
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.navigation.home.SECTION_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToDidiScreen
+import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.ui.common_components.BlueButtonWithIcon
 import com.nrlm.baselinesurvey.ui.common_components.ButtonOutline
 import com.nrlm.baselinesurvey.ui.common_components.DialogComponent
 import com.nrlm.baselinesurvey.ui.common_components.DoubleButtonBox
+import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
+import com.nrlm.baselinesurvey.ui.common_components.YesNoButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SurveyStateEvents
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.TypeDropDownComponent
 import com.nrlm.baselinesurvey.ui.start_screen.viewmodel.BaseLineStartViewModel
+import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.languageItemActiveBg
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
-import com.nrlm.baselinesurvey.ui.theme.smallTextStyleWithNormalWeight
+import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark50
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.openSettings
@@ -112,14 +117,14 @@ fun BaseLineStartScreen(
                     navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId")
                 },
                 negativeButtonOnClick = {
-                    navigateBackToDidiScreen(navController)
+                    navigateBackToSurveyeeListScreen(navController)
                 }
             )
         }
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(horizontal = 6.dp)
                 .padding(top = it.calculateTopPadding() + 6.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp)
@@ -137,7 +142,17 @@ fun BaseLineStartScreen(
             }
             TextDetails(title = "Didi: ", data = didi.value.didiName)
             TextDetails(title = "Dada: ", data = didi.value.dadaName)
-            TextDetails(title = "Caste: ", data = didi.value.casteId.toString())
+            YesNoButtonComponent(onOptionSelected = {}, title = "Does Didi have aadhar card?")
+            EditTextWithTitleComponent(title = "Enter Didi's aadhar number") {
+            }
+            TypeDropDownComponent(
+                title = "Which social category do you belong to?",
+                sources = listOf("SC", "ST", "OBC", "General"),
+            ) {
+
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            YesNoButtonComponent(onOptionSelected = {}, title = "Does didi have voter card?")
             Spacer(modifier = Modifier.height(10.dp))
 
             var hasImage by remember {
@@ -577,13 +592,12 @@ fun BaseLineStartScreen(
 @Composable
 fun TextDetails(title: String, data: String) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Text(text = title, style = smallTextStyleWithNormalWeight)
+        Text(text = title, style = defaultTextStyle, color = textColorDark)
         Text(
             text = data, style = smallTextStyle
         )
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
