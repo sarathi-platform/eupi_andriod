@@ -20,6 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.navigation.home.navigateBackToMissionScreen
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.StepsBox
 import com.nrlm.baselinesurvey.ui.mission_screen.viewmodel.MissionViewModel
@@ -55,7 +56,9 @@ fun MissionSummaryScreen(
                 isActive = true,
                 isLeftArrow = true
 
-            ) {}
+            ) {
+                navigateBackToMissionScreen(navController)
+            }
         }
 
     }

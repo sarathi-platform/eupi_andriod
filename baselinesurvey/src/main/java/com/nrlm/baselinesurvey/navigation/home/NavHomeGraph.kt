@@ -285,6 +285,10 @@ fun navigateBackToDidiScreen(navController: NavController) {
     navController.popBackStack(HomeScreens.DIDI_SCREEN.route, false)
 }
 
+fun navigateBackToMissionScreen(navController: NavController) {
+    navController.popBackStack(HomeScreens.Home_SCREEN.route, false)
+}
+
 fun navigateToQuestionScreen(
     didiId: Int,
     sectionId: Int,
