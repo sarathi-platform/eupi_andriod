@@ -63,8 +63,7 @@ class EventObserverInterfaceImpl @Inject constructor(
         WorkManager
             .getInstance(context)
             .enqueue(uploadWorkRequest)
-
-
+        
     }
 
     fun getBatchSize(networkSpeed: NetworkSpeed): Int {

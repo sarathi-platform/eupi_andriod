@@ -18,9 +18,7 @@ class SyncUploadWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted val workerParams: WorkerParameters,
     val syncApiRepository: SyncApiRepository
-) :
-
-    CoroutineWorker(appContext, workerParams) {
+) : CoroutineWorker(appContext, workerParams) {
     var batchLimit = 10;
     override suspend fun doWork(): Result {
         Log.d(

@@ -12,8 +12,8 @@ import java.net.SocketTimeoutException
 class FirebaseUploadWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    val syncApiRepository: SyncApiRepository,
-    val firebaseRepository: FirebaseRepository
+    private val syncApiRepository: SyncApiRepository,
+    private val firebaseRepository: FirebaseRepository
 ): CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
