@@ -1,19 +1,16 @@
 package com.nudge.syncmanager
 
-import android.app.Notification
 import android.content.Context
 import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
-import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.facebook.network.connectionclass.ConnectionClassManager
 import com.facebook.network.connectionclass.ConnectionQuality
 import com.facebook.network.connectionclass.DeviceBandwidthSampler
-import com.nudge.core.enums.NetworkSpeed
+import com.nudge.core.getBatchSize
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import java.io.IOException
 import java.net.SocketTimeoutException
 
 @HiltWorker
@@ -71,15 +68,6 @@ class SyncUploadWorker @AssistedInject constructor(
         }
     }
 
-    fun getBatchSize(connectionQuality: ConnectionQuality): Int {
-        return when (connectionQuality) {
-            ConnectionQuality.EXCELLENT -> return 20
-            ConnectionQuality.GOOD -> return 15
-            ConnectionQuality.MODERATE -> return 10
-            ConnectionQuality.POOR -> 5
-            ConnectionQuality.UNKNOWN -> -1
-        }
-    }
 
 }
 

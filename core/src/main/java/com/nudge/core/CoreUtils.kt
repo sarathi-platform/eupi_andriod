@@ -1,5 +1,6 @@
 package com.nudge.core
 
+import com.facebook.network.connectionclass.ConnectionQuality
 import com.google.gson.Gson
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
@@ -38,4 +39,14 @@ fun List<Events>.getEventDependencyEntityListFromEvents(dependentEvents: Events)
         eventDependencyList.add(EventDependencyEntity(dependentEvents.id, dependsOnEvent.id))
     }
     return eventDependencyList
+}
+
+fun getBatchSize(connectionQuality: ConnectionQuality): Int {
+    return when (connectionQuality) {
+        ConnectionQuality.EXCELLENT -> return 20
+        ConnectionQuality.GOOD -> return 15
+        ConnectionQuality.MODERATE -> return 10
+        ConnectionQuality.POOR -> 5
+        ConnectionQuality.UNKNOWN -> -1
+    }
 }
