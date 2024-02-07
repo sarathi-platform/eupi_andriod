@@ -16,6 +16,7 @@ import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
+import com.nrlm.baselinesurvey.model.datamodel.MissionActivityModel
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.utils.createMultiLanguageVillageRequest
 import javax.inject.Inject
@@ -30,17 +31,20 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
 
     override suspend fun getSurveyeeList(missionId: Int, activityId: Int): List<SurveyeeEntity> {
         val didiList = mutableListOf<SurveyeeEntity>()
-        getMission(missionId).activities.forEach { activity ->
-            if (activityId == activity.activityId) {
-                activity.tasks.forEach { task ->
-                    didiList.add(surveyeeEntityDao.getDidi(task.didiId))
-                }
+         getMission(missionId = missionId).activities.filter {
+                it.activityId==activityId
+            }.firstOrNull()?.tasks?.forEach { task ->
+                didiList.add(surveyeeEntityDao.getDidi(task.didiId))
             }
 
-        }
         return didiList
         //return surveyeeEntityDao.getAllDidis()
     }
+
+
+
+
+
 
     override suspend fun getSurveyeeListFromNetwork(): Boolean {
         try {
@@ -113,6 +117,18 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
 
     override suspend fun getMission(missionId: Int): MissionEntity {
         return missionEntityDao.getMission(missionId)
+    }
+
+    override suspend fun getSelectedActivity(
+        missionId: Int,
+        activityId: Int
+    ): MissionActivityModel? {
+
+      val activity=  getMission(missionId).activities.filter {
+            it.activityId==activityId
+        }
+
+        return activity.firstOrNull()
     }
 
 }

@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.text.capitalize
 import androidx.core.content.FileProvider
 import androidx.core.text.isDigitsOnly
 import com.google.gson.Gson
@@ -557,6 +558,10 @@ fun List<SectionEntity>.getSectionIndexByOrder(sectionOrder: Int): Int {
 fun List<SectionEntity>.sortedBySectionOrder(): List<SectionEntity> {
     return this/*.sortedBy { it.sectionOrder }*/ //TODO Uncomment this when order numbers are received from backend
 }
+fun String.toCamelCase() =
+    split(" ").joinToString(" "){
+        it.capitalize(Locale.US)
+    }
 
 
 inline fun <reified T : Any> T.json(): String = Gson().toJson(this, T::class.java)

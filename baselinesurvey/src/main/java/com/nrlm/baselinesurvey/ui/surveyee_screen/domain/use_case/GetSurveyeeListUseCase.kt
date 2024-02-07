@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case
 
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
+import com.nrlm.baselinesurvey.model.datamodel.MissionActivityModel
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeListScreenRepository
 
 class GetSurveyeeListUseCase(
@@ -12,5 +13,10 @@ class GetSurveyeeListUseCase(
 
     suspend fun getSurveyeeListFromNetwork(): Boolean {
         return repository.getSurveyeeListFromNetwork()
+    }
+
+    suspend fun getSelectedActivity(missionId: Int,activityId: Int): MissionActivityModel?
+    {
+        return repository.getSelectedActivity(missionId,activityId)
     }
 }

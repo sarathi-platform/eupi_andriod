@@ -161,13 +161,13 @@ fun SurveyeeCardWithTolaFilterComponentPreview() {
     val surveyeeCardState1 = SurveyeeCardState(
         surveyeeDetails = didi1,
         subtitle = didi1.didiName,
-        address = didi1.houseNo + ", " + didi1.cohortName,
+        address = didi1.houseNo + ",  " + didi1.cohortName,
         surveyState = SurveyState.NOT_STARTED
     )
     val surveyeeCardState2 = SurveyeeCardState(
         surveyeeDetails = didi2,
         subtitle = didi2.didiName,
-        address = didi2.houseNo + ", " + didi2.cohortName,
+        address = didi2.houseNo + ",  " + didi2.cohortName,
         surveyState = SurveyState.NOT_STARTED
     )
     val surveyeeStateList1 = listOf<SurveyeeCardState>(surveyeeCardState1, surveyeeCardState1, surveyeeCardState1)

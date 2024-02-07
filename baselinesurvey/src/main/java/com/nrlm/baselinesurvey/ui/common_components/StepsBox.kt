@@ -30,21 +30,29 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.ui.theme.black1
+import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.buttonTextStyle
 import com.nrlm.baselinesurvey.ui.theme.greenOnline
 import com.nrlm.baselinesurvey.ui.theme.greyBorder
+import com.nrlm.baselinesurvey.ui.theme.inprogressYellow
+import com.nrlm.baselinesurvey.ui.theme.mediumBoldTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleMediumWeight
+import com.nrlm.baselinesurvey.ui.theme.smallTextStyleMediumWeight2
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
+import com.nrlm.baselinesurvey.ui.theme.white
 
 @Composable
 fun StepsBox(
@@ -55,6 +63,7 @@ fun StepsBox(
     index: Int,
     iconResourceId: Int,
     isCompleted: Boolean = false,
+    backgroundColor:Color?= white,
     onclick: (Int) -> Unit
 ) {
     if (stepNo == 6)
@@ -79,7 +88,7 @@ fun StepsBox(
                     color = if (isCompleted) greenOnline else greyBorder,
                     shape = RoundedCornerShape(6.dp)
                 )
-                .background(Color.White)
+                .background(backgroundColor?: white)
                 .clickable {
                     onclick(index)
                 }
@@ -92,14 +101,16 @@ fun StepsBox(
             ConstraintLayout(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 14.dp)
+                    .padding(top =8.dp, bottom = 10.dp)
                     .padding(end = 16.dp, start = 8.dp),
             ) {
                 val (textContainer, buttonContainer, iconContainer) = createRefs()
                 Icon(
                     painter = painterResource(id = iconResourceId),
                     contentDescription = null,
-                    modifier = Modifier
+                    tint = Color.Unspecified,
+
+                            modifier = Modifier
                         .constrainAs(iconContainer) {
                             start.linkTo(parent.start)
                             top.linkTo(parent.top)
@@ -134,28 +145,29 @@ fun StepsBox(
                         modifier = Modifier
                             .padding(
                                 top = 10.dp,
-                                bottom = if (isCompleted) 0.dp else 10.dp,
                                 end = 10.dp
                             )
                             .fillMaxWidth(),
                         softWrap = true,
+                        color = black100Percent,
                         textAlign = TextAlign.Start,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 2,
-                        style = buttonTextStyle
+                        style = mediumBoldTextStyle
                     )
                     //TODO add string for other steps when steps is complete.
                     if (subTitle != "") {
                         Text(
                             text = subTitle,
+                            color = black100Percent,
                             modifier = Modifier
-                                .padding(bottom = 10.dp)
                                 .fillMaxWidth(),
                             softWrap = true,
                             textAlign = TextAlign.Start,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 2,
-                            style = smallerTextStyle
+                            fontWeight = FontWeight.Medium,
+                            style = smallTextStyleMediumWeight2
                         )
                     }
                 }
@@ -258,7 +270,7 @@ fun StepBoxPreview() {
         subTitle = "10 Poor didis identified",
         stepNo = 1,
         index = 1,
-        iconResourceId = R.drawable.ic_group_icon,
+        iconResourceId = R.drawable.ic_mission_inprogress,
         onclick = {})
 }
 

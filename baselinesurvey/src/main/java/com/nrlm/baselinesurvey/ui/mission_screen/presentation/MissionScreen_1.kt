@@ -105,7 +105,7 @@ fun MissionScreen_1(
                 items(viewModel.filterMissionList.value) { mission ->
                     MissonRowScreen_1(
                         missionName = mission.missionName,
-                        missionDueDate = mission.endDate,
+                        missionDueDate = mission.startDate,
                         onViewStatusClick = {},
                         onStartClick = { navController.navigate("${MISSION_SUMMARY_SCREEN_ROUTE_NAME}/${mission.missionId}") })
                 }

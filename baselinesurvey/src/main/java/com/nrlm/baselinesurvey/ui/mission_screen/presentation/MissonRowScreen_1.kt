@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
@@ -19,11 +20,16 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
@@ -32,7 +38,9 @@ import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
+import com.nrlm.baselinesurvey.ui.theme.greenOnline
 import com.nrlm.baselinesurvey.ui.theme.greyColor
+import com.nrlm.baselinesurvey.ui.theme.greyLightColor
 import com.nrlm.baselinesurvey.ui.theme.languageItemActiveBg
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleMediumWeight
@@ -64,40 +72,52 @@ fun MissonRowScreen_1(
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .background(greyColor)
+                    .background(greyLightColor)
                     .padding(5.dp)
             ) {
-                Text(text = missionDueDate, style = smallerTextStyle)
+                Text(text = stringResource(id = R.string.start_by_x_date,missionDueDate), style = smallerTextStyle)
             }
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 10.dp)
+                    .padding(horizontal = 10.dp,),
+                verticalAlignment =Alignment.CenterVertically
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_group_icon),
                     contentDescription = "more action button",
                     tint = blueDark,
-                    modifier = Modifier.padding(vertical = 10.dp)
                 )
                 Text(
                     text = missionName,
                     fontFamily = NotoSans,
+                    color = blueDark,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(10.dp),
+                        .padding(horizontal = 5.dp),
                     fontWeight = FontWeight.SemiBold,
+                    fontSize = 20.sp
                 )
             }
             Text(
                 text = "Task Pending - 40",
                 fontFamily = NotoSans,
                 fontWeight = FontWeight.SemiBold,
+                fontSize = 16.sp,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 10.dp)
             )
+
+//            LinearProgressIndicator(
+//                progress = 0.5f,
+//                color = greenOnline,
+//                backgroundColor = white,
+//                strokeCap = StrokeCap.Round,
+//                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+//            )
+            
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

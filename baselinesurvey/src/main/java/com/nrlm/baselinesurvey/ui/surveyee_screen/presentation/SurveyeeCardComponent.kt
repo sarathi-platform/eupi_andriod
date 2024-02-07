@@ -31,6 +31,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -49,7 +51,9 @@ import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_3_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_4_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_5_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_6_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.greenDark
@@ -63,6 +67,7 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark80
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
+import com.nrlm.baselinesurvey.utils.toCamelCase
 
 @Composable
 fun SurveyeeCardComponent(
@@ -183,9 +188,10 @@ fun SurveyeeCardComponent(
                                     tint = Color.Black,
                                     modifier = Modifier.height(dimen_18_dp)
                                 )
-                                Spacer(modifier = Modifier.width(dimen_8_dp))
+                                Spacer(modifier = Modifier.width(dimen_3_dp))
                                 Text(
-                                    text = surveyeeState.address,
+
+                                    text = surveyeeState.address.toLowerCase(Locale.current).toCamelCase(),
                                     style = smallTextStyleMediumWeight,
                                     color = textColorDark
                                 )
@@ -341,7 +347,7 @@ fun SurveyeeCardPreview() {
             surveyeeState = SurveyeeCardState(
                 surveyeeDetails = didi,
                 subtitle = didi.didiName,
-                address = didi.houseNo + ", " + didi.cohortName,
+                address = didi.houseNo + ",  " + didi.cohortName,
                 surveyState = SurveyState.NOT_STARTED
             ),
             showCheckBox = true,
