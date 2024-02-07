@@ -23,6 +23,8 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.StepsBox
 import com.nrlm.baselinesurvey.ui.mission_screen.viewmodel.MissionViewModel
+import com.nrlm.baselinesurvey.ui.theme.black100Percent
+import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.inprogressYellow
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
@@ -65,14 +67,17 @@ fun MissionSummaryScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 10.dp),
                     text = missions[0].missionName,
-                    style = largeTextStyle
+                    style = largeTextStyle,
+                    color = blueDark
                 )
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 10.dp),
                     text = stringResource(id = R.string.due_by_x,missions[0].endDate),
-                    style = newMediumTextStyle
+                    style = newMediumTextStyle,
+                    color = black100Percent
+
                 )
                 LazyColumn(
                 ) {
