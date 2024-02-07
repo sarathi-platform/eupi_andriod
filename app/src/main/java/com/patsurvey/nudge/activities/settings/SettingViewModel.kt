@@ -6,7 +6,9 @@ import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.facebook.network.connectionclass.DeviceBandwidthSampler
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.enums.NetworkSpeed
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.SyncBPCDataOnServer
@@ -32,6 +34,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.ConnectionMonitor
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
@@ -59,9 +62,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.IOException
+import java.net.URL
 import java.util.Timer
 import java.util.TimerTask
 import javax.inject.Inject
+
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
@@ -838,5 +844,34 @@ class SettingViewModel @Inject constructor(
 
     suspend fun exportLocalData(context: Context) {
         exportHelper.exportAllData(context)
+    }
+
+    fun syncAllPending(networkSpeed: NetworkSpeed) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
+            try {
+                DeviceBandwidthSampler.getInstance().startSampling()
+                // Open a stream to download the image from our URL.
+                val connection = URL("https://sarathi.lokos.in/write-api/file/view?fileName=25882_shibani%20Nama%20_CRP_2023-12-10.png").openConnection()
+                connection.setUseCaches(false)
+                connection.connect()
+                val input = connection.getInputStream()
+                try {
+                    val buffer = ByteArray(1024)
+
+                    // Do some busy waiting while the stream is open.
+                    while (input.read(buffer) != -1) {
+                    }
+                } finally {
+                    input.close()
+                    DeviceBandwidthSampler.getInstance().stopSampling()
+
+                }
+            } catch (e: IOException) {
+                Log.e("TAG", "Error while downloading image.")
+            }
+            Log.d("D", ConnectionMonitor.DoesNetworkHaveInternet.getNetworkStrength().toString())
+            NudgeCore.getEventObserver()?.syncPendingEvent(NudgeCore.getAppContext(),networkSpeed)
+        }
     }
 }

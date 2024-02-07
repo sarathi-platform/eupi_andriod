@@ -3,6 +3,7 @@ package com.nudge.communicationModule
 import android.content.Context
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
+import com.nudge.core.enums.NetworkSpeed
 
 interface EventObserverInterface {
 
@@ -16,5 +17,5 @@ interface EventObserverInterface {
 
     suspend fun addEventDependencies(eventDependencies: List<EventDependencyEntity>)
 
-    suspend fun syncPendingEvent(context: Context)
+    suspend fun syncPendingEvent(context: Context, networkSpeed: NetworkSpeed)
 }

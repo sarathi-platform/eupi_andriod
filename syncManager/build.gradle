@@ -56,6 +56,7 @@ dependencies {
 
     //Core Module
     implementation(project(":core"))
+    implementation(project(":internetSpeedChecker"))
 
     implementation "com.squareup.retrofit2:retrofit:$retrofit"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit"
