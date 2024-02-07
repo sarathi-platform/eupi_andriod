@@ -16,7 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.ui.theme.borderGrey
-import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
+import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 
 @Composable
@@ -28,10 +28,12 @@ fun EditTextWithTitleComponent(
     val txt: MutableState<String> = remember {
         mutableStateOf(defaultValue)
     }
-    Column {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 2.dp)) {
         Text(
             text = title ?: "select",
-            style = largeTextStyle,
+            style = defaultTextStyle,
             color = textColorDark
         )
         OutlinedTextField(

@@ -83,7 +83,10 @@ fun RadioQuestionBoxComponent(
     var optionItem: OptionItemEntity
     val queLazyState: LazyListState = rememberLazyListState()
 
-    val questionList = ArrayList<QuestionList?>()
+    val questionList = remember {
+        mutableStateOf(mutableListOf<QuestionList?>())
+    }
+
 
     val innerFirstVisibleItemIndex by remember {
         derivedStateOf {
@@ -175,11 +178,9 @@ fun RadioQuestionBoxComponent(
                                                 selectedIndex = selectedIndex
                                             ) {
                                                 if (!optionsItem.questionList?.isEmpty()!!) {
-                                                    questionList.clear()
+                                                    questionList.value.clear()
                                                     optionsItem.questionList.let { it1 ->
-                                                        questionList.addAll(
-                                                            it1
-                                                        )
+                                                        questionList.value.addAll(it1)
                                                     }
                                                     optionDetailVisibilityState.value =
                                                         !optionDetailVisibilityState.value
@@ -204,7 +205,7 @@ fun RadioQuestionBoxComponent(
                                 AnimatedVisibility(visible = optionDetailVisibilityState.value) {
                                     SubQuestionComponent(
                                         maxCustomHeight = maxCustomHeight,
-                                        questionList = questionList
+                                        questionList = questionList.value
                                     )
                                 }
                             }
