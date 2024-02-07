@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Text
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -74,10 +74,11 @@ fun MissionSummaryScreen(
                 )
                 LazyColumn(
                 ) {
-
-                    items(missions[0].activities) { activity ->
+                    itemsIndexed(
+                        items = missions[0].activities ?: emptyList()
+                    ) { index, activity ->
                         StepsBox(
-                            modifier = Modifier.padding(5.dp),
+                            modifier = Modifier.padding(16.dp),
                             boxTitle = activity.activityName,
                             subTitle = activity.reviewer,
                             stepNo = activity.activityTypeId,

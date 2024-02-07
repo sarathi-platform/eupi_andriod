@@ -53,7 +53,7 @@ fun MissonRowScreen_1(
             defaultElevation = 10.dp
         ), modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp)
+            .padding(16.dp)
     ) {
 
         Column(

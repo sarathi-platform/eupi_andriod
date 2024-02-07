@@ -37,19 +37,14 @@ import com.nrlm.baselinesurvey.ui.theme.smallestTextStyle
 fun BottomNavigationBar(navController: NavHostController) {
     val screens = listOf(
         BottomNavItem(
-            stringResource(R.string.home),
-            "home_screen",
-            painterResource(R.drawable.home_icn)
-        ),
-        BottomNavItem(
             stringResource(R.string.mission),
-            "mission_screen",
+            "home_screen",
             painterResource(R.drawable.ic_mission_icon)
         ),
         BottomNavItem(
-            stringResource(R.string.didi),
-            "didi_screen",
-            painterResource(R.drawable.didi_icon)
+            stringResource(R.string.task),
+            "mission_screen",
+            painterResource(R.drawable.ic_mission_icon)
         )
     )
 

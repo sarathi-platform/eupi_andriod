@@ -409,6 +409,7 @@
     <string name="ok_text">Ok</string>
     <string name="home" translatable="false">Home</string>
     <string name="mission" translatable="false">Missions</string>
+    <string name="task" translatable="false">Task</string>
     <string name="day_tab" translatable="false">Day</string>
     <string name="search" translatable="false">Search</string>
 
