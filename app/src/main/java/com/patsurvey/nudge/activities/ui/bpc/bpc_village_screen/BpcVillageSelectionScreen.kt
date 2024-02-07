@@ -83,6 +83,7 @@ import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.BPCVillageStatus
 import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidthWithoutIcon
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -356,8 +357,11 @@ fun BpcVillageSelectionScreen(
                             if (viewModel.isUserBpc()) {
                                 val stepId= villages[viewModel.villageSelected.value].stepId
                                 val statusId= villages[viewModel.villageSelected.value].statusId
-                                when (fetchBorderColorForVillage(stepId, statusId)) {
-                                    0, 1 -> showCustomToast(context,  context.getString(R.string.village_is_not_vo_endorsed_right_now))
+                                when (fetchBPCVillageStatus(stepId, statusId)) {
+                                    BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal, BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal -> showCustomToast(
+                                        context,
+                                        context.getString(R.string.village_is_not_vo_endorsed_right_now)
+                                    )
                                     else -> {
                                         viewModel.updateSelectedVillage(villageList = villages)
                                         navController.popBackStack()
@@ -405,16 +409,16 @@ fun BpcVillageAndVoBoxForBottomSheet(
     selectedIndex: Int,
     onVillageSeleted: (Int) -> Unit
 ) {
+    val bpcVillageStatus = fetchBPCVillageStatus(
+        villageEntity.stepId,
+        villageEntity.statusId
+    )
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .border(
                 width = 1.dp,
-                color = if (fetchBorderColorForVillage(
-                        villageEntity.stepId,
-                        villageEntity.statusId
-                    ) == 4
-                ) greenOnline else {
+                color = if (bpcVillageStatus == BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal) greenOnline else {
                     if (index == selectedIndex) blueDark else greyRadioButton
                 },
                 shape = RoundedCornerShape(6.dp)
@@ -427,8 +431,8 @@ fun BpcVillageAndVoBoxForBottomSheet(
                     color = Color.Black
                 )
             ) {
-                when (fetchBorderColorForVillage(villageEntity.stepId, villageEntity.statusId)) {
-                    0, 1 -> showCustomToast(
+                when (bpcVillageStatus) {
+                    BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal, BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal -> showCustomToast(
                         context,
                         context.getString(R.string.village_is_not_vo_endorsed_right_now)
                     )
@@ -444,22 +448,16 @@ fun BpcVillageAndVoBoxForBottomSheet(
             Column(
                 modifier = Modifier
                     .background(
-                        when (fetchBorderColorForVillage(
-                            villageEntity.stepId,
-                            villageEntity.statusId
-                        )) {
-                            0 -> white
-                            1, 2, 3 -> stepBoxActiveColor
-                            4 -> greenLight
+                        when (bpcVillageStatus) {
+                            BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal, BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal -> white
+                            BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal, BPCVillageStatus.BPC_VERIFICATION_NOT_STARTED.ordinal, BPCVillageStatus.BPC_VERIFICATION_IN_PROGRESS.ordinal -> stepBoxActiveColor
+                            BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal -> greenLight
                             else -> white
                         }
                     )
                     .alpha(
-                        when (fetchBorderColorForVillage(
-                            villageEntity.stepId,
-                            villageEntity.statusId
-                        )) {
-                            0 -> .5f
+                        when (bpcVillageStatus) {
+                            BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal, BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal -> .5f
                             else -> 1f
                         }
                     )
@@ -475,7 +473,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                     Icon(
                         painter = painterResource(id = R.drawable.home_icn),
                         contentDescription = null,
-                        tint = if (fetchBorderColorForVillage(villageEntity.stepId, villageEntity.statusId) == 4) greenOnline else textColorDark,
+                        tint = if (bpcVillageStatus == BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal) greenOnline else textColorDark,
                         modifier = Modifier.constrainAs(iconRef) {
                             top.linkTo(parent.top)
                             start.linkTo(parent.start)
@@ -483,7 +481,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                     )
                     Text(
                         text = " ${villageEntity.name}",
-                        color = if (fetchBorderColorForVillage(villageEntity.stepId, villageEntity.statusId) == 4) greenOnline else textColorDark,
+                        color = if (bpcVillageStatus == BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal) greenOnline else textColorDark,
                         fontSize = 14.sp,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.SemiBold,
@@ -526,7 +524,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                     Text(
                         text = "VO: ",
                         modifier = Modifier,
-                        color = if (fetchBorderColorForVillage(villageEntity.stepId, villageEntity.statusId) == 4) greenOnline else textColorDark,
+                        color = if (bpcVillageStatus == BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal) greenOnline else textColorDark,
                         fontSize = 14.sp,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.Medium
@@ -535,7 +533,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                         text = villageEntity.federationName,
                         modifier = Modifier
                             .fillMaxWidth(),
-                        color = if (fetchBorderColorForVillage(villageEntity.stepId, villageEntity.statusId) == 4) greenOnline else textColorDark,
+                        color = if (bpcVillageStatus == BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal) greenOnline else textColorDark,
                         fontSize = 14.sp,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.Medium
@@ -546,13 +544,10 @@ fun BpcVillageAndVoBoxForBottomSheet(
                 Row(
                     Modifier
                         .background(
-                            when (fetchBorderColorForVillage(
-                                villageEntity.stepId,
-                                villageEntity.statusId
-                            )) {
-                                0 -> white
-                                1, 2, 3 -> stepBoxActiveColor
-                                4 -> greenLight
+                            when (bpcVillageStatus) {
+                                BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal, BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal -> white
+                                BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal, BPCVillageStatus.BPC_VERIFICATION_NOT_STARTED.ordinal, BPCVillageStatus.BPC_VERIFICATION_IN_PROGRESS.ordinal -> stepBoxActiveColor
+                                BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal -> greenLight
                                 else -> white
                             },
                             shape = RoundedCornerShape(bottomStart = 6.dp, bottomEnd = 6.dp)
@@ -563,16 +558,16 @@ fun BpcVillageAndVoBoxForBottomSheet(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Log.d("TAG", "VillageAndVoBoxForBottomSheet IconCaes:  ${fetchBorderColorForVillage(villageEntity.stepId, villageEntity.statusId)}")
-                    if(fetchBorderColorForVillage(villageEntity.stepId, villageEntity.statusId) !=2) {
+                    Log.d("TAG", "VillageAndVoBoxForBottomSheet IconCaes:  ${bpcVillageStatus}")
+                    if(bpcVillageStatus>BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal) {
                         Icon(
                             painter = painterResource(id = R.drawable.icon_feather_check_circle_white),
                             contentDescription = null,
-                            tint = if (fetchBorderColorForVillage(villageEntity.stepId, villageEntity.statusId) == 4
+                            tint = if (bpcVillageStatus == 5
                             ) greenOnline else blueDark
                         )
                     }
-                    if(fetchBorderColorForVillage(villageEntity.stepId, villageEntity.statusId) == 1){
+                    if(bpcVillageStatus < BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal){
                         Text(
                             text = stringResource(id = R.string.vo_endorsement_not_started),
                             color = textColorDark,
@@ -587,10 +582,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                                     if (villageEntity.statusId == StepStatus.COMPLETED.ordinal) R.string.bpc_verification_completed_village_banner_text else R.string.vo_endorsement_completed_village_banner_text
                                 }
                             ),
-                            color = if (fetchBorderColorForVillage(
-                                    villageEntity.stepId,
-                                    villageEntity.statusId
-                                ) == 4
+                            color = if (bpcVillageStatus == BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal
                             ) greenOnline else textColorDark,
                             style = smallerTextStyle,
                             modifier = Modifier.absolutePadding(bottom = 3.dp)
@@ -651,19 +643,18 @@ fun BpcVillageAndVoBoxForBottomSheetPreview(
     }
 }
 
-private fun fetchBorderColorForVillage(stepId: Int,statusId: Int) :Int{
-    Log.d("TAG", "fetchBorderColorForVillage: stepId: $stepId :: statusId: ${StepStatus.getStepFromOrdinal(statusId)}")
-    return if (stepId == 44 && statusId == StepStatus.INPROGRESS.ordinal) {
-        0
-    }
-    else if (stepId == 44 && statusId == StepStatus.COMPLETED.ordinal) {
-        1
-    }
-    else if (stepId == 45 && statusId == StepStatus.NOT_STARTED.ordinal) {
-        2
-    } else if (stepId == 45 && statusId == StepStatus.INPROGRESS.ordinal) {
-        3
-    } else if (stepId == 45 && statusId == StepStatus.COMPLETED.ordinal) {
-        4
-    } else 0
+private fun fetchBPCVillageStatus(stepId: Int,statusId: Int):Int{
+    return if(stepId == 44 && statusId == StepStatus.NOT_STARTED.ordinal){
+        BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal
+    }else if(stepId == 44 && statusId == StepStatus.INPROGRESS.ordinal){
+        BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal
+    }else if(stepId == 44 && statusId == StepStatus.COMPLETED.ordinal){
+        BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal
+    }else if(stepId == 45 && statusId == StepStatus.NOT_STARTED.ordinal){
+        BPCVillageStatus.BPC_VERIFICATION_NOT_STARTED.ordinal
+    }else if(stepId == 45 && statusId == StepStatus.INPROGRESS.ordinal){
+        BPCVillageStatus.BPC_VERIFICATION_IN_PROGRESS.ordinal
+    }else if(stepId == 45 && statusId == StepStatus.COMPLETED.ordinal){
+        BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal
+    }else 0
 }
