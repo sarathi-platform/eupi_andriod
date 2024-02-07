@@ -15,7 +15,7 @@ object NudgeCore {
 
 
     fun initEventObserver(syncManager:SyncManager) {
-        eventObserver = syncManager.init()
+        eventObserver = syncManager.initEventObserver()
     }
 
     fun getEventObserver(): EventObserverInterface? {

@@ -11,6 +11,9 @@ const val EventDependencyTable = "event_dependency_table"
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"
 const val SYNC_MANAGER_DB_VERSION = 1
 
+//FirebaseDb Properties
+const val EVENTS_BACKUP_COLLECTION = "EventsBackUp"
+
 
 // Increase DB Version everytime any change is made to any table or a new table is added.
 const val NUDGE_DATABASE = "NudgeDatabase"

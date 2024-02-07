@@ -9,6 +9,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import com.nudge.communicationModule.EventObserverInterface
+import com.nudge.core.Core
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity

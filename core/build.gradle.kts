@@ -64,4 +64,10 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.43.2")
     kapt("com.google.dagger:hilt-android-compiler:2.43.2")
 
+    //Firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
+
+    //Firebase Firestore
+    implementation("com.google.firebase:firebase-firestore")
+
 }

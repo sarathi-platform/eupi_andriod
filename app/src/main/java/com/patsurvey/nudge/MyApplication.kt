@@ -9,6 +9,7 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
 import com.akexorcist.localizationactivity.core.LocalizationApplicationDelegate
+import com.nudge.core.Core
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.syncmanager.SyncManager

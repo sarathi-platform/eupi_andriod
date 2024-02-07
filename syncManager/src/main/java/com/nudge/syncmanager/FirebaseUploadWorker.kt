@@ -1,33 +1,29 @@
 package com.nudge.syncmanager
 
-import android.app.Notification
 import android.content.Context
-import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
-import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import java.io.IOException
 import java.net.SocketTimeoutException
 
 @HiltWorker
-class SyncUploadWorker @AssistedInject constructor(
+class FirebaseUploadWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    val syncApiRepository: SyncApiRepository
-) :
+    val syncApiRepository: SyncApiRepository,
+    val firebaseRepository: FirebaseRepository
+): CoroutineWorker(appContext, workerParams) {
 
-    CoroutineWorker(appContext, workerParams) {;
     override suspend fun doWork(): Result {
         return if (runAttemptCount < 5) { // runAttemptCount starts from 0
             try {
                 var totalPendingEventCount = syncApiRepository.getPendingEventCount()
                 while (totalPendingEventCount > 0) {
                     val pendingEvents = syncApiRepository.getPendingEventFromDb()
-                    syncApiRepository.syncEventInNetwork(pendingEvents)
-                    totalPendingEventCount =  syncApiRepository.getPendingEventCount()
+                    firebaseRepository.addEventsToFirebase(pendingEvents)
+                    totalPendingEventCount = syncApiRepository.getPendingEventCount()
                 }
                 // do long running work
             } catch (ex: SocketTimeoutException) {
@@ -39,6 +35,4 @@ class SyncUploadWorker @AssistedInject constructor(
         }
     }
 
-
 }
-

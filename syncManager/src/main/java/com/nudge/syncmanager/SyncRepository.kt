@@ -12,32 +12,35 @@ import com.nudge.core.model.request.EventRequest
 
 import javax.inject.Inject
 
-class  SyncApiRepository @Inject constructor(
+class SyncApiRepository @Inject constructor(
     val apiService: SyncApiService,
-    val eventDao: EventsDao,
-
-    ) {
+    val eventDao: EventsDao
+) {
     suspend fun fetchLanguageFromAPI(): ApiResponseModel<ConfigResponseModel> {
         return apiService.configDetails()
     }
 
     suspend fun getPendingEventFromDb(): List<Events> {
-   return  eventDao.getAllPendingEvent(listOf(EventSyncStatus.RETRY,EventSyncStatus.OPEN))
+        return eventDao.getAllPendingEvent(listOf(EventSyncStatus.RETRY, EventSyncStatus.OPEN))
 
     }
 
     suspend fun getPendingEventCount(): Int {
-   return  eventDao.getTotalPendingEventCount(listOf(EventSyncStatus.RETRY,EventSyncStatus.OPEN))
+        return eventDao.getTotalPendingEventCount(
+            listOf(
+                EventSyncStatus.RETRY,
+                EventSyncStatus.OPEN
+            )
+        )
 
     }
 
-    suspend fun  syncEventInNetwork(events:List<Events>)
-    {
-val eventRequest:List<EventRequest> =events.map {
-    EventRequest.EventRequestMapper.fromEvent(it)
-}
+    suspend fun syncEventInNetwork(events: List<Events>) {
+        val eventRequest: List<EventRequest> = events.map {
+            EventRequest.EventRequestMapper.fromEvent(it)
+        }
 
-Log.d("Sync Request", Gson().toJson(eventRequest))
+        Log.d("Sync Request", Gson().toJson(eventRequest))
 
     }
 
