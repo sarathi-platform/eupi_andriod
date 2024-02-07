@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -22,6 +23,7 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.StepsBox
 import com.nrlm.baselinesurvey.ui.mission_screen.viewmodel.MissionViewModel
+import com.nrlm.baselinesurvey.ui.theme.inprogressYellow
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
 
@@ -69,7 +71,7 @@ fun MissionSummaryScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 10.dp),
-                    text = missions[0].endDate,
+                    text = stringResource(id = R.string.due_by_x,missions[0].endDate),
                     style = newMediumTextStyle
                 )
                 LazyColumn(
@@ -78,12 +80,13 @@ fun MissionSummaryScreen(
                         items = missions[0].activities ?: emptyList()
                     ) { index, activity ->
                         StepsBox(
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                             boxTitle = activity.activityName,
-                            subTitle = activity.reviewer,
+                            subTitle = stringResource(id =R.string. x_dii_pending,activity.tasks.size),
                             stepNo = activity.activityTypeId,
                             index = 1,
-                            iconResourceId = R.drawable.ic_group_icon,
+                            iconResourceId = R.drawable.ic_mission_inprogress,
+                            backgroundColor = inprogressYellow,
                             onclick = {
                                 navController.navigate("add_didi_graph/${activity.activityId}/${missionId}")
                             })

@@ -147,7 +147,7 @@ fun ButtonPositive(
                     contentDescription = "Positive Button",
                     tint = if (isActive) iconTintColor else greyBorder,
                     modifier = Modifier
-                        .absolutePadding(top = 2.dp, left = 2.dp)
+                        .absolutePadding(top = 2.dp, left = 2.dp, right = 10.dp)
                 )
             }
             Text(
