@@ -94,7 +94,7 @@ class BpcProgressScreenViewModel @Inject constructor(
                     appScopeLaunch(Dispatchers.IO) {
                         delay(100)
                         setBpcVerificationCompleteForVillages()
-                        repository.updateVillageDataLoadStatus(getSelectedVillage().id, true)
+                        repository.updateVillageDataLoadStatus(getSelectedVillage().id, 1)
                         delay(200)
                         withContext(Dispatchers.Main) {
                             showLoader.value = false
