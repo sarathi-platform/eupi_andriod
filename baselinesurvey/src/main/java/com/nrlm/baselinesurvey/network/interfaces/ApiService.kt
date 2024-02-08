@@ -56,7 +56,9 @@ interface ApiService {
 
     @POST(SUBPATH_FETCH_SURVEY_FROM_NETWORK)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun getSurveyFromNetwork(@Body surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<List<SurveyResponseModel>>
+//    suspend fun getSurveyFromNetwork(@Body surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<List<SurveyResponseModel>>
+        suspend fun getSurveyFromNetwork(@Body surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<SurveyResponseModel>
+
 
     @POST(SUBPATH_SAVE_SURVEY_ANSWES)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")

@@ -24,6 +24,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.SwitchComponent
@@ -32,6 +33,7 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionType
 import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
+import com.nrlm.baselinesurvey.utils.storeGivenAnswered
 import kotlinx.coroutines.launch
 
 @Composable
@@ -40,7 +42,8 @@ fun NestedLazyList(
     outerState: LazyListState = rememberLazyListState(),
     innerState: LazyListState = rememberLazyListState(),
     formTypeOption: FormTypeOption?,
-    viewModel: BaseViewModel
+    viewModel: BaseViewModel,
+    onSaveFormTypeOption: (questionTypeEvent: QuestionTypeEvent) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val questionTypeScreenViewModel = (viewModel as QuestionTypeScreenViewModel)
@@ -88,34 +91,6 @@ fun NestedLazyList(
                 .heightIn(maxHeight)
                 .padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
         ) {
-//            item {
-//                TopAppBar(
-//                    title = {
-//                        Row(
-//                            modifier = Modifier.fillMaxWidth(),
-//                            horizontalArrangement = Arrangement.Center
-//                        ) {
-//                                Text(
-//                                    text = "sectionDetails.sectionName",
-//                                    color = textColorDark
-//                                )
-//                        }
-//                    },
-//                    navigationIcon = {
-//
-//                        Icon(
-//                            Icons.Filled.ArrowBack,
-//                            null,
-//                            tint = textColorDark,
-//                            modifier = Modifier.clickable {
-//                                    navController.popBackStack()
-//                            })
-//                    },
-//                    backgroundColor = white,
-//                    elevation = 0.dp,
-//
-//                    )
-//            }
             item {
                 LazyColumn(
                     state = innerState,
@@ -136,12 +111,12 @@ fun NestedLazyList(
                                     option.display,
                                     option.selectedValue ?: "Select",
                                     option.values
-                                ) {
+                                ) { value ->
                                     formTypeOption?.let { it1 ->
-                                        storeGivenAnswered(
-                                            questionTypeScreenViewModel,
-                                            it1, option.optionId ?: 0, it
-                                        )
+                                        onSaveFormTypeOption(storeGivenAnswered(
+                                            it1, option.optionId ?: 0, value,
+                                            referenceId = viewModel.referenceId
+                                        ))
                                     }
                                 }
                             }
@@ -150,22 +125,25 @@ fun NestedLazyList(
                                 EditTextWithTitleComponent(
                                     option.display,
                                     option.selectedValue ?: ""
-                                ) {
+                                ) { value ->
                                     formTypeOption?.let { it1 ->
+                                        onSaveFormTypeOption(
                                         storeGivenAnswered(
-                                            questionTypeScreenViewModel,
-                                            it1, option.optionId ?: 0, it
-                                        )
+                                            it1, option.optionId ?: 0, value,
+                                            referenceId = viewModel.referenceId
+                                        ))
                                     }
                                 }
                             }
 
                             QuestionType.Toggle.name -> {
-                                SwitchComponent(option.display, option.selectedValue ?: "No") {
+                                SwitchComponent(option.display, option.selectedValue ?: "No") { value ->
                                     formTypeOption?.let { it1 ->
-                                        storeGivenAnswered(
-                                            questionTypeScreenViewModel,
-                                            it1, option.optionId ?: 0, it
+                                        onSaveFormTypeOption(
+                                            storeGivenAnswered(
+                                                it1, option.optionId ?: 0, value,
+                                                referenceId = viewModel.referenceId
+                                            )
                                         )
                                     }
                                 }
@@ -179,22 +157,5 @@ fun NestedLazyList(
 
 }
 
-private fun storeGivenAnswered(
-    questionTypeScreenViewModel: QuestionTypeScreenViewModel,
-    formTypeOption: FormTypeOption,
-    optionId: Int,
-    selectedValue: String
-) {
-    questionTypeScreenViewModel.onEvent(
-        QuestionTypeEvent.FormTypeQuestionAnswered(
-            surveyId = formTypeOption.surveyId,
-            sectionId = formTypeOption.sectionId,
-            didiId = formTypeOption.didiId,
-            questionId = formTypeOption.questionId,
-            optionItemId = optionId,
-            selectedValue = selectedValue
-        )
-    )
-}
 
 

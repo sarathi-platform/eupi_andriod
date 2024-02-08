@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.nrlm.baselinesurvey.OPTION_TABLE
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
+import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 
 @Dao
 interface OptionItemDao {
@@ -53,5 +54,9 @@ interface OptionItemDao {
     )
 //    @Query("Select * from $OPTION_TABLE where surveyId = :surveyId and languageId = :languageId")
 //    fun getAllOptionForLanguage(surveyId: Int, languageId: Int): List<OptionItemEntity>
+
+
+    @Query("Select * from $OPTION_TABLE where surveyId = :surveyId and languageId = :languageId")
+    fun getAllOptionForLanguage(surveyId: Int, languageId: Int): List<OptionItemEntity>
 
 }

@@ -43,7 +43,7 @@ interface QuestionScreenRepository {
     suspend fun updateDidiSurveyStatus(didiId: Int, surveyId: Int)
 
     suspend fun getSectionsList(surveyId: Int, languageId: Int): List<SectionEntity>
-    suspend fun updateOptionItem(
+    /*suspend fun updateOptionItem(
         surveyId: Int,
         sectionId: Int,
         questionId: Int,
@@ -56,6 +56,6 @@ interface QuestionScreenRepository {
         questionId: Int,
         optionId: Int,
         selectedValue: String
-    )
+    )*/
 
 }

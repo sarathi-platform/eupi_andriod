@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponen
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
@@ -9,6 +10,7 @@ import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,8 +28,12 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -38,6 +44,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -46,6 +54,7 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.model.HouseholdMemberDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.navigation.home.FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
@@ -58,17 +67,23 @@ import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenEvents
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.handleOnMediaTypeDescriptionActions
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
+import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_80_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.progressIndicatorColor
+import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.mapFormQuestionResponseToHouseholdMemberDto
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun NestedLazyList(
@@ -83,6 +98,9 @@ fun NestedLazyList(
     sectionInfoButtonClicked: () -> Unit,
     answeredQuestionCountIncreased: (count: Int) -> Unit,
 ) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
     val questionScreenViewModel = (viewModel as QuestionScreenViewModel)
 
     val innerQueState: LazyListState = rememberLazyListState()
@@ -106,6 +124,32 @@ fun NestedLazyList(
         label = "",
         animationSpec = tween()
     )
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    val householdMemberDtoList = remember {
+        mutableStateOf(mutableListOf<HouseholdMemberDto>())
+    }
+
+    DisposableEffect(key1 = context) {
+
+        sectionDetails.questionList.find { it.type == QuestionType.Form.name }?.questionId?.let { questionId ->
+            coroutineScope.launch(Dispatchers.IO) {
+                val optionItemEntityList = questionScreenViewModel.getFormQuestionsOptionsItemEntityList(sectionDetails.surveyId, sectionDetails.sectionId, questionId)
+                questionScreenViewModel.optionItemEntityList = optionItemEntityList
+                questionScreenViewModel.formResponsesForQuestionLive = questionScreenViewModel.getFormQuestionResponseEntity(sectionDetails.surveyId, sectionDetails.sectionId, questionId, surveyeeId)
+                withContext(Dispatchers.Main) {
+                    questionScreenViewModel.formResponsesForQuestionLive.observe(lifecycleOwner) {
+                        householdMemberDtoList.value.addAll(it.mapFormQuestionResponseToHouseholdMemberDto(optionItemEntityList))
+                    }
+                }
+            }
+
+        }
+        onDispose {
+            questionScreenViewModel.formResponsesForQuestionLive.removeObservers(lifecycleOwner)
+        }
+    }
 
 
     SideEffect {
@@ -172,14 +216,6 @@ fun NestedLazyList(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Center
                         ) {
-                            /*if (sectionDetails.sectionIcon != null) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.sample_step_icon_2),
-                                    contentDescription = "section icon",
-                                    tint = textColorDark
-                                )
-                                Spacer(modifier = Modifier.width(dimen_4_dp))
-                            }*/
                             if (!sectionDetails.sectionName.equals(NO_SECTION, true))
                                 Text(
                                     text = sectionDetails.sectionName,
@@ -219,25 +255,6 @@ fun NestedLazyList(
                     elevation = 0.dp,
 
                     )
-            }
-            item {
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
-//                        .padding(vertical = dimensionResource(id = R.dimen.dp_15))
-//                ) {
-//                    if (!sectionDetails.sectionName.equals("Food Security", true)) {
-//                        CTAButtonComponent(tittle = "Add Income Source", Modifier.fillMaxWidth()) {
-//                            // navController.navigate(AddIncome_SCREEN_ROUTE_NAME)
-//                            if (sectionDetails.sectionName.equals("Financial Inclusion", true))
-//                                navController.navigate(AddIncome_SCREEN_ROUTE_NAME)
-//                            if (sectionDetails.sectionName.equals("Social Inclusion", true))
-//                                navController.navigate(AddHouseHoldMember_SCREEN_ROUTE_NAME)
-//
-//                        }
-//                    }
-//                }
             }
 
             item {
@@ -292,11 +309,11 @@ fun NestedLazyList(
                                     questionIndex = index, question = question,
                                     maxCustomHeight = maxHeight,
                                     optionItemEntityList = optionList,
-                                    selectedOptionIndex = optionList?.indexOf(selectedOption)
+                                    selectedOptionIndex = optionList?.indexOf(optionList.find { it.optionId == selectedOption?.optionId })
                                         ?: -1,
                                     onAnswerSelection = { questionIndex, optionItem ->
-                                        if (!answeredQuestionIndices.value.contains(questionIndex)) {
-                                            answeredQuestionIndices.value.add(questionIndex)
+                                        if (!answeredQuestionIndices.value.contains(optionItem.id)) {
+                                            answeredQuestionIndices.value.add(optionItem.id)
                                             answeredQuestionCount.value =
                                                 answeredQuestionCount.value.inc()
                                                     .coerceIn(0, sectionDetails.questionList.size)
@@ -520,6 +537,55 @@ fun NestedLazyList(
 
                                     }
                                 ) {}
+                            }
+                        }
+                    }
+                    item {
+                        Column {
+                            householdMemberDtoList.value.forEach { householdMemberDto ->
+                                Card(
+                                    elevation = CardDefaults.cardElevation(
+                                        defaultElevation = defaultCardElevation
+                                    ),
+                                    shape = RoundedCornerShape(roundedCornerRadiusDefault),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(white)
+                                        .clickable {
+
+                                        }
+                                        .then(modifier)
+                                ) {
+                                    Column(modifier = Modifier
+                                        .background(white)
+                                        .padding(dimen_16_dp)) {
+                                        Row(
+                                            Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.Start
+                                        ) {
+                                            Column {
+                                                Text(text = householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find { it.display?.contains("Name", ignoreCase = true)!! }?.optionId] ?: BLANK_STRING)
+                                                Text(text = buildString {
+                                                    this.append(householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find { it.display?.contains("Relationship", ignoreCase = true)!! }?.optionId] ?: BLANK_STRING)
+                                                    this.append(" | ")
+                                                    this.append(householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find { it.display?.contains("Age", ignoreCase = true)!! }?.optionId] ?: BLANK_STRING)
+                                                })
+                                            }
+                                        }
+                                        Row(modifier = Modifier.fillMaxWidth()) {
+                                            Button(onClick = { /*TODO*/ }, modifier = Modifier
+                                                .fillMaxWidth()
+                                                .weight(1f)) {
+                                                Text(text = "Edit")
+                                            }
+                                            Button(onClick = { /*TODO*/ }, modifier = Modifier
+                                                .fillMaxWidth()
+                                                .weight(1f)) {
+                                                Text(text = "Delete")
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

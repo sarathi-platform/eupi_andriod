@@ -47,7 +47,7 @@ import com.patsurvey.nudge.customviews.htmltext.HtmlText
 fun ExpandableDescriptionContentComponent(
     questionDetailExpanded: (index: Int) -> Unit,
     index: Int,
-    question: QuestionEntity,
+    question: QuestionEntity?,
     imageClickListener: (imageTypeDescriptionContent: String) -> Unit,
     videoLinkClicked: (videoTypeDescriptionContent: String) -> Unit,
 ) {
@@ -57,7 +57,7 @@ fun ExpandableDescriptionContentComponent(
 
     //TODO Modify code to handle contentList.
     val descriptionContentState = remember {
-        mutableStateOf(DescriptionContentState(textTypeDescriptionContent = question.questionSummary ?: BLANK_STRING))
+        mutableStateOf(DescriptionContentState(textTypeDescriptionContent = question?.questionSummary ?: BLANK_STRING))
     }
 
     Box(

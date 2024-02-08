@@ -218,24 +218,6 @@ fun MiscQuestionBoxComponent(
     }
 }
 
-private fun storeGivenAnswered(
-    questionTypeScreenViewModel: QuestionTypeScreenViewModel,
-    formTypeOption: FormTypeOption,
-    optionId: Int,
-    selectedValue: String
-) {
-    questionTypeScreenViewModel.onEvent(
-        QuestionTypeEvent.FormTypeQuestionAnswered(
-            surveyId = formTypeOption.surveyId,
-            sectionId = formTypeOption.sectionId,
-            didiId = formTypeOption.didiId,
-            questionId = formTypeOption.questionId,
-            optionItemId = optionId,
-            selectedValue = selectedValue
-        )
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
 fun InputQuestionBoxComponentPreview() {

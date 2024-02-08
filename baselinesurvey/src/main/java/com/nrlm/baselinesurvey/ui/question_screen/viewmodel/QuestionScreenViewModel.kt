@@ -3,12 +3,16 @@ package com.nrlm.baselinesurvey.ui.question_screen.viewmodel
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
+import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
@@ -74,6 +78,21 @@ class QuestionScreenViewModel @Inject constructor(
             _sectionsList.value = questionScreenUseCase.getSectionsListUseCase.invoke(surveyeeId)
                 .sortedBySectionOrder()
         }
+    }
+
+    suspend fun getFormQuestionResponseEntity(surveyId: Int, sectionId: Int, questionId: Int, didiId: Int): LiveData<List<FormQuestionResponseEntity>> {
+        return questionScreenUseCase.getFormQuestionResponseUseCase.getFormResponsesForQuestionLive(surveyId, sectionId, questionId, didiId)
+    }
+
+    var formResponsesForQuestionLive: LiveData<List<FormQuestionResponseEntity>> = MutableLiveData(mutableListOf())
+
+    var optionItemEntityList = emptyList<OptionItemEntity>()
+    suspend fun getFormQuestionsOptionsItemEntityList(surveyId: Int, sectionId: Int, questionId: Int): List<OptionItemEntity> {
+        return questionScreenUseCase.getFormQuestionResponseUseCase.invoke(
+            surveyId,
+            sectionId,
+            questionId
+        )
     }
 
     fun init(sectionId: Int, surveyeeId: Int) {
@@ -161,7 +180,7 @@ class QuestionScreenViewModel @Inject constructor(
                 performSearchQuery(event.searchTerm, event.isFilterApplied, event.fromScreen)
             }
 
-            is QuestionScreenEvents.FormTypeQuestionAnswered -> {
+            /*is QuestionScreenEvents.FormTypeQuestionAnswered -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     questionScreenUseCase.saveSectionAnswerUseCase.updateOptionItemValue(
                         event.surveyId,
@@ -171,7 +190,7 @@ class QuestionScreenViewModel @Inject constructor(
                         event.selectedValue
                     )
                 }
-            }
+            }*/
         }
     }
 

@@ -56,7 +56,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         return apiService.getDidisFromNetwork(userId)
     }
 
-    override suspend fun fetchSurveyFromNetwork(surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<List<SurveyResponseModel>> {
+    override suspend fun fetchSurveyFromNetwork(surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<SurveyResponseModel> {
         return apiService.getSurveyFromNetwork(surveyRequestBodyModel)
     }
 
@@ -71,7 +71,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
             languageId = languageId
         )
         surveyEntityDao.insertSurvey(surveyEntity)
-        surveyResponseModel.surveyList.forEach { section ->
+        surveyResponseModel.sections.forEach { section ->
             sectionEntityDao.deleteSurveySectionFroLanguage(section.sectionId, surveyResponseModel.surveyId, languageId)
             val sectionEntity = SectionEntity(
                 id = 0,

@@ -6,6 +6,7 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
+import com.nrlm.baselinesurvey.database.dao.FormQuestionResponseDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionAnswerEntityDao
@@ -36,7 +37,8 @@ class QuestionScreenRepositoryImpl @Inject constructor(
     private val questionEntityDao: QuestionEntityDao,
     private val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
     private val sectionAnswerEntityDao: SectionAnswerEntityDao,
-    private val optionItemDao: OptionItemDao
+    private val optionItemDao: OptionItemDao,
+    private val formQuestionResponseDao: FormQuestionResponseDao
 ): QuestionScreenRepository {
 
     override suspend fun getSections(sectionId: Int, languageId: Int): SectionListItem {
@@ -158,8 +160,8 @@ class QuestionScreenRepositoryImpl @Inject constructor(
     }
 
     private suspend fun getOptionsFromOptionsItems(answer: SectionAnswerEntity): List<Options> {
-        for (option in answer.optionItems)
-            updateOptionItem(answer.surveyId, answer.sectionId, answer.questionId, option)
+//        for (option in answer.optionItems)
+//            updateOptionItem(answer.surveyId, answer.sectionId, answer.questionId, option)
         return Options.getOptionsFromOptionsItems(answer.optionItems)
 
     }
@@ -233,34 +235,35 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         return sectionEntityDao.getAllSectionForSurveyInLanguage(surveyId, languageId)
     }
 
-    override suspend fun updateOptionItem(
-        surveyId: Int,
-        sectionId: Int,
-        questionId: Int,
-        optionItem: OptionItemEntity
-    ) {
-        optionItemDao.updateOptionItem(
-            surveyId,
-            sectionId,
-            questionId,
-            optionItem.optionId ?: 0,
-            optionItem.isSelected ?: false
-        )
-    }
+/*override suspend fun updateOptionItem(
+    surveyId: Int,
+    sectionId: Int,
+    questionId: Int,
+    optionItem: OptionItemEntity,
 
-    override suspend fun updateOptionItemValue(
-        surveyId: Int,
-        sectionId: Int,
-        questionId: Int,
-        optionId: Int,
-        selectedValue: String
-    ) {
-        return optionItemDao.updateOptionItemValue(
-            surveyId = surveyId,
-            sectionId = sectionId,
-            questionId = questionId,
-            optionId = optionId,
-            selectValue = selectedValue
-        )
-    }
+) {
+    formQuestionResponseDao.updateOptionItemValue(
+        surveyId,
+        sectionId,
+        questionId,
+        optionItem.optionId ?: 0,
+        optionItem.isSelected ?: false
+    )
+}
+
+override suspend fun updateOptionItemValue(
+    surveyId: Int,
+    sectionId: Int,
+    questionId: Int,
+    optionId: Int,
+    selectedValue: String
+) {
+    return optionItemDao.updateOptionItemValue(
+        surveyId = surveyId,
+        sectionId = sectionId,
+        questionId = questionId,
+        optionId = optionId,
+        selectValue = selectedValue
+    )
+}*/
 }

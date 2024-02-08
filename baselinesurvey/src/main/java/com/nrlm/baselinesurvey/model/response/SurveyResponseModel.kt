@@ -36,7 +36,7 @@ data class SurveyResponseModel(
 
     @SerializedName("sections")
     @Expose
-    val surveyList: List<Sections>,
+    val sections: List<Sections>,
 
 
     @SerializedName("approver")

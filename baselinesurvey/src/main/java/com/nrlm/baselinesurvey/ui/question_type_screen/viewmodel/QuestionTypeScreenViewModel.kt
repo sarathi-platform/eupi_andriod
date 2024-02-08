@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
-import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.QuestionTypeScreenUseCase
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.FormQuestionScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.states.LoaderState
@@ -15,11 +15,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class QuestionTypeScreenViewModel @Inject constructor(
-    private val questionTypeScreenUseCase: QuestionTypeScreenUseCase
+    private val formQuestionScreenUseCase: FormQuestionScreenUseCase
 ) : BaseViewModel() {
 
     private val _loaderState = mutableStateOf(LoaderState())
@@ -27,11 +28,13 @@ class QuestionTypeScreenViewModel @Inject constructor(
     val optionList: State<List<OptionItemEntity>> get() = _optionList
     private val _optionList = mutableStateOf<List<OptionItemEntity>>(emptyList())
 
+    val referenceId: String = UUID.randomUUID().toString()
+
     fun init(sectionId: Int, surveyId: Int, questionId: Int) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _optionList.value =
-                questionTypeScreenUseCase.getQuestionTypeFormOptionUseCase.invoke(
+                formQuestionScreenUseCase.getFormQuestionResponseUseCase.invoke(
                     surveyId,
                     sectionId,
                     questionId
@@ -51,15 +54,28 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 )
             }
 
-            is QuestionTypeEvent.FormTypeQuestionAnswered -> {
+            is QuestionTypeEvent.SaveFormQuestionResponseEvent -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    questionTypeScreenUseCase.getQuestionTypeFormOptionUseCase.updateOptionItemValue(
-                        event.surveyId,
-                        event.sectionId,
-                        event.questionId,
-                        event.optionItemId,
-                        event.selectedValue
+                    val formQuestionResponseForQuestionOption = formQuestionScreenUseCase.getFormQuestionResponseUseCase.getFormResponsesForQuestionOption(
+                        event.formQuestionResponseEntity.surveyId,
+                        event.formQuestionResponseEntity.sectionId,
+                        event.formQuestionResponseEntity.questionId,
+                        event.formQuestionResponseEntity.referenceId,
+                        event.formQuestionResponseEntity.didiId
                     )
+                    if (formQuestionResponseForQuestionOption.any { it.optionId == event.formQuestionResponseEntity.optionId }) {
+                        formQuestionScreenUseCase.updateFormQuestionResponseUseCase.invoke(
+                            event.formQuestionResponseEntity.surveyId,
+                            event.formQuestionResponseEntity.sectionId,
+                            event.formQuestionResponseEntity.questionId,
+                            event.formQuestionResponseEntity.optionId,
+                            event.formQuestionResponseEntity.selectedValue,
+                            event.formQuestionResponseEntity.referenceId,
+                            event.formQuestionResponseEntity.didiId
+                        )
+                    } else {
+                        formQuestionScreenUseCase.saveFormQuestionResponseUseCase.invoke(event.formQuestionResponseEntity)
+                    }
                 }
 
             }
