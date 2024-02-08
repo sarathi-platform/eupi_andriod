@@ -31,13 +31,14 @@ interface FormQuestionResponseDao {
         didiId: Int
     ): LiveData<List<FormQuestionResponseEntity>>
 
-    @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND optionId = :referenceId AND didiId = :didiId")
+    @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND referenceId = :referenceId AND didiId = :didiId and optionId = :optionId")
     fun getFormResponsesForQuestionOption(
         surveyId: Int,
         sectionId: Int,
         questionId: Int,
         referenceId: String,
-        didiId: Int
+        didiId: Int,
+        optionId: Int
     ): List<FormQuestionResponseEntity>
 
     @Query("Update $FORM_QUESTION_RESPONSE_TABLE set selectedValue = :selectedValue where didiId = :didiId AND surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND optionId = :optionId AND referenceId = :referenceId")

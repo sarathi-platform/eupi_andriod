@@ -57,11 +57,12 @@ class QuestionTypeScreenViewModel @Inject constructor(
             is QuestionTypeEvent.SaveFormQuestionResponseEvent -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     val formQuestionResponseForQuestionOption = formQuestionScreenUseCase.getFormQuestionResponseUseCase.getFormResponsesForQuestionOption(
-                        event.formQuestionResponseEntity.surveyId,
-                        event.formQuestionResponseEntity.sectionId,
-                        event.formQuestionResponseEntity.questionId,
-                        event.formQuestionResponseEntity.referenceId,
-                        event.formQuestionResponseEntity.didiId
+                        surveyId = event.formQuestionResponseEntity.surveyId,
+                        sectionId = event.formQuestionResponseEntity.sectionId,
+                        questionId = event.formQuestionResponseEntity.questionId,
+                        referenceId = event.formQuestionResponseEntity.referenceId,
+                        optionId = event.formQuestionResponseEntity.optionId,
+                        didiId = event.formQuestionResponseEntity.didiId
                     )
                     if (formQuestionResponseForQuestionOption.any { it.optionId == event.formQuestionResponseEntity.optionId }) {
                         formQuestionScreenUseCase.updateFormQuestionResponseUseCase.invoke(

@@ -42,7 +42,8 @@ class GetFormQuestionResponseUseCase(private val repository: FormQuestionRespons
         sectionId: Int,
         questionId: Int,
         referenceId: String,
-        didiId: Int
+        optionId: Int,
+        didiId: Int,
         //TODO Add option Id
     ): List<FormQuestionResponseEntity> {
         return repository.getFormResponsesForQuestionOption(
@@ -50,7 +51,8 @@ class GetFormQuestionResponseUseCase(private val repository: FormQuestionRespons
             sectionId = sectionId,
             questionId = questionId,
             referenceId = referenceId,
-            didiId = didiId
+            didiId = didiId,
+            optionId = optionId
         )
     }
 
