@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.toLowerCase
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.NO_TOLA_TITLE
 import com.nrlm.baselinesurvey.base.BaseViewModel
@@ -56,11 +57,19 @@ class SurveyeeScreenViewModel @Inject constructor(
     val checkedItemsState = mutableStateOf(mutableSetOf<Int>())
 
     val showMoveDidisBanner = mutableStateOf(false)
-
+val endDateOfActivity= mutableStateOf("")
+    val  surveyName= mutableStateOf("")
     fun init(missionId: Int, activityId: Int) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 //            if (_surveyeeListState.value.isEmpty()) {
+            val activity = surveyeeScreenUseCase.getSurveyeeListUseCase.getSelectedActivity(
+                missionId,
+                activityId
+            )
+            endDateOfActivity.value = activity?.endDate ?: ""
+            surveyName.value = activity?.activityName ?: ""
+
             val surveyeeListFromDb =
                 surveyeeScreenUseCase.getSurveyeeListUseCase.invoke(missionId, activityId)
             if (_surveyeeListState.value.isNotEmpty()) {
@@ -245,9 +254,9 @@ class SurveyeeScreenViewModel @Inject constructor(
 
     private fun getSurveyeeAddress(surveyeeEntity: SurveyeeEntity): String {
         return if (surveyeeEntity.cohortName.equals(NO_TOLA_TITLE, true))
-            surveyeeEntity.houseNo + "," + surveyeeEntity.cohortName
+            surveyeeEntity.houseNo + ", " + surveyeeEntity.cohortName
         else
-            surveyeeEntity.houseNo + "," + surveyeeEntity.villageName
+            surveyeeEntity.houseNo + ", " + surveyeeEntity.villageName
     }
 
 }

@@ -16,7 +16,7 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BaselineApplication.Companion.appScopeLaunch
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
+import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SurveyStateEvents
 import com.nrlm.baselinesurvey.ui.start_screen.domain.use_case.StartSurveyScreenUserCase
@@ -24,7 +24,6 @@ import com.nrlm.baselinesurvey.ui.start_screen.presentation.StartSurveyScreenEve
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LocationCoordinates
 import com.nrlm.baselinesurvey.utils.LocationUtil
-import com.nrlm.baselinesurvey.utils.states.SurveyState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,7 +52,11 @@ class BaseLineStartViewModel @Inject constructor(
     private val _didiEntity = MutableStateFlow(
         SurveyeeEntity.getEmptySurveyeeEntity()
     )
+    private val _didiInfo = MutableStateFlow(
+        DidiIntoEntity.getEmptyDidiIntoEntity()
+    )
     val didiEntity: StateFlow<SurveyeeEntity> get() = _didiEntity
+    val didiInfo: StateFlow<DidiIntoEntity> get() = _didiInfo
 
     fun getFileName(context: Context, didi: SurveyeeEntity): File {
         val directory = getImagePath(context)
@@ -80,7 +83,11 @@ class BaseLineStartViewModel @Inject constructor(
             }
             is SurveyStateEvents.UpdateDidiSurveyStatus -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    startSurveyScreenUserCase.updateSurveyStateUseCase.invoke(event.didiId, event.didiSurveyState)
+                    startSurveyScreenUserCase.updateSurveyStateUseCase.invoke(
+                        event.didiId,
+                        event.didiSurveyState
+                    )
+                    startSurveyScreenUserCase.updateSurveyStateUseCase.saveDidiInfoInDB(event.didiInfo)
                 }
             }
         }
@@ -115,6 +122,11 @@ class BaseLineStartViewModel @Inject constructor(
     fun getDidiDetails(didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _didiEntity.emit(startSurveyScreenUserCase.getSurveyeeDetailsUserCase.invoke(didiId))
+            _didiInfo.emit(
+                startSurveyScreenUserCase.getSurveyeeDetailsUserCase.getDidiIndoDetail(
+                    didiId
+                )
+            )
             if (!_didiEntity.value.crpImageLocalPath.isNullOrEmpty()) {
                 photoUri.value = if (didiEntity.value.crpImageLocalPath.contains("|"))
                     didiEntity.value.crpImageLocalPath.split("|")[0].toUri()

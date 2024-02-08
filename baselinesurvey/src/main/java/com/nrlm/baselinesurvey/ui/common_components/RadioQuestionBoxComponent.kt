@@ -27,7 +27,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -53,8 +52,6 @@ import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
-import com.nrlm.baselinesurvey.ui.theme.lightGray2
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
@@ -83,7 +80,10 @@ fun RadioQuestionBoxComponent(
     var optionItem: OptionItemEntity
     val queLazyState: LazyListState = rememberLazyListState()
 
-    val questionList = ArrayList<QuestionList?>()
+    val questionList = remember {
+        mutableStateOf(mutableListOf<QuestionList?>())
+    }
+
 
     val innerFirstVisibleItemIndex by remember {
         derivedStateOf {
@@ -175,11 +175,9 @@ fun RadioQuestionBoxComponent(
                                                 selectedIndex = selectedIndex
                                             ) {
                                                 if (!optionsItem.questionList?.isEmpty()!!) {
-                                                    questionList.clear()
+                                                    questionList.value.clear()
                                                     optionsItem.questionList.let { it1 ->
-                                                        questionList.addAll(
-                                                            it1
-                                                        )
+                                                        questionList.value.addAll(it1)
                                                     }
                                                     optionDetailVisibilityState.value =
                                                         !optionDetailVisibilityState.value
@@ -204,7 +202,7 @@ fun RadioQuestionBoxComponent(
                                 AnimatedVisibility(visible = optionDetailVisibilityState.value) {
                                     SubQuestionComponent(
                                         maxCustomHeight = maxCustomHeight,
-                                        questionList = questionList
+                                        questionList = questionList.value
                                     )
                                 }
                             }
@@ -215,28 +213,28 @@ fun RadioQuestionBoxComponent(
                                     .fillMaxWidth()
                                     .height(dimen_10_dp)
                             )
-                            Divider(
-                                thickness = dimen_1_dp,
-                                color = lightGray2,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            ExpandableDescriptionContentComponent(
-                                questionDetailExpanded,
-                                questionIndex,
-                                question,
-                                imageClickListener = { imageTypeDescriptionContent ->
-                                    onMediaTypeDescriptionAction(
-                                        DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
-                                        imageTypeDescriptionContent
-                                    )
-                                },
-                                videoLinkClicked = { videoTypeDescriptionContent ->
-                                    onMediaTypeDescriptionAction(
-                                        DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
-                                        videoTypeDescriptionContent
-                                    )
-                                }
-                            )
+//                            Divider(
+//                                thickness = dimen_1_dp,
+//                                color = lightGray2,
+//                                modifier = Modifier.fillMaxWidth()
+//                            )
+//                            ExpandableDescriptionContentComponent(
+//                                questionDetailExpanded,
+//                                questionIndex,
+//                                question,
+//                                imageClickListener = { imageTypeDescriptionContent ->
+//                                    onMediaTypeDescriptionAction(
+//                                        DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
+//                                        imageTypeDescriptionContent
+//                                    )
+//                                },
+//                                videoLinkClicked = { videoTypeDescriptionContent ->
+//                                    onMediaTypeDescriptionAction(
+//                                        DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
+//                                        videoTypeDescriptionContent
+//                                    )
+//                                }
+//                            )
                         }
                     }
                 }

@@ -40,12 +40,16 @@ import com.nrlm.baselinesurvey.ui.common_components.MoveSurveyeesUpdateBannerCom
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.SurveyeeScreenViewModel
+import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
+import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
+import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.progressIndicatorColor
+import com.nrlm.baselinesurvey.ui.theme.red
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.trackColor
@@ -101,6 +105,27 @@ fun AllSurveyeeListTab(
                             white
                         )
                 ) {
+
+                    item {
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 10.dp),
+                                text = viewModel.surveyName.value,
+                                style = largeTextStyle,
+                                color = blueDark
+                            )
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 10.dp, bottom = 10.dp),
+                                text = stringResource(id = R.string.due_by_x, viewModel.endDateOfActivity.value),
+                                style = newMediumTextStyle,
+                                color = black100Percent
+                            )
+                        }
+                    }
                     item {
                         SearchWithFilterViewComponent(
                             placeholderString = stringResource(id = R.string.search_didis),
@@ -226,11 +251,11 @@ fun AllSurveyeeListTab(
             }
         }
 
-        PullRefreshIndicator(
-            refreshing = loaderState.isLoaderVisible,
-            state = pullRefreshState,
-            modifier = Modifier.align(Alignment.TopCenter),
-            contentColor = blueDark,
-        )
+//        PullRefreshIndicator(
+//            refreshing = loaderState.isLoaderVisible,
+//            state = pullRefreshState,
+//            modifier = Modifier.align(Alignment.TopCenter),
+//            contentColor = blueDark,
+//        )
     }
 }

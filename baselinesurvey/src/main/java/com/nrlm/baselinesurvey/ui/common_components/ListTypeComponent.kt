@@ -23,7 +23,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
@@ -49,10 +48,8 @@ import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.languageItemActiveBg
-import com.nrlm.baselinesurvey.ui.theme.lightGray2
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
@@ -189,28 +186,28 @@ fun ListTypeQuestion(
                                     .fillMaxWidth()
                                     .height(dimen_10_dp)
                             )
-                            Divider(
-                                thickness = dimen_1_dp,
-                                color = lightGray2,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            ExpandableDescriptionContentComponent(
-                                questionDetailExpanded,
-                                questionIndex,
-                                question,
-                                imageClickListener = { imageTypeDescriptionContent ->
-                                    onMediaTypeDescriptionAction(
-                                        DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
-                                        imageTypeDescriptionContent
-                                    )
-                                },
-                                videoLinkClicked = { videoTypeDescriptionContent ->
-                                    onMediaTypeDescriptionAction(
-                                        DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
-                                        videoTypeDescriptionContent
-                                    )
-                                }
-                            )
+//                            Divider(
+//                                thickness = dimen_1_dp,
+//                                color = lightGray2,
+//                                modifier = Modifier.fillMaxWidth()
+//                            )
+//                            ExpandableDescriptionContentComponent(
+//                                questionDetailExpanded,
+//                                questionIndex,
+//                                question,
+//                                imageClickListener = { imageTypeDescriptionContent ->
+//                                    onMediaTypeDescriptionAction(
+//                                        DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
+//                                        imageTypeDescriptionContent
+//                                    )
+//                                },
+//                                videoLinkClicked = { videoTypeDescriptionContent ->
+//                                    onMediaTypeDescriptionAction(
+//                                        DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
+//                                        videoTypeDescriptionContent
+//                                    )
+//                                }
+//                            )
                         }
                     }
                 }

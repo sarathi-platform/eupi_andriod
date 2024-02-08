@@ -1,7 +1,6 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.presentation
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,7 +12,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
@@ -107,21 +105,21 @@ fun SurveyeeListScreen(
 //
 //            }
 //        },
-        floatingActionButton = {
-            if (!isSelectionEnabled.value && !loaderState.isLoaderVisible && selectedTabIndex.intValue != 0) {
-                androidx.compose.material.FloatingActionButton(
-                    onClick = {
-                        isSelectionEnabled.value = true
-                    },
-                    backgroundColor = white
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_fab_convert_check_box),
-                        contentDescription = ""
-                    )
-                }
-            }
-        },
+//        floatingActionButton = {
+//            if (!isSelectionEnabled.value && !loaderState.isLoaderVisible && selectedTabIndex.intValue != 0) {
+//                androidx.compose.material.FloatingActionButton(
+//                    onClick = {
+//                        isSelectionEnabled.value = true
+//                    },
+//                    backgroundColor = white
+//                ) {
+//                    Image(
+//                        painter = painterResource(id = R.drawable.ic_fab_convert_check_box),
+//                        contentDescription = ""
+//                    )
+//                }
+//            }
+//        },
         bottomBar = {
             if (isSelectionEnabled.value && !loaderState.isLoaderVisible && selectedTabIndex.intValue != 0) {
                 PrimarySecandaryButtonBoxPreFilled(

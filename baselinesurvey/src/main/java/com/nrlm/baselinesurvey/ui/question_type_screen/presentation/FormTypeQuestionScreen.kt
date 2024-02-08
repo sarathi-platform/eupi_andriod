@@ -141,7 +141,7 @@ fun FormTypeQuestionScreen(
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
                     .padding(top = it.calculateTopPadding() + 20.dp)
-                    .padding(bottom = it.calculateTopPadding() + 70.dp)
+                    .padding(bottom = it.calculateTopPadding() + 100.dp)
                     .constrainAs(mainBox) {
                         start.linkTo(parent.start)
                         top.linkTo(parent.top)

@@ -48,18 +48,24 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
 import com.nrlm.baselinesurvey.navigation.home.SECTION_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToDidiScreen
+import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.ui.common_components.BlueButtonWithIcon
 import com.nrlm.baselinesurvey.ui.common_components.ButtonOutline
 import com.nrlm.baselinesurvey.ui.common_components.DialogComponent
 import com.nrlm.baselinesurvey.ui.common_components.DoubleButtonBox
+import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
+import com.nrlm.baselinesurvey.ui.common_components.YesNoButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SurveyStateEvents
 import com.nrlm.baselinesurvey.ui.start_screen.viewmodel.BaseLineStartViewModel
+import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.languageItemActiveBg
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
-import com.nrlm.baselinesurvey.ui.theme.smallTextStyleWithNormalWeight
+import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark50
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.openSettings
@@ -78,14 +84,28 @@ fun BaseLineStartScreen(
     val shouldRequestPermission = remember {
         mutableStateOf(false)
     }
+    val isAdharCard = remember {
+        mutableStateOf(-1)
+    }
+    val aadharNumber = remember {
+        mutableStateOf(BLANK_STRING)
+    }
+    val phoneNumber = remember {
+        mutableStateOf(BLANK_STRING)
+    }
+    val isVoterCard = remember {
+        mutableStateOf(-1)
+    }
     val didi = baseLineStartViewModel.didiEntity
+    val didiInfoDetail = baseLineStartViewModel.didiInfo
     LaunchedEffect(key1 = true) {
         baseLineStartViewModel.getDidiDetails(didiId)
     }
 
     val isContinueButtonActive by remember {
         derivedStateOf {
-            baseLineStartViewModel.photoUri.value != Uri.EMPTY
+            (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (isVoterCard.value != -1) && (phoneNumber.value.length == 10)
+                    && (isAdharCard.value != -1) && (isAdharCard.value == 2 || (isAdharCard.value == 1 && aadharNumber.value.length == 14))
         }
     }
 
@@ -105,21 +125,32 @@ fun BaseLineStartScreen(
                 isPositiveButtonActive = isContinueButtonActive,
                 positiveButtonOnClick = {
                     didi.value.didiId?.let {
-                        baseLineStartViewModel.onEvent(SurveyStateEvents.UpdateDidiSurveyStatus(
-                            it, SurveyState.INPROGRESS)
+                        baseLineStartViewModel.onEvent(
+                            SurveyStateEvents.UpdateDidiSurveyStatus(
+                                it,
+                                didiInfo = DidiIntoEntity(
+                                    1,
+                                    didiId = it,
+                                    isAdharCard = isAdharCard.value,
+                                    isVoterCard = isVoterCard.value,
+                                    adharNumber = aadharNumber.value,
+                                    phoneNumber = phoneNumber.value
+                                ),
+                                SurveyState.INPROGRESS
+                            )
                         )
                     }
                     navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId")
                 },
                 negativeButtonOnClick = {
-                    navigateBackToDidiScreen(navController)
+                    navigateBackToSurveyeeListScreen(navController)
                 }
             )
         }
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(horizontal = 6.dp)
                 .padding(top = it.calculateTopPadding() + 6.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp)
@@ -135,9 +166,42 @@ fun BaseLineStartScreen(
                     openSettings(localContext)
                 }
             }
-            TextDetails(title = "Didi: ", data = didi.value.didiName)
-            TextDetails(title = "Dada: ", data = didi.value.dadaName)
-            TextDetails(title = "Caste: ", data = didi.value.casteId.toString())
+            TextDetails(title = "Didi : ", data = didi.value.didiName)
+            TextDetails(title = "Dada : ", data = didi.value.dadaName)
+            TextDetails(title = "Caste : ", data = didi.value.casteId.toString())
+            YesNoButtonComponent(
+                defaultValue = didiInfoDetail.value?.isAdharCard ?: -1,
+                title = "Does Didi have aadhar card?"
+            ) {
+                isAdharCard.value = it
+            }
+            if (isAdharCard.value == 1) {
+                EditTextWithTitleComponent(
+                    defaultValue = didiInfoDetail.value?.adharNumber ?: "",
+                    title = "Enter Didi's aadhar number",
+                    isOnlyNumber = true,
+                    maxLength = 14
+                ) {
+                    aadharNumber.value = it
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            YesNoButtonComponent(
+                defaultValue = didiInfoDetail.value?.isVoterCard ?: -1,
+                title = "Does didi have voter card?"
+            ) {
+                isVoterCard.value = it
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            EditTextWithTitleComponent(
+                defaultValue = didiInfoDetail.value?.phoneNumber ?: "",
+                title = "Enter didi's family phone number",
+                isOnlyNumber = true,
+                maxLength = 10
+            ) {
+                phoneNumber.value = it
+            }
             Spacer(modifier = Modifier.height(10.dp))
 
             var hasImage by remember {
@@ -577,13 +641,12 @@ fun BaseLineStartScreen(
 @Composable
 fun TextDetails(title: String, data: String) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Text(text = title, style = smallTextStyleWithNormalWeight)
+        Text(text = title, style = defaultTextStyle, color = textColorDark)
         Text(
             text = data, style = smallTextStyle
         )
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
