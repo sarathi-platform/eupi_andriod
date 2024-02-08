@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material3.LinearProgressIndicator
@@ -34,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.navigation.home.navigateToBaseLineStartScreen
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.MoveSurveyeesUpdateBannerComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
@@ -49,7 +47,6 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.progressIndicatorColor
-import com.nrlm.baselinesurvey.ui.theme.red
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.trackColor
@@ -191,7 +188,12 @@ fun AllSurveyeeListTab(
                                 showCheckBox = !isSelectionEnabled.value,
                                 fromScreen = ALL_TAB,
                                 checkBoxChecked = { surveyeeEntity, isChecked ->
-                                    onActionEvent(SurveyeeListScreenActions.CheckBoxClicked(isChecked, surveyeeEntity))
+                                    onActionEvent(
+                                        SurveyeeListScreenActions.CheckBoxClicked(
+                                            isChecked,
+                                            surveyeeEntity
+                                        )
+                                    )
                                 },
                                 moveDidiToThisWeek = { surveyeeCardState, moveToThisWeek ->
                                     viewModel.onEvent(
@@ -201,6 +203,8 @@ fun AllSurveyeeListTab(
                                         )
                                     )
                                 },
+                                //Todo add proper tex
+                                primaryButtonText = "Start " + viewModel.surveyName.value.split(" ")[1],
                                 buttonClicked = { buttonName, surveyeeId ->
                                     handleButtonClick(buttonName, surveyeeId, navController)
                                 }

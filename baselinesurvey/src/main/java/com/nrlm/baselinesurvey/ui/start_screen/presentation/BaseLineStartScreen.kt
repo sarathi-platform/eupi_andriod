@@ -168,7 +168,7 @@ fun BaseLineStartScreen(
             }
             TextDetails(title = "Didi : ", data = didi.value.didiName)
             TextDetails(title = "Dada : ", data = didi.value.dadaName)
-            TextDetails(title = "Caste : ", data = didi.value.casteId.toString())
+            TextDetails(title = "Caste : ", data = "ST")
             YesNoButtonComponent(
                 defaultValue = didiInfoDetail.value?.isAdharCard ?: -1,
                 title = "Does Didi have aadhar card?"

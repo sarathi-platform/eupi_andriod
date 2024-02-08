@@ -70,6 +70,7 @@ fun SurveyeeCardComponent(
     surveyeeState: SurveyeeCardState,
     showCheckBox: Boolean,
     fromScreen: String,
+    primaryButtonText: String = "Start Baseline",
     checkBoxChecked: (surveyeeEntity: SurveyeeEntity, isChecked: Boolean) -> Unit,
     buttonClicked: (buttonName: ButtonName, surveyeeId: Int) -> Unit,
     moveDidiToThisWeek: (surveyeeCardState: SurveyeeCardState, moveToThisWeek: Boolean) -> Unit
@@ -256,7 +257,7 @@ fun SurveyeeCardComponent(
                                 ),
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text(text = "Start Baseline", style = smallTextStyleMediumWeight)
+                                Text(text = primaryButtonText, style = smallTextStyleMediumWeight)
                             }
                         }
                     }
@@ -349,12 +350,12 @@ fun SurveyeeCardPreview() {
             ),
             showCheckBox = true,
             fromScreen = ALL_TAB,
-            checkBoxChecked = { surveyeeEntity, isChecked ->  
-                
+            checkBoxChecked = { surveyeeEntity, isChecked ->
+
             },
-            moveDidiToThisWeek = {
-                    surveyeeCardState: SurveyeeCardState, moveToThisWeek: Boolean ->
+            moveDidiToThisWeek = { surveyeeCardState: SurveyeeCardState, moveToThisWeek: Boolean ->
             },
+            primaryButtonText = "",
             buttonClicked = { buttonName, surveyeeId ->
 
             }
