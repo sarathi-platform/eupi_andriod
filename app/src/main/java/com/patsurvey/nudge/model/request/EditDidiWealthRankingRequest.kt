@@ -14,7 +14,11 @@ data class EditDidiWealthRankingRequest(
     @SerializedName("localModifiedDate") var localModifiedDate: Long?=0,
     @SerializedName("rankingEdit") var rankingEdit: Boolean = true,
     @SerializedName("shgFlag") var shgFlag: String? = BLANK_STRING,
-    @SerializedName("ableBodiedFlag") var ableBodiedFlag: String? = BLANK_STRING
+    @SerializedName("ableBodiedFlag") var ableBodiedFlag: String? = BLANK_STRING,
+    @SerializedName("villageId") var villageId: Int,
+    @SerializedName("name") var name: String = "",
+    @SerializedName("guardianName") var guardianName: String = "",
+    @SerializedName("address") var address: String = "",
 ) {
     fun toJson() : JsonObject {
         val jsonObject = JsonObject()

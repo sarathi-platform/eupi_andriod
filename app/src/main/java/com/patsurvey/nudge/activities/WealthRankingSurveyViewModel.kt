@@ -266,8 +266,14 @@ class WealthRankingSurveyViewModel @Inject constructor(
                     val didiWealthRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                     val didiStepRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                     needToPostDidiList.forEach { didi ->
-                        didiWealthRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, rankingEdit = false, localModifiedDate = System.currentTimeMillis()))
-                        didiStepRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, rankingEdit = false, localModifiedDate = System.currentTimeMillis()))
+                        didiWealthRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, rankingEdit = false, localModifiedDate = System.currentTimeMillis(),  name = didi.name,
+                            address = didi.address,
+                            guardianName = didi.guardianName,
+                            villageId = didi.villageId,))
+                        didiStepRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, rankingEdit = false, localModifiedDate = System.currentTimeMillis(),   name = didi.name,
+                            address = didi.address,
+                            guardianName = didi.guardianName,
+                            villageId = didi.villageId,))
                     }
                     didiWealthRequestList.addAll(didiStepRequestList)
                     NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> didiRequestList: $didiWealthRequestList")

@@ -157,6 +157,7 @@ class SurveySummaryViewModel @Inject constructor(
                         calculateDidiScore(didiId = didi.id)
                         delay(100)
                         didi.score = repository.getDidiScoreFromDb(didi.id)
+                        val didiEntity = repository.getDidiFromDB(didi.id)
                         var qList: ArrayList<AnswerDetailDTOListItem> = arrayListOf()
                         val needToPostQuestionsList = repository.getAllNeedToPostQuesForDidi(didi.id)
                         if (needToPostQuestionsList.isNotEmpty()) {
@@ -246,7 +247,7 @@ class SurveySummaryViewModel @Inject constructor(
                             }
                         scoreDidiList.add(
                             EditDidiWealthRankingRequest(
-                                id = if (didi.serverId == 0) didi.id else didi.serverId,
+                                id =  didi.serverId,
                                 score = didi.score,
                                 comment = comment,
                                 type = if (repository.prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
@@ -264,7 +265,11 @@ class SurveySummaryViewModel @Inject constructor(
                                 },
                                 rankingEdit = false,
                                 shgFlag = SHGFlag.fromInt(didi.shgFlag).name,
-                                ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name
+                                ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name,
+                                name = didi.name,
+                                address = didiEntity.address,
+                                guardianName = didiEntity.guardianName,
+                                villageId = didi.villageId,
                             )
                         )
                         answeredDidiList.add(
@@ -605,8 +610,11 @@ class SurveySummaryViewModel @Inject constructor(
                                             comment = if ((didi.score
                                                     ?: 0.0) < passingScore
                                             ) LOW_SCORE else "",
-                                            localModifiedDate = System.currentTimeMillis()
-                                        )
+                                            localModifiedDate = System.currentTimeMillis(),
+                                            name = didi.name,
+                                            address = didi.address,
+                                            guardianName = didi.guardianName,
+                                            villageId = didi.villageId,                                        )
                                     )
                                 )
                                 if (updatedPatResponse.status.equals(SUCCESS, true)) {
@@ -635,7 +643,11 @@ class SurveySummaryViewModel @Inject constructor(
                                                 result = PatSurveyStatus.NOT_AVAILABLE.name,
                                                 score = 0.0,
                                                 comment = TYPE_EXCLUSION,
-                                                localModifiedDate = System.currentTimeMillis()
+                                                localModifiedDate = System.currentTimeMillis(),
+                                                name = didi.name,
+                                                address = didi.address,
+                                                guardianName = didi.guardianName,
+                                                villageId = didi.villageId,
                                             )
                                         )
                                     )

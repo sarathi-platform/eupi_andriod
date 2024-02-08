@@ -512,7 +512,11 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     }
                     didiRequestList.add(
                         EditDidiWealthRankingRequest(
-                            id = if (didi.serverId == 0) didi.id else didi.serverId,
+                            name = didi.name,
+                            address = didi.address,
+                            guardianName = didi.guardianName,
+                            villageId = didi.villageId,
+                            id = didi.serverId,
                             score = didi.score,
                             comment =comment,
                             type = BPC_SURVEY_CONSTANT,
@@ -688,7 +692,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                 }
                             scoreDidiList.add(
                                 EditDidiWealthRankingRequest(
-                                    id = if (didi.serverId == 0) didi.id else didi.serverId,
+                                    id =  didi.serverId,
                                     score = didi.score,
                                     comment = comment,
                                     type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
@@ -706,7 +710,8 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                     },
                                     rankingEdit = false,
                                     shgFlag = SHGFlag.fromInt(didi.shgFlag).name,
-                                    ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name
+                                    ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name,
+                                    villageId =  didi.villageId
                                 )
                             )
                             val patSummarySaveRequest = PATSummarySaveRequest(

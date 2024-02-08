@@ -283,10 +283,14 @@ class FormPictureScreenViewModel @Inject constructor(
 
                                 val updateVoStatusRequest = listOf(
                                     EditDidiWealthRankingRequest(
-                                        if (didi.serverId == 0) didi.id else didi.serverId,
+                                         didi.serverId,
                                         StepType.VO_ENDROSEMENT.name,
                                         ACCEPTED,
-                                        rankingEdit = false
+                                        rankingEdit = false,
+                                        name = didi.name,
+                                        address = didi.address,
+                                        guardianName = didi.guardianName,
+                                        villageId = didi.villageId,
                                     )
                                 )
                                 NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> updateVoStatusRequest:" +
@@ -339,10 +343,14 @@ class FormPictureScreenViewModel @Inject constructor(
 
                                 val updateVoStatusRequest = listOf(
                                     EditDidiWealthRankingRequest(
-                                        if (didi.serverId == 0) didi.id else didi.serverId,
+                                        didi.serverId,
                                         StepType.VO_ENDROSEMENT.name,
                                         DidiEndorsementStatus.REJECTED.name,
-                                        rankingEdit = false
+                                        rankingEdit = false,
+                                        name = didi.name,
+                                        address = didi.address,
+                                        guardianName = didi.guardianName,
+                                        villageId = didi.villageId,
                                     )
                                 )
                                 NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> updateVoStatusRequest:" +

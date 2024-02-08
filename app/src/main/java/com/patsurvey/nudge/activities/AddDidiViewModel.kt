@@ -298,7 +298,7 @@ class AddDidiViewModel @Inject constructor(
                 if (didiList.isNotEmpty()) {
                     val didiRequestList = arrayListOf<EditDidiRequest>()
                     didiList.forEach { didi->
-                        didiRequestList.add(EditDidiRequest(didi.serverId,didi.name,didi.address,didi.guardianName,didi.castId,didi.cohortId))
+                        didiRequestList.add(EditDidiRequest(didi.serverId,didi.name,didi.address,didi.guardianName,didi.castId,didi.cohortId,didi.villageId,didi.cohortName))
                     }
                     NudgeLogger.d("AddDidiViewModel", "updateDidiToNetwork -> didiList: $didiList")
                     val response = addDidiRepository.updateDidis(didiRequestList)
@@ -1435,7 +1435,9 @@ class AddDidiViewModel @Inject constructor(
                             didi.address,
                             didi.guardianName,
                             didi.castId,
-                            didi.cohortId
+                            didi.cohortId,
+                            didi.villageId,
+                            didi.cohortName
                         )
                     )
                     val response = addDidiRepository.updateDidis(didiRequestList)

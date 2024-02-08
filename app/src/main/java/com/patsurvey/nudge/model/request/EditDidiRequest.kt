@@ -18,6 +18,8 @@ data class EditDidiRequest(
     var castId: Int,
     @SerializedName("cohortId")
     var cohortId: Int,
+    @SerializedName("villageId") var villageId : Int,
+    @SerializedName("cohortName") var cohortName : String,
 ) {
     fun toJson() : JsonObject {
         val jsonObject = JsonObject()
@@ -27,6 +29,8 @@ data class EditDidiRequest(
         jsonObject.addProperty("guardianName", guardianName)
         jsonObject.addProperty("castId", castId)
         jsonObject.addProperty("cohortId", cohortId)
+        jsonObject.addProperty("villageId", villageId)
+        jsonObject.addProperty("cohortName", cohortName)
         return jsonObject
     }
 }
