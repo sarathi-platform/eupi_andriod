@@ -170,14 +170,14 @@ fun BaseLineStartScreen(
             TextDetails(title = "Dada : ", data = didi.value.dadaName)
             TextDetails(title = "Caste : ", data = "ST")
             YesNoButtonComponent(
-                defaultValue = didiInfoDetail.value?.isAdharCard ?: -1,
+               // defaultValue = didiInfoDetail.value?.isAdharCard ?: -1,
                 title = "Does Didi have aadhar card?"
             ) {
                 isAdharCard.value = it
             }
             if (isAdharCard.value == 1) {
                 EditTextWithTitleComponent(
-                    defaultValue = didiInfoDetail.value?.adharNumber ?: "",
+                    //defaultValue = didiInfoDetail.value?.adharNumber ?: "",
                     title = "Enter Didi's aadhar number",
                     isOnlyNumber = true,
                     maxLength = 14
@@ -188,14 +188,14 @@ fun BaseLineStartScreen(
             }
             Spacer(modifier = Modifier.height(8.dp))
             YesNoButtonComponent(
-                defaultValue = didiInfoDetail.value?.isVoterCard ?: -1,
+                //defaultValue = didiInfoDetail.value?.isVoterCard ?: -1,
                 title = "Does didi have voter card?"
             ) {
                 isVoterCard.value = it
             }
             Spacer(modifier = Modifier.height(10.dp))
             EditTextWithTitleComponent(
-                defaultValue = didiInfoDetail.value?.phoneNumber ?: "",
+                // defaultValue = didiInfoDetail.value?.phoneNumber ?: "",
                 title = "Enter didi's family phone number",
                 isOnlyNumber = true,
                 maxLength = 10
