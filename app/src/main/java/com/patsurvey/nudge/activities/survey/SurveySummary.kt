@@ -244,6 +244,7 @@ fun SurveySummary(
                             }
                         })
                     } else {
+                        surveySummaryViewModel.writeBpcMatchScoreEvent()
                         surveySummaryViewModel.repository.prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + surveySummaryViewModel.repository.prefRepo.getSelectedVillage().id, false)
                     }
 
