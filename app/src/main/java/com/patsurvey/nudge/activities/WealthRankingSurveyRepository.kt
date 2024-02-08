@@ -6,7 +6,6 @@ import com.nudge.core.KEY_PARENT_ENTITY_ADDRESS
 import com.nudge.core.KEY_PARENT_ENTITY_DADA_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_DIDI_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_TOLA_NAME
-import com.nudge.core.KEY_PARENT_ENTITY_VILLAGE_ID
 import com.nudge.core.SELECTION_MISSION
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
@@ -36,7 +35,6 @@ import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
-import com.patsurvey.nudge.model.request.getAddCohortRequestPayloadFromString
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.WorkFlowResponse
 import com.patsurvey.nudge.network.interfaces.ApiService
@@ -173,7 +171,7 @@ class WealthRankingSurveyRepository @Inject constructor(
 
                 var saveWealthRankingEvent = Events(
                     name = eventName.name,
-                    type = eventType.name,
+                    type = eventName.topicName,
                     createdBy = prefRepo.getUserId(),
                     mobile_number = prefRepo.getMobileNumber(),
                     request_payload = requestPayload,

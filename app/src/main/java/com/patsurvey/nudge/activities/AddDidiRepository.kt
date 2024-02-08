@@ -44,7 +44,6 @@ import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
-import com.patsurvey.nudge.model.request.AddCohortRequest
 import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.model.request.DeleteDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiRequest
@@ -206,7 +205,7 @@ class AddDidiRepository @Inject constructor(
 
                 var addDidiEvent = Events(
                     name = eventName.name,
-                    type = eventType.name,
+                    type = eventName.topicName,
                     createdBy = prefRepo.getUserId(),
                     mobile_number = prefRepo.getMobileNumber(),
                     request_payload = requestPayload,
@@ -235,7 +234,7 @@ class AddDidiRepository @Inject constructor(
 
                 var updateDidiEvent = Events(
                     name = eventName.name,
-                    type = eventType.name,
+                    type = eventName.topicName,
                     createdBy = prefRepo.getUserId(),
                     mobile_number = prefRepo.getMobileNumber(),
                     request_payload = requestPayload,
@@ -264,7 +263,7 @@ class AddDidiRepository @Inject constructor(
 
                 var deleteDidiRequest = Events(
                     name = eventName.name,
-                    type = eventType.name,
+                    type = eventName.topicName,
                     createdBy = prefRepo.getUserId(),
                     mobile_number = prefRepo.getMobileNumber(),
                     request_payload = requestPayload,

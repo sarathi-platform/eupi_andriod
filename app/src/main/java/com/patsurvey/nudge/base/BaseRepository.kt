@@ -5,13 +5,11 @@ import com.nudge.core.EventSyncStatus
 import com.nudge.core.SELECTION_MISSION
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
-import com.nudge.core.database.entities.getDependentEventsId
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
 import com.nudge.core.getSizeInLong
 import com.nudge.core.json
 import com.nudge.core.model.MetadataDto
-import com.nudge.core.model.getMetaDataDtoFromString
 import com.nudge.core.toDate
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.analytics.AnalyticsHelper
@@ -47,7 +45,8 @@ import com.patsurvey.nudge.utils.TIMEOUT_ERROR_MSG
 import com.patsurvey.nudge.utils.UNAUTHORISED_MESSAGE
 import com.patsurvey.nudge.utils.UNREACHABLE_ERROR_MSG
 import com.patsurvey.nudge.utils.getParentEntityMapForEvent
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Job
 import retrofit2.HttpException
 import retrofit2.Response
 import java.io.IOException
@@ -97,8 +96,8 @@ abstract class BaseRepository{
         val requestPayload = patSummarySaveRequest.json()
 
         var savePatSummeryEvent = Events(
-            name = eventName.topicName,
-            type = eventType.name,
+            name = eventName.name,
+            type = eventName.topicName,
             createdBy = prefRepo.getUserId(),
             mobile_number = prefRepo.getMobileNumber(),
             request_payload = requestPayload,
@@ -121,7 +120,7 @@ abstract class BaseRepository{
         val requestPayload = patScoreSaveEvent.json()
         var savePatScoreEvent = Events(
             name = eventName.name,
-            type = eventType.name,
+            type = eventName.topicName,
             createdBy = prefRepo.getUserId(),
             mobile_number = prefRepo.getMobileNumber(),
             request_payload = requestPayload,
@@ -173,7 +172,7 @@ abstract class BaseRepository{
 
         val updateWorkflowEvent = Events(
             name = eventName.name,
-            type = eventType.name,
+            type = eventName.topicName,
             createdBy = prefRepo.getUserId(),
             mobile_number = prefRepo.getMobileNumber(),
             request_payload = requestPayload,

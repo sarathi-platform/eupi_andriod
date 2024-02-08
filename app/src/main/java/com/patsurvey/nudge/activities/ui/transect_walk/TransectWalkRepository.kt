@@ -38,8 +38,12 @@ import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.TolaApiResponse
 import com.patsurvey.nudge.model.response.WorkFlowResponse
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.NudgeCore
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.getParentEntityMapForEvent
+import com.patsurvey.nudge.utils.updateLastSyncTime
 import javax.inject.Inject
-import com.patsurvey.nudge.utils.*
 
 
 class TransectWalkRepository @Inject constructor(
@@ -104,7 +108,7 @@ class TransectWalkRepository @Inject constructor(
                 val requestPayload = AddCohortRequest.getRequestObjectForTola(eventItem as TolaEntity).json()
                 val addTolaEvent = Events(
                     name = eventName.name,
-                    type = eventType.name,
+                    type = eventName.topicName,
                     createdBy = prefRepo.getUserId(),
                     mobile_number = prefRepo.getMobileNumber(),
                     modified_date = System.currentTimeMillis().toDate(),
@@ -125,7 +129,7 @@ class TransectWalkRepository @Inject constructor(
                 val requestPayload = EditCohortRequest.getRequestObjectForTola(eventItem as TolaEntity).json()
                 var updateTolaEvent = Events(
                     name = eventName.name,
-                    type = eventName.name,
+                    type = eventName.topicName,
                     createdBy = prefRepo.getUserId(),
                     mobile_number = prefRepo.getMobileNumber(),
                     modified_date = System.currentTimeMillis().toDate(),
@@ -153,7 +157,7 @@ class TransectWalkRepository @Inject constructor(
                 val requestPayload = DeleteTolaRequest.getRequestObjectForDeleteTola(eventItem as TolaEntity).json()
                 val deleteTolaEvent = Events(
                     name = eventName.name,
-                    type = eventName.name,
+                    type = eventName.topicName,
                     createdBy = prefRepo.getUserId(),
                     mobile_number = prefRepo.getMobileNumber(),
                     modified_date = System.currentTimeMillis().toDate(),
