@@ -5,10 +5,10 @@ import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import javax.inject.Inject
 
 class MissionScreenRepositoryImpl @Inject constructor(
-    private val missionEntityDao: MissionEntityDao,
+    private val missionEntityDao: MissionEntityDao
 ) : MissionScreenRepository {
-    override suspend fun getMissions(): List<MissionEntity>? {
-        return missionEntityDao.getAllMission()
+    override suspend fun getMissionsFromDB(): List<MissionEntity> {
+        return missionEntityDao.getMissions()
     }
 
     override fun getLanguageId(): String {

@@ -11,12 +11,11 @@ import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
 import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
-import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
-import com.nrlm.baselinesurvey.database.entity.MissionEntity
+import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
-import com.nrlm.baselinesurvey.model.datamodel.MissionActivityModel
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.utils.createMultiLanguageVillageRequest
 import javax.inject.Inject
@@ -26,7 +25,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
     private val surveyeeEntityDao: SurveyeeEntityDao,
     private val languageListDao: LanguageListDao,
-    private val missionEntityDao: MissionEntityDao
+    private val activityTaskDao: ActivityTaskDao
 ): SurveyeeListScreenRepository {
 
     override suspend fun getSurveyeeList(
@@ -34,9 +33,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
         activityName: String
     ): List<SurveyeeEntity> {
         val didiList = mutableListOf<SurveyeeEntity>()
-        getMission(missionId = missionId).activities.filter {
-            it.activityName == activityName
-        }.firstOrNull()?.tasks?.forEach { task ->
+        getActivityTasks(missionId = missionId, activityName = activityName).forEach { task ->
             if (surveyeeEntityDao.isDidiExist(task.didiId)) {
                 didiList.add(surveyeeEntityDao.getDidi(task.didiId))
             }
@@ -118,20 +115,10 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
         surveyeeEntityDao.moveSurveyeeToThisWeek(didiId, moveDidisToNextWeek)
     }
 
-    override suspend fun getMission(missionId: Int): MissionEntity {
-        return missionEntityDao.getMission(missionId)
-    }
-
-    override suspend fun getSelectedActivity(
+    override suspend fun getActivityTasks(
         missionId: Int,
         activityName: String
-    ): MissionActivityModel? {
-
-      val activity=  getMission(missionId).activities.filter {
-          it.activityName == activityName
-        }
-
-        return activity.firstOrNull()
+    ): List<ActivityTaskEntity> {
+        return activityTaskDao.getActivityTask(missionId, activityName)
     }
-
 }

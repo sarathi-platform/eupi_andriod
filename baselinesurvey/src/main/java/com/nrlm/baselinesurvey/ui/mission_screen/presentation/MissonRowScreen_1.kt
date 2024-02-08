@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
-import com.nrlm.baselinesurvey.model.datamodel.MissionTaskModel
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
@@ -47,14 +46,6 @@ import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
 
-private fun getTask(mission: MissionEntity): List<MissionTaskModel?> {
-    val missionTask = mutableListOf<MissionTaskModel>()
-
-    mission.activities.forEach { activity ->
-        missionTask.addAll(activity.tasks)
-    }
-    return missionTask
-}
 
 @Composable
 fun MissonRowScreen_1(
@@ -64,9 +55,9 @@ fun MissonRowScreen_1(
     onViewStatusClick: () -> Unit,
     onStartClick: () -> Unit
 ) {
-    val missionTask = getTask(mission)
+    val missionTask = mission.activityTaskSize
     val curPercentage = animateFloatAsState(
-        targetValue = 0 / missionTask.size.toFloat(),
+        targetValue = 0 / mission.activityTaskSize.toFloat(),
         label = "",
         animationSpec = tween()
     )
@@ -116,7 +107,7 @@ fun MissonRowScreen_1(
                 )
             }
             Text(
-                text = "Task Pending - 0/${missionTask.size}",
+                text = "Task Pending - 0/${mission.activityTaskSize}",
                 fontFamily = NotoSans,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,

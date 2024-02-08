@@ -65,8 +65,9 @@ fun AllSurveyeeListTab(
     isSelectionEnabled: MutableState<Boolean>,
     navController: NavController,
     onActionEvent: (surveyeeListScreenActions: SurveyeeListScreenActions) -> Unit,
-    modifier: Modifier = Modifier
-
+    modifier: Modifier = Modifier,
+    activityName: String,
+    activityDate: String
 ) {
 
     val surveyeeList = viewModel.filteredSurveyeeListState.value
@@ -109,7 +110,7 @@ fun AllSurveyeeListTab(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 10.dp),
-                                text = viewModel.surveyName.value,
+                                text = activityName,
                                 style = largeTextStyle,
                                 color = blueDark
                             )
@@ -117,7 +118,7 @@ fun AllSurveyeeListTab(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 10.dp, bottom = 10.dp),
-                                text = stringResource(id = R.string.due_by_x, viewModel.endDateOfActivity.value),
+                                text = stringResource(id = R.string.due_by_x, activityDate),
                                 style = newMediumTextStyle,
                                 color = black100Percent
                             )
@@ -204,7 +205,7 @@ fun AllSurveyeeListTab(
                                     )
                                 },
                                 //Todo add proper tex
-                                primaryButtonText = "Start " + viewModel.surveyName.value.split(" ")[1],
+                                primaryButtonText = "Start " + activityName.split(" ")[1],
                                 buttonClicked = { buttonName, surveyeeId ->
                                     handleButtonClick(buttonName, surveyeeId, navController)
                                 }

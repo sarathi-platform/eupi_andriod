@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class GetMissionListFromDbUseCase @Inject constructor(private val repository: MissionScreenRepository) {
     suspend operator fun invoke(): List<MissionEntity>? {
-        return repository.getMissions()
+        return repository.getMissionsFromDB()
     }
 
 }

@@ -5,10 +5,12 @@ import com.nrlm.baselinesurvey.activity.domain.repository.MainActivityRepository
 import com.nrlm.baselinesurvey.activity.domain.use_case.IsLoggedInUseCase
 import com.nrlm.baselinesurvey.activity.domain.use_case.MainActivityUseCase
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.DidiInfoDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.FormQuestionResponseDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
+import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
@@ -53,6 +55,10 @@ import com.nrlm.baselinesurvey.ui.mission_screen.domain.repository.MissionScreen
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.FetchMissionDataFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.GetMissionListFromDbUseCase
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.MissionScreenUseCase
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.repository.MissionSummaryScreenRepository
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.repository.MissionSummaryScreenRepositoryImpl
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.GetMissionActivitiesFromDBUseCase
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.MissionSummaryScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepository
 import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.GetSectionAnswersUseCase
@@ -63,8 +69,8 @@ import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.SaveSectionAns
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.UpdateSectionProgressUseCase
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.repository.FormQuestionResponseRepository
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.repository.FormQuestionResponseRepositoryImpl
-import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.GetFormQuestionResponseUseCase
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.FormQuestionScreenUseCase
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.GetFormQuestionResponseUseCase
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.SaveFormQuestionResponseUseCase
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.UpdateFormQuestionResponseUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.repository.SectionListScreenRepository
@@ -146,6 +152,18 @@ object BaselineModule {
 
     @Provides
     @Singleton
+    fun provideMissionSummaryScreenUseCase(
+        missionSummaryScreenRepository: MissionSummaryScreenRepository
+    ): MissionSummaryScreenUseCase {
+        return MissionSummaryScreenUseCase(
+            getMissionActivitiesFromDBUseCase = GetMissionActivitiesFromDBUseCase(
+                missionSummaryScreenRepository
+            )
+        )
+    }
+
+    @Provides
+    @Singleton
     fun provideLanguageScreenRepository(
         prefRepo: PrefRepo,
         apiService: ApiService,
@@ -200,14 +218,14 @@ object BaselineModule {
         apiService: ApiService,
         surveyeeEntityDao: SurveyeeEntityDao,
         languageListDao: LanguageListDao,
-        missionEntityDao: MissionEntityDao
+        activityTaskDao: ActivityTaskDao
     ): SurveyeeListScreenRepository {
         return SurveyeeListScreenRepositoryImpl(
             prefRepo,
             apiService,
             surveyeeEntityDao,
             languageListDao,
-            missionEntityDao
+            activityTaskDao
         )
     }
 
@@ -327,8 +345,9 @@ object BaselineModule {
         sectionEntityDao: SectionEntityDao,
         questionEntityDao: QuestionEntityDao,
         optionItemDao: OptionItemDao,
-        missionEntityDao: MissionEntityDao
-
+        missionEntityDao: MissionEntityDao,
+        missionActivityDao: MissionActivityDao,
+        activityTaskDao: ActivityTaskDao,
     ): DataLoadingScreenRepository {
         return DataLoadingScreenRepositoryImpl(
             prefRepo,
@@ -339,7 +358,9 @@ object BaselineModule {
             sectionEntityDao,
             questionEntityDao,
             optionItemDao,
-            missionEntityDao
+            missionEntityDao,
+            missionActivityDao,
+            activityTaskDao
         )
     }
 
@@ -414,7 +435,9 @@ object BaselineModule {
                 formQuestionResponse
             ),
             saveFormQuestionResponseUseCase = SaveFormQuestionResponseUseCase(formQuestionResponse),
-            updateFormQuestionResponseUseCase = UpdateFormQuestionResponseUseCase(formQuestionResponse)
+            updateFormQuestionResponseUseCase = UpdateFormQuestionResponseUseCase(
+                formQuestionResponse
+            )
         )
     }
 
@@ -422,6 +445,12 @@ object BaselineModule {
     @Singleton
     fun provideMissionRepository(missionEntityDao: MissionEntityDao): MissionScreenRepository {
         return MissionScreenRepositoryImpl(missionEntityDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMissionSummaryRepository(missionActivityDao: MissionActivityDao): MissionSummaryScreenRepository {
+        return MissionSummaryScreenRepositoryImpl(missionActivityDao)
     }
 
 }

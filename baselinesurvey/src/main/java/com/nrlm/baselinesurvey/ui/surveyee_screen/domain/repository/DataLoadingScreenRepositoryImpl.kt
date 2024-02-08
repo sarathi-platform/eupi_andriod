@@ -9,14 +9,18 @@ import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
 import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
+import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
+import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
+import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
@@ -42,7 +46,9 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     val sectionEntityDao: SectionEntityDao,
     val questionEntityDao: QuestionEntityDao,
     val optionItemDao: OptionItemDao,
-    val missionEntityDao: MissionEntityDao
+    val missionEntityDao: MissionEntityDao,
+    val missionActivityDao: MissionActivityDao,
+    val activityTaskDao: ActivityTaskDao
 ) : DataLoadingScreenRepository {
     override suspend fun fetchLocalLanguageList(): List<LanguageEntity> {
         return languageListDao.getAllLanguages()
@@ -183,12 +189,28 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         return apiService.getBaseLineMission(missionRequest)
     }
 
-    override suspend fun saveAllMissionToDB(missions: List<MissionEntity>) {
-        missionEntityDao.insertMissionAll(missions)
+    override suspend fun saveMissionToDB(missions: MissionEntity) {
+        missionEntityDao.insertMission(missions)
     }
 
-    override suspend fun deleteAllMissionToDB() {
+    override suspend fun saveMissionsActivityToDB(activities: MissionActivityEntity) {
+        missionActivityDao.insertMissionActivity(activities)
+    }
+
+    override suspend fun saveActivityTaskToDB(tasks: ActivityTaskEntity) {
+        activityTaskDao.insertActivityTask(tasks)
+    }
+
+    override suspend fun deleteMissionsFromDB() {
         missionEntityDao.deleteMissions()
+    }
+
+    override suspend fun deleteMissionActivitiesFromDB() {
+        missionActivityDao.deleteActivities()
+    }
+
+    override suspend fun deleteActivityTasksFromDB() {
+        activityTaskDao.deleteActivityTask()
     }
 
 }

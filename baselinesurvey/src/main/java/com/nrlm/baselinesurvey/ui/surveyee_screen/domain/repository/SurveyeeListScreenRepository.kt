@@ -1,8 +1,7 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository
 
-import com.nrlm.baselinesurvey.database.entity.MissionEntity
+import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
-import com.nrlm.baselinesurvey.model.datamodel.MissionActivityModel
 
 interface SurveyeeListScreenRepository {
 
@@ -13,9 +12,7 @@ interface SurveyeeListScreenRepository {
     suspend fun moveSurveyeesToThisWeek(didiIdList: Set<Int>, moveDidisToNextWeek: Boolean)
 
     suspend fun moveSurveyeeToThisWeek(didiId: Int, moveDidisToNextWeek: Boolean)
-    suspend fun getMission(missionId: Int): MissionEntity
-
-    suspend fun getSelectedActivity(missionId: Int, activityName: String): MissionActivityModel?
+    suspend fun getActivityTasks(missionId: Int, activityName: String): List<ActivityTaskEntity>
 
 
 }

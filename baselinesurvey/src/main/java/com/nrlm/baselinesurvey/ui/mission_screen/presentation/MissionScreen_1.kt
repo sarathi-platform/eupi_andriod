@@ -107,7 +107,7 @@ fun MissionScreen_1(
                         mission = mission,
                         missionDueDate = mission.startDate,
                         onViewStatusClick = {},
-                        onStartClick = { navController.navigate("${MISSION_SUMMARY_SCREEN_ROUTE_NAME}/${mission.missionId}") })
+                        onStartClick = { navController.navigate("${MISSION_SUMMARY_SCREEN_ROUTE_NAME}/${mission.missionId}/${mission.missionName}/${mission.endDate}") })
                 }
             }
         }

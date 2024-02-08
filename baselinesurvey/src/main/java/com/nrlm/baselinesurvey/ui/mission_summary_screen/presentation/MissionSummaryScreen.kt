@@ -1,4 +1,4 @@
-package com.nrlm.baselinesurvey.ui.mission_screen.presentation
+package com.nrlm.baselinesurvey.ui.mission_summary_screen.presentation
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -23,7 +22,7 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToMissionScreen
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.StepsBox
-import com.nrlm.baselinesurvey.ui.mission_screen.viewmodel.MissionViewModel
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.viewModel.MissionSummaryViewModel
 import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.inprogressYellow
@@ -32,18 +31,19 @@ import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Preview(showBackground = true)
 @Composable
 fun MissionSummaryScreen(
     navController: NavController = rememberNavController(),
     missionId: Int = 0,
-    viewModel: MissionViewModel = hiltViewModel()
+    missionName: String,
+    missionDate: String,
+    viewModel: MissionSummaryViewModel = hiltViewModel()
 ) {
-    var missions =
-        viewModel.filterMissionList.value.filter { s -> missionId == s.missionId }
+    val activities =
+        viewModel.activities.value
 
     LaunchedEffect(key1 = true) {
-        viewModel.init()
+        viewModel.init(missionId)
     }
     Scaffold(bottomBar = {
         Box(
@@ -63,13 +63,13 @@ fun MissionSummaryScreen(
 
     }
     ) {
-        if (missions.isNotEmpty()) {
+        if (activities.isNotEmpty()) {
             Column(modifier = Modifier.fillMaxSize()) {
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 10.dp),
-                    text = missions[0].missionName,
+                    text = missionName,
                     style = largeTextStyle,
                     color = blueDark
                 )
@@ -77,7 +77,7 @@ fun MissionSummaryScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 10.dp),
-                    text = stringResource(id = R.string.due_by_x,missions[0].endDate),
+                    text = stringResource(id = R.string.due_by_x, missionDate),
                     style = newMediumTextStyle,
                     color = black100Percent
 
@@ -85,18 +85,21 @@ fun MissionSummaryScreen(
                 LazyColumn(
                 ) {
                     itemsIndexed(
-                        items = missions[0].activities ?: emptyList()
+                        items = activities
                     ) { index, activity ->
                         StepsBox(
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                             boxTitle = activity.activityName,
-                            subTitle = stringResource(id =R.string. x_dii_pending,activity.tasks.size),
+                            subTitle = stringResource(
+                                id = R.string.x_dii_pending,
+                                activity.activityTaskSize
+                            ),
                             stepNo = activity.activityTypeId,
                             index = 1,
                             iconResourceId = R.drawable.ic_mission_inprogress,
                             backgroundColor = inprogressYellow,
                             onclick = {
-                                navController.navigate("add_didi_graph/${activity.activityName}/${missionId}")
+                                navController.navigate("add_didi_graph/${activity.activityName}/${missionId}/${activity.endDate}")
                             })
                     }
 

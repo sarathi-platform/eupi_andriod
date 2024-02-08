@@ -11,9 +11,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
+import com.nrlm.baselinesurvey.ARG_ACTIVITY_DATE
 import com.nrlm.baselinesurvey.ARG_ACTIVITY_ID
 import com.nrlm.baselinesurvey.ARG_DIDI_ID
+import com.nrlm.baselinesurvey.ARG_MISSION_DATE
 import com.nrlm.baselinesurvey.ARG_MISSION_ID
+import com.nrlm.baselinesurvey.ARG_MISSION_NAME
 import com.nrlm.baselinesurvey.ARG_QUESTION_ID
 import com.nrlm.baselinesurvey.ARG_QUESTION_NAME
 import com.nrlm.baselinesurvey.ARG_SECTION_ID
@@ -23,7 +26,7 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.mission_screen.presentation.MissionScreen_1
-import com.nrlm.baselinesurvey.ui.mission_screen.presentation.MissionSummaryScreen
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.presentation.MissionSummaryScreen
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenHandler
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.FormTypeQuestionScreen
 import com.nrlm.baselinesurvey.ui.search.presentation.SearchScreens
@@ -48,12 +51,18 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
         composable(route = HomeScreens.MISSION_SUMMARY_SCREEN.route, arguments = listOf(
             navArgument(name = ARG_MISSION_ID) {
                 type = NavType.IntType
+            },
+            navArgument(name = ARG_MISSION_NAME) {
+                type = NavType.StringType
+            }, navArgument(name = ARG_MISSION_DATE) {
+                type = NavType.StringType
             }
         )) {
             MissionSummaryScreen(
                 navController = navController, missionId = it.arguments?.getInt(
                     ARG_MISSION_ID
-                ) ?: 0
+                ) ?: 0, missionName = it.arguments?.getString(ARG_MISSION_NAME) ?: "",
+                missionDate = it.arguments?.getString(ARG_MISSION_DATE) ?: ""
             )
         }
 
@@ -62,7 +71,8 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
                 viewModel = hiltViewModel(),
                 navController = navController,
                 activityName = "",
-                missionId = 0
+                missionId = 0,
+                activityDate = "",
             )
         }
 
@@ -199,7 +209,8 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
                 viewModel = hiltViewModel(),
                 navController = navController,
                 activityName = "",
-                missionId = 0
+                missionId = 0,
+                activityDate = ""
             )
         }
         addDidiNavGraph(navController = navController)
@@ -218,6 +229,10 @@ fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
                 name = ARG_MISSION_ID
             ) {
                 type = NavType.IntType
+            }, navArgument(
+                name = ARG_ACTIVITY_DATE
+            ) {
+                type = NavType.StringType
             }
         )
     ) {
@@ -230,7 +245,8 @@ fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
                 activityName = it.arguments?.getString(
                     ARG_ACTIVITY_ID
                 ) ?: "",
-                missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: 0
+                missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: 0,
+                activityDate = it.arguments?.getString(ARG_ACTIVITY_DATE) ?: ""
             )
         }
 
@@ -261,7 +277,7 @@ sealed class HomeScreens(val route: String) {
     object MISSION_SCREEN : HomeScreens(route = MISSION_SCREEN_ROUTE_NAME)
     object DIDI_SCREEN : HomeScreens(route = DIDI_SCREEN_ROUTE_NAME)
     object MISSION_SUMMARY_SCREEN :
-        HomeScreens(route = "$MISSION_SUMMARY_SCREEN_ROUTE_NAME/{$ARG_MISSION_ID}")
+        HomeScreens(route = "$MISSION_SUMMARY_SCREEN_ROUTE_NAME/{$ARG_MISSION_ID}/{$ARG_MISSION_NAME}/{$ARG_MISSION_DATE}")
 }
 
 const val DATA_LOADING_SCREEN_ROUTE_NAME = "data_loading_screen"

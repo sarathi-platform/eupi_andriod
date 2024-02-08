@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,19 +57,11 @@ class SurveyeeScreenViewModel @Inject constructor(
     val checkedItemsState = mutableStateOf(mutableSetOf<Int>())
 
     val showMoveDidisBanner = mutableStateOf(false)
-val endDateOfActivity= mutableStateOf("")
-    val  surveyName= mutableStateOf("")
+
+    @SuppressLint("SuspiciousIndentation")
     fun init(missionId: Int, activityName: String) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-//            if (_surveyeeListState.value.isEmpty()) {
-            val activity = surveyeeScreenUseCase.getSurveyeeListUseCase.getSelectedActivity(
-                missionId,
-                activityName
-            )
-            endDateOfActivity.value = activity?.endDate ?: ""
-            surveyName.value = activity?.activityName ?: ""
-
             val surveyeeListFromDb =
                 surveyeeScreenUseCase.getSurveyeeListUseCase.invoke(missionId, activityName)
             if (_surveyeeListState.value.isNotEmpty()) {

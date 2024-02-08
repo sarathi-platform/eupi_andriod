@@ -72,6 +72,14 @@ object DatabaseModule {
 
     @Provides
     @Singleton
+    fun provideMissionActivityEntityDao(db: NudgeBaselineDatabase) = db.missionActivityEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideActivityTaskEntityDao(db: NudgeBaselineDatabase) = db.activityTaskEntityDao()
+
+    @Provides
+    @Singleton
     fun provideDidiSectionProgressEntityDao(db: NudgeBaselineDatabase) =
         db.didiSectionProgressEntityDao()
 

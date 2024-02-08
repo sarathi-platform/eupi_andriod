@@ -36,7 +36,8 @@ fun SurveyeeListScreen(
     navController: NavController,
     viewModel: SurveyeeScreenViewModel,
     missionId: Int,
-    activityName: String
+    activityName: String,
+    activityDate: String
 ) {
     val context = LocalContext.current
 
@@ -155,6 +156,8 @@ fun SurveyeeListScreen(
             viewModel = viewModel,
             isSelectionEnabled = isSelectionEnabled,
             navController = navController,
+            activityName = activityName,
+            activityDate = activityDate,
             onActionEvent = { surveyeeListScreenActions ->
                 when (surveyeeListScreenActions) {
                     is CheckBoxClicked -> {

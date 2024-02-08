@@ -10,7 +10,7 @@ import com.nrlm.baselinesurvey.database.entity.MissionEntity
 @Dao
 interface MissionEntityDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertMissionAll(missions: List<MissionEntity>)
+    fun insertMission(missions: MissionEntity)
 
 //    @Insert(onConflict = OnConflictStrategy.REPLACE)
 //    fun insertMission(mission: MissionEntity)
@@ -19,7 +19,7 @@ interface MissionEntityDao {
     fun deleteMissions()
 
     @Query("SELECT * FROM $MISSION_TABLE_NAME")
-    suspend fun getAllMission(): List<MissionEntity>
+    suspend fun getMissions(): List<MissionEntity>
 
     @Query("SELECT * FROM $MISSION_TABLE_NAME where missionId=:missionId ")
     suspend fun getMission(missionId: Int): MissionEntity

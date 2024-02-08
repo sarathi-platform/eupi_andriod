@@ -1,6 +1,8 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository
 
+import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
+import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
@@ -38,7 +40,11 @@ interface DataLoadingScreenRepository {
         missionName: String
     ): ApiResponseModel<List<MissionResponseModel>>
 
-    suspend fun saveAllMissionToDB(missions: List<MissionEntity>)
-    suspend fun deleteAllMissionToDB()
+    suspend fun saveMissionToDB(missions: MissionEntity)
+    suspend fun saveMissionsActivityToDB(activities: MissionActivityEntity)
+    suspend fun saveActivityTaskToDB(tasks: ActivityTaskEntity)
+    suspend fun deleteMissionsFromDB()
+    suspend fun deleteMissionActivitiesFromDB()
+    suspend fun deleteActivityTasksFromDB()
 
 }

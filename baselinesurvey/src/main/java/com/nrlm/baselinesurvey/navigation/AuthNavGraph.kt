@@ -71,7 +71,8 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
                 viewModel = hiltViewModel(),
                 navController = navController,
                 activityName = "",
-                missionId = 0
+                missionId = 0,
+                activityDate = ""
             )
         }
 
