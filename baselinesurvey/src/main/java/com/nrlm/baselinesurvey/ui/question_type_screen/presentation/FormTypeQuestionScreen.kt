@@ -42,8 +42,6 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScr
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
-import com.nrlm.baselinesurvey.ui.theme.inactiveLightBlue
-import com.nrlm.baselinesurvey.ui.theme.inactiveTextBlue
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
@@ -136,7 +134,7 @@ fun FormTypeQuestionScreen(
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
                     .padding(top = it.calculateTopPadding() + 20.dp)
-                    .padding(bottom = it.calculateTopPadding() + 70.dp)
+                    .padding(bottom = it.calculateTopPadding() + 100.dp)
                     .constrainAs(mainBox) {
                         start.linkTo(parent.start)
                         top.linkTo(parent.top)
