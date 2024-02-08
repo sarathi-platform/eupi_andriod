@@ -28,6 +28,7 @@ const val KEY_DEVICE_DETAILS = "device_detail"
 const val ACCESS_TOKEN = "ACCESS_TOKEN"
 const val PREF_MOBILE_NUMBER = "pref_mobile_number"
 const val SUCCESS = "SUCCESS"
+const val SUCCESS_CODE = "200"
 const val FAIL = "FAIL"
 const val SPLASH_SCREEN_DURATION = 2000L
 const val ONE_SECOND = 2000L
@@ -52,6 +53,8 @@ const val TOLA_COUNT = "tola_count"
 const val DIDI_COUNT = "didi_count"
 const val QUESTION_TABLE = "question_table"
 const val OPTION_TABLE = "option_table"
+const val FORM_QUESTION_RESPONSE_TABLE = "form_question_response_table"
+
 const val DIDI_SECTION_PROGRESS_TABLE = "didi_section_progress_table"
 const val TRAINING_VIDEO_TABLE = "training_video_table"
 const val BPC_SUMMARY_TABLE = "bpc_summary_table"

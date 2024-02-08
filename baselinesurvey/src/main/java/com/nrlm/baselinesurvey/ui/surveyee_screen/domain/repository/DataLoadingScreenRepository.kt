@@ -18,7 +18,7 @@ interface DataLoadingScreenRepository {
 
     suspend fun fetchSurveyeeListFromNetwork(userId: Int): ApiResponseModel<BeneficiaryApiResponse>
 
-    suspend fun fetchSurveyFromNetwork(surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<List<SurveyResponseModel>>
+    suspend fun fetchSurveyFromNetwork(surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<SurveyResponseModel>
 
     fun saveSurveyToDb(surveyResponseModel: SurveyResponseModel, languageId: Int)
 

@@ -1,13 +1,10 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.presentation
 
+import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
+
 sealed class QuestionTypeEvent {
-    data class FormTypeQuestionAnswered(
-        val surveyId: Int,
-        val sectionId: Int,
-        val didiId: Int,
-        val questionId: Int,
-        val optionItemId: Int,
-        val selectedValue: String,
+    data class SaveFormQuestionResponseEvent(
+       val formQuestionResponseEntity: FormQuestionResponseEntity
     ) : QuestionTypeEvent()
 
 }

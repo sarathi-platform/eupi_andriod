@@ -6,6 +6,7 @@ import com.nrlm.baselinesurvey.activity.domain.use_case.IsLoggedInUseCase
 import com.nrlm.baselinesurvey.activity.domain.use_case.MainActivityUseCase
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
+import com.nrlm.baselinesurvey.database.dao.FormQuestionResponseDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
@@ -59,10 +60,12 @@ import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.GetSectionsLis
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.QuestionScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.SaveSectionAnswerUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.UpdateSectionProgressUseCase
-import com.nrlm.baselinesurvey.ui.question_type_screen.domain.repository.QuestionTypeRepository
-import com.nrlm.baselinesurvey.ui.question_type_screen.domain.repository.QuestionTypeRepositoryImpl
-import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.GetQuestionTypeFormOptionUseCase
-import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.QuestionTypeScreenUseCase
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.repository.FormQuestionResponseRepository
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.repository.FormQuestionResponseRepositoryImpl
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.GetFormQuestionResponseUseCase
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.FormQuestionScreenUseCase
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.SaveFormQuestionResponseUseCase
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.UpdateFormQuestionResponseUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.repository.SectionListScreenRepository
 import com.nrlm.baselinesurvey.ui.section_screen.domain.repository.SectionListScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSectionListUseCase
@@ -260,7 +263,8 @@ object BaselineModule {
         questionEntityDao: QuestionEntityDao,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
         sectionAnswerEntityDao: SectionAnswerEntityDao,
-        optionItemDao: OptionItemDao
+        optionItemDao: OptionItemDao,
+        formQuestionResponseDao: FormQuestionResponseDao
     ): QuestionScreenRepository {
         return QuestionScreenRepositoryImpl(
             prefRepo,
@@ -271,21 +275,24 @@ object BaselineModule {
             questionEntityDao,
             didiSectionProgressEntityDao,
             sectionAnswerEntityDao,
-            optionItemDao
+            optionItemDao,
+            formQuestionResponseDao = formQuestionResponseDao
         )
     }
 
     @Provides
     @Singleton
     fun providesQuestionScreenUseCase(
-        questionScreenRepository: QuestionScreenRepository
+        questionScreenRepository: QuestionScreenRepository,
+        formQuestionResponseRepository: FormQuestionResponseRepository
     ): QuestionScreenUseCase {
         return QuestionScreenUseCase(
             getSectionUseCase = GetSectionUseCase(questionScreenRepository),
             getSectionsListUseCase = GetSectionsListUseCase(questionScreenRepository),
             updateSectionProgressUseCase = UpdateSectionProgressUseCase(questionScreenRepository),
             saveSectionAnswerUseCase = SaveSectionAnswerUseCase(questionScreenRepository),
-            getSectionAnswersUseCase = GetSectionAnswersUseCase(questionScreenRepository)
+            getSectionAnswersUseCase = GetSectionAnswersUseCase(questionScreenRepository),
+            getFormQuestionResponseUseCase = GetFormQuestionResponseUseCase(formQuestionResponseRepository)
         )
     }
 
@@ -382,21 +389,24 @@ object BaselineModule {
 
     @Provides
     @Singleton
-    fun provideQuestionTypeRepository(
-        optionItemDao: OptionItemDao
-    ): QuestionTypeRepository {
-        return QuestionTypeRepositoryImpl(optionItemDao)
+    fun provideFormQuestionResponseRepository(
+        optionItemDao: OptionItemDao,
+        formQuestionResponseDao: FormQuestionResponseDao
+    ): FormQuestionResponseRepository {
+        return FormQuestionResponseRepositoryImpl(optionItemDao = optionItemDao, formQuestionResponseDao = formQuestionResponseDao)
     }
 
     @Provides
     @Singleton
     fun providesQuestionTypeScreenUseCase(
-        questionTypeRepository: QuestionTypeRepository
-    ): QuestionTypeScreenUseCase {
-        return QuestionTypeScreenUseCase(
-            getQuestionTypeFormOptionUseCase = GetQuestionTypeFormOptionUseCase(
-                questionTypeRepository
+        formQuestionResponse: FormQuestionResponseRepository
+    ): FormQuestionScreenUseCase {
+        return FormQuestionScreenUseCase(
+            getFormQuestionResponseUseCase = GetFormQuestionResponseUseCase(
+                formQuestionResponse
             ),
+            saveFormQuestionResponseUseCase = SaveFormQuestionResponseUseCase(formQuestionResponse),
+            updateFormQuestionResponseUseCase = UpdateFormQuestionResponseUseCase(formQuestionResponse)
         )
     }
 

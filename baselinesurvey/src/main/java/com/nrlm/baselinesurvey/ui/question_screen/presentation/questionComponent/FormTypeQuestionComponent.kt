@@ -50,7 +50,7 @@ import kotlinx.coroutines.launch
 fun FormTypeQuestionComponent(
     modifier: Modifier = Modifier,
     questionIndex: Int,
-    question: QuestionEntity,
+    question: QuestionEntity?,
     maxCustomHeight: Dp,
     onAnswerSelection: (questionIndex: Int) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
@@ -73,7 +73,19 @@ fun FormTypeQuestionComponent(
             )
             .heightIn(min = 100.dp, maxCustomHeight)
     ) {
-        Card(
+
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)) {
+            CTAButtonComponent(
+                tittle = question?.questionDisplay,
+                Modifier
+                    .fillMaxWidth()
+            ) {
+                onAnswerSelection(questionIndex)
+            }
+        }
+        /*Card(
             elevation = CardDefaults.cardElevation(
                 defaultElevation = defaultCardElevation
             ),
@@ -108,7 +120,7 @@ fun FormTypeQuestionComponent(
                                     color = textColorDark
                                 )
                                 HtmlText(
-                                    text = "${question.questionDisplay}",
+                                    text = "${question?.questionDisplay}",
                                     style = defaultTextStyle,
                                     color = textColorDark,
                                     overflow = TextOverflow.Ellipsis,
@@ -128,7 +140,7 @@ fun FormTypeQuestionComponent(
                                 .fillMaxWidth()
                                 .padding(10.dp)) {
                                 CTAButtonComponent(
-                                    tittle = question.questionDisplay,
+                                    tittle = question?.questionDisplay,
                                     Modifier
                                         .fillMaxWidth()
                                 ) {
@@ -169,6 +181,6 @@ fun FormTypeQuestionComponent(
                     }
                 }
             }
-        }
+        }*/
     }
 }

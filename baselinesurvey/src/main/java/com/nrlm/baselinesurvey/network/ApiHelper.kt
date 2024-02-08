@@ -15,7 +15,8 @@ const val SUBPATH_USER_VIEW = "/read-api/user/view"
 const val SUBPATH_GET_DIDI_LIST = "/read-api/web/upcm/view"
 
 // Survey API
-const val SUBPATH_FETCH_SURVEY_FROM_NETWORK = "/survey-engine/survey/view"
+//const val SUBPATH_FETCH_SURVEY_FROM_NETWORK = "/survey-engine/survey/view"
+const val SUBPATH_FETCH_SURVEY_FROM_NETWORK = "/survey-engine/survey/getSurvey"
 const val SUBPATH_SAVE_SURVEY_ANSWES = "/baseline-service/baseline/save"
 
 const val SUBPATH_GET_SAVED_SURVEY = "/baseline-service/baseline/summary"

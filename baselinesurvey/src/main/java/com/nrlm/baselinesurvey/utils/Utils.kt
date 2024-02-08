@@ -22,12 +22,17 @@ import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_NAME
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
+import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
+import com.nrlm.baselinesurvey.model.HouseholdMemberDto
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.Sections
 import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.model.response.QuestionList
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -560,3 +565,40 @@ fun List<SectionEntity>.sortedBySectionOrder(): List<SectionEntity> {
 
 
 inline fun <reified T : Any> T.json(): String = Gson().toJson(this, T::class.java)
+
+fun storeGivenAnswered(
+    formTypeOption: FormTypeOption,
+    optionId: Int,
+    selectedValue: String,
+    referenceId: String
+): QuestionTypeEvent {
+    val formQuestionResponseEntity = FormQuestionResponseEntity(surveyId = formTypeOption.surveyId,
+        sectionId = formTypeOption.sectionId,
+        didiId = formTypeOption.didiId,
+        questionId = formTypeOption.questionId,
+        optionId = optionId,
+        selectedValue = selectedValue,
+        referenceId = referenceId
+    )
+    return QuestionTypeEvent.SaveFormQuestionResponseEvent(
+        formQuestionResponseEntity
+    )
+}
+
+fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToHouseholdMemberDto(optionsItemEntityList: List<OptionItemEntity>): List<HouseholdMemberDto> {
+    val householdMembersList = mutableListOf<HouseholdMemberDto>()
+    val referenceIdMap = this.groupBy { it.referenceId }
+    referenceIdMap.forEach { formQuestionResponseEntityList ->
+        val householdMember = HouseholdMemberDto()
+        val householdMemberDetailsMap = mutableMapOf<Int, String>()
+        householdMember.referenceId = formQuestionResponseEntityList.key
+        formQuestionResponseEntityList.value.forEachIndexed { index, formQuestionResponseEntity ->
+            val option = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }
+            householdMemberDetailsMap.put(option?.optionId ?: -1, formQuestionResponseEntity.selectedValue)
+            householdMember.memberDetailsMap = householdMemberDetailsMap
+            householdMembersList.add(householdMember)
+        }
+
+    }
+    return householdMembersList
+}
