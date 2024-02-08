@@ -37,6 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.NestedLazyList
@@ -61,7 +62,8 @@ fun FormTypeQuestionScreen(
     questionName: String = "",
     surveyID: Int = 0,
     sectionId: Int = 0,
-    questionId: Int = 0
+    questionId: Int = 0,
+    surveyeeId: Int
 ) {
     val totalOptionSize = viewModel.optionList.value.size
     val answeredOptionCount = remember { mutableIntStateOf(0) }
@@ -155,7 +157,7 @@ fun FormTypeQuestionScreen(
                 if (!viewModel.loaderState.value.isLoaderVisible) {
                     var fromTypeOption = FormTypeOption.getOptionItem(
                         surveyID,
-                        0,
+                        surveyeeId,
                         sectionId,
                         questionId,
                         viewModel.optionList.value
@@ -178,6 +180,6 @@ fun FormTypeQuestionScreen(
 @Preview(showBackground = true)
 @Composable
 private fun FormTypeQuestionScreenPreview() {
-    MaterialTheme { FormTypeQuestionScreen(rememberNavController()) }
+    MaterialTheme { FormTypeQuestionScreen(rememberNavController(), surveyeeId = 0) }
 
 }

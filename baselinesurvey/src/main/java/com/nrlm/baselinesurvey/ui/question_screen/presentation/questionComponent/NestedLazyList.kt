@@ -23,12 +23,14 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ButtonColors
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.LinearProgressIndicator
@@ -44,6 +46,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -67,6 +70,7 @@ import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenEvents
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.handleOnMediaTypeDescriptionActions
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
+import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
@@ -137,6 +141,7 @@ fun NestedLazyList(
             coroutineScope.launch(Dispatchers.IO) {
                 val optionItemEntityList = questionScreenViewModel.getFormQuestionsOptionsItemEntityList(sectionDetails.surveyId, sectionDetails.sectionId, questionId)
                 questionScreenViewModel.optionItemEntityList = optionItemEntityList
+                surveyeeId
                 questionScreenViewModel.formResponsesForQuestionLive = questionScreenViewModel.getFormQuestionResponseEntity(sectionDetails.surveyId, sectionDetails.sectionId, questionId, surveyeeId)
                 withContext(Dispatchers.Main) {
                     questionScreenViewModel.formResponsesForQuestionLive.observe(lifecycleOwner) {
@@ -144,7 +149,6 @@ fun NestedLazyList(
                     }
                 }
             }
-
         }
         onDispose {
             questionScreenViewModel.formResponsesForQuestionLive.removeObservers(lifecycleOwner)
@@ -485,7 +489,7 @@ fun NestedLazyList(
                                     questionIndex = index,
                                     maxCustomHeight = maxHeight,
                                     onAnswerSelection = { questionIndex ->
-                                        navController.navigate("$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/${question.questionDisplay}/${sectionDetails.surveyId}/${sectionDetails.sectionId}/${question.questionId}")
+                                        navController.navigate("$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/${question.questionDisplay}/${sectionDetails.surveyId}/${sectionDetails.sectionId}/${question.questionId}/${surveyeeId}")
                                         if (!answeredQuestionIndices.value.contains(questionIndex)) {
                                             answeredQuestionIndices.value.add(questionIndex)
                                             answeredQuestionCount.value =
@@ -575,17 +579,22 @@ fun NestedLazyList(
                                         Row(modifier = Modifier.fillMaxWidth()) {
                                             Button(onClick = { /*TODO*/ }, modifier = Modifier
                                                 .fillMaxWidth()
-                                                .weight(1f)) {
+                                                .weight(1f),
+                                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent, contentColor = blueDark)
+                                            ) {
                                                 Text(text = "Edit")
                                             }
                                             Button(onClick = { /*TODO*/ }, modifier = Modifier
                                                 .fillMaxWidth()
-                                                .weight(1f)) {
+                                                .weight(1f),
+                                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent, contentColor = blueDark)
+                                            ) {
                                                 Text(text = "Delete")
                                             }
                                         }
                                     }
                                 }
+                                Spacer(modifier = Modifier.fillMaxWidth().height(dimen_8_dp))
                             }
                         }
                     }

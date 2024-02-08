@@ -20,7 +20,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -62,8 +64,11 @@ import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.YesNoButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SurveyStateEvents
 import com.nrlm.baselinesurvey.ui.start_screen.viewmodel.BaseLineStartViewModel
+import com.nrlm.baselinesurvey.ui.theme.defaultBottomBarPadding
+import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.languageItemActiveBg
+import com.nrlm.baselinesurvey.ui.theme.red
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark50
@@ -102,10 +107,9 @@ fun BaseLineStartScreen(
         baseLineStartViewModel.getDidiDetails(didiId)
     }
 
-    val isContinueButtonActive by remember {
+    val isContinueButtonActive = remember {
         derivedStateOf {
-            (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (isVoterCard.value != -1) && (phoneNumber.value.length == 10)
-                    && (isAdharCard.value != -1) && (isAdharCard.value == 2 || (isAdharCard.value == 1 && aadharNumber.value.length == 14))
+            (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (isVoterCard.value != -1) && (phoneNumber.value.length == 10) && (isAdharCard.value != -1)
         }
     }
 
@@ -114,15 +118,14 @@ fun BaseLineStartScreen(
     }
 
     Scaffold(modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal = 16.dp),
+        .fillMaxSize(),
         bottomBar = {
             DoubleButtonBox(
                 modifier = Modifier
                     .shadow(10.dp),
                 positiveButtonText = stringResource(id = R.string.continue_text),
                 negativeButtonText = stringResource(id = R.string.go_back_text),
-                isPositiveButtonActive = isContinueButtonActive,
+                isPositiveButtonActive = isContinueButtonActive.value,
                 positiveButtonOnClick = {
                     didi.value.didiId?.let {
                         baseLineStartViewModel.onEvent(
@@ -148,11 +151,14 @@ fun BaseLineStartScreen(
             )
         }
     ) {
+
+        val scrollState = rememberScrollState()
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 6.dp)
-                .padding(top = it.calculateTopPadding() + 6.dp),
+                .padding(top = it.calculateTopPadding() + 6.dp)
+                .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             if (shouldRequestPermission.value) {
@@ -174,6 +180,7 @@ fun BaseLineStartScreen(
                 title = "Does Didi have aadhar card?"
             ) {
                 isAdharCard.value = it
+                (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (isVoterCard.value != -1) && (phoneNumber.value.length == 10) && (isAdharCard.value != -1)
             }
             if (isAdharCard.value == 1) {
                 EditTextWithTitleComponent(
@@ -633,8 +640,8 @@ fun BaseLineStartScreen(
 //                                patDidiSummaryViewModel.shouldShowCamera.value = true
                 }
             }
+            Spacer(modifier = Modifier.fillMaxWidth().padding(bottom = it.calculateBottomPadding() + defaultBottomBarPadding))
         }
-
     }
 }
 

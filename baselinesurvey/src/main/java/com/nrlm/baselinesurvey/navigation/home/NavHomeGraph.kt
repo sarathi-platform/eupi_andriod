@@ -149,15 +149,19 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
             },
             navArgument(name = ARG_QUESTION_ID) {
                 type = NavType.IntType
+            },
+            navArgument(name = ARG_DIDI_ID) {
+                type = NavType.IntType
             }
         )) {
             FormTypeQuestionScreen(
                 navController = navController,
                 viewModel = hiltViewModel(),
                 it.arguments?.getString(ARG_QUESTION_NAME) ?: "",
-                it.arguments?.getInt(ARG_SURVEY_ID) ?: 0,
-                it.arguments?.getInt(ARG_SECTION_ID) ?: 0,
-                it.arguments?.getInt(ARG_QUESTION_ID) ?: 0
+                it.arguments?.getInt(ARG_SURVEY_ID) ?: -1,
+                it.arguments?.getInt(ARG_SECTION_ID) ?: -1,
+                it.arguments?.getInt(ARG_QUESTION_ID) ?: -1,
+                surveyeeId = it.arguments?.getInt(ARG_DIDI_ID) ?: -1
             )
         }
         composable(route = HomeScreens.BaseLineStartScreen.route, arguments = listOf(
@@ -247,7 +251,7 @@ sealed class HomeScreens(val route: String) {
         HomeScreens(route = "$VIDEO_PLAYER_SCREEN_ROUTE_NAME/{$ARG_VIDEO_PATH}")
 
     object FormTypeQuestionScreen :
-        HomeScreens(route = "${FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME}/{$ARG_QUESTION_NAME}/{$ARG_SURVEY_ID}/{$ARG_SECTION_ID}/{$ARG_QUESTION_ID}")
+        HomeScreens(route = "${FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME}/{$ARG_QUESTION_NAME}/{$ARG_SURVEY_ID}/{$ARG_SECTION_ID}/{$ARG_QUESTION_ID}/{$ARG_DIDI_ID}")
 
     object BaseLineStartScreen :
         HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}")
