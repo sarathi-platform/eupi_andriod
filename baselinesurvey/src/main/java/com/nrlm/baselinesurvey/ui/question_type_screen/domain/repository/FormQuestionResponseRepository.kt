@@ -29,7 +29,8 @@ interface FormQuestionResponseRepository {
         sectionId: Int,
         questionId: Int,
         referenceId: String,
-        didiId: Int
+        didiId: Int,
+        optionId: Int
     ): List<FormQuestionResponseEntity>
 
     suspend fun addFormResponseForQuestion(

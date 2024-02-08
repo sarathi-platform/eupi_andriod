@@ -11,7 +11,6 @@ import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.compose.ui.text.capitalize
 import androidx.core.content.FileProvider
 import androidx.core.text.isDigitsOnly
 import com.google.gson.Gson
@@ -27,7 +26,7 @@ import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
-import com.nrlm.baselinesurvey.model.HouseholdMemberDto
+import com.nrlm.baselinesurvey.model.FormResponseObjectDto
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.Sections
 import com.nrlm.baselinesurvey.model.response.ContentList
@@ -590,20 +589,19 @@ fun storeGivenAnswered(
     )
 }
 
-fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToHouseholdMemberDto(optionsItemEntityList: List<OptionItemEntity>): List<HouseholdMemberDto> {
-    val householdMembersList = mutableListOf<HouseholdMemberDto>()
+fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObjectDto(optionsItemEntityList: List<OptionItemEntity>): List<FormResponseObjectDto> {
+    val householdMembersList = mutableListOf<FormResponseObjectDto>()
     val referenceIdMap = this.groupBy { it.referenceId }
     referenceIdMap.forEach { formQuestionResponseEntityList ->
-        val householdMember = HouseholdMemberDto()
+        val householdMember = FormResponseObjectDto()
         val householdMemberDetailsMap = mutableMapOf<Int, String>()
         householdMember.referenceId = formQuestionResponseEntityList.key
         formQuestionResponseEntityList.value.forEachIndexed { index, formQuestionResponseEntity ->
             val option = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }
             householdMemberDetailsMap.put(option?.optionId ?: -1, formQuestionResponseEntity.selectedValue)
             householdMember.memberDetailsMap = householdMemberDetailsMap
-            householdMembersList.add(householdMember)
         }
-
+        householdMembersList.add(householdMember)
     }
     return householdMembersList
 }

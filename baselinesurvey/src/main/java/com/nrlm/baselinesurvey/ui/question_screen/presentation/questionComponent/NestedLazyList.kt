@@ -2,7 +2,6 @@ package com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponen
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
@@ -28,9 +27,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -54,11 +50,12 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.model.HouseholdMemberDto
+import com.nrlm.baselinesurvey.model.FormResponseObjectDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.navigation.home.FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.common_components.FormResponseCard
 import com.nrlm.baselinesurvey.ui.common_components.GridTypeComponent
 import com.nrlm.baselinesurvey.ui.common_components.ListTypeQuestion
 import com.nrlm.baselinesurvey.ui.common_components.RadioQuestionBoxComponent
@@ -67,19 +64,16 @@ import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenEvents
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.handleOnMediaTypeDescriptionActions
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
-import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_80_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.progressIndicatorColor
-import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
-import com.nrlm.baselinesurvey.utils.mapFormQuestionResponseToHouseholdMemberDto
+import com.nrlm.baselinesurvey.utils.mapFormQuestionResponseToFromResponseObjectDto
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -128,7 +122,7 @@ fun NestedLazyList(
     val lifecycleOwner = LocalLifecycleOwner.current
 
     val householdMemberDtoList = remember {
-        mutableStateOf(mutableListOf<HouseholdMemberDto>())
+        mutableStateOf(mutableListOf<FormResponseObjectDto>())
     }
 
     DisposableEffect(key1 = context) {
@@ -140,11 +134,10 @@ fun NestedLazyList(
                 questionScreenViewModel.formResponsesForQuestionLive = questionScreenViewModel.getFormQuestionResponseEntity(sectionDetails.surveyId, sectionDetails.sectionId, questionId, surveyeeId)
                 withContext(Dispatchers.Main) {
                     questionScreenViewModel.formResponsesForQuestionLive.observe(lifecycleOwner) {
-                        householdMemberDtoList.value.addAll(it.mapFormQuestionResponseToHouseholdMemberDto(optionItemEntityList))
+                        householdMemberDtoList.value.addAll(it.mapFormQuestionResponseToFromResponseObjectDto(optionItemEntityList))
                     }
                 }
             }
-
         }
         onDispose {
             questionScreenViewModel.formResponsesForQuestionLive.removeObservers(lifecycleOwner)
@@ -485,7 +478,7 @@ fun NestedLazyList(
                                     questionIndex = index,
                                     maxCustomHeight = maxHeight,
                                     onAnswerSelection = { questionIndex ->
-                                        navController.navigate("$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/${question.questionDisplay}/${sectionDetails.surveyId}/${sectionDetails.sectionId}/${question.questionId}")
+                                        navController.navigate("$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/${question.questionDisplay}/${sectionDetails.surveyId}/${sectionDetails.sectionId}/${question.questionId}/${surveyeeId}")
                                         if (!answeredQuestionIndices.value.contains(questionIndex)) {
                                             answeredQuestionIndices.value.add(questionIndex)
                                             answeredQuestionCount.value =
@@ -543,49 +536,10 @@ fun NestedLazyList(
                     item {
                         Column {
                             householdMemberDtoList.value.forEach { householdMemberDto ->
-                                Card(
-                                    elevation = CardDefaults.cardElevation(
-                                        defaultElevation = defaultCardElevation
-                                    ),
-                                    shape = RoundedCornerShape(roundedCornerRadiusDefault),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(white)
-                                        .clickable {
-
-                                        }
-                                        .then(modifier)
-                                ) {
-                                    Column(modifier = Modifier
-                                        .background(white)
-                                        .padding(dimen_16_dp)) {
-                                        Row(
-                                            Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.Start
-                                        ) {
-                                            Column {
-                                                Text(text = householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find { it.display?.contains("Name", ignoreCase = true)!! }?.optionId] ?: BLANK_STRING)
-                                                Text(text = buildString {
-                                                    this.append(householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find { it.display?.contains("Relationship", ignoreCase = true)!! }?.optionId] ?: BLANK_STRING)
-                                                    this.append(" | ")
-                                                    this.append(householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find { it.display?.contains("Age", ignoreCase = true)!! }?.optionId] ?: BLANK_STRING)
-                                                })
-                                            }
-                                        }
-                                        Row(modifier = Modifier.fillMaxWidth()) {
-                                            Button(onClick = { /*TODO*/ }, modifier = Modifier
-                                                .fillMaxWidth()
-                                                .weight(1f)) {
-                                                Text(text = "Edit")
-                                            }
-                                            Button(onClick = { /*TODO*/ }, modifier = Modifier
-                                                .fillMaxWidth()
-                                                .weight(1f)) {
-                                                Text(text = "Delete")
-                                            }
-                                        }
-                                    }
-                                }
+                                FormResponseCard(householdMemberDto = householdMemberDto, viewModel = questionScreenViewModel)
+                                Spacer(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(dimen_8_dp))
                             }
                         }
                     }
