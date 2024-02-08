@@ -4,7 +4,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.text.toLowerCase
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.NO_TOLA_TITLE
 import com.nrlm.baselinesurvey.base.BaseViewModel
@@ -59,19 +58,19 @@ class SurveyeeScreenViewModel @Inject constructor(
     val showMoveDidisBanner = mutableStateOf(false)
 val endDateOfActivity= mutableStateOf("")
     val  surveyName= mutableStateOf("")
-    fun init(missionId: Int, activityId: Int) {
+    fun init(missionId: Int, activityName: String) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 //            if (_surveyeeListState.value.isEmpty()) {
             val activity = surveyeeScreenUseCase.getSurveyeeListUseCase.getSelectedActivity(
                 missionId,
-                activityId
+                activityName
             )
             endDateOfActivity.value = activity?.endDate ?: ""
             surveyName.value = activity?.activityName ?: ""
 
             val surveyeeListFromDb =
-                surveyeeScreenUseCase.getSurveyeeListUseCase.invoke(missionId, activityId)
+                surveyeeScreenUseCase.getSurveyeeListUseCase.invoke(missionId, activityName)
             if (_surveyeeListState.value.isNotEmpty()) {
                 _surveyeeListState.value.clear()
             }
@@ -112,7 +111,7 @@ val endDateOfActivity= mutableStateOf("")
 
     fun getThisWeekSurveyeeList() {
         CoroutineScope(Dispatchers.IO).launch {
-            val surveyeeListFromDb = surveyeeScreenUseCase.getSurveyeeListUseCase.invoke(0, 0)
+            val surveyeeListFromDb = surveyeeScreenUseCase.getSurveyeeListUseCase.invoke(0, "")
             surveyeeListFromDb.filter { it.movedToThisWeek }.forEach { surveyeeEntity ->
                 val surveyeeState = SurveyeeCardState(
                     surveyeeDetails = surveyeeEntity,

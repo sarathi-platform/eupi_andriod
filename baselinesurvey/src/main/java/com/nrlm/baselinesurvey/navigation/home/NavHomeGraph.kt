@@ -61,7 +61,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
             SurveyeeListScreen(
                 viewModel = hiltViewModel(),
                 navController = navController,
-                activityId = 0,
+                activityName = "",
                 missionId = 0
             )
         }
@@ -194,7 +194,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
             SurveyeeListScreen(
                 viewModel = hiltViewModel(),
                 navController = navController,
-                activityId = 0,
+                activityName = "",
                 missionId = 0
             )
         }
@@ -209,7 +209,7 @@ fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
             navArgument(
                 name = ARG_ACTIVITY_ID
             ) {
-                type = NavType.IntType
+                type = NavType.StringType
             }, navArgument(
                 name = ARG_MISSION_ID
             ) {
@@ -223,9 +223,9 @@ fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
             SurveyeeListScreen(
                 viewModel = hiltViewModel(),
                 navController = navController,
-                activityId = it.arguments?.getInt(
+                activityName = it.arguments?.getString(
                     ARG_ACTIVITY_ID
-                ) ?: 0,
+                ) ?: "",
                 missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: 0
             )
         }

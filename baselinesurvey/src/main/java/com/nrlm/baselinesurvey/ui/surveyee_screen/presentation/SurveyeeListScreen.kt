@@ -36,12 +36,12 @@ fun SurveyeeListScreen(
     navController: NavController,
     viewModel: SurveyeeScreenViewModel,
     missionId: Int,
-    activityId: Int
+    activityName: String
 ) {
     val context = LocalContext.current
 
     LaunchedEffect(key1 = true) {
-        viewModel.init(missionId, activityId)
+        viewModel.init(missionId, activityName)
     }
 
     val loaderState = viewModel.loaderState.value
@@ -174,6 +174,8 @@ fun SurveyeeListScreen(
                             isFilterApplied = surveyeeListScreenActions.isFilterAppliedState.isFilterApplied
                         )
                     }
+
+                    else -> {}
                 }
             }
         )

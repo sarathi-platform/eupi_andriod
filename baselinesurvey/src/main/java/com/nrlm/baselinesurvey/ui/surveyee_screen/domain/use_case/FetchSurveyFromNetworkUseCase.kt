@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case
 
-import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.SUCCESS_CODE
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepository
@@ -9,16 +8,14 @@ import com.nrlm.baselinesurvey.utils.BaselineLogger
 class FetchSurveyFromNetworkUseCase(
     private val repository: DataLoadingScreenRepository
 ) {
-    suspend operator fun invoke(): Boolean {
+    suspend operator fun invoke(surveyRequestBodyModel: SurveyRequestBodyModel): Boolean {
         try {
             //TODO Run a loop on language id later
-            val surveyRequestBodyModel =
-                SurveyRequestBodyModel(languageId = 2, surveyName = "BASELINE", referenceId = 2, referenceType = "STATE")
             val surveyApiResponse = repository.fetchSurveyFromNetwork(surveyRequestBodyModel)
             if (surveyApiResponse.status.equals(SUCCESS_CODE, true)) {
                 surveyApiResponse.data?.let { surveyApiResponse ->
 //                    for (survey in surveyApiResponse) {
-                        repository.saveSurveyToDb(surveyApiResponse, languageId = 2)
+                    repository.saveSurveyToDb(surveyApiResponse, languageId = 2)
 //                    }
                     return true
                 }

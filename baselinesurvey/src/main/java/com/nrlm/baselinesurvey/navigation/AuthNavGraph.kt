@@ -70,7 +70,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             SurveyeeListScreen(
                 viewModel = hiltViewModel(),
                 navController = navController,
-                activityId = 0,
+                activityName = "",
                 missionId = 0
             )
         }

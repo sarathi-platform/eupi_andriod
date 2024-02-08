@@ -29,16 +29,19 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
     private val missionEntityDao: MissionEntityDao
 ): SurveyeeListScreenRepository {
 
-    override suspend fun getSurveyeeList(missionId: Int, activityId: Int): List<SurveyeeEntity> {
+    override suspend fun getSurveyeeList(
+        missionId: Int,
+        activityName: String
+    ): List<SurveyeeEntity> {
         val didiList = mutableListOf<SurveyeeEntity>()
-         getMission(missionId = missionId).activities.filter {
-                it.activityId==activityId
-            }.firstOrNull()?.tasks?.forEach { task ->
+        getMission(missionId = missionId).activities.filter {
+            it.activityName == activityName
+        }.firstOrNull()?.tasks?.forEach { task ->
+            if (surveyeeEntityDao.isDidiExist(task.didiId)) {
                 didiList.add(surveyeeEntityDao.getDidi(task.didiId))
             }
-
+        }
         return didiList
-        //return surveyeeEntityDao.getAllDidis()
     }
 
 
@@ -121,11 +124,11 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
 
     override suspend fun getSelectedActivity(
         missionId: Int,
-        activityId: Int
+        activityName: String
     ): MissionActivityModel? {
 
       val activity=  getMission(missionId).activities.filter {
-            it.activityId==activityId
+          it.activityName == activityName
         }
 
         return activity.firstOrNull()

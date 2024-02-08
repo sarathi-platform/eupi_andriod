@@ -6,7 +6,7 @@ import com.nrlm.baselinesurvey.model.datamodel.MissionActivityModel
 
 interface SurveyeeListScreenRepository {
 
-    suspend fun getSurveyeeList(missionId: Int, activityId: Int): List<SurveyeeEntity>
+    suspend fun getSurveyeeList(missionId: Int, activityName: String): List<SurveyeeEntity>
 
     suspend fun getSurveyeeListFromNetwork(): Boolean
 
@@ -15,7 +15,7 @@ interface SurveyeeListScreenRepository {
     suspend fun moveSurveyeeToThisWeek(didiId: Int, moveDidisToNextWeek: Boolean)
     suspend fun getMission(missionId: Int): MissionEntity
 
-    suspend fun getSelectedActivity(missionId: Int,activityId: Int):MissionActivityModel?
+    suspend fun getSelectedActivity(missionId: Int, activityName: String): MissionActivityModel?
 
 
 }
