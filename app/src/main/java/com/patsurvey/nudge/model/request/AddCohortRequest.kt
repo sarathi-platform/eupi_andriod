@@ -15,6 +15,7 @@ data class AddCohortRequest(
     @SerializedName("localCreatedDate") var localCreatedDate : Long,
     @SerializedName("localModifiedDate") var localModifiedDate : Long,
     @SerializedName("deviceId") var deviceId : String = "",
+    @SerializedName("cohorotId") var cohorotId : Int = 0,
 ) {
 
     companion object {
@@ -28,6 +29,7 @@ data class AddCohortRequest(
                 localCreatedDate = tola.localCreatedDate ?: 0,
                 localModifiedDate = tola.localModifiedDate ?: 0,
                 deviceId = tola.localUniqueId?: "",
+                cohorotId = tola.serverId
             )
         }
     }

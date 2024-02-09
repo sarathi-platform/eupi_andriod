@@ -641,10 +641,12 @@ class TransectWalkViewModel @Inject constructor(
             )
 //            transectWalkRepository.tolaInsert(updatedTola)
             transectWalkRepository.updateTolaName(id, newName)
+            val localTola = transectWalkRepository.getTola(id)
+
             // TODO Move to repository
             val updatedTolaEvent = transectWalkRepository.createEvent(
-                updatedTola,
-                EventName.UPDATE_TOLA,
+                localTola,
+                EventName.ADD_TOLA,
                 EventType.STATEFUL
             )
             // TODO handle empty event case.

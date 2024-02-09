@@ -287,7 +287,7 @@ class SurveySummaryRepository @Inject constructor(
 
                 var saveBpcMatchScoreEvent = Events(
                     name = eventName.name,
-                    type = eventType.name,
+                    type = eventName.topicName,
                     createdBy = prefRepo.getUserId(),
                     mobile_number = prefRepo.getMobileNumber(),
                     request_payload = requestPayload,

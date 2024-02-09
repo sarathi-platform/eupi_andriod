@@ -573,7 +573,8 @@ class AddDidiViewModel @Inject constructor(
                     needsToPostRanking = _didiList.value.get(_didiList.value.map { it.id }
                         .indexOf(didiId)).needsToPostRanking,
                     needsToPost = true,
-                    localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext()),
+                    localUniqueId = _didiList.value.get(_didiList.value.map { it.id }
+                        .indexOf(didiId)).localUniqueId,
                     ableBodiedFlag = didiList.value.get(_didiList.value.map { it.id }
                         .indexOf(didiId)).ableBodiedFlag
                 )
@@ -582,7 +583,7 @@ class AddDidiViewModel @Inject constructor(
 
                 addDidiRepository.insertEventIntoDb(
                     updatedDidi,
-                    EventName.UPDATE_DIDI,
+                    EventName.ADD_DIDI,
                     EventType.STATEFUL
                 )
 

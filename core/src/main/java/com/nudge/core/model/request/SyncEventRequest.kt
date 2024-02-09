@@ -17,7 +17,7 @@ data class EventRequest(val id:String,
 
     object EventRequestMapper {
         fun fromEvent(event: Events) =
-           EventRequest(event.id,event.name,event.type.getTopicFromName(),event.createdBy, event.mobile_number,event.request_payload,event.metadata,event.created_date.toString(),event.modified_date.toString())
+           EventRequest(event.id,event.name,event.type,event.createdBy, event.mobile_number,event.request_payload,event.metadata,event.created_date.toString(),event.modified_date.toString())
     }
 }
 
