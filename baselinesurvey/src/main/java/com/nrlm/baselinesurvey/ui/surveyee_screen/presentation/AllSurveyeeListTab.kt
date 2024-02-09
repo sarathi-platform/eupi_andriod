@@ -67,7 +67,8 @@ fun AllSurveyeeListTab(
     onActionEvent: (surveyeeListScreenActions: SurveyeeListScreenActions) -> Unit,
     modifier: Modifier = Modifier,
     activityName: String,
-    activityDate: String
+    activityDate: String,
+    activityId: Int,
 ) {
 
     val surveyeeList = viewModel.filteredSurveyeeListState.value
@@ -207,7 +208,12 @@ fun AllSurveyeeListTab(
                                 //Todo add proper tex
                                 primaryButtonText = "Start " + activityName.split(" ")[1],
                                 buttonClicked = { buttonName, surveyeeId ->
-                                    handleButtonClick(buttonName, surveyeeId, navController)
+                                    handleButtonClick(
+                                        buttonName,
+                                        surveyeeId,
+                                        activityId,
+                                        navController
+                                    )
                                 }
                             )
                         }
@@ -219,7 +225,12 @@ fun AllSurveyeeListTab(
                                 showCheckBox = !isSelectionEnabled.value,
                                 fromScreen = ALL_TAB,
                                 buttonClicked = { buttonName, surveyeeId ->
-                                    handleButtonClick(buttonName, surveyeeId, navController)
+                                    handleButtonClick(
+                                        buttonName,
+                                        surveyeeId,
+                                        activityId,
+                                        navController
+                                    )
                                 },
                                 checkBoxChecked = { surveyeeEntity, isChecked ->
                                     onActionEvent(SurveyeeListScreenActions.CheckBoxClicked(isChecked, surveyeeEntity))

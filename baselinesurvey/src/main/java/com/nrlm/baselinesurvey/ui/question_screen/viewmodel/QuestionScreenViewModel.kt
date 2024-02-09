@@ -12,7 +12,6 @@ import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
-import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
@@ -95,12 +94,16 @@ class QuestionScreenViewModel @Inject constructor(
         )
     }
 
-    fun init(sectionId: Int, surveyeeId: Int) {
+    fun init(sectionId: Int, surveyId: Int, surveyeeId: Int) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val selectedlanguageId = questionScreenUseCase.getSectionUseCase.getSelectedLanguage()
             _sectionDetail.value =
-                questionScreenUseCase.getSectionUseCase.invoke(sectionId, selectedlanguageId)
+                questionScreenUseCase.getSectionUseCase.invoke(
+                    sectionId,
+                    surveyId,
+                    selectedlanguageId
+                )
             val questionAnswerMap = mutableMapOf<Int, List<OptionItemEntity>>()
             val localAnswerList =
                 questionScreenUseCase.getSectionAnswersUseCase.getSectionAnswerForDidi(

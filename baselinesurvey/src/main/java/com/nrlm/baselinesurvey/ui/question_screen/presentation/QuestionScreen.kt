@@ -66,6 +66,7 @@ fun QuestionScreen(
     viewModel: QuestionScreenViewModel,
     surveyeeId: Int,
     sectionId: Int,
+    survyeId: Int,
     nextSectionHandler: (sectionId: Int) -> Unit
 ) {
 
@@ -75,7 +76,7 @@ fun QuestionScreen(
 
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-        viewModel.init(sectionId, surveyeeId)
+        viewModel.init(sectionId, survyeId, surveyeeId)
         delay(300)
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
     }

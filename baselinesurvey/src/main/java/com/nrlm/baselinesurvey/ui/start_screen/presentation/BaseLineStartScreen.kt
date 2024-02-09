@@ -65,10 +65,8 @@ import com.nrlm.baselinesurvey.ui.common_components.YesNoButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SurveyStateEvents
 import com.nrlm.baselinesurvey.ui.start_screen.viewmodel.BaseLineStartViewModel
 import com.nrlm.baselinesurvey.ui.theme.defaultBottomBarPadding
-import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.languageItemActiveBg
-import com.nrlm.baselinesurvey.ui.theme.red
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark50
@@ -82,7 +80,8 @@ import com.nrlm.baselinesurvey.utils.uriFromFile
 fun BaseLineStartScreen(
     navController: NavHostController,
     baseLineStartViewModel: BaseLineStartViewModel,
-    didiId: Int
+    didiId: Int,
+    surveyId: Int
 ) {
     val localContext = LocalContext.current
     val screenHeight = LocalConfiguration.current.screenHeightDp
@@ -143,7 +142,7 @@ fun BaseLineStartScreen(
                             )
                         )
                     }
-                    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId")
+                    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
                 },
                 negativeButtonOnClick = {
                     navigateBackToSurveyeeListScreen(navController)
@@ -156,7 +155,7 @@ fun BaseLineStartScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 6.dp)
+                .padding(horizontal = 16.dp)
                 .padding(top = it.calculateTopPadding() + 6.dp)
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(2.dp)
@@ -640,7 +639,9 @@ fun BaseLineStartScreen(
 //                                patDidiSummaryViewModel.shouldShowCamera.value = true
                 }
             }
-            Spacer(modifier = Modifier.fillMaxWidth().padding(bottom = it.calculateBottomPadding() + defaultBottomBarPadding))
+            Spacer(modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = it.calculateBottomPadding() + defaultBottomBarPadding))
         }
     }
 }

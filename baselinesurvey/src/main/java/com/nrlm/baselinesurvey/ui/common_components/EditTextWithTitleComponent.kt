@@ -38,6 +38,10 @@ fun EditTextWithTitleComponent(
     val txt: MutableState<String> = remember {
         mutableStateOf(defaultValue)
     }
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -59,8 +63,13 @@ fun EditTextWithTitleComponent(
                 }
                 onAnswerSelection(txt.value)
             },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = if (isOnlyNumber) KeyboardType.Number else KeyboardType.Ascii),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done,
+                keyboardType = if (isOnlyNumber) KeyboardType.Number else KeyboardType.Ascii
+            ),
             keyboardActions = KeyboardActions(onDone = {
+                focusManager.clearFocus()
+                keyboardController?.hide()
                 onAnswerSelection(txt.value)
             }),
             colors = TextFieldDefaults.outlinedTextFieldColors(

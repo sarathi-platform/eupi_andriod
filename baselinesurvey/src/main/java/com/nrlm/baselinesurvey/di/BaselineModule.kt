@@ -77,6 +77,7 @@ import com.nrlm.baselinesurvey.ui.section_screen.domain.repository.SectionListSc
 import com.nrlm.baselinesurvey.ui.section_screen.domain.repository.SectionListScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSectionListUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSectionProgressForDidiUseCase
+import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSurvyeDetails
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.SectionListScreenUseCase
 import com.nrlm.baselinesurvey.ui.start_screen.domain.repository.StartScreenRepository
 import com.nrlm.baselinesurvey.ui.start_screen.domain.repository.StartScreenRepositoryImpl
@@ -247,7 +248,8 @@ object BaselineModule {
         sectionEntityDao: SectionEntityDao,
         questionEntityDao: QuestionEntityDao,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
-        optionItemDao: OptionItemDao
+        optionItemDao: OptionItemDao,
+        surveyeeEntityDao: SurveyeeEntityDao,
     ): SectionListScreenRepository {
         return SectionListScreenRepositoryImpl(
             prefRepo,
@@ -256,7 +258,8 @@ object BaselineModule {
             sectionEntityDao,
             questionEntityDao,
             didiSectionProgressEntityDao,
-            optionItemDao
+            optionItemDao,
+            surveyeeEntityDao
         )
     }
 
@@ -267,7 +270,10 @@ object BaselineModule {
     ): SectionListScreenUseCase {
         return SectionListScreenUseCase(
             getSectionListUseCase = GetSectionListUseCase(sectionListScreenRepository),
-            getSectionProgressForDidiUseCase = GetSectionProgressForDidiUseCase(sectionListScreenRepository)
+            getSectionProgressForDidiUseCase = GetSectionProgressForDidiUseCase(
+                sectionListScreenRepository
+            ),
+            getSurvyeDetails = GetSurvyeDetails(sectionListScreenRepository)
         )
     }
 

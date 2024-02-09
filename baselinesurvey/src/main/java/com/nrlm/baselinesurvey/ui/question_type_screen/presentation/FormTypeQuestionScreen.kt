@@ -5,10 +5,8 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
@@ -37,7 +35,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.NestedLazyList
@@ -45,11 +42,7 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScr
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
-import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
-import com.nrlm.baselinesurvey.ui.theme.inactiveLightBlue
-import com.nrlm.baselinesurvey.ui.theme.inactiveTextBlue
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
-import com.nrlm.baselinesurvey.ui.theme.red
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white

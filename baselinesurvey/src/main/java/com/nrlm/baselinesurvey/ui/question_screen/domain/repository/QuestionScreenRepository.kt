@@ -8,7 +8,7 @@ import com.nrlm.baselinesurvey.utils.states.SectionStatus
 
 interface QuestionScreenRepository {
 
-    suspend fun getSections(sectionId: Int, languageId: Int): SectionListItem
+    suspend fun getSections(sectionId: Int, surveyId: Int, languageId: Int): SectionListItem
 
     fun getSelectedLanguage(): Int
     suspend fun updateSectionProgress(surveyId: Int, sectionId: Int, didiId: Int, sectionStatus: SectionStatus)

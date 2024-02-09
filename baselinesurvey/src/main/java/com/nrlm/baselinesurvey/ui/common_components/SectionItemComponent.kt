@@ -37,6 +37,9 @@ import com.nrlm.baselinesurvey.ui.theme.sectionIconInProgressBg
 import com.nrlm.baselinesurvey.ui.theme.sectionIconNotStartedBg
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
 import com.nrlm.baselinesurvey.ui.theme.stepBoxActiveColor
+import com.nrlm.baselinesurvey.ui.theme.stepIconCompleted
+import com.nrlm.baselinesurvey.ui.theme.stepIconDisableColor
+import com.nrlm.baselinesurvey.ui.theme.stepIconEnableColor
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark50
 import com.nrlm.baselinesurvey.ui.theme.white
@@ -45,6 +48,7 @@ import com.nrlm.baselinesurvey.utils.states.SectionStatus
 
 @Composable
 fun SectionItemComponent(
+    index: Int,
     modifier: Modifier = Modifier,
     sectionStateItem: SectionState,
     onclick: (Int) -> Unit,
@@ -117,8 +121,8 @@ fun SectionItemComponent(
                         ),
                         contentAlignment = Alignment.Center
                     ) {
-                        /*Icon(
-                            painter = painterResource(id = sectionStateItem.section.sectionIcon),
+                        Icon(
+                            painter = painterResource(id = getIcon(index)),
                             contentDescription = null,
                             tint = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.INPROGRESS.name) or sectionStateItem.sectionStatus.name.equals(
                                     SectionStatus.COMPLETED.name
@@ -127,7 +131,7 @@ fun SectionItemComponent(
                                 if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) stepIconCompleted else stepIconEnableColor
                             } else stepIconDisableColor,
                             modifier = Modifier
-                        )*/
+                        )
                     }
                 }
 
@@ -213,28 +217,60 @@ fun SectionItemComponent(
 
 }
 
+private fun getIcon(index: Int): Int {
+    when (index) {
+        0 -> {
+            return R.drawable.house_hold_icon
+        }
+
+        1 -> {
+            return R.drawable.ic_food_security_icon
+        }
+
+        2 -> {
+            return R.drawable.ic_social_inclusion_icon
+        }
+
+        3 -> {
+            return R.drawable.ic_finacial_inclusion_icon
+        }
+
+        4 -> {
+            return R.drawable.icon_goverment_icon
+        }
+
+        5 -> {
+            return R.drawable.ic_livilihood_incom_icon
+        }
+
+        else -> {
+            return R.drawable.house_hold_icon
+        }
+    }
+}
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun SectionItemComponentPreview(
     modifier: Modifier = Modifier
 ) {
-   /* val sectionStateItem1 = SectionState(sampleSetcion1, SectionStatus.INPROGRESS)
-    val sectionStateItem2 = SectionState(sampleSection2, SectionStatus.COMPLETED)
-    val sectionStateItem3 = SectionState(sampleSection2, SectionStatus.NOT_STARTED)
+    /* val sectionStateItem1 = SectionState(sampleSetcion1, SectionStatus.INPROGRESS)
+     val sectionStateItem2 = SectionState(sampleSection2, SectionStatus.COMPLETED)
+     val sectionStateItem3 = SectionState(sampleSection2, SectionStatus.NOT_STARTED)
 
-    Column(modifier = Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(
-        dimen_10_dp)) {
-        SectionItemComponent(
-            sectionStateItem = sectionStateItem1,
-            onclick = {},
-            onDetailIconClicked = {})
-        SectionItemComponent(
-            sectionStateItem = sectionStateItem2,
-            onclick = {},
-            onDetailIconClicked = {})
-        SectionItemComponent(
-            sectionStateItem = sectionStateItem3,
-            onclick = {},
-            onDetailIconClicked = {})
-    }*/
+     Column(modifier = Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(
+         dimen_10_dp)) {
+         SectionItemComponent(
+             sectionStateItem = sectionStateItem1,
+             onclick = {},
+             onDetailIconClicked = {})
+         SectionItemComponent(
+             sectionStateItem = sectionStateItem2,
+             onclick = {},
+             onDetailIconClicked = {})
+         SectionItemComponent(
+             sectionStateItem = sectionStateItem3,
+             onclick = {},
+             onDetailIconClicked = {})
+     }*/
 }

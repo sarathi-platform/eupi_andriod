@@ -79,7 +79,7 @@ fun MissonRowScreen_1(
                 Modifier
                     .fillMaxWidth()
                     .background(greyLightColor)
-                    .padding(5.dp)
+                    .padding(horizontal = 16.dp, vertical = 5.dp)
             ) {
                 Text(text = stringResource(id = R.string.start_by_x_date,missionDueDate), style = smallerTextStyle)
             }
@@ -120,7 +120,9 @@ fun MissonRowScreen_1(
                 color = progressIndicatorColor,
                 trackColor = trackColor,
                 strokeCap = StrokeCap.Round,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp)
             )
 
             Row(

@@ -35,21 +35,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.ui.theme.black1
 import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
-import com.nrlm.baselinesurvey.ui.theme.buttonTextStyle
 import com.nrlm.baselinesurvey.ui.theme.greenOnline
 import com.nrlm.baselinesurvey.ui.theme.greyBorder
-import com.nrlm.baselinesurvey.ui.theme.inprogressYellow
-import com.nrlm.baselinesurvey.ui.theme.mediumBoldTextStyle
+import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleMediumWeight
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleMediumWeight2
-import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
@@ -88,7 +83,7 @@ fun StepsBox(
                     color = if (isCompleted) greenOnline else greyBorder,
                     shape = RoundedCornerShape(6.dp)
                 )
-                .background(backgroundColor?: white)
+                .background(backgroundColor ?: white)
                 .clickable {
                     onclick(index)
                 }
@@ -101,7 +96,7 @@ fun StepsBox(
             ConstraintLayout(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top =8.dp, bottom = 10.dp)
+                    .padding(top = 8.dp, bottom = 10.dp)
                     .padding(end = 16.dp, start = 8.dp),
             ) {
                 val (textContainer, buttonContainer, iconContainer) = createRefs()
@@ -111,16 +106,16 @@ fun StepsBox(
                     tint = Color.Unspecified,
 
                             modifier = Modifier
-                        .constrainAs(iconContainer) {
-                            start.linkTo(parent.start)
-                            top.linkTo(parent.top)
-                            bottom.linkTo(parent.bottom)
-                        }
-                        .size(48.dp)
-                        .padding(
-                            top = if (isCompleted) 0.dp else 6.dp,
-                            start = if (isCompleted) 0.dp else 4.dp
-                        )
+                                .constrainAs(iconContainer) {
+                                    start.linkTo(parent.start)
+                                    top.linkTo(parent.top)
+                                    bottom.linkTo(parent.bottom)
+                                }
+                                .size(48.dp)
+                                .padding(
+                                    top = if (isCompleted) 0.dp else 6.dp,
+                                    start = if (isCompleted) 0.dp else 4.dp
+                                )
                 )
 
 
@@ -137,11 +132,7 @@ fun StepsBox(
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = if (boxTitle.contains("pat ", true)) boxTitle.replace(
-                            "pat ",
-                            "PAT ",
-                            true
-                        ) else boxTitle,
+                        text = boxTitle,
                         modifier = Modifier
                             .padding(
                                 top = 10.dp,
@@ -153,7 +144,7 @@ fun StepsBox(
                         textAlign = TextAlign.Start,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 2,
-                        style = mediumBoldTextStyle
+                        style = largeTextStyle
                     )
                     //TODO add string for other steps when steps is complete.
                     if (subTitle != "") {

@@ -281,6 +281,7 @@ const val QUESTION_DATA_TAB = "Questions Data"
 const val SECTION_INFORMATION_TAB = "Section Information"
 
 const val BASE_LINE = "BASELINE"
+const val HAMLET = "HAMLET"
 const val ARG_VIDEO_PATH = "video_path"
 const val ARG_ACTIVITY_ID = "activity_id"
 const val ARG_ACTIVITY_DATE = "activity_date"

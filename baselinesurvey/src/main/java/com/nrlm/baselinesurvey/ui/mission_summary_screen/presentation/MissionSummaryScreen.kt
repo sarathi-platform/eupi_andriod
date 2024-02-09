@@ -99,7 +99,7 @@ fun MissionSummaryScreen(
                             iconResourceId = R.drawable.ic_mission_inprogress,
                             backgroundColor = inprogressYellow,
                             onclick = {
-                                navController.navigate("add_didi_graph/${activity.activityName}/${missionId}/${activity.endDate}")
+                                navController.navigate("add_didi_graph/${activity.activityName}/${missionId}/${activity.endDate}/${activity.activityId}")
                             })
                     }
 

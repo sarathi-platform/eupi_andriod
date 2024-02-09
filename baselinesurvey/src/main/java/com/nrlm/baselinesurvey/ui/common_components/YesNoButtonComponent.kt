@@ -2,24 +2,19 @@ package com.nrlm.baselinesurvey.ui.common_components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -54,13 +49,11 @@ fun YesNoButtonComponent(
     val shgFlag = remember {
         mutableStateOf(defaultValue)
     }
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
     ) {
         Text(
-            modifier = Modifier.widthIn(0.dp, 200.dp),
             text = buildAnnotatedString {
                 withStyle(
                     style = SpanStyle(
@@ -90,18 +83,14 @@ fun YesNoButtonComponent(
 
         Box(
             modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp)
                 .clip(RoundedCornerShape(6.dp))
-                .border(
-                    1.dp,
-                    color = lightGray2,
-                    RoundedCornerShape(6.dp)
-                )
                 .background(white, shape = RoundedCornerShape(6.dp))
                 .padding(0.dp)
         ) {
             Row(
                 Modifier
-                    .padding(0.dp)
                     .onGloballyPositioned { coordinates ->
                         yesNoButtonViewHeight.value =
                             with(localDensity) { coordinates.size.height.toDp() }
@@ -115,45 +104,41 @@ fun YesNoButtonComponent(
                         shgFlag.value = SHGFlag.YES.value
                         onOptionSelected(SHGFlag.YES.value)
                     }, modifier = Modifier
-                        .clip(
-                            RoundedCornerShape(
-                                topStart = 6.dp,
-                                bottomStart = 6.dp
-                            )
-                        )
+                        .weight(1f)
                         .background(
                             if (shgFlag.value == SHGFlag.YES.value) blueDark else Color.Transparent,
                             RoundedCornerShape(
                                 topStart = 6.dp,
-                                bottomStart = 6.dp
+                                bottomStart = 6.dp,
+                                bottomEnd = 6.dp,
+                                topEnd = 6.dp
                             )
                         )
+                        .border(1.dp, color = lightGray2, RoundedCornerShape(6.dp))
+
                 ) {
                     Text(
                         text = stringResource(id = R.string.option_yes),
                         color = if (shgFlag.value == SHGFlag.YES.value) white else textColorDark
                     )
                 }
-                Divider(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .height(yesNoButtonViewHeight.value)
-                        .background(lightGray2)
-                )
+                Spacer(modifier = Modifier.width(16.dp))
+
                 TextButton(
                     onClick = {
                         shgFlag.value = SHGFlag.NO.value
                         onOptionSelected(SHGFlag.NO.value)
                     }, modifier = Modifier
-                        .clip(
-                            RoundedCornerShape(
-                                topEnd = 6.dp,
-                                bottomEnd = 6.dp
-                            )
-                        )
+                        .weight(1f)
+                        .border(1.dp, color = lightGray2, RoundedCornerShape(6.dp))
                         .background(
                             if (shgFlag.value == SHGFlag.NO.value) blueDark else Color.Transparent,
-                            RoundedCornerShape(topEnd = 6.dp, bottomEnd = 6.dp)
+                            RoundedCornerShape(
+                                topStart = 6.dp,
+                                bottomStart = 6.dp,
+                                bottomEnd = 6.dp,
+                                topEnd = 6.dp
+                            )
                         )
                 ) {
                     Text(
@@ -161,9 +146,9 @@ fun YesNoButtonComponent(
                         color = if (shgFlag.value == SHGFlag.NO.value) white else textColorDark
                     )
                 }
+                Spacer(modifier = Modifier.weight(1f))
             }
         }
-        Spacer(modifier = Modifier.height(8.dp))
     }
 
 }

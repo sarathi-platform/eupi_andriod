@@ -37,7 +37,8 @@ fun SurveyeeListScreen(
     viewModel: SurveyeeScreenViewModel,
     missionId: Int,
     activityName: String,
-    activityDate: String
+    activityDate: String,
+    activityId: Int
 ) {
     val context = LocalContext.current
 
@@ -158,6 +159,7 @@ fun SurveyeeListScreen(
             navController = navController,
             activityName = activityName,
             activityDate = activityDate,
+            activityId = activityId,
             onActionEvent = { surveyeeListScreenActions ->
                 when (surveyeeListScreenActions) {
                     is CheckBoxClicked -> {
@@ -232,15 +234,20 @@ fun SurveyeeListScreen(
     }
 }
 
-fun handleButtonClick(buttonName: ButtonName, surveyeeId: Int, navController: NavController) {
+fun handleButtonClick(
+    buttonName: ButtonName,
+    surveyeeId: Int,
+    surveyId: Int,
+    navController: NavController
+) {
     when (buttonName) {
         is ButtonName.START_BUTTON -> {
-            navigateToBaseLineStartScreen(surveyeeId, navController)
+            navigateToBaseLineStartScreen(surveyeeId, surveyId, navController)
 //            navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$surveyeeId")
         }
 
         is ButtonName.CONTINUE_BUTTON -> {
-            navigateToSectionListScreen(surveyeeId, navController)
+            navigateToSectionListScreen(surveyeeId, surveyId, navController)
         }
 
         is ButtonName.NEGATIVE_BUTTON -> {
@@ -248,7 +255,7 @@ fun handleButtonClick(buttonName: ButtonName, surveyeeId: Int, navController: Na
         }
 
         is ButtonName.SHOW_BUTTON -> {
-            navigateToSectionListScreen(surveyeeId, navController)
+            navigateToSectionListScreen(surveyeeId, surveyId, navController)
         }
 
         is ButtonName.EXPORT_BUTTON -> {

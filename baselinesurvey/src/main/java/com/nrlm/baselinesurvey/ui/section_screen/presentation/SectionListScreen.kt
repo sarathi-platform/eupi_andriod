@@ -55,6 +55,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToQuestionScreen
@@ -73,6 +74,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_30_dp
 import com.nrlm.baselinesurvey.ui.theme.lightBlue
+import com.nrlm.baselinesurvey.ui.theme.mediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
@@ -88,13 +90,16 @@ fun SectionListScreen(
     navController: NavController,
     viewModel: SectionListScreenViewModel,
     modifier: Modifier = Modifier,
-    didiId: Int
+    didiId: Int,
+    surveyId: Int
 ) {
 
     val loaderState = viewModel.loaderState.value
+    lateinit var didiDetail: SurveyeeEntity
 
     LaunchedEffect(key1 = true) {
-        viewModel.init(didiId)
+        viewModel.init(didiId, surveyId)
+        // didiDetail= viewModel.getSurveeDetail(didiId)
     }
 
     val sectionsList = viewModel.sectionItemStateList.value
@@ -140,7 +145,13 @@ fun SectionListScreen(
                     Modifier
                         .fillMaxWidth()
                         .weight(1f)) {
-
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.CenterStart),
+                        text = "Dedi101",
+                        style = mediumTextStyle
+                    )
                     Box(
                         Modifier
                             .padding(dimen_1_dp)
@@ -299,9 +310,15 @@ fun SectionListScreen(
 
                         itemsIndexed(items = sectionsList) { index, sectionStateItem ->
                             SectionItemComponent(
+                                index,
                                 sectionStateItem = sectionStateItem,
                                 onclick = {
-                                    navigateToQuestionScreen(didiId = didiId, sectionId = sectionStateItem.section.sectionId, sectionStateItem.section.surveyId, navController)
+                                    navigateToQuestionScreen(
+                                        didiId = didiId,
+                                        sectionId = sectionStateItem.section.sectionId,
+                                        sectionStateItem.section.surveyId,
+                                        navController
+                                    )
                                 },
                                 onDetailIconClicked = {
                                     scope.launch {

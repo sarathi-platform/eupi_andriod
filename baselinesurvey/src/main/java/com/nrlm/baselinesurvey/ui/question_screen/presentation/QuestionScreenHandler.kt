@@ -37,6 +37,7 @@ fun QuestionScreenHandler(
             navController = navController,
             viewModel = viewModel,
             surveyeeId = didiId,
+            survyeId = surveyId,
             sectionId = selectedSectionId.value
         ) { currentSectionId ->
             if (sectionsList.size == 1 && sectionsList[0].sectionName.equals(NO_SECTION, true)) {

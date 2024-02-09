@@ -73,6 +73,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
                 activityName = "",
                 missionId = 0,
                 activityDate = "",
+                activityId = 0
             )
         }
 
@@ -82,12 +83,17 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
                     name = ARG_DIDI_ID
                 ) {
                     type = NavType.IntType
-            }
-        )) {
+                }, navArgument(
+                    name = ARG_SURVEY_ID
+                ) {
+                    type = NavType.IntType
+                }
+            )) {
             SectionListScreen(
                 navController, viewModel = hiltViewModel(), didiId = it.arguments?.getInt(
                     ARG_DIDI_ID
-                ) ?: 0
+                ) ?: 0,
+                surveyId = it.arguments?.getInt(ARG_SURVEY_ID) ?: 0
             )
         }
 
@@ -179,12 +185,17 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
                 name = ARG_DIDI_ID
             ) {
                 type = NavType.IntType
+            }, navArgument(
+                name = ARG_SURVEY_ID
+            ) {
+                type = NavType.IntType
             }
         )) {
             BaseLineStartScreen(
                 navController = navController,
                 baseLineStartViewModel = hiltViewModel(),
-                it.arguments?.getInt(ARG_DIDI_ID) ?: -1
+                it.arguments?.getInt(ARG_DIDI_ID) ?: -1,
+                surveyId = it.arguments?.getInt(ARG_SURVEY_ID) ?: -1
             )
         }
 
@@ -210,7 +221,8 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
                 navController = navController,
                 activityName = "",
                 missionId = 0,
-                activityDate = ""
+                activityDate = "",
+                activityId = 0
             )
         }
         addDidiNavGraph(navController = navController)
@@ -233,6 +245,10 @@ fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
                 name = ARG_ACTIVITY_DATE
             ) {
                 type = NavType.StringType
+            }, navArgument(
+                name = ARG_SURVEY_ID
+            ) {
+                type = NavType.IntType
             }
         )
     ) {
@@ -246,7 +262,8 @@ fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
                     ARG_ACTIVITY_ID
                 ) ?: "",
                 missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: 0,
-                activityDate = it.arguments?.getString(ARG_ACTIVITY_DATE) ?: ""
+                activityDate = it.arguments?.getString(ARG_ACTIVITY_DATE) ?: "",
+                activityId = it.arguments?.getInt(ARG_SURVEY_ID) ?: 0
             )
         }
 
@@ -256,7 +273,9 @@ fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
 
 sealed class HomeScreens(val route: String) {
     object DATA_LOADING_SCREEN : HomeScreens(route = DATA_LOADING_SCREEN_ROUTE_NAME)
-    object SECTION_SCREEN : HomeScreens(route = "$SECTION_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}")
+    object SECTION_SCREEN :
+        HomeScreens(route = "$SECTION_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}/{$ARG_SURVEY_ID}")
+
     object QUESTION_SCREEN :
         HomeScreens(route = "$QUESTION_SCREEN_ROUTE_NAME/{$ARG_SECTION_ID}/{$ARG_DIDI_ID}/{$ARG_SURVEY_ID}")
 
@@ -270,7 +289,7 @@ sealed class HomeScreens(val route: String) {
         HomeScreens(route = "${FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME}/{$ARG_QUESTION_NAME}/{$ARG_SURVEY_ID}/{$ARG_SECTION_ID}/{$ARG_QUESTION_ID}/{$ARG_DIDI_ID}")
 
     object BaseLineStartScreen :
-        HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}")
+        HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}/{$ARG_SURVEY_ID}")
 
     object SearchScreen : HomeScreens(route = SEARCH_SCREEN_ROUTE_NAME)
     object Home_SCREEN : HomeScreens(route = HOME_SCREEN_ROUTE_NAME)
@@ -293,8 +312,8 @@ const val MISSION_SCREEN_ROUTE_NAME = "mission_screen"
 const val DIDI_SCREEN_ROUTE_NAME = "didi_screen"
 const val MISSION_SUMMARY_SCREEN_ROUTE_NAME = "mission_summary_screen"
 
-fun navigateToBaseLineStartScreen(surveyeeId: Int, navController: NavController) {
-    navController.navigate("$BASELINE_START_SCREEN_ROUTE_NAME/$surveyeeId")
+fun navigateToBaseLineStartScreen(surveyeeId: Int, survyId: Int, navController: NavController) {
+    navController.navigate("$BASELINE_START_SCREEN_ROUTE_NAME/$surveyeeId/$survyId")
 }
 
 fun navigateBackToSurveyeeListScreen(navController: NavController) {
@@ -318,8 +337,8 @@ fun navigateToQuestionScreen(
     navController.navigate("$QUESTION_SCREEN_ROUTE_NAME/${sectionId}/$didiId/$surveyId")
 }
 
-fun navigateToSectionListScreen(surveyeeId: Int, navController: NavController) {
-    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$surveyeeId")
+fun navigateToSectionListScreen(surveyeeId: Int, surveyeId: Int, navController: NavController) {
+    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$surveyeeId/$surveyeId")
 }
 
 fun navigateToSearchScreen(navController: NavController) {

@@ -1,7 +1,6 @@
 package com.nrlm.baselinesurvey.ui.question_screen.domain.repository
 
 import android.util.Log
-import com.nrlm.baselinesurvey.BASE_LINE
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
@@ -41,8 +40,12 @@ class QuestionScreenRepositoryImpl @Inject constructor(
     private val formQuestionResponseDao: FormQuestionResponseDao
 ): QuestionScreenRepository {
 
-    override suspend fun getSections(sectionId: Int, languageId: Int): SectionListItem {
-        val survey = surveyEntityDao.getSurveyDetailForLanguage(BASE_LINE, languageId)
+    override suspend fun getSections(
+        sectionId: Int,
+        surveyId: Int,
+        languageId: Int
+    ): SectionListItem {
+        val survey = surveyEntityDao.getSurveyDetailForLanguage(surveyId, languageId)
         val sectionEntity = sectionEntityDao.getSurveySectionForLanguage(
             sectionId,
             survey?.surveyId ?: 0,
