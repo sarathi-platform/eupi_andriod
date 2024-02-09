@@ -105,7 +105,11 @@ class QuestionScreenViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val selectedlanguageId = questionScreenUseCase.getSectionUseCase.getSelectedLanguage()
             _sectionDetail.value =
-                questionScreenUseCase.getSectionUseCase.invoke(sectionId, selectedlanguageId)
+                questionScreenUseCase.getSectionUseCase.invoke(
+                    sectionId,
+                    surveyId,
+                    selectedlanguageId
+                )
             val questionAnswerMap = mutableMapOf<Int, List<OptionItemEntity>>()
             _inputTypeQuestionAnswerEntityList.value = questionScreenUseCase.getSectionUseCase.getInputTypeQuestionAnswers(
                 surveyId = surveyId,
