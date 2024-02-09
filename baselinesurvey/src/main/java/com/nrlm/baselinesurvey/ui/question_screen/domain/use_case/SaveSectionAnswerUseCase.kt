@@ -48,8 +48,27 @@ class SaveSectionAnswerUseCase(
         return repository.isQuestionAlreadyAnswered(didiId, questionId, sectionId)
     }
 
+    fun isInputTypeQuestionAlreadyAnswered(surveyId: Int, sectionId: Int, questionId: Int, didiId: Int, optionId: Int): Int {
+        return repository.isInputTypeQuestionAlreadyAnswered(surveyId = surveyId, sectionId = sectionId, questionId = questionId, didiId = didiId, optionItemId = optionId)
+    }
+
     suspend fun saveSectionAnswersToServer(didiId: Int, surveyId: Int) {
         repository.saveSectionAnswersToServer(didiId, surveyId)
+    }
+
+    suspend fun updateInputTypeQuestionAnswer(surveyId: Int, sectionId: Int, questionId: Int, didiId: Int, optionId: Int, inputValue: String) {
+        repository.updateInputTypeQuestionAnswer(
+            surveyId = surveyId,
+            sectionId = sectionId,
+            questionId = questionId,
+            didiId = didiId,
+            optionId = optionId,
+            inputValue = inputValue
+        )
+    }
+
+    suspend fun saveInputTypeQuestionAnswer(surveyId: Int, sectionId: Int, questionId: Int, didiId: Int, optionId: Int, inputValue: String) {
+        repository.saveInputTypeQuestionAnswer(surveyId, sectionId, questionId, didiId, optionId, inputValue)
     }
 
     /*suspend fun updateOptionItemValue(

@@ -168,11 +168,11 @@ fun ListTypeQuestion(
                                     optionItemEntityList ?: listOf()
                                 ) { _index: Int, optionsItem: OptionItemEntity ->
                                     OptionCard(
-                                        buttonTitle = optionsItem.display ?: BLANK_STRING,
+                                        optionItem = optionsItem,
                                         index = _index,
                                         selectedIndex = selectedIndex.value,
                                     ) {
-                                        selectedIndex.value = questionIndex
+                                        selectedIndex.value = it
                                         onAnswerSelection(questionIndex, optionsItem)
                                     }
                                     Spacer(modifier = Modifier.height(dimen_8_dp))
@@ -287,7 +287,7 @@ fun ListTypeQuestionPreview() {
 @Composable
 public fun OptionCard(
     modifier: Modifier = Modifier,
-    buttonTitle: String,
+    optionItem: OptionItemEntity,
     index: Int,
     selectedIndex: Int,
     onOptionSelected: (Int) -> Unit
@@ -296,9 +296,9 @@ public fun OptionCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(6.dp))
-            .background(if (selectedIndex == index) blueDark else languageItemActiveBg)
+            .background(if (optionItem.optionId == selectedIndex) blueDark else languageItemActiveBg)
             .clickable {
-                onOptionSelected(index)
+                onOptionSelected(optionItem.optionId ?: -1)
             }
             .padding(horizontal = 10.dp)
             .then(modifier)) {
@@ -311,13 +311,13 @@ public fun OptionCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 HtmlText(
-                    text = buttonTitle,
+                    text = optionItem.display ?: BLANK_STRING,
                     style = TextStyle(
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.Normal,
                         fontSize = 14.sp
                     ),
-                    color = if (selectedIndex == index) white else textColorDark
+                    color = if (optionItem.optionId == selectedIndex) white else textColorDark
                 )
             }
         }
@@ -333,6 +333,19 @@ public fun OptionCard(
 @Preview(showBackground = true)
 @Composable
 fun OptionCardPreview() {
-    OptionCard(modifier = Modifier, "Option", index = 0, onOptionSelected = {}, selectedIndex = 0)
+    val option = OptionItemEntity(
+        optionId = 1,
+        display = "Milk and milk products",
+        weight = 1,
+        summary = "Milk and milk products",
+        optionValue = 1,
+        // optionImage = R.drawable.icon_check,
+        optionImage = "",
+        optionType = "",
+        surveyId = 1,
+        questionId = 1,
+        id = 1
+    )
+    OptionCard(modifier = Modifier, option, index = 0, onOptionSelected = {}, selectedIndex = 1)
 }
 

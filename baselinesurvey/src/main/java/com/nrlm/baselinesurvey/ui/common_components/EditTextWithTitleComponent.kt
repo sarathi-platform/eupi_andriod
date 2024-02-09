@@ -38,6 +38,9 @@ fun EditTextWithTitleComponent(
     val txt: MutableState<String> = remember {
         mutableStateOf(defaultValue)
     }
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -62,6 +65,7 @@ fun EditTextWithTitleComponent(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = if (isOnlyNumber) KeyboardType.Number else KeyboardType.Ascii),
             keyboardActions = KeyboardActions(onDone = {
                 onAnswerSelection(txt.value)
+                keyboardController?.hide()
             }),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = placeholderGrey,

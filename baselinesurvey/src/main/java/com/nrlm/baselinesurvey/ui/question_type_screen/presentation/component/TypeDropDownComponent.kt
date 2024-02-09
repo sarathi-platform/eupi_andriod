@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.toSize
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.ui.common_components.DropDownWithTitleComponent
 
 @Composable
@@ -16,16 +17,17 @@ fun TypeDropDownComponent(
     title: String?,
     hintText: String = "Select",
     sources: List<String>?,
+    selectOptionText: String = BLANK_STRING,
     onAnswerSelection: (selectValue: String) -> Unit,
 
     ) {
-    val defaultList = if (sources == null) listOf("Yes", "No") else sources
+    val defaultSourceList = if (sources == null) listOf("Yes", "No") else sources
     var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember { mutableStateOf(hintText) }
+    var selectedOptionText by remember { mutableStateOf(if (selectOptionText.equals(BLANK_STRING)) hintText else selectOptionText) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
     DropDownWithTitleComponent(
         title = title ?: "",
-        items = defaultList ?: listOf(),
+        items = defaultSourceList ?: listOf(),
         modifier = Modifier.fillMaxWidth(),
         mTextFieldSize = textFieldSize,
         expanded = expanded,
@@ -40,7 +42,7 @@ fun TypeDropDownComponent(
             textFieldSize = coordinates.size.toSize()
         },
         onItemSelected = {
-            selectedOptionText = defaultList?.get(defaultList.indexOf(it)) ?: ""
+            selectedOptionText = defaultSourceList?.get(defaultSourceList.indexOf(it)) ?: ""
             onAnswerSelection(selectedOptionText)
             expanded = false
         },

@@ -64,6 +64,7 @@ fun QuestionScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: QuestionScreenViewModel,
+    surveyId: Int,
     surveyeeId: Int,
     sectionId: Int,
     nextSectionHandler: (sectionId: Int) -> Unit
@@ -75,7 +76,7 @@ fun QuestionScreen(
 
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-        viewModel.init(sectionId, surveyeeId)
+        viewModel.init(surveyId = surveyId, sectionId = sectionId, surveyeeId = surveyeeId)
         delay(300)
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
     }
@@ -106,7 +107,7 @@ fun QuestionScreen(
 
     Scaffold(
         containerColor = white,
-        modifier = Modifier.padding(top = dimen_10_dp),
+        modifier = Modifier.padding(top = dimen_10_dp).fillMaxSize(),
         bottomBar = {
             BottomAppBar(containerColor = white, tonalElevation = defaultCardElevation, contentPadding = PaddingValues(horizontal = dimen_16_dp)) {
                 Column {

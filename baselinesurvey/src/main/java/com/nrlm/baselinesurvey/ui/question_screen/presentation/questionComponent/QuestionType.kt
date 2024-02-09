@@ -276,7 +276,7 @@ private fun GridType(
     selectedOptionsItem: MutableList<OptionItemEntity>
 ) {
     GridOptionCard(
-        buttonTitle = optionItem.display ?: BLANK_STRING,
+        optionItem = optionItem,
         index = _index,
         selectedIndex = selectedIndices
     ) {
@@ -388,7 +388,7 @@ private fun ListType(
     optionsItem: OptionItemEntity, _index: Int, selectedIndex: MutableIntState, questionIndex: Int
 ) {
     OptionCard(
-        buttonTitle = optionsItem.display ?: BLANK_STRING,
+        optionItem = optionsItem,
         index = _index,
         selectedIndex = selectedIndex.value,
     ) {

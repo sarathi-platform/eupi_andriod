@@ -120,7 +120,7 @@ fun MissonRowScreen_1(
                 color = progressIndicatorColor,
                 trackColor = trackColor,
                 strokeCap = StrokeCap.Round,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp).fillMaxWidth()
             )
 
             Row(

@@ -36,6 +36,7 @@ fun QuestionScreenHandler(
         QuestionScreen(
             navController = navController,
             viewModel = viewModel,
+            surveyId = surveyId,
             surveyeeId = didiId,
             sectionId = selectedSectionId.value
         ) { currentSectionId ->

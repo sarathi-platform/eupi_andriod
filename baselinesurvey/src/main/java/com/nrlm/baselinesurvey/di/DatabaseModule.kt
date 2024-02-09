@@ -91,6 +91,10 @@ object DatabaseModule {
     @Singleton
     fun provideFormQuestionResponseDao(db: NudgeBaselineDatabase) = db.formQuestionResponseDao()
 
+    @Provides
+    @Singleton
+    fun provideInputTypeQuestionAnswerDao(db: NudgeBaselineDatabase) = db.inputTypeQuestionAnswerDao()
+
     /*@Provides
     @Singleton
     fun providesEventsDao(syncDb: com.nudge.core.database.SyncManagerDatabase) = syncDb.eventsDao()*/
