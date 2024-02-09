@@ -57,6 +57,7 @@ const val DIDI_COUNT = "didi_count"
 const val QUESTION_TABLE = "question_table"
 const val OPTION_TABLE = "option_table"
 const val FORM_QUESTION_RESPONSE_TABLE = "form_question_response_table"
+const val INPUT_TYPE_QUESTION_ANSWER_TABLE = "input_type_question_answer_entity"
 
 const val DIDI_SECTION_PROGRESS_TABLE = "didi_section_progress_table"
 const val TRAINING_VIDEO_TABLE = "training_video_table"

@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.question_screen.domain.repository
 
+import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
@@ -34,6 +35,8 @@ interface QuestionScreenRepository {
 
     fun isQuestionAlreadyAnswered(didiId: Int, questionId: Int, sectionId: Int): Int
 
+    fun isInputTypeQuestionAlreadyAnswered(surveyId: Int, sectionId: Int, didiId: Int, questionId: Int, optionItemId: Int): Int
+
     fun getAllAnswersForDidi(didiId: Int): List<SectionAnswerEntity>
 
     fun getSectionAnswerForDidi(sectionId: Int, didiId: Int): List<SectionAnswerEntity>
@@ -43,6 +46,13 @@ interface QuestionScreenRepository {
     suspend fun updateDidiSurveyStatus(didiId: Int, surveyId: Int)
 
     suspend fun getSectionsList(surveyId: Int, languageId: Int): List<SectionEntity>
+
+    suspend fun updateInputTypeQuestionAnswer(surveyId: Int, sectionId: Int, questionId: Int, didiId: Int, optionId: Int, inputValue: String)
+
+    suspend fun saveInputTypeQuestionAnswer(surveyId: Int, sectionId: Int, questionId: Int, didiId: Int, optionId: Int, inputValue: String)
+
+    suspend fun getAllInputTypeQuestionAnswersForDidi(surveyId: Int, sectionId: Int, didiId: Int): List<InputTypeQuestionAnswerEntity>
+
     /*suspend fun updateOptionItem(
         surveyId: Int,
         sectionId: Int,

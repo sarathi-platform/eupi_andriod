@@ -111,6 +111,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                         //  options = question.options,
                         languageId = languageId
                     )
+                    questionEntityDao.insertQuestion(questionEntity)
                     question.options.forEach { optionsItem ->
                         if (optionsItem != null) {
                             optionItemDao.deleteSurveySectionQuestionOptionFroLanguage(
@@ -140,9 +141,28 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                                 languageId = languageId
                             )
                             optionItemDao.insertOption(optionItemEntity)
+
+                            // TODO Anupam uncomment it when conditional logic is added.
+                            /*if (!optionsItem.questionList.isNullOrEmpty()) {
+                                optionsItem.questionList.forEach { internalQuestion ->
+                                    val internalQuestionEntity = QuestionEntity(
+                                        id = 0,
+                                        questionId = internalQuestion?.questionId,
+                                        sectionId = section.sectionId,
+                                        surveyId = surveyResponseModel.surveyId,
+                                        questionDisplay = internalQuestion?.questionDisplay,
+                                        questionSummary = internalQuestion?.questionSummary,
+                                        gotoQuestionId = internalQuestion?.gotoQuestionId,
+                                        order = internalQuestion?.order,
+                                        type = internalQuestion?.type,
+                                        //  options = question.options,
+                                        languageId = languageId
+                                    )
+                                    questionEntityDao.insertQuestion(internalQuestionEntity)
+                                }
+                            }*/
                         }
                     }
-                    questionEntityDao.insertQuestion(questionEntity)
                 }
             }
         }

@@ -50,6 +50,8 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.navigation.home.FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME
@@ -73,7 +75,9 @@ import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.findOptionFromId
 import com.nrlm.baselinesurvey.utils.mapFormQuestionResponseToFromResponseObjectDto
+import com.nrlm.baselinesurvey.utils.mapToOptionItem
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -96,6 +100,8 @@ fun NestedLazyList(
     val coroutineScope = rememberCoroutineScope()
 
     val questionScreenViewModel = (viewModel as QuestionScreenViewModel)
+
+    val inputTypeQuestionAnswerEntityList = questionScreenViewModel.inputTypeQuestionAnswerEntityList
 
     val innerQueState: LazyListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -357,8 +363,9 @@ fun NestedLazyList(
                                 ListTypeQuestion(
                                     question = question,
                                     optionItemEntityList = optionList ?: listOf(),
-                                    selectedOptionIndex = optionList?.indexOf(selectedOption)
-                                        ?: -1,
+                                    selectedOptionIndex = optionList?.find { it.optionId == selectedOption?.optionId }?.optionId ?: -1
+                                    /*optionList?.indexOf(selectedOption)
+                                        ?: -1*/,
                                     questionIndex = index,
                                     maxCustomHeight = maxHeight,
                                     onAnswerSelection = { questionIndex, optionItem ->
@@ -414,8 +421,8 @@ fun NestedLazyList(
                                 val optionList =
                                     sectionDetails.optionsItemMap[question.questionId] ?: listOf()
                                 val selectedIndices = mutableListOf<Int>()
-                                selectedOption?.forEach {
-                                    selectedIndices.add(selectedOption?.indexOf(it) ?: -1)
+                                selectedOption?.forEach { selectedItem ->
+                                    selectedIndices.add(selectedOption.find { it.optionId == selectedItem.optionId }?.optionId ?: -1)
                                 }
                                 GridTypeComponent(
                                     question = question,
@@ -499,11 +506,19 @@ fun NestedLazyList(
                                 val selectedOption =
                                     sectionDetails.questionAnswerMapping[question.questionId]?.first()
                                 val optionList = sectionDetails.optionsItemMap[question.questionId]
+                                val selectedOptionMap = mutableMapOf<Int, InputTypeQuestionAnswerEntity>()
+                                val selectedInputQuestionOptionItemEntityList = if (optionList != null) {
+                                    inputTypeQuestionAnswerEntityList.value.mapToOptionItem(optionList)
+                                } else emptyList()
+                                selectedInputQuestionOptionItemEntityList.forEach { option ->
+                                    option.optionId?.let { selectedOptionMap[it] = inputTypeQuestionAnswerEntityList.value.findOptionFromId(option)!! }
+                                }
+
+
                                 MiscQuestionBoxComponent(
                                     question = question,
                                     questionIndex = index,
-                                    selectedOptionIndex = optionList?.indexOf(selectedOption)
-                                        ?: -1,
+                                    selectedOptionMap = selectedOptionMap,
                                     maxCustomHeight = maxHeight,
                                     optionItemEntityList = sectionDetails.optionsItemMap[question.questionId],
                                     onAnswerSelection = { questionIndex, optionId, selectedValue ->
@@ -514,22 +529,33 @@ fun NestedLazyList(
                                                     .coerceIn(0, sectionDetails.questionList.size)
                                             answeredQuestionCountIncreased(answeredQuestionCount.value)
                                         }
+
                                         questionScreenViewModel.onEvent(
-                                            QuestionScreenEvents.FormTypeQuestionAnswered(
+                                            QuestionScreenEvents.SectionProgressUpdated(
                                                 surveyId = sectionDetails.surveyId,
                                                 sectionId = sectionDetails.sectionId,
-                                                didiId = 0,
+                                                didiId = surveyeeId,
+                                                sectionStatus = SectionStatus.INPROGRESS
+                                            )
+                                        )
+
+                                        questionScreenViewModel.onEvent(
+                                            QuestionScreenEvents.InputTypeQuestionAnswered(
+                                                surveyId = sectionDetails.surveyId,
+                                                sectionId = sectionDetails.sectionId,
+                                                didiId = surveyeeId,
                                                 questionId = question.questionId ?: 0,
                                                 optionItemId = optionId,
-                                                selectedValue = selectedValue
+                                                inputValue = selectedValue
                                             )
                                         )
 
                                     },
                                     onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
 
-                                    }
-                                ) {}
+                                    },
+                                    questionDetailExpanded = {}
+                                )
                             }
                         }
                     }

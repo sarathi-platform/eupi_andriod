@@ -34,6 +34,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
@@ -62,14 +64,14 @@ fun MiscQuestionBoxComponent(
     questionIndex: Int,
     question: QuestionEntity,
     optionItemEntityList: List<OptionItemEntity>?,
-    selectedOptionIndex: Int = -1,
+    selectedOptionMap: Map<Int, InputTypeQuestionAnswerEntity>,
     maxCustomHeight: Dp,
     onAnswerSelection: (questionIndex: Int, optionId: Int, selectedValue: String) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
 ) {
     val scope = rememberCoroutineScope()
-    var selectedIndex by remember { mutableIntStateOf(selectedOptionIndex) }
+//    var selectedIndex by remember { mutableIntStateOf(selectedOptionIndex) }
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyListState = rememberLazyListState()
     SideEffect {
@@ -153,12 +155,12 @@ fun MiscQuestionBoxComponent(
                                         QuestionType.Input.name -> {
                                             EditTextWithTitleComponent(
                                                 optionsItem.display,
-                                                optionsItem.selectedValue ?: ""
-                                            ) {
+                                                defaultValue = selectedOptionMap[optionsItem.optionId]?.inputValue ?: ""
+                                            ) { inputValue ->
                                                 onAnswerSelection(
                                                     questionIndex,
                                                     optionsItem.optionId ?: 0,
-                                                    it
+                                                    inputValue
                                                 )
                                             }
                                             Spacer(modifier = Modifier.height(dimen_8_dp))
@@ -167,8 +169,9 @@ fun MiscQuestionBoxComponent(
                                         QuestionType.SingleSelectDropdown.name -> {
                                             TypeDropDownComponent(
                                                 optionsItem.display,
-                                                optionsItem.selectedValue ?: "Select",
-                                                optionsItem.values
+                                                hintText = optionsItem.selectedValue ?: "Select",
+                                                sources = optionsItem.values,
+                                                selectOptionText = selectedOptionMap[optionsItem.optionId]?.inputValue ?: BLANK_STRING
                                             ) {
                                                 onAnswerSelection(
                                                     questionIndex,

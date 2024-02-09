@@ -31,12 +31,6 @@ data class QuestionEntity(
     @ColumnInfo(name = "surveyId")
     val surveyId: Int,
 
-//    @SerializedName("options")
-//    @Expose
-//    @ColumnInfo(name = "options")
-//    @TypeConverters(QuestionsOptionsConverter::class)
-//    var options: List<OptionsItem> = emptyList(),
-
     @SerializedName("questionImageUrl")
     @Expose
     @ColumnInfo(name = "questionImageUrl")
@@ -66,26 +60,6 @@ data class QuestionEntity(
     @Expose
     @ColumnInfo(name = "order")
     var order: Int? = 0,
-
-    /* @SerializedName("questionFlag")
-     @Expose
-     @ColumnInfo(name = "questionFlag")
-     var questionFlag: String? = BLANK_STRING,
-
-     @SerializedName("json")
-     @Expose
-     @ColumnInfo(name = "json")
-     var json: String? = BLANK_STRING,
-
-     @SerializedName("actionType")
-     @Expose
-     @ColumnInfo(name = "actionType")
-     var actionType: String? = BLANK_STRING,
-
-    @SerializedName("orderNumber")
-    @Expose
-    @ColumnInfo(name = "orderNumber")
-    var sectionOrderNumber: Int? = 0,*/
 
     @SerializedName("languageId")
     @Expose

@@ -23,8 +23,10 @@ import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_NAME
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
+import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
+import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
@@ -604,4 +606,21 @@ fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObject
         householdMembersList.add(householdMember)
     }
     return householdMembersList
+}
+
+fun List<SectionAnswerEntity>.findQuestionForQuestionId(questionId: Int): SectionAnswerEntity? {
+    return this.find { it.questionId == questionId }
+}
+
+fun List<InputTypeQuestionAnswerEntity>.mapToOptionItem(optionsItemEntityList: List<OptionItemEntity>): List<OptionItemEntity> {
+    val mOptionsItemList = mutableListOf<OptionItemEntity>()
+    this.forEach { inputTypeQuestionAnswerEntity ->
+        if (optionsItemEntityList.any { it.optionId == inputTypeQuestionAnswerEntity.optionId })
+            optionsItemEntityList.find { it.optionId == inputTypeQuestionAnswerEntity.optionId }?.let { optionsItemEntity -> mOptionsItemList.add(optionsItemEntity) }
+    }
+    return mOptionsItemList
+}
+
+fun List<InputTypeQuestionAnswerEntity>.findOptionFromId(optionsItemEntity: OptionItemEntity): InputTypeQuestionAnswerEntity? {
+    return this.find { it.optionId == optionsItemEntity.optionId }
 }

@@ -9,6 +9,7 @@ import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.DidiInfoDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.FormQuestionResponseDao
+import com.nrlm.baselinesurvey.database.dao.InputTypeQuestionAnswerDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
@@ -289,19 +290,21 @@ object BaselineModule {
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
         sectionAnswerEntityDao: SectionAnswerEntityDao,
         optionItemDao: OptionItemDao,
-        formQuestionResponseDao: FormQuestionResponseDao
+        formQuestionResponseDao: FormQuestionResponseDao,
+        inputTypeQuestionAnswerDao: InputTypeQuestionAnswerDao
     ): QuestionScreenRepository {
         return QuestionScreenRepositoryImpl(
-            prefRepo,
-            apiService,
-            surveyeeEntityDao,
-            surveyEntityDao,
-            sectionEntityDao,
-            questionEntityDao,
-            didiSectionProgressEntityDao,
-            sectionAnswerEntityDao,
-            optionItemDao,
-            formQuestionResponseDao = formQuestionResponseDao
+            prefRepo = prefRepo,
+            apiService = apiService,
+            surveyeeEntityDao = surveyeeEntityDao,
+            surveyEntityDao = surveyEntityDao,
+            sectionEntityDao = sectionEntityDao,
+            questionEntityDao = questionEntityDao,
+            didiSectionProgressEntityDao = didiSectionProgressEntityDao,
+            sectionAnswerEntityDao = sectionAnswerEntityDao,
+            optionItemDao = optionItemDao,
+            formQuestionResponseDao = formQuestionResponseDao,
+            inputTypeQuestionAnswerDao = inputTypeQuestionAnswerDao
         )
     }
 

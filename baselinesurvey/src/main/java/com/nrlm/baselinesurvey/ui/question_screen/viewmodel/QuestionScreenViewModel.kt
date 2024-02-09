@@ -9,16 +9,19 @@ import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
+import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.model.response.ContentList
+import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.QuestionScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenEvents
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nrlm.baselinesurvey.utils.findQuestionForQuestionId
 import com.nrlm.baselinesurvey.utils.sortedBySectionOrder
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -59,6 +62,9 @@ class QuestionScreenViewModel @Inject constructor(
 
     val expandedImagePath = mutableStateOf("")
 
+    private val _inputTypeQuestionAnswerEntityList = mutableStateOf<List<InputTypeQuestionAnswerEntity>>(emptyList())
+    val inputTypeQuestionAnswerEntityList: State<List<InputTypeQuestionAnswerEntity>> get() = _inputTypeQuestionAnswerEntityList
+
     private val _filterSectionList = mutableStateOf<SectionListItem>(
         SectionListItem(
             contentList = listOf(
@@ -94,17 +100,18 @@ class QuestionScreenViewModel @Inject constructor(
         )
     }
 
-    fun init(sectionId: Int, surveyId: Int, surveyeeId: Int) {
+    fun init(surveyId: Int, sectionId: Int, surveyeeId: Int) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val selectedlanguageId = questionScreenUseCase.getSectionUseCase.getSelectedLanguage()
             _sectionDetail.value =
-                questionScreenUseCase.getSectionUseCase.invoke(
-                    sectionId,
-                    surveyId,
-                    selectedlanguageId
-                )
+                questionScreenUseCase.getSectionUseCase.invoke(sectionId, selectedlanguageId)
             val questionAnswerMap = mutableMapOf<Int, List<OptionItemEntity>>()
+            _inputTypeQuestionAnswerEntityList.value = questionScreenUseCase.getSectionUseCase.getInputTypeQuestionAnswers(
+                surveyId = surveyId,
+                sectionId = sectionId,
+                didiId = surveyeeId
+            )
             val localAnswerList =
                 questionScreenUseCase.getSectionAnswersUseCase.getSectionAnswerForDidi(
                     sectionId = sectionId,
@@ -183,6 +190,17 @@ class QuestionScreenViewModel @Inject constructor(
                 performSearchQuery(event.searchTerm, event.isFilterApplied, event.fromScreen)
             }
 
+            is QuestionScreenEvents.InputTypeQuestionAnswered -> {
+                saveInputTypeQuestionAnswer(
+                    surveyId = event.surveyId,
+                    sectionId = event.sectionId,
+                    questionId = event.questionId,
+                    optionId = event.optionItemId,
+                    didiId = event.didiId,
+                    inputValue = event.inputValue
+                )
+            }
+
             /*is QuestionScreenEvents.FormTypeQuestionAnswered -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     questionScreenUseCase.saveSectionAnswerUseCase.updateOptionItemValue(
@@ -195,6 +213,59 @@ class QuestionScreenViewModel @Inject constructor(
                 }
             }*/
         }
+    }
+
+    private fun saveInputTypeQuestionAnswer(surveyId: Int,
+                                            sectionId: Int,
+                                            didiId: Int,
+                                            questionId: Int,
+                                            optionId: Int,
+                                            inputValue: String)
+    {
+     CoroutineScope(Dispatchers.IO).launch {
+         try {
+             val isQuestionAlreadyAnswer =
+                 questionScreenUseCase.saveSectionAnswerUseCase.isInputTypeQuestionAlreadyAnswered(
+                     surveyId = surveyId,
+                     sectionId = sectionId,
+                     questionId = questionId,
+                     didiId = didiId,
+                     optionId = optionId
+                 )
+
+             if (isQuestionAlreadyAnswer > 0) {
+                 questionScreenUseCase.saveSectionAnswerUseCase.updateInputTypeQuestionAnswer(
+                     surveyId = surveyId,
+                     sectionId = sectionId,
+                     questionId = questionId,
+                     didiId = didiId,
+                     optionId = optionId,
+                     inputValue = inputValue
+                 )
+             } else {
+                 questionScreenUseCase.saveSectionAnswerUseCase.saveInputTypeQuestionAnswer(
+                     surveyId = surveyId,
+                     sectionId = sectionId,
+                     questionId = questionId,
+                     didiId = didiId,
+                     optionId = optionId,
+                     inputValue = inputValue
+                 )
+             }
+
+         } catch (ex: Exception) {
+             BaselineLogger.e(
+                 "QuestionScreenViewModel",
+                 "saveInputTypeQuestionAnswer -> questionId = $questionId,\n" +
+                         "                        didiId = $didiId,\n" +
+                         "                        sectionId = $sectionId,\n" +
+                         "                        surveyId = $surveyId,\n" +
+                         "                        optionId = $optionId"+
+                         "                        inputValue = $inputValue"
+                 , ex
+             )
+         }
+     }
     }
 
     private fun saveOrUpdateSectionAnswers(
@@ -213,12 +284,21 @@ class QuestionScreenViewModel @Inject constructor(
                         sectionId = sectionId,
                         questionId = questionId
                     )
+
+                val existingGridTypeAnswers = questionScreenUseCase.getSectionAnswersUseCase.getSectionAnswerForDidi(sectionId = sectionId, didiId = didiId).findQuestionForQuestionId(questionId)
                 if (isQuestionAlreadyAnswered > 0) {
+                    val finalAnswerList: MutableList<OptionItemEntity> = mutableListOf()
+                    if (questionEntity.type?.equals(QuestionType.Grid.name) == true) {
+                        finalAnswerList.addAll(existingGridTypeAnswers?.optionItems ?: emptyList())
+                        finalAnswerList.addAll(optionsItem)
+                    } else {
+                        finalAnswerList.addAll(optionsItem)
+                    }
                     questionScreenUseCase.saveSectionAnswerUseCase.updateSectionAnswerForDidi(
                         didiId = didiId,
                         questionId = questionId,
                         sectionId = sectionId,
-                        optionItems = optionsItem,
+                        optionItems = finalAnswerList,
                         questionType = questionEntity.type ?: BLANK_STRING,
                         questionSummary = questionEntity.questionSummary ?: BLANK_STRING
                     )

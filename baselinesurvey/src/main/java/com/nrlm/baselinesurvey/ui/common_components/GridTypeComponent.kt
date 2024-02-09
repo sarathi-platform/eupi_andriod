@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -31,6 +32,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -38,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -166,12 +169,13 @@ fun GridTypeComponent(
                                     modifier = Modifier
                                         .wrapContentWidth()
                                         .padding(horizontal = dimen_16_dp)
-                                        .heightIn(min = 110.dp, max = maxCustomHeight)
+                                        .heightIn(min = 110.dp, max = maxCustomHeight),
+                                    horizontalArrangement = Arrangement.Center
                                 ) {
                                     itemsIndexed(optionItemEntityList?.sortedBy { it.optionValue }
                                         ?: emptyList()) { _index, optionItem ->
                                         GridOptionCard(
-                                            buttonTitle = optionItem.display ?: BLANK_STRING,
+                                            optionItem = optionItem,
                                             index = _index,
                                             selectedIndex = selectedIndices
                                         ) {
@@ -227,9 +231,9 @@ fun GridTypeComponent(
 }
 
 @Composable
-public fun GridOptionCard(
+fun GridOptionCard(
     modifier: Modifier = Modifier,
-    buttonTitle: String,
+    optionItem: OptionItemEntity,
     index: Int,
     selectedIndex: List<Int>,
     onOptionSelected: (Int) -> Unit
@@ -239,9 +243,9 @@ public fun GridOptionCard(
             .fillMaxWidth()
             .padding(horizontal = dimen_5_dp, vertical = dimen_5_dp)
             .clip(RoundedCornerShape(6.dp))
-            .background(if (selectedIndex.contains(index)) blueDark else languageItemActiveBg)
+            .background(if (selectedIndex.contains(optionItem.optionId)) blueDark else languageItemActiveBg)
             .clickable {
-                onOptionSelected(index)
+                onOptionSelected(optionItem.optionId ?: -1)
             }
             .then(modifier)) {
         Box(
@@ -253,13 +257,14 @@ public fun GridOptionCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 HtmlText(
-                    text = buttonTitle,
+                    text = optionItem.display ?: BLANK_STRING,
                     style = TextStyle(
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.Normal,
                         fontSize = 14.sp,
+                        textAlign = TextAlign.Center
                     ),
-                    color = if (selectedIndex.contains(index)) white else textColorDark
+                    color = if (selectedIndex.contains(optionItem.optionId)) white else textColorDark
                 )
             }
         }
@@ -318,7 +323,21 @@ fun GridTypeQuestionPreview() {
         questionId = 1,
         id = 1
     )
-    val optionItemEntity = listOf(option1, option2)
+
+    val option3 = OptionItemEntity(
+        optionId = 1,
+        display = "Milk and milk products",
+        weight = 1,
+        summary = "Milk and milk products",
+        optionValue = 1,
+        // optionImage = R.drawable.icon_check,
+        optionImage = "",
+        optionType = "",
+        surveyId = 1,
+        questionId = 1,
+        id = 1
+    )
+    val optionItemEntity = listOf(option1, option2, option3, option1)
 
     BoxWithConstraints() {
         GridTypeComponent(
@@ -341,8 +360,21 @@ fun GridTypeQuestionPreview() {
 @Preview(showBackground = true)
 @Composable
 fun GridOptionCardPreview() {
-    /*val selectedIndex = remember {
-        mutableStateOf(mutableListOf<Int>(0))
+    val selectedIndex = remember {
+        mutableStateOf(mutableListOf<Int>(1))
     }
-    GridOptionCard(modifier = Modifier, "Option", index = 0, onOptionSelected = {}, selectedIndex = selectedIndex)*/
+    val option = OptionItemEntity(
+        optionId = 1,
+        display = "Milk and milk products",
+        weight = 1,
+        summary = "Milk and milk products",
+        optionValue = 1,
+        // optionImage = R.drawable.icon_check,
+        optionImage = "",
+        optionType = "",
+        surveyId = 1,
+        questionId = 1,
+        id = 1
+    )
+    GridOptionCard(modifier = Modifier, option, index = 0, onOptionSelected = {}, selectedIndex = selectedIndex.value)
 }
