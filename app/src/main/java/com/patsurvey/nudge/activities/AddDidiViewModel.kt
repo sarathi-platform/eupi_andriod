@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.*
+import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.nudge.core.enums.EventName
@@ -23,9 +24,12 @@ import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddDidiRequest
+import com.patsurvey.nudge.model.request.AnswerDetailDTOListItem
 import com.patsurvey.nudge.model.request.DeleteDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiRequest
+import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
+import com.patsurvey.nudge.model.request.PATSummarySaveRequest
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -1704,6 +1708,46 @@ class AddDidiViewModel @Inject constructor(
             )
             addDidiRepository.writeEventIntoLogFile(updateWorkflowEvent)
 
+    }
+
+    override fun addDidiNotAvailableEvent(didiId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val languageId = addDidiRepository.prefRepo.getAppLanguageId() ?: 2
+            val questionList = addDidiRepository.questionListDao.getAllQuestionsForLanguage(languageId)
+            val didiEntity = addDidiRepository.getDidi(didiId)
+            val patSummarySaveRequest = PATSummarySaveRequest.getPatSummarySaveRequest(
+                didiEntity = didiEntity,
+                answerDetailDTOList = emptyList(),
+                languageId = languageId,
+                surveyId = questionList.first().questionId?.let { addDidiRepository.getSurveyId(it, addDidiRepository.questionListDao) }!!,
+                villageEntity = addDidiRepository.prefRepo.getSelectedVillage(),
+                userType = if((addDidiRepository.prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true)) USER_BPC else USER_CRP
+            ).json()
+
+            val event = EventV1(
+                eventTopic = EventName.SAVE_PAT_ANSWERS.topicName,
+                payload = patSummarySaveRequest,
+                mobileNumber = addDidiRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
+            )
+
+            addDidiRepository.writeEventIntoLogFile(event)
+        }
+    }
+
+    override fun addNotAvailableDidiPatScoreEventForDidi(didiId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val passingMark = addDidiRepository.questionListDao.getPassingScore()
+            val didiEntity = addDidiRepository.getDidi(didiId)
+            val patScoreSaveRequest = EditDidiWealthRankingRequest.getRequestPayloadForPatScoreSave(didiEntity, passingMark, isBpcUserType = addDidiRepository.prefRepo.isUserBPC()).json()
+
+            val event = EventV1(
+                eventTopic = EventName.SAVE_PAT_SCORE.topicName,
+                payload = patScoreSaveRequest,
+                mobileNumber = addDidiRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
+            )
+
+            addDidiRepository.writeEventIntoLogFile(event)
+        }
     }
 
 }

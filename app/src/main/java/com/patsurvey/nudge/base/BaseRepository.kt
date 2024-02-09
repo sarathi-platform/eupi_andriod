@@ -15,6 +15,7 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.di.DatabaseModule
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
@@ -269,6 +270,10 @@ abstract class BaseRepository{
             payload = payload,
             mobileNumber = mobileNumber
         )
+    }
+
+    fun getSurveyId(questionId: Int, questionListDao: QuestionListDao): Int {
+        return questionListDao.getQuestion(questionId).surveyId ?: 0
     }
 }
 

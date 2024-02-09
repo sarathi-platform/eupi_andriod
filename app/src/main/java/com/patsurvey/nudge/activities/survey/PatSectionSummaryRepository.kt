@@ -130,10 +130,6 @@ class PatSectionSummaryRepository @Inject constructor(
         return numericAnswerDao.getAllAnswersForDidi(didiId)
     }
 
-    private fun getSurveyId(questionId: Int): Int {
-        return questionListDao.getQuestion(questionId).surveyId ?: 0
-    }
-
     suspend fun writePatSummarySaveEvent(didiEntity: DidiEntity) {
         val sectionAnswerEntityList = getAllAnswersForDidi(didiEntity.id)
         val numericAnswerEntityList = getAllNumericAnswersForDidi(didiEntity.id)
@@ -142,7 +138,7 @@ class PatSectionSummaryRepository @Inject constructor(
             didiEntity = didiEntity,
             answerDetailDTOList = answerDetailDTOListItem,
             languageId = (prefRepo.getAppLanguageId() ?: 2),
-            surveyId = getSurveyId(sectionAnswerEntityList.first().questionId),
+            surveyId = getSurveyId(sectionAnswerEntityList.first().questionId, questionListDao),
             villageEntity = prefRepo.getSelectedVillage(),
             userType = if((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true)) USER_BPC else USER_CRP
         ).json()
