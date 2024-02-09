@@ -200,6 +200,7 @@ fun ParticipatoryWealthRankingSurvey(
                         viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
                         viewModel.updateWorkflowStatusInEvent(StepStatus.COMPLETED.name, stepId)
                         viewModel.updateWealthRankingFlagForDidis()
+                        viewModel.addRankingFlagEditEvent()
                         viewModel.saveWealthRankingCompletionDate()
                         if ((context as MainActivity).isOnline.value ?: false) {
                             if(viewModel.isTolaSynced.value == 2

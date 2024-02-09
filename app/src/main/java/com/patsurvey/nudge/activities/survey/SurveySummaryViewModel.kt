@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
@@ -43,6 +44,7 @@ import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
@@ -939,7 +941,7 @@ class SurveySummaryViewModel @Inject constructor(
         }
     }
 
-    override  suspend fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
+    override suspend fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
 
             val stepListEntity = repository.getStepForVillage(
                 repository.prefRepo.getSelectedVillage().id,
@@ -953,6 +955,14 @@ class SurveySummaryViewModel @Inject constructor(
             )
             repository.writeEventIntoLogFile(updateWorkflowEvent)
         }
+
+    override fun addRankingFlagEditEvent(isUserBpc: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val addRankingFlagEditEvent = repository.createRankingFlagEditEvent(villageId = repository.prefRepo.getSelectedVillage().id, stepType = if (isUserBpc) BPC_SURVEY_CONSTANT else PAT_SURVEY, repository.prefRepo.getMobileNumber() ?: BLANK_STRING)
+
+            repository.writeEventIntoLogFile(addRankingFlagEditEvent)
+        }
+    }
 
 
 }

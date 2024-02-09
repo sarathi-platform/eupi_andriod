@@ -18,6 +18,7 @@ import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.di.DatabaseModule
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.model.dataModel.RankingEditEvent
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.model.request.GetQuestionListRequest
@@ -45,6 +46,7 @@ import com.patsurvey.nudge.utils.RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE
 import com.patsurvey.nudge.utils.RESPONSE_CODE_TIMEOUT
 import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
 import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.TIMEOUT_ERROR_MSG
 import com.patsurvey.nudge.utils.UNAUTHORISED_MESSAGE
 import com.patsurvey.nudge.utils.UNREACHABLE_ERROR_MSG
@@ -260,5 +262,13 @@ abstract class BaseRepository{
         )
     }
 
+    fun createRankingFlagEditEvent(villageId: Int, stepType: String, mobileNumber: String): EventV1 {
+        val payload = RankingEditEvent(villageId = villageId, type = stepType, status = false).json()
+        return EventV1(
+            eventTopic = EventName.RANKING_FLAG_EDIT.topicName,
+            payload = payload,
+            mobileNumber = mobileNumber
+        )
+    }
 }
 

@@ -883,6 +883,7 @@ fun FormPictureScreen(
                                 formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id,
                                 stepId
                             )
+                            formPictureScreenViewModel.addRankingFlagEditEvent()
                             formPictureScreenViewModel.saveVoEndorsementDate()
                                 formPictureScreenViewModel.uploadFormsCAndD(context,(context as MainActivity).isOnline.value)
 
