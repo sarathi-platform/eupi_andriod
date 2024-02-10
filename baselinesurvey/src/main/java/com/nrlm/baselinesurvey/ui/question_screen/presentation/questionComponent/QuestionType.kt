@@ -24,7 +24,6 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -34,6 +33,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -42,9 +42,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
+import com.nrlm.baselinesurvey.model.response.QuestionList
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.CTAButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
@@ -52,13 +52,11 @@ import com.nrlm.baselinesurvey.ui.common_components.GridOptionCard
 import com.nrlm.baselinesurvey.ui.common_components.OptionCard
 import com.nrlm.baselinesurvey.ui.common_components.RadioButtonOptionComponent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.TypeDropDownComponent
-import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
-import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
@@ -69,6 +67,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun QuestionType(
     modifier: Modifier = Modifier,
+    parentIndex: Int,
     questionIndex: Int,
     question: QuestionEntity,
     optionItemEntityList: List<OptionItemEntity>?,
@@ -85,6 +84,14 @@ fun QuestionType(
 
     val innerState: LazyGridState = rememberLazyGridState()
     val innerListState: LazyListState = rememberLazyListState()
+    val questionList = remember {
+        mutableStateOf(mutableListOf<QuestionList?>())
+    }
+    val optionDetailVisibilityState = remember {
+        mutableStateOf(false)
+    }
+    val selectedOptionsItem = remember { mutableListOf<OptionItemEntity>() }
+
 
     SideEffect {
         val totalItemsCount =
@@ -107,9 +114,8 @@ fun QuestionType(
             .heightIn(min = 100.dp, maxCustomHeight)
     ) {
         Card(elevation = CardDefaults.cardElevation(
-            defaultElevation = defaultCardElevation
+            defaultElevation = 0.dp
         ),
-            shape = RoundedCornerShape(roundedCornerRadiusDefault),
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = minHeight, max = maxHeight)
@@ -130,11 +136,10 @@ fun QuestionType(
                         item {
                             Row(
                                 modifier = Modifier
-                                    .padding(bottom = 10.dp)
                                     .padding(horizontal = dimen_16_dp)
                             ) {
                                 Text(
-                                    text = "${questionIndex + 1}. ",
+                                    text = "${parentIndex}.${questionIndex + 1}. ",
                                     style = defaultTextStyle,
                                     color = textColorDark
                                 )
@@ -153,13 +158,15 @@ fun QuestionType(
                                 QuestionType.MultiSelect.name, QuestionType.Grid.name
                                 -> {
                                     LazyVerticalGridList(
-                                        innerState,
-                                        maxCustomHeight,
-                                        optionItemEntityList,
-                                        selectedIndex,
-                                        onAnswerSelection,
-                                        questionIndex,
-                                        question.type ?: "",
+                                        innerState = innerState,
+                                        maxCustomHeight = maxCustomHeight,
+                                        optionItemEntityList = optionItemEntityList,
+                                        selectedIndex = selectedIndex,
+                                        onAnswerSelection = onAnswerSelection,
+                                        questionIndex = questionIndex,
+                                        optionDetailVisibilityState = optionDetailVisibilityState.value,
+                                        questionList = questionList.value,
+                                        questionType = question.type ?: "",
                                     )
                                 }
 
@@ -224,9 +231,12 @@ private fun LazyVerticalGridList(
     onAnswerSelection: (questionIndex: Int, optionItem: OptionItemEntity) -> Unit,
     questionIndex: Int,
     questionType: String,
+    optionDetailVisibilityState: Boolean,
+    questionList: MutableList<QuestionList?>,
     selectedOptionIndex: Int = -1,
     selectedOptionIndices: List<Int> = listOf(),
 ) {
+
     var selectedIndex1 = selectedIndex
     val selectedIndex = remember { mutableIntStateOf(selectedOptionIndex) }
     val selectedIndices = remember { mutableStateListOf<Int>() }

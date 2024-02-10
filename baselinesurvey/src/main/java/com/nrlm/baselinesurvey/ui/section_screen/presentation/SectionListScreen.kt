@@ -73,8 +73,8 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_30_dp
+import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.lightBlue
-import com.nrlm.baselinesurvey.ui.theme.mediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
@@ -149,8 +149,8 @@ fun SectionListScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.CenterStart),
-                        text = "Dedi101",
-                        style = mediumTextStyle
+                        text = viewModel.didiName.value,
+                        style = largeTextStyle
                     )
                     Box(
                         Modifier
@@ -162,16 +162,16 @@ fun SectionListScreen(
                             .align(Alignment.CenterEnd)
                             .zIndex(1f)
                     ) {
-                        Image(
-                            modifier = Modifier
-                                .padding(5.dp)
-                                .clickable {
-                                    if (!isBannerExpanded.value)
-                                        isBannerExpanded.value = true
-                                },
-                            painter = painterResource(id = R.drawable.info_icon),
-                            contentDescription = ""
-                        )
+//                        Image(
+//                            modifier = Modifier
+//                                .padding(5.dp)
+//                                .clickable {
+//                                    if (!isBannerExpanded.value)
+//                                        isBannerExpanded.value = true
+//                                },
+//                            painter = painterResource(id = R.drawable.info_icon),
+//                            contentDescription = ""
+//                        )
                     }
                     this@TopAppBar.AnimatedVisibility(
                         visible = isBannerExpanded.value,

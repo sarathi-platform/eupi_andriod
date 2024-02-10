@@ -87,8 +87,8 @@ fun MissonRowScreen_1(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 10.dp,),
-                verticalAlignment =Alignment.CenterVertically
+                    .padding(start = 16.dp, top = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_group_icon),
@@ -113,7 +113,7 @@ fun MissonRowScreen_1(
                 fontSize = 16.sp,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 10.dp)
+                    .padding(start = 16.dp)
             )
             LinearProgressIndicator(
                 progress = curPercentage.value,

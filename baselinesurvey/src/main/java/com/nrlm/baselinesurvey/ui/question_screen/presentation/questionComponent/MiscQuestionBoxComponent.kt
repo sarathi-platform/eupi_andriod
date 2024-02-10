@@ -24,11 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,10 +37,7 @@ import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.ListTypeQuestion
-import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
-import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.TypeDropDownComponent
-import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
@@ -152,10 +145,12 @@ fun MiscQuestionBoxComponent(
                                     optionItemEntityList ?: listOf()
                                 ) { _index: Int, optionsItem: OptionItemEntity ->
                                     when (optionsItem.optionType) {
-                                        QuestionType.Input.name -> {
+                                        QuestionType.Input.name,
+                                        QuestionType.InputText.name -> {
                                             EditTextWithTitleComponent(
                                                 optionsItem.display,
-                                                defaultValue = selectedOptionMap[optionsItem.optionId]?.inputValue ?: ""
+                                                defaultValue = selectedOptionMap[optionsItem.optionId]?.inputValue
+                                                    ?: ""
                                             ) { inputValue ->
                                                 onAnswerSelection(
                                                     questionIndex,
@@ -166,12 +161,21 @@ fun MiscQuestionBoxComponent(
                                             Spacer(modifier = Modifier.height(dimen_8_dp))
                                         }
 
+                                        QuestionType.InputNumber.name -> {
+                                            IncrementDecrementView(
+                                                currentValue = "0",
+                                                onAnswerSelection = {}
+                                            )
+                                            Spacer(modifier = Modifier.height(dimen_8_dp))
+                                        }
+
                                         QuestionType.SingleSelectDropdown.name -> {
                                             TypeDropDownComponent(
                                                 optionsItem.display,
                                                 hintText = optionsItem.selectedValue ?: "Select",
                                                 sources = optionsItem.values,
-                                                selectOptionText = selectedOptionMap[optionsItem.optionId]?.inputValue ?: BLANK_STRING
+                                                selectOptionText = selectedOptionMap[optionsItem.optionId]?.inputValue
+                                                    ?: BLANK_STRING
                                             ) {
                                                 onAnswerSelection(
                                                     questionIndex,

@@ -201,6 +201,7 @@ fun RadioQuestionBoxComponent(
                             if (optionDetailVisibilityState.value) {
                                 AnimatedVisibility(visible = optionDetailVisibilityState.value) {
                                     SubQuestionComponent(
+                                        parentIndex = questionIndex + 1,
                                         maxCustomHeight = maxCustomHeight,
                                         questionList = questionList.value
                                     )

@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.network.interfaces
 
 import com.nrlm.baselinesurvey.KEY_HEADER_MOBILE
 import com.nrlm.baselinesurvey.KEY_HEADER_TYPE
+import com.nrlm.baselinesurvey.database.entity.CasteEntity
 import com.nrlm.baselinesurvey.model.request.FetchSavedSurveyAnswersRequest
 import com.nrlm.baselinesurvey.model.request.LoginRequest
 import com.nrlm.baselinesurvey.model.request.MissionRequest
@@ -71,4 +72,7 @@ interface ApiService {
     @POST(SUBPATH_GET_MISSION)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getBaseLineMission(@Body missionRequest: MissionRequest): ApiResponseModel<List<MissionResponseModel>>
+
+    @GET("/read-api/config/caste/get")
+    suspend fun getCasteList(@Query("languageId") languageId: Int): ApiResponseModel<List<CasteEntity>>
 }

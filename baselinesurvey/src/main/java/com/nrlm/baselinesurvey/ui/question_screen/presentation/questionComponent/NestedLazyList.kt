@@ -42,7 +42,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -51,7 +50,6 @@ import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
-import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.navigation.home.FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME
@@ -241,14 +239,14 @@ fun NestedLazyList(
                     },
                     actions = {
 
-                        Icon(
-                            painterResource(id = R.drawable.info_icon),
-                            null,
-                            tint = textColorDark,
-                            modifier = Modifier.clickable {
-                                sectionInfoButtonClicked()
-                            }
-                        )
+//                        Icon(
+//                            painterResource(id = R.drawable.info_icon),
+//                            null,
+//                            tint = textColorDark,
+//                            modifier = Modifier.clickable {
+//                                sectionInfoButtonClicked()
+//                            }
+//                        )
                     },
                     backgroundColor = white,
                     elevation = 0.dp,

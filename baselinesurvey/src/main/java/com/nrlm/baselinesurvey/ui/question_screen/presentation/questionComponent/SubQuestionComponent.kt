@@ -25,7 +25,6 @@ import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.response.QuestionList
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.white
 import kotlinx.coroutines.launch
 
@@ -35,6 +34,7 @@ fun SubQuestionComponent(
     outerState: LazyListState = rememberLazyListState(),
     innerState: LazyListState = rememberLazyListState(),
     queLazyState: LazyListState = rememberLazyListState(),
+    parentIndex: Int,
     maxCustomHeight: Dp,
     questionList: List<QuestionList?>?
 ) {
@@ -67,7 +67,6 @@ fun SubQuestionComponent(
                     state = innerState,
                     userScrollEnabled = false,
                     modifier = Modifier.wrapContentHeight(),
-                    verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
                 ) {
                     itemsIndexed(
                         items = questionList ?: emptyList()
@@ -81,6 +80,7 @@ fun SubQuestionComponent(
                                 1,
                                 2
                             ),
+                            parentIndex = parentIndex,
                             maxCustomHeight = maxCustomHeight,
                             onAnswerSelection = { questionIndex, optionItem -> },
                             questionDetailExpanded = {},

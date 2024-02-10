@@ -5,7 +5,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.DropdownMenu
@@ -124,7 +123,6 @@ fun <T> DropDownWithTitleComponent(
             readOnly = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(40.dp)
                 .clickable { onExpandedChange(expanded) }
                 .onGloballyPositioned { coordinates ->
                     // This value is used to assign to
