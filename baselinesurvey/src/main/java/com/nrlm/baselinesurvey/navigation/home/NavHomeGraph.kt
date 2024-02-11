@@ -13,6 +13,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nrlm.baselinesurvey.ARG_ACTIVITY_DATE
 import com.nrlm.baselinesurvey.ARG_ACTIVITY_ID
+import com.nrlm.baselinesurvey.ARG_COMPLETION_MESSAGE
 import com.nrlm.baselinesurvey.ARG_DIDI_ID
 import com.nrlm.baselinesurvey.ARG_MISSION_DATE
 import com.nrlm.baselinesurvey.ARG_MISSION_ID
@@ -25,6 +26,8 @@ import com.nrlm.baselinesurvey.ARG_VIDEO_PATH
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
+import com.nrlm.baselinesurvey.ui.common_components.FinalStepCompletionScreen
+import com.nrlm.baselinesurvey.ui.common_components.StepCompletionScreen
 import com.nrlm.baselinesurvey.ui.mission_screen.presentation.MissionScreen_1
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.presentation.MissionSummaryScreen
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenHandler
@@ -225,8 +228,44 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
                 activityId = 0
             )
         }
+        composable(
+            route = HomeScreens.Final_StepComplitionScreen.route,
+            arguments = listOf(navArgument(ARG_COMPLETION_MESSAGE) {
+                type = NavType.StringType
+            })
+        ) {
+            FinalStepCompletionScreen(
+                navController = navController,
+                modifier = Modifier,
+                message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
+            )
+            {
+                navController.popBackStack()
+                // navController.navigate(HomeScreens.VO_ENDORSEMENT_DIGITAL_FORM_C_SCREEN.route)
+            }
+        }
+
+        composable(
+            route = HomeScreens.STEP_COMPLETION_SCREEN.route,
+            arguments = listOf(navArgument(ARG_COMPLETION_MESSAGE) {
+                type = NavType.StringType
+            })
+        ) {
+            StepCompletionScreen(
+                navController = navController,
+                modifier = Modifier,
+                message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
+            ) {
+                navController.popBackStack()
+                //navController.navigate(PatScreens.PAT_DIGITAL_FORM_B_SCREEN.route)
+
+            }
+        }
+
+
         addDidiNavGraph(navController = navController)
     }
+
 }
 
 fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
@@ -297,6 +336,13 @@ sealed class HomeScreens(val route: String) {
     object DIDI_SCREEN : HomeScreens(route = DIDI_SCREEN_ROUTE_NAME)
     object MISSION_SUMMARY_SCREEN :
         HomeScreens(route = "$MISSION_SUMMARY_SCREEN_ROUTE_NAME/{$ARG_MISSION_ID}/{$ARG_MISSION_NAME}/{$ARG_MISSION_DATE}")
+
+    object Final_StepComplitionScreen :
+        HomeScreens(route = "$Final_Step_Complition_Screen_ROUTE_NAME/{$ARG_COMPLETION_MESSAGE}")
+
+    object STEP_COMPLETION_SCREEN :
+        HomeScreens(route = "$Step_Complition_Screen_ROUTE_NAME/{$ARG_COMPLETION_MESSAGE}")
+
 }
 
 const val DATA_LOADING_SCREEN_ROUTE_NAME = "data_loading_screen"
@@ -311,6 +357,9 @@ const val HOME_SCREEN_ROUTE_NAME = "home_screen"
 const val MISSION_SCREEN_ROUTE_NAME = "mission_screen"
 const val DIDI_SCREEN_ROUTE_NAME = "didi_screen"
 const val MISSION_SUMMARY_SCREEN_ROUTE_NAME = "mission_summary_screen"
+const val Final_Step_Complition_Screen_ROUTE_NAME = "final_step_complition_screen"
+const val Step_Complition_Screen_ROUTE_NAME = "step_complition_screen"
+
 
 fun navigateToBaseLineStartScreen(surveyeeId: Int, survyId: Int, navController: NavController) {
     navController.navigate("$BASELINE_START_SCREEN_ROUTE_NAME/$surveyeeId/$survyId")

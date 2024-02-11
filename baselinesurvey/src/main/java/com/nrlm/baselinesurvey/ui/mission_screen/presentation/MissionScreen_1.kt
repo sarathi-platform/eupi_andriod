@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.mission_screen.presentation
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -27,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.navigation.home.MISSION_SUMMARY_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
 import com.nrlm.baselinesurvey.ui.mission_screen.viewmodel.MissionViewModel
@@ -41,13 +44,16 @@ fun MissionScreen_1(
     navController: NavController = rememberNavController(),
     viewModel: MissionViewModel = hiltViewModel()
 ) {
-    val list = listOf(
-        1, 2, 3, 4
-    )
+    val context = LocalContext.current
+
     LaunchedEffect(key1 = true) {
         viewModel.init()
     }
-    Scaffold(modifier = Modifier,
+    BackHandler {
+        (context as? MainActivity)?.finish()
+    }
+    Scaffold(
+        modifier = Modifier,
         topBar = {
             TopAppBar(
                 title = {
@@ -107,7 +113,10 @@ fun MissionScreen_1(
                         mission = mission,
                         missionDueDate = mission.startDate,
                         onViewStatusClick = {},
-                        onStartClick = { navController.navigate("${MISSION_SUMMARY_SCREEN_ROUTE_NAME}/${mission.missionId}/${mission.missionName}/${mission.endDate}") })
+                        onStartClick = {
+                            navController.navigate("${MISSION_SUMMARY_SCREEN_ROUTE_NAME}/${mission.missionId}/${mission.missionName}/${mission.endDate}")
+                            //navController.navigate("${Step_Complition_Screen_ROUTE_NAME}/${"jfhdkjhkjkd"}")
+                        })
                 }
             }
         }
