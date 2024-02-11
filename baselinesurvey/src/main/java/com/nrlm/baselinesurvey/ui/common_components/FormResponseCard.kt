@@ -1,11 +1,15 @@
 package com.nrlm.baselinesurvey.ui.common_components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,6 +45,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_14_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_56_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
+import com.nrlm.baselinesurvey.ui.theme.greyLightColor
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.white
 
@@ -61,6 +67,13 @@ fun FormResponseCard(
         modifier = Modifier
             .fillMaxWidth()
             .background(white)
+            .padding(16.dp)
+            .clip(RoundedCornerShape(6.dp))
+            .border(
+                width = 1.dp,
+                color = greyLightColor,
+                shape = RoundedCornerShape(6.dp)
+            )
             .clickable {
 
             }
@@ -71,9 +84,10 @@ fun FormResponseCard(
             mutableStateOf(0.dp)
         }
 
-        Column(modifier = Modifier
-            .background(white)
-            .padding(vertical = dimen_8_dp)) {
+        Column(
+            modifier = Modifier
+                .background(white)
+        ) {
             Row(
                 Modifier
                     .fillMaxWidth()
@@ -90,38 +104,75 @@ fun FormResponseCard(
                 }
                 Spacer(modifier = Modifier.width(dimen_14_dp))
                 Column {
-                    Text(text = householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find { it.display?.contains("Name", ignoreCase = true)!! }?.optionId] ?: BLANK_STRING)
+                    Text(text = householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find {
+                        it.display?.contains(
+                            "Name",
+                            ignoreCase = true
+                        )!!
+                    }?.optionId] ?: BLANK_STRING)
                     Text(text = buildString {
-                        this.append(householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find { it.display?.contains("Relationship", ignoreCase = true)!! }?.optionId] ?: BLANK_STRING)
+                        this.append(householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find {
+                            it.display?.contains(
+                                "Relationship",
+                                ignoreCase = true
+                            )!!
+                        }?.optionId] ?: BLANK_STRING)
                         this.append(" | ")
-                        this.append(householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find { it.display?.contains("Age", ignoreCase = true)!! }?.optionId] ?: BLANK_STRING)
+                        this.append(householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find {
+                            it.display?.contains(
+                                "Age",
+                                ignoreCase = true
+                            )!!
+                        }?.optionId] ?: BLANK_STRING)
                     })
                 }
             }
             Spacer(modifier = Modifier.height(dimen_8_dp))
-            Divider(thickness = dimen_1_dp, modifier = Modifier.fillMaxWidth(), color = borderGreyLight)
-            Row(modifier = Modifier
-                .fillMaxWidth()
+            Divider(
+                thickness = dimen_1_dp,
+                modifier = Modifier.fillMaxWidth(),
+                color = borderGreyLight
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .height(IntrinsicSize.Min)
             ) {
-                TextButton(onClick = { /*TODO*/ }, modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = blueDark)
+                TextButton(
+                    onClick = { /*TODO*/ }, modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = blueDark
+                    )
                 ) {
-                    Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit Button", tint = blueDark)
+                    Icon(
+                        imageVector = Icons.Outlined.Edit,
+                        contentDescription = "Edit Button",
+                        tint = blueDark
+                    )
                 }
                 Divider(
+                    color = borderGreyLight,
                     modifier = Modifier
+                        .fillMaxHeight()  //fill the max height
                         .width(1.dp)
-                        .height(dividerHeight.value)
-                        .background(borderGreyLight)
                 )
-                TextButton(onClick = { /*TODO*/ }, modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = blueDark)
+                TextButton(
+                    onClick = { /*TODO*/ }, modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = blueDark
+                    )
                 ) {
-                    Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete Button", tint = blueDark)
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = "Delete Button",
+                        tint = blueDark
+                    )
                 }
             }
         }

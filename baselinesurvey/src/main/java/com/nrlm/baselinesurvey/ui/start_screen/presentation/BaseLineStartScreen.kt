@@ -173,9 +173,9 @@ fun BaseLineStartScreen(
             }
             TextDetails(title = "Didi : ", data = didi.value.didiName)
             TextDetails(title = "Dada : ", data = didi.value.dadaName)
-            TextDetails(title = "Caste : ", data = "ST")
+            TextDetails(title = "Caste : ", data = getCasteName(didi.value.casteId))
             YesNoButtonComponent(
-               // defaultValue = didiInfoDetail.value?.isAdharCard ?: -1,
+                // defaultValue = didiInfoDetail.value?.isAdharCard ?: -1,
                 title = "Does Didi have aadhar card?"
             ) {
                 isAdharCard.value = it
@@ -186,7 +186,7 @@ fun BaseLineStartScreen(
                     //defaultValue = didiInfoDetail.value?.adharNumber ?: "",
                     title = "Enter Didi's aadhar number",
                     isOnlyNumber = true,
-                    maxLength = 14
+                    maxLength = 12
                 ) {
                     aadharNumber.value = it
                 }
@@ -677,4 +677,32 @@ fun BaseLineStartScreenPreview(
             color = textColorDark50
         )
     }
+}
+
+private fun getCasteName(casteId: Int): String {
+    var casteName = ""
+    when (casteId) {
+        1 -> {
+            casteName = "GEN"
+        }
+
+        2 -> {
+            casteName = "OBC"
+
+        }
+
+        3 -> {
+            casteName = "SC"
+
+        }
+
+        4 -> {
+            casteName = "ST"
+        }
+
+        else -> {
+            casteName = "ST"
+        }
+    }
+    return casteName
 }
