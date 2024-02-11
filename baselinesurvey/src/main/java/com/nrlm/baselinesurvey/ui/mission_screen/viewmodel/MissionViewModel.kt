@@ -38,8 +38,12 @@ class MissionViewModel @Inject constructor(
     private fun initMissionScreenList() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             missionScreenUseCase.getMissionListFromDbUseCase.invoke()?.let {
-                _missionList.value = it
-                _filterMissionList.value = it
+                val missions =
+                    missionScreenUseCase.fetchMissionStatusFromDbUseCase.getMissionsStatusFromDB(it)
+                if (missions != null) {
+                    _missionList.value = missions
+                    _filterMissionList.value = missions
+                }
             }
 
         }

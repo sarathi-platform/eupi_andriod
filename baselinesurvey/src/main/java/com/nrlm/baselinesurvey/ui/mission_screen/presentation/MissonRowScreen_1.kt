@@ -3,6 +3,7 @@ package com.nrlm.baselinesurvey.ui.mission_screen.presentation
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,8 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -35,11 +38,13 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
+import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
+import com.nrlm.baselinesurvey.ui.theme.greenLight
+import com.nrlm.baselinesurvey.ui.theme.greenOnline
 import com.nrlm.baselinesurvey.ui.theme.greyLightColor
-import com.nrlm.baselinesurvey.ui.theme.progressIndicatorColor
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleMediumWeight
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
@@ -57,7 +62,7 @@ fun MissonRowScreen_1(
 ) {
     val missionTask = mission.activityTaskSize
     val curPercentage = animateFloatAsState(
-        targetValue = 0 / mission.activityTaskSize.toFloat(),
+        targetValue = mission.activityComplete / mission.activityTaskSize.toFloat(),
         label = "",
         animationSpec = tween()
     )
@@ -68,20 +73,34 @@ fun MissonRowScreen_1(
         ), modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
+            .clip(RoundedCornerShape(6.dp))
+            .border(
+                width = 1.dp,
+                color = if (mission.missionStatus == 2) greenOnline else greyLightColor,
+                shape = RoundedCornerShape(6.dp)
+            )
+            .background(Color.Transparent)
     ) {
 
         Column(
             modifier = modifier
                 .fillMaxWidth()
-                .background(white)
+                .background(if (mission.missionStatus == 2) greenLight else white)
         ) {
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .background(greyLightColor)
+                    .background(if (mission.missionStatus == 2) greenOnline else greyLightColor)
                     .padding(horizontal = 16.dp, vertical = 5.dp)
             ) {
-                Text(text = stringResource(id = R.string.start_by_x_date,missionDueDate), style = smallerTextStyle)
+                Text(
+                    text = if (mission.missionStatus != 2) stringResource(
+                        id = R.string.start_by_x_date,
+                        missionDueDate
+                    ) else "Completed",
+                    style = smallerTextStyle,
+                    color = if (mission.missionStatus == 2) white else black100Percent,
+                )
             }
 
             Row(
@@ -98,26 +117,27 @@ fun MissonRowScreen_1(
                 Text(
                     text = mission.missionName,
                     fontFamily = NotoSans,
-                    color = blueDark,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 5.dp),
                     fontWeight = FontWeight.SemiBold,
+                    color = blueDark,
                     fontSize = 20.sp
                 )
             }
             Text(
-                text = "Task Pending - 0/${mission.activityTaskSize}",
+                text = "Task Pending - ${mission.activityComplete}/${mission.activityTaskSize}",
                 fontFamily = NotoSans,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
+                color = blueDark,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp)
             )
             LinearProgressIndicator(
                 progress = curPercentage.value,
-                color = progressIndicatorColor,
+                color = greenOnline,
                 trackColor = trackColor,
                 strokeCap = StrokeCap.Round,
                 modifier = Modifier
@@ -161,7 +181,9 @@ fun MissonRowScreen_1(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = "Start", style = smallTextStyleMediumWeight, color = white
+                        text = if (mission.missionStatus == 2) "View" else "Start",
+                        style = smallTextStyleMediumWeight,
+                        color = white
                     )
                     Icon(
                         Icons.Default.ArrowForward,

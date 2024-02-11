@@ -26,9 +26,9 @@ data class MissionActivityEntity(
     var startDate: String,
     var subject: String,
     var status: String,
-    var activityTaskSize: Int
-
-
+    var activityTaskSize: Int,
+    var activityStatus: Int,
+    var pendingDidi: Int
 ) {
     companion object {
         fun getMissionActivityEntity(
@@ -48,7 +48,9 @@ data class MissionActivityEntity(
                 reviewer = activity.reviewer,
                 subject = activity.subject,
                 status = "",
-                activityTaskSize = activityTaskSize
+                activityTaskSize = activityTaskSize,
+                activityStatus = 0,
+                pendingDidi = activityTaskSize
             )
         }
     }

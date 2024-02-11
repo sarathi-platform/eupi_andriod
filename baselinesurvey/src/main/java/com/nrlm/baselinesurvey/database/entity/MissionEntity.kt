@@ -20,7 +20,10 @@ data class MissionEntity(
     var startDate: String,
     var endDate: String,
     var status: String,
-    var activityTaskSize: Int
+    var activityTaskSize: Int,
+    var missionStatus: Int,
+    var pendingActivity: Int,
+    var activityComplete: Int
 ) {
     companion object {
         fun getMissionEntity(activityTaskSize: Int, mission: MissionResponseModel): MissionEntity {
@@ -30,8 +33,10 @@ data class MissionEntity(
                 startDate = mission.startDate,
                 endDate = mission.endDate,
                 status = "",
-                activityTaskSize = activityTaskSize
-
+                activityTaskSize = activityTaskSize,
+                missionStatus = 0,
+                pendingActivity = 0,
+                activityComplete = 0
             )
         }
     }

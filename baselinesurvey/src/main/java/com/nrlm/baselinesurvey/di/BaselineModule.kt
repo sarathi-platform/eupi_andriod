@@ -54,10 +54,12 @@ import com.nrlm.baselinesurvey.ui.language.domain.use_case.SaveSelectedVillageUs
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.repository.MissionScreenRepository
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.repository.MissionScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.FetchMissionDataFromNetworkUseCase
+import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.FetchMissionStatusFromDbUseCase
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.GetMissionListFromDbUseCase
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.MissionScreenUseCase
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.repository.MissionSummaryScreenRepository
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.repository.MissionSummaryScreenRepositoryImpl
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.GetActivityStateFromDBUseCase
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.GetMissionActivitiesFromDBUseCase
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.MissionSummaryScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepository
@@ -148,7 +150,10 @@ object BaselineModule {
             fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(
                 dataLoadingScreenRepository
             ),
-            getMissionListFromDbUseCase = GetMissionListFromDbUseCase(missionScreenRepository)
+            getMissionListFromDbUseCase = GetMissionListFromDbUseCase(missionScreenRepository),
+            fetchMissionStatusFromDbUseCase = FetchMissionStatusFromDbUseCase(
+                missionScreenRepository
+            )
         )
     }
 
@@ -159,6 +164,9 @@ object BaselineModule {
     ): MissionSummaryScreenUseCase {
         return MissionSummaryScreenUseCase(
             getMissionActivitiesFromDBUseCase = GetMissionActivitiesFromDBUseCase(
+                missionSummaryScreenRepository
+            ),
+            getActivityStateFromDBUseCase = GetActivityStateFromDBUseCase(
                 missionSummaryScreenRepository
             )
         )
@@ -452,14 +460,21 @@ object BaselineModule {
 
     @Provides
     @Singleton
-    fun provideMissionRepository(missionEntityDao: MissionEntityDao): MissionScreenRepository {
-        return MissionScreenRepositoryImpl(missionEntityDao)
+    fun provideMissionRepository(
+        missionEntityDao: MissionEntityDao,
+        missionActivityDao: MissionActivityDao
+    ): MissionScreenRepository {
+        return MissionScreenRepositoryImpl(missionEntityDao, missionActivityDao)
     }
 
     @Provides
     @Singleton
-    fun provideMissionSummaryRepository(missionActivityDao: MissionActivityDao): MissionSummaryScreenRepository {
-        return MissionSummaryScreenRepositoryImpl(missionActivityDao)
+    fun provideMissionSummaryRepository(
+        missionActivityDao: MissionActivityDao,
+        taskDao: ActivityTaskDao,
+        surveyeeEntityDao: SurveyeeEntityDao
+    ): MissionSummaryScreenRepository {
+        return MissionSummaryScreenRepositoryImpl(missionActivityDao, taskDao, surveyeeEntityDao)
     }
 
 }

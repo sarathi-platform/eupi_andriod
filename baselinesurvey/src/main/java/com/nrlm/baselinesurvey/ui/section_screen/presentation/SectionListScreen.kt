@@ -99,7 +99,6 @@ fun SectionListScreen(
 
     LaunchedEffect(key1 = true) {
         viewModel.init(didiId, surveyId)
-        // didiDetail= viewModel.getSurveeDetail(didiId)
     }
 
     val sectionsList = viewModel.sectionItemStateList.value

@@ -20,4 +20,7 @@ interface ActivityTaskDao {
 
     @Query("SELECT * FROM $TASK_TABLE_NAME where missionId=:missionId and activityName like :activityName")
     suspend fun getActivityTask(missionId: Int, activityName: String): List<ActivityTaskEntity>
+
+    @Query("Select * FROM $TASK_TABLE_NAME where missionId in(:missionId) and activityName in(:activityName)")
+    fun isTaskExist(missionId: Int, activityName: String): Boolean
 }

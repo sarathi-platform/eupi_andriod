@@ -24,4 +24,12 @@ interface MissionEntityDao {
     @Query("SELECT * FROM $MISSION_TABLE_NAME where missionId=:missionId ")
     suspend fun getMission(missionId: Int): MissionEntity
 
+    @Query("Update $MISSION_TABLE_NAME set missionStatus = :status, pendingActivity=:pendingActivity, activityComplete=:activityComplete where missionId = :missionId")
+    fun updateMissionStatus(
+        missionId: Int,
+        status: Int,
+        activityComplete: Int,
+        pendingActivity: Int
+    )
+
 }

@@ -23,6 +23,7 @@ data class ActivityTaskEntity(
     var taskName: String,
     var status: String,
     var activityName: String,
+    var activityState: Int,
 ) {
     companion object {
         fun getActivityTaskEntity(
@@ -39,7 +40,8 @@ data class ActivityTaskEntity(
                 taskDate = task.taskDate,
                 taskName = task.taskName,
                 status = "",
-                activityName = activityName
+                activityName = activityName,
+                activityState = 0
             )
         }
     }

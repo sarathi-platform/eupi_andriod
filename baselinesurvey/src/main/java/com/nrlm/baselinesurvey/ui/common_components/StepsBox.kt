@@ -40,12 +40,16 @@ import androidx.constraintlayout.compose.Dimension
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
+import com.nrlm.baselinesurvey.ui.theme.greenLight
 import com.nrlm.baselinesurvey.ui.theme.greenOnline
 import com.nrlm.baselinesurvey.ui.theme.greyBorder
+import com.nrlm.baselinesurvey.ui.theme.inprogressYellow
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleMediumWeight
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleMediumWeight2
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
+import com.nrlm.baselinesurvey.ui.theme.stepIconCompleted
+import com.nrlm.baselinesurvey.ui.theme.stepIconDisableColor
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 
@@ -83,7 +87,7 @@ fun StepsBox(
                     color = if (isCompleted) greenOnline else greyBorder,
                     shape = RoundedCornerShape(6.dp)
                 )
-                .background(backgroundColor ?: white)
+                .background(if (isCompleted) greenLight else inprogressYellow)
                 .clickable {
                     onclick(index)
                 }
@@ -103,19 +107,18 @@ fun StepsBox(
                 Icon(
                     painter = painterResource(id = iconResourceId),
                     contentDescription = null,
-                    tint = Color.Unspecified,
-
-                            modifier = Modifier
-                                .constrainAs(iconContainer) {
-                                    start.linkTo(parent.start)
-                                    top.linkTo(parent.top)
-                                    bottom.linkTo(parent.bottom)
-                                }
-                                .size(48.dp)
-                                .padding(
-                                    top = if (isCompleted) 0.dp else 6.dp,
-                                    start = if (isCompleted) 0.dp else 4.dp
-                                )
+                    tint = if (isCompleted) stepIconCompleted else stepIconDisableColor,
+                    modifier = Modifier
+                        .constrainAs(iconContainer) {
+                            start.linkTo(parent.start)
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                        }
+                        .size(48.dp)
+                        .padding(
+                            top = if (isCompleted) 0.dp else 6.dp,
+                            start = if (isCompleted) 0.dp else 4.dp
+                        )
                 )
 
 
@@ -140,17 +143,16 @@ fun StepsBox(
                             )
                             .fillMaxWidth(),
                         softWrap = true,
-                        color = black100Percent,
+                        color = if (isCompleted) greenOnline else black100Percent,
                         textAlign = TextAlign.Start,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 2,
                         style = largeTextStyle
                     )
-                    //TODO add string for other steps when steps is complete.
                     if (subTitle != "") {
                         Text(
                             text = subTitle,
-                            color = black100Percent,
+                            color = if (isCompleted) greenOnline else black100Percent,
                             modifier = Modifier
                                 .fillMaxWidth(),
                             softWrap = true,
@@ -261,6 +263,7 @@ fun StepBoxPreview() {
         subTitle = "10 Poor didis identified",
         stepNo = 1,
         index = 1,
+        isCompleted = true,
         iconResourceId = R.drawable.ic_mission_inprogress,
         onclick = {})
 }

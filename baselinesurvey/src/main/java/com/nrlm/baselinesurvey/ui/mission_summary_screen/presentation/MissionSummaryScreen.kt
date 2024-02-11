@@ -92,10 +92,11 @@ fun MissionSummaryScreen(
                             boxTitle = activity.activityName,
                             subTitle = stringResource(
                                 id = R.string.x_dii_pending,
-                                activity.activityTaskSize
+                                activity.pendingDidi
                             ),
                             stepNo = activity.activityTypeId,
                             index = 1,
+                            isCompleted = activity.activityStatus == 2,
                             iconResourceId = R.drawable.ic_mission_inprogress,
                             backgroundColor = inprogressYellow,
                             onclick = {

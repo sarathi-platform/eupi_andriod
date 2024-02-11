@@ -23,7 +23,11 @@ class MissionSummaryViewModel @Inject constructor(
     fun init(missionId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             missionSummaryScreenUseCase.getMissionActivitiesFromDBUseCase.invoke(missionId)?.let {
-                _activities.value = it
+                _activities.value =
+                    missionSummaryScreenUseCase.getActivityStateFromDBUseCase.getActivitiesStatus(
+                        missionId,
+                        it
+                    )
             }
         }
     }
