@@ -560,10 +560,20 @@ fun NestedLazyList(
                     item {
                         Column {
                             householdMemberDtoList.value.forEach { householdMemberDto ->
-                                FormResponseCard(householdMemberDto = householdMemberDto, viewModel = questionScreenViewModel)
-                                Spacer(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(dimen_8_dp))
+                                FormResponseCard(
+                                    householdMemberDto = householdMemberDto,
+                                    viewModel = questionScreenViewModel,
+                                    onDelete = {
+
+                                    },
+                                    onUpdate = {
+
+                                    })
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(dimen_8_dp)
+                                )
                             }
                         }
                     }

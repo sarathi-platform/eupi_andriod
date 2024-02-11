@@ -54,7 +54,9 @@ fun FormResponseCard(
     modifier: Modifier = Modifier,
     householdMemberDto: FormResponseObjectDto,
     viewModel: BaseViewModel,
-    isPictureRequired: Boolean = true
+    isPictureRequired: Boolean = true,
+    onDelete: () -> Unit,
+    onUpdate: () -> Unit
 ) {
 
     val questionScreenViewModel = viewModel as QuestionScreenViewModel
@@ -139,7 +141,7 @@ fun FormResponseCard(
                     .height(IntrinsicSize.Min)
             ) {
                 TextButton(
-                    onClick = { /*TODO*/ }, modifier = Modifier
+                    onClick = { onUpdate() }, modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     colors = ButtonDefaults.buttonColors(
@@ -160,7 +162,7 @@ fun FormResponseCard(
                         .width(1.dp)
                 )
                 TextButton(
-                    onClick = { /*TODO*/ }, modifier = Modifier
+                    onClick = { onDelete() }, modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     colors = ButtonDefaults.buttonColors(
