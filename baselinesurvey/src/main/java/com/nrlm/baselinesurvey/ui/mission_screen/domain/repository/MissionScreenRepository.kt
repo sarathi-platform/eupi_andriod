@@ -5,7 +5,6 @@ import com.nrlm.baselinesurvey.database.entity.MissionEntity
 interface MissionScreenRepository {
     suspend fun getMissionsFromDB(): List<MissionEntity>?
     fun getLanguageId(): String
-    suspend fun getMissionsStatusFromDB(missions: List<MissionEntity>?): List<MissionEntity>?
 
 
 }

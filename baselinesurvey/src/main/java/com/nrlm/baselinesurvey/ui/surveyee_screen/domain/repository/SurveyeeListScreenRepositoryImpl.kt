@@ -13,11 +13,15 @@ import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
+import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
+import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.utils.createMultiLanguageVillageRequest
+import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
 import javax.inject.Inject
 
 class SurveyeeListScreenRepositoryImpl @Inject constructor(
@@ -25,7 +29,8 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
     private val surveyeeEntityDao: SurveyeeEntityDao,
     private val languageListDao: LanguageListDao,
-    private val activityTaskDao: ActivityTaskDao
+    private val activityTaskDao: ActivityTaskDao,
+    private val activityDao: MissionActivityDao
 ): SurveyeeListScreenRepository {
 
     override suspend fun getSurveyeeList(
@@ -121,4 +126,48 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
     ): List<ActivityTaskEntity> {
         return activityTaskDao.getActivityTask(missionId, activityName)
     }
+
+    override suspend fun getMissionActivitiesStatusFromDB(
+        activityId: Int,
+        surveyeeCardState: List<SurveyeeCardState>
+    ) {
+        var activities = activityDao.getActivitiesFormIds(activityId)
+        val tasks = activityTaskDao.getActivityTaskFromIds(activities.activityId)
+        activityDao.updateActivityStatus(
+            activityId,
+            SurveyState.INPROGRESS.ordinal,
+            activities.activityTaskSize
+        )
+        var activityCompleteInc = 0
+        var activityPending = activities.pendingDidi
+
+        surveyeeCardState.forEach { surveyeeCardState ->
+            if (surveyeeCardState.surveyState == SurveyState.COMPLETED) {
+                ++activityCompleteInc
+                activityPending = --activities.pendingDidi
+            }
+
+        }
+        val complete =
+            if (activities.activityTaskSize == activityCompleteInc) SurveyState.COMPLETED.ordinal else SurveyState.INPROGRESS.ordinal
+        activityDao.updateActivityStatus(
+            activityId,
+            complete,
+            activities.activityTaskSize - activityCompleteInc
+        )
+
+    }
+
+    override suspend fun getMissionActivitiesAllTaskStatusFromDB(
+        activityId: Int,
+        isAllTask: Boolean
+    ) {
+        activityDao.updateActivityStatus(activityId, isAllTask)
+    }
+
+    override suspend fun getActivitiyStatusFromDB(activityId: Int): MissionActivityEntity {
+        return activityDao.getActivity(activityId)
+    }
+
+
 }

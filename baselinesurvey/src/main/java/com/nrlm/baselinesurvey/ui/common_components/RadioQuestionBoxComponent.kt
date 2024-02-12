@@ -174,14 +174,14 @@ fun RadioQuestionBoxComponent(
                                                 optionsItem = optionsItem,
                                                 selectedIndex = selectedIndex
                                             ) {
-                                                if (!optionsItem.questionList?.isEmpty()!!) {
-                                                    questionList.value.clear()
-                                                    optionsItem.questionList.let { it1 ->
-                                                        questionList.value.addAll(it1)
-                                                    }
-                                                    optionDetailVisibilityState.value =
-                                                        !optionDetailVisibilityState.value
-                                                }
+//                                                if (!optionsItem.questionList?.isEmpty()!!) {
+//                                                    questionList.value.clear()
+//                                                    optionsItem.questionList.let { it1 ->
+//                                                        questionList.value.addAll(it1)
+//                                                    }
+//                                                    optionDetailVisibilityState.value =
+//                                                        !optionDetailVisibilityState.value
+//                                                }
                                                 selectedIndex = _index
                                                 onAnswerSelection(questionIndex, optionsItem)
                                             }

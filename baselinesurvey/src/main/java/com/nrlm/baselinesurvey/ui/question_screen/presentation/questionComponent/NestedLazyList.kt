@@ -500,16 +500,27 @@ fun NestedLazyList(
                             }
 
                             QuestionType.Input.name,
+                            QuestionType.InputText.name,
+                            QuestionType.InputNumber.name,
                             QuestionType.SingleSelectDropdown.name -> {
                                 val selectedOption =
                                     sectionDetails.questionAnswerMapping[question.questionId]?.first()
                                 val optionList = sectionDetails.optionsItemMap[question.questionId]
-                                val selectedOptionMap = mutableMapOf<Int, InputTypeQuestionAnswerEntity>()
-                                val selectedInputQuestionOptionItemEntityList = if (optionList != null) {
-                                    inputTypeQuestionAnswerEntityList.value.mapToOptionItem(optionList)
-                                } else emptyList()
+                                val selectedOptionMap =
+                                    mutableMapOf<Int, InputTypeQuestionAnswerEntity>()
+                                val selectedInputQuestionOptionItemEntityList =
+                                    if (optionList != null) {
+                                        inputTypeQuestionAnswerEntityList.value.mapToOptionItem(
+                                            optionList
+                                        )
+                                    } else emptyList()
                                 selectedInputQuestionOptionItemEntityList.forEach { option ->
-                                    option.optionId?.let { selectedOptionMap[it] = inputTypeQuestionAnswerEntityList.value.findOptionFromId(option)!! }
+                                    option.optionId?.let {
+                                        selectedOptionMap[it] =
+                                            inputTypeQuestionAnswerEntityList.value.findOptionFromId(
+                                                option
+                                            )!!
+                                    }
                                 }
 
 

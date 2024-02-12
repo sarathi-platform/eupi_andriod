@@ -35,7 +35,7 @@ data class MissionEntity(
                 status = "",
                 activityTaskSize = activityTaskSize,
                 missionStatus = 0,
-                pendingActivity = 0,
+                pendingActivity = activityTaskSize,
                 activityComplete = 0
             )
         }

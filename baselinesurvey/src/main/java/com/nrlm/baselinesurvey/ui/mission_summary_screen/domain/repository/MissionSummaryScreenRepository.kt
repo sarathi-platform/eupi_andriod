@@ -6,7 +6,6 @@ interface MissionSummaryScreenRepository {
     suspend fun getMissionActivitiesFromDB(missionId: Int): List<MissionActivityEntity>?
     suspend fun getMissionActivitiesStatusFromDB(
         missionId: Int,
-        activities: List<MissionActivityEntity>?
-    ): List<MissionActivityEntity>
-
+        activities: List<MissionActivityEntity>
+    )
 }

@@ -11,16 +11,20 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.THIS_WEEK_TAB
+import com.nrlm.baselinesurvey.navigation.home.Step_Complition_Screen_ROUTE_NAME
+import com.nrlm.baselinesurvey.navigation.home.navigateBackToMissionSummaryScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToBaseLineStartScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToSectionListScreen
-import com.nrlm.baselinesurvey.ui.common_components.PrimarySecandaryButtonBoxPreFilled
+import com.nrlm.baselinesurvey.ui.common_components.DoubleButtonBox
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreenActions.CheckBoxClicked
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.SurveyeeScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.white
@@ -42,8 +46,9 @@ fun SurveyeeListScreen(
 ) {
     val context = LocalContext.current
 
+
     LaunchedEffect(key1 = true) {
-        viewModel.init(missionId, activityName)
+        viewModel.init(missionId, activityName, activityId)
     }
 
     val loaderState = viewModel.loaderState.value
@@ -55,6 +60,7 @@ fun SurveyeeListScreen(
     val isSelectionEnabled = remember {
         mutableStateOf(false)
     }
+
 
     var selectedTabIndex = remember { mutableIntStateOf(1) }
 
@@ -123,30 +129,52 @@ fun SurveyeeListScreen(
 //            }
 //        },
         bottomBar = {
-            if (isSelectionEnabled.value && !loaderState.isLoaderVisible && selectedTabIndex.intValue != 0) {
-                PrimarySecandaryButtonBoxPreFilled(
-                    modifier = Modifier,
-                    primaryButtonText = stringResource(id = R.string.more_item_text),
-                    secandaryButtonText = stringResource(id = R.string.cancel_tola_text),
-                    secandaryButtonRequired = true,
-                    primaryButtonOnClick = {
-                        viewModel.onEvent(
-                            SurveyeeListEvents.MoveDidisThisWeek(
-                                viewModel.checkedItemsState.value,
-                                true
-                            )
-                        )
-                        isSelectionEnabled.value = false
-                        viewModel.onEvent(SurveyeeListEvents.CancelAllSelection(isFilterAppliedState.value.isFilterApplied))
-                    },
-                    secandaryButtonOnClick = {
-//                        isCancelBtnClick.value = true
-                        isSelectionEnabled.value = false
-                        viewModel.onEvent(SurveyeeListEvents.CancelAllSelection(isFilterAppliedState.value.isFilterApplied))
-                    }
-                )
-            }
+//            if (isSelectionEnabled.value && !loaderState.isLoaderVisible && selectedTabIndex.intValue != 0) {
+//                PrimarySecandaryButtonBoxPreFilled(
+//                    modifier = Modifier,
+//                    primaryButtonText = stringResource(id = R.string.more_item_text),
+//                    secandaryButtonText = stringResource(id = R.string.cancel_tola_text),
+//                    secandaryButtonRequired = true,
+//                    primaryButtonOnClick = {
+//                        viewModel.onEvent(
+//                            SurveyeeListEvents.MoveDidisThisWeek(
+//                                viewModel.checkedItemsState.value,
+//                                true
+//                            )
+//                        )
+//                        isSelectionEnabled.value = false
+//                        viewModel.onEvent(SurveyeeListEvents.CancelAllSelection(isFilterAppliedState.value.isFilterApplied))
+//                    },
+//                    secandaryButtonOnClick = {
+////                        isCancelBtnClick.value = true
+//                        isSelectionEnabled.value = false
+//                        viewModel.onEvent(SurveyeeListEvents.CancelAllSelection(isFilterAppliedState.value.isFilterApplied))
+//                    }
+//                )
+//            }
 
+
+            DoubleButtonBox(
+                modifier = Modifier
+                    .shadow(10.dp),
+                positiveButtonText = stringResource(id = R.string.next),
+                negativeButtonText = stringResource(id = R.string.go_back_text),
+                isPositiveButtonActive = viewModel.isEnableNextBTn.value,
+                positiveButtonOnClick = {
+                    viewModel.onEvent(
+                        SurveyeeListEvents.UpdateActivityAllTask(
+                            activityId,
+                            viewModel.isEnableNextBTn.value
+                        )
+                    )
+                    navController.navigate("${Step_Complition_Screen_ROUTE_NAME}/${"You have successfully completed the ${activityName} activity"}")
+                    // navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
+                },
+                negativeButtonOnClick = {
+
+                    navigateBackToMissionSummaryScreen(navController)
+                }
+            )
         },
         containerColor = white
     ) {

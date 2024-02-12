@@ -256,8 +256,9 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
                 modifier = Modifier,
                 message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
             ) {
+
                 navController.popBackStack()
-                //navController.navigate(PatScreens.PAT_DIGITAL_FORM_B_SCREEN.route)
+                navController.navigate(HomeScreens.MISSION_SCREEN.route)
 
             }
         }
@@ -367,6 +368,10 @@ fun navigateToBaseLineStartScreen(surveyeeId: Int, survyId: Int, navController: 
 
 fun navigateBackToSurveyeeListScreen(navController: NavController) {
     navController.popBackStack(HomeScreens.SURVEYEE_LIST_SCREEN.route, false)
+}
+
+fun navigateBackToMissionSummaryScreen(navController: NavController) {
+    navController.popBackStack(HomeScreens.MISSION_SUMMARY_SCREEN.route, false)
 }
 
 fun navigateBackToDidiScreen(navController: NavController) {
