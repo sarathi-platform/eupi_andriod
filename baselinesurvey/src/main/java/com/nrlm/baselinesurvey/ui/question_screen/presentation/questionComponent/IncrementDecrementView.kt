@@ -55,7 +55,7 @@ import com.nrlm.baselinesurvey.utils.onlyNumberField
 
 @Composable
 fun IncrementDecrementView(
-    title: String = "IncrementDecrementView",
+    title: String = BLANK_STRING,
     currentValue: String? = "0",
     onAnswerSelection: (selectValue: String) -> Unit,
     isRequiredField: Boolean = false

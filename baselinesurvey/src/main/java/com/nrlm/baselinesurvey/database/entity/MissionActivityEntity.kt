@@ -7,6 +7,7 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.ACTIVITY_TABLE_NAME
 import com.nrlm.baselinesurvey.model.datamodel.MissionActivityModel
+import com.nrlm.baselinesurvey.utils.states.SurveyState
 
 @Entity(tableName = ACTIVITY_TABLE_NAME)
 data class MissionActivityEntity(
@@ -28,7 +29,8 @@ data class MissionActivityEntity(
     var status: String,
     var activityTaskSize: Int,
     var activityStatus: Int,
-    var pendingDidi: Int
+    var pendingDidi: Int,
+    val isAllTask: Boolean
 ) {
     companion object {
         fun getMissionActivityEntity(
@@ -49,8 +51,9 @@ data class MissionActivityEntity(
                 subject = activity.subject,
                 status = "",
                 activityTaskSize = activityTaskSize,
-                activityStatus = 0,
-                pendingDidi = activityTaskSize
+                activityStatus = SurveyState.INPROGRESS.ordinal,
+                pendingDidi = activityTaskSize,
+                isAllTask = false
             )
         }
     }

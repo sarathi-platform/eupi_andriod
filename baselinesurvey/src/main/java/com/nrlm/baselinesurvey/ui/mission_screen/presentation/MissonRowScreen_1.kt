@@ -76,7 +76,7 @@ fun MissonRowScreen_1(
             .clip(RoundedCornerShape(6.dp))
             .border(
                 width = 1.dp,
-                color = if (mission.missionStatus == 2) greenOnline else greyLightColor,
+                color = if (mission.pendingActivity == 0) greenOnline else greyLightColor,
                 shape = RoundedCornerShape(6.dp)
             )
             .background(Color.Transparent)
@@ -85,21 +85,22 @@ fun MissonRowScreen_1(
         Column(
             modifier = modifier
                 .fillMaxWidth()
-                .background(if (mission.missionStatus == 2) greenLight else white)
+                .background(if (mission.pendingActivity == 0) greenLight else white)
         ) {
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .background(if (mission.missionStatus == 2) greenOnline else greyLightColor)
+                    .background(if (mission.pendingActivity == 0) greenOnline else greyLightColor)
                     .padding(horizontal = 16.dp, vertical = 5.dp)
             ) {
                 Text(
-                    text = if (mission.missionStatus != 2) stringResource(
+                    text = if (mission.pendingActivity == 0) "Completed"
+                    else stringResource(
                         id = R.string.start_by_x_date,
                         missionDueDate
-                    ) else "Completed",
+                    ),
                     style = smallerTextStyle,
-                    color = if (mission.missionStatus == 2) white else black100Percent,
+                    color = if (mission.pendingActivity == 0) white else black100Percent,
                 )
             }
 
@@ -181,7 +182,7 @@ fun MissonRowScreen_1(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = if (mission.missionStatus == 2) "View" else "Start",
+                        text = if (mission.pendingActivity == 0) "View" else "Start",
                         style = smallTextStyleMediumWeight,
                         color = white
                     )

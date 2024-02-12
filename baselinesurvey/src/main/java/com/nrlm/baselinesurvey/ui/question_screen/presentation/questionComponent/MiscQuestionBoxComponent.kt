@@ -163,6 +163,7 @@ fun MiscQuestionBoxComponent(
 
                                         QuestionType.InputNumber.name -> {
                                             IncrementDecrementView(
+                                                title = optionsItem.display ?: BLANK_STRING,
                                                 currentValue = selectedOptionMap[optionsItem.optionId]?.inputValue,
                                                 onAnswerSelection = { inputValue ->
                                                     onAnswerSelection(

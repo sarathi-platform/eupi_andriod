@@ -54,14 +54,13 @@ import com.nrlm.baselinesurvey.ui.language.domain.use_case.SaveSelectedVillageUs
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.repository.MissionScreenRepository
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.repository.MissionScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.FetchMissionDataFromNetworkUseCase
-import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.FetchMissionStatusFromDbUseCase
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.GetMissionListFromDbUseCase
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.MissionScreenUseCase
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.repository.MissionSummaryScreenRepository
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.repository.MissionSummaryScreenRepositoryImpl
-import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.GetActivityStateFromDBUseCase
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.GetMissionActivitiesFromDBUseCase
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.MissionSummaryScreenUseCase
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.UpdateMisisonState
 import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepository
 import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.DeleteFormQuestionResponseUseCase
@@ -96,6 +95,7 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCa
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyeeListFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchUserDetailFromNetworkUseCase
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.GetActivityStateFromDBUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.GetSurveyeeListUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.MoveSurveyeeToThisWeekUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
@@ -151,10 +151,7 @@ object BaselineModule {
             fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(
                 dataLoadingScreenRepository
             ),
-            getMissionListFromDbUseCase = GetMissionListFromDbUseCase(missionScreenRepository),
-            fetchMissionStatusFromDbUseCase = FetchMissionStatusFromDbUseCase(
-                missionScreenRepository
-            )
+            getMissionListFromDbUseCase = GetMissionListFromDbUseCase(missionScreenRepository)
         )
     }
 
@@ -165,11 +162,9 @@ object BaselineModule {
     ): MissionSummaryScreenUseCase {
         return MissionSummaryScreenUseCase(
             getMissionActivitiesFromDBUseCase = GetMissionActivitiesFromDBUseCase(
-                missionSummaryScreenRepository
+                missionSummaryScreenRepository,
             ),
-            getActivityStateFromDBUseCase = GetActivityStateFromDBUseCase(
-                missionSummaryScreenRepository
-            )
+            updateMisisonState = UpdateMisisonState(missionSummaryScreenRepository)
         )
     }
 
@@ -229,14 +224,16 @@ object BaselineModule {
         apiService: ApiService,
         surveyeeEntityDao: SurveyeeEntityDao,
         languageListDao: LanguageListDao,
-        activityTaskDao: ActivityTaskDao
+        activityTaskDao: ActivityTaskDao,
+        missionActivityDao: MissionActivityDao
     ): SurveyeeListScreenRepository {
         return SurveyeeListScreenRepositoryImpl(
             prefRepo,
             apiService,
             surveyeeEntityDao,
             languageListDao,
-            activityTaskDao
+            activityTaskDao,
+            missionActivityDao
         )
     }
 
@@ -245,7 +242,10 @@ object BaselineModule {
     fun provideSurveyeeScreenUseCase(surveyeeListScreenRepository: SurveyeeListScreenRepository): SurveyeeScreenUseCase {
         return SurveyeeScreenUseCase(
             getSurveyeeListUseCase = GetSurveyeeListUseCase(surveyeeListScreenRepository),
-            moveSurveyeeToThisWeek = MoveSurveyeeToThisWeekUseCase(surveyeeListScreenRepository)
+            moveSurveyeeToThisWeek = MoveSurveyeeToThisWeekUseCase(surveyeeListScreenRepository),
+            getActivityStateFromDBUseCase = GetActivityStateFromDBUseCase(
+                surveyeeListScreenRepository
+            )
         )
     }
 
@@ -474,9 +474,15 @@ object BaselineModule {
     fun provideMissionSummaryRepository(
         missionActivityDao: MissionActivityDao,
         taskDao: ActivityTaskDao,
-        surveyeeEntityDao: SurveyeeEntityDao
+        surveyeeEntityDao: SurveyeeEntityDao,
+        missionEntityDao: MissionEntityDao
     ): MissionSummaryScreenRepository {
-        return MissionSummaryScreenRepositoryImpl(missionActivityDao, taskDao, surveyeeEntityDao)
+        return MissionSummaryScreenRepositoryImpl(
+            missionActivityDao,
+            taskDao,
+            surveyeeEntityDao,
+            missionEntityDao
+        )
     }
 
 }
