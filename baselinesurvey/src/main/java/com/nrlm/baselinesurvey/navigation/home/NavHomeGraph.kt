@@ -256,9 +256,9 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
                 modifier = Modifier,
                 message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
             ) {
-
-                navController.popBackStack()
-                navController.navigate(HomeScreens.MISSION_SCREEN.route)
+                navigateBackToMissionScreen(navController)
+//                navController.popBackStack()
+//                navController.navigate(HomeScreens.MISSION_SCREEN.route)
 
             }
         }

@@ -44,7 +44,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         BottomNavItem(
             stringResource(R.string.task),
             "mission_screen",
-            painterResource(R.drawable.ic_mission_icon)
+            painterResource(R.drawable.ic_bottom_task_icon)
         )
     )
 

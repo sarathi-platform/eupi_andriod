@@ -55,13 +55,21 @@ fun RadioButtonOptionComponent(
                     white
                 } else {
                     //TODO need to remove this condition when get image from backend
-                    if (optionsItem.display.equals("YES", false))
+                    if (optionsItem.display.equals(
+                            "YES",
+                            false
+                        ) || optionsItem.display.equals("Good", false)
+                    )
                         greenActiveIcon
                     else
                         redOffline
                 },
                 //TODO need to remove this condition when get image from backend
-                icon = if (optionsItem.display.equals("YES", false))
+                icon = if (optionsItem.display.equals(
+                        "YES",
+                        false
+                    ) || optionsItem.display.equals("Good", false)
+                )
                     painterResource(id = R.drawable.icon_check)
                 else
                     painterResource(id = R.drawable.icon_close)
