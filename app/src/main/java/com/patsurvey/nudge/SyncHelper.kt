@@ -112,7 +112,7 @@ class SyncHelper (
     val numericAnswerDao: NumericAnswerDao,
     val questionDao: QuestionListDao
 ){
-
+    private val TAG="SyncHelper"
     private val pendingTimerTime : Long= 10000
     private var isPending = 0
     fun syncDataToServer(networkCallbackListener: NetworkCallbackListener){
@@ -349,7 +349,9 @@ class SyncHelper (
                 didiList.forEach { didi ->
                     didi.transactionId?.let { ids.add(it) }
                 }
+                NudgeLogger.d(TAG,"checkDidiWealthStatus Request=> ${ids.json()}")
                 val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
+                NudgeLogger.d(TAG,"checkDidiWealthStatus Response=> ${response.json()}")
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.forEach { transactionIdResponse ->
                         didiList.forEach { didi ->
@@ -382,7 +384,9 @@ class SyncHelper (
                 didiList.forEach { tola ->
                     tola.transactionId?.let { ids.add(it) }
                 }
+                NudgeLogger.d(TAG,"checkUpdateDidiStatus Request=> ${ids.json()}")
                 val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
+                NudgeLogger.d(TAG,"checkUpdateDidiStatus Response=> ${response.json()}")
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.forEach { transactionIdResponse ->
                         didiList.forEach { didi ->
