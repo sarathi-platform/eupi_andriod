@@ -6,11 +6,7 @@ import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
-import com.nudge.core.enums.EventFormatterName
 import com.nudge.core.enums.EventName
-import com.nudge.core.enums.EventWriterName
-import com.nudge.core.eventswriter.EventWriterFactory
-import com.nudge.core.eventswriter.IEventFormatter
 import com.nudge.core.eventswriter.entities.EventV1
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
@@ -35,7 +31,6 @@ import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
-import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_C_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_D_PAGE_COUNT
@@ -578,21 +573,6 @@ class FormPictureScreenViewModel @Inject constructor(
                             )
                             repository.uri = File(it.value).toUri()
                             repository.writeImageEventIntoLogFile(eventFormC)
-                            /*val eventFormatter: IEventFormatter =
-                                EventWriterFactory().createEventWriter(
-                                    NudgeCore.getAppContext(),
-                                    EventFormatterName.JSON_FORMAT_EVENT
-                                )
-
-                            eventFormatter.saveAndFormatEvent(
-                                event = eventV1,
-                                listOf(
-                                    EventWriterName.FILE_EVENT_WRITER,
-                                    EventWriterName.IMAGE_EVENT_WRITER,
-                                    EventWriterName.DB_EVENT_WRITER,
-                                    EventWriterName.LOG_EVENT_WRITER
-                                ), File(it.value).toUri()
-                            )*/
                         }
 
                     }

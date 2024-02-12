@@ -208,7 +208,6 @@ fun SettingScreen(
         list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
         list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
         list.add(SettingOptionModel(7, stringResource(id = R.string.export_file), BLANK_STRING))
-//        list.add(SettingOptionModel(7, stringResource(R.string.export_data_test), BLANK_STRING))
         /*if (BuildConfig.DEBUG) *//*list.add(
             SettingOptionModel(
                 6,
@@ -437,7 +436,6 @@ fun SettingScreen(
                                 }
 
                                 3 -> {
-
 
                                     if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
                                         navController.navigate(SettingScreens.VIDEO_LIST_SCREEN.route)

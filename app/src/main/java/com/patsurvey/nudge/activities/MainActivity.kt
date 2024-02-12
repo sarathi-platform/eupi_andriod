@@ -28,7 +28,6 @@ import androidx.navigation.compose.rememberNavController
 import com.akexorcist.localizationactivity.core.LocalizationActivityDelegate
 import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
 import com.google.android.gms.auth.api.phone.SmsRetriever
-import com.nudge.syncmanager.SyncManager
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
@@ -81,7 +80,6 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
             setTheme(R.style.Android_starter_project_blow_lollipop)
         }
         super.onCreate(savedInstanceState)
-        SyncManager()
         setContent {
             Nudge_Theme {
                 val snackState = rememberSnackBarState()
