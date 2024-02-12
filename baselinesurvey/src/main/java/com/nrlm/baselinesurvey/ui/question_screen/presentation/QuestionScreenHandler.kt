@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToDidiScreen
+import com.nrlm.baselinesurvey.navigation.home.navigateBackToSectionListScreen
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
 
 
@@ -43,16 +44,17 @@ fun QuestionScreenHandler(
             if (sectionsList.size == 1 && sectionsList[0].sectionName.equals(NO_SECTION, true)) {
                 navigateBackToDidiScreen(navController)
             } else {
-                try {
+                navController.navigateBackToSectionListScreen(surveyeeId = didiId, surveyeId = surveyId)
+               /* try {
                     // TODO @Anupam Update this when order number is received from backend
-                    /*val currentSection = sectionsList[sectionsList.getSectionIndexById(selectedSectionId.value)]
-                    selectedSectionId.value = sectionsList[sectionsList.getSectionIndexByOrder(currentSection.sectionOrder + 1)].sectionId*/
+                    *//*val currentSection = sectionsList[sectionsList.getSectionIndexById(selectedSectionId.value)]
+                    selectedSectionId.value = sectionsList[sectionsList.getSectionIndexByOrder(currentSection.sectionOrder + 1)].sectionId*//*
 
                     // TODO @Anupam Temp Solution only until order number is not received from backend
                     navigateBackToDidiScreen(navController)
                 } catch (ex: Exception) {
                     navigateBackToDidiScreen(navController)
-                }
+                }*/
             }
         }
     }

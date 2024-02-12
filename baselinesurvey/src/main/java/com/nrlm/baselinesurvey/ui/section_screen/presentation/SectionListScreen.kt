@@ -266,9 +266,8 @@ fun SectionListScreen(
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(dimen_14_dp),
                         modifier = Modifier.padding(
-                            horizontal = dimen_16_dp,
-                            vertical = dimen_16_dp
-                        )
+                            horizontal = dimen_16_dp
+                        ).padding(top = dimen_16_dp)
                     ) {
 
                         item {

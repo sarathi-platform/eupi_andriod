@@ -390,6 +390,11 @@ fun navigateBackToMissionScreen(navController: NavController) {
     navController.popBackStack(HomeScreens.Home_SCREEN.route, false)
 }
 
+fun NavController.navigateBackToSectionListScreen(surveyeeId: Int, surveyeId: Int) {
+    this.popBackStack(HomeScreens.SECTION_SCREEN.route, true)
+    navigateToSectionListScreen(surveyeeId = surveyeeId, surveyeId = surveyeId, this)
+}
+
 fun navigateToQuestionScreen(
     didiId: Int,
     sectionId: Int,

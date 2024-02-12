@@ -136,8 +136,8 @@ fun NestedLazyListForFormQuestions(
                                     }
                                 }
                             }
-
-                            QuestionType.Input.name -> {
+                            QuestionType.Input.name,
+                            QuestionType.InputText.name-> {
                                 EditTextWithTitleComponent(
                                     option.display,
                                     formQuestionResponseEntity.value.getResponseForOptionId(option.optionId ?: -1)?.selectedValue ?: BLANK_STRING
