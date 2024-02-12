@@ -26,6 +26,7 @@ import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
+import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
@@ -598,6 +599,7 @@ fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObject
         val householdMember = FormResponseObjectDto()
         val householdMemberDetailsMap = mutableMapOf<Int, String>()
         householdMember.referenceId = formQuestionResponseEntityList.key
+        householdMember.questionId = formQuestionResponseEntityList.value.first().questionId
         formQuestionResponseEntityList.value.forEachIndexed { index, formQuestionResponseEntity ->
             val option = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }
             householdMemberDetailsMap.put(option?.optionId ?: -1, formQuestionResponseEntity.selectedValue)
@@ -606,6 +608,16 @@ fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObject
         householdMembersList.add(householdMember)
     }
     return householdMembersList
+}
+
+fun List<FormQuestionResponseEntity>.getResponseForOptionId(optionId: Int): FormQuestionResponseEntity? {
+    if (optionId == -1)
+        return null
+    return this.find { it.optionId == optionId }
+}
+
+fun  List<QuestionEntity>.findIndexForQuestionId(questionId: Int): Int {
+    return this.map { it.questionId }.indexOf(questionId)
 }
 
 fun List<SectionAnswerEntity>.findQuestionForQuestionId(questionId: Int): SectionAnswerEntity? {

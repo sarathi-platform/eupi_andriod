@@ -21,6 +21,7 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,10 +35,14 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.DELAY_1_MS
+import com.nrlm.baselinesurvey.DELAY_2_MS
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
-import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.NestedLazyList
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.NestedLazyListForFormQuestions
 import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScreenViewModel
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
@@ -56,15 +61,16 @@ fun FormTypeQuestionScreen(
     surveyID: Int = 0,
     sectionId: Int = 0,
     questionId: Int = 0,
-    surveyeeId: Int
+    surveyeeId: Int,
+    referenceId: String = BLANK_STRING
 ) {
     val totalOptionSize = viewModel.optionList.value.size
     val answeredOptionCount = remember { mutableIntStateOf(0) }
 
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-        viewModel.init(sectionId, surveyID, questionId)
-        delay(200)
+        viewModel.init(sectionId, surveyID, questionId, referenceId)
+        delay(DELAY_2_MS)
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
     }
     val focusManager = LocalFocusManager.current
@@ -143,10 +149,6 @@ fun FormTypeQuestionScreen(
                     },
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                LoaderComponent(
-                    visible = viewModel.loaderState.value.isLoaderVisible,
-                    modifier = Modifier.padding(it)
-                )
                 if (!viewModel.loaderState.value.isLoaderVisible) {
                     var fromTypeOption = FormTypeOption.getOptionItem(
                         surveyID,
@@ -155,7 +157,7 @@ fun FormTypeQuestionScreen(
                         questionId,
                         viewModel.optionList.value
                     )
-                    NestedLazyList(
+                    NestedLazyListForFormQuestions(
                         formTypeOption = fromTypeOption,
                         viewModel = viewModel
                     ) { questionTypeEvent ->
@@ -164,6 +166,10 @@ fun FormTypeQuestionScreen(
                         )
                     }
                 }
+                LoaderComponent(
+                    visible = viewModel.loaderState.value.isLoaderVisible,
+                    modifier = Modifier.padding(it)
+                )
             }
 
         }

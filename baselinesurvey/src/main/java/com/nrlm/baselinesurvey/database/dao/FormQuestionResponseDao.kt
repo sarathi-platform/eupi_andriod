@@ -52,4 +52,10 @@ interface FormQuestionResponseDao {
         didiId: Int
     )
 
+    @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where referenceId = :referenceId")
+    fun getFormResponseForReferenceId(referenceId: String): List<FormQuestionResponseEntity>
+
+    @Query("DELETE from $FORM_QUESTION_RESPONSE_TABLE where referenceId = :referenceId")
+    fun deleteFormResponseQuestionForReferenceId(referenceId: String)
+
 }

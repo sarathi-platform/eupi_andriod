@@ -55,8 +55,8 @@ fun FormResponseCard(
     householdMemberDto: FormResponseObjectDto,
     viewModel: BaseViewModel,
     isPictureRequired: Boolean = true,
-    onDelete: () -> Unit,
-    onUpdate: () -> Unit
+    onDelete: (referenceId: String) -> Unit,
+    onUpdate: (referenceId: String) -> Unit
 ) {
 
     val questionScreenViewModel = viewModel as QuestionScreenViewModel
@@ -69,13 +69,6 @@ fun FormResponseCard(
         modifier = Modifier
             .fillMaxWidth()
             .background(white)
-            .padding(16.dp)
-            .clip(RoundedCornerShape(6.dp))
-            .border(
-                width = 1.dp,
-                color = greyLightColor,
-                shape = RoundedCornerShape(6.dp)
-            )
             .clickable {
 
             }
@@ -86,10 +79,9 @@ fun FormResponseCard(
             mutableStateOf(0.dp)
         }
 
-        Column(
-            modifier = Modifier
-                .background(white)
-        ) {
+        Column(modifier = Modifier
+            .background(white)
+            .padding(vertical = dimen_8_dp)) {
             Row(
                 Modifier
                     .fillMaxWidth()
@@ -106,54 +98,25 @@ fun FormResponseCard(
                 }
                 Spacer(modifier = Modifier.width(dimen_14_dp))
                 Column {
-                    Text(text = householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find {
-                        it.display?.contains(
-                            "Name",
-                            ignoreCase = true
-                        )!!
-                    }?.optionId] ?: BLANK_STRING)
+                    Text(text = householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find { it.display?.contains("Name", ignoreCase = true)!! }?.optionId] ?: BLANK_STRING)
                     Text(text = buildString {
-                        this.append(householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find {
-                            it.display?.contains(
-                                "Relationship",
-                                ignoreCase = true
-                            )!!
-                        }?.optionId] ?: BLANK_STRING)
+                        this.append(householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find { it.display?.contains("Relationship", ignoreCase = true)!! }?.optionId] ?: BLANK_STRING)
                         this.append(" | ")
-                        this.append(householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find {
-                            it.display?.contains(
-                                "Age",
-                                ignoreCase = true
-                            )!!
-                        }?.optionId] ?: BLANK_STRING)
+                        this.append(householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find { it.display?.contains("Age", ignoreCase = true)!! }?.optionId] ?: BLANK_STRING)
                     })
                 }
             }
             Spacer(modifier = Modifier.height(dimen_8_dp))
-            Divider(
-                thickness = dimen_1_dp,
-                modifier = Modifier.fillMaxWidth(),
-                color = borderGreyLight
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .height(IntrinsicSize.Min)
+            Divider(thickness = dimen_1_dp, modifier = Modifier.fillMaxWidth(), color = borderGreyLight)
+            Row(modifier = Modifier
+                .fillMaxWidth()
             ) {
-                TextButton(
-                    onClick = { onUpdate() }, modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = blueDark
-                    )
+                TextButton(onClick = { onUpdate(householdMemberDto.referenceId) }, modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = blueDark)
                 ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Edit,
-                        contentDescription = "Edit Button",
-                        tint = blueDark
-                    )
+                    Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit Button", tint = blueDark)
                 }
                 Divider(
                     color = borderGreyLight,
@@ -161,28 +124,21 @@ fun FormResponseCard(
                         .fillMaxHeight()  //fill the max height
                         .width(1.dp)
                 )
-                TextButton(
-                    onClick = { onDelete() }, modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = blueDark
-                    )
+                TextButton(onClick = { onDelete(householdMemberDto.referenceId) }, modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = blueDark)
                 ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Delete,
-                        contentDescription = "Delete Button",
-                        tint = blueDark
-                    )
+                    Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete Button", tint = blueDark)
                 }
             }
         }
     }
 }
 
+/*
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun FormResponseCardPreview() {
 
-}
+}*/

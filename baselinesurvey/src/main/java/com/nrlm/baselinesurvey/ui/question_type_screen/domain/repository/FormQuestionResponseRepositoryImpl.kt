@@ -88,5 +88,13 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
             didiId = didiId
         )
     }
+
+    override suspend fun getFormResponseForReferenceId(referenceId: String): List<FormQuestionResponseEntity> {
+        return formQuestionResponseDao.getFormResponseForReferenceId(referenceId)
+    }
+
+    override suspend fun deleteFormQuestionResponseForReferenceId(referenceId: String) {
+        formQuestionResponseDao.deleteFormResponseQuestionForReferenceId(referenceId = referenceId)
+    }
 }
 

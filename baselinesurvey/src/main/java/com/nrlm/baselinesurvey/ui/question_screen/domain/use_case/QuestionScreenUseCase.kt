@@ -8,5 +8,6 @@ data class QuestionScreenUseCase(
     val updateSectionProgressUseCase: UpdateSectionProgressUseCase,
     val saveSectionAnswerUseCase: SaveSectionAnswerUseCase,
     val getSectionAnswersUseCase: GetSectionAnswersUseCase,
-    val getFormQuestionResponseUseCase: GetFormQuestionResponseUseCase
+    val getFormQuestionResponseUseCase: GetFormQuestionResponseUseCase,
+    val deleteFormQuestionResponseUseCase: DeleteFormQuestionResponseUseCase
 )

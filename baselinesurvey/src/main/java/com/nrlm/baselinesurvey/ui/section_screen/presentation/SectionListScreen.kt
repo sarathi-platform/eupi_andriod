@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -130,6 +131,7 @@ fun SectionListScreen(
 
     Scaffold(
         backgroundColor = white,
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 backgroundColor = white,

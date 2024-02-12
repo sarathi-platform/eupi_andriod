@@ -109,23 +109,8 @@ fun QuestionScreen(
         containerColor = white,
         modifier = Modifier.padding(top = dimen_10_dp).fillMaxSize(),
         bottomBar = {
-            BottomAppBar(containerColor = white, tonalElevation = defaultCardElevation, contentPadding = PaddingValues(horizontal = dimen_16_dp)) {
+            BottomAppBar(containerColor = white, tonalElevation = defaultCardElevation) {
                 Column {
-                    /*LinearProgressIndicator(
-                        modifier = Modifier
-                            .height(dimen_6_dp)
-                            .fillMaxWidth()
-                            .clip(
-                                RoundedCornerShape(
-                                    topStart = roundedCornerRadiusDefault,
-                                    topEnd = roundedCornerRadiusDefault
-                                )
-                            )
-                            ,
-                        color = greenOnline,
-                        trackColor = Color.Transparent,
-                        progress = curPercentage.value
-                    )*/
                     ExtendedFloatingActionButton(
                         modifier = Modifier
                             .fillMaxWidth(),
@@ -230,104 +215,6 @@ fun QuestionScreen(
                     }
                 )
             }
-
-            /*ModalBottomSheetLayout(
-                sheetContent = {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
-                        horizontalAlignment = Alignment.Start,
-                        modifier = Modifier
-                    ) {
-
-                        Column {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = dimen_10_dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.info_icon),
-                                    contentDescription = "info icon"
-                                )
-                            }
-                            Divider(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(1.dp), color = greyBorder
-                            )
-
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = dimen_16_dp, horizontal = dimen_18_dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = sectionDetails.sectionDetails,
-                                    color = textColorDark,
-                                    style = smallerTextStyleNormalWeight,
-                                    modifier = Modifier.padding(horizontal = dimen_10_dp)
-                                )
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = dimen_16_dp, horizontal = dimen_24_dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Button(
-                                    onClick = {
-                                        scope.launch {
-                                            scaffoldState.hide()
-                                        }
-                                    }, shape = RoundedCornerShape(
-                                        roundedCornerRadiusDefault
-                                    ), colors = ButtonDefaults.buttonColors(
-                                        backgroundColor = blueDark,
-                                        contentColor = white
-                                    )
-                                ) {
-                                    Text(text = "Ok", color = white, style = smallerTextStyle)
-                                }
-                            }
-                            Spacer(modifier = Modifier.height(16.dp))
-                        }
-                    }
-                },
-                sheetState = scaffoldState,
-                sheetElevation = 20.dp,
-                sheetBackgroundColor = Color.White,
-                sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
-            ) {
-
-                if (viewModel.showExpandedImage.value) {
-                    ImageExpanderDialogComponent(
-                        viewModel.expandedImagePath.value
-                    ) {
-                        viewModel.showExpandedImage.value = false
-                    }
-                }
-
-                NestedLazyList(
-                    navController = navController,
-                    sectionDetails = sectionDetails,
-                    viewModel = viewModel,
-                    surveyeeId = surveyeeId,
-                    sectionInfoButtonClicked = {
-                        scope.launch {
-                            if (!scaffoldState.isVisible) {
-                                scaffoldState.show()
-                            } else {
-                                scaffoldState.hide()
-                            }
-                        }
-                    },
-                    answeredQuestionCountIncreased = { count ->
-                        answeredQuestionCount.value = count
-                    }
-                )
-            }*/
         }
     }
 }

@@ -46,4 +46,8 @@ interface FormQuestionResponseRepository {
         referenceId: String,
         didiId: Int
     )
+
+    suspend fun getFormResponseForReferenceId(referenceId: String): List<FormQuestionResponseEntity>
+
+    suspend fun deleteFormQuestionResponseForReferenceId(referenceId: String)
 }
