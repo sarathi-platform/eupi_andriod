@@ -98,6 +98,9 @@ const val ARG_VILLAGE_ID = "villageId"
 const val ARG_DIDI_DETAILS_ID = "didi_details_id"
 const val ARG_STEP_ID = "stepId"
 const val ARG_DIDI_ID = "didiId"
+
+const val ARG_FORM_QUESTION_RESPONSE_REFERENCE_ID = "formQuestionResponseReferenceId"
+
 const val ARG_DIDI_STATUS = "didi_status"
 const val ARG_SECTION_TYPE = "section_type"
 const val ARG_QUESTION_INDEX = "question_index"
@@ -290,4 +293,11 @@ const val ARG_ACTIVITY_DATE = "activity_date"
 const val ARG_MISSION_ID = "mission_id"
 const val ARG_MISSION_NAME = "mission_name"
 const val ARG_MISSION_DATE = "mission_date"
+
+const val DELAY_1_MS: Long = 100
+const val DELAY_2_MS:Long = 200
+const val DELAY_1_SEC: Long = 1000
+const val DELAY_2_SEC: Long = 2000
+
+const val VALUE_NO = "No"
 

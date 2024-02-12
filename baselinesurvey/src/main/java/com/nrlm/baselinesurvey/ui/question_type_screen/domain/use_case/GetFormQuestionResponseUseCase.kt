@@ -55,4 +55,8 @@ class GetFormQuestionResponseUseCase(private val repository: FormQuestionRespons
         )
     }
 
+    suspend fun getFormResponseForReferenceId(referenceId: String): List<FormQuestionResponseEntity> {
+        return repository.getFormResponseForReferenceId(referenceId)
+    }
+
 }

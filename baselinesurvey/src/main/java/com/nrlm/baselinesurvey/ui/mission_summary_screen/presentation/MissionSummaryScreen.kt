@@ -28,6 +28,7 @@ import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.inprogressYellow
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
+import com.nrlm.baselinesurvey.ui.theme.white
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -45,7 +46,10 @@ fun MissionSummaryScreen(
     LaunchedEffect(key1 = true) {
         viewModel.init(missionId)
     }
-    Scaffold(bottomBar = {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = white,
+        bottomBar = {
         Box(
             modifier = Modifier
                 .fillMaxWidth()

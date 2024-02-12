@@ -19,6 +19,7 @@ import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.QuestionScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenEvents
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.findQuestionForQuestionId
@@ -85,7 +86,7 @@ class QuestionScreenViewModel @Inject constructor(
         }
     }
 
-    suspend fun getFormQuestionResponseEntity(surveyId: Int, sectionId: Int, questionId: Int, didiId: Int): LiveData<List<FormQuestionResponseEntity>> {
+    suspend fun getFormQuestionResponseEntityLive(surveyId: Int, sectionId: Int, questionId: Int, didiId: Int): LiveData<List<FormQuestionResponseEntity>> {
         return questionScreenUseCase.getFormQuestionResponseUseCase.getFormResponsesForQuestionLive(surveyId, sectionId, questionId, didiId)
     }
 
@@ -203,6 +204,13 @@ class QuestionScreenViewModel @Inject constructor(
                     didiId = event.didiId,
                     inputValue = event.inputValue
                 )
+            }
+
+            is QuestionTypeEvent.DeleteFormQuestionResponseEvent -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    questionScreenUseCase.deleteFormQuestionResponseUseCase.invoke(referenceId = event.referenceId)
+                }
+
             }
 
             /*is QuestionScreenEvents.FormTypeQuestionAnswered -> {

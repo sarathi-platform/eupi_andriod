@@ -24,7 +24,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.DELAY_1_MS
+import com.nrlm.baselinesurvey.VALUE_NO
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.SwitchComponent
@@ -33,11 +37,13 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionType
 import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
+import com.nrlm.baselinesurvey.utils.getResponseForOptionId
 import com.nrlm.baselinesurvey.utils.storeGivenAnswered
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun NestedLazyList(
+fun NestedLazyListForFormQuestions(
     modifier: Modifier = Modifier,
     outerState: LazyListState = rememberLazyListState(),
     innerState: LazyListState = rememberLazyListState(),
@@ -47,6 +53,11 @@ fun NestedLazyList(
 ) {
     val scope = rememberCoroutineScope()
     val questionTypeScreenViewModel = (viewModel as QuestionTypeScreenViewModel)
+
+    val formQuestionResponseEntity = viewModel.formQuestionResponseEntity
+        /*remember { mutableStateOf<List<FormQuestionResponseEntity>>(emptyList()) }*/
+
+//    formQuestionResponseEntity.value = viewModel.formQuestionResponseEntity.value
 
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
@@ -114,7 +125,8 @@ fun NestedLazyList(
                                 TypeDropDownComponent(
                                     option.display,
                                     option.selectedValue ?: "Select",
-                                    option.values
+                                    option.values,
+                                    selectOptionText = formQuestionResponseEntity.value.getResponseForOptionId(option.optionId ?: -1)?.selectedValue ?: BLANK_STRING
                                 ) { value ->
                                     formTypeOption?.let { it1 ->
                                         onSaveFormTypeOption(storeGivenAnswered(
@@ -128,7 +140,7 @@ fun NestedLazyList(
                             QuestionType.Input.name -> {
                                 EditTextWithTitleComponent(
                                     option.display,
-                                    option.selectedValue ?: ""
+                                    formQuestionResponseEntity.value.getResponseForOptionId(option.optionId ?: -1)?.selectedValue ?: BLANK_STRING
                                 ) { value ->
                                     formTypeOption?.let { it1 ->
                                         onSaveFormTypeOption(
@@ -141,7 +153,7 @@ fun NestedLazyList(
                             }
 
                             QuestionType.Toggle.name -> {
-                                SwitchComponent(option.display, option.selectedValue ?: "No") { value ->
+                                SwitchComponent(option.display, formQuestionResponseEntity.value.getResponseForOptionId(option.optionId ?: -1)?.selectedValue ?: VALUE_NO) { value ->
                                     formTypeOption?.let { it1 ->
                                         onSaveFormTypeOption(
                                             storeGivenAnswered(

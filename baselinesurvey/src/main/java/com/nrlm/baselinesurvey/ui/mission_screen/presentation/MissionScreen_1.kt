@@ -36,6 +36,7 @@ import com.nrlm.baselinesurvey.ui.mission_screen.viewmodel.MissionViewModel
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
+import com.nrlm.baselinesurvey.ui.theme.white
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Preview(showBackground = true)
@@ -54,6 +55,7 @@ fun MissionScreen_1(
     }
     Scaffold(
         modifier = Modifier,
+        containerColor = white,
         topBar = {
             TopAppBar(
                 title = {

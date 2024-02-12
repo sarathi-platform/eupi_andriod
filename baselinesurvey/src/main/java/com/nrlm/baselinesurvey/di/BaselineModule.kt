@@ -64,6 +64,7 @@ import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.GetMissi
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.MissionSummaryScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepository
 import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepositoryImpl
+import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.DeleteFormQuestionResponseUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.GetSectionAnswersUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.GetSectionUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.GetSectionsListUseCase
@@ -328,7 +329,8 @@ object BaselineModule {
             updateSectionProgressUseCase = UpdateSectionProgressUseCase(questionScreenRepository),
             saveSectionAnswerUseCase = SaveSectionAnswerUseCase(questionScreenRepository),
             getSectionAnswersUseCase = GetSectionAnswersUseCase(questionScreenRepository),
-            getFormQuestionResponseUseCase = GetFormQuestionResponseUseCase(formQuestionResponseRepository)
+            getFormQuestionResponseUseCase = GetFormQuestionResponseUseCase(formQuestionResponseRepository),
+            deleteFormQuestionResponseUseCase = DeleteFormQuestionResponseUseCase(formQuestionResponseRepository)
         )
     }
 

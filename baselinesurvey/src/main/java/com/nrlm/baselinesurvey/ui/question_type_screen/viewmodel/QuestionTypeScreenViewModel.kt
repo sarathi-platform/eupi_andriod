@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.FormQuestionScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
@@ -28,9 +30,12 @@ class QuestionTypeScreenViewModel @Inject constructor(
     val optionList: State<List<OptionItemEntity>> get() = _optionList
     private val _optionList = mutableStateOf<List<OptionItemEntity>>(emptyList())
 
-    val referenceId: String = UUID.randomUUID().toString()
+    var referenceId: String = UUID.randomUUID().toString()
 
-    fun init(sectionId: Int, surveyId: Int, questionId: Int) {
+    private val _formQuestionResponseEntity = mutableStateOf<List<FormQuestionResponseEntity>>(emptyList())
+    val formQuestionResponseEntity: State<List<FormQuestionResponseEntity>> get() = _formQuestionResponseEntity
+
+    fun init(sectionId: Int, surveyId: Int, questionId: Int, referenceId: String = BLANK_STRING) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _optionList.value =
@@ -39,11 +44,19 @@ class QuestionTypeScreenViewModel @Inject constructor(
                     sectionId,
                     questionId
                 )
+            if (referenceId.isNotBlank()) {
+                this@QuestionTypeScreenViewModel.referenceId = referenceId
+                _formQuestionResponseEntity.value = getFormResponseForReferenceId(referenceId = referenceId)
+            }
             Log.d("TAG", "init: questionOptionList-> ${optionList.value}")
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
+    }
+
+    suspend fun getFormResponseForReferenceId(referenceId: String): List<FormQuestionResponseEntity> {
+        return formQuestionScreenUseCase.getFormQuestionResponseUseCase.getFormResponseForReferenceId(referenceId)
     }
 
     override fun <T> onEvent(event: T) {

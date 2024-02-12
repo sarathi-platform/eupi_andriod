@@ -7,4 +7,8 @@ sealed class QuestionTypeEvent {
        val formQuestionResponseEntity: FormQuestionResponseEntity
     ) : QuestionTypeEvent()
 
+    data class DeleteFormQuestionResponseEvent(
+        val referenceId: String
+    ): QuestionTypeEvent()
+
 }
