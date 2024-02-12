@@ -1142,8 +1142,9 @@ class SyncHelper (
                             didiStepRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, rankingEdit = didi.rankingEdit, localModifiedDate = System.currentTimeMillis()))
                         }
                         didiWealthRequestList.addAll(didiStepRequestList)
-                        val updateWealthRankResponse = apiService.updateDidiRanking(didiWealthRequestList)
                         NudgeLogger.d("SyncHelper","updateWealthRankingToNetwork updateDidiRanking Request=> ${Gson().toJson(didiWealthRequestList)}")
+                        val updateWealthRankResponse = apiService.updateDidiRanking(didiWealthRequestList)
+                        NudgeLogger.d("SyncHelper","updateWealthRankingToNetwork updateDidiRanking updateWealthRankResponse=> ${updateWealthRankResponse.json()}")
                         if(updateWealthRankResponse.status.equals(SUCCESS,true)){
                             val didiListResponse = updateWealthRankResponse.data
                             if(!didiListResponse?.get(0)?.transactionId.isNullOrEmpty()){
@@ -1347,7 +1348,7 @@ class SyncHelper (
                         )
                         NudgeLogger.d(
                             "SyncHelper",
-                            "savePATSummeryToServer patSummarySaveRequest: $patSummarySaveRequest"
+                            "savePATSummeryToServer patSummarySaveRequest: ${patSummarySaveRequest.json()}"
                         )
 
                         answeredDidiList.add(
@@ -1422,7 +1423,8 @@ class SyncHelper (
         if(scoreDidiList.isNotEmpty()) {
             job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
                 NudgeLogger.d("SyncHelper","savePatScoreToServer updateDidiScore Request=> ${scoreDidiList.json()}")
-                apiService.updateDidiScore(scoreDidiList)
+                val updateDidiScoreResponse = apiService.updateDidiScore(scoreDidiList)
+                NudgeLogger.d("SyncHelper","savePatScoreToServer updateDidiScore updateDidiScoreResponse=> ${updateDidiScoreResponse.json()}")
             }
         }
     }
@@ -1452,8 +1454,9 @@ class SyncHelper (
                                 }
                             }
                         }
+                        NudgeLogger.d("SyncHelper","updateVoStatusToNetwork Request=> ${Gson().toJson(didiRequestList)}")
                         val updateWealthRankResponse=apiService.updateDidiRanking(didiRequestList)
-                        NudgeLogger.d("SyncHelper","updateVoStatusToNetwork updateDidiRanking Request=> ${Gson().toJson(didiRequestList)}")
+                        NudgeLogger.d("SyncHelper","updateVoStatusToNetwork updateWealthRankResponse=> ${updateWealthRankResponse.json()}")
                         if(updateWealthRankResponse.status.equals(SUCCESS,true)){
                             val didiListResponse = updateWealthRankResponse.data
                             if (didiListResponse?.get(0)?.transactionId != null) {

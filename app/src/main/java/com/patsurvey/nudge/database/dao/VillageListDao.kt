@@ -44,6 +44,6 @@ interface VillageListDao {
     fun updateStepAndStatusId(villageId: Int, stepId: Int,statusId:Int)
 
     @Query("UPDATE $VILLAGE_TABLE_NAME SET isDataLoadTriedOnce=:isDataLoadTriedOnce where id = :villageId")
-    fun updateVillageDataLoadStatus(villageId: Int, isDataLoadTriedOnce: Boolean)
+    fun updateVillageDataLoadStatus(villageId: Int, isDataLoadTriedOnce: Int)
 
 }
