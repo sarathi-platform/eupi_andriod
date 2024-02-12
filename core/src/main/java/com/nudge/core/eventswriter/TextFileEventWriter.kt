@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.text.TextUtils
+import android.util.Log
 import com.nudge.core.EVENT_DELIMETER
 import com.nudge.core.LOCAL_BACKUP_EXTENSION
 import com.nudge.core.LOCAL_BACKUP_FILE_NAME
@@ -68,6 +69,7 @@ open class TextFileEventWriter() : IEventWriter {
                     val nameIndex = cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)
                     if (nameIndex > -1) {
                         val displayName = cursor.getString(nameIndex)
+                        Log.d("FileWriter", "${displayName} : ${fileNameWithExtension} ")
                         if (displayName == fileNameWithExtension) {
                             val idIndex = cursor.getColumnIndex(MediaStore.MediaColumns._ID)
                             if (idIndex > -1) {

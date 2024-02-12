@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.nudge.core.EventsTable
 import com.nudge.core.database.converters.DateConverter
-import com.nudge.core.database.converters.StringJsonConverter
 import java.util.Date
 import java.util.UUID
 
@@ -55,6 +54,3 @@ data class Events (
     val metadata: String?
 
 )
-
-
-
