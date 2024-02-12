@@ -197,6 +197,7 @@ fun SurveySummary(
                     surveySummaryViewModel.markBpcVerificationComplete(surveySummaryViewModel.repository.prefRepo.getSelectedVillage().id, stepId)
                     surveySummaryViewModel.saveBpcPatCompletionDate()
                     surveySummaryViewModel.updatePatEditFlag()
+                    surveySummaryViewModel.addRankingFlagEditEvent(true)
 
                     if ((context as MainActivity).isOnline.value ?: false) {
                         surveySummaryViewModel.savePATSummeryToServer(object :
@@ -264,6 +265,7 @@ fun SurveySummary(
                                 )
                                 surveySummaryViewModel.savePatCompletionDate()
                                 surveySummaryViewModel.updatePatEditFlag()
+                                surveySummaryViewModel.addRankingFlagEditEvent()
                             }
                             if ((context as MainActivity).isOnline.value ?: false) {
                                 if (surveySummaryViewModel.isTolaSynced.value == 2

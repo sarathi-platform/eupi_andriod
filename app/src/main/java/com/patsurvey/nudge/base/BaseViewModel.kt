@@ -194,6 +194,11 @@ abstract class BaseViewModel : ViewModel(){
 
       open suspend fun updateWorkflowStatus(stepStatus: String, stepId: Int) {}
 
+    open fun addRankingFlagEditEvent(isUserBpc: Boolean = false) {}
+    open fun addDidiNotAvailableEvent(didiId: Int) {}
+
+    open fun addNotAvailableDidiPatScoreEventForDidi(didiId: Int) {}
+
 
 }
 
