@@ -56,12 +56,12 @@ import com.nrlm.baselinesurvey.utils.onlyNumberField
 @Composable
 fun IncrementDecrementView(
     title: String = "IncrementDecrementView",
-    currentValue: String = "0",
+    currentValue: String? = "0",
     onAnswerSelection: (selectValue: String) -> Unit,
     isRequiredField: Boolean = false
 ) {
     val currentCount: MutableState<String> = remember {
-        mutableStateOf(currentValue)
+        mutableStateOf(currentValue ?: "0")
     }
     Column(
         modifier = Modifier

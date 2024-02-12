@@ -163,8 +163,14 @@ fun MiscQuestionBoxComponent(
 
                                         QuestionType.InputNumber.name -> {
                                             IncrementDecrementView(
-                                                currentValue = "0",
-                                                onAnswerSelection = {}
+                                                currentValue = selectedOptionMap[optionsItem.optionId]?.inputValue,
+                                                onAnswerSelection = { inputValue ->
+                                                    onAnswerSelection(
+                                                        questionIndex,
+                                                        optionsItem.optionId ?: 0,
+                                                        inputValue
+                                                    )
+                                                }
                                             )
                                             Spacer(modifier = Modifier.height(dimen_8_dp))
                                         }
