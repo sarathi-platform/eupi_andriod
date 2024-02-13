@@ -7,6 +7,7 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -36,6 +37,7 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOpt
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_30_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.utils.getResponseForOptionId
 import com.nrlm.baselinesurvey.utils.storeGivenAnswered
@@ -136,8 +138,8 @@ fun NestedLazyListForFormQuestions(
                                     }
                                 }
                             }
-
-                            QuestionType.Input.name -> {
+                            QuestionType.Input.name,
+                            QuestionType.InputText.name-> {
                                 EditTextWithTitleComponent(
                                     option.display,
                                     formQuestionResponseEntity.value.getResponseForOptionId(option.optionId ?: -1)?.selectedValue ?: BLANK_STRING
@@ -167,6 +169,9 @@ fun NestedLazyListForFormQuestions(
                         }
                     }
                 }
+            }
+            item { 
+                Spacer(modifier = Modifier.fillMaxWidth().height(dimen_30_dp))
             }
         }
     }

@@ -589,7 +589,7 @@ fun NestedLazyList(
                     }
                     item {
                         Column {
-                            householdMemberDtoList.value.forEach { householdMemberDto ->
+                            householdMemberDtoList.value.distinctBy { it.referenceId }.forEach { householdMemberDto ->
                                 FormResponseCard(
                                     householdMemberDto = householdMemberDto,
                                     viewModel = questionScreenViewModel,
