@@ -12,15 +12,14 @@ import android.text.TextUtils
 import android.util.Log
 import com.nudge.core.EVENT_DELIMETER
 import com.nudge.core.LOCAL_BACKUP_EXTENSION
-import com.nudge.core.LOCAL_BACKUP_FILE_NAME
 import com.nudge.core.SARATHI_DIRECTORY_NAME
 import com.nudge.core.enums.EventWriterName
+import com.nudge.core.preference.CoreSharedPrefs
 import java.io.File
 import java.io.FileWriter
 
 
-open class TextFileEventWriter() : IEventWriter {
-
+open class TextFileEventWriter : IEventWriter {
     val textMimeType = "text/plain"
     override suspend fun addEvent(context: Context, event: String, mobileNo: String, uri: Uri?) {
         writeEventInFile(context, event, mobileNo)
@@ -32,12 +31,16 @@ open class TextFileEventWriter() : IEventWriter {
 
     private fun writeEventInFile(context: Context, content: String, mobileNo: String) {
         if (TextUtils.isEmpty(content.trim())) return
-        val fileNameWithExtension = LOCAL_BACKUP_FILE_NAME + LOCAL_BACKUP_EXTENSION
-        val  finalContent= content+"\n"+ EVENT_DELIMETER+"\n"
+        val fileNameWithExtension =
+            CoreSharedPrefs.getInstance(context).getBackupFileName() + LOCAL_BACKUP_EXTENSION
+        val finalContent = content + "\n" + EVENT_DELIMETER + "\n"
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, LOCAL_BACKUP_FILE_NAME)
+                put(
+                    MediaStore.MediaColumns.DISPLAY_NAME,
+                    CoreSharedPrefs.getInstance(context).getBackupFileName()
+                )
                 put(MediaStore.MediaColumns.MIME_TYPE, textMimeType)
                 put(
                     MediaStore.MediaColumns.RELATIVE_PATH,
@@ -95,6 +98,25 @@ open class TextFileEventWriter() : IEventWriter {
                 }
             }
 
+            val savedFileCursor: Cursor? = context.contentResolver.query(
+                fileUri!!,
+                null,
+                null, null,
+                null
+            )
+            if (savedFileCursor != null && savedFileCursor.count > 0) {
+                while (savedFileCursor.moveToNext()) {
+                    val nameIndex =
+                        savedFileCursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)
+                    if (nameIndex > -1) {
+                        val displayName = savedFileCursor.getString(nameIndex)
+                        CoreSharedPrefs.getInstance(context)
+                            .setBackupFileName(displayName.substringBeforeLast("."))
+                        Log.d("File created", displayName)
+
+                    }
+                }
+            }
 
         } else {
 
@@ -117,3 +139,5 @@ open class TextFileEventWriter() : IEventWriter {
         }
     }
 }
+
+
