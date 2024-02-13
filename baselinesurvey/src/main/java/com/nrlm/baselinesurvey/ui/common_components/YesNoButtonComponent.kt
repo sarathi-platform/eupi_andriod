@@ -39,7 +39,7 @@ import com.nrlm.baselinesurvey.ui.theme.white
 @Composable
 fun YesNoButtonComponent(
     defaultValue: Int = -1,
-    title: String = "Select", isMandatory: Boolean = false,
+    title: String? = "Select", isMandatory: Boolean = false,
     onOptionSelected: (Int) -> Unit
 ) {
     val yesNoButtonViewHeight = remember {

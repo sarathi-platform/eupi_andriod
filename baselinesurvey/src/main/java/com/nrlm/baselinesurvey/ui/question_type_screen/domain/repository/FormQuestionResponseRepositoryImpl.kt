@@ -96,5 +96,9 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
     override suspend fun deleteFormQuestionResponseForReferenceId(referenceId: String) {
         formQuestionResponseDao.deleteFormResponseQuestionForReferenceId(referenceId = referenceId)
     }
+
+    override suspend fun saveFormsIntoDB(form: List<FormQuestionResponseEntity>) {
+        formQuestionResponseDao.addFormResponseList(form)
+    }
 }
 

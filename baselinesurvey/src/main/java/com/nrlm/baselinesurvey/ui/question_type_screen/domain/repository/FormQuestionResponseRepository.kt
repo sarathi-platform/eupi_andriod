@@ -50,4 +50,5 @@ interface FormQuestionResponseRepository {
     suspend fun getFormResponseForReferenceId(referenceId: String): List<FormQuestionResponseEntity>
 
     suspend fun deleteFormQuestionResponseForReferenceId(referenceId: String)
+    suspend fun saveFormsIntoDB(form: List<FormQuestionResponseEntity>)
 }

@@ -54,7 +54,6 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
 import com.nrlm.baselinesurvey.navigation.home.SECTION_SCREEN_ROUTE_NAME
-import com.nrlm.baselinesurvey.navigation.home.navigateBackToDidiScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.ui.common_components.BlueButtonWithIcon
 import com.nrlm.baselinesurvey.ui.common_components.ButtonOutline
@@ -113,7 +112,7 @@ fun BaseLineStartScreen(
     }
 
     BackHandler {
-        navigateBackToDidiScreen(navController)
+        navigateBackToSurveyeeListScreen(navController)
     }
 
     Scaffold(modifier = Modifier
@@ -175,7 +174,7 @@ fun BaseLineStartScreen(
             TextDetails(title = "Dada : ", data = didi.value.dadaName)
             TextDetails(title = "Caste : ", data = getCasteName(didi.value.casteId))
             YesNoButtonComponent(
-                // defaultValue = didiInfoDetail.value?.isAdharCard ?: -1,
+                defaultValue = didiInfoDetail.value?.isAdharCard ?: -1,
                 title = "Does Didi have aadhar card?"
             ) {
                 isAdharCard.value = it
@@ -183,7 +182,7 @@ fun BaseLineStartScreen(
             }
             if (isAdharCard.value == 1) {
                 EditTextWithTitleComponent(
-                    //defaultValue = didiInfoDetail.value?.adharNumber ?: "",
+                    defaultValue = didiInfoDetail.value?.adharNumber ?: "",
                     title = "Enter Didi's aadhar number",
                     isOnlyNumber = true,
                     maxLength = 12
@@ -194,14 +193,14 @@ fun BaseLineStartScreen(
             }
             Spacer(modifier = Modifier.height(8.dp))
             YesNoButtonComponent(
-                //defaultValue = didiInfoDetail.value?.isVoterCard ?: -1,
+                defaultValue = didiInfoDetail.value?.isVoterCard ?: -1,
                 title = "Does didi have voter card?"
             ) {
                 isVoterCard.value = it
             }
             Spacer(modifier = Modifier.height(10.dp))
             EditTextWithTitleComponent(
-                // defaultValue = didiInfoDetail.value?.phoneNumber ?: "",
+                defaultValue = didiInfoDetail.value?.phoneNumber ?: "",
                 title = "Enter didi's family phone number",
                 isOnlyNumber = true,
                 maxLength = 10

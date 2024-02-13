@@ -12,4 +12,12 @@ class SaveFormQuestionResponseUseCase(private val repository: FormQuestionRespon
             formQuestionResponseEntity
         )
     }
+
+    suspend fun saveFormsListIntoDB(
+        formQuestionResponseEntity: List<FormQuestionResponseEntity>
+    ) {
+        repository.saveFormsIntoDB(
+            formQuestionResponseEntity
+        )
+    }
 }

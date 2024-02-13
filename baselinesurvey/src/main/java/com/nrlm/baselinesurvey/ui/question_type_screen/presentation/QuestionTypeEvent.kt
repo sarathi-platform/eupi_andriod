@@ -4,11 +4,15 @@ import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 
 sealed class QuestionTypeEvent {
     data class SaveFormQuestionResponseEvent(
-       val formQuestionResponseEntity: FormQuestionResponseEntity
+        val formQuestionResponseEntity: FormQuestionResponseEntity
     ) : QuestionTypeEvent()
 
     data class DeleteFormQuestionResponseEvent(
         val referenceId: String
-    ): QuestionTypeEvent()
+    ) : QuestionTypeEvent()
+
+    data class StoreCacheFormQuestionResponseEvent(
+        val formQuestionResponseList: List<FormQuestionResponseEntity>
+    ) : QuestionTypeEvent()
 
 }

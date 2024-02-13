@@ -5,7 +5,6 @@ import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
-import com.nrlm.baselinesurvey.utils.states.SurveyState
 import javax.inject.Inject
 
 class MissionSummaryScreenRepositoryImpl @Inject constructor(
@@ -22,26 +21,21 @@ class MissionSummaryScreenRepositoryImpl @Inject constructor(
         missionId: Int,
         activities: List<MissionActivityEntity>
     ) {
-        val missions = missionEntityDao.getMission(missionId)
-        var misisonCompleteInc = 0
-        var activityPending = missions.pendingActivity
+        var activityPending = 0
         missionEntityDao.updateMissionStatus(
             missionId,
-            SurveyState.INPROGRESS.ordinal,
+            8,
             activities.size
         )
+        var taskSize = 0
         activities.forEach { activity ->
-            if (activity.activityStatus == SurveyState.COMPLETED.ordinal) {
-                ++misisonCompleteInc
-                activityPending = --missions.pendingActivity
-            }
+            activityPending += activity.pendingDidi
+            taskSize += activity.activityTaskSize
         }
-        val completeInc =
-            if (missions.activityTaskSize == misisonCompleteInc) SurveyState.COMPLETED.ordinal else SurveyState.INPROGRESS.ordinal
         missionEntityDao.updateMissionStatus(
             missionId,
-            misisonCompleteInc,
-            activities.size - misisonCompleteInc
+            taskSize - activityPending,
+            activityPending
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.presentation
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -17,7 +17,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
@@ -36,23 +35,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.DELAY_1_MS
 import com.nrlm.baselinesurvey.DELAY_2_MS
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
+import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.NestedLazyListForFormQuestions
 import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScreenViewModel
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
-import com.nrlm.baselinesurvey.ui.theme.blueDark
-import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
-import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
-import com.nrlm.baselinesurvey.ui.theme.white
 import kotlinx.coroutines.delay
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun FormTypeQuestionScreen(
     navController: NavHostController,
@@ -64,8 +59,7 @@ fun FormTypeQuestionScreen(
     surveyeeId: Int,
     referenceId: String = BLANK_STRING
 ) {
-    val totalOptionSize = viewModel.optionList.value.size
-    val answeredOptionCount = remember { mutableIntStateOf(0) }
+
 
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -73,6 +67,8 @@ fun FormTypeQuestionScreen(
         delay(DELAY_2_MS)
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
     }
+    val totalOptionSize = mutableStateOf(viewModel.optionList.value.size)
+    val answeredOptionCount = remember { mutableIntStateOf(0) }
     val focusManager = LocalFocusManager.current
 
     Scaffold(
@@ -88,7 +84,9 @@ fun FormTypeQuestionScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = {
+                        navController.popBackStack()
+                    }) {
                         Icon(Icons.Filled.ArrowBack, null, tint = textColorDark)
                     }
                 },
@@ -103,25 +101,17 @@ fun FormTypeQuestionScreen(
                     .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
                     .padding(vertical = dimensionResource(id = R.dimen.dp_15))
             ) {
-                ExtendedFloatingActionButton(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-//                        shape = RoundedCornerShape(bottomStart = roundedCornerRadiusDefault, bottomEnd = roundedCornerRadiusDefault),
-                    shape = RoundedCornerShape(roundedCornerRadiusDefault),
-                    // containerColor = if (answeredOptionCount.value == totalOptionSize) blueDark else inactiveLightBlue,
-                    containerColor = blueDark,
-                    //contentColor = if (answeredOptionCount.value == totalOptionSize) white else inactiveTextBlue,
-                    contentColor = white,
-                    onClick = {
-                        navController.popBackStack()
-                    }
+                ButtonPositive(
+                    buttonTitle = questionName,
+                    isActive = answeredOptionCount.value == totalOptionSize.value,
+                    isArrowRequired = false
                 ) {
-                    Text(
-                        text = questionName,
-                        style = defaultTextStyle,
-                        //color = if (answeredOptionCount.value == totalOptionSize) white else inactiveTextBlue
-                        color = white
+                    viewModel.onEvent(
+                        QuestionTypeEvent.StoreCacheFormQuestionResponseEvent(
+                            viewModel._storeCacheForResponse.distinct()
+                        )
                     )
+                    navController.popBackStack()
                 }
             }
         }
@@ -157,14 +147,30 @@ fun FormTypeQuestionScreen(
                         questionId,
                         viewModel.optionList.value
                     )
+                    totalOptionSize.value = fromTypeOption.options.size
                     NestedLazyListForFormQuestions(
                         formTypeOption = fromTypeOption,
-                        viewModel = viewModel
-                    ) { questionTypeEvent ->
-                        viewModel.onEvent(
-                            questionTypeEvent
-                        )
-                    }
+                        viewModel = viewModel,
+                        answeredQuestionCountIncreased = { count ->
+                            answeredOptionCount.value = count
+                        },
+                        onSaveFormTypeOption = { questionTypeEvent ->
+                            viewModel.onEvent(
+                                questionTypeEvent
+                            )
+                        },
+                        saveCacheFormData = { formQuestionResponseEntity ->
+                            val form = viewModel._storeCacheForResponse
+                                .find { it.optionId == formQuestionResponseEntity.optionId }
+                            if (form == null) {
+                                answeredOptionCount.value.and(formQuestionResponseEntity.optionId)
+                                answeredOptionCount.value = answeredOptionCount.value.inc()
+                                viewModel._storeCacheForResponse.add(formQuestionResponseEntity)
+                            } else {
+                                form.selectedValue = formQuestionResponseEntity.selectedValue
+                            }
+                        }
+                    )
                 }
                 LoaderComponent(
                     visible = viewModel.loaderState.value.isLoaderVisible,

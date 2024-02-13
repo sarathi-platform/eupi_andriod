@@ -56,7 +56,6 @@ import com.nrlm.baselinesurvey.ui.theme.greenDark
 import com.nrlm.baselinesurvey.ui.theme.mediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleMediumWeight
-import com.nrlm.baselinesurvey.ui.theme.smallTextStyleNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark80
 import com.nrlm.baselinesurvey.ui.theme.white
@@ -269,24 +268,24 @@ fun SurveyeeCardComponent(
                             .padding(top = dimen_18_dp),
                         horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
                     ) {
-                        Button(
-                            onClick = {
-                                buttonClicked(
-                                    ButtonName.EXPORT_BUTTON,
-                                    surveyeeState.surveyeeDetails.didiId ?: 0
-                                )
-                            },
-                            enabled = true,
-                            shape = RoundedCornerShape(roundedCornerRadiusDefault),
-                            border = BorderStroke(dimen_1_dp, blueDark),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = white,
-                                contentColor = blueDark
-                            ),
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(text = "Export", style = smallTextStyleNormalWeight)
-                        }
+//                        Button(
+//                            onClick = {
+//                                buttonClicked(
+//                                    ButtonName.EXPORT_BUTTON,
+//                                    surveyeeState.surveyeeDetails.didiId ?: 0
+//                                )
+//                            },
+//                            enabled = true,
+//                            shape = RoundedCornerShape(roundedCornerRadiusDefault),
+//                            border = BorderStroke(dimen_1_dp, blueDark),
+//                            colors = ButtonDefaults.buttonColors(
+//                                containerColor = white,
+//                                contentColor = blueDark
+//                            ),
+//                            modifier = Modifier.weight(1f)
+//                        ) {
+//                            Text(text = "Export", style = smallTextStyleNormalWeight)
+//                        }
                         Button(
                             onClick = {
                                 buttonClicked(

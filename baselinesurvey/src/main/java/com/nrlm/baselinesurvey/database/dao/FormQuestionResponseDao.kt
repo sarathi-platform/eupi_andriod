@@ -15,6 +15,9 @@ interface FormQuestionResponseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addFormResponse(formQuestionResponseEntity: FormQuestionResponseEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun addFormResponseList(formQuestionResponses: List<FormQuestionResponseEntity>)
+
     @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId and didiId = :didiId")
     fun getFormResponsesForQuestion(
         surveyId: Int,

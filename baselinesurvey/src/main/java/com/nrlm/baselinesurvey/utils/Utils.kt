@@ -592,7 +592,27 @@ fun storeGivenAnswered(
     )
 }
 
-fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObjectDto(optionsItemEntityList: List<OptionItemEntity>): List<FormResponseObjectDto> {
+fun saveFormQuestionResponseEntity(
+    formTypeOption: FormTypeOption,
+    optionId: Int,
+    selectedValue: String,
+    referenceId: String
+): FormQuestionResponseEntity {
+
+    return FormQuestionResponseEntity(
+        surveyId = formTypeOption.surveyId,
+        sectionId = formTypeOption.sectionId,
+        didiId = formTypeOption.didiId,
+        questionId = formTypeOption.questionId,
+        optionId = optionId,
+        selectedValue = selectedValue,
+        referenceId = referenceId
+    )
+}
+
+fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObjectDto(
+    optionsItemEntityList: List<OptionItemEntity>
+): List<FormResponseObjectDto> {
     val householdMembersList = mutableListOf<FormResponseObjectDto>()
     val referenceIdMap = this.groupBy { it.referenceId }
     referenceIdMap.forEach { formQuestionResponseEntityList ->

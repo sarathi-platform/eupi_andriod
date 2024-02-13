@@ -2,7 +2,6 @@ package com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponen
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
@@ -42,7 +41,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
@@ -56,6 +54,7 @@ import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
+import com.nrlm.baselinesurvey.navigation.home.navigateToBaseLineStartScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToFormTypeQuestionScreen
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.FormResponseCard
@@ -95,6 +94,7 @@ fun NestedLazyList(
     innerState: LazyListState = rememberLazyListState(),
     queLazyState: LazyListState = rememberLazyListState(),
     surveyeeId: Int,
+    surveyId: Int,
     navController: NavController,
     viewModel: BaseViewModel,
     sectionDetails: SectionListItem,
@@ -501,15 +501,35 @@ fun NestedLazyList(
                                     questionIndex = index,
                                     maxCustomHeight = maxHeight,
                                     onAnswerSelection = { questionIndex ->
-                                        if (householdMemberDtoList.value.size > 0 || !answeredQuestionIndices.value.contains(questionIndex)) {
-                                            answeredQuestionIndices.value.add(questionIndex)
-                                            answeredQuestionCount.value =
-                                                answeredQuestionCount.value.inc()
-                                                    .coerceIn(0, sectionDetails.questionList.size)
-                                            answeredQuestionCountIncreased(answeredQuestionCount.value)
+                                        //TODO need to be dynamic..
+                                        if (question.questionDisplay.equals("Add Didi", false)) {
+                                            navigateToBaseLineStartScreen(
+                                                surveyeeId,
+                                                surveyId,
+                                                navController
+                                            )
+                                        } else {
+                                            if (householdMemberDtoList.value.size > 0 || !answeredQuestionIndices.value.contains(
+                                                    questionIndex
+                                                )
+                                            ) {
+                                                answeredQuestionIndices.value.add(questionIndex)
+                                                answeredQuestionCount.value =
+                                                    answeredQuestionCount.value.inc()
+                                                        .coerceIn(
+                                                            0,
+                                                            sectionDetails.questionList.size
+                                                        )
+                                                answeredQuestionCountIncreased(answeredQuestionCount.value)
+                                            }
+                                            navigateToFormTypeQuestionScreen(
+                                                navController,
+                                                question,
+                                                sectionDetails,
+                                                surveyeeId
+                                            )
                                         }
 //                                        navController.navigate("$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/${question.questionDisplay}/${sectionDetails.surveyId}/${sectionDetails.sectionId}/${question.questionId}/${surveyeeId}")
-                                        navigateToFormTypeQuestionScreen(navController, question, sectionDetails, surveyeeId)
                                     },
                                     questionDetailExpanded = {
 

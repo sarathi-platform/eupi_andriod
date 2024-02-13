@@ -32,7 +32,11 @@ class QuestionTypeScreenViewModel @Inject constructor(
 
     var referenceId: String = UUID.randomUUID().toString()
 
-    private val _formQuestionResponseEntity = mutableStateOf<List<FormQuestionResponseEntity>>(emptyList())
+    private val _formQuestionResponseEntity =
+        mutableStateOf<List<FormQuestionResponseEntity>>(emptyList())
+    val _storeCacheForResponse = mutableListOf<FormQuestionResponseEntity>()
+
+
     val formQuestionResponseEntity: State<List<FormQuestionResponseEntity>> get() = _formQuestionResponseEntity
 
     fun init(sectionId: Int, surveyId: Int, questionId: Int, referenceId: String = BLANK_STRING) {
@@ -92,6 +96,14 @@ class QuestionTypeScreenViewModel @Inject constructor(
                     }
                 }
 
+            }
+
+            is QuestionTypeEvent.StoreCacheFormQuestionResponseEvent -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    formQuestionScreenUseCase.saveFormQuestionResponseUseCase.saveFormsListIntoDB(
+                        event.formQuestionResponseList
+                    )
+                }
             }
         }
     }

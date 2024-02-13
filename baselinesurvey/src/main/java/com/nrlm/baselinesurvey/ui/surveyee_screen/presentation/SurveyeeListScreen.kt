@@ -22,7 +22,6 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.THIS_WEEK_TAB
 import com.nrlm.baselinesurvey.navigation.home.Step_Complition_Screen_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToMissionSummaryScreen
-import com.nrlm.baselinesurvey.navigation.home.navigateToBaseLineStartScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToSectionListScreen
 import com.nrlm.baselinesurvey.ui.common_components.DoubleButtonBox
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreenActions.CheckBoxClicked
@@ -270,7 +269,8 @@ fun handleButtonClick(
 ) {
     when (buttonName) {
         is ButtonName.START_BUTTON -> {
-            navigateToBaseLineStartScreen(surveyeeId, surveyId, navController)
+            navigateToSectionListScreen(surveyeeId, surveyId, navController)
+            // navigateToBaseLineStartScreen(surveyeeId, surveyId, navController)
 //            navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$surveyeeId")
         }
 
