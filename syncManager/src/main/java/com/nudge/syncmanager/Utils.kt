@@ -1,6 +1,5 @@
 package com.nudge.syncmanager
 
-import com.nudge.syncmanager.database.entities.Events
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -23,21 +22,4 @@ fun Long.toTimeDateString(): String {
     val dateTime = Date(this)
     val format = SimpleDateFormat("HH:mm:ss dd/MM/yyyy", Locale.getDefault())
     return format.format(dateTime)
-}
-
-fun getSampleEvent(): Events {
-    return Events(
-        name = "TEST_EVENT",
-        type = "notification",
-        created_date = System.currentTimeMillis().toDate(),
-        modified_date = System.currentTimeMillis().toDate(),
-        created_by = "123",
-        request_status = "OPEN",
-        request_payload = "{status: SUCCESS}",
-        response_status = "OPEN",
-        reponse_payload = "{status: SUCCESS}",
-        retry_count = 0,
-        error_message = null,
-        metadata = "{metadata: sample data}"
-    )
 }

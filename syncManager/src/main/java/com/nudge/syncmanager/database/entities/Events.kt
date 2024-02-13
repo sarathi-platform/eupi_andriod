@@ -1,16 +1,14 @@
 package com.nudge.syncmanager.database.entities
-
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.nudge.syncmanager.database.converters.DateConverter
-import com.nudge.syncmanager.database.converters.StringJsonConverter
 import java.util.Date
 import java.util.UUID
 
-@Entity(tableName = "Events_table")
-data class Events <T> (
+@Entity(tableName = "EventsTable")
+data class Events(
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = false)
     val id: String = UUID.randomUUID().toString(),
@@ -32,16 +30,14 @@ data class Events <T> (
     @ColumnInfo("created_by")
     val created_by: String,
 
+    @ColumnInfo("request_payload")
+    val request_payload: String?,
+
     @ColumnInfo("request_status")
     val request_status: String,
 
-    @ColumnInfo("request_payload")
-    @TypeConverters(StringJsonConverter::class)
-    val request_payload: T,
-
     @ColumnInfo("consumer_response_payload")
-    @TypeConverters(StringJsonConverter::class)
-    val consumer_response_payload: T,
+    val consumer_response_payload: String?,
 
     @ColumnInfo("consumer_status")
     val consumer_status: String,
@@ -53,10 +49,6 @@ data class Events <T> (
     val error_message: String?,
 
     @ColumnInfo("metadata")
-    @TypeConverters(StringJsonConverter::class)
-    val metadata: T
+    val metadata: String?
 
 )
-
-
-

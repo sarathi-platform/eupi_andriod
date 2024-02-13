@@ -12,7 +12,7 @@ interface EventsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(event: Events)
 
-    @Query("SELECT * from Events_table")
+    @Query("SELECT * from EventsTable")
     fun getAllEvent(): List<Events>
 
 }
