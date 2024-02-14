@@ -8,12 +8,16 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.Op
 
 sealed class QuestionTypeEvent {
     data class SaveFormQuestionResponseEvent(
-       val formQuestionResponseEntity: FormQuestionResponseEntity
+        val formQuestionResponseEntity: FormQuestionResponseEntity
     ) : QuestionTypeEvent()
 
     data class DeleteFormQuestionResponseEvent(
         val referenceId: String
-    ): QuestionTypeEvent()
+    ) : QuestionTypeEvent()
+
+    data class StoreCacheFormQuestionResponseEvent(
+        val formQuestionResponseList: List<FormQuestionResponseEntity>
+    ) : QuestionTypeEvent()
 
     data class DeleteFormQuestionOptionResponseEvent(
         val optionId: Int?,

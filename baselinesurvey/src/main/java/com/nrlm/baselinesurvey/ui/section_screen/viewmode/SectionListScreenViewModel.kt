@@ -37,6 +37,7 @@ class SectionListScreenViewModel @Inject constructor(
 
     val sampleVideoPath = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6ParticipatoryWealthRanking.mp4"
 
+    val allSessionCompleted = mutableStateOf(false)
 
     fun init(didiId: Int, surveyId: Int) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -72,6 +73,7 @@ class SectionListScreenViewModel @Inject constructor(
                             _sectionItemStateList.value.add(sectionState)
                             didiName.value =
                                 sectionScreenUseCase.getSurvyeDetails.getSurveyeDetails(didiId = didiId).didiName
+                            allSessionCompleted.value = isAllSessionCompleted()
 
                         }
                 }
@@ -110,6 +112,16 @@ class SectionListScreenViewModel @Inject constructor(
 
     fun getSurveeDetail(didiId: Int): SurveyeeEntity {
         return sectionScreenUseCase.getSurvyeDetails.getSurveyeDetails(didiId = didiId)
+    }
+
+    private fun isAllSessionCompleted(): Boolean {
+        var isFlag = true
+        _sectionItemStateList.value.forEach { sectionState ->
+            if (sectionState.sectionStatus != SectionStatus.COMPLETED) {
+                return false
+            }
+        }
+        return true
     }
 
 }

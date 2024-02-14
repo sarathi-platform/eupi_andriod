@@ -123,6 +123,7 @@ fun <T> DropDownWithTitleComponent(
             readOnly = true,
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(top = 6.dp)
                 .clickable { onExpandedChange(expanded) }
                 .onGloballyPositioned { coordinates ->
                     // This value is used to assign to

@@ -7,6 +7,7 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.MISSION_TABLE_NAME
 import com.nrlm.baselinesurvey.model.response.MissionResponseModel
+import com.nrlm.baselinesurvey.utils.states.SurveyState
 
 @Entity(tableName = MISSION_TABLE_NAME)
 data class MissionEntity(
@@ -36,7 +37,7 @@ data class MissionEntity(
                 activityTaskSize = activityTaskSize,
                 missionStatus = 0,
                 pendingActivity = activityTaskSize,
-                activityComplete = 0
+                activityComplete = SurveyState.NOT_STARTED.ordinal
             )
         }
     }

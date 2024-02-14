@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -28,8 +29,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
+import com.nrlm.baselinesurvey.ui.common_components.YesNoButtonComponent
+import com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponent.IncrementDecrementView
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
 import com.nrlm.baselinesurvey.ui.common_components.RadioOptionTypeComponent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScreenViewModel
@@ -40,6 +45,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_64_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.utils.getResponseForOptionId
 import com.nrlm.baselinesurvey.utils.storeGivenAnswered
+import com.nrlm.baselinesurvey.utils.saveFormQuestionResponseEntity
 import kotlinx.coroutines.launch
 
 @Composable
@@ -48,8 +54,10 @@ fun NestedLazyListForFormQuestions(
     outerState: LazyListState = rememberLazyListState(),
     innerState: LazyListState = rememberLazyListState(),
     viewModel: BaseViewModel,
-    onSaveFormTypeOption: (questionTypeEvent: QuestionTypeEvent) -> Unit
-) {
+    onSaveFormTypeOption: (questionTypeEvent: QuestionTypeEvent) -> Unit,
+    saveCacheFormData: (formQuestionResponseEntity: FormQuestionResponseEntity) -> Unit,
+    answeredQuestionCountIncreased: (count: Int) -> Unit,
+    ) {
     val scope = rememberCoroutineScope()
     val questionTypeScreenViewModel = (viewModel as QuestionTypeScreenViewModel)
 
@@ -57,6 +65,15 @@ fun NestedLazyListForFormQuestions(
         /*remember { mutableStateOf<List<FormQuestionResponseEntity>>(emptyList()) }*/
 
 //    formQuestionResponseEntity.value = viewModel.formQuestionResponseEntity.value
+
+    val answeredQuestionCount = remember {
+        mutableIntStateOf(formTypeOption?.options?.size ?: 0)
+    }
+
+    val answeredQuestionIndices = remember {
+        mutableStateOf(mutableListOf<Int>())
+    }
+
 
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
@@ -130,11 +147,15 @@ fun NestedLazyListForFormQuestions(
                                     selectOptionText = formQuestionResponseEntity.value.getResponseForOptionId(option.optionId ?: -1)?.selectedValue ?: BLANK_STRING
                                 ) { value ->
                                     questionTypeScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionalOptionState(option, value))
-                                    questionTypeScreenViewModel.formTypeOption?.let { it1 ->
-                                        onSaveFormTypeOption(storeGivenAnswered(
-                                            it1, option.optionId ?: 0, value,
-                                            referenceId = questionTypeScreenViewModel.referenceId
-                                        ))
+                                    questionTypeScreenViewModel.formTypeOption?.let { formTypeOption ->
+                                        saveCacheFormData(
+                                            saveFormQuestionResponseEntity(
+                                                formTypeOption,
+                                                option.optionId ?: 0,
+                                                value,
+                                                viewModel.referenceId
+                                            )
+                                        )
                                     }
                                 }
                             }
@@ -156,14 +177,38 @@ fun NestedLazyListForFormQuestions(
                                                 )
                                             )
                                         }
-                                        onSaveFormTypeOption(
-                                            storeGivenAnswered(
-                                                it1, option.optionId ?: 0, value,
-                                                referenceId = questionTypeScreenViewModel.referenceId
+                                        saveCacheFormData(
+                                            saveFormQuestionResponseEntity(
+                                                formTypeOption,
+                                                option.optionId ?: 0,
+                                                value,
+                                                viewModel.referenceId
                                             )
                                         )
                                     }
+
                                 }
+                            }
+
+                            QuestionType.InputNumber.name -> {
+                                IncrementDecrementView(
+                                    title = option.display ?: BLANK_STRING,
+                                    currentValue = formQuestionResponseEntity.value.getResponseForOptionId(
+                                        option.optionId ?: -1
+                                    )?.selectedValue ?: BLANK_STRING,
+                                    onAnswerSelection = { selectedValue ->
+                                        formTypeOption?.let { formTypeOption ->
+                                            saveCacheFormData(
+                                                saveFormQuestionResponseEntity(
+                                                    formTypeOption,
+                                                    option.optionId ?: 0,
+                                                    selectedValue,
+                                                    viewModel.referenceId
+                                                )
+                                            )
+                                        }
+                                    }
+                                )
                             }
 
                             QuestionType.RadioButton.name,
@@ -172,16 +217,15 @@ fun NestedLazyListForFormQuestions(
                                     optionItemEntityState = option,
                                     onOptionSelected = { selectedValue ->
                                         questionTypeScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionalOptionState(option, selectedValue))
-                                        questionTypeScreenViewModel.formTypeOption.let { it1 ->
-                                            onSaveFormTypeOption(
-                                                storeGivenAnswered(
-                                                    formTypeOption = it1,
-                                                    optionId = option.optionId ?: 0,
-                                                    selectedValue = selectedValue,
-                                                    referenceId = questionTypeScreenViewModel.referenceId
+                                        questionTypeScreenViewModel.formTypeOption?.let { formTypeOption ->
+                                            saveCacheFormData(
+                                                saveFormQuestionResponseEntity(
+                                                    formTypeOption,
+                                                    option.optionId ?: 0,
+                                                    selectedValue,
+                                                    viewModel.referenceId
                                                 )
                                             )
-
                                         }
                                     }
                                 )
@@ -198,6 +242,8 @@ fun NestedLazyListForFormQuestions(
                                         )
                                     }
                                 }
+//
+                            }
                             }*/
                         }
                     }
@@ -215,16 +261,7 @@ fun NestedLazyListForFormQuestions(
             }
         }
     }
-    /*LaunchedEffect(key1 = Unit) {
-        delay(3000)
-        updatedOptionList.value = updatedOptionList.value.apply {
-            this.forEach {
-                it.copy(
-                    showQuestion = true
-                )
-            }
-        }
-    }*/
+
 }
 
 

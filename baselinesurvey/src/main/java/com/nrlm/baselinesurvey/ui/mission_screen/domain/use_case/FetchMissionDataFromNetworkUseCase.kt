@@ -38,7 +38,7 @@ class FetchMissionDataFromNetworkUseCase(
                                     )
                                 )
                             }
-                            activityTaskSize = activity.tasks.size
+                            activityTaskSize += activity.tasks.size
                         }
                         repository.saveMissionToDB(
                             MissionEntity.getMissionEntity(

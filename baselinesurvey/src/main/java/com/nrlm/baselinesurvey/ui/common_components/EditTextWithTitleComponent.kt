@@ -40,8 +40,11 @@ fun EditTextWithTitleComponent(
     maxLength: Int = 150,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
-    val txt: MutableState<String> = remember {
+    val txt = remember {
         mutableStateOf(defaultValue)
+    }
+    if (txt.value.isBlank()) {
+        txt.value = defaultValue
     }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -87,11 +90,11 @@ fun EditTextWithTitleComponent(
 
         }
     }
-    
+
 }
 
 @Composable
 @Preview(showBackground = true)
 fun EditTextWithTitleComponentPreview() {
-    EditTextWithTitleComponent(title = "select") {}
+    EditTextWithTitleComponent(title = "select", defaultValue = "") {}
 }

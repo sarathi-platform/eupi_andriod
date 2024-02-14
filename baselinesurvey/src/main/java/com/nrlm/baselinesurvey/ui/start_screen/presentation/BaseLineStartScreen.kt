@@ -54,7 +54,6 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
 import com.nrlm.baselinesurvey.navigation.home.SECTION_SCREEN_ROUTE_NAME
-import com.nrlm.baselinesurvey.navigation.home.navigateBackToDidiScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.ui.common_components.BlueButtonWithIcon
 import com.nrlm.baselinesurvey.ui.common_components.ButtonOutline
@@ -76,7 +75,7 @@ import com.nrlm.baselinesurvey.utils.openSettings
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.uriFromFile
 
-@SuppressLint("StateFlowValueCalledInComposition")
+@SuppressLint("StateFlowValueCalledInComposition", "UnrememberedMutableState")
 @Composable
 fun BaseLineStartScreen(
     navController: NavHostController,
@@ -89,32 +88,34 @@ fun BaseLineStartScreen(
     val shouldRequestPermission = remember {
         mutableStateOf(false)
     }
-    val isAdharCard = remember {
-        mutableStateOf(-1)
-    }
-    val aadharNumber = remember {
-        mutableStateOf(BLANK_STRING)
-    }
-    val phoneNumber = remember {
-        mutableStateOf(BLANK_STRING)
-    }
-    val isVoterCard = remember {
-        mutableStateOf(-1)
-    }
+
     val didi = baseLineStartViewModel.didiEntity
-    val didiInfoDetail = baseLineStartViewModel.didiInfo
     LaunchedEffect(key1 = true) {
         baseLineStartViewModel.getDidiDetails(didiId)
     }
+    val didiInfoDetail = baseLineStartViewModel.didiInfo
+    val isAdharCard =
+        mutableStateOf(didiInfoDetail.value?.isAdharCard ?: -1)
 
-    val isContinueButtonActive = remember {
+    val aadharNumber =
+        mutableStateOf(didiInfoDetail.value?.adharNumber ?: BLANK_STRING)
+
+    val phoneNumber =
+        mutableStateOf(didiInfoDetail.value?.phoneNumber ?: BLANK_STRING)
+
+    val isVoterCard =
+        mutableStateOf(didiInfoDetail.value?.isVoterCard ?: -1)
+
+    val isContinueButtonActive =
         derivedStateOf {
-            (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (isVoterCard.value != -1) && (phoneNumber.value.length == 10) && (isAdharCard.value != -1)
+            (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (isVoterCard.value != -1) && (phoneNumber.value.length == 10) &&
+                    ((isAdharCard.value != -1) && ((isAdharCard.value == 2) || (isAdharCard.value == 1 && aadharNumber.value.length == 12)))
         }
-    }
+
+
 
     BackHandler {
-        navigateBackToDidiScreen(navController)
+        navigateBackToSurveyeeListScreen(navController)
     }
 
     Scaffold(modifier = Modifier
@@ -132,7 +133,6 @@ fun BaseLineStartScreen(
                             SurveyStateEvents.UpdateDidiSurveyStatus(
                                 it,
                                 didiInfo = DidiIntoEntity(
-                                    1,
                                     didiId = it,
                                     isAdharCard = isAdharCard.value,
                                     isVoterCard = isVoterCard.value,
@@ -176,7 +176,7 @@ fun BaseLineStartScreen(
             TextDetails(title = "Dada : ", data = didi.value.dadaName)
             TextDetails(title = "Caste : ", data = getCasteName(didi.value.casteId))
             YesNoButtonComponent(
-                // defaultValue = didiInfoDetail.value?.isAdharCard ?: -1,
+                defaultValue = isAdharCard.value,
                 title = "Does Didi have aadhar card?"
             ) {
                 isAdharCard.value = it
@@ -184,7 +184,7 @@ fun BaseLineStartScreen(
             }
             if (isAdharCard.value == 1) {
                 EditTextWithTitleComponent(
-                    //defaultValue = didiInfoDetail.value?.adharNumber ?: "",
+                    defaultValue = aadharNumber.value,
                     title = "Enter Didi's aadhar number",
                     isOnlyNumber = true,
                     maxLength = 12
@@ -195,14 +195,14 @@ fun BaseLineStartScreen(
             }
             Spacer(modifier = Modifier.height(8.dp))
             YesNoButtonComponent(
-                //defaultValue = didiInfoDetail.value?.isVoterCard ?: -1,
+                defaultValue = isVoterCard.value,
                 title = "Does didi have voter card?"
             ) {
                 isVoterCard.value = it
             }
             Spacer(modifier = Modifier.height(10.dp))
             EditTextWithTitleComponent(
-                // defaultValue = didiInfoDetail.value?.phoneNumber ?: "",
+                defaultValue = phoneNumber.value,
                 title = "Enter didi's family phone number",
                 showQuestion = OptionItemEntityState.getEmptyStateObject().copy(showQuestion = true),
                 isOnlyNumber = true,
@@ -224,7 +224,11 @@ fun BaseLineStartScreen(
                         "rememberLauncherForActivityResult -> onResult = success: $success"
                     )
                     if (success) {
-                        baseLineStartViewModel.onEvent(StartSurveyScreenEvents.SaveImagePathForSurveyee(localContext))
+                        baseLineStartViewModel.onEvent(
+                            StartSurveyScreenEvents.SaveImagePathForSurveyee(
+                                localContext
+                            )
+                        )
                     } else {
                         baseLineStartViewModel.shouldShowPhoto.value =
                             baseLineStartViewModel.photoUri.value != Uri.EMPTY
@@ -641,9 +645,11 @@ fun BaseLineStartScreen(
 //                                patDidiSummaryViewModel.shouldShowCamera.value = true
                 }
             }
-            Spacer(modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = it.calculateBottomPadding() + defaultBottomBarPadding))
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = it.calculateBottomPadding() + defaultBottomBarPadding)
+            )
         }
     }
 }

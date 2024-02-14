@@ -49,7 +49,7 @@ import com.nrlm.baselinesurvey.ui.theme.smallTextStyleMediumWeight
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleMediumWeight2
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.stepIconCompleted
-import com.nrlm.baselinesurvey.ui.theme.stepIconDisableColor
+import com.nrlm.baselinesurvey.ui.theme.stepIconEnableColor
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 
@@ -107,7 +107,7 @@ fun StepsBox(
                 Icon(
                     painter = painterResource(id = iconResourceId),
                     contentDescription = null,
-                    tint = if (isCompleted) stepIconCompleted else stepIconDisableColor,
+                    tint = if (isCompleted) stepIconCompleted else stepIconEnableColor,
                     modifier = Modifier
                         .constrainAs(iconContainer) {
                             start.linkTo(parent.start)

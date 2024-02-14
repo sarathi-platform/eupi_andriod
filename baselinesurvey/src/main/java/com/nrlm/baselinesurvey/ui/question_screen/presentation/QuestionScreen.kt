@@ -34,8 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
-import com.nrlm.baselinesurvey.navigation.home.navigateBackToSectionListScreen
-import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.DescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ImageExpanderDialogComponent
@@ -108,7 +106,9 @@ fun QuestionScreen(
 
     Scaffold(
         containerColor = white,
-        modifier = Modifier.padding(top = dimen_10_dp).fillMaxSize(),
+        modifier = Modifier
+            .padding(top = dimen_10_dp)
+            .fillMaxSize(),
         bottomBar = {
             BottomAppBar(containerColor = white, tonalElevation = defaultCardElevation) {
                 Column {
@@ -202,6 +202,7 @@ fun QuestionScreen(
                     sectionDetails = sectionDetails,
                     viewModel = viewModel,
                     surveyeeId = surveyeeId,
+                    surveyId = surveyId,
                     sectionInfoButtonClicked = {
                         scope.launch {
                             if (!scaffoldState.isVisible) {

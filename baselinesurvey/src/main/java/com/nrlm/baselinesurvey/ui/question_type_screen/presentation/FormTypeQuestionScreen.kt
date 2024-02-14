@@ -51,9 +51,7 @@ import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
-import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
-import com.nrlm.baselinesurvey.ui.theme.white
 import kotlinx.coroutines.delay
 
 @Composable
@@ -67,8 +65,7 @@ fun FormTypeQuestionScreen(
     surveyeeId: Int,
     referenceId: String = BLANK_STRING
 ) {
-    val totalOptionSize = viewModel.optionList.value.size
-    val answeredOptionCount = remember { mutableIntStateOf(0) }
+
 
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -76,6 +73,10 @@ fun FormTypeQuestionScreen(
         delay(DELAY_2_MS)
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
     }
+    val totalOptionSize = remember {
+        mutableStateOf(viewModel.optionList.value.size)
+    }
+    val answeredOptionCount = remember { mutableIntStateOf(0) }
     val focusManager = LocalFocusManager.current
 
     Scaffold(
@@ -92,7 +93,9 @@ fun FormTypeQuestionScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = {
+                        navController.popBackStack()
+                    }) {
                         Icon(Icons.Filled.ArrowBack, null, tint = textColorDark)
                     }
                 },
@@ -105,25 +108,17 @@ fun FormTypeQuestionScreen(
                 containerColor = white,
                 contentPadding = PaddingValues(dimen_16_dp)
             ) {
-                ExtendedFloatingActionButton(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-//                        shape = RoundedCornerShape(bottomStart = roundedCornerRadiusDefault, bottomEnd = roundedCornerRadiusDefault),
-                    shape = RoundedCornerShape(roundedCornerRadiusDefault),
-                    // containerColor = if (answeredOptionCount.value == totalOptionSize) blueDark else inactiveLightBlue,
-                    containerColor = blueDark,
-                    //contentColor = if (answeredOptionCount.value == totalOptionSize) white else inactiveTextBlue,
-                    contentColor = white,
-                    onClick = {
-                        navController.popBackStack()
-                    }
+                ButtonPositive(
+                    buttonTitle = questionName,
+                    isActive = !referenceId.isNullOrBlank() || answeredOptionCount.value == totalOptionSize.value,
+                    isArrowRequired = false
                 ) {
-                    Text(
-                        text = questionName,
-                        style = defaultTextStyle,
-                        //color = if (answeredOptionCount.value == totalOptionSize) white else inactiveTextBlue
-                        color = white
+                    viewModel.onEvent(
+                        QuestionTypeEvent.StoreCacheFormQuestionResponseEvent(
+                            viewModel._storeCacheForResponse.distinct()
+                        )
                     )
+                    navController.popBackStack()
                 }
             }
         }
@@ -154,13 +149,29 @@ fun FormTypeQuestionScreen(
             ) {
                 if (!viewModel.loaderState.value.isLoaderVisible) {
 
+                    totalOptionSize.value = viewModel.fromTypeOption.options.size
                     NestedLazyListForFormQuestions(
-                        viewModel = viewModel
-                    ) { questionTypeEvent ->
-                        viewModel.onEvent(
-                            questionTypeEvent
-                        )
-                    }
+                        viewModel = viewModel,
+                        answeredQuestionCountIncreased = { count ->
+                            answeredOptionCount.value = count
+                        },
+                        onSaveFormTypeOption = { questionTypeEvent ->
+                            viewModel.onEvent(
+                                questionTypeEvent
+                            )
+                        },
+                        saveCacheFormData = { formQuestionResponseEntity ->
+                            val form = viewModel._storeCacheForResponse
+                                .find { it.optionId == formQuestionResponseEntity.optionId }
+                            if (form == null) {
+                                answeredOptionCount.value.and(formQuestionResponseEntity.optionId)
+                                answeredOptionCount.value = answeredOptionCount.value.inc()
+                                viewModel._storeCacheForResponse.add(formQuestionResponseEntity)
+                            } else {
+                                form.selectedValue = formQuestionResponseEntity.selectedValue
+                            }
+                        }
+                    )
                 }
                 LoaderComponent(
                     visible = viewModel.loaderState.value.isLoaderVisible,

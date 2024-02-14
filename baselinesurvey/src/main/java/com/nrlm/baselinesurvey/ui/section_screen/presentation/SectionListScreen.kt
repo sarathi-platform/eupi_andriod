@@ -47,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -61,6 +62,7 @@ import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToQuestionScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToSearchScreen
+import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.SectionItemComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.DescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ImageExpanderDialogComponent
@@ -223,6 +225,24 @@ fun SectionListScreen(
                     }
                 }
             }
+        },
+        bottomBar = {
+            if (viewModel.allSessionCompleted.value) {
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
+                        .padding(vertical = dimensionResource(id = R.dimen.dp_15))
+                ) {
+                    ButtonPositive(
+                        buttonTitle = "Submit ${if (surveyId == 1) "BaseLine" else "Hamlet"} for ${viewModel.didiName.value}",
+                        isArrowRequired = false,
+                        isActive = true
+                    ) {
+                        navigateBackToSurveyeeListScreen(navController)
+
+                    }
+                }
+            }
         }
     ) {
         it
@@ -241,6 +261,9 @@ fun SectionListScreen(
                 navigateToQuestionScreen(didiId, sectionsList[0].section.sectionId, surveyId = sectionsList[0].section.surveyId, navController)
             } else {
                 ModelBottomSheetDescriptionContentComponent(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(it),
                     sheetContent = {
                         DescriptionContentComponent(
                             buttonClickListener = {
@@ -265,9 +288,11 @@ fun SectionListScreen(
                 ) {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(dimen_14_dp),
-                        modifier = Modifier.padding(
-                            horizontal = dimen_16_dp
-                        ).padding(top = dimen_16_dp)
+                        modifier = Modifier
+                            .padding(
+                                horizontal = dimen_16_dp
+                            )
+                            .padding(top = dimen_16_dp)
                     ) {
 
                         item {

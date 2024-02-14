@@ -56,6 +56,7 @@ import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
+import com.nrlm.baselinesurvey.navigation.home.navigateToBaseLineStartScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToFormTypeQuestionScreen
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.FormResponseCard
@@ -514,15 +515,35 @@ fun NestedLazyList(
                                     questionIndex = index,
                                     maxCustomHeight = maxHeight,
                                     onAnswerSelection = { questionIndex ->
-                                        if (householdMemberDtoList.value.size > 0 || !answeredQuestionIndices.value.contains(questionIndex)) {
-                                            answeredQuestionIndices.value.add(questionIndex)
-                                            answeredQuestionCount.value =
-                                                answeredQuestionCount.value.inc()
-                                                    .coerceIn(0, sectionDetails.questionList.size)
-                                            answeredQuestionCountIncreased(answeredQuestionCount.value)
+                                        //TODO need to be dynamic..
+                                        if (question.questionDisplay.equals("Add Didi", false)) {
+                                            navigateToBaseLineStartScreen(
+                                                surveyeeId,
+                                                sectionDetails.surveyId,
+                                                navController
+                                            )
+                                        } else {
+                                            if (householdMemberDtoList.value.size > 0 || !answeredQuestionIndices.value.contains(
+                                                    questionIndex
+                                                )
+                                            ) {
+                                                answeredQuestionIndices.value.add(questionIndex)
+                                                answeredQuestionCount.value =
+                                                    answeredQuestionCount.value.inc()
+                                                        .coerceIn(
+                                                            0,
+                                                            sectionDetails.questionList.size
+                                                        )
+                                                answeredQuestionCountIncreased(answeredQuestionCount.value)
+                                            }
+                                            navigateToFormTypeQuestionScreen(
+                                                navController,
+                                                question,
+                                                sectionDetails,
+                                                surveyeeId
+                                            )
                                         }
 //                                        navController.navigate("$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/${question.questionDisplay}/${sectionDetails.surveyId}/${sectionDetails.sectionId}/${question.questionId}/${surveyeeId}")
-                                        navigateToFormTypeQuestionScreen(navController, question.questionEntity, sectionDetails, surveyeeId)
                                     },
                                     questionDetailExpanded = {
 

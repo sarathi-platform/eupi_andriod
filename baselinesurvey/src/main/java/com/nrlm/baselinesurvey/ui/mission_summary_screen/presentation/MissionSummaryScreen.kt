@@ -91,12 +91,14 @@ fun MissionSummaryScreen(
                     itemsIndexed(
                         items = activities
                     ) { index, activity ->
+                        var subTitle = if (activity.activityId == 1) "Didi's" else "Hamlet's "
                         StepsBox(
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                             boxTitle = activity.activityName,
                             subTitle = stringResource(
                                 id = R.string.x_dii_pending,
-                                activity.pendingDidi
+                                activity.pendingDidi,
+                                subTitle,
                             ),
                             stepNo = activity.activityTypeId,
                             index = 1,

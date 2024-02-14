@@ -412,8 +412,8 @@
     <string name="task" translatable="false">Task</string>
     <string name="day_tab" translatable="false">Day</string>
     <string name="search" translatable="false">Search</string>
-    <string name="x_dii_pending" translatable="false">%d Didi\'s Pending</string>
+    <string name="x_dii_pending" translatable="false">%d %sPending</string>
     <string name="due_by_x" translatable="false">Due by %s</string>
-    <string name="start_by_x_date">Start by %s</string>
+    <string name="start_by_x_date" translatable="false">Start by %s</string>
 
 </resources>

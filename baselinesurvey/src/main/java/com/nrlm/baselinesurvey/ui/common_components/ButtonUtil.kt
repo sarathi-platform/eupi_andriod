@@ -335,4 +335,17 @@ fun DoubleButtonBoxPreview() {
     )
 }
 
+@Composable
+@Preview
+fun ButtonPositivePerview() {
+    ButtonPositive(
+        buttonTitle = "fdhjhfkjd",
+        isArrowRequired = false,
+        isActive = true
+    ) {
+
+    }
+
+}
+
 

@@ -27,7 +27,7 @@ data class FormQuestionResponseEntity(
     val optionId: Int,
 
     @ColumnInfo(name = "selectedValue")
-    val selectedValue: String,
+    var selectedValue: String,
 
     @ColumnInfo(name = "referenceId")
     val referenceId: String
