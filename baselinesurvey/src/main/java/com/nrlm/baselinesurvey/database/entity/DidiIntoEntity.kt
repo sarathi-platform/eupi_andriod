@@ -9,11 +9,11 @@ import com.nrlm.baselinesurvey.DIDI_INFO_TABLE_NAME
 
 @Entity(tableName = DIDI_INFO_TABLE_NAME)
 data class DidiIntoEntity(
-    @PrimaryKey(autoGenerate = true)
-    @SerializedName("id")
+    @PrimaryKey(autoGenerate = false)
+    @SerializedName("didiId")
     @Expose
-    @ColumnInfo(name = "id")
-    var id: Int,
+    @ColumnInfo(name = "didiId")
+    //  var id: Int,
     var didiId: Int?,
     var adharNumber: String?,
     var phoneNumber: String?,
@@ -22,7 +22,7 @@ data class DidiIntoEntity(
 ) {
     companion object {
         fun getEmptyDidiIntoEntity() = DidiIntoEntity(
-            id = 0,
+            // id = 0,
             didiId = 0,
             adharNumber = "",
             phoneNumber = "",

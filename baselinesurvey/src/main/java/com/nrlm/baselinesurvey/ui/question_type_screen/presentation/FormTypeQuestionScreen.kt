@@ -103,7 +103,7 @@ fun FormTypeQuestionScreen(
             ) {
                 ButtonPositive(
                     buttonTitle = questionName,
-                    isActive = answeredOptionCount.value == totalOptionSize.value,
+                    isActive = !referenceId.isNullOrBlank() || answeredOptionCount.value == totalOptionSize.value,
                     isArrowRequired = false
                 ) {
                     viewModel.onEvent(

@@ -10,8 +10,8 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -36,8 +36,15 @@ fun EditTextWithTitleComponent(
     maxLength: Int = 150,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
-    val txt: MutableState<String> =
+    val txt = remember {
         mutableStateOf(defaultValue)
+    }
+    if (txt.value.isBlank()) {
+        txt.value = defaultValue
+    }
+
+//    val txt: MutableState<String> =
+//        mutableStateOf(defaultValue)
 
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -86,5 +93,5 @@ fun EditTextWithTitleComponent(
 @Composable
 @Preview(showBackground = true)
 fun EditTextWithTitleComponentPreview() {
-    EditTextWithTitleComponent(title = "select") {}
+    EditTextWithTitleComponent(title = "select", defaultValue = "") {}
 }

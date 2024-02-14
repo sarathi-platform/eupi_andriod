@@ -48,9 +48,21 @@ fun YesNoButtonComponent(
         mutableStateOf(0.dp)
     }
     val localDensity = LocalDensity.current
-    val shgFlag =
+    val shgFlag = remember {
         mutableStateOf(defaultValue)
 
+    }
+    if (shgFlag.value == -1) {
+        shgFlag.value = defaultValue
+    }
+
+
+    //  val txt = remember {
+    //        mutableStateOf(defaultValue)
+    //    }
+    //     if(txt.value.isBlank()) {
+    //         txt.value = defaultValue
+    //    }
     Column(
         modifier = Modifier
             .fillMaxWidth()

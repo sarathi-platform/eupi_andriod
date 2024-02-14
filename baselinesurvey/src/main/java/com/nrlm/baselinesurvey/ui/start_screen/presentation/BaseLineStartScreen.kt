@@ -94,16 +94,16 @@ fun BaseLineStartScreen(
     }
     val didiInfoDetail = baseLineStartViewModel.didiInfo
     val isAdharCard =
-        mutableStateOf(didiInfoDetail.value.isAdharCard ?: -1)
+        mutableStateOf(didiInfoDetail.value?.isAdharCard ?: -1)
 
     val aadharNumber =
-        mutableStateOf(didiInfoDetail.value.adharNumber ?: BLANK_STRING)
+        mutableStateOf(didiInfoDetail.value?.adharNumber ?: BLANK_STRING)
 
     val phoneNumber =
-        mutableStateOf(didiInfoDetail.value.phoneNumber ?: BLANK_STRING)
+        mutableStateOf(didiInfoDetail.value?.phoneNumber ?: BLANK_STRING)
 
     val isVoterCard =
-        mutableStateOf(didiInfoDetail.value.isVoterCard ?: -1)
+        mutableStateOf(didiInfoDetail.value?.isVoterCard ?: -1)
 
     val isContinueButtonActive =
         derivedStateOf {
@@ -132,7 +132,6 @@ fun BaseLineStartScreen(
                             SurveyStateEvents.UpdateDidiSurveyStatus(
                                 it,
                                 didiInfo = DidiIntoEntity(
-                                    1,
                                     didiId = it,
                                     isAdharCard = isAdharCard.value,
                                     isVoterCard = isVoterCard.value,
