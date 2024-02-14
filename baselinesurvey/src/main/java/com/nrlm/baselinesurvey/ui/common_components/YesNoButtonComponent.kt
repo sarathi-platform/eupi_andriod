@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.common_components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,7 @@ import com.nrlm.baselinesurvey.ui.theme.red
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun YesNoButtonComponent(
     defaultValue: Int = -1,
@@ -46,9 +48,9 @@ fun YesNoButtonComponent(
         mutableStateOf(0.dp)
     }
     val localDensity = LocalDensity.current
-    val shgFlag = remember {
+    val shgFlag =
         mutableStateOf(defaultValue)
-    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()

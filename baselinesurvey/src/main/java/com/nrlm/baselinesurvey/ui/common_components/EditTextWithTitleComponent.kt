@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.common_components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,7 +12,6 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -26,6 +26,7 @@ import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 
+@SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun EditTextWithTitleComponent(
@@ -35,9 +36,9 @@ fun EditTextWithTitleComponent(
     maxLength: Int = 150,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
-    val txt: MutableState<String> = remember {
+    val txt: MutableState<String> =
         mutableStateOf(defaultValue)
-    }
+
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
