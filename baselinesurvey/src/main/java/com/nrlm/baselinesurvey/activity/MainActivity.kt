@@ -21,6 +21,7 @@ import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.navigation.navgraph.RootNavigationGraph
 import com.nrlm.baselinesurvey.ui.common_components.NetworkBanner
 import com.nrlm.baselinesurvey.ui.theme.The_nudgeTheme
+import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.ConnectionMonitor
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,7 +45,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = white
                 ) {
                     ConstraintLayout() {
                         val (networkBanner, mainContent) = createRefs()
@@ -65,7 +66,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                             start.linkTo(parent.start)
                             bottom.linkTo(parent.bottom)
                             height = Dimension.fillToConstraints
-                        }) {
+                        }.fillMaxSize()) {
                             RootNavigationGraph(navController = rememberNavController(), sharedPrefs)
                         }
                     }

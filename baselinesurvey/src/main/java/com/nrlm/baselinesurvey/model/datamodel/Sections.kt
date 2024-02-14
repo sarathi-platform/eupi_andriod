@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.model.response.ContentList
-import com.nrlm.baselinesurvey.model.response.QuestionList
 
 data class Sections(
     @SerializedName("sectionId")

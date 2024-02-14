@@ -1,5 +1,7 @@
 package com.nrlm.baselinesurvey.ui.common_components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -49,6 +51,7 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
+import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
@@ -68,6 +71,7 @@ import kotlinx.coroutines.launch
 fun GridTypeComponent(
     modifier: Modifier = Modifier,
     question: QuestionEntity,
+    showQuestionState: QuestionEntityState = QuestionEntityState.getEmptyStateObject(),
     optionItemEntityList: List<OptionItemEntity>,
     questionIndex: Int,
     selectedOptionIndices: List<Int>,
@@ -107,107 +111,108 @@ fun GridTypeComponent(
             .heightIn(min = 100.dp, maxCustomHeight)
     ) {
 
-        Card(
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = defaultCardElevation
-            ),
-            shape = RoundedCornerShape(roundedCornerRadiusDefault),
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(white)
-                .clickable {
-                }
-                .then(modifier)
-        ) {
-            Column(modifier = Modifier.background(white)) {
-                Column(
-                    Modifier.padding(top = dimen_16_dp),
-                    verticalArrangement = Arrangement.spacedBy(
-                        dimen_18_dp
-                    )
-                ) {
-                    LazyColumn(
-                        state = outerState,
-                        modifier = Modifier
-                            .heightIn(min = 110.dp, max = maxCustomHeight)
+        VerticalAnimatedVisibilityComponent(visible = showQuestionState.showQuestion) {
+            Card(
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = defaultCardElevation
+                ),
+                shape = RoundedCornerShape(roundedCornerRadiusDefault),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(white)
+                    .clickable {
+                    }
+                    .then(modifier)
+            ) {
+                Column(modifier = Modifier.background(white)) {
+                    Column(
+                        Modifier.padding(top = dimen_16_dp),
+                        verticalArrangement = Arrangement.spacedBy(
+                            dimen_18_dp
+                        )
                     ) {
-                        item {
-                            Row(
-                                modifier = Modifier.padding(horizontal = dimen_16_dp)
-                            ) {
-                                HtmlText(
-                                    text = "${question.questionId} .",
-                                    style = TextStyle(
-                                        fontFamily = NotoSans,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontSize = 14.sp,
-                                        color = textColorDark
-                                    ),
-                                )
-
-                                HtmlText(
-                                    text = "${question.questionDisplay}",
-                                    style = TextStyle(
-                                        fontFamily = NotoSans,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontSize = 14.sp,
-                                        color = textColorDark
-                                    ),
-                                )
-                            }
-                        }
-                        item {
-                            Spacer(modifier = Modifier.height(dimen_10_dp))
-                        }
-
-                        item {
-                            if (optionItemEntityList?.isNotEmpty() == true) {
-                                LazyVerticalGrid(
-                                    userScrollEnabled = false,
-                                    state = innerState,
-                                    columns = GridCells.Fixed(2),
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .padding(horizontal = dimen_16_dp)
-                                        .heightIn(min = 110.dp, max = maxCustomHeight),
-                                    horizontalArrangement = Arrangement.Center
+                        LazyColumn(
+                            state = outerState,
+                            modifier = Modifier
+                                .heightIn(min = 110.dp, max = maxCustomHeight)
+                        ) {
+                            item {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = dimen_16_dp)
                                 ) {
-                                    itemsIndexed(optionItemEntityList?.sortedBy { it.optionValue }
-                                        ?: emptyList()) { _index, optionItem ->
-                                        GridOptionCard(
-                                            optionItem = optionItem,
-                                            index = _index,
-                                            selectedIndex = selectedIndices
-                                        ) {
-                                            if (!selectedIndices.contains(it)) {
-                                                //optionItem.isSelected=true
-                                                selectedIndices.add(it)
-                                            } else {
-                                                // optionItem.isSelected=false
-                                                selectedIndices.remove(it)
-                                            }
+                                    HtmlText(
+                                        text = "${question.questionId} .",
+                                        style = TextStyle(
+                                            fontFamily = NotoSans,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontSize = 14.sp,
+                                            color = textColorDark
+                                        ),
+                                    )
 
-                                            if (!selectedOptionsItem.contains(optionItem)) {
-                                                // optionItem.isSelected = !optionItem.isSelected!!
-                                                selectedOptionsItem.add(optionItem)
-                                            } else {
-                                                selectedOptionsItem.remove(optionItem)
-                                            }
-
-                                            onAnswerSelection(questionIndex, selectedOptionsItem, selectedIndices)
-                                        }
-                                        Spacer(modifier = Modifier.height(4.dp))
-                                    }
-
+                                    HtmlText(
+                                        text = "${question.questionDisplay}",
+                                        style = TextStyle(
+                                            fontFamily = NotoSans,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontSize = 14.sp,
+                                            color = textColorDark
+                                        ),
+                                    )
                                 }
                             }
-                        }
-                        item {
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 10.dp)
-                            )
+                            item {
+                                Spacer(modifier = Modifier.height(dimen_10_dp))
+                            }
+
+                            item {
+                                if (optionItemEntityList?.isNotEmpty() == true) {
+                                    LazyVerticalGrid(
+                                        userScrollEnabled = false,
+                                        state = innerState,
+                                        columns = GridCells.Fixed(2),
+                                        modifier = Modifier
+                                            .wrapContentWidth()
+                                            .padding(horizontal = dimen_16_dp)
+                                            .heightIn(min = 110.dp, max = maxCustomHeight),
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        itemsIndexed(optionItemEntityList?.sortedBy { it.optionValue }
+                                            ?: emptyList()) { _index, optionItem ->
+                                            GridOptionCard(
+                                                optionItem = optionItem,
+                                                index = _index,
+                                                selectedIndex = selectedIndices
+                                            ) {
+                                                if (!selectedIndices.contains(it)) {
+                                                    //optionItem.isSelected=true
+                                                    selectedIndices.add(it)
+                                                } else {
+                                                    // optionItem.isSelected=false
+                                                    selectedIndices.remove(it)
+                                                }
+
+                                                if (!selectedOptionsItem.contains(optionItem)) {
+                                                    // optionItem.isSelected = !optionItem.isSelected!!
+                                                    selectedOptionsItem.add(optionItem)
+                                                } else {
+                                                    selectedOptionsItem.remove(optionItem)
+                                                }
+
+                                                onAnswerSelection(questionIndex, selectedOptionsItem, selectedIndices)
+                                            }
+                                            Spacer(modifier = Modifier.height(4.dp))
+                                        }
+
+                                    }
+                                }
+                            }
+                            item {
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 10.dp)
+                                )
 //                            Divider(thickness = dimen_1_dp, color = lightGray2, modifier = Modifier.fillMaxWidth())
 //                            ExpandableDescriptionContentComponent(
 //                                questionDetailExpanded,
@@ -220,13 +225,13 @@ fun GridTypeComponent(
 //                                    onMediaTypeDescriptionAction(DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT, videoTypeDescriptionContent)
 //                                }
 //                            )
+                            }
                         }
-                    }
 
+                    }
                 }
             }
         }
-
     }
 }
 

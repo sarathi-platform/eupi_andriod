@@ -63,6 +63,7 @@ import com.nrlm.baselinesurvey.ui.common_components.DoubleButtonBox
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.YesNoButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SurveyStateEvents
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.start_screen.viewmodel.BaseLineStartViewModel
 import com.nrlm.baselinesurvey.ui.theme.defaultBottomBarPadding
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
@@ -203,6 +204,7 @@ fun BaseLineStartScreen(
             EditTextWithTitleComponent(
                 // defaultValue = didiInfoDetail.value?.phoneNumber ?: "",
                 title = "Enter didi's family phone number",
+                showQuestion = OptionItemEntityState.getEmptyStateObject().copy(showQuestion = true),
                 isOnlyNumber = true,
                 maxLength = 10
             ) {

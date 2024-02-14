@@ -1,5 +1,7 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponent
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -24,6 +26,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -37,6 +40,9 @@ import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.ListTypeQuestion
+import com.nrlm.baselinesurvey.ui.common_components.VerticalAnimatedVisibilityComponent
+import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.TypeDropDownComponent
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
@@ -56,6 +62,7 @@ fun MiscQuestionBoxComponent(
     modifier: Modifier = Modifier,
     questionIndex: Int,
     question: QuestionEntity,
+    showQuestionState: QuestionEntityState = QuestionEntityState.getEmptyStateObject(),
     optionItemEntityList: List<OptionItemEntity>?,
     selectedOptionMap: Map<Int, InputTypeQuestionAnswerEntity>,
     maxCustomHeight: Dp,
@@ -81,149 +88,155 @@ fun MiscQuestionBoxComponent(
             )
             .heightIn(min = 100.dp, maxCustomHeight)
     ) {
-        Card(
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = defaultCardElevation
-            ),
-            shape = RoundedCornerShape(roundedCornerRadiusDefault),
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = minHeight, max = maxHeight)
-                .background(white)
-                .clickable {
 
-                }
-                .then(modifier)
-        ) {
-            Column(modifier = Modifier.background(white)) {
-                Column(
-                    Modifier.padding(top = dimen_16_dp),
-                    verticalArrangement = Arrangement.spacedBy(dimen_18_dp)
-                ) {
-                    LazyColumn(
-                        state = outerState,
-                        modifier = Modifier
-                            .heightIn(min = 110.dp, max = maxCustomHeight)
+        VerticalAnimatedVisibilityComponent(visible = showQuestionState.showQuestion) {
+            Card(
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = defaultCardElevation
+                ),
+                shape = RoundedCornerShape(roundedCornerRadiusDefault),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = minHeight, max = maxHeight)
+                    .background(white)
+                    .clickable {
+
+                    }
+                    .then(modifier)
+            ) {
+                Column(modifier = Modifier.background(white)) {
+                    Column(
+                        Modifier.padding(top = dimen_16_dp),
+                        verticalArrangement = Arrangement.spacedBy(dimen_18_dp)
                     ) {
-                        item {
+                        LazyColumn(
+                            state = outerState,
+                            modifier = Modifier
+                                .heightIn(min = 110.dp, max = maxCustomHeight)
+                        ) {
+                            item {
 
-                            Row(
-                                modifier = Modifier
-                                    .padding(bottom = 10.dp)
-                                    .padding(horizontal = dimen_16_dp)
-                            ) {
-                                Text(
-                                    text = "${questionIndex + 1}. ", style = defaultTextStyle,
-                                    color = textColorDark
-                                )
-                                HtmlText(
-                                    text = "${question.questionDisplay}",
-                                    style = defaultTextStyle,
-                                    color = textColorDark,
-                                    overflow = TextOverflow.Ellipsis,
-                                    softWrap = true
+                                Row(
+                                    modifier = Modifier
+                                        .padding(bottom = 10.dp)
+                                        .padding(horizontal = dimen_16_dp)
+                                ) {
+                                    Text(
+                                        text = "${questionIndex + 1}. ", style = defaultTextStyle,
+                                        color = textColorDark
+                                    )
+                                    HtmlText(
+                                        text = "${question.questionDisplay}",
+                                        style = defaultTextStyle,
+                                        color = textColorDark,
+                                        overflow = TextOverflow.Ellipsis,
+                                        softWrap = true
+                                    )
+                                }
+                            }
+                            item {
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(dimen_16_dp)
                                 )
                             }
-                        }
-                        item {
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(dimen_16_dp)
-                            )
-                        }
-                        item {
-                            LazyColumn(
-                                userScrollEnabled = false,
-                                state = innerState,
-                                modifier = Modifier
-                                    .wrapContentWidth()
-                                    .padding(horizontal = dimen_16_dp)
-                                    .heightIn(min = 110.dp, max = maxCustomHeight)
-                            ) {
-                                itemsIndexed(
-                                    optionItemEntityList ?: listOf()
-                                ) { _index: Int, optionsItem: OptionItemEntity ->
-                                    when (optionsItem.optionType) {
-                                        QuestionType.Input.name,
-                                        QuestionType.InputText.name -> {
-                                            EditTextWithTitleComponent(
-                                                optionsItem.display,
-                                                defaultValue = selectedOptionMap[optionsItem.optionId]?.inputValue
-                                                    ?: ""
-                                            ) { inputValue ->
-                                                onAnswerSelection(
-                                                    questionIndex,
-                                                    optionsItem.optionId ?: 0,
-                                                    inputValue
-                                                )
-                                            }
-                                            Spacer(modifier = Modifier.height(dimen_8_dp))
-                                        }
-
-                                        QuestionType.InputNumber.name -> {
-                                            IncrementDecrementView(
-                                                title = optionsItem.display ?: BLANK_STRING,
-                                                currentValue = selectedOptionMap[optionsItem.optionId]?.inputValue,
-                                                onAnswerSelection = { inputValue ->
+                            item {
+                                LazyColumn(
+                                    userScrollEnabled = false,
+                                    state = innerState,
+                                    modifier = Modifier
+                                        .wrapContentWidth()
+                                        .padding(horizontal = dimen_16_dp)
+                                        .heightIn(min = 110.dp, max = maxCustomHeight)
+                                ) {
+                                    itemsIndexed(
+                                        showQuestionState.optionItemEntityState ?: listOf()
+                                    ) { _index: Int, optionsItem: OptionItemEntityState ->
+                                        when (optionsItem.optionItemEntity?.optionType) {
+                                            QuestionType.Input.name,
+                                            QuestionType.InputText.name -> {
+                                                EditTextWithTitleComponent(
+                                                    optionsItem.optionItemEntity.display,
+                                                    showQuestion = optionsItem,
+                                                    defaultValue = selectedOptionMap[optionsItem.optionId]?.inputValue
+                                                        ?: ""
+                                                ) { inputValue ->
                                                     onAnswerSelection(
                                                         questionIndex,
                                                         optionsItem.optionId ?: 0,
                                                         inputValue
                                                     )
                                                 }
-                                            )
-                                            Spacer(modifier = Modifier.height(dimen_8_dp))
-                                        }
-
-                                        QuestionType.SingleSelectDropdown.name -> {
-                                            TypeDropDownComponent(
-                                                optionsItem.display,
-                                                hintText = optionsItem.selectedValue ?: "Select",
-                                                sources = optionsItem.values,
-                                                selectOptionText = selectedOptionMap[optionsItem.optionId]?.inputValue
-                                                    ?: BLANK_STRING
-                                            ) {
-                                                onAnswerSelection(
-                                                    questionIndex,
-                                                    optionsItem.optionId ?: 0,
-                                                    it
-                                                )
+                                                Spacer(modifier = Modifier.height(dimen_8_dp))
                                             }
-                                            Spacer(modifier = Modifier.height(dimen_8_dp))
+
+                                            QuestionType.InputNumber.name -> {
+                                                IncrementDecrementView(
+                                                    title = optionsItem.optionItemEntity.display ?: BLANK_STRING,
+                                                    showQuestion = optionsItem,
+                                                    currentValue = selectedOptionMap[optionsItem.optionId]?.inputValue,
+                                                    onAnswerSelection = { inputValue ->
+                                                        onAnswerSelection(
+                                                            questionIndex,
+                                                            optionsItem.optionId ?: 0,
+                                                            inputValue
+                                                        )
+                                                    }
+                                                )
+                                                Spacer(modifier = Modifier.height(dimen_8_dp))
+                                            }
+
+                                            QuestionType.SingleSelectDropdown.name -> {
+                                                TypeDropDownComponent(
+                                                    title = optionsItem.optionItemEntity.display ?: BLANK_STRING,
+                                                    hintText = optionsItem.optionItemEntity.selectedValue ?: "Select",
+                                                    showQuestionState = optionsItem,
+                                                    sources = optionsItem.optionItemEntity.values,
+                                                    selectOptionText = selectedOptionMap[optionsItem.optionId]?.inputValue
+                                                        ?: BLANK_STRING
+                                                ) {
+                                                    onAnswerSelection(
+                                                        questionIndex,
+                                                        optionsItem.optionId ?: 0,
+                                                        it
+                                                    )
+                                                }
+                                                Spacer(modifier = Modifier.height(dimen_8_dp))
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                        item {
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(dimen_10_dp)
+                            item {
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(dimen_10_dp)
+                                )
+/*                            Divider(
+                                thickness = dimen_1_dp,
+                                color = lightGray2,
+                                modifier = Modifier.fillMaxWidth()
                             )
-//                            Divider(
-//                                thickness = dimen_1_dp,
-//                                color = lightGray2,
-//                                modifier = Modifier.fillMaxWidth()
-//                            )
-//                            ExpandableDescriptionContentComponent(
-//                                questionDetailExpanded,
-//                                questionIndex,
-//                                question,
-//                                imageClickListener = { imageTypeDescriptionContent ->
-//                                    onMediaTypeDescriptionAction(
-//                                        DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
-//                                        imageTypeDescriptionContent
-//                                    )
-//                                },
-//                                videoLinkClicked = { videoTypeDescriptionContent ->
-//                                    onMediaTypeDescriptionAction(
-//                                        DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
-//                                        videoTypeDescriptionContent
-//                                    )
-//                                }
-//                            )
+                            ExpandableDescriptionContentComponent(
+                                questionDetailExpanded,
+                                questionIndex,
+                                question,
+                                imageClickListener = { imageTypeDescriptionContent ->
+                                    onMediaTypeDescriptionAction(
+                                        DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
+                                        imageTypeDescriptionContent
+                                    )
+                                },
+                                videoLinkClicked = { videoTypeDescriptionContent ->
+                                    onMediaTypeDescriptionAction(
+                                        DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
+                                        videoTypeDescriptionContent
+                                    )
+                                }
+                            )*/
+                            }
                         }
                     }
                 }

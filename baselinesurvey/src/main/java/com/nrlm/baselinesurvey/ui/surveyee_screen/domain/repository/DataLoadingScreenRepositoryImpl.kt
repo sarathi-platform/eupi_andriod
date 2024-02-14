@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository
 
+import android.util.Log
 import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nrlm.baselinesurvey.PREF_KEY_IDENTITY_NUMBER
 import com.nrlm.baselinesurvey.PREF_KEY_NAME
@@ -27,11 +28,14 @@ import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
+import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
+import com.nrlm.baselinesurvey.model.datamodel.Sections
 import com.nrlm.baselinesurvey.model.request.MissionRequest
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.model.response.BeneficiaryApiResponse
 import com.nrlm.baselinesurvey.model.response.MissionResponseModel
+import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
@@ -78,6 +82,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         )
         surveyEntityDao.insertSurvey(surveyEntity)
         surveyResponseModel.sections.forEach { section ->
+            val subQuestionList = mutableListOf<QuestionList>()
             sectionEntityDao.deleteSurveySectionFroLanguage(section.sectionId, surveyResponseModel.surveyId, languageId)
             val sectionEntity = SectionEntity(
                 id = 0,
@@ -91,81 +96,121 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
             )
             sectionEntityDao.insertSection(sectionEntity)
             section.questionList.forEach { question ->
-                if (question != null) {
+                saveQuestionAndOptionsToDb(question = question, section, surveyResponseModel, languageId)
+                question?.options?.forEach { optionItem ->
+                    if (optionItem?.conditions?.isNotEmpty()!!) {
+                        optionItem.conditions.forEach {
+                            subQuestionList.addAll(it?.resultList ?: emptyList())
+                        }
+                    }
+                }
+            }
+            subQuestionList.forEach { conditionalItem ->
+//                if (conditionalItem is QuestionList)
+                    saveQuestionAndOptionsToDb(question = conditionalItem, section, surveyResponseModel, languageId, true)
+                /*if (conditionalItem is OptionsItem) {
+                    saveConditionalOptions(
+                        conditionalItem, ,
+                        section,
+                        surveyResponseModel,
+                        languageId
+                    )
+                }*/
+            }
+        }
+    }
+
+    private fun saveQuestionAndOptionsToDb(question: QuestionList?, section: Sections, surveyResponseModel: SurveyResponseModel, languageId: Int, isSubQuestionList: Boolean = false) {
+        try {
+            if (question?.questionId != null) {
+                val existingQuestion = questionEntityDao.getQuestionForSurveySectionForLanguage(question.questionId!!,
+                    section.sectionId,
+                    surveyResponseModel.surveyId,
+                    languageId)
+                if (existingQuestion != null) {
                     questionEntityDao.deleteSurveySectionQuestionFroLanguage(
                         question.questionId!!,
                         section.sectionId,
                         surveyResponseModel.surveyId,
                         languageId
                     )
-                    val questionEntity = QuestionEntity(
-                        id = 0,
-                        questionId = question.questionId,
-                        sectionId = section.sectionId,
-                        surveyId = surveyResponseModel.surveyId,
-                        questionDisplay = question.questionDisplay,
-                        questionSummary = question.questionSummary,
-                        gotoQuestionId = question.gotoQuestionId,
-                        order = question.order,
-                        type = question.type,
-                        //  options = question.options,
-                        languageId = languageId
-                    )
-                    questionEntityDao.insertQuestion(questionEntity)
-                    question.options.forEach { optionsItem ->
-                        if (optionsItem != null) {
-                            optionItemDao.deleteSurveySectionQuestionOptionFroLanguage(
-                                optionsItem.optionId!!,
-                                question.questionId!!,
-                                section.sectionId,
-                                surveyResponseModel.surveyId,
-                                languageId
-                            )
-                            val optionItemEntity = OptionItemEntity(
-                                id = 0,
-                                optionId = optionsItem.optionId,
-                                questionId = question.questionId,
-                                sectionId = section.sectionId,
-                                surveyId = surveyResponseModel.surveyId,
-                                display = optionsItem.display,
-                                weight = optionsItem.weight,
-                                optionValue = optionsItem.optionValue,
-                                summary = optionsItem.summary,
-                                count = optionsItem.count,
-                                optionImage = optionsItem.optionImage,
-                                optionType = optionsItem.optionType,
-                                questionList = optionsItem.questionList,
-                                conditional = optionsItem.conditional,
-                                order = optionsItem.order,
-                                values = optionsItem.values,
-                                languageId = languageId
-                            )
-                            optionItemDao.insertOption(optionItemEntity)
-
-                            // TODO Anupam uncomment it when conditional logic is added.
-                            /*if (!optionsItem.questionList.isNullOrEmpty()) {
-                                optionsItem.questionList.forEach { internalQuestion ->
-                                    val internalQuestionEntity = QuestionEntity(
-                                        id = 0,
-                                        questionId = internalQuestion?.questionId,
-                                        sectionId = section.sectionId,
-                                        surveyId = surveyResponseModel.surveyId,
-                                        questionDisplay = internalQuestion?.questionDisplay,
-                                        questionSummary = internalQuestion?.questionSummary,
-                                        gotoQuestionId = internalQuestion?.gotoQuestionId,
-                                        order = internalQuestion?.order,
-                                        type = internalQuestion?.type,
-                                        //  options = question.options,
-                                        languageId = languageId
-                                    )
-                                    questionEntityDao.insertQuestion(internalQuestionEntity)
-                                }
-                            }*/
-                        }
+                }
+                val questionEntity = QuestionEntity(
+                    id = 0,
+                    questionId = question.questionId,
+                    sectionId = section.sectionId,
+                    surveyId = surveyResponseModel.surveyId,
+                    questionDisplay = question.questionDisplay,
+                    questionSummary = question.questionSummary,
+                    gotoQuestionId = question.gotoQuestionId,
+                    order = question.order,
+                    type = question.type,
+                    //  options = question.options,
+                    languageId = languageId,
+                    isConditional = isSubQuestionList
+                )
+                questionEntityDao.insertQuestion(questionEntity)
+                question.options.forEach { optionsItem ->
+                    if (optionsItem != null) {
+                        optionItemDao.deleteSurveySectionQuestionOptionFroLanguage(
+                            optionsItem.optionId!!,
+                            question.questionId!!,
+                            section.sectionId,
+                            surveyResponseModel.surveyId,
+                            languageId
+                        )
+                        val optionItemEntity = OptionItemEntity(
+                            id = 0,
+                            optionId = optionsItem.optionId,
+                            questionId = question.questionId,
+                            sectionId = section.sectionId,
+                            surveyId = surveyResponseModel.surveyId,
+                            display = optionsItem.display,
+                            weight = optionsItem.weight,
+                            optionValue = optionsItem.optionValue,
+                            summary = optionsItem.summary,
+                            count = optionsItem.count,
+                            optionImage = optionsItem.optionImage,
+                            optionType = optionsItem.optionType,
+                            questionList = optionsItem.questionList,
+                            conditional = optionsItem.conditional,
+                            order = optionsItem.order,
+                            values = optionsItem.values,
+                            languageId = languageId,
+                            conditions = optionsItem.conditions
+                        )
+                        optionItemDao.insertOption(optionItemEntity)
                     }
                 }
             }
+        } catch (ex: Exception) {
+            Log.e("DataLoadingScreenRepositoryImpl", "saveQuestionAndOptionsToDb: exception, question: $question", ex)
         }
+
+    }
+
+    private fun saveConditionalOptions(optionsItem: OptionsItem, question: QuestionList, section: Sections, surveyResponseModel: SurveyResponseModel, languageId: Int) {
+        val optionItemEntity = OptionItemEntity(
+            id = 0,
+            optionId = optionsItem.optionId,
+            questionId = question.questionId,
+            sectionId = section.sectionId,
+            surveyId = surveyResponseModel.surveyId,
+            display = optionsItem.display,
+            weight = optionsItem.weight,
+            optionValue = optionsItem.optionValue,
+            summary = optionsItem.summary,
+            count = optionsItem.count,
+            optionImage = optionsItem.optionImage,
+            optionType = optionsItem.optionType,
+            questionList = optionsItem.questionList,
+            conditional = true,
+            order = optionsItem.order,
+            values = optionsItem.values,
+            languageId = languageId,
+            conditions = optionsItem.conditions
+        )
+        optionItemDao.insertOption(optionItemEntity)
     }
 
     override fun saveUserDetails(userDetailsResponse: UserDetailsResponse) {

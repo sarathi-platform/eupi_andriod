@@ -20,5 +20,9 @@ data class FormTypeOption(
         ): FormTypeOption {
             return FormTypeOption(surveyId, didiId, sectionId, questionId, optionItems)
         }
+
+        fun getEmptyOptionItem(): FormTypeOption {
+            return FormTypeOption(-1, -1, -1, -1, emptyList())
+        }
     }
 }

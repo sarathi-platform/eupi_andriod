@@ -11,11 +11,13 @@ import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.core.content.FileProvider
 import androidx.core.text.isDigitsOnly
 import com.google.gson.Gson
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BuildConfig
+import com.nrlm.baselinesurvey.CONDITIONS_DELIMITER
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_LOCAL_NAME
@@ -30,12 +32,16 @@ import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
+import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.Sections
 import com.nrlm.baselinesurvey.model.response.ContentList
-import com.nrlm.baselinesurvey.model.response.QuestionList
+import com.nrlm.baselinesurvey.model.datamodel.QuestionList
+import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -610,6 +616,36 @@ fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObject
     return householdMembersList
 }
 
+fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId: Int): OptionItemEntity {
+    var optionItemEntity = OptionItemEntity(
+        id = 0,
+        sectionId = sectionId,
+        surveyId = surveyId,
+        questionId = this.questionId,
+        optionId = this.questionId,
+        display = this.questionDisplay,
+        weight = this.options?.first()?.weight,
+        optionType = this.type,
+        summary = this.questionSummary,
+        values = emptyList(),
+    )
+    val valuesList = mutableListOf<String>()
+    this.options.forEach {
+        when (it?.optionType) {
+            QuestionType.SingleSelectDropdown.name -> {
+                it.values.let { it1 -> valuesList.addAll(it1) }
+            }
+            else -> {
+                valuesList.add(it?.display ?: BLANK_STRING)
+            }
+        }
+    }
+    optionItemEntity = optionItemEntity.copy(
+        values = valuesList
+    )
+    return optionItemEntity
+}
+
 fun List<FormQuestionResponseEntity>.getResponseForOptionId(optionId: Int): FormQuestionResponseEntity? {
     if (optionId == -1)
         return null
@@ -635,4 +671,95 @@ fun List<InputTypeQuestionAnswerEntity>.mapToOptionItem(optionsItemEntityList: L
 
 fun List<InputTypeQuestionAnswerEntity>.findOptionFromId(optionsItemEntity: OptionItemEntity): InputTypeQuestionAnswerEntity? {
     return this.find { it.optionId == optionsItemEntity.optionId }
+}
+
+fun SnapshotStateList<QuestionEntityState>.findIndexOfListById(questionId: Int?): Int {
+    if (questionId == null)
+        return -1
+
+    return this.map { it.questionId }.indexOf(questionId)
+}
+
+fun SnapshotStateList<QuestionEntityState>.findQuestionEntityStateById(questionId: Int?): QuestionEntityState? {
+    if (questionId == null)
+        return null
+    val tempList = this.distinctBy { it.questionId }
+    return tempList.find { it.questionId == questionId }
+}
+
+fun List<OptionItemEntityState>.findIndexOfOptionById(optionId: Int?): Int {
+    if (optionId == null)
+        return -1
+    return this.map { it.optionId }.indexOf(optionId)
+}
+
+fun QuestionEntityState.getAnswerOptionForSingleAnswerOption(): OptionItemEntity? {
+    return this.answerdOptionList.first()
+}
+
+fun QuestionEntityState.getAnswerOptionIdForSingleAnswerOption(): Int? {
+    return this.answerdOptionList.first().optionId
+}
+
+fun List<OptionItemEntityState>.updateOptionItemEntityListStateForQuestionByCondition(conditionResult: Boolean): List<OptionItemEntityState> {
+    val updatedOptionItemEntityStateList = mutableListOf<OptionItemEntityState>()
+    this.forEach { optionItemEntityStateForQuestion ->
+        val updatedOptionItemEntityState = optionItemEntityStateForQuestion.copy(
+            showQuestion = conditionResult
+        )
+        updatedOptionItemEntityStateList.add(updatedOptionItemEntityState)
+    }
+    return updatedOptionItemEntityStateList
+}
+
+fun ConditionsDto.checkCondition(userInputValue: String): Boolean {
+    val condition = this.value.split(CONDITIONS_DELIMITER, ignoreCase = true)
+    try {
+        val result = when(checkStringOperator(this.operator)){
+            Operator.EQUAL_TO -> {
+                userInputValue.equals(condition.first(), ignoreCase = true)
+            }
+            Operator.LESS_THAN -> {
+                userInputValue.toInt() < condition.first().toInt()
+            }
+            Operator.IN_BETWEEN -> {
+                userInputValue.toInt() > condition.first().toInt() && userInputValue.toInt() < condition.last().toInt()
+            }
+            /*Operator.LESS_THAN_EQUAL_TO ->{
+                if(totalAmount <= (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){
+                    score = it.score.toDouble()
+                    return@breaking
+                }
+            }
+            Operator.MORE_THAN -> {
+                if(totalAmount > (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){
+                    score = it.score.toDouble()
+                    return@breaking
+                }
+            }
+            Operator.MORE_THAN_EQUAL_TO -> {
+                if(totalAmount >= (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){
+                    score = it.score.toDouble()
+                    return@breaking
+                }
+            }*/
+            else -> {
+                false
+            }
+        }
+        return result
+    } catch (ex: Exception) {
+        return false
+    }
+}
+
+fun checkStringOperator(operator:String) = when(operator){
+    "==" ->Operator.EQUAL_TO
+    "=" ->Operator.EQUAL_TO
+    "<" ->Operator.LESS_THAN
+    "<=" ->Operator.LESS_THAN_EQUAL_TO
+    ">" ->Operator.MORE_THAN
+    ">=" ->Operator.MORE_THAN_EQUAL_TO
+    "><" -> Operator.IN_BETWEEN
+    else->{}
 }

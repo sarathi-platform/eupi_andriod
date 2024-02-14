@@ -3,7 +3,6 @@ package com.nrlm.baselinesurvey.model.datamodel
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.model.response.QuestionList
 
 data class OptionsItem(
 
@@ -21,9 +20,6 @@ data class OptionsItem(
 
     @SerializedName("paraphrase")
     val summary: String? = null,
-
-    /*    @SerializedName("isSelected")
-        val isSelected: Boolean? = false,*/
 
     @SerializedName("count")
     var count: Int? = 0,
@@ -55,4 +51,8 @@ data class OptionsItem(
     @Expose
     val values: List<String> = listOf(),
 
-    )
+    @SerializedName("conditions")
+    @Expose
+    val conditions: List<ConditionsDto?>? = emptyList()
+
+)

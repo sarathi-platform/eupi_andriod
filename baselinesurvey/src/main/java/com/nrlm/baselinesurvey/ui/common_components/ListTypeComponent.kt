@@ -1,6 +1,8 @@
 package com.nrlm.baselinesurvey.ui.common_components
 
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -43,6 +45,7 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
+import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
@@ -62,6 +65,7 @@ import kotlinx.coroutines.launch
 fun ListTypeQuestion(
     modifier: Modifier = Modifier,
     question: QuestionEntity,
+    showQuestionState: QuestionEntityState = QuestionEntityState.getEmptyStateObject(),
     optionItemEntityList: List<OptionItemEntity>?,
     questionIndex: Int,
     selectedOptionIndex: Int = -1,
@@ -97,117 +101,120 @@ fun ListTypeQuestion(
             )
             .heightIn(min = 100.dp, maxCustomHeight)
     ) {
-        Card(
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = defaultCardElevation
-            ),
-            shape = RoundedCornerShape(roundedCornerRadiusDefault),
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = minHeight, max = maxHeight)
-                .background(white)
-                .clickable {
-                }
-                .then(modifier)
-        ) {
-            Column(modifier = Modifier.background(white)) {
-                Column(
-                    Modifier.padding(top = dimen_16_dp),
-                    verticalArrangement = Arrangement.spacedBy(
-                        dimen_10_dp
-                    )
-                ) {
-                    LazyColumn(
-                        state = outerState,
-                        modifier = Modifier
-                            .heightIn(min = 110.dp, max = maxCustomHeight)
+
+        VerticalAnimatedVisibilityComponent(visible = showQuestionState.showQuestion) {
+            Card(
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = defaultCardElevation
+                ),
+                shape = RoundedCornerShape(roundedCornerRadiusDefault),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = minHeight, max = maxHeight)
+                    .background(white)
+                    .clickable {
+                    }
+                    .then(modifier)
+            ) {
+                Column(modifier = Modifier.background(white)) {
+                    Column(
+                        Modifier.padding(top = dimen_16_dp),
+                        verticalArrangement = Arrangement.spacedBy(
+                            dimen_10_dp
+                        )
                     ) {
+                        LazyColumn(
+                            state = outerState,
+                            modifier = Modifier
+                                .heightIn(min = 110.dp, max = maxCustomHeight)
+                        ) {
 
-                        item {
-                            Row(modifier = Modifier.padding(horizontal = dimen_16_dp)) {
-                                HtmlText(
-                                    text = "${question.questionId}. ",
-                                    style = TextStyle(
-                                        fontFamily = NotoSans,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontSize = 14.sp,
-                                        color = textColorDark
-                                    ),
-                                )
+                            item {
+                                Row(modifier = Modifier.padding(horizontal = dimen_16_dp)) {
+                                    HtmlText(
+                                        text = "${question.questionId}. ",
+                                        style = TextStyle(
+                                            fontFamily = NotoSans,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontSize = 14.sp,
+                                            color = textColorDark
+                                        ),
+                                    )
 
-                                HtmlText(
-                                    text = "${question.questionDisplay}",
-                                    style = TextStyle(
-                                        fontFamily = NotoSans,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontSize = 14.sp,
-                                        color = textColorDark
-                                    ),
-                                )
-                            }
-                        }
-
-                        item {
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(dimen_16_dp)
-                            )
-                        }
-
-                        item {
-                            LazyColumn(
-                                userScrollEnabled = false,
-                                state = innerState,
-                                modifier = Modifier
-                                    .wrapContentWidth()
-                                    .padding(horizontal = dimen_16_dp)
-                                    .heightIn(min = 110.dp, max = maxCustomHeight)
-                            ) {
-                                itemsIndexed(
-                                    optionItemEntityList ?: listOf()
-                                ) { _index: Int, optionsItem: OptionItemEntity ->
-                                    OptionCard(
-                                        optionItem = optionsItem,
-                                        index = _index,
-                                        selectedIndex = selectedIndex.value,
-                                    ) {
-                                        selectedIndex.value = it
-                                        onAnswerSelection(questionIndex, optionsItem)
-                                    }
-                                    Spacer(modifier = Modifier.height(dimen_8_dp))
+                                    HtmlText(
+                                        text = "${question.questionDisplay}",
+                                        style = TextStyle(
+                                            fontFamily = NotoSans,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontSize = 14.sp,
+                                            color = textColorDark
+                                        ),
+                                    )
                                 }
                             }
-                        }
 
-                        item {
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(dimen_10_dp)
+                            item {
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(dimen_16_dp)
+                                )
+                            }
+
+                            item {
+                                LazyColumn(
+                                    userScrollEnabled = false,
+                                    state = innerState,
+                                    modifier = Modifier
+                                        .wrapContentWidth()
+                                        .padding(horizontal = dimen_16_dp)
+                                        .heightIn(min = 110.dp, max = maxCustomHeight)
+                                ) {
+                                    itemsIndexed(
+                                        optionItemEntityList ?: listOf()
+                                    ) { _index: Int, optionsItem: OptionItemEntity ->
+                                        OptionCard(
+                                            optionItem = optionsItem,
+                                            index = _index,
+                                            selectedIndex = selectedIndex.value,
+                                        ) {
+                                            selectedIndex.value = it
+                                            onAnswerSelection(questionIndex, optionsItem)
+                                        }
+                                        Spacer(modifier = Modifier.height(dimen_8_dp))
+                                    }
+                                }
+                            }
+
+                            item {
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(dimen_10_dp)
+                                )
+                            /*Divider(
+                                thickness = dimen_1_dp,
+                                color = lightGray2,
+                                modifier = Modifier.fillMaxWidth()
                             )
-//                            Divider(
-//                                thickness = dimen_1_dp,
-//                                color = lightGray2,
-//                                modifier = Modifier.fillMaxWidth()
-//                            )
-//                            ExpandableDescriptionContentComponent(
-//                                questionDetailExpanded,
-//                                questionIndex,
-//                                question,
-//                                imageClickListener = { imageTypeDescriptionContent ->
-//                                    onMediaTypeDescriptionAction(
-//                                        DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
-//                                        imageTypeDescriptionContent
-//                                    )
-//                                },
-//                                videoLinkClicked = { videoTypeDescriptionContent ->
-//                                    onMediaTypeDescriptionAction(
-//                                        DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
-//                                        videoTypeDescriptionContent
-//                                    )
-//                                }
-//                            )
+                            ExpandableDescriptionContentComponent(
+                                questionDetailExpanded,
+                                questionIndex,
+                                question,
+                                imageClickListener = { imageTypeDescriptionContent ->
+                                    onMediaTypeDescriptionAction(
+                                        DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
+                                        imageTypeDescriptionContent
+                                    )
+                                },
+                                videoLinkClicked = { videoTypeDescriptionContent ->
+                                    onMediaTypeDescriptionAction(
+                                        DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
+                                        videoTypeDescriptionContent
+                                    )
+                                }
+                            )*/
+                            }
                         }
                     }
                 }

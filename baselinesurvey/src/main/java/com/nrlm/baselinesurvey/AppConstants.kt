@@ -301,3 +301,5 @@ const val DELAY_2_SEC: Long = 2000
 
 const val VALUE_NO = "No"
 
+const val CONDITIONS_DELIMITER = ","
+

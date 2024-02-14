@@ -5,6 +5,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,6 +18,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,6 +49,7 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScr
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
+import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
@@ -69,13 +72,14 @@ fun FormTypeQuestionScreen(
 
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-        viewModel.init(sectionId, surveyID, questionId, referenceId)
+        viewModel.init(sectionId, surveyID, questionId, surveyeeId, referenceId)
         delay(DELAY_2_MS)
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
     }
     val focusManager = LocalFocusManager.current
 
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = {
@@ -97,11 +101,9 @@ fun FormTypeQuestionScreen(
             )
         },
         bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
-                    .padding(vertical = dimensionResource(id = R.dimen.dp_15))
+            BottomAppBar(
+                containerColor = white,
+                contentPadding = PaddingValues(dimen_16_dp)
             ) {
                 ExtendedFloatingActionButton(
                     modifier = Modifier
@@ -129,7 +131,7 @@ fun FormTypeQuestionScreen(
         ConstraintLayout(modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(bottom = it.calculateTopPadding() + 70.dp)
+            .padding(bottom = it.calculateTopPadding())
             .pointerInput(true) {
                 detectTapGestures(onTap = {
                     focusManager.clearFocus()
@@ -141,24 +143,18 @@ fun FormTypeQuestionScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
-                    .padding(top = it.calculateTopPadding() + 20.dp)
-                    .padding(bottom = it.calculateTopPadding() + 100.dp)
+                    .padding(top = it.calculateTopPadding())
+                    .padding(bottom = it.calculateTopPadding())
                     .constrainAs(mainBox) {
                         start.linkTo(parent.start)
                         top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
                     },
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (!viewModel.loaderState.value.isLoaderVisible) {
-                    var fromTypeOption = FormTypeOption.getOptionItem(
-                        surveyID,
-                        surveyeeId,
-                        sectionId,
-                        questionId,
-                        viewModel.optionList.value
-                    )
+
                     NestedLazyListForFormQuestions(
-                        formTypeOption = fromTypeOption,
                         viewModel = viewModel
                     ) { questionTypeEvent ->
                         viewModel.onEvent(

@@ -1,9 +1,10 @@
-package com.nrlm.baselinesurvey.model.response
+package com.nrlm.baselinesurvey.model.datamodel
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
+import com.nrlm.baselinesurvey.model.response.ContentList
+
 
 data class QuestionList (
     @SerializedName("questionId")
@@ -51,8 +52,4 @@ data class QuestionList (
     @Expose
     val languageCode: String = BLANK_STRING,
 
-//    @SerializedName("values")
-//    @Expose
-//    val values: Any
-
-)
+    )

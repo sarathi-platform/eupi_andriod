@@ -8,9 +8,11 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.OPTION_TABLE
+import com.nrlm.baselinesurvey.database.converters.ConditionsDtoConvertor
 import com.nrlm.baselinesurvey.database.converters.OptionQuestionConverter
 import com.nrlm.baselinesurvey.database.converters.StringConverter
-import com.nrlm.baselinesurvey.model.response.QuestionList
+import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
+import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 
 @Entity(tableName = OPTION_TABLE)
 data class OptionItemEntity(
@@ -78,6 +80,12 @@ data class OptionItemEntity(
     @Expose
     @ColumnInfo(name = "languageId")
     var languageId: Int? = 1,
+
+    @SerializedName("conditions")
+    @Expose
+    @TypeConverters(ConditionsDtoConvertor::class)
+    val conditions: List<ConditionsDto?>? = emptyList(),
+
     @SerializedName("isSelected")
     var isSelected: Boolean? = false,
     @SerializedName("selectedValue")

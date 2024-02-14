@@ -19,7 +19,7 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
         return optionItemDao.getSurveySectionQuestionOptions(
             surveyId = surveyId,
             sectionId = sectionId,
-            questionId = questionId,)
+            questionId = questionId)
     }
 
     override suspend fun getFormResponsesForQuestion(
@@ -95,6 +95,22 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
 
     override suspend fun deleteFormQuestionResponseForReferenceId(referenceId: String) {
         formQuestionResponseDao.deleteFormResponseQuestionForReferenceId(referenceId = referenceId)
+    }
+
+    override suspend fun deleteFormQuestionResponseForOption(
+        optionId: Int,
+        questionId: Int,
+        sectionId: Int,
+        surveyId: Int,
+        surveyeeId: Int
+    ) {
+        formQuestionResponseDao.deleteFormResponseQuestionForOption(
+            optionId = optionId,
+            questionId = questionId,
+            sectionId = sectionId,
+            surveyId = surveyId,
+            surveyeeId = surveyeeId
+        )
     }
 }
 

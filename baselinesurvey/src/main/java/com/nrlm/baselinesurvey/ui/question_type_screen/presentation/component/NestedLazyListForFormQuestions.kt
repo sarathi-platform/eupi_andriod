@@ -7,6 +7,7 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -26,22 +27,19 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.DELAY_1_MS
-import com.nrlm.baselinesurvey.VALUE_NO
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
-import com.nrlm.baselinesurvey.ui.common_components.SwitchComponent
-import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
+import com.nrlm.baselinesurvey.ui.common_components.RadioOptionTypeComponent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScreenViewModel
+import com.nrlm.baselinesurvey.ui.theme.dimen_100_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_30_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_64_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.utils.getResponseForOptionId
 import com.nrlm.baselinesurvey.utils.storeGivenAnswered
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -49,14 +47,13 @@ fun NestedLazyListForFormQuestions(
     modifier: Modifier = Modifier,
     outerState: LazyListState = rememberLazyListState(),
     innerState: LazyListState = rememberLazyListState(),
-    formTypeOption: FormTypeOption?,
     viewModel: BaseViewModel,
     onSaveFormTypeOption: (questionTypeEvent: QuestionTypeEvent) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val questionTypeScreenViewModel = (viewModel as QuestionTypeScreenViewModel)
 
-    val formQuestionResponseEntity = viewModel.formQuestionResponseEntity
+    val formQuestionResponseEntity = questionTypeScreenViewModel.formQuestionResponseEntity
         /*remember { mutableStateOf<List<FormQuestionResponseEntity>>(emptyList()) }*/
 
 //    formQuestionResponseEntity.value = viewModel.formQuestionResponseEntity.value
@@ -100,13 +97,14 @@ fun NestedLazyListForFormQuestions(
                 },
                 Orientation.Vertical,
             )
+            .fillMaxHeight()
     ) {
         LazyColumn(
             userScrollEnabled = false,
             state = outerState,
             modifier = Modifier
-                .heightIn(maxHeight)
-                .padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
+                .heightIn(dimen_100_dp, maxHeight)
+                .padding(horizontal = 16.dp)
         ) {
             item {
                 LazyColumn(
@@ -120,62 +118,113 @@ fun NestedLazyListForFormQuestions(
                         Spacer(modifier = Modifier.width(dimen_24_dp))
                     }
                     itemsIndexed(
-                        items = formTypeOption?.options ?: emptyList()
+                        items = /*formTypeOption?.options*/questionTypeScreenViewModel.updatedOptionList.distinctBy { it.optionId } ?: emptyList()
                     ) { index, option ->
-                        when (option.optionType) {
+                        when (option.optionItemEntity?.optionType) {
                             QuestionType.SingleSelectDropdown.name -> {
                                 TypeDropDownComponent(
-                                    option.display,
-                                    option.selectedValue ?: "Select",
-                                    option.values,
+                                    option.optionItemEntity?.display,
+                                    option.optionItemEntity.selectedValue ?: "Select",
+                                    showQuestionState = option,
+                                    sources = option.optionItemEntity.values,
                                     selectOptionText = formQuestionResponseEntity.value.getResponseForOptionId(option.optionId ?: -1)?.selectedValue ?: BLANK_STRING
                                 ) { value ->
-                                    formTypeOption?.let { it1 ->
+                                    questionTypeScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionalOptionState(option, value))
+                                    questionTypeScreenViewModel.formTypeOption?.let { it1 ->
                                         onSaveFormTypeOption(storeGivenAnswered(
                                             it1, option.optionId ?: 0, value,
-                                            referenceId = viewModel.referenceId
+                                            referenceId = questionTypeScreenViewModel.referenceId
                                         ))
                                     }
                                 }
                             }
                             QuestionType.Input.name,
-                            QuestionType.InputText.name-> {
+                            QuestionType.InputText.name,
+                            QuestionType.InputNumber.name-> {
                                 EditTextWithTitleComponent(
-                                    option.display,
-                                    formQuestionResponseEntity.value.getResponseForOptionId(option.optionId ?: -1)?.selectedValue ?: BLANK_STRING
+                                    option.optionItemEntity.display,
+                                    showQuestion = option,
+                                    defaultValue = formQuestionResponseEntity.value.getResponseForOptionId(option.optionId ?: -1)?.selectedValue ?: BLANK_STRING,
+                                    isOnlyNumber = option.optionItemEntity.optionType == QuestionType.InputNumber.name
                                 ) { value ->
-                                    formTypeOption?.let { it1 ->
-                                        onSaveFormTypeOption(
-                                        storeGivenAnswered(
-                                            it1, option.optionId ?: 0, value,
-                                            referenceId = viewModel.referenceId
-                                        ))
-                                    }
-                                }
-                            }
-
-                            QuestionType.Toggle.name -> {
-                                SwitchComponent(option.display, formQuestionResponseEntity.value.getResponseForOptionId(option.optionId ?: -1)?.selectedValue ?: VALUE_NO) { value ->
-                                    formTypeOption?.let { it1 ->
+                                    questionTypeScreenViewModel.formTypeOption.let { it1 ->
+                                        if (!option.optionItemEntity.conditions.isNullOrEmpty()) {
+                                            questionTypeScreenViewModel.onEvent(
+                                                QuestionTypeEvent.UpdateConditionalOptionState(
+                                                    optionItemEntityState = option,
+                                                    value
+                                                )
+                                            )
+                                        }
                                         onSaveFormTypeOption(
                                             storeGivenAnswered(
                                                 it1, option.optionId ?: 0, value,
-                                                referenceId = viewModel.referenceId
+                                                referenceId = questionTypeScreenViewModel.referenceId
                                             )
                                         )
                                     }
                                 }
                             }
+
+                            QuestionType.RadioButton.name,
+                            QuestionType.Toggle.name-> {
+                                RadioOptionTypeComponent(
+                                    optionItemEntityState = option,
+                                    onOptionSelected = { selectedValue ->
+                                        questionTypeScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionalOptionState(option, selectedValue))
+                                        questionTypeScreenViewModel.formTypeOption.let { it1 ->
+                                            onSaveFormTypeOption(
+                                                storeGivenAnswered(
+                                                    formTypeOption = it1,
+                                                    optionId = option.optionId ?: 0,
+                                                    selectedValue = selectedValue,
+                                                    referenceId = questionTypeScreenViewModel.referenceId
+                                                )
+                                            )
+
+                                        }
+                                    }
+                                )
+                            }
+
+                            /*QuestionType.Toggle.name-> {
+                                SwitchComponent(option.optionItemEntity.display, formQuestionResponseEntity.value.getResponseForOptionId(option.optionId ?: -1)?.selectedValue ?: VALUE_NO) { value ->
+                                    questionTypeScreenViewModel.formTypeOption?.let { it1 ->
+                                        onSaveFormTypeOption(
+                                            storeGivenAnswered(
+                                                it1, option.optionId ?: 0, value,
+                                                referenceId = questionTypeScreenViewModel.referenceId
+                                            )
+                                        )
+                                    }
+                                }
+                            }*/
                         }
+                    }
+                    item {
+                        Spacer(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(dimen_64_dp))
+                    }
+                    item {
+                        Spacer(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(dimen_30_dp))
                     }
                 }
             }
-            item { 
-                Spacer(modifier = Modifier.fillMaxWidth().height(dimen_30_dp))
-            }
         }
     }
-
+    /*LaunchedEffect(key1 = Unit) {
+        delay(3000)
+        updatedOptionList.value = updatedOptionList.value.apply {
+            this.forEach {
+                it.copy(
+                    showQuestion = true
+                )
+            }
+        }
+    }*/
 }
 
 

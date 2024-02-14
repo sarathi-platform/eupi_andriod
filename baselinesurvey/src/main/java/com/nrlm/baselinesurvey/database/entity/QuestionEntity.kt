@@ -65,4 +65,9 @@ data class QuestionEntity(
     @Expose
     @ColumnInfo(name = "languageId")
     var languageId: Int? = 1,
+
+    @SerializedName("isConditional")
+    @Expose
+    @ColumnInfo(name = "isConditional")
+    var isConditional: Boolean = false
 )

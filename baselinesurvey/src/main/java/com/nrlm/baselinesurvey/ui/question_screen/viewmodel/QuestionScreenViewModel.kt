@@ -2,7 +2,9 @@ package com.nrlm.baselinesurvey.ui.question_screen.viewmodel
 
 import android.util.Log
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -13,18 +15,25 @@ import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
+import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.QuestionScreenUseCase
+import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenEvents
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nrlm.baselinesurvey.utils.checkCondition
+import com.nrlm.baselinesurvey.utils.findIndexOfListById
+import com.nrlm.baselinesurvey.utils.findQuestionEntityStateById
 import com.nrlm.baselinesurvey.utils.findQuestionForQuestionId
 import com.nrlm.baselinesurvey.utils.sortedBySectionOrder
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nrlm.baselinesurvey.utils.updateOptionItemEntityListStateForQuestionByCondition
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -65,6 +74,9 @@ class QuestionScreenViewModel @Inject constructor(
 
     private val _inputTypeQuestionAnswerEntityList = mutableStateOf<List<InputTypeQuestionAnswerEntity>>(emptyList())
     val inputTypeQuestionAnswerEntityList: State<List<InputTypeQuestionAnswerEntity>> get() = _inputTypeQuestionAnswerEntityList
+
+    private val _questionEntityStateList = mutableStateListOf<QuestionEntityState>()
+    val questionEntityStateList: SnapshotStateList<QuestionEntityState> get() = _questionEntityStateList
 
     private val _filterSectionList = mutableStateOf<SectionListItem>(
         SectionListItem(
@@ -133,10 +145,81 @@ class QuestionScreenViewModel @Inject constructor(
                 questionAnswerMapping = questionAnswerMap
             )
             _filterSectionList.value = _sectionDetail.value
+
+            initQuestionEntityStateList()
+
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
+    }
+
+    private fun initQuestionEntityStateList() {
+        sectionDetail.value.questionList.forEach { questionEntity ->
+            var questionEntityState = QuestionEntityState(questionId = questionEntity.questionId, questionEntity = questionEntity, optionItemEntityState = emptyList<OptionItemEntityState>(), answerdOptionList = emptyList(), showQuestion = !questionEntity.isConditional)
+            val optionItemEntityStateList: List<OptionItemEntityState> = getOptionItemEntityStateListFromMap(
+                sectionDetail.value.optionsItemMap[questionEntity.questionId]
+            )
+            questionEntityState = questionEntityState.copy(
+                optionItemEntityState = optionItemEntityStateList
+            )
+            sectionDetail.value.optionsItemMap.forEach { optionItemMap ->
+
+            }
+            filterSectionList.value?.questionAnswerMapping?.forEach { optionItemMap ->
+                val mOptionItemEntity=  getAnswerOptionItemEntityListFromMap(optionItemMap, questionEntity.questionId)
+                questionEntityState = questionEntityState.copy(
+                    answerdOptionList = mOptionItemEntity
+                )
+            }
+            _questionEntityStateList.add(questionEntityState)
+        }
+        _questionEntityStateList.sortedBy { it.questionId }
+        
+        updateQuestionEntityStateForAnsweredQuestions(questionEntityStateList)
+    }
+
+    private fun updateQuestionEntityStateForAnsweredQuestions(questionEntityStateList: SnapshotStateList<QuestionEntityState>) {
+        questionEntityStateList.forEach {  questionEntityState ->
+            if (sectionDetail.value.questionAnswerMapping.containsKey(questionEntityState.questionId) && !questionEntityState.showQuestion) {
+                updateQuestionStateVisibilityForAnsweredQuestions(questionEntityState.questionId, true)
+            }
+        }
+
+    }
+
+    private fun updateQuestionStateVisibilityForAnsweredQuestions(questionId: Int?, showQuestion: Boolean) {
+        var questionToShow = questionEntityStateList.findQuestionEntityStateById(questionId)
+        questionToShow = questionToShow?.copy(
+                showQuestion = showQuestion
+            )
+        updateQuestionEntityStateList(questionToShow)
+    }
+
+    private fun getOptionItemEntityStateListFromMap(optionItemList: List<OptionItemEntity>?): List<OptionItemEntityState> {
+        val optionItemEntityStateList = mutableListOf<OptionItemEntityState>()
+        optionItemList?.let { optionList ->
+            optionList.forEach {
+                val mOptionItemEntityState = OptionItemEntityState(
+                    it.optionId,
+                    optionItemEntity = it,
+                    showQuestion = !it.conditional
+                )
+                optionItemEntityStateList.add(mOptionItemEntityState)
+            }
+        }
+        return optionItemEntityStateList
+    }
+
+    private fun getAnswerOptionItemEntityListFromMap(optionItemMap: Map.Entry<Int, List<OptionItemEntity>>, questionId: Int?): List<OptionItemEntity> {
+        val mOptionItemEntity = emptyList<OptionItemEntity>()
+        if (optionItemMap.key == questionId) {
+            val mOptionItemEntity = mutableListOf<OptionItemEntity>()
+            optionItemMap.value.forEach {
+                mOptionItemEntity.add(it)
+            }
+        }
+        return mOptionItemEntity
     }
 
     override fun <T> onEvent(event: T) {
@@ -152,6 +235,8 @@ class QuestionScreenViewModel @Inject constructor(
                 }
             }
             is QuestionScreenEvents.RatioTypeQuestionAnswered -> {
+                updateQuestionAnswerState(event.questionId, listOf(event.optionItemEntity))
+
                 saveOrUpdateSectionAnswers(
                     surveyId = event.surveyId,
                     sectionId = event.sectionId,
@@ -213,6 +298,23 @@ class QuestionScreenViewModel @Inject constructor(
 
             }
 
+            is QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption ->  {
+                event.optionItemEntity.conditions?.forEach { conditionsDto ->
+                    when (event.questionEntityState?.questionEntity?.type) {
+                        QuestionType.RadioButton.name,
+                        QuestionType.List.name -> {
+                            val conditionCheckResult = conditionsDto?.checkCondition(event.optionItemEntity.display ?: BLANK_STRING)
+                            updateQuestionStateForCondition(conditionResult = conditionCheckResult == true, conditionsDto)
+                        }
+                    }
+
+                }
+            }
+            
+            is QuestionTypeEvent.UpdateConditionQuestionStateForAnsweredQuestions -> {
+                
+            }
+
             /*is QuestionScreenEvents.FormTypeQuestionAnswered -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     questionScreenUseCase.saveSectionAnswerUseCase.updateOptionItemValue(
@@ -224,6 +326,42 @@ class QuestionScreenViewModel @Inject constructor(
                     )
                 }
             }*/
+        }
+    }
+
+    private fun updateQuestionAnswerState(questionId: Int, answeredOptionItemEntityList: List<OptionItemEntity>) {
+        var questionToShow = questionEntityStateList.findQuestionEntityStateById(questionId)
+        questionToShow = questionToShow?.copy(
+            answerdOptionList = answeredOptionItemEntityList
+        )
+        val questionToShowIndex = questionEntityStateList.findIndexOfListById(questionId)
+        if (questionToShowIndex != -1) {
+            _questionEntityStateList.removeAt(questionToShowIndex)
+            _questionEntityStateList.add(questionToShowIndex, questionToShow!!)
+        }
+    }
+
+    override fun updateQuestionStateForCondition(conditionResult: Boolean, conditionsDto: ConditionsDto?) {
+        conditionsDto?.let { conditions ->
+            conditions.resultList.forEach { questionList ->
+                var questionToShow = questionEntityStateList.findQuestionEntityStateById(questionList.questionId)
+                val updatedOptionItemEntityStateList = questionToShow?.optionItemEntityState
+                    ?.updateOptionItemEntityListStateForQuestionByCondition(conditionResult)
+                questionToShow = questionToShow?.copy(
+                    optionItemEntityState = updatedOptionItemEntityStateList!!,
+                    showQuestion = conditionResult
+                )
+                updateQuestionEntityStateList(questionToShow)
+            }
+        }
+    }
+
+    private fun updateQuestionEntityStateList(questionToShow: QuestionEntityState?) {
+        val questionToShowIndex = questionEntityStateList.findIndexOfListById(questionToShow?.questionId)
+        if (questionToShowIndex != -1) {
+            _questionEntityStateList.removeAt(questionToShowIndex)
+            val index = (questionToShow?.questionEntity?.order ?: 0) - 1
+            _questionEntityStateList.add(if (index != -1) index else questionToShowIndex, questionToShow!!)
         }
     }
 

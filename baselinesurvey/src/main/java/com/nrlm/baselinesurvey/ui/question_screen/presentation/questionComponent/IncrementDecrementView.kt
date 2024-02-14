@@ -43,6 +43,8 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.MAXIMUM_RANGE
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.CustomOutlineTextField
+import com.nrlm.baselinesurvey.ui.common_components.VerticalAnimatedVisibilityComponent
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.greenOnline
 import com.nrlm.baselinesurvey.ui.theme.lightGray2
@@ -57,199 +59,204 @@ import com.nrlm.baselinesurvey.utils.onlyNumberField
 fun IncrementDecrementView(
     title: String = BLANK_STRING,
     currentValue: String? = "0",
+    showQuestion: OptionItemEntityState = OptionItemEntityState.getEmptyStateObject(),
     onAnswerSelection: (selectValue: String) -> Unit,
     isRequiredField: Boolean = false
 ) {
     val currentCount: MutableState<String> = remember {
         mutableStateOf(currentValue ?: "0")
     }
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(5.dp)
-    ) {
-        Text(
-            text = buildAnnotatedString {
-                withStyle(
-                    style = SpanStyle(
-                        color = textColorDark,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = NotoSans
-                    )
-                ) {
-                    append(title)
-                }
-                if (isRequiredField) {
-                    withStyle(
-                        style = SpanStyle(
-                            color = red,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            fontFamily = NotoSans
-                        )
-                    ) {
-                        append("*")
-                    }
-                }
-            }
-        )
-        Box(
+    VerticalAnimatedVisibilityComponent(visible = showQuestion.showQuestion) {
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White)
-                .border(width = 1.dp, shape = RoundedCornerShape(6.dp), color = lightGray2)
+                .padding(5.dp)
         ) {
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(45.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                        .clip(
-                            RoundedCornerShape(
-                                topStart = 6.dp, bottomStart = 6.dp
+            if (!title.equals(BLANK_STRING)) {
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                color = textColorDark,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = NotoSans
                             )
-                        )
-                        .background(
-                            white, RoundedCornerShape(
-                                topStart = 6.dp, bottomStart = 6.dp
-                            )
-                        ), contentAlignment = Alignment.Center
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(), horizontalArrangement = Arrangement.Center
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .weight(1f)
-                                .clip(
-                                    RoundedCornerShape(
-                                        topEnd = 6.dp, bottomEnd = 6.dp
-                                    )
-                                )
-                                .background(
-                                    white, RoundedCornerShape(
-                                        topEnd = 6.dp, bottomEnd = 6.dp
-                                    )
-                                )
-                                .clickable {
-                                    currentCount.value = incDecValue(0, currentCount.value)
-                                    onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
-                                }, contentAlignment = Alignment.Center
                         ) {
-
-                            Icon(
-                                painter = painterResource(id = R.drawable.minus_icon),
-                                contentDescription = "decrement counter",
-                                tint = redOffline,
-                                modifier = Modifier.size(16.dp)
-                            )
+                            append(title)
+                        }
+                        if (isRequiredField) {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = red,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontFamily = NotoSans
+                                )
+                            ) {
+                                append("*")
+                            }
                         }
                     }
-
-                }
-                Spacer(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .fillMaxHeight()
-                        .background(lightGray2)
                 )
-                Column(
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .border(width = 1.dp, shape = RoundedCornerShape(6.dp), color = lightGray2)
+            ) {
+
+                Row(
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
+                        .fillMaxWidth()
+                        .height(45.dp)
                 ) {
-                    CustomOutlineTextField(
-                        value = currentCount.value,
-                        readOnly = false,
-                        onValueChange = {
-                            if (onlyNumberField(it)) {
-                                var isValidCount = true
-                                if (isValidCount) {
-                                    val currentIt = if (it.isEmpty()) 0 else it.toInt()
-                                    if (currentIt <= MAXIMUM_RANGE) {
-                                        currentCount.value = it.ifEmpty { "" }
-                                        onAnswerSelection(it)
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .clip(
+                                RoundedCornerShape(
+                                    topStart = 6.dp, bottomStart = 6.dp
+                                )
+                            )
+                            .background(
+                                white, RoundedCornerShape(
+                                    topStart = 6.dp, bottomStart = 6.dp
+                                )
+                            ), contentAlignment = Alignment.Center
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(), horizontalArrangement = Arrangement.Center
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .weight(1f)
+                                    .clip(
+                                        RoundedCornerShape(
+                                            topEnd = 6.dp, bottomEnd = 6.dp
+                                        )
+                                    )
+                                    .background(
+                                        white, RoundedCornerShape(
+                                            topEnd = 6.dp, bottomEnd = 6.dp
+                                        )
+                                    )
+                                    .clickable {
+                                        currentCount.value = incDecValue(0, currentCount.value)
+                                        onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
+                                    }, contentAlignment = Alignment.Center
+                            ) {
+
+                                Icon(
+                                    painter = painterResource(id = R.drawable.minus_icon),
+                                    contentDescription = "decrement counter",
+                                    tint = redOffline,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        }
+
+                    }
+                    Spacer(
+                        modifier = Modifier
+                            .width(1.dp)
+                            .fillMaxHeight()
+                            .background(lightGray2)
+                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .weight(1f)
+                    ) {
+                        CustomOutlineTextField(
+                            value = currentCount.value,
+                            readOnly = false,
+                            onValueChange = {
+                                if (onlyNumberField(it)) {
+                                    var isValidCount = true
+                                    if (isValidCount) {
+                                        val currentIt = if (it.isEmpty()) 0 else it.toInt()
+                                        if (currentIt <= MAXIMUM_RANGE) {
+                                            currentCount.value = it.ifEmpty { "" }
+                                            onAnswerSelection(it)
+                                        }
                                     }
                                 }
-                            }
-                        },
-                        placeholder = {
-                            Text(
-                                text = "0", style = TextStyle(
-                                    fontFamily = NotoSans,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 14.sp,
-                                    textAlign = TextAlign.Center,
-                                ), color = placeholderGrey, modifier = Modifier.fillMaxWidth()
-                            )
-                        },
-                        textStyle = TextStyle(
-                            fontFamily = NotoSans,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 14.sp,
-                            textAlign = TextAlign.Center
-                        ),
-                        singleLine = true,
-                        maxLines = 1,
-                        colors = TextFieldDefaults.textFieldColors(
-                            textColor = textColorDark,
-                            backgroundColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                        ),
-                        keyboardOptions = KeyboardOptions(
-                            capitalization = KeyboardCapitalization.None,
-                            autoCorrect = true,
-                            keyboardType = KeyboardType.Number,
-                        ),
+                            },
+                            placeholder = {
+                                Text(
+                                    text = "0", style = TextStyle(
+                                        fontFamily = NotoSans,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 14.sp,
+                                        textAlign = TextAlign.Center,
+                                    ), color = placeholderGrey, modifier = Modifier.fillMaxWidth()
+                                )
+                            },
+                            textStyle = TextStyle(
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 14.sp,
+                                textAlign = TextAlign.Center
+                            ),
+                            singleLine = true,
+                            maxLines = 1,
+                            colors = TextFieldDefaults.textFieldColors(
+                                textColor = textColorDark,
+                                backgroundColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                            ),
+                            keyboardOptions = KeyboardOptions(
+                                capitalization = KeyboardCapitalization.None,
+                                autoCorrect = true,
+                                keyboardType = KeyboardType.Number,
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(40.dp)
+                        )
+                    }
+                    Spacer(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(40.dp)
+                            .width(1.dp)
+                            .fillMaxHeight()
+                            .background(lightGray2)
                     )
-                }
-                Spacer(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .fillMaxHeight()
-                        .background(lightGray2)
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
-                        .clip(
-                            RoundedCornerShape(
-                                topEnd = 6.dp, bottomEnd = 6.dp
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .weight(1f)
+                            .clip(
+                                RoundedCornerShape(
+                                    topEnd = 6.dp, bottomEnd = 6.dp
+                                )
                             )
-                        )
-                        .background(
-                            white, RoundedCornerShape(
-                                topEnd = 6.dp, bottomEnd = 6.dp
+                            .background(
+                                white, RoundedCornerShape(
+                                    topEnd = 6.dp, bottomEnd = 6.dp
+                                )
                             )
+                            .clickable {
+                                currentCount.value = incDecValue(1, currentCount.value)
+                                onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
+                            }, contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.plus_icon),
+                            contentDescription = "increment counter",
+                            tint = greenOnline,
+                            modifier = Modifier.size(16.dp)
                         )
-                        .clickable {
-                            currentCount.value = incDecValue(1, currentCount.value)
-                            onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
-                        }, contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.plus_icon),
-                        contentDescription = "increment counter",
-                        tint = greenOnline,
-                        modifier = Modifier.size(16.dp)
-                    )
+                    }
                 }
             }
-        }
 
+        }
     }
 
 }

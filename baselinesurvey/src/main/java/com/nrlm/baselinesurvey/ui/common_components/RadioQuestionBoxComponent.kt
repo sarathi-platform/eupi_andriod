@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.common_components
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -29,6 +30,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -44,9 +46,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
-import com.nrlm.baselinesurvey.model.response.QuestionList
+import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponent.SubQuestionComponent
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
@@ -65,7 +69,8 @@ fun RadioQuestionBoxComponent(
     modifier: Modifier = Modifier,
     questionIndex: Int,
     question: QuestionEntity,
-    optionItemEntityList: List<OptionItemEntity>?,
+    showQuestionState: QuestionEntityState = QuestionEntityState.getEmptyStateObject(),
+    optionItemEntityList: List<OptionItemEntity>,
     selectedOptionIndex: Int = -1,
     maxCustomHeight: Dp,
     onAnswerSelection: (questionIndex: Int, optionItem: OptionItemEntity) -> Unit,
@@ -101,7 +106,6 @@ fun RadioQuestionBoxComponent(
     }
 
 
-
     BoxWithConstraints(
         modifier = modifier
             .scrollable(
@@ -110,110 +114,92 @@ fun RadioQuestionBoxComponent(
             )
             .heightIn(min = 100.dp, maxCustomHeight)
     ) {
-        Card(
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = defaultCardElevation
-            ),
-            shape = RoundedCornerShape(roundedCornerRadiusDefault),
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = minHeight, max = maxHeight)
-                .background(white)
-                .clickable {
+        VerticalAnimatedVisibilityComponent(visible = showQuestionState.showQuestion) {
+            Card(
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = defaultCardElevation
+                ),
+                shape = RoundedCornerShape(roundedCornerRadiusDefault),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = minHeight, max = maxHeight)
+                    .background(white)
+                    .clickable {
 
-                }
-                .then(modifier)
-        ) {
-            Column(modifier = Modifier.background(white)) {
+                    }
+                    .then(modifier)
+            ) {
+                Column(modifier = Modifier.background(white)) {
 
-                Column(
-                    Modifier.padding(top = dimen_16_dp),
-                    verticalArrangement = Arrangement.spacedBy(dimen_18_dp)
-                ) {
-                    LazyColumn(
-                        state = outerState,
-                        modifier = Modifier
-                            .heightIn(min = 110.dp, max = maxCustomHeight)
+                    Column(
+                        Modifier.padding(top = dimen_16_dp),
+                        verticalArrangement = Arrangement.spacedBy(dimen_18_dp)
                     ) {
+                        LazyColumn(
+                            state = outerState,
+                            modifier = Modifier
+                                .heightIn(min = 110.dp, max = maxCustomHeight)
+                        ) {
 
-                        item {
+                            item {
 
-                            Row(modifier = Modifier
-                                .padding(bottom = 10.dp)
-                                .padding(horizontal = dimen_16_dp)) {
-                                Text(
-                                    text = "${questionIndex + 1}. ", style = defaultTextStyle,
-                                    color = textColorDark
-                                )
-                                HtmlText(
-                                    text = "${question.questionDisplay}",
-                                    style = defaultTextStyle,
-                                    color = textColorDark,
-                                    overflow = TextOverflow.Ellipsis,
-                                    softWrap = true
-                                )
+                                Row(modifier = Modifier
+                                    .padding(bottom = 10.dp)
+                                    .padding(horizontal = dimen_16_dp)) {
+                                    Text(
+                                        text = "${questionIndex + 1}. ", style = defaultTextStyle,
+                                        color = textColorDark
+                                    )
+                                    HtmlText(
+                                        text = "${question.questionDisplay}",
+                                        style = defaultTextStyle,
+                                        color = textColorDark,
+                                        overflow = TextOverflow.Ellipsis,
+                                        softWrap = true
+                                    )
+                                }
                             }
-                        }
-                        item {
-                            if (optionItemEntityList?.isNotEmpty() == true) {
-                                LazyVerticalGrid(
-                                    userScrollEnabled = false,
-                                    state = innerState,
-                                    columns = GridCells.Fixed(2),
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .padding(horizontal = dimen_16_dp)
-                                        .heightIn(min = 110.dp, max = maxCustomHeight)
-                                ) {
-                                    itemsIndexed(
-                                        optionItemEntityList ?: emptyList()
-                                    ) { _index: Int, optionsItem: OptionItemEntity ->
-                                        if (optionsItem.optionType.equals(QuestionType.RadioButton.name)) {
-                                            RadioButtonOptionComponent(
-                                                index = _index,
-                                                optionsItem = optionsItem,
-                                                selectedIndex = selectedIndex
-                                            ) {
-//                                                if (!optionsItem.questionList?.isEmpty()!!) {
-//                                                    questionList.value.clear()
-//                                                    optionsItem.questionList.let { it1 ->
-//                                                        questionList.value.addAll(it1)
-//                                                    }
-//                                                    optionDetailVisibilityState.value =
-//                                                        !optionDetailVisibilityState.value
-//                                                }
-                                                selectedIndex = _index
-                                                onAnswerSelection(questionIndex, optionsItem)
-                                            }
+                            item {
+                                if (optionItemEntityList?.isNotEmpty() == true) {
+                                    LazyVerticalGrid(
+                                        userScrollEnabled = false,
+                                        state = innerState,
+                                        columns = GridCells.Fixed(2),
+                                        modifier = Modifier
+                                            .wrapContentWidth()
+                                            .padding(horizontal = dimen_16_dp)
+                                            .heightIn(min = 110.dp, max = maxCustomHeight)
+                                    ) {
+                                        itemsIndexed(
+                                            optionItemEntityList ?: emptyList()
+                                        ) { _index: Int, optionsItem: OptionItemEntity ->
+                                            if (optionsItem.optionType.equals(QuestionType.RadioButton.name)) {
+                                                RadioButtonOptionComponent(
+                                                    index = _index,
+                                                    optionsItem = optionsItem,
+                                                    selectedIndex = selectedIndex
+                                                ) {
+                                                    selectedIndex = _index
+                                                    onAnswerSelection(questionIndex, optionsItem)
+                                                }
 
+                                            }
                                         }
                                     }
+                                } else {
+                                    Spacer(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(dimen_10_dp)
+                                    )
                                 }
-                            } else {
+                            }
+                            item {
                                 Spacer(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(dimen_10_dp)
                                 )
-                            }
-                        }
-                        item {
-                            if (optionDetailVisibilityState.value) {
-                                AnimatedVisibility(visible = optionDetailVisibilityState.value) {
-                                    SubQuestionComponent(
-                                        parentIndex = questionIndex + 1,
-                                        maxCustomHeight = maxCustomHeight,
-                                        questionList = questionList.value
-                                    )
-                                }
-                            }
-                        }
-                        item {
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(dimen_10_dp)
-                            )
 //                            Divider(
 //                                thickness = dimen_1_dp,
 //                                color = lightGray2,
@@ -236,6 +222,7 @@ fun RadioQuestionBoxComponent(
 //                                    )
 //                                }
 //                            )
+                            }
                         }
                     }
                 }
