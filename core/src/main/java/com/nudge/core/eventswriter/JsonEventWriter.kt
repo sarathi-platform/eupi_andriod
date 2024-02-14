@@ -6,6 +6,7 @@ import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventWriterName
 import com.nudge.core.eventWriters
 import com.nudge.core.json
+import com.nudge.core.model.request.toEventRequest
 
 class JsonEventWriter(val context:Context):IEventFormatter{
 
@@ -23,6 +24,11 @@ class JsonEventWriter(val context:Context):IEventFormatter{
             }
 
             eventWriter.firstOrNull()
-                ?.addEvent(context = context, event = event.json(), event.mobile_number, uri)
+                ?.addEvent(
+                    context = context,
+                    event = event.toEventRequest().json(),
+                    event.mobile_number,
+                    uri
+                )
         }    }
 }

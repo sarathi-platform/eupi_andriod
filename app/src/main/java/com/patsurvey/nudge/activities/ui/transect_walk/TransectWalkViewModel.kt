@@ -94,12 +94,13 @@ class TransectWalkViewModel @Inject constructor(
                     localUniqueId = getUniqueIdForEntity()
                 )
                 transectWalkRepository.tolaInsert(tolaItem)
-                val addTolaEvent = transectWalkRepository.createEvent(
-                    tolaItem,
-                    EventName.ADD_TOLA,
-                    EventType.STATEFUL
+
+                transectWalkRepository.saveEvent(
+                    eventItem = tolaItem,
+                    eventName = EventName.ADD_TOLA,
+                    eventType = EventType.STATEFUL
                 )
-                addTolaEvent?.let { transectWalkRepository.saveEventToMultipleSources(it) }
+
                 val updatedTolaList =
                     transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
                 withContext(Dispatchers.Main) {
@@ -130,10 +131,11 @@ class TransectWalkViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val tolaItem = TolaEntity.createEmptyTolaForVillageId(villageEntity.value?.id ?: 0)
             transectWalkRepository.tolaInsert(tolaItem)
-            val addTolaEvent =
-                transectWalkRepository.createEvent(tolaItem, EventName.ADD_TOLA, EventType.STATEFUL)
-            addTolaEvent?.let { transectWalkRepository.saveEventToMultipleSources(it) }
-
+            transectWalkRepository.saveEvent(
+                eventItem = tolaItem,
+                eventName = EventName.ADD_TOLA,
+                eventType = EventType.STATEFUL
+            )
             val updatedTolaList =
                 transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
             withContext(Dispatchers.Main) {
@@ -682,17 +684,11 @@ class TransectWalkViewModel @Inject constructor(
                         tolaId,
                         TolaStatus.TOLA_DELETED.ordinal
                     )
-
-                    val deleteTolaEvent = transectWalkRepository.createEvent(
-                        localTola,
-                        EventName.DELETE_TOLA,
-                        EventType.STATEFUL
+                    transectWalkRepository.saveEvent(
+                        eventItem = localTola,
+                        eventName = EventName.DELETE_TOLA,
+                        eventType = EventType.STATEFUL
                     )
-
-                    deleteTolaEvent?.let {
-                        transectWalkRepository.saveEventToMultipleSources(it)
-                    }
-
                     val updatedTolaList =
                         transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
                     withContext(Dispatchers.Main) {
@@ -787,12 +783,11 @@ class TransectWalkViewModel @Inject constructor(
                 }
 
                 didiList.forEach { didi ->
-                    val deleteDidiEvent = transectWalkRepository.createEvent(
+                    transectWalkRepository.saveEvent(
                         didi,
                         EventName.DELETE_DIDI,
                         EventType.STATEFUL
                     )
-                    deleteDidiEvent?.let { transectWalkRepository.saveEventToMultipleSources(it) }
                 }
 
                 if (isOnline) {
@@ -850,13 +845,12 @@ class TransectWalkViewModel @Inject constructor(
 //            transectWalkRepository.tolaInsert(updatedTola)
             transectWalkRepository.updateTolaName(id, newName)
             val localTola = transectWalkRepository.getTola(id)
-
-            val updatedTolaEvent = transectWalkRepository.createEvent(
-                localTola,
-                EventName.ADD_TOLA,
-                EventType.STATEFUL
+            transectWalkRepository.saveEvent(
+                eventItem = localTola,
+                eventName = EventName.ADD_TOLA,
+                eventType = EventType.STATEFUL
             )
-            updatedTolaEvent?.let { transectWalkRepository.saveEventToMultipleSources(it) }
+
 
             val updatedTolaList =
                 transectWalkRepository.getAllTolasForVillage(transectWalkRepository.getSelectedVillage().id)
@@ -1297,8 +1291,10 @@ class TransectWalkViewModel @Inject constructor(
             prefRepo = transectWalkRepository.prefRepo
         )
         updateWorkflowEvent?.let { event ->
-            transectWalkRepository.insertEventIntoDb(event, emptyList())
+
+        transectWalkRepository.insertEventIntoDb(event, emptyList())
         }
+
         updateWorkflowEvent?.let { transectWalkRepository.saveEventToMultipleSources(it) }
 
     }

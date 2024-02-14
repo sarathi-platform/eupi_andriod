@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
 import com.nudge.core.eventswriter.entities.EventV1
+import com.nudge.core.json
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
@@ -26,6 +27,7 @@ import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.utils.ACCEPTED
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
@@ -34,6 +36,7 @@ import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PAT_SURVEY
 import com.patsurvey.nudge.utils.PREF_FORM_C_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_D_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
@@ -47,7 +50,6 @@ import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.compressImage
 import com.patsurvey.nudge.utils.getFileNameFromURL
-import com.patsurvey.nudge.utils.json
 import com.patsurvey.nudge.utils.longToString
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import com.patsurvey.nudge.utils.uriFromFile
@@ -202,7 +204,7 @@ class FormPictureScreenViewModel @Inject constructor(
                 stepId = stepId,
                 updatedCompletedStepsList = updatedCompletedStepsList
             )
-            updateWorkflowStatus(StepStatus.COMPLETED.name, stepId)
+            updateWorkflowStatus(StepStatus.COMPLETED, villageId, stepId)
         }
     }
 
@@ -576,7 +578,7 @@ class FormPictureScreenViewModel @Inject constructor(
                                 mobileNumber = repository.prefRepo.getMobileNumber() ?: BLANK_STRING
                             )
                             repository.uri = File(it.value).toUri()
-                            repository.writeImageEventIntoLogFile(eventFormC)
+                            // repository.writeImageEventIntoLogFile(eventFormC)
                         }
 
                     }
@@ -610,7 +612,7 @@ class FormPictureScreenViewModel @Inject constructor(
                             )
 
                             repository.uri = File(it.value).toUri()
-                            repository.writeImageEventIntoLogFile(eventFormD)
+                            //repository.writeImageEventIntoLogFile(eventFormD)
 
                             /*val eventFormatter: IEventFormatter =
                                 EventWriterFactory().createEventWriter(
@@ -771,40 +773,40 @@ class FormPictureScreenViewModel @Inject constructor(
         },time)
     }
 
-    fun saveWorkflowEventIntoDb(stepStatus: StepStatus, villageId: Int, stepId: Int) {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val stepEntity =
-                repository.getStepForVillage(villageId = villageId, stepId = stepId)
-            val updateWorkflowEvent = repository.createWorkflowEvent(
-                eventItem = stepEntity,
-                stepStatus = stepStatus,
-                eventName = EventName.WORKFLOW_STATUS_UPDATE,
-                eventType = EventType.STATEFUL,
-                prefRepo = repository.prefRepo
-            )
-            updateWorkflowEvent?.let { event ->
-                repository.insertEventIntoDb(event, emptyList())
-            }
+    override suspend fun updateWorkflowStatus(
+        stepStatus: StepStatus,
+        villageId: Int,
+        stepId: Int
+    ) {
+        val stepEntity =
+            repository.getStepForVillage(villageId = villageId, stepId = stepId)
+        val updateWorkflowEvent = repository.createWorkflowEvent(
+            eventItem = stepEntity,
+            stepStatus = stepStatus,
+            eventName = EventName.WORKFLOW_STATUS_UPDATE,
+            eventType = EventType.STATEFUL,
+            prefRepo = repository.prefRepo
+        )
+        updateWorkflowEvent?.let { event ->
+            repository.saveEventToMultipleSources(event)
         }
     }
 
-    override suspend fun  updateWorkflowStatus(stepStatus: String, stepId: Int) {
-
-            val stepListEntity = repository.getStepForVillage(
-                repository.prefRepo.getSelectedVillage().id,
-                stepId
+    override fun addRankingFlagEditEvent(isUserBpc: Boolean, stepId: Int) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            val stepEntity =
+                repository.getStepForVillage(
+                    villageId = repository.prefRepo.getSelectedVillage().id,
+                    stepId = stepId
                 )
-            val updateWorkflowEvent = repository.createStepUpdateEvent(
-                stepStatus,
-                stepListEntity,
-                repository.prefRepo.getMobileNumber() ?: BLANK_STRING
-            )
-        repository.saveEventToMultipleSources(updateWorkflowEvent)
-        }
 
-    override fun addRankingFlagEditEvent(isUserBpc: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val addRankingFlagEditEvent = repository.createRankingFlagEditEvent(villageId = repository.prefRepo.getSelectedVillage().id, stepType = StepType.VO_ENDROSEMENT.name, repository.prefRepo.getMobileNumber() ?: BLANK_STRING)
+            val addRankingFlagEditEvent = repository.createRankingFlagEditEvent(
+                stepEntity,
+                villageId = repository.prefRepo.getSelectedVillage().id,
+                stepType = if (isUserBpc) BPC_SURVEY_CONSTANT else PAT_SURVEY,
+                repository.prefRepo.getMobileNumber() ?: BLANK_STRING,
+                repository.prefRepo.getUserId()
+            )
 
             repository.saveEventToMultipleSources(addRankingFlagEditEvent)
         }

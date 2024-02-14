@@ -207,7 +207,7 @@ fun SurveySummary(
                     surveySummaryViewModel.saveBpcPatCompletionDate()
                     surveySummaryViewModel.updatePatEditFlag()
                     surveySummaryViewModel.addRankingFlagEditEvent(
-                        true, stepStatus = StepStatus.COMPLETED,
+                        true,
                         stepId = stepId
                     )
 

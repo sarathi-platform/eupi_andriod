@@ -5,12 +5,9 @@ import android.net.Uri
 import android.os.Environment
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
-import com.nudge.core.enums.EventFormatterName
 import com.nudge.core.enums.EventName
-import com.nudge.core.enums.EventWriterName
-import com.nudge.core.eventswriter.EventWriterFactory
-import com.nudge.core.eventswriter.IEventFormatter
 import com.nudge.core.eventswriter.entities.EventV1
+import com.nudge.core.json
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.survey.PatDidiSummaryRepository
@@ -24,7 +21,6 @@ import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.LocationCoordinates
-import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.SUCCESS
@@ -32,7 +28,6 @@ import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.compressImage
 import com.patsurvey.nudge.utils.getFileNameFromURL
-import com.patsurvey.nudge.utils.json
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -141,7 +136,7 @@ class PatDidiSummaryViewModel @Inject constructor(
                 mobileNumber = patDidiSummaryRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
             )
             patDidiSummaryRepository.uri = uri
-            patDidiSummaryRepository.writeImageEventIntoLogFile(eventV1)
+            // patDidiSummaryRepository.writeImageEventIntoLogFile(eventV1)
 
         }
     }

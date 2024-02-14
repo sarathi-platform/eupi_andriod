@@ -56,7 +56,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -201,9 +200,13 @@ fun ParticipatoryWealthRankingSurvey(
 
                         viewModel.saveWorkflowEventIntoDb(stepStatus = StepStatus.COMPLETED, villageId = viewModel.villageId, stepId = stepId)
 
-                        viewModel.updateWorkflowStatusInEvent(StepStatus.COMPLETED.name, stepId)
+                        viewModel.updateWorkflowStatusInEvent(
+                            StepStatus.COMPLETED,
+                            stepId,
+                            villageId = viewModel.villageId
+                        )
                         viewModel.updateWealthRankingFlagForDidis()
-                        viewModel.addRankingFlagEditEvent()
+                        viewModel.addRankingFlagEditEvent(stepId = stepId)
                         viewModel.saveWealthRankingCompletionDate()
                         if ((context as MainActivity).isOnline.value ?: false) {
                             if(viewModel.isTolaSynced.value == 2
@@ -363,7 +366,7 @@ fun ParticipatoryWealthRankingSurvey(
                                     Box(
                                         Modifier
                                             .fillMaxWidth()
-                                            .padding(vertical = (screenHeight/4).dp)
+                                            .padding(vertical = (screenHeight / 4).dp)
                                     ) {
                                         Text(
                                             text = buildAnnotatedString {
@@ -830,7 +833,10 @@ fun DidiItemCardForWealthRanking(
                         modifier = Modifier.layoutId("houseNumber_1")
                     )
 
-                    Spacer(modifier = Modifier.fillMaxWidth().height(4.dp).layoutId("latestStatusCollapsed"))
+                    Spacer(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(4.dp)
+                        .layoutId("latestStatusCollapsed"))
 
                     CardArrow(
                         modifier = Modifier.layoutId("expendArrowImage"),

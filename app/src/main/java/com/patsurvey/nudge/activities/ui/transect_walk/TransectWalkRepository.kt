@@ -273,6 +273,7 @@ class TransectWalkRepository @Inject constructor(
         if (event?.id?.equals(BLANK_STRING) != true) {
             event?.let {
                 eventObserver?.addEvent(it)
+                saveEventToMultipleSources(event)
                 val eventDependencies = this.createEventDependency(eventItem, eventName, it)
                 if (eventDependencies.isNotEmpty()) {
                     eventObserver?.addEventDependencies(eventDependencies)

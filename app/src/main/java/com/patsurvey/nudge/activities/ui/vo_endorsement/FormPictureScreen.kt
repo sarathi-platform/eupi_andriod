@@ -110,7 +110,6 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
-import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.navigation.home.VoEndorsmentScreeens
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
@@ -883,12 +882,7 @@ fun FormPictureScreen(
                                 formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id,
                                 stepId
                             )
-                            formPictureScreenViewModel.saveWorkflowEventIntoDb(
-                                stepStatus = StepStatus.COMPLETED,
-                                villageId = formPictureScreenViewModel.getSelectedVillage().id,
-                                stepId = stepId
-                            )
-                            formPictureScreenViewModel.addRankingFlagEditEvent()
+                            formPictureScreenViewModel.addRankingFlagEditEvent(stepId = stepId)
                             formPictureScreenViewModel.saveVoEndorsementDate()
                                 formPictureScreenViewModel.uploadFormsCAndD(context,(context as MainActivity).isOnline.value)
 

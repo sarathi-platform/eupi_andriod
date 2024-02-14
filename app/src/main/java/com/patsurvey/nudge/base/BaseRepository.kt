@@ -379,13 +379,6 @@ abstract class BaseRepository{
             payload = payload,
             mobileNumber = mobileNumber
         )
-        val updateWorkflowEvent = transectWalkRepository.createWorkflowEvent(
-            eventItem = stepEntity,
-            stepStatus = stepStatus,
-            eventName = EventName.WORKFLOW_STATUS_UPDATE,
-            eventType = EventType.STATEFUL,
-            prefRepo = transectWalkRepository.prefRepo
-        )
     }
 
     fun createRankingFlagEditEvent(
@@ -398,7 +391,7 @@ abstract class BaseRepository{
         val payload = RankingEditEvent(villageId = villageId, type = stepType, status = false).json()
 
 
-        val rankingEditEvent = Events(
+        return Events(
             name = EventName.RANKING_FLAG_EDIT.name,
             type = EventName.RANKING_FLAG_EDIT.topicName,
             createdBy = userID,
@@ -414,6 +407,7 @@ abstract class BaseRepository{
                 request_payload_size = payload.getSizeInLong(),
                 parentEntity = getParentEntityMapForEvent(eventItem, EventName.RANKING_FLAG_EDIT)
             ).json()
+        )
 
     }
 

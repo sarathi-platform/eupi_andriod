@@ -84,6 +84,7 @@ class VoEndorsementSummaryRepository @Inject constructor(
                 if (eventDependencies.isNotEmpty()) {
                     eventObserver?.addEventDependencies(eventDependencies)
                 }
+                saveEventToMultipleSources(it)
             }
         }
 

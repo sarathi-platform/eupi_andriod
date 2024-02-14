@@ -1,29 +1,20 @@
 package com.patsurvey.nudge.activities
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
-import androidx.lifecycle.viewModelScope
 import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
-import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.VillageEntity
-import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.NumericAnswerDao
-import com.patsurvey.nudge.database.dao.QuestionListDao
-import com.patsurvey.nudge.database.dao.StepsListDao
-import com.patsurvey.nudge.database.dao.TolaDao
-import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
-import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.FORM_C
@@ -519,9 +510,9 @@ class WealthRankingSurveyViewModel @Inject constructor(
         }
     }
 
-    fun updateWorkflowStatusInEvent(stepStatus: String, stepId: Int) {
+    fun updateWorkflowStatusInEvent(stepStatus: StepStatus, stepId: Int, villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            updateWorkflowStatus(stepStatus, stepId)
+            updateWorkflowStatus(stepStatus = stepStatus, stepId = stepId, villageId = villageId)
         }
     }
     fun saveWorkflowEventIntoDb(stepStatus: StepStatus, villageId: Int, stepId: Int) {
@@ -541,26 +532,39 @@ class WealthRankingSurveyViewModel @Inject constructor(
         }
     }
 
-}
 
-    override suspend fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
-        val stepListEntity = repository.getStepForVillage(
-            repository.prefRepo.getSelectedVillage().id,
-            stepId
+    override suspend fun updateWorkflowStatus(stepStatus: StepStatus, villageId: Int, stepId: Int) {
+        val stepEntity =
+            repository.getStepForVillage(villageId = villageId, stepId = stepId)
+        val updateWorkflowEvent = repository.createWorkflowEvent(
+            eventItem = stepEntity,
+            stepStatus = stepStatus,
+            eventName = EventName.WORKFLOW_STATUS_UPDATE,
+            eventType = EventType.STATEFUL,
+            prefRepo = repository.prefRepo
         )
-        val updateWorkflowEvent = repository.createStepUpdateEvent(
-            stepStatus,
-            stepListEntity,
-            repository.prefRepo.getMobileNumber() ?: BLANK_STRING
-        )
-        repository.writeEventIntoLogFile(updateWorkflowEvent)
+        updateWorkflowEvent?.let { event ->
+            repository.saveEventToMultipleSources(event)
+        }
     }
 
-    override fun addRankingFlagEditEvent(isUserBpc: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val addRankingFlagEditEvent = repository.createRankingFlagEditEvent(villageId = repository.prefRepo.getSelectedVillage().id, stepType = StepType.WEALTH_RANKING.name, repository.prefRepo.getMobileNumber() ?: BLANK_STRING)
+    override fun addRankingFlagEditEvent(isUserBpc: Boolean, stepId: Int) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            val stepEntity =
+                repository.getStepForVillage(
+                    villageId = repository.prefRepo.getSelectedVillage().id,
+                    stepId = stepId
+                )
 
-            repository.writeEventIntoLogFile(addRankingFlagEditEvent)
+            val addRankingFlagEditEvent = repository.createRankingFlagEditEvent(
+                stepEntity,
+                villageId = repository.prefRepo.getSelectedVillage().id,
+                stepType = StepType.WEALTH_RANKING.name,
+                repository.prefRepo.getMobileNumber() ?: BLANK_STRING,
+                repository.prefRepo.getUserId()
+            )
+
+            repository.saveEventToMultipleSources(addRankingFlagEditEvent)
         }
     }
 
