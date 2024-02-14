@@ -32,6 +32,7 @@ import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.request.AddCohortRequest
+import com.patsurvey.nudge.model.request.DeleteDidiRequest
 import com.patsurvey.nudge.model.request.DeleteTolaRequest
 import com.patsurvey.nudge.model.request.EditCohortRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
@@ -175,6 +176,37 @@ class TransectWalkRepository @Inject constructor(
 
                 return deleteTolaEvent
             }
+
+            EventName.DELETE_DIDI -> {
+                val requestPayload =
+                    DeleteDidiRequest.getDeleteDidiDetailsRequest(eventItem as DidiEntity).json()
+
+                var deleteDidiRequest = Events(
+                    name = eventName.name,
+                    type = eventName.topicName,
+                    createdBy = prefRepo.getUserId(),
+                    mobile_number = prefRepo.getMobileNumber(),
+                    request_payload = requestPayload,
+                    status = EventSyncStatus.OPEN.name,
+                    modified_date = System.currentTimeMillis().toDate(),
+                    result = null,
+                    consumer_status = BLANK_STRING,
+                    metadata = MetadataDto(
+                        mission = SELECTION_MISSION,
+                        depends_on = listOf(),
+                        request_payload_size = requestPayload.getSizeInLong(),
+                        parentEntity = getParentEntityMapForEvent(eventItem, eventName)
+                    ).json()
+                )
+                val dependsOn = createEventDependency(eventItem, eventName, deleteDidiRequest)
+                val metadata = deleteDidiRequest.metadata?.getMetaDataDtoFromString()
+                val updatedMetaData = metadata?.copy(depends_on = dependsOn.getDependentEventsId())
+                deleteDidiRequest = deleteDidiRequest.copy(
+                    metadata = updatedMetaData?.json()
+                )
+
+                return deleteDidiRequest
+            }
             else -> {
                 return null
             }
@@ -225,7 +257,7 @@ class TransectWalkRepository @Inject constructor(
         return eventDependencyList
     }
 
-    override suspend fun <T> insertEventIntoDb(
+    override suspend fun <T> saveEvent(
         eventItem: T,
         eventName: EventName,
         eventType: EventType

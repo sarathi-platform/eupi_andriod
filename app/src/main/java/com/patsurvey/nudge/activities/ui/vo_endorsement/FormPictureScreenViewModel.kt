@@ -5,12 +5,10 @@ import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import com.nudge.core.enums.EventName
-import com.nudge.core.enums.EventType
 import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
-import com.nudge.core.enums.EventFormatterName
 import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
 import com.nudge.core.eventswriter.entities.EventV1
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
@@ -28,7 +26,6 @@ import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.utils.ACCEPTED
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
@@ -37,7 +34,6 @@ import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PAT_SURVEY
 import com.patsurvey.nudge.utils.PREF_FORM_C_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_D_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
@@ -803,14 +799,14 @@ class FormPictureScreenViewModel @Inject constructor(
                 stepListEntity,
                 repository.prefRepo.getMobileNumber() ?: BLANK_STRING
             )
-            repository.writeEventIntoLogFile(updateWorkflowEvent)
+        repository.saveEventToMultipleSources(updateWorkflowEvent)
         }
 
     override fun addRankingFlagEditEvent(isUserBpc: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             val addRankingFlagEditEvent = repository.createRankingFlagEditEvent(villageId = repository.prefRepo.getSelectedVillage().id, stepType = StepType.VO_ENDROSEMENT.name, repository.prefRepo.getMobileNumber() ?: BLANK_STRING)
 
-            repository.writeEventIntoLogFile(addRankingFlagEditEvent)
+            repository.saveEventToMultipleSources(addRankingFlagEditEvent)
         }
     }
 }

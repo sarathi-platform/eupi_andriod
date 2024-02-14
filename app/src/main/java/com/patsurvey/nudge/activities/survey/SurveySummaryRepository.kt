@@ -7,12 +7,11 @@ import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
+import com.nudge.core.eventswriter.entities.EventV1
 import com.nudge.core.getSizeInLong
 import com.nudge.core.json
 import com.nudge.core.model.MetadataDto
 import com.nudge.core.toDate
-import com.nudge.core.enums.EventName
-import com.nudge.core.eventswriter.entities.EventV1
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponseForPatStatus
 import com.patsurvey.nudge.base.BaseRepository
@@ -330,7 +329,7 @@ class SurveySummaryRepository @Inject constructor(
         }
     }
 
-    override suspend fun <T> insertEventIntoDb(
+    override suspend fun <T> saveEvent(
         eventItem: T,
         eventName: EventName,
         eventType: EventType
@@ -370,7 +369,7 @@ class SurveySummaryRepository @Inject constructor(
             mobileNumber = prefRepo.getMobileNumber() ?: BLANK_STRING
         )
 
-        writeEventIntoLogFile(event)
+        //  saveEventToMultipleSources(event)
 
     }
 

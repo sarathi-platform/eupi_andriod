@@ -304,22 +304,22 @@ class PatSectionSummaryViewModel @Inject constructor(
         }
     }
 
-    fun insertPatEvents() {
+    fun savePATEvent() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             calculateDidiScore(didiEntity.value.id)
             val updatedDidiEntity = patSectionRepository.getDidiFromDB(didiEntity.value.id)
-            patSectionRepository.insertEventIntoDb(updatedDidiEntity, EventName.SAVE_PAT_ANSWERS, EventType.STATEFUL)
-            patSectionRepository.insertEventIntoDb(updatedDidiEntity, EventName.SAVE_PAT_SCORE, EventType.STATEFUL)
+            patSectionRepository.saveEvent(
+                updatedDidiEntity,
+                EventName.SAVE_PAT_ANSWERS,
+                EventType.STATEFUL
+            )
+            patSectionRepository.saveEvent(
+                updatedDidiEntity,
+                EventName.SAVE_PAT_SCORE,
+                EventType.STATEFUL
+            )
         }
     }
 
 
-    fun writePatEvents() {
-        CoroutineScope(Dispatchers.IO).launch {
-            calculateDidiScore(didiEntity.value.id)
-            val updatedDidiEntity = patSectionRepository.getDidiFromDB(didiEntity.value.id)
-            patSectionRepository.writePatSummarySaveEvent(updatedDidiEntity)
-            patSectionRepository.writePatScoreSaveEvent(updatedDidiEntity)
-        }
-    }
 }

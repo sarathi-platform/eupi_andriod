@@ -17,7 +17,6 @@ import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.utils.ApiType
-import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
@@ -342,48 +341,30 @@ class ProgressScreenViewModel @Inject constructor(
     fun saveFromPage(pageFrom: String) {
         progressScreenRepository.saveFromPage(pageFrom)
     }
-    fun updateWorkflowStatusInEvent(stepStatus: String, stepId: Int) {
+
+    fun updateWorkflowStatusInEvent(stepStatus: StepStatus, stepId: Int, villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            updateWorkflowStatus(stepStatus,stepId)
+            updateWorkflowStatus(stepStatus = stepStatus, villageId = villageId, stepId = stepId)
         }
     }
-     override suspend fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
 
+    override suspend fun updateWorkflowStatus(stepStatus: StepStatus, villageId: Int, stepId: Int) {
 
-            val stepListEntity = progressScreenRepository.getStepForVillage(
-                progressScreenRepository.prefRepo.getSelectedVillage().id,
-                stepId,
+        val stepEntity =
+            progressScreenRepository.getStepForVillage(villageId = villageId, stepId = stepId)
+        if (stepEntity.workFlowId == 0) {
 
-                )
-            if (stepListEntity.workFlowId == 0) {
-                val updateWorkflowEvent = progressScreenRepository.createStepUpdateEvent(
-                    stepStatus,
-                    stepListEntity,
-                    progressScreenRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
-                )
-                progressScreenRepository.writeEventIntoLogFile(updateWorkflowEvent)
+            val updateWorkflowEvent = progressScreenRepository.createWorkflowEvent(
+                eventItem = stepEntity,
+                StepStatus.INPROGRESS,
+                EventName.WORKFLOW_STATUS_UPDATE,
+                EventType.STATEFUL,
+                progressScreenRepository.prefRepo
+            )
+            updateWorkflowEvent?.let { progressScreenRepository.saveEventToMultipleSources(it) }
             }
 
     }
 
-    fun saveWorkflowEventIntoDb(villageId: Int, stepId: Int) {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val stepEntity = progressScreenRepository.getStepForVillage(villageId = villageId, stepId = stepId)
-            if (stepEntity.workFlowId == 0) {
-
-                val updateWorkflowEvent = progressScreenRepository.createWorkflowEvent(
-                    eventItem = stepEntity,
-                    StepStatus.INPROGRESS,
-                    EventName.WORKFLOW_STATUS_UPDATE,
-                    EventType.STATEFUL,
-                    progressScreenRepository.prefRepo
-                )
-                updateWorkflowEvent?.let { event ->
-                    progressScreenRepository.insertEventIntoDb(event, emptyList())
-                }
-
-            }
-        }
-    }
 
 }

@@ -5,10 +5,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.nudge.core.enums.EventName
-import com.nudge.core.eventswriter.entities.EventV1
-import com.patsurvey.nudge.activities.WealthRankingSurveyRepository
-import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
+import com.nudge.core.eventswriter.entities.EventV1
 import com.patsurvey.nudge.activities.WealthRankingSurveyRepository
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -164,7 +162,7 @@ class WealthRankingViewModel @Inject constructor(
                         mobileNumber = repository.prefRepo.getMobileNumber() ?: BLANK_STRING
                     )
 
-                    repository.writeEventIntoLogFile(event)
+                    repository.saveEventToMultipleSources(event)
 
                     didiDao.updateDidiNeedToPostWealthRank(didiEntity.id,true)
                     didiDao.updateModifiedDate(System.currentTimeMillis(),didiEntity.id)

@@ -23,6 +23,7 @@ import com.patsurvey.nudge.utils.RESPONSE_CODE_NO_DATA
 import com.patsurvey.nudge.utils.RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE
 import com.patsurvey.nudge.utils.RESPONSE_CODE_TIMEOUT
 import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
+import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TIMEOUT_ERROR_MSG
 import com.patsurvey.nudge.utils.UNAUTHORISED_MESSAGE
 import com.patsurvey.nudge.utils.UNREACHABLE_ERROR_MSG
@@ -192,9 +193,8 @@ abstract class BaseViewModel : ViewModel(){
         }
     }
 
-      open suspend fun updateWorkflowStatus(stepStatus: String, stepId: Int) {}
-
-    open fun addRankingFlagEditEvent(isUserBpc: Boolean = false) {}
+    open suspend fun updateWorkflowStatus(stepStatus: StepStatus, villageId: Int, stepId: Int) {}
+    open fun addRankingFlagEditEvent(iisUserBpc: Boolean = false, stepId: Int) {}
     open fun addDidiNotAvailableEvent(didiId: Int) {}
 
     open fun addNotAvailableDidiPatScoreEventForDidi(didiId: Int) {}

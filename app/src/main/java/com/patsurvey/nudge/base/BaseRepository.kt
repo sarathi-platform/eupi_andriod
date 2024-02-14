@@ -6,38 +6,29 @@ import com.nudge.core.EventSyncStatus
 import com.nudge.core.SELECTION_MISSION
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
-import com.nudge.core.enums.EventName
-import com.nudge.core.enums.EventType
-import com.nudge.core.getSizeInLong
-import com.nudge.core.json
-import com.nudge.core.model.MetadataDto
-import com.nudge.core.toDate
 import com.nudge.core.enums.EventFormatterName
 import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
 import com.nudge.core.enums.EventWriterName
 import com.nudge.core.eventswriter.EventWriterFactory
 import com.nudge.core.eventswriter.IEventFormatter
 import com.nudge.core.eventswriter.entities.EventV1
-import com.patsurvey.nudge.MyApplication
+import com.nudge.core.getSizeInLong
+import com.nudge.core.json
+import com.nudge.core.model.MetadataDto
+import com.nudge.core.toDate
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.StepListEntity
-import com.patsurvey.nudge.database.QuestionEntity
-import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
-import com.patsurvey.nudge.di.DatabaseModule
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.model.dataModel.RankingEditEvent
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.PATSummarySaveRequest
-import com.patsurvey.nudge.model.request.UpdateWorkflowRequest
-import com.patsurvey.nudge.model.dataModel.RankingEditEvent
-import com.patsurvey.nudge.model.request.AddWorkFlowRequest
-import com.patsurvey.nudge.model.request.EditWorkFlowRequest
-import com.patsurvey.nudge.model.request.GetQuestionListRequest
 import com.patsurvey.nudge.model.request.UpdateWorkflowRequest
 import com.patsurvey.nudge.network.NetworkResult
 import com.patsurvey.nudge.network.interfaces.ApiService
@@ -45,8 +36,6 @@ import com.patsurvey.nudge.utils.ApiResponseFailException
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.COMMON_ERROR_MSG
-import com.patsurvey.nudge.utils.NudgeCore
-import com.patsurvey.nudge.utils.HEADING_QUESTION_TYPE
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.RESPONSE_CODE_500
@@ -60,15 +49,10 @@ import com.patsurvey.nudge.utils.RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE
 import com.patsurvey.nudge.utils.RESPONSE_CODE_TIMEOUT
 import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
 import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.SUCCESS
-import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.TIMEOUT_ERROR_MSG
 import com.patsurvey.nudge.utils.UNAUTHORISED_MESSAGE
 import com.patsurvey.nudge.utils.UNREACHABLE_ERROR_MSG
 import com.patsurvey.nudge.utils.getParentEntityMapForEvent
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Job
-import com.patsurvey.nudge.utils.json
 import kotlinx.coroutines.*
 import retrofit2.HttpException
 import retrofit2.Response
@@ -107,7 +91,7 @@ abstract class BaseRepository{
         return emptyList()
     }
 
-    open suspend fun <T> insertEventIntoDb(
+    open suspend fun <T> saveEvent(
         eventItem: T,
         eventName: EventName,
         eventType: EventType
@@ -344,13 +328,13 @@ abstract class BaseRepository{
         )
     }
 
-    open suspend fun writeEventIntoLogFile(eventV1: EventV1){
+    open suspend fun saveEventToMultipleSources(event: Events) {
      try {
 
 
          val eventFormatter: IEventFormatter = getEventFormatter()
          eventFormatter.saveAndFormatEvent(
-             event = eventV1,
+             event = event,
              listOf(
                  EventWriterName.FILE_EVENT_WRITER,
                  EventWriterName.DB_EVENT_WRITER,
@@ -363,13 +347,13 @@ abstract class BaseRepository{
      }
     }
 
-    open suspend fun writeImageEventIntoLogFile(eventV1: EventV1) {
+    open suspend fun writeImageEventIntoLogFile(event: Events) {
         val  eventFormatter: IEventFormatter = getEventFormatter()
         try {
 
 
         eventFormatter.saveAndFormatEvent(
-            event = eventV1,
+            event = event,
             listOf(
                 EventWriterName.FILE_EVENT_WRITER,
                 EventWriterName.IMAGE_EVENT_WRITER,
@@ -395,15 +379,42 @@ abstract class BaseRepository{
             payload = payload,
             mobileNumber = mobileNumber
         )
+        val updateWorkflowEvent = transectWalkRepository.createWorkflowEvent(
+            eventItem = stepEntity,
+            stepStatus = stepStatus,
+            eventName = EventName.WORKFLOW_STATUS_UPDATE,
+            eventType = EventType.STATEFUL,
+            prefRepo = transectWalkRepository.prefRepo
+        )
     }
 
-    fun createRankingFlagEditEvent(villageId: Int, stepType: String, mobileNumber: String): EventV1 {
+    fun createRankingFlagEditEvent(
+        eventItem: StepListEntity,
+        villageId: Int,
+        stepType: String,
+        mobileNumber: String,
+        userID: String
+    ): Events {
         val payload = RankingEditEvent(villageId = villageId, type = stepType, status = false).json()
-        return EventV1(
-            eventTopic = EventName.RANKING_FLAG_EDIT.topicName,
-            payload = payload,
-            mobileNumber = mobileNumber
-        )
+
+
+        val rankingEditEvent = Events(
+            name = EventName.RANKING_FLAG_EDIT.name,
+            type = EventName.RANKING_FLAG_EDIT.topicName,
+            createdBy = userID,
+            mobile_number = mobileNumber,
+            request_payload = payload,
+            status = EventSyncStatus.OPEN.name,
+            modified_date = System.currentTimeMillis().toDate(),
+            result = null,
+            consumer_status = BLANK_STRING,
+            metadata = MetadataDto(
+                mission = SELECTION_MISSION,
+                depends_on = listOf(),
+                request_payload_size = payload.getSizeInLong(),
+                parentEntity = getParentEntityMapForEvent(eventItem, EventName.RANKING_FLAG_EDIT)
+            ).json()
+
     }
 
     fun getSurveyId(questionId: Int, questionListDao: QuestionListDao): Int {

@@ -162,7 +162,7 @@ class AddDidiRepository @Inject constructor(
         return this.didiDao.getDidiExist(name, address, guardianName, tolaId, villageId)
     }
 
-    override suspend fun <T> insertEventIntoDb(
+    override suspend fun <T> saveEvent(
         eventItem: T,
         eventName: EventName,
         eventType: EventType
@@ -178,6 +178,7 @@ class AddDidiRepository @Inject constructor(
         if (event?.id?.equals(BLANK_STRING) != true) {
             event?.let {
                 eventObserver?.addEvent(it)
+                saveEventToMultipleSources(it)
                 val eventDependencies = this.createEventDependency(eventItem, eventName, it)
                 if (eventDependencies.isNotEmpty()) {
                     eventObserver?.addEventDependencies(eventDependencies)

@@ -4,9 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
-import androidx.lifecycle.viewModelScope
 import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
@@ -47,7 +47,6 @@ import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
@@ -535,7 +534,7 @@ class SurveySummaryViewModel @Inject constructor(
             }
             updatedCompletedStepsList.add(stepId)
             repository.markStepComplete(villageId = villageId, stepId = stepId, updatedCompletedStepsList)
-            updateWorkflowStatus(StepStatus.COMPLETED.name, stepId)
+            updateWorkflowStatus(StepStatus.COMPLETED, villageId = villageId, stepId)
 
         }
     }
@@ -548,7 +547,7 @@ class SurveySummaryViewModel @Inject constructor(
                 isComplete = StepStatus.COMPLETED.ordinal,
                 villageId = villageId
             )
-            updateWorkflowStatus(StepStatus.COMPLETED.name, bpcStepId)
+            updateWorkflowStatus(StepStatus.COMPLETED, villageId = villageId, bpcStepId)
         }
     }
 
@@ -962,7 +961,7 @@ class SurveySummaryViewModel @Inject constructor(
             questionPassionScore = passingScore
         )
 
-        repository.insertEventIntoDb(eventItem, EventName.SAVE_BPC_MATCH_SCORE, EventType.STATEFUL)
+        repository.saveEvent(eventItem, EventName.SAVE_BPC_MATCH_SCORE, EventType.STATEFUL)
 
     }
 
@@ -983,26 +982,38 @@ class SurveySummaryViewModel @Inject constructor(
         }
     }
 
-    override suspend fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
-
-            val stepListEntity = repository.getStepForVillage(
-                repository.prefRepo.getSelectedVillage().id,
-                stepId,
-
-                )
-            val updateWorkflowEvent = repository.createStepUpdateEvent(
-                stepStatus,
-                stepListEntity,
-                repository.prefRepo.getMobileNumber() ?: BLANK_STRING
-            )
-            repository.writeEventIntoLogFile(updateWorkflowEvent)
+    override suspend fun updateWorkflowStatus(stepStatus: StepStatus, villageId: Int, stepId: Int) {
+        val stepEntity =
+            repository.getStepForVillage(villageId = villageId, stepId = stepId)
+        val updateWorkflowEvent = repository.createWorkflowEvent(
+            eventItem = stepEntity,
+            stepStatus = stepStatus,
+            eventName = EventName.WORKFLOW_STATUS_UPDATE,
+            eventType = EventType.STATEFUL,
+            prefRepo = repository.prefRepo
+        )
+        updateWorkflowEvent?.let { event ->
+            repository.saveEventToMultipleSources(event)
+        }
         }
 
-    override fun addRankingFlagEditEvent(isUserBpc: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val addRankingFlagEditEvent = repository.createRankingFlagEditEvent(villageId = repository.prefRepo.getSelectedVillage().id, stepType = if (isUserBpc) BPC_SURVEY_CONSTANT else PAT_SURVEY, repository.prefRepo.getMobileNumber() ?: BLANK_STRING)
+    override fun addRankingFlagEditEvent(isUserBpc: Boolean, stepId: Int) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            val stepEntity =
+                repository.getStepForVillage(
+                    villageId = repository.prefRepo.getSelectedVillage().id,
+                    stepId = stepId
+                )
 
-            repository.writeEventIntoLogFile(addRankingFlagEditEvent)
+            val addRankingFlagEditEvent = repository.createRankingFlagEditEvent(
+                stepEntity,
+                villageId = repository.prefRepo.getSelectedVillage().id,
+                stepType = if (isUserBpc) BPC_SURVEY_CONSTANT else PAT_SURVEY,
+                repository.prefRepo.getMobileNumber() ?: BLANK_STRING,
+                repository.prefRepo.getUserId()
+            )
+
+            repository.saveEventToMultipleSources(addRankingFlagEditEvent)
         }
     }
 

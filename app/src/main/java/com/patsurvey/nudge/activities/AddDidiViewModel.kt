@@ -3,13 +3,14 @@ package com.patsurvey.nudge.activities
 import android.annotation.SuppressLint
 import android.text.TextUtils
 import android.util.Log
-import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
 import com.patsurvey.nudge.CheckDBStatus
-import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
@@ -18,7 +19,6 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.LastTolaSelectedEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.VillageEntity
-import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.LocalDbListener
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
@@ -26,7 +26,31 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.AbleBodiedFlag
+import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
+import com.patsurvey.nudge.utils.DIDI_COUNT
+import com.patsurvey.nudge.utils.DidiStatus
+import com.patsurvey.nudge.utils.FORM_C
+import com.patsurvey.nudge.utils.FORM_D
+import com.patsurvey.nudge.utils.HUSBAND_STRING
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_DIDI_UNAVAILABLE
+import com.patsurvey.nudge.utils.PREF_FORM_PATH
+import com.patsurvey.nudge.utils.PREF_SOCIAL_MAPPING_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.SHGFlag
+import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.SummaryNavigation
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.TYPE_INCLUSION
+import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
+import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.getUniqueIdForEntity
+import com.patsurvey.nudge.utils.longToString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +59,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.util.Timer
+import java.util.TimerTask
 import javax.inject.Inject
 
 @HiltViewModel
@@ -486,12 +511,12 @@ class AddDidiViewModel @Inject constructor(
                     shgFlag = SHGFlag.NOT_MARKED.value,
                     transactionId = "",
                     needsToPostRanking = false,
-                    localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext()),
+                    localUniqueId = getUniqueIdForEntity(),
                     ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value
                 )
                 addDidiRepository.insertDidi(didiEntity)
 
-                addDidiRepository.insertEventIntoDb(
+                addDidiRepository.saveEvent(
                     didiEntity,
                     EventName.ADD_DIDI,
                     EventType.STATEFUL
@@ -581,7 +606,7 @@ class AddDidiViewModel @Inject constructor(
                 updatedDidi.guardianName
                 addDidiRepository.insertDidi(updatedDidi)
 
-                addDidiRepository.insertEventIntoDb(
+                addDidiRepository.saveEvent(
                     updatedDidi,
                     EventName.ADD_DIDI,
                     EventType.STATEFUL
@@ -1249,8 +1274,16 @@ class AddDidiViewModel @Inject constructor(
                 addDidiRepository.getSelectedVillage().id
             )
             //TODO @Anupam check why not available case is not working.
-            addDidiRepository.insertEventIntoDb(eventItem = updatedDidiEntity, eventName = EventName.SAVE_PAT_ANSWERS, eventType = EventType.STATEFUL)
-            addDidiRepository.insertEventIntoDb(eventItem = updatedDidiEntity, eventName = EventName.SAVE_PAT_SCORE, EventType.STATEFUL)
+            addDidiRepository.saveEvent(
+                eventItem = updatedDidiEntity,
+                eventName = EventName.SAVE_PAT_ANSWERS,
+                eventType = EventType.STATEFUL
+            )
+            addDidiRepository.saveEvent(
+                eventItem = updatedDidiEntity,
+                eventName = EventName.SAVE_PAT_SCORE,
+                EventType.STATEFUL
+            )
             pendingDidiCount.value =
                 addDidiRepository.getAllPendingPATDidisCount(addDidiRepository.getSelectedVillage().id)
         }
@@ -1322,7 +1355,7 @@ class AddDidiViewModel @Inject constructor(
                 needsToPostDeleteStatus = if (didi.serverId != 0) true else false
             )
 
-            addDidiRepository.insertEventIntoDb(
+            addDidiRepository.saveEvent(
                 didi,
                 EventName.DELETE_DIDI,
                 EventType.STATEFUL

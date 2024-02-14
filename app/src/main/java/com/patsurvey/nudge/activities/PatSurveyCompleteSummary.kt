@@ -339,8 +339,7 @@ fun PatSurveyCompleteSummary(
             positiveButtonOnClick = {
 
                 if (fromScreen != ARG_FROM_PAT_SUMMARY_SCREEN) {
-                    patSectionSummaryViewModel.insertPatEvents()
-                    patSectionSummaryViewModel.writePatEvents()
+                    patSectionSummaryViewModel.savePATEvent()
 
                 }
 

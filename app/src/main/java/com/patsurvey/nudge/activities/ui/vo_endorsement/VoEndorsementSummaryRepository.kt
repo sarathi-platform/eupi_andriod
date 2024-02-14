@@ -68,7 +68,7 @@ class VoEndorsementSummaryRepository @Inject constructor(
         )
     }
 
-    override suspend fun <T> insertEventIntoDb(
+    override suspend fun <T> saveEvent(
         eventItem: T,
         eventName: EventName,
         eventType: EventType
