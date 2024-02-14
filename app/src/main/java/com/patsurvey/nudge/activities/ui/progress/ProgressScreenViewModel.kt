@@ -17,6 +17,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
@@ -246,6 +247,7 @@ class ProgressScreenViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val dbResponse = progressScreenRepository.getStepForVillage(villageId, stepId)
+
                 NudgeLogger.d(
                     "ProgressScreenViewModel",
                     "callWorkFlowAPI -> dbResponse: ${dbResponse.toString()}"
@@ -339,6 +341,29 @@ class ProgressScreenViewModel @Inject constructor(
 
     fun saveFromPage(pageFrom: String) {
         progressScreenRepository.saveFromPage(pageFrom)
+    }
+    fun updateWorkflowStatusInEvent(stepStatus: String, stepId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            updateWorkflowStatus(stepStatus,stepId)
+        }
+    }
+     override suspend fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
+
+
+            val stepListEntity = progressScreenRepository.getStepForVillage(
+                progressScreenRepository.prefRepo.getSelectedVillage().id,
+                stepId,
+
+                )
+            if (stepListEntity.workFlowId == 0) {
+                val updateWorkflowEvent = progressScreenRepository.createStepUpdateEvent(
+                    stepStatus,
+                    stepListEntity,
+                    progressScreenRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
+                )
+                progressScreenRepository.writeEventIntoLogFile(updateWorkflowEvent)
+            }
+
     }
 
     fun saveWorkflowEventIntoDb(villageId: Int, stepId: Int) {

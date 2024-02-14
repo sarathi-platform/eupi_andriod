@@ -6,14 +6,18 @@ import com.patsurvey.nudge.database.TolaEntity
 
 data class DeleteTolaRequest(
     @SerializedName("id") var id: Int,
-    @SerializedName("localModifiedDate") var localModifiedDate : Long
+    @SerializedName("localModifiedDate") var localModifiedDate : Long,
+    @SerializedName("cohortName") var cohortName: String,
+    @SerializedName("villageId") var villageId: Int
 ) {
 
     companion object {
         fun getRequestObjectForDeleteTola(tola: TolaEntity): DeleteTolaRequest {
             return DeleteTolaRequest(
                 id = tola.serverId,
-                localModifiedDate = System.currentTimeMillis()
+                localModifiedDate = System.currentTimeMillis(),
+                cohortName = tola.name,
+                villageId = tola.villageId
             )
         }
     }

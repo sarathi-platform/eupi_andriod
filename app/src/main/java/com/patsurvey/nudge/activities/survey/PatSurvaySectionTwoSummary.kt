@@ -123,6 +123,7 @@ fun PatSurvaySectionTwoSummaryScreen(
 
                 patSectionSummaryViewModel.insertPatEvents()
 
+                patSectionSummaryViewModel.writePatEvents()
                 patSectionSummaryViewModel.setPATSection2Complete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
                 patSectionSummaryViewModel.setPATSurveyComplete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
                 patSectionSummaryViewModel.updateExclusionStatus(didi.value.id,ExclusionType.NO_EXCLUSION.ordinal,

@@ -340,6 +340,8 @@ fun PatSurveyCompleteSummary(
 
                 if (fromScreen != ARG_FROM_PAT_SUMMARY_SCREEN) {
                     patSectionSummaryViewModel.insertPatEvents()
+                    patSectionSummaryViewModel.writePatEvents()
+
                 }
 
                 if(patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()){

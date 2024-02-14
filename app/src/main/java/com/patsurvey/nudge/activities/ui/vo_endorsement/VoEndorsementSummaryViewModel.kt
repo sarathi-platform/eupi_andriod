@@ -3,18 +3,16 @@ package com.patsurvey.nudge.activities.ui.vo_endorsement
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
+import com.nudge.core.enums.EventName
+import com.nudge.core.eventswriter.entities.EventV1
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.base.BaseViewModel
-import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
-import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.QuestionListDao
-import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -23,6 +21,7 @@ import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
+import com.patsurvey.nudge.utils.json
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -160,6 +159,15 @@ class VoEndorsementSummaryViewModel @Inject constructor(
                 needsToPostVo = true,
                 villageId = villageId
             )
+
+            val updatedDidi = repository.getDidiFromDB(didiId)
+            val event = EventV1(
+                eventTopic = EventName.SAVE_VO_ENDORSEMENT.topicName,
+                payload = EditDidiWealthRankingRequest.getRequestPayloadForVoEndorsement(updatedDidi).json(),
+                mobileNumber = repository.prefRepo.getMobileNumber() ?: BLANK_STRING
+            )
+
+            repository.writeEventIntoLogFile(event)
 
             NudgeLogger.e("VoEndorsementSummaryViewModel",
                 "updateVoEndorsementStatus -> didiDao.updateNeedToPostVO after")

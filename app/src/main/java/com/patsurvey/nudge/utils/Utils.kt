@@ -170,8 +170,8 @@ fun getDeviceId(context: Context) : String{
         Settings.Secure.ANDROID_ID) ?: ""
 }
 
-fun getUniqueIdForEntity(context: Context) : String{
-    return getDeviceId(context) + "|" + System.currentTimeMillis()
+fun getUniqueIdForEntity() : String{
+    return UUID.randomUUID().toString() .replace("-","")+ "|" + System.currentTimeMillis()
 }
 
 fun findCompleteValue(status:String): StepStatus {
@@ -1308,7 +1308,7 @@ fun getSampleEvent(): Events {
             localCreatedDate = System.currentTimeMillis(),
             localModifiedDate = System.currentTimeMillis(),
             transactionId = "",
-            localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
+            localUniqueId = getUniqueIdForEntity()
         )
         ).json(),
         consumer_status = EventSyncStatus.OPEN.name,
@@ -1324,7 +1324,7 @@ fun getSampleEvent(): Events {
                 localCreatedDate = System.currentTimeMillis(),
                 localModifiedDate = System.currentTimeMillis(),
                 transactionId = "",
-                localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
+                localUniqueId = getUniqueIdForEntity()
             )
         ).json(),
         retry_count = 0,

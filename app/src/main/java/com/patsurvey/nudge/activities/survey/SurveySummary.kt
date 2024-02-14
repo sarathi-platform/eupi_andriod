@@ -206,6 +206,7 @@ fun SurveySummary(
                     )
                     surveySummaryViewModel.saveBpcPatCompletionDate()
                     surveySummaryViewModel.updatePatEditFlag()
+                    surveySummaryViewModel.addRankingFlagEditEvent(true)
 
                     if ((context as MainActivity).isOnline.value ?: false) {
                         surveySummaryViewModel.savePATSummeryToServer(object :
@@ -253,6 +254,7 @@ fun SurveySummary(
                             }
                         })
                     } else {
+                        surveySummaryViewModel.writeBpcMatchScoreEvent()
                         surveySummaryViewModel.repository.prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + surveySummaryViewModel.repository.prefRepo.getSelectedVillage().id, false)
                     }
 
@@ -277,6 +279,7 @@ fun SurveySummary(
                                 )
                                 surveySummaryViewModel.savePatCompletionDate()
                                 surveySummaryViewModel.updatePatEditFlag()
+                                surveySummaryViewModel.addRankingFlagEditEvent()
                             }
                             if ((context as MainActivity).isOnline.value ?: false) {
                                 if (surveySummaryViewModel.isTolaSynced.value == 2

@@ -352,6 +352,7 @@ fun ProgressScreen(
                                     if (mainActivity?.isOnline?.value == true) {
                                        viewModel.callWorkFlowAPI(villageId,step.id,step.programId)
                                     }
+                                    viewModel.updateWorkflowStatusInEvent(StepStatus.INPROGRESS.name, step.id)
                                     viewModel.saveWorkflowEventIntoDb(villageId = villageId, stepId = step.id)
                                     when (index) {
                                         0 -> {

@@ -489,6 +489,7 @@ fun TransectWalkScreen(
                         }
                         viewModel.markTransectWalkComplete(villageId, stepId)
                         viewModel.saveWorkflowEventIntoDb(stepStatus = StepStatus.COMPLETED, villageId = villageId, stepId = stepId)
+                        viewModel.updateWorkflowStatusInEvent(StepStatus.COMPLETED.name, stepId)
                         navController.navigate(
                             "step_completion_screen/${
                                 context.getString(R.string.transect_walk_completed_message).replace(

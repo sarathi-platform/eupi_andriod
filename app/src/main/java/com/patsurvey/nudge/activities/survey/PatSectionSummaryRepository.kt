@@ -1,5 +1,7 @@
 package com.patsurvey.nudge.activities.survey
 
+import com.nudge.core.enums.EventName
+import com.nudge.core.eventswriter.entities.EventV1
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.KEY_PARENT_ENTITY_ADDRESS
 import com.nudge.core.KEY_PARENT_ENTITY_DADA_NAME
@@ -35,10 +37,19 @@ import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.PATSummarySaveRequest
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
+import com.patsurvey.nudge.model.request.AnswerDetailDTOListItem
+import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
+import com.patsurvey.nudge.model.request.PATSummarySaveRequest
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.USER_BPC
+import com.patsurvey.nudge.utils.USER_CRP
+import com.patsurvey.nudge.utils.json
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.getParentEntityMapForEvent
@@ -238,12 +249,39 @@ class PatSectionSummaryRepository @Inject constructor(
         eventType: EventType
     ) {
         val eventObserver = NudgeCore.getEventObserver()
+    private fun getAllAnswersForDidi(didiId: Int): List<SectionAnswerEntity> {
+        return answerDao.getAllNeedToPostQuesForDidi(didiId)
+    }
+
+    private fun getAllNumericAnswersForDidi(didiId: Int): List<NumericAnswerEntity> {
+        return numericAnswerDao.getAllAnswersForDidi(didiId)
+    }
+
+    suspend fun writePatSummarySaveEvent(didiEntity: DidiEntity) {
+        val sectionAnswerEntityList = getAllAnswersForDidi(didiEntity.id)
+        val numericAnswerEntityList = getAllNumericAnswersForDidi(didiEntity.id)
+        val answerDetailDTOListItem = AnswerDetailDTOListItem.getAnswerDetailDtoListItem(sectionAnswerEntityList, numericAnswerEntityList)
+        val patSummarySaveRequest = PATSummarySaveRequest.getPatSummarySaveRequest(
+            didiEntity = didiEntity,
+            answerDetailDTOList = answerDetailDTOListItem,
+            languageId = (prefRepo.getAppLanguageId() ?: 2),
+            surveyId = getSurveyId(sectionAnswerEntityList.first().questionId, questionListDao),
+            villageEntity = prefRepo.getSelectedVillage(),
+            userType = if((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true)) USER_BPC else USER_CRP
+        ).json()
+
+        val event = EventV1(
+            eventTopic = EventName.SAVE_PAT_ANSWERS.topicName,
+            payload = patSummarySaveRequest,
+            mobileNumber = prefRepo.getMobileNumber() ?: BLANK_STRING
+        )
 
         val event = this.createEvent(
             eventItem,
             eventName,
             eventType
         )
+        writeEventIntoLogFile(event)
 
         if (event?.id?.equals(BLANK_STRING) != true) {
             event?.let {
@@ -256,5 +294,20 @@ class PatSectionSummaryRepository @Inject constructor(
         }
     }
 
+    }
+
+    suspend fun writePatScoreSaveEvent(didiEntity: DidiEntity) {
+        val passingMark = questionListDao.getPassingScore()
+        val patScoreSaveRequest = EditDidiWealthRankingRequest.getRequestPayloadForPatScoreSave(didiEntity, passingMark, isBpcUserType = prefRepo.isUserBPC()).json()
+
+        val event = EventV1(
+            eventTopic = EventName.SAVE_PAT_SCORE.topicName,
+            payload = patScoreSaveRequest,
+            mobileNumber = prefRepo.getMobileNumber() ?: BLANK_STRING
+        )
+
+        writeEventIntoLogFile(event)
+
+    }
 
 }

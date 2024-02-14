@@ -11,6 +11,8 @@ import com.nudge.core.getSizeInLong
 import com.nudge.core.json
 import com.nudge.core.model.MetadataDto
 import com.nudge.core.toDate
+import com.nudge.core.enums.EventName
+import com.nudge.core.eventswriter.entities.EventV1
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponseForPatStatus
 import com.patsurvey.nudge.base.BaseRepository
@@ -184,6 +186,7 @@ class SurveySummaryRepository @Inject constructor(
             StepStatus.COMPLETED.ordinal,
             villageId
         )
+
         stepsListDao.updateNeedToPost(stepId, villageId, true)
         val stepDetails = stepsListDao.getStepForVillage(villageId, stepId)
         if (stepDetails.orderNumber < stepsListDao.getAllSteps().size) {
@@ -350,6 +353,25 @@ class SurveySummaryRepository @Inject constructor(
                 }
             }
         }
+    }
+
+    suspend fun writeBpcMatchScoreEvent(
+        villageId: Int,
+        passingScore: Int,
+        bpcStep: StepListEntity,
+        didiList: List<DidiEntity>
+    ) {
+        val event = EventV1(eventTopic = EventName.SAVE_BPC_MATCH_SCORE.topicName, payload = SaveMatchSummaryRequest.getSaveMatchSummaryRequestForBpc(
+            villageId = villageId,
+            stepListEntity = bpcStep,
+            didiList = didiList,
+            questionPassionScore = passingScore
+        ).json(),
+            mobileNumber = prefRepo.getMobileNumber() ?: BLANK_STRING
+        )
+
+        writeEventIntoLogFile(event)
+
     }
 
 }

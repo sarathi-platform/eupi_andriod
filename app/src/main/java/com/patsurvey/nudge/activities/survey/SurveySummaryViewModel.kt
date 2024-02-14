@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
+import androidx.lifecycle.viewModelScope
 import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
@@ -15,7 +16,6 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
-import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
@@ -26,7 +26,37 @@ import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.model.request.PATSummarySaveRequest
 import com.patsurvey.nudge.model.request.SaveMatchSummaryRequest
 import com.patsurvey.nudge.model.response.OptionsItem
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.AbleBodiedFlag
+import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
+import com.patsurvey.nudge.utils.COMPLETED_STRING
+import com.patsurvey.nudge.utils.DIDI_NOT_AVAILABLE
+import com.patsurvey.nudge.utils.DIDI_REJECTED
+import com.patsurvey.nudge.utils.ExclusionType
+import com.patsurvey.nudge.utils.FLAG_RATIO
+import com.patsurvey.nudge.utils.FLAG_WEIGHT
+import com.patsurvey.nudge.utils.LOW_SCORE
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PAT_SURVEY
+import com.patsurvey.nudge.utils.PREF_BPC_PAT_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
+import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.SHGFlag
+import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.StepType
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.USER_BPC
+import com.patsurvey.nudge.utils.USER_CRP
+import com.patsurvey.nudge.utils.VERIFIED_STRING
+import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.calculateScore
+import com.patsurvey.nudge.utils.longToString
+import com.patsurvey.nudge.utils.toWeightageRatio
+import com.patsurvey.nudge.utils.updateLastSyncTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,7 +66,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
+import java.util.Timer
+import java.util.TimerTask
 import javax.inject.Inject
 
 @HiltViewModel
@@ -502,7 +534,8 @@ class SurveySummaryViewModel @Inject constructor(
                 }
             }
             updatedCompletedStepsList.add(stepId)
-            repository.markStepComplete(villageId = villageId, stepId = stepId,updatedCompletedStepsList)
+            repository.markStepComplete(villageId = villageId, stepId = stepId, updatedCompletedStepsList)
+            updateWorkflowStatus(StepStatus.COMPLETED.name, stepId)
 
         }
     }
@@ -515,6 +548,7 @@ class SurveySummaryViewModel @Inject constructor(
                 isComplete = StepStatus.COMPLETED.ordinal,
                 villageId = villageId
             )
+            updateWorkflowStatus(StepStatus.COMPLETED.name, bpcStepId)
         }
     }
 
@@ -696,6 +730,17 @@ class SurveySummaryViewModel @Inject constructor(
             }
         }
     }
+
+    fun writeBpcMatchScoreEvent() {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val villageId = repository.prefRepo.getSelectedVillage().id
+            val passingScore = repository.getPassingScore()
+            val bpcStep =
+                repository.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }.last()
+
+            repository.writeBpcMatchScoreEvent(villageId, passingScore, bpcStep, didiList.value)
+        }
+    }
     fun sendBpcMatchScore(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
@@ -704,6 +749,9 @@ class SurveySummaryViewModel @Inject constructor(
                 val bpcStep = repository.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }.last()
 
                 insertBpcMatchScoreEvent(villageId, passingScore, bpcStep, didiList.value)
+
+
+                repository.writeBpcMatchScoreEvent(villageId, passingScore, bpcStep, didiList.value)
 
                 val matchPercentage = calculateMatchPercentage(didiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }, passingScore)
                 val saveMatchSummaryRequest = SaveMatchSummaryRequest(
@@ -934,5 +982,29 @@ class SurveySummaryViewModel @Inject constructor(
             }
         }
     }
+
+    override suspend fun updateWorkflowStatus(stepStatus: String, stepId: Int) {
+
+            val stepListEntity = repository.getStepForVillage(
+                repository.prefRepo.getSelectedVillage().id,
+                stepId,
+
+                )
+            val updateWorkflowEvent = repository.createStepUpdateEvent(
+                stepStatus,
+                stepListEntity,
+                repository.prefRepo.getMobileNumber() ?: BLANK_STRING
+            )
+            repository.writeEventIntoLogFile(updateWorkflowEvent)
+        }
+
+    override fun addRankingFlagEditEvent(isUserBpc: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val addRankingFlagEditEvent = repository.createRankingFlagEditEvent(villageId = repository.prefRepo.getSelectedVillage().id, stepType = if (isUserBpc) BPC_SURVEY_CONSTANT else PAT_SURVEY, repository.prefRepo.getMobileNumber() ?: BLANK_STRING)
+
+            repository.writeEventIntoLogFile(addRankingFlagEditEvent)
+        }
+    }
+
 
 }

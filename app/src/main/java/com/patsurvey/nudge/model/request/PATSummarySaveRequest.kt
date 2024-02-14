@@ -39,23 +39,40 @@ data class PATSummarySaveRequest(
     val beneficiaryName: String? = BLANK_STRING,
 
     @SerializedName("patSurveyStatus")
-    var patSurveyStatus: Int=0,
+    var patSurveyStatus: Int = 0,
 
     @SerializedName("section1Status")
-    var section1Status: Int=0,
+    var section1Status: Int = 0,
 
     @SerializedName("section2Status")
-    var section2Status: Int=0,
+    var section2Status: Int = 0,
 
     @SerializedName("patExclusionStatus")
-    var patExclusionStatus: Int=0,
+    var patExclusionStatus: Int = 0,
 
     @SerializedName("shgFlag")
-    val shgFlag: Int? = -1
+    val shgFlag: Int? = -1,
+    @SerializedName("beneficiaryAddress")
+    val beneficiaryAddress: String? = BLANK_STRING,
+
+    @SerializedName("guardianName")
+    val guardianName: String? = BLANK_STRING,
+
+    @SerializedName("cohortName")
+    val cohortName: String? = BLANK_STRING,
+    @SerializedName("externalSystemId")
+    val externalSystemId: String? = BLANK_STRING
 ) {
 
     companion object {
-        fun getPatSummarySaveRequest(didiEntity: DidiEntity, answerDetailDTOList: List<AnswerDetailDTOListItem?>, villageEntity: VillageEntity, surveyId: Int, languageId: Int, userType: String): PATSummarySaveRequest {
+        fun getPatSummarySaveRequest(
+            didiEntity: DidiEntity,
+            answerDetailDTOList: List<AnswerDetailDTOListItem?>,
+            villageEntity: VillageEntity,
+            surveyId: Int,
+            languageId: Int,
+            userType: String
+        ): PATSummarySaveRequest {
             return PATSummarySaveRequest(
                 surveyId = surveyId,
                 stateId = villageEntity.stateId,
@@ -70,12 +87,15 @@ data class PATSummarySaveRequest(
                 section2Status = didiEntity.section2Status,
                 patExclusionStatus = didiEntity.patExclusionStatus,
                 shgFlag = didiEntity.shgFlag,
+                beneficiaryAddress = didiEntity.address,
+                cohortName = didiEntity.cohortName,
+                guardianName = didiEntity.guardianName,
                 answerDetailDTOList = answerDetailDTOList
             )
         }
     }
 
-    fun toJson() : JsonObject {
+    fun toJson(): JsonObject {
         val jsonObject = JsonObject()
         jsonObject.addProperty("surveyId", surveyId)
         jsonObject.addProperty("stateId", stateId)
@@ -112,7 +132,10 @@ data class AnswerDetailDTOListItem(
 ) {
 
     companion object {
-        fun getAnswerDetailDtoListItem(sectionAnswerEntityList: List<SectionAnswerEntity>, numericAnswerEntityList: List<NumericAnswerEntity>): List<AnswerDetailDTOListItem> {
+        fun getAnswerDetailDtoListItem(
+            sectionAnswerEntityList: List<SectionAnswerEntity>,
+            numericAnswerEntityList: List<NumericAnswerEntity>
+        ): List<AnswerDetailDTOListItem> {
             var optionList: List<OptionsItem> = emptyList()
             val qList = mutableListOf<AnswerDetailDTOListItem>()
             if (sectionAnswerEntityList.isNotEmpty()) {
@@ -130,7 +153,8 @@ data class AnswerDetailDTOListItem(
                             )
                         )
                     } else {
-                        val numOptionList = numericAnswerEntityList.filter { it.questionId == sectionAnswerEntity.questionId }
+                        val numOptionList =
+                            numericAnswerEntityList.filter { it.questionId == sectionAnswerEntity.questionId }
 
                         val tList: java.util.ArrayList<OptionsItem> = arrayListOf()
                         if (numOptionList.isNotEmpty()) {
@@ -148,7 +172,7 @@ data class AnswerDetailDTOListItem(
                                 )
                             }
                             optionList = tList
-                        }else{
+                        } else {
                             tList.add(
                                 OptionsItem(
                                     optionId = sectionAnswerEntity.optionId,

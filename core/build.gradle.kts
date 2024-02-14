@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
-
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
@@ -63,6 +61,8 @@ dependencies {
 
     implementation("com.google.dagger:hilt-android:2.43.2")
     kapt("com.google.dagger:hilt-android-compiler:2.43.2")
+    kapt("androidx.hilt:hilt-compiler:1.0.0")
+
 
     implementation(project(":internetSpeedChecker"))
 

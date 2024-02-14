@@ -213,7 +213,7 @@ class PatSectionSummaryViewModel @Inject constructor(
         }
     }
 
-    fun calculateDidiScore(didiId: Int) {
+    private suspend fun calculateDidiScore(didiId: Int) {
         var passingMark = 0
         var isDidiAccepted = false
         var comment = LOW_SCORE
@@ -313,4 +313,13 @@ class PatSectionSummaryViewModel @Inject constructor(
         }
     }
 
+
+    fun writePatEvents() {
+        CoroutineScope(Dispatchers.IO).launch {
+            calculateDidiScore(didiEntity.value.id)
+            val updatedDidiEntity = patSectionRepository.getDidiFromDB(didiEntity.value.id)
+            patSectionRepository.writePatSummarySaveEvent(updatedDidiEntity)
+            patSectionRepository.writePatScoreSaveEvent(updatedDidiEntity)
+        }
+    }
 }

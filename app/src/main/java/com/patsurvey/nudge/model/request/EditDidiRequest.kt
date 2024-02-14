@@ -24,7 +24,7 @@ data class EditDidiRequest(
     companion object {
         fun getUpdateDidiDetailsRequest(didiEntity: DidiEntity): EditDidiRequest {
             return EditDidiRequest(
-                id = if (didiEntity.serverId != 0) didiEntity.serverId else didiEntity.id,
+                id = didiEntity.serverId,
                 name = didiEntity.name,
                 address = didiEntity.address,
                 guardianName = didiEntity.guardianName,

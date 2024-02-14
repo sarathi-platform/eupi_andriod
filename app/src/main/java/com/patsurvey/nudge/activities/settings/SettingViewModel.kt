@@ -1,12 +1,15 @@
 package com.patsurvey.nudge.activities.settings
 
 import android.content.Context
+import android.content.Intent
 import android.os.CountDownTimer
 import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.facebook.network.connectionclass.DeviceBandwidthSampler
+import com.nudge.core.ZIP_MIME_TYPE
+import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.enums.NetworkSpeed
 import com.patsurvey.nudge.MyApplication
@@ -329,10 +332,13 @@ class SettingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val fetchAllDidiNeedToPostList = didiDao.fetchAllDidiNeedToPost(true, "", 0)
             val fetchPendingDidiList = didiDao.fetchPendingDidi(true, "")
-            val fetchAllDidiNeedToDeleteList = didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, true, "", 0)
-            val fetchAllPendingDidiNeedToDeleteList = didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, "", 0)
+            val fetchAllDidiNeedToDeleteList =
+                didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, true, "", 0)
+            val fetchAllPendingDidiNeedToDeleteList =
+                didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, "", 0)
             val fetchAllDidiNeedToUpdateList = didiDao.fetchAllDidiNeedToUpdate(true, "", 0)
-            val fetchAllPendingDidiNeedToUpdateList = didiDao.fetchAllPendingDidiNeedToUpdate(true, "", 0)
+            val fetchAllPendingDidiNeedToUpdateList =
+                didiDao.fetchAllPendingDidiNeedToUpdate(true, "", 0)
             NudgeLogger.d(
                 "SettingViewModel",
                 "isSecondStepNeedToBeSync -> fetchAllDidiNeedToPostList -> ${fetchAllDidiNeedToPostList.json()};; \n\n fetchPendingDidiList -> ${fetchPendingDidiList.json()};; " +
@@ -383,7 +389,10 @@ class SettingViewModel @Inject constructor(
                 PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + village.id,
                 false
             )
-            NudgeLogger.d("SettingViewModel", "isBPCScoreSaved: village.id -> ${village.id}, isBPCScoreSaved -> $isBpcScoreSaved")
+            NudgeLogger.d(
+                "SettingViewModel",
+                "isBPCScoreSaved: village.id -> ${village.id}, isBPCScoreSaved -> $isBpcScoreSaved"
+            )
             isBpcScoreSavedList.add(isBpcScoreSaved)
         }
         if (isBpcScoreSavedList.contains(false))
@@ -430,7 +439,8 @@ class SettingViewModel @Inject constructor(
                         "\n\n fetchAllDidiNeedsToPostImage -> ${fetchAllDidiNeedsToPostImage.json()};; "
             )
 
-            NudgeLogger.d("SettingViewModel",
+            NudgeLogger.d(
+                "SettingViewModel",
                 "isFourthStepNeedToBeSync -> fetchPATSurveyDidiList.isEmpty() -> ${fetchPATSurveyDidiList.isEmpty()};;" +
                         "\n\n fetchPendingPatStatusDidi.isEmpty() -> ${fetchPendingPatStatusDidi.isEmpty()};; " +
                         "\n\n fetchAllDidiNeedsToPostImage.isEmpty() -> ${fetchAllDidiNeedsToPostImage.isEmpty()};; "
@@ -462,7 +472,7 @@ class SettingViewModel @Inject constructor(
         stepFifthSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val getAllNeedToPostVoDidis = didiDao.getAllNeedToPostVoDidis(true, "")
-            val fetchPendingVOStatusStatusDidi = didiDao.fetchPendingVOStatusStatusDidi(true,"")
+            val fetchPendingVOStatusStatusDidi = didiDao.fetchPendingVOStatusStatusDidi(true, "")
             NudgeLogger.d(
                 "SettingViewModel",
                 "isFifthStepNeedToBeSync -> getAllNeedToPostVoDidis -> ${getAllNeedToPostVoDidis.json()};;" +
@@ -506,7 +516,10 @@ class SettingViewModel @Inject constructor(
             val isFormUploadedForVillage = prefRepo.getPref(
                 PREF_NEED_TO_POST_FORM_C_AND_D_ + prefRepo.getSelectedVillage().id, false
             )
-            NudgeLogger.d("SettingViewModel", "isFormNeedToBeUpload: village.id -> ${village.id}, isFormUploadedForVillage -> $isFormUploadedForVillage")
+            NudgeLogger.d(
+                "SettingViewModel",
+                "isFormNeedToBeUpload: village.id -> ${village.id}, isFormUploadedForVillage -> $isFormUploadedForVillage"
+            )
 
             isFormUploadedList.add(isFormUploadedForVillage)
         }
@@ -872,6 +885,29 @@ class SettingViewModel @Inject constructor(
             }
             Log.d("D", ConnectionMonitor.DoesNetworkHaveInternet.getNetworkStrength().toString())
             NudgeCore.getEventObserver()?.syncPendingEvent(NudgeCore.getAppContext(),networkSpeed)
+        }
+    }
+
+    fun compressEventAndImageData(title: String) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val compression = ZipFileCompression()
+                val fileUri = compression.compressBackupFiles(
+                    NudgeCore.getAppContext(),
+                    prefRepo.getMobileNumber() ?: ""
+                )
+                val shareIntent = Intent(Intent.ACTION_SEND)
+                shareIntent.setType(ZIP_MIME_TYPE)
+                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri)
+                shareIntent.putExtra(Intent.EXTRA_TITLE, title)
+                val chooserIntent = Intent.createChooser(shareIntent, title)
+                NudgeCore.startExternalApp(chooserIntent)
+
+            } catch (exception: Exception) {
+                NudgeLogger.e("Compression", exception.message ?: "")
+                exception.printStackTrace()
+            }
+
         }
     }
 }

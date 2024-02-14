@@ -581,6 +581,7 @@ class VillageSelectionRepository @Inject constructor(
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             //Fetch Didi Details
             try {
+                val oldDidiList = didiDao.getAllDidisForVillage(villageId)
                 val didiResponse =
                     apiService.getDidisFromNetwork(villageId = villageId)
                 if (didiResponse.status.equals(SUCCESS, true)) {
@@ -620,45 +621,60 @@ class VillageSelectionRepository @Inject constructor(
                                                 .indexOf(StepType.VO_ENDROSEMENT.name)].status)
                                         else DidiEndorsementStatus.NOT_STARTED.ordinal
 
+                                    var remoteDidiEntity = DidiEntity(
+                                        id = didi.id,
+                                        serverId = didi.id,
+                                        name = didi.name,
+                                        address = didi.address,
+                                        guardianName = didi.guardianName,
+                                        relationship = didi.relationship,
+                                        castId = didi.castId,
+                                        castName = casteName,
+                                        cohortId = didi.cohortId,
+                                        villageId = villageId,
+                                        cohortName = tolaName,
+                                        needsToPost = false,
+                                        wealth_ranking = wealthRanking,
+                                        forVoEndorsement = if (patSurveyAcceptedRejected.equals(
+                                                COMPLETED_STRING, true
+                                            )
+                                        ) 1 else 0,
+                                        voEndorsementStatus = voEndorsementStatus,
+                                        needsToPostRanking = false,
+                                        createdDate = didi.createdDate,
+                                        modifiedDate = didi.modifiedDate,
+                                        beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
+                                        shgFlag = SHGFlag.fromSting(didi.shgFlag ?: SHGFlag.NOT_MARKED.name).value,
+                                        transactionId = "",
+                                        localCreatedDate = didi.localCreatedDate,
+                                        localModifiedDate = didi.localModifiedDate,
+                                        score = didi.crpScore,
+                                        crpScore = didi.crpScore,
+                                        crpComment = didi.crpComment,
+                                        comment = didi.comment,
+                                        crpUploadedImage = didi.crpUploadedImage,
+                                        needsToPostImage = false,
+                                        rankingEdit = didi.rankingEdit,
+                                        patEdit = didi.patEdit,
+                                        voEndorsementEdit = didi.voEndorsementEdit,
+                                        ableBodiedFlag = AbleBodiedFlag.fromSting(didi.ableBodiedFlag ?: AbleBodiedFlag.NOT_MARKED.name).value
+                                    )
+                                    val oldDidiEntity = oldDidiList.filter {
+                                        it.name == remoteDidiEntity.name
+                                                && it.guardianName == remoteDidiEntity.guardianName
+                                                && it.address == remoteDidiEntity.address
+                                                && it.cohortName == remoteDidiEntity.cohortName
+                                                && it.villageId == remoteDidiEntity.villageId
+                                    }.firstOrNull()
+                                    oldDidiEntity.let { oldDidi ->
+                                        if (oldDidi?.serverId == 0) {
+                                            remoteDidiEntity = oldDidi.copy(
+                                                serverId = remoteDidiEntity.serverId
+                                            )
+                                        }
+                                    }
                                     didiDao.insertDidi(
-                                        DidiEntity(
-                                            id = didi.id,
-                                            serverId = didi.id,
-                                            name = didi.name,
-                                            address = didi.address,
-                                            guardianName = didi.guardianName,
-                                            relationship = didi.relationship,
-                                            castId = didi.castId,
-                                            castName = casteName,
-                                            cohortId = didi.cohortId,
-                                            villageId = villageId,
-                                            cohortName = tolaName,
-                                            needsToPost = false,
-                                            wealth_ranking = wealthRanking,
-                                            forVoEndorsement = if (patSurveyAcceptedRejected.equals(
-                                                    COMPLETED_STRING, true
-                                                )
-                                            ) 1 else 0,
-                                            voEndorsementStatus = voEndorsementStatus,
-                                            needsToPostRanking = false,
-                                            createdDate = didi.createdDate,
-                                            modifiedDate = didi.modifiedDate,
-                                            beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
-                                            shgFlag = SHGFlag.fromSting(didi.shgFlag ?: SHGFlag.NOT_MARKED.name).value,
-                                            transactionId = "",
-                                            localCreatedDate = didi.localCreatedDate,
-                                            localModifiedDate = didi.localModifiedDate,
-                                            score = didi.crpScore,
-                                            crpScore = didi.crpScore,
-                                            crpComment = didi.crpComment,
-                                            comment = didi.comment,
-                                            crpUploadedImage = didi.crpUploadedImage,
-                                            needsToPostImage = false,
-                                            rankingEdit = didi.rankingEdit,
-                                            patEdit = didi.patEdit,
-                                            voEndorsementEdit = didi.voEndorsementEdit,
-                                            ableBodiedFlag = AbleBodiedFlag.fromSting(didi.ableBodiedFlag ?: AbleBodiedFlag.NOT_MARKED.name).value
-                                        )
+                                        remoteDidiEntity
                                     )
 //                                                    }
                                     if(!didi.crpUploadedImage.isNullOrEmpty()){
@@ -1068,7 +1084,9 @@ class VillageSelectionRepository @Inject constructor(
                         jsonTola.add(
                             DeleteTolaRequest(
                                 tola.serverId,
-                                localModifiedDate = System.currentTimeMillis()
+                                localModifiedDate = System.currentTimeMillis(),
+                                tola.name,
+                                tola.villageId
                             ).toJson()
                         )
                     }
