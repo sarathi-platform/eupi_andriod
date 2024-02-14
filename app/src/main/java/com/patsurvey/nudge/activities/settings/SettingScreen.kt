@@ -194,14 +194,14 @@ fun SettingScreen(
     } else {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.US)
         val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
-        list.add(
-            SettingOptionModel(
-                1,
-                context.getString(R.string.sync_up),
-                context.getString(R.string.last_syncup_text)
-                    .replace("{LAST_SYNC_TIME}", lastSyncTime.toString())
-            )
-        )
+//        list.add(
+//            SettingOptionModel(
+//                1,
+//                context.getString(R.string.sync_up),
+//                context.getString(R.string.last_syncup_text)
+//                    .replace("{LAST_SYNC_TIME}", lastSyncTime.toString())
+//            )
+//        )
         list.add(SettingOptionModel(2, context.getString(R.string.profile), BLANK_STRING))
         list.add(SettingOptionModel(3, context.getString(R.string.forms), BLANK_STRING))
         list.add(SettingOptionModel(4, context.getString(R.string.training_videos), BLANK_STRING))
@@ -410,52 +410,57 @@ fun SettingScreen(
                             navController = navController
                         ) {
                             when (index) {
+//                                0 -> {
+//                                    viewModel.syncErrorMessage.value = ""
+//                                    if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
+//                                        if (!viewModel.prefRepo.isUserBPC()) {
+//                                            viewModel.showSyncDialog.value = true
+//                                        } else {
+//                                            syncBPCStatus.value = viewModel.bpcSyncStatus.value
+//                                            isBPCDataNeedToBeSynced.value = false
+//                                            viewModel.showBPCSyncDialog.value = true
+//                                        }
+//                                    } else navController.navigate(AuthScreen.PROFILE_SCREEN.route)
+//                                }
+
                                 0 -> {
-                                    viewModel.syncErrorMessage.value = ""
-                                    if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
-                                        if (!viewModel.prefRepo.isUserBPC()) {
-                                            viewModel.showSyncDialog.value = true
-                                        } else {
-                                            syncBPCStatus.value = viewModel.bpcSyncStatus.value
-                                            isBPCDataNeedToBeSynced.value = false
-                                            viewModel.showBPCSyncDialog.value = true
-                                        }
-                                    } else navController.navigate(AuthScreen.PROFILE_SCREEN.route)
+                                    if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
+                                        navController.navigate(SettingScreens.PROFILE_SCREEN.route)
+                                    else navController.navigate(AuthScreen.PROFILE_SCREEN.route)
                                 }
 
                                 1 -> {
                                     if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
-                                        navController.navigate(SettingScreens.PROFILE_SCREEN.route)
+                                        expanded.value = !expanded.value
                                     else navController.navigate(AuthScreen.VIDEO_LIST_SCREEN.route)
                                 }
 
                                 2 -> {
-                                    if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
-                                        expanded.value = !expanded.value
-                                    else navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
-                                }
-
-                                3 -> {
 
                                     if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
                                         navController.navigate(SettingScreens.VIDEO_LIST_SCREEN.route)
                                     else
                                     //navController.navigate(SettingScreens.BUG_LOGGING_SCREEN.route)
+                                        navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
+
+
+                                }
+
+                                3 -> {
+                                    if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
+                                        navController.navigate(SettingScreens.LANGUAGE_SCREEN.route)
+                                    } else {
 
                                         viewModel.buildAndShareLogs()
-
-
+                                    }
                                 }
 
                                 4 -> {
-                                    navController.navigate(SettingScreens.LANGUAGE_SCREEN.route)
-                                }
-
-                                5 -> {
 //                                    navController.navigate(SettingScreens.BUG_LOGGING_SCREEN.route)
                                     viewModel.buildAndShareLogs()
                                 }
-                                6 -> {
+
+                                5 -> {
                                     viewModel.compressEventAndImageData(context.getString(R.string.share_export_file))
                                 }
 
