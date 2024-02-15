@@ -993,7 +993,7 @@ class SurveySummaryViewModel @Inject constructor(
             prefRepo = repository.prefRepo
         )
         updateWorkflowEvent?.let { event ->
-            repository.saveEventToMultipleSources(event)
+            repository.saveEventToMultipleSources(event, listOf())
         }
         }
 
@@ -1013,7 +1013,7 @@ class SurveySummaryViewModel @Inject constructor(
                 repository.prefRepo.getUserId()
             )
 
-            repository.saveEventToMultipleSources(addRankingFlagEditEvent)
+            repository.saveEventToMultipleSources(addRankingFlagEditEvent, listOf())
         }
     }
 

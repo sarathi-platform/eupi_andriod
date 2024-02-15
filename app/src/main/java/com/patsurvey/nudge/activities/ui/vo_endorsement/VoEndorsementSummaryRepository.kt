@@ -6,7 +6,6 @@ import com.nudge.core.KEY_PARENT_ENTITY_DADA_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_DIDI_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_TOLA_NAME
 import com.nudge.core.SELECTION_MISSION
-import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.getDependentEventsId
@@ -38,7 +37,6 @@ class VoEndorsementSummaryRepository @Inject constructor(
     val answerDao: AnswerDao,
     val questionListDao: QuestionListDao,
     val stepsListDao: StepsListDao,
-    val eventsDao: EventsDao
 ):BaseRepository() {
     fun getAllQuestionsForLanguage():List<QuestionEntity>{
         return questionListDao.getAllQuestionsForLanguage(prefRepo.getAppLanguageId()?:2)
@@ -84,7 +82,7 @@ class VoEndorsementSummaryRepository @Inject constructor(
                 if (eventDependencies.isNotEmpty()) {
                     eventObserver?.addEventDependencies(eventDependencies)
                 }
-                saveEventToMultipleSources(it)
+                saveEventToMultipleSources(it, eventDependencies)
             }
         }
 

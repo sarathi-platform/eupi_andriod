@@ -1608,7 +1608,7 @@ class AddDidiViewModel @Inject constructor(
                 prefRepo = addDidiRepository.prefRepo
             )
             updateWorkflowEvent?.let { event ->
-                addDidiRepository.saveEventToMultipleSources(event)
+                addDidiRepository.saveEventToMultipleSources(event, listOf())
             }
         }
     }

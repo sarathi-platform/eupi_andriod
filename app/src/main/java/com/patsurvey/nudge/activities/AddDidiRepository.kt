@@ -10,7 +10,6 @@ import com.nudge.core.KEY_PARENT_ENTITY_DIDI_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_TOLA_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_VILLAGE_ID
 import com.nudge.core.SELECTION_MISSION
-import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.getDependentEventsId
@@ -54,7 +53,6 @@ import com.patsurvey.nudge.model.response.DidiApiResponse
 import com.patsurvey.nudge.model.response.WorkFlowResponse
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiStatus
-import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.getParentEntityMapForEvent
 import com.patsurvey.nudge.utils.getPatScoreSaveEvent
@@ -73,7 +71,6 @@ class AddDidiRepository @Inject constructor(
     val questionListDao: QuestionListDao,
     val answerDao: AnswerDao,
     val numericAnswerDao: NumericAnswerDao,
-    val eventsDao: EventsDao,
 ) : BaseRepository() {
     fun getSelectedVillage(): VillageEntity {
         return this.prefRepo.getSelectedVillage()
@@ -167,8 +164,6 @@ class AddDidiRepository @Inject constructor(
         eventName: EventName,
         eventType: EventType
     ) {
-        val eventObserver = NudgeCore.getEventObserver()
-
         val event = this.createEvent(
             eventItem,
             eventName,
@@ -177,12 +172,9 @@ class AddDidiRepository @Inject constructor(
 
         if (event?.id?.equals(BLANK_STRING) != true) {
             event?.let {
-                eventObserver?.addEvent(it)
-                saveEventToMultipleSources(it)
                 val eventDependencies = this.createEventDependency(eventItem, eventName, it)
-                if (eventDependencies.isNotEmpty()) {
-                    eventObserver?.addEventDependencies(eventDependencies)
-                }
+                saveEventToMultipleSources(it, eventDependencies)
+
             }
         }
     }

@@ -10,6 +10,10 @@ import android.os.Environment
 import android.provider.MediaStore
 import androidx.core.net.toUri
 import com.nudge.core.SARATHI_DIRECTORY_NAME
+import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.entities.EventDependencyEntity
+import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventWriterName
 import com.nudge.core.eventswriter.IEventWriter
 import java.io.File
@@ -18,8 +22,17 @@ import java.io.IOException
 
 class ImageEventWriter : IEventWriter {
     val mimeType = "image/png"
-    override suspend fun addEvent(context: Context, event: String, mobileNo: String, uri: Uri?) {
-        uri?.let { saveImageToMediaStore(context, it,mobileNo) }
+
+    override suspend fun addEvent(
+        context: Context,
+        event: Events,
+        mobileNo: String,
+        uri: Uri?,
+        dependencyEntity: List<EventDependencyEntity>,
+        eventsDao: EventsDao,
+        eventDependencyDao: EventDependencyDao
+    ) {
+        uri?.let { saveImageToMediaStore(context, it, mobileNo) }
     }
 
 

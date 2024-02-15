@@ -361,7 +361,12 @@ class ProgressScreenViewModel @Inject constructor(
                 EventType.STATEFUL,
                 progressScreenRepository.prefRepo
             )
-            updateWorkflowEvent?.let { progressScreenRepository.saveEventToMultipleSources(it) }
+            updateWorkflowEvent?.let {
+                progressScreenRepository.saveEventToMultipleSources(
+                    it,
+                    listOf()
+                )
+            }
             }
 
     }

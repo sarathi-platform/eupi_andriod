@@ -4,7 +4,6 @@ import com.nudge.core.KEY_PARENT_ENTITY_ADDRESS
 import com.nudge.core.KEY_PARENT_ENTITY_DADA_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_DIDI_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_TOLA_NAME
-import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.getDependentEventsId
@@ -40,7 +39,6 @@ class PatSectionSummaryRepository @Inject constructor(
     private val answerDao: AnswerDao,
     private val numericAnswerDao: NumericAnswerDao,
     private val stepsListDao: StepsListDao,
-    private val eventsDao: EventsDao
 ):BaseRepository() {
 
     fun getAllStepsForVillage():List<StepListEntity>{
@@ -234,12 +232,13 @@ class PatSectionSummaryRepository @Inject constructor(
 
         if (event?.id?.equals(BLANK_STRING) != true) {
             event?.let {
-                saveEventToMultipleSources(it)
                 eventObserver?.addEvent(it)
                 val eventDependencies = this.createEventDependency(eventItem, eventName, it)
                 if (eventDependencies.isNotEmpty()) {
                     eventObserver?.addEventDependencies(eventDependencies)
                 }
+                saveEventToMultipleSources(it, eventDependencies)
+
             }
         }
     }

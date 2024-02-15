@@ -544,7 +544,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
             prefRepo = repository.prefRepo
         )
         updateWorkflowEvent?.let { event ->
-            repository.saveEventToMultipleSources(event)
+            repository.saveEventToMultipleSources(event, listOf())
         }
     }
 
@@ -564,7 +564,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                 repository.prefRepo.getUserId()
             )
 
-            repository.saveEventToMultipleSources(addRankingFlagEditEvent)
+            repository.saveEventToMultipleSources(addRankingFlagEditEvent, listOf())
         }
     }
 

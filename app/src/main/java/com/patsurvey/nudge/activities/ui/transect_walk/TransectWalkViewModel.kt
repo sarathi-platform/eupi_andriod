@@ -1295,7 +1295,12 @@ class TransectWalkViewModel @Inject constructor(
         transectWalkRepository.insertEventIntoDb(event, emptyList())
         }
 
-        updateWorkflowEvent?.let { transectWalkRepository.saveEventToMultipleSources(it) }
+        updateWorkflowEvent?.let {
+            transectWalkRepository.saveEventToMultipleSources(
+                it,
+                listOf()
+            )
+        }
 
     }
 

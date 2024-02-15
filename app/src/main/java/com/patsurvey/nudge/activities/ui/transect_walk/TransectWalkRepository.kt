@@ -7,7 +7,6 @@ import com.nudge.core.KEY_PARENT_ENTITY_TOLA_ID
 import com.nudge.core.KEY_PARENT_ENTITY_TOLA_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_VILLAGE_ID
 import com.nudge.core.SELECTION_MISSION
-import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.getDependentEventsId
@@ -52,7 +51,6 @@ class TransectWalkRepository @Inject constructor(
     val tolaDao: TolaDao,
     val stepsListDao: StepsListDao,
     val villageListDao: VillageListDao,
-    val eventsDao: EventsDao
 ) : BaseRepository() {
 
     fun getSelectedVillage(): VillageEntity {
@@ -272,12 +270,9 @@ class TransectWalkRepository @Inject constructor(
 
         if (event?.id?.equals(BLANK_STRING) != true) {
             event?.let {
-                eventObserver?.addEvent(it)
-                saveEventToMultipleSources(event)
                 val eventDependencies = this.createEventDependency(eventItem, eventName, it)
-                if (eventDependencies.isNotEmpty()) {
-                    eventObserver?.addEventDependencies(eventDependencies)
-                }
+                saveEventToMultipleSources(event, eventDependencies)
+
             }
         }
     }

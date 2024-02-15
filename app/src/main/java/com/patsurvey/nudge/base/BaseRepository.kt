@@ -4,6 +4,8 @@ import android.net.Uri
 import com.google.gson.JsonSyntaxException
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.SELECTION_MISSION
+import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventFormatterName
@@ -72,6 +74,14 @@ abstract class BaseRepository{
 
     @Inject
     lateinit var didiDao:DidiDao
+
+    @Inject
+    lateinit var eventsDao: EventsDao
+
+    @Inject
+    lateinit var eventDependencyDao: EventDependencyDao
+
+
 
     open fun onServerError(error: ErrorModel?){
 
@@ -324,22 +334,29 @@ abstract class BaseRepository{
     private fun getEventFormatter(): IEventFormatter {
         return EventWriterFactory().createEventWriter(
             NudgeCore.getAppContext(),
-            EventFormatterName.JSON_FORMAT_EVENT
+            EventFormatterName.JSON_FORMAT_EVENT,
+            eventsDao = eventsDao,
+            eventDependencyDao
         )
     }
 
-    open suspend fun saveEventToMultipleSources(event: Events) {
+    open suspend fun saveEventToMultipleSources(
+        event: Events,
+        eventDependencies: List<EventDependencyEntity>
+    ) {
      try {
 
 
          val eventFormatter: IEventFormatter = getEventFormatter()
          eventFormatter.saveAndFormatEvent(
              event = event,
+             dependencyEntity = eventDependencies,
              listOf(
                  EventWriterName.FILE_EVENT_WRITER,
                  EventWriterName.DB_EVENT_WRITER,
                  EventWriterName.LOG_EVENT_WRITER
-             )
+             ),
+
          )
      }   catch (exception:Exception)
      {
@@ -354,12 +371,14 @@ abstract class BaseRepository{
 
         eventFormatter.saveAndFormatEvent(
             event = event,
+            dependencyEntity = listOf(),
             listOf(
                 EventWriterName.FILE_EVENT_WRITER,
                 EventWriterName.IMAGE_EVENT_WRITER,
                 EventWriterName.DB_EVENT_WRITER,
                 EventWriterName.LOG_EVENT_WRITER
             ),
+
             uri
         )
         uri = null

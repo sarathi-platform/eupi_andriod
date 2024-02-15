@@ -13,7 +13,13 @@ import android.util.Log
 import com.nudge.core.EVENT_DELIMETER
 import com.nudge.core.LOCAL_BACKUP_EXTENSION
 import com.nudge.core.SARATHI_DIRECTORY_NAME
+import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.entities.EventDependencyEntity
+import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventWriterName
+import com.nudge.core.json
+import com.nudge.core.model.request.toEventRequest
 import com.nudge.core.preference.CoreSharedPrefs
 import java.io.File
 import java.io.FileWriter
@@ -21,8 +27,17 @@ import java.io.FileWriter
 
 open class TextFileEventWriter : IEventWriter {
     val textMimeType = "text/plain"
-    override suspend fun addEvent(context: Context, event: String, mobileNo: String, uri: Uri?) {
-        writeEventInFile(context, event, mobileNo)
+
+    override suspend fun addEvent(
+        context: Context,
+        event: Events,
+        mobileNo: String,
+        uri: Uri?,
+        dependencyEntity: List<EventDependencyEntity>,
+        eventsDao: EventsDao,
+        eventDependencyDao: EventDependencyDao
+    ) {
+        writeEventInFile(context, event.toEventRequest().json(), mobileNo)
     }
 
     override suspend fun getEventWriteType(): EventWriterName {
