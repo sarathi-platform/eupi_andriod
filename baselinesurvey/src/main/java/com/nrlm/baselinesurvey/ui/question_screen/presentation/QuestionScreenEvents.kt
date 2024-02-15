@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation
 
+import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
@@ -61,4 +62,9 @@ sealed class QuestionScreenEvents {
 
     data class SendAnswersToServer(val surveyId: Int, val sectionId: Int, val didiId: Int) :
         QuestionScreenEvents()
+
+    data class SaveMiscTypeQuestionAnswers(val surveyeeId: Int, val questionEntityState: QuestionEntityState, val optionItemEntity: OptionItemEntity, val selectedValue: String) : QuestionScreenEvents()
+    data class UpdateQuestionAnswerMappingForUi(val question: QuestionEntityState, val mOptionItem: List<OptionItemEntity>): QuestionScreenEvents()
+
+    data class UpdateInputTypeQuestionAnswerEntityForUi(val inputTypeQuestionAnswerEntity: InputTypeQuestionAnswerEntity)
 }

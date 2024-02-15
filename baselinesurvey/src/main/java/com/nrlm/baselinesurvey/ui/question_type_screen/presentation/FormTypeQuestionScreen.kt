@@ -3,13 +3,11 @@ package com.nrlm.baselinesurvey.ui.question_type_screen.presentation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -19,17 +17,14 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,20 +33,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.DELAY_1_MS
 import com.nrlm.baselinesurvey.DELAY_2_MS
-import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
+import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
-import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.NestedLazyListForFormQuestions
 import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScreenViewModel
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
-import com.nrlm.baselinesurvey.ui.theme.blueDark
-import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
+import com.nrlm.baselinesurvey.ui.theme.white
 import kotlinx.coroutines.delay
 
 @Composable
@@ -73,11 +64,14 @@ fun FormTypeQuestionScreen(
         delay(DELAY_2_MS)
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
     }
-    val totalOptionSize = remember {
-        mutableStateOf(viewModel.optionList.value.size)
-    }
-    val answeredOptionCount = remember { mutableIntStateOf(0) }
+
     val focusManager = LocalFocusManager.current
+
+    val saveButtonActiveState = remember {
+        derivedStateOf {
+            referenceId.isNotBlank() || (viewModel.answeredOptionCount.intValue == viewModel.totalOptionSize.value)
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -110,12 +104,12 @@ fun FormTypeQuestionScreen(
             ) {
                 ButtonPositive(
                     buttonTitle = questionName,
-                    isActive = !referenceId.isNullOrBlank() || answeredOptionCount.value == totalOptionSize.value,
+                    isActive = saveButtonActiveState.value,
                     isArrowRequired = false
                 ) {
                     viewModel.onEvent(
-                        QuestionTypeEvent.StoreCacheFormQuestionResponseEvent(
-                            viewModel._storeCacheForResponse.distinct()
+                        QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent(
+                            viewModel.formQuestionResponseEntity.value
                         )
                     )
                     navController.popBackStack()
@@ -148,12 +142,10 @@ fun FormTypeQuestionScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (!viewModel.loaderState.value.isLoaderVisible) {
-
-                    totalOptionSize.value = viewModel.fromTypeOption.options.size
                     NestedLazyListForFormQuestions(
                         viewModel = viewModel,
                         answeredQuestionCountIncreased = { count ->
-                            answeredOptionCount.value = count
+                            viewModel.answeredOptionCount.value = count
                         },
                         onSaveFormTypeOption = { questionTypeEvent ->
                             viewModel.onEvent(
@@ -161,15 +153,7 @@ fun FormTypeQuestionScreen(
                             )
                         },
                         saveCacheFormData = { formQuestionResponseEntity ->
-                            val form = viewModel._storeCacheForResponse
-                                .find { it.optionId == formQuestionResponseEntity.optionId }
-                            if (form == null) {
-                                answeredOptionCount.value.and(formQuestionResponseEntity.optionId)
-                                answeredOptionCount.value = answeredOptionCount.value.inc()
-                                viewModel._storeCacheForResponse.add(formQuestionResponseEntity)
-                            } else {
-                                form.selectedValue = formQuestionResponseEntity.selectedValue
-                            }
+                            viewModel.onEvent(QuestionTypeEvent.CacheFormQuestionResponseEvent(formQuestionResponseEntity))
                         }
                     )
                 }

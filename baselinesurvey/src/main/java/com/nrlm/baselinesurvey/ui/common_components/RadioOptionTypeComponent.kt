@@ -45,6 +45,7 @@ import com.nrlm.baselinesurvey.ui.theme.white
 fun RadioOptionTypeComponent(
     optionItemEntityState: OptionItemEntityState,
     isMandatory: Boolean = false,
+    selectedValue: String = BLANK_STRING,
     onOptionSelected: (optionValue: String) -> Unit
 ) {
     val yesNoButtonViewHeight = remember {
@@ -53,7 +54,7 @@ fun RadioOptionTypeComponent(
     val localDensity = LocalDensity.current
 
     val selectedValue = remember {
-        mutableStateOf(BLANK_STRING)
+        mutableStateOf(selectedValue)
     }
 
     VerticalAnimatedVisibilityComponent(visible = optionItemEntityState.showQuestion) {

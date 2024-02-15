@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponent
 
-import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
@@ -36,7 +35,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -78,10 +76,7 @@ import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
-import com.nrlm.baselinesurvey.utils.findIndexForQuestionId
-import com.nrlm.baselinesurvey.utils.findIndexOfOptionById
 import com.nrlm.baselinesurvey.utils.findOptionFromId
-import com.nrlm.baselinesurvey.utils.getAnswerOptionIdForSingleAnswerOption
 import com.nrlm.baselinesurvey.utils.mapFormQuestionResponseToFromResponseObjectDto
 import com.nrlm.baselinesurvey.utils.mapToOptionItem
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
@@ -320,7 +315,6 @@ fun NestedLazyList(
                         items = questionScreenViewModel.questionEntityStateList.distinctBy { it.questionId } ?: emptyList()
                     ) { index, question ->
 
-
                         when (question?.questionEntity?.type) {
                             QuestionType.RadioButton.name -> {
                                 val selectedOption =
@@ -472,6 +466,8 @@ fun NestedLazyList(
                                             }
                                         }
 
+                                        questionScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionQuestionStateForMultipleOption(questionEntityState = question, optionItemEntityList = optionItems))
+
                                         questionScreenViewModel.onEvent(
                                             QuestionScreenEvents.SectionProgressUpdated(
                                                 surveyId = sectionDetails.surveyId,
@@ -516,7 +512,7 @@ fun NestedLazyList(
                                     maxCustomHeight = maxHeight,
                                     onAnswerSelection = { questionIndex ->
                                         //TODO need to be dynamic..
-                                        if (question.questionDisplay.equals("Add Didi", false)) {
+                                        if (question.questionEntity.questionDisplay.equals("Add Didi", false)) {
                                             navigateToBaseLineStartScreen(
                                                 surveyeeId,
                                                 sectionDetails.surveyId,
@@ -538,7 +534,7 @@ fun NestedLazyList(
                                             }
                                             navigateToFormTypeQuestionScreen(
                                                 navController,
-                                                question,
+                                                question.questionEntity,
                                                 sectionDetails,
                                                 surveyeeId
                                             )
@@ -559,32 +555,35 @@ fun NestedLazyList(
                                 val selectedOption =
                                     sectionDetails.questionAnswerMapping[question.questionId]?.first()
                                 val optionList = sectionDetails.optionsItemMap[question.questionId]
-                                val selectedOptionMap =
+                                val selectedOptionMapForNumericInputTypeQuestions =
                                     mutableMapOf<Int, InputTypeQuestionAnswerEntity>()
-                                val selectedInputQuestionOptionItemEntityList =
-                                    if (optionList != null) {
-                                        inputTypeQuestionAnswerEntityList.value.mapToOptionItem(
-                                            optionList
-                                        )
-                                    } else emptyList()
-                                selectedInputQuestionOptionItemEntityList.forEach { option ->
-                                    option.optionId?.let {
-                                        selectedOptionMap[it] =
-                                            inputTypeQuestionAnswerEntityList.value.findOptionFromId(
-                                                option
-                                            )!!
+                                if (question.questionEntity.type == QuestionType.InputNumber.name) {
+                                    val selectedInputQuestionOptionItemEntityList =
+                                        if (optionList != null) {
+                                            inputTypeQuestionAnswerEntityList.value.mapToOptionItem(
+                                                optionList
+                                            )
+                                        } else emptyList()
+                                    selectedInputQuestionOptionItemEntityList.forEach { option ->
+                                        option.optionId?.let {
+                                            selectedOptionMapForNumericInputTypeQuestions[it] =
+                                                inputTypeQuestionAnswerEntityList.value.findOptionFromId(
+                                                    option
+                                                )!!
+                                        }
                                     }
                                 }
+
 
 
                                 MiscQuestionBoxComponent(
                                     question = question.questionEntity,
                                     showQuestionState = question,
                                     questionIndex = index,
-                                    selectedOptionMap = selectedOptionMap,
+                                    selectedOptionMapForNumericInputTypeQuestions = selectedOptionMapForNumericInputTypeQuestions,
+                                    selectedOption = selectedOption,
                                     maxCustomHeight = maxHeight,
-                                    optionItemEntityList = sectionDetails.optionsItemMap[question.questionId],
-                                    onAnswerSelection = { questionIndex, optionId, selectedValue ->
+                                    onAnswerSelection = { questionIndex, optionItem, selectedValue ->
                                         if (!answeredQuestionIndices.value.contains(questionIndex)) {
                                             answeredQuestionIndices.value.add(questionIndex)
                                             answeredQuestionCount.value =
@@ -592,6 +591,15 @@ fun NestedLazyList(
                                                     .coerceIn(0, sectionDetails.questionList.size)
                                             answeredQuestionCountIncreased(answeredQuestionCount.value)
                                         }
+
+
+                                        when (optionItem.optionType) {
+                                            QuestionType.SingleSelectDropdown.name -> {
+                                                val mOptionItem = optionItem.copy(selectedValue = selectedValue)
+                                                questionScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption(question, mOptionItem))
+                                            }
+                                        }
+
 
                                         questionScreenViewModel.onEvent(
                                             QuestionScreenEvents.SectionProgressUpdated(
@@ -602,17 +610,32 @@ fun NestedLazyList(
                                             )
                                         )
 
+                                        val mOptionItem = optionItem.copy(selectedValue = selectedValue)
                                         questionScreenViewModel.onEvent(
-                                            QuestionScreenEvents.InputTypeQuestionAnswered(
-                                                surveyId = sectionDetails.surveyId,
-                                                sectionId = sectionDetails.sectionId,
-                                                didiId = surveyeeId,
-                                                questionId = question.questionId ?: 0,
-                                                optionItemId = optionId,
-                                                inputValue = selectedValue
-                                            )
+                                            QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(question, listOf(mOptionItem))
                                         )
 
+                                        when (question.questionEntity.type) {
+                                            QuestionType.InputNumber.name -> {
+                                                questionScreenViewModel.onEvent(
+                                                    QuestionScreenEvents.InputTypeQuestionAnswered(
+                                                        surveyId = sectionDetails.surveyId,
+                                                        sectionId = sectionDetails.sectionId,
+                                                        didiId = surveyeeId,
+                                                        questionId = question.questionId ?: -1,
+                                                        optionItemId = optionItem.optionId ?: -1,
+                                                        inputValue = selectedValue
+                                                    )
+                                                )
+                                            }
+                                            QuestionType.Input.name,
+                                            QuestionType.InputText.name,
+                                            QuestionType.SingleSelectDropdown.name -> {
+                                                questionScreenViewModel.onEvent(
+                                                    QuestionScreenEvents.SaveMiscTypeQuestionAnswers(surveyeeId = surveyeeId, questionEntityState = question, optionItemEntity = optionItem, selectedValue = selectedValue)
+                                                )
+                                            }
+                                        }
                                     },
                                     onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
 

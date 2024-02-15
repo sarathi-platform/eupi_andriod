@@ -180,6 +180,9 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                             conditions = optionsItem.conditions
                         )
                         optionItemDao.insertOption(optionItemEntity)
+                        optionsItem.conditions?.forEach { conditionsDto ->
+//                            if (conditionsDto?.resultType?.equals())
+                        }
                     }
                 }
             }

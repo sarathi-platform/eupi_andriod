@@ -202,7 +202,6 @@ fun QuestionScreen(
                     sectionDetails = sectionDetails,
                     viewModel = viewModel,
                     surveyeeId = surveyeeId,
-                    surveyId = surveyId,
                     sectionInfoButtonClicked = {
                         scope.launch {
                             if (!scaffoldState.isVisible) {

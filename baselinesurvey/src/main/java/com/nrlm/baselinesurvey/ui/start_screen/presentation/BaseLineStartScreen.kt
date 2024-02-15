@@ -146,7 +146,8 @@ fun BaseLineStartScreen(
                     navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
                 },
                 negativeButtonOnClick = {
-                    navigateBackToSurveyeeListScreen(navController)
+                    navController.popBackStack()
+//                    navigateBackToSurveyeeListScreen(navController)
                 }
             )
         }

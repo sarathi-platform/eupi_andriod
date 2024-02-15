@@ -28,12 +28,13 @@ interface QuestionScreenRepository {
         didiId: Int,
         sectionId: Int,
         questionId: Int,
+        surveyId: Int,
         optionItems: List<OptionItemEntity>,
         questionType: String,
         questionSummary: String
     )
 
-    fun isQuestionAlreadyAnswered(didiId: Int, questionId: Int, sectionId: Int): Int
+    fun isQuestionAlreadyAnswered(didiId: Int, questionId: Int, sectionId: Int, surveyId: Int): Int
 
     fun isInputTypeQuestionAlreadyAnswered(surveyId: Int, sectionId: Int, didiId: Int, questionId: Int, optionItemId: Int): Int
 
