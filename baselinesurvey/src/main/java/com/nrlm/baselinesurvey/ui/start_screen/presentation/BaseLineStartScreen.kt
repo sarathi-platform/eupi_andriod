@@ -50,7 +50,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
 import com.nrlm.baselinesurvey.navigation.home.SECTION_SCREEN_ROUTE_NAME
@@ -93,23 +92,14 @@ fun BaseLineStartScreen(
     LaunchedEffect(key1 = true) {
         baseLineStartViewModel.getDidiDetails(didiId)
     }
-    val didiInfoDetail = baseLineStartViewModel.didiInfo
-    val isAdharCard =
-        mutableStateOf(didiInfoDetail.value?.isAdharCard ?: -1)
 
-    val aadharNumber =
-        mutableStateOf(didiInfoDetail.value?.adharNumber ?: BLANK_STRING)
 
-    val phoneNumber =
-        mutableStateOf(didiInfoDetail.value?.phoneNumber ?: BLANK_STRING)
-
-    val isVoterCard =
-        mutableStateOf(didiInfoDetail.value?.isVoterCard ?: -1)
+    //val didiInfoDetail = baseLineStartViewModel.didiInfo
 
     val isContinueButtonActive =
         derivedStateOf {
-            (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (isVoterCard.value != -1) && (phoneNumber.value.length == 10) &&
-                    ((isAdharCard.value != -1) && ((isAdharCard.value == 2) || (isAdharCard.value == 1 && aadharNumber.value.length == 12)))
+            (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (baseLineStartViewModel.isVoterCard.value != -1) && (baseLineStartViewModel.phoneNumber.value.length == 10) &&
+                    ((baseLineStartViewModel.isAdharCard.value != -1) && ((baseLineStartViewModel.isAdharCard.value == 2) || (baseLineStartViewModel.isAdharCard.value == 1 && baseLineStartViewModel.aadharNumber.value.length == 12)))
         }
 
 
@@ -134,10 +124,10 @@ fun BaseLineStartScreen(
                                 it,
                                 didiInfo = DidiIntoEntity(
                                     didiId = it,
-                                    isAdharCard = isAdharCard.value,
-                                    isVoterCard = isVoterCard.value,
-                                    adharNumber = aadharNumber.value,
-                                    phoneNumber = phoneNumber.value
+                                    isAdharCard = baseLineStartViewModel.isAdharCard.value,
+                                    isVoterCard = baseLineStartViewModel.isVoterCard.value,
+                                    adharNumber = baseLineStartViewModel.aadharNumber.value,
+                                    phoneNumber = baseLineStartViewModel.phoneNumber.value
                                 ),
                                 SurveyState.INPROGRESS
                             )
@@ -177,39 +167,43 @@ fun BaseLineStartScreen(
             TextDetails(title = "Dada : ", data = didi.value.dadaName)
             TextDetails(title = "Caste : ", data = getCasteName(didi.value.casteId))
             YesNoButtonComponent(
-                defaultValue = isAdharCard.value,
+                defaultValue = baseLineStartViewModel.isAdharCard.value,
                 title = "Does Didi have aadhar card?"
             ) {
-                isAdharCard.value = it
-                (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (isVoterCard.value != -1) && (phoneNumber.value.length == 10) && (isAdharCard.value != -1)
+                baseLineStartViewModel.isAdharCard.value = it
+                baseLineStartViewModel.adharCardState.value =
+                    baseLineStartViewModel.adharCardState.value.copy(showQuestion = baseLineStartViewModel.isAdharTxtVisible.value)
+                //  (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (baseLineStartViewModel.isVoterCard.value != -1) && (baseLineStartViewModel.phoneNumber.value.length == 10) && (baseLineStartViewModel.isAdharCard.value != -1)
             }
-            if (isAdharCard.value == 1) {
+
                 EditTextWithTitleComponent(
-                    defaultValue = aadharNumber.value,
+                    defaultValue = baseLineStartViewModel.aadharNumber.value,
                     title = "Enter Didi's aadhar number",
                     isOnlyNumber = true,
+                    showQuestion = baseLineStartViewModel.adharCardState.value,
                     maxLength = 12
                 ) {
-                    aadharNumber.value = it
+                    baseLineStartViewModel.aadharNumber.value = it
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-            }
+
             Spacer(modifier = Modifier.height(8.dp))
             YesNoButtonComponent(
-                defaultValue = isVoterCard.value,
+                defaultValue = baseLineStartViewModel.isVoterCard.value,
                 title = "Does didi have voter card?"
             ) {
-                isVoterCard.value = it
+                baseLineStartViewModel.isVoterCard.value = it
             }
             Spacer(modifier = Modifier.height(10.dp))
             EditTextWithTitleComponent(
-                defaultValue = phoneNumber.value,
+                defaultValue = baseLineStartViewModel.phoneNumber.value,
                 title = "Enter didi's family phone number",
-                showQuestion = OptionItemEntityState.getEmptyStateObject().copy(showQuestion = true),
+                showQuestion = OptionItemEntityState.getEmptyStateObject()
+                    .copy(showQuestion = true),
                 isOnlyNumber = true,
-                maxLength = 10
+                maxLength = 10,
             ) {
-                phoneNumber.value = it
+                baseLineStartViewModel.phoneNumber.value = it
             }
             Spacer(modifier = Modifier.height(10.dp))
 

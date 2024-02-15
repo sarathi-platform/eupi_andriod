@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
@@ -19,6 +20,7 @@ import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SurveyStateEvents
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.start_screen.domain.use_case.StartSurveyScreenUserCase
 import com.nrlm.baselinesurvey.ui.start_screen.presentation.StartSurveyScreenEvents
 import com.nrlm.baselinesurvey.utils.BaselineLogger
@@ -48,6 +50,17 @@ class BaseLineStartViewModel @Inject constructor(
     var updatedLocalPath = mutableStateOf(BLANK_STRING)
 
     var didiImageLocation = mutableStateOf("{0.0,0.0}")
+    val isAdharCard =
+        mutableStateOf(-1)
+
+    val aadharNumber =
+        mutableStateOf(BLANK_STRING)
+
+    val phoneNumber =
+        mutableStateOf(BLANK_STRING)
+
+    val isVoterCard =
+        mutableStateOf(-1)
 
     private val _didiEntity = MutableStateFlow(
         SurveyeeEntity.getEmptySurveyeeEntity()
@@ -57,6 +70,11 @@ class BaseLineStartViewModel @Inject constructor(
     )
     val didiEntity: StateFlow<SurveyeeEntity> get() = _didiEntity
     val didiInfo: StateFlow<DidiIntoEntity> get() = _didiInfo
+
+    var isAdharTxtVisible = derivedStateOf {
+        isAdharCard.value == 1
+    }
+    val adharCardState = mutableStateOf(OptionItemEntityState.getEmptyStateObject())
 
     fun getFileName(context: Context, didi: SurveyeeEntity): File {
         val directory = getImagePath(context)
@@ -134,6 +152,11 @@ class BaseLineStartViewModel @Inject constructor(
                     _didiEntity.value.crpImageLocalPath.toUri()
                 shouldShowPhoto.value = true
             }
+            isAdharCard.value = didiInfo.value?.isAdharCard ?: -1
+            adharCardState.value = adharCardState.value.copy(showQuestion = isAdharTxtVisible.value)
+            phoneNumber.value = didiInfo.value?.phoneNumber ?: BLANK_STRING
+            isVoterCard.value = didiInfo.value?.isVoterCard ?: -1
+            aadharNumber.value = didiInfo.value?.adharNumber ?: BLANK_STRING
         }
     }
 
