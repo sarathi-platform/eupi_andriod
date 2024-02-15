@@ -144,17 +144,34 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         didiId: Int,
         sectionId: Int,
         questionId: Int,
+        surveyId: Int,
         optionItems: List<OptionItemEntity>,
         questionType: String,
         questionSummary: String
     ) {
         sectionAnswerEntityDao.updateAnswer(
-            didiId, sectionId, questionId, optionItems, questionType, questionSummary
+            didiId = didiId,
+            sectionId = sectionId,
+            questionId = questionId,
+            surveyId = surveyId,
+            optionItems = optionItems,
+            questionType = questionType,
+            questionSummary = questionSummary
         )
     }
 
-    override fun isQuestionAlreadyAnswered(didiId: Int, questionId: Int, sectionId: Int): Int {
-        return sectionAnswerEntityDao.isQuestionAlreadyAnswered(didiId, questionId, sectionId)
+    override fun isQuestionAlreadyAnswered(
+        didiId: Int,
+        questionId: Int,
+        sectionId: Int,
+        surveyId: Int
+    ): Int {
+        return sectionAnswerEntityDao.isQuestionAlreadyAnswered(
+            didiId = didiId,
+            questionId = questionId,
+            sectionId = sectionId,
+            surveyId = surveyId
+        )
     }
 
     override fun isInputTypeQuestionAlreadyAnswered(

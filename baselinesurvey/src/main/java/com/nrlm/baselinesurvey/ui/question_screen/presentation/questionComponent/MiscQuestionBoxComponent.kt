@@ -1,7 +1,5 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponent
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -26,7 +24,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -63,10 +60,10 @@ fun MiscQuestionBoxComponent(
     questionIndex: Int,
     question: QuestionEntity,
     showQuestionState: QuestionEntityState = QuestionEntityState.getEmptyStateObject(),
-    optionItemEntityList: List<OptionItemEntity>?,
-    selectedOptionMap: Map<Int, InputTypeQuestionAnswerEntity>,
+    selectedOptionMapForNumericInputTypeQuestions: Map<Int, InputTypeQuestionAnswerEntity>,
+    selectedOption: OptionItemEntity?,
     maxCustomHeight: Dp,
-    onAnswerSelection: (questionIndex: Int, optionId: Int, selectedValue: String) -> Unit,
+    onAnswerSelection: (questionIndex: Int, optionItemEntity: OptionItemEntity, selectedValue: String) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
 ) {
@@ -159,12 +156,12 @@ fun MiscQuestionBoxComponent(
                                                 EditTextWithTitleComponent(
                                                     optionsItem.optionItemEntity.display,
                                                     showQuestion = optionsItem,
-                                                    defaultValue = selectedOptionMap[optionsItem.optionId]?.inputValue
+                                                    defaultValue = selectedOption?.selectedValue
                                                         ?: ""
                                                 ) { inputValue ->
                                                     onAnswerSelection(
                                                         questionIndex,
-                                                        optionsItem.optionId ?: 0,
+                                                        optionsItem.optionItemEntity,
                                                         inputValue
                                                     )
                                                 }
@@ -175,11 +172,11 @@ fun MiscQuestionBoxComponent(
                                                 IncrementDecrementView(
                                                     title = optionsItem.optionItemEntity.display ?: BLANK_STRING,
                                                     showQuestion = optionsItem,
-                                                    currentValue = selectedOptionMap[optionsItem.optionId]?.inputValue,
+                                                    currentValue = selectedOptionMapForNumericInputTypeQuestions[optionsItem.optionId]?.inputValue,
                                                     onAnswerSelection = { inputValue ->
                                                         onAnswerSelection(
                                                             questionIndex,
-                                                            optionsItem.optionId ?: 0,
+                                                            optionsItem.optionItemEntity,
                                                             inputValue
                                                         )
                                                     }
@@ -193,12 +190,12 @@ fun MiscQuestionBoxComponent(
                                                     hintText = optionsItem.optionItemEntity.selectedValue ?: "Select",
                                                     showQuestionState = optionsItem,
                                                     sources = optionsItem.optionItemEntity.values,
-                                                    selectOptionText = selectedOptionMap[optionsItem.optionId]?.inputValue
+                                                    selectOptionText = selectedOption?.selectedValue
                                                         ?: BLANK_STRING
                                                 ) {
                                                     onAnswerSelection(
                                                         questionIndex,
-                                                        optionsItem.optionId ?: 0,
+                                                        optionsItem.optionItemEntity,
                                                         it
                                                     )
                                                 }

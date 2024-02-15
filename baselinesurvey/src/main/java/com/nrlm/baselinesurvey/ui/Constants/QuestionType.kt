@@ -13,3 +13,8 @@ enum class QuestionType {
     Toggle,
     InputNumber;
 }
+
+ enum class ResultType {
+     Option,
+     Questions
+ }

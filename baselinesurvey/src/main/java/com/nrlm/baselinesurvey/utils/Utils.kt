@@ -37,6 +37,7 @@ import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.Sections
 import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.model.datamodel.QuestionList
+import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
@@ -579,7 +580,7 @@ fun String.toCamelCase() =
 
 inline fun <reified T : Any> T.json(): String = Gson().toJson(this, T::class.java)
 
-fun storeGivenAnswered(
+fun getEventForMiscQuestionAnswers(
     formTypeOption: FormTypeOption,
     optionId: Int,
     selectedValue: String,
@@ -707,6 +708,13 @@ fun SnapshotStateList<QuestionEntityState>.findQuestionEntityStateById(questionI
     return tempList.find { it.questionId == questionId }
 }
 
+fun InputTypeQuestionAnswerEntity.getOptionItemEntityFromInputTypeQuestionAnswer(sectionDetails: SectionListItem): OptionItemEntity? {
+    val question =  sectionDetails.questionList.find { it.questionId == this.questionId }
+    var mOptionItemEntity = sectionDetails.optionsItemMap[question?.questionId]?.find { it.optionId == this.optionId }
+    mOptionItemEntity = mOptionItemEntity?.copy(selectedValue = this.inputValue)
+    return mOptionItemEntity
+}
+
 fun List<OptionItemEntityState>.findIndexOfOptionById(optionId: Int?): Int {
     if (optionId == null)
         return -1
@@ -732,6 +740,24 @@ fun List<OptionItemEntityState>.updateOptionItemEntityListStateForQuestionByCond
     return updatedOptionItemEntityStateList
 }
 
+
+//TODO Test and optimize this extension function.
+fun <T> SnapshotStateList<T>.updateListAtIndex(index: Int, item: T?): SnapshotStateList<T> {
+    return when (item) {
+        is QuestionEntityState -> {
+            if (index != -1) {
+                this.removeAt(index)
+                val mIndex = (item?.questionEntity?.order ?: 0) - 1
+                this.add(if (mIndex != -1) index else index, item)
+            }
+            this
+        }
+        else -> {
+            this
+        }
+    }
+}
+
 fun ConditionsDto.checkCondition(userInputValue: String): Boolean {
     val condition = this.value.split(CONDITIONS_DELIMITER, ignoreCase = true)
     try {
@@ -743,7 +769,7 @@ fun ConditionsDto.checkCondition(userInputValue: String): Boolean {
                 userInputValue.toInt() < condition.first().toInt()
             }
             Operator.IN_BETWEEN -> {
-                userInputValue.toInt() > condition.first().toInt() && userInputValue.toInt() < condition.last().toInt()
+                userInputValue.toInt() >= condition.first().toInt() && userInputValue.toInt() <= condition.last().toInt()
             }
             /*Operator.LESS_THAN_EQUAL_TO ->{
                 if(totalAmount <= (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){

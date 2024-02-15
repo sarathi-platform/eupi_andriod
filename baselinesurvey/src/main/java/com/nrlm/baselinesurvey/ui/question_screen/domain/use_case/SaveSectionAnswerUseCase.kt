@@ -30,22 +30,29 @@ class SaveSectionAnswerUseCase(
         didiId: Int,
         sectionId: Int,
         questionId: Int,
+        surveyId: Int,
         optionItems: List<OptionItemEntity>,
         questionType: String,
         questionSummary: String
     ) {
         repository.updateSectionAnswerForDidi(
-            didiId,
-            sectionId,
-            questionId,
-            optionItems,
-            questionType,
-            questionSummary
+            didiId = didiId,
+            sectionId = sectionId,
+            questionId = questionId,
+            surveyId = surveyId,
+            optionItems = optionItems,
+            questionType = questionType,
+            questionSummary = questionSummary
         )
     }
 
-    fun isQuestionAlreadyAnswered(didiId: Int, questionId: Int, sectionId: Int): Int {
-        return repository.isQuestionAlreadyAnswered(didiId, questionId, sectionId)
+    fun isQuestionAlreadyAnswered(didiId: Int, questionId: Int, sectionId: Int, surveyId: Int): Int {
+        return repository.isQuestionAlreadyAnswered(
+            didiId = didiId,
+            questionId = questionId,
+            sectionId = sectionId,
+            surveyId = surveyId
+        )
     }
 
     fun isInputTypeQuestionAlreadyAnswered(surveyId: Int, sectionId: Int, questionId: Int, didiId: Int, optionId: Int): Int {

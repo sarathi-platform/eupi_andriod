@@ -331,6 +331,8 @@ object BaselineModule {
             saveSectionAnswerUseCase = SaveSectionAnswerUseCase(questionScreenRepository),
             getSectionAnswersUseCase = GetSectionAnswersUseCase(questionScreenRepository),
             getFormQuestionResponseUseCase = GetFormQuestionResponseUseCase(formQuestionResponseRepository),
+            saveFormQuestionResponseUseCase = SaveFormQuestionResponseUseCase(formQuestionResponseRepository),
+            updateFormQuestionResponseUseCase = UpdateFormQuestionResponseUseCase(formQuestionResponseRepository),
             deleteFormQuestionResponseUseCase = DeleteFormQuestionResponseUseCase(formQuestionResponseRepository)
         )
     }

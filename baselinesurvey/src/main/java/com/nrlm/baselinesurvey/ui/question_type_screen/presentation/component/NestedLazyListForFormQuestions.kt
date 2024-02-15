@@ -32,9 +32,7 @@ import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
-import com.nrlm.baselinesurvey.ui.common_components.YesNoButtonComponent
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponent.IncrementDecrementView
-import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
 import com.nrlm.baselinesurvey.ui.common_components.RadioOptionTypeComponent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScreenViewModel
@@ -44,7 +42,6 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_30_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_64_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.utils.getResponseForOptionId
-import com.nrlm.baselinesurvey.utils.storeGivenAnswered
 import com.nrlm.baselinesurvey.utils.saveFormQuestionResponseEntity
 import kotlinx.coroutines.launch
 
@@ -62,12 +59,9 @@ fun NestedLazyListForFormQuestions(
     val questionTypeScreenViewModel = (viewModel as QuestionTypeScreenViewModel)
 
     val formQuestionResponseEntity = questionTypeScreenViewModel.formQuestionResponseEntity
-        /*remember { mutableStateOf<List<FormQuestionResponseEntity>>(emptyList()) }*/
-
-//    formQuestionResponseEntity.value = viewModel.formQuestionResponseEntity.value
 
     val answeredQuestionCount = remember {
-        mutableIntStateOf(formTypeOption?.options?.size ?: 0)
+        mutableIntStateOf(questionTypeScreenViewModel.formTypeOption?.options?.size ?: 0)
     }
 
     val answeredQuestionIndices = remember {
@@ -179,7 +173,7 @@ fun NestedLazyListForFormQuestions(
                                         }
                                         saveCacheFormData(
                                             saveFormQuestionResponseEntity(
-                                                formTypeOption,
+                                                questionTypeScreenViewModel.formTypeOption,
                                                 option.optionId ?: 0,
                                                 value,
                                                 viewModel.referenceId
@@ -192,12 +186,12 @@ fun NestedLazyListForFormQuestions(
 
                             QuestionType.InputNumber.name -> {
                                 IncrementDecrementView(
-                                    title = option.display ?: BLANK_STRING,
+                                    title = option.optionItemEntity.display ?: BLANK_STRING,
                                     currentValue = formQuestionResponseEntity.value.getResponseForOptionId(
                                         option.optionId ?: -1
                                     )?.selectedValue ?: BLANK_STRING,
                                     onAnswerSelection = { selectedValue ->
-                                        formTypeOption?.let { formTypeOption ->
+                                        questionTypeScreenViewModel.formTypeOption.let { formTypeOption ->
                                             saveCacheFormData(
                                                 saveFormQuestionResponseEntity(
                                                     formTypeOption,
@@ -215,6 +209,9 @@ fun NestedLazyListForFormQuestions(
                             QuestionType.Toggle.name-> {
                                 RadioOptionTypeComponent(
                                     optionItemEntityState = option,
+                                    selectedValue = formQuestionResponseEntity.value.getResponseForOptionId(
+                                        option.optionId ?: -1
+                                    )?.selectedValue ?: BLANK_STRING,
                                     onOptionSelected = { selectedValue ->
                                         questionTypeScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionalOptionState(option, selectedValue))
                                         questionTypeScreenViewModel.formTypeOption?.let { formTypeOption ->

@@ -31,6 +31,7 @@ import com.nrlm.baselinesurvey.utils.checkCondition
 import com.nrlm.baselinesurvey.utils.findIndexOfListById
 import com.nrlm.baselinesurvey.utils.findQuestionEntityStateById
 import com.nrlm.baselinesurvey.utils.findQuestionForQuestionId
+import com.nrlm.baselinesurvey.utils.getOptionItemEntityFromInputTypeQuestionAnswer
 import com.nrlm.baselinesurvey.utils.sortedBySectionOrder
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.updateOptionItemEntityListStateForQuestionByCondition
@@ -129,21 +130,27 @@ class QuestionScreenViewModel @Inject constructor(
                 sectionId = sectionId,
                 didiId = surveyeeId
             )
+
             val localAnswerList =
                 questionScreenUseCase.getSectionAnswersUseCase.getSectionAnswerForDidi(
                     sectionId = sectionId,
                     didiId = surveyeeId
                 )
             Log.d("TAG", "init: localAnswerList-> $localAnswerList")
+
             localAnswerList.forEach {
                 if (!questionAnswerMap.containsKey(it.questionId)) {
                     questionAnswerMap.put(it.questionId, it.optionItems)
                 }
             }
+
             Log.d("TAG", "init: questionAnswerMap-> $questionAnswerMap")
             _sectionDetail.value = _sectionDetail.value.copy(
                 questionAnswerMapping = questionAnswerMap
             )
+
+            updateQuestionAnswerMapForNumericInputQuestions()
+
             _filterSectionList.value = _sectionDetail.value
 
             initQuestionEntityStateList()
@@ -152,6 +159,28 @@ class QuestionScreenViewModel @Inject constructor(
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
+    }
+
+    private fun updateQuestionAnswerMapForNumericInputQuestions() {
+
+        if (inputTypeQuestionAnswerEntityList.value.isEmpty())
+            return
+
+        val questionAnswerMap = sectionDetail.value.questionAnswerMapping.toMutableMap()
+        _inputTypeQuestionAnswerEntityList.value.forEach {
+            val optionItemEntity = it.getOptionItemEntityFromInputTypeQuestionAnswer(sectionDetail.value)
+            if (!questionAnswerMap.containsKey(it.questionId)) {
+                questionAnswerMap.put(it.questionId, listOf(optionItemEntity!!))
+            } else {
+                val mList = mutableListOf<OptionItemEntity>()
+                mList.addAll(questionAnswerMap[it.questionId]!!)
+                mList.add(optionItemEntity!!)
+                questionAnswerMap.put(it.questionId, mList)
+            }
+        }
+        _sectionDetail.value = _sectionDetail.value.copy(
+            questionAnswerMapping = questionAnswerMap
+        )
     }
 
     private fun initQuestionEntityStateList() {
@@ -234,6 +263,30 @@ class QuestionScreenViewModel @Inject constructor(
                     questionScreenUseCase.updateSectionProgressUseCase.invoke(event.surveyId, event.sectionId, event.didiId, event.sectionStatus)
                 }
             }
+
+            is QuestionScreenEvents.UpdateQuestionAnswerMappingForUi -> {
+                val questionAnswerMapping = _sectionDetail.value.questionAnswerMapping.toMutableMap()
+                questionAnswerMapping[event.question.questionId ?: -1] = event.mOptionItem
+                _sectionDetail.value = _sectionDetail.value.copy(
+                    questionAnswerMapping = questionAnswerMapping
+                )
+            }
+
+            is QuestionScreenEvents.UpdateInputTypeQuestionAnswerEntityForUi -> {
+                val mInputTypeQuestionAnswerEntityList = _inputTypeQuestionAnswerEntityList.value.toMutableList()
+
+                val isAnswerAlreadyMarked = mInputTypeQuestionAnswerEntityList.find { it.optionId == event.inputTypeQuestionAnswerEntity.optionId }
+                if (isAnswerAlreadyMarked == null)
+                    mInputTypeQuestionAnswerEntityList.add(event.inputTypeQuestionAnswerEntity)
+                else {
+                    val index = mInputTypeQuestionAnswerEntityList.map { it.optionId }.indexOf(isAnswerAlreadyMarked.optionId)
+                    mInputTypeQuestionAnswerEntityList.removeAt(index = index)
+                    mInputTypeQuestionAnswerEntityList.add(index, event.inputTypeQuestionAnswerEntity)
+                }
+
+                _inputTypeQuestionAnswerEntityList.value = mInputTypeQuestionAnswerEntityList
+            }
+
             is QuestionScreenEvents.RatioTypeQuestionAnswered -> {
                 updateQuestionAnswerState(event.questionId, listOf(event.optionItemEntity))
 
@@ -291,6 +344,15 @@ class QuestionScreenViewModel @Inject constructor(
                 )
             }
 
+            is QuestionScreenEvents.SaveMiscTypeQuestionAnswers -> {
+                saveOrUpdateMiscTypeQuestionAnswers(
+                    didiId = event.surveyeeId,
+                    questionEntityState = event.questionEntityState,
+                    optionItemEntity = event.optionItemEntity,
+                    selectedValue = event.selectedValue
+                )
+            }
+
             is QuestionTypeEvent.DeleteFormQuestionResponseEvent -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     questionScreenUseCase.deleteFormQuestionResponseUseCase.invoke(referenceId = event.referenceId)
@@ -306,9 +368,33 @@ class QuestionScreenViewModel @Inject constructor(
                             val conditionCheckResult = conditionsDto?.checkCondition(event.optionItemEntity.display ?: BLANK_STRING)
                             updateQuestionStateForCondition(conditionResult = conditionCheckResult == true, conditionsDto)
                         }
+                        QuestionType.SingleSelectDropdown.name -> {
+                            val conditionCheckResult = conditionsDto?.checkCondition(event.optionItemEntity.selectedValue ?: BLANK_STRING)
+                            updateQuestionStateForCondition(conditionResult = conditionCheckResult == true, conditionsDto)
+                        }
                     }
-
                 }
+            }
+
+            is QuestionTypeEvent.UpdateConditionQuestionStateForMultipleOption -> {
+                val conditionalOptions = event.optionItemEntityList.filter { it.conditions?.isNullOrEmpty() != true }
+                conditionalOptions.forEach {
+                    it.conditions?.forEach { conditionsDto ->
+                        when (event.questionEntityState?.questionEntity?.type) {
+                            QuestionType.MultiSelect.name,
+                            QuestionType.Grid.name -> {
+                                val conditionCheckResult = conditionsDto?.checkCondition(
+                                    it.display ?: BLANK_STRING
+                                )
+                                updateQuestionStateForCondition(
+                                    conditionResult = conditionCheckResult == true,
+                                    conditionsDto
+                                )
+                            }
+                        }
+                    }
+                }
+
             }
             
             is QuestionTypeEvent.UpdateConditionQuestionStateForAnsweredQuestions -> {
@@ -327,6 +413,42 @@ class QuestionScreenViewModel @Inject constructor(
                 }
             }*/
         }
+    }
+
+    private fun saveOrUpdateMiscTypeQuestionAnswers(didiId: Int, questionEntityState: QuestionEntityState, optionItemEntity: OptionItemEntity, selectedValue: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val isQuestionAlreadyAnswer =
+                questionScreenUseCase.saveSectionAnswerUseCase.isQuestionAlreadyAnswered(
+                    surveyId = questionEntityState.questionEntity?.surveyId ?: -1,
+                    sectionId = questionEntityState.questionEntity?.sectionId ?: -1,
+                    questionId = questionEntityState.questionId ?: -1,
+                    didiId = didiId
+                )
+            val optionToSave = optionItemEntity.copy(selectedValue = selectedValue)
+            if (isQuestionAlreadyAnswer > 0) {
+                questionScreenUseCase.saveSectionAnswerUseCase.updateSectionAnswerForDidi(
+                    didiId = didiId,
+                    surveyId = questionEntityState.questionEntity?.surveyId ?: -1,
+                    sectionId = questionEntityState.questionEntity?.sectionId ?: -1,
+                    questionId = questionEntityState.questionId ?: -1,
+                    optionItems = listOf(optionToSave),
+                    questionSummary = questionEntityState.questionEntity?.questionSummary ?: BLANK_STRING,
+                    questionType = questionEntityState.questionEntity?.type ?: BLANK_STRING
+                )
+            } else {
+                questionScreenUseCase.saveSectionAnswerUseCase.saveSectionAnswerForDidi(
+                    didiId = didiId,
+                    surveyId = questionEntityState.questionEntity?.surveyId ?: -1,
+                    sectionId = questionEntityState.questionEntity?.sectionId ?: -1,
+                    questionId = questionEntityState.questionId ?: -1,
+                    optionItems = listOf(optionToSave),
+                    questionSummary = questionEntityState.questionEntity?.questionSummary ?: BLANK_STRING,
+                    questionType = questionEntityState.questionEntity?.type ?: BLANK_STRING
+                )
+            }
+
+        }
+
     }
 
     private fun updateQuestionAnswerState(questionId: Int, answeredOptionItemEntityList: List<OptionItemEntity>) {
@@ -432,7 +554,8 @@ class QuestionScreenViewModel @Inject constructor(
                     questionScreenUseCase.saveSectionAnswerUseCase.isQuestionAlreadyAnswered(
                         didiId = didiId,
                         sectionId = sectionId,
-                        questionId = questionId
+                        questionId = questionId,
+                        surveyId = surveyId
                     )
 
                 val existingGridTypeAnswers = questionScreenUseCase.getSectionAnswersUseCase.getSectionAnswerForDidi(sectionId = sectionId, didiId = didiId).findQuestionForQuestionId(questionId)
@@ -447,6 +570,7 @@ class QuestionScreenViewModel @Inject constructor(
                     questionScreenUseCase.saveSectionAnswerUseCase.updateSectionAnswerForDidi(
                         didiId = didiId,
                         questionId = questionId,
+                        surveyId = surveyId,
                         sectionId = sectionId,
                         optionItems = finalAnswerList,
                         questionType = questionEntity.type ?: BLANK_STRING,
