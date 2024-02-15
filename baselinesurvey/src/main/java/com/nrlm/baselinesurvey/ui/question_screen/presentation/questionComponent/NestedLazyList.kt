@@ -123,7 +123,7 @@ fun NestedLazyList(
     }
 
     val curPercentage = animateFloatAsState(
-        targetValue = answeredQuestionCount.value.toFloat() / sectionDetails.questionList.size.toFloat(),
+        targetValue = answeredQuestionCount.value.toFloat() / sectionDetails.questionSize.toFloat(),
         label = "",
         animationSpec = tween()
     )
@@ -286,7 +286,7 @@ fun NestedLazyList(
                     )
                     Spacer(modifier = Modifier.width(dimen_8_dp))
                     Text(
-                        text = "${answeredQuestionCount.value}/${sectionDetails.questionList.size}",
+                        text = "${answeredQuestionCount.value}/${sectionDetails.questionSize}",
                         color = textColorDark,
                         style = smallTextStyle
                     )

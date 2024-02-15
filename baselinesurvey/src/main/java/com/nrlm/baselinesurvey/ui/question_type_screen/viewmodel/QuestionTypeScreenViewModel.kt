@@ -222,7 +222,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
 
     private fun updateCachedData() {
         _formQuestionResponseEntity.value = storeCacheForResponse
-        totalOptionSize.intValue = updatedOptionList.size
+        totalOptionSize.intValue = optionList.value.size
         answeredOptionCount.intValue = formQuestionResponseEntity.value.size
     }
 

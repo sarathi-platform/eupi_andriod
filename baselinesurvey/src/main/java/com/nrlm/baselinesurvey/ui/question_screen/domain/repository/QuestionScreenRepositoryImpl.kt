@@ -84,7 +84,8 @@ class QuestionScreenRepositoryImpl @Inject constructor(
             contentList = emptyList(),
             languageId = languageId,
             questionList = questionList,
-            optionsItemMap = questionOptionMap
+            optionsItemMap = questionOptionMap,
+            questionSize = sectionEntity.questionSize
         )
     }
 

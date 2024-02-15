@@ -19,6 +19,9 @@ data class SectionListItem(
     val sectionDetails: String = BLANK_STRING,
 
     val sectionIcon: String = BLANK_STRING,
+
+    val questionSize: Int = 0,
+
 //    val sectionIcon: Int = 0,
 
     val contentList: List<ContentList>,

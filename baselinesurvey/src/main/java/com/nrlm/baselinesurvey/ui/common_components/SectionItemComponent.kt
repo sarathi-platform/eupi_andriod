@@ -158,9 +158,11 @@ fun SectionItemComponent(
                         style = defaultTextStyle
                     )
                     Text(
-                        text = "${sectionStateItem.section.questionList?.size} Questions",
-                        color = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) greenOnline else if(sectionStateItem.sectionStatus.name.equals(
-                                SectionStatus.INPROGRESS.name)) textColorDark else textColorDark50,
+                        text = "${sectionStateItem.section.questionSize} Questions",
+                        color = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) greenOnline else if (sectionStateItem.sectionStatus.name.equals(
+                                SectionStatus.INPROGRESS.name
+                            )
+                        ) textColorDark else textColorDark50,
                         modifier = Modifier
                             .fillMaxWidth(),
                         softWrap = true,

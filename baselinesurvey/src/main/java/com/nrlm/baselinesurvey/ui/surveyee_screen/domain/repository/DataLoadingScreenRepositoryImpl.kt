@@ -29,13 +29,13 @@ import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
+import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.Sections
 import com.nrlm.baselinesurvey.model.request.MissionRequest
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.model.response.BeneficiaryApiResponse
 import com.nrlm.baselinesurvey.model.response.MissionResponseModel
-import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
@@ -92,7 +92,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                 sectionOrder = section.sectionOrder,
                 sectionDetails = section.sectionDetails,
                 sectionIcon = section.sectionIcon,
-                languageId = languageId
+                languageId = languageId,
+                questionSize = section.questionList.size
             )
             sectionEntityDao.insertSection(sectionEntity)
             section.questionList.forEach { question ->
