@@ -28,7 +28,6 @@ import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
-import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.PoorDidiListDao
@@ -120,7 +119,6 @@ import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.VERIFIED_STRING
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_STEP_ORDER
-import com.patsurvey.nudge.utils.VillageListDiffUtil
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.calculateScore
 import com.patsurvey.nudge.utils.compressImage
@@ -1332,8 +1330,7 @@ class VillageSelectionRepository @Inject constructor(
             val didiList = didiDao.getDidisToBeDeleted(
                 activeStatus = DidiStatus.DIID_DELETED.ordinal,
                 needsToPostDeleteStatus = true,
-                transactionId = "",
-                serverId = 0
+                transactionId = ""
             )
             val jsonDidi = JsonArray()
             if (didiList.isNotEmpty()) {
@@ -1383,7 +1380,10 @@ class VillageSelectionRepository @Inject constructor(
 
     private fun checkDeleteDidiStatusForCrp(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal,"",0)
+            val didiList = didiDao.fetchAllPendingDidiNeedToDelete(
+                DidiStatus.DIID_DELETED.ordinal,
+                ""
+            )
             if(didiList.isNotEmpty()) {
                 val ids: ArrayList<String> = arrayListOf()
                 didiList.forEach { didi ->
@@ -1416,7 +1416,7 @@ class VillageSelectionRepository @Inject constructor(
 
     private fun updateDidiToNetworkForCrp(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllDidiNeedToUpdate(true,"",0)
+            val didiList = didiDao.fetchAllDidiNeedToUpdate(true, "")
             if (didiList.isNotEmpty()) {
                 val didiRequestList = arrayListOf<EditDidiRequest>()
                 didiList.forEach { didi->
@@ -1475,7 +1475,7 @@ class VillageSelectionRepository @Inject constructor(
 
     private fun checkUpdateDidiStatusForCrp(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllPendingDidiNeedToUpdate(true,"",0)
+            val didiList = didiDao.fetchAllPendingDidiNeedToUpdate(true, "")
             if(didiList.isNotEmpty()) {
                 val ids: ArrayList<String> = arrayListOf()
                 didiList.forEach { tola ->
@@ -1514,7 +1514,7 @@ class VillageSelectionRepository @Inject constructor(
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
-                    val needToPostDidiList=didiDao.getAllNeedToPostDidiRanking(true, 0)
+                    val needToPostDidiList = didiDao.getAllNeedToPostDidiRanking(true)
                     if (needToPostDidiList.isNotEmpty()) {
                         val didiWealthRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         val didiStepRequestList = arrayListOf<EditDidiWealthRankingRequest>()
@@ -1742,6 +1742,9 @@ class VillageSelectionRepository @Inject constructor(
                             PATSummarySaveRequest(
                                 villageId = didi.villageId,
                                 surveyId = surveyId,
+                                cohortName = didiEntity.cohortName,
+                                beneficiaryAddress = didiEntity.address,
+                                guardianName = didiEntity.guardianName,
                                 beneficiaryId = didi.serverId,
                                 languageId = prefRepo.getAppLanguageId() ?: 2,
                                 stateId = stateId,
@@ -1925,7 +1928,10 @@ class VillageSelectionRepository @Inject constructor(
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
-                    val needToPostDidiList=didiDao.fetchAllVONeedToPostStatusDidi(needsToPostVo = true, transactionId = "", 0)
+                    val needToPostDidiList = didiDao.fetchAllVONeedToPostStatusDidi(
+                        needsToPostVo = true,
+                        transactionId = ""
+                    )
                     if(needToPostDidiList.isNotEmpty()){
                         val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi->
@@ -2145,7 +2151,9 @@ class VillageSelectionRepository @Inject constructor(
                     if (step.workFlowId > 0) {
                         editWorkFlowRequest.add((EditWorkFlowRequest(
                             step.workFlowId,
-                            StepStatus.getStepFromOrdinal(step.isComplete)
+                            StepStatus.getStepFromOrdinal(step.isComplete),
+                            villageId = step.villageId,
+                            programsProcessId = step.id
                         )))
                         needToEditStep.add(step)
                     } else {
@@ -2237,7 +2245,9 @@ class VillageSelectionRepository @Inject constructor(
                     EditWorkFlowRequest(
                         step.workFlowId,
                         StepStatus.getStepFromOrdinal(step.isComplete),
-                        stepCompletionDate
+                        stepCompletionDate,
+                        villageId = step.villageId,
+                        programsProcessId = step.id
                     )
                 )
             }
@@ -2579,6 +2589,9 @@ class VillageSelectionRepository @Inject constructor(
                             val patSummarySaveRequest = PATSummarySaveRequest(
                                 villageId = didi.villageId,
                                 surveyId = surveyId,
+                                cohortName = didiEntity.cohortName,
+                                beneficiaryAddress = didiEntity.address,
+                                guardianName = didiEntity.guardianName,
                                 beneficiaryId = if (didi.serverId == 0) didi.id else didi.serverId,
                                 languageId = prefRepo.getAppLanguageId() ?: 2,
                                 stateId = prefRepo.getSelectedVillage().stateId,
@@ -2907,7 +2920,9 @@ class VillageSelectionRepository @Inject constructor(
                     if (bpcStep.workFlowId > 0) {
                         editWorkFlowRequest.add((EditWorkFlowRequest(
                             bpcStep.workFlowId,
-                            StepStatus.getStepFromOrdinal(bpcStep.isComplete)
+                            StepStatus.getStepFromOrdinal(bpcStep.isComplete),
+                            villageId = bpcStep.villageId,
+                            programsProcessId = bpcStep.id
                         )))
                         needToEditStep.add(bpcStep)
                     } else {
@@ -2980,7 +2995,9 @@ class VillageSelectionRepository @Inject constructor(
                         EditWorkFlowRequest(
                             step.workFlowId,
                             StepStatus.getStepFromOrdinal(step.isComplete),
-                            stepCompletionDate
+                            stepCompletionDate,
+                            villageId = step.villageId,
+                            programsProcessId = step.id
                         )
                     )
                 }

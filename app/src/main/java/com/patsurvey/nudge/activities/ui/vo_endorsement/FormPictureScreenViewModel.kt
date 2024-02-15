@@ -11,10 +11,6 @@ import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
-import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.PoorDidiListDao
-import com.patsurvey.nudge.database.dao.StepsListDao
-import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
@@ -41,7 +37,6 @@ import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
-import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.compressImage
 import com.patsurvey.nudge.utils.getFileNameFromURL
@@ -425,8 +420,10 @@ class FormPictureScreenViewModel @Inject constructor(
                     val primaryWorkFlowRequest = listOf(
                         EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(5)].workFlowId,
                             StepStatus.COMPLETED.name, longToString(repository.prefRepo.getPref(
-                                PREF_VO_ENDORSEMENT_COMPLETION_DATE_ +repository.prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
-                        )
+                                PREF_VO_ENDORSEMENT_COMPLETION_DATE_ +repository.prefRepo.getSelectedVillage().id,System.currentTimeMillis())),
+                            villageId,
+                            programsProcessId = stepList[stepList.map { it.orderNumber }
+                                .indexOf(5)].id)
                     )
                     NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
 
@@ -473,7 +470,9 @@ class FormPictureScreenViewModel @Inject constructor(
                                 EditWorkFlowRequest(
                                     bpcStep.workFlowId,
                                     StepStatus.INPROGRESS.name,
-                                    System.currentTimeMillis().toString()
+                                    System.currentTimeMillis().toString(),
+                                    villageId,
+                                    programsProcessId = bpcStep.id
                                 )
                             )
                             val bpcStepWorkFlowResponse =

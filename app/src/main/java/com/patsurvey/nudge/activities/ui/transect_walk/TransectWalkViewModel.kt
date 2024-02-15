@@ -751,7 +751,11 @@ class TransectWalkViewModel @Inject constructor(
                     apiRequest.add(
                         EditWorkFlowRequest(
                             stepList[stepList.map { it.orderNumber }.indexOf(1)].workFlowId,
-                            StepStatus.INPROGRESS.name
+                            StepStatus.INPROGRESS.name,
+
+                            villageId = villageId,
+                            programsProcessId = stepList[stepList.map { it.orderNumber }
+                                .indexOf(1)].id
                         )
                     )
                     completeStepList.let { it ->
@@ -762,7 +766,10 @@ class TransectWalkViewModel @Inject constructor(
                                     apiRequest.add(
                                         EditWorkFlowRequest(
                                             newStep.workFlowId,
-                                            StepStatus.INPROGRESS.name
+                                            StepStatus.INPROGRESS.name,
+                                            villageId = villageId,
+                                            programsProcessId = newStep.id
+
                                         )
                                     )
                                 }
@@ -844,7 +851,13 @@ class TransectWalkViewModel @Inject constructor(
                 if (dbResponse.workFlowId > 0) {
                     val primaryWorkFlowRequest = listOf(EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(1)].workFlowId
                         , StepStatus.COMPLETED.name, longToString(transectWalkRepository.getPref(
-                            PREF_TRANSECT_WALK_COMPLETION_DATE_+transectWalkRepository.getSelectedVillage().id,System.currentTimeMillis()))
+                            PREF_TRANSECT_WALK_COMPLETION_DATE_ + transectWalkRepository.getSelectedVillage().id,
+                            System.currentTimeMillis()
+                        )
+                        ),
+                        villageId,
+                        programsProcessId = stepList[stepList.map { it.orderNumber }
+                            .indexOf(1)].workFlowId
                     ))
                     NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
                     val response = transectWalkRepository.editWorkFlow(primaryWorkFlowRequest)
@@ -874,7 +887,12 @@ class TransectWalkViewModel @Inject constructor(
                                 "step.orderNumber > 1 && step.workFlowId > 0: " +
                                 "${step.orderNumber > 1} && ${step.workFlowId > 0}")
                         if (step.orderNumber > 1 &&  step.workFlowId > 0) {
-                            val inProgressStepRequest = listOf(EditWorkFlowRequest(step.workFlowId, StepStatus.INPROGRESS.name))
+                            val inProgressStepRequest = listOf(
+                                EditWorkFlowRequest(
+                                    step.workFlowId, StepStatus.INPROGRESS.name,
+                                    villageId = villageId, programsProcessId = step.id
+                                )
+                            )
                             NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> inProgressStepRequest = $inProgressStepRequest")
                             val inProgressStepResponse = transectWalkRepository.editWorkFlow(inProgressStepRequest)
                             NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> inProgressStepResponse: status = ${inProgressStepResponse.status}, message = ${inProgressStepResponse.message}, data = ${inProgressStepResponse.data.toString()}")

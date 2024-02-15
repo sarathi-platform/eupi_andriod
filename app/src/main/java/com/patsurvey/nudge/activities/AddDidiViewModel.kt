@@ -3,7 +3,9 @@ package com.patsurvey.nudge.activities
 import android.annotation.SuppressLint
 import android.text.TextUtils
 import android.util.Log
-import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.patsurvey.nudge.CheckDBStatus
@@ -16,7 +18,6 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.LastTolaSelectedEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.VillageEntity
-import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.LocalDbListener
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
@@ -24,7 +25,31 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.AbleBodiedFlag
+import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
+import com.patsurvey.nudge.utils.DIDI_COUNT
+import com.patsurvey.nudge.utils.DidiStatus
+import com.patsurvey.nudge.utils.FORM_C
+import com.patsurvey.nudge.utils.FORM_D
+import com.patsurvey.nudge.utils.HUSBAND_STRING
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_DIDI_UNAVAILABLE
+import com.patsurvey.nudge.utils.PREF_FORM_PATH
+import com.patsurvey.nudge.utils.PREF_SOCIAL_MAPPING_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.SHGFlag
+import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.SummaryNavigation
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.TYPE_INCLUSION
+import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
+import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.getUniqueIdForEntity
+import com.patsurvey.nudge.utils.longToString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +58,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.util.Timer
+import java.util.TimerTask
 import javax.inject.Inject
 
 @HiltViewModel
@@ -966,9 +992,14 @@ class AddDidiViewModel @Inject constructor(
                             StepStatus.COMPLETED.name, longToString(
                                 addDidiRepository.getPref(
                                     PREF_SOCIAL_MAPPING_COMPLETION_DATE_ + addDidiRepository.getSelectedVillage().id,
-                                    System.currentTimeMillis()
-                                )
-                            )
+                                    System.currentTimeMillis(),
+
+                                    ),
+
+                                ),
+                            villageId = villageId,
+                            programsProcessId = stepList[stepList.map { it.orderNumber }
+                                .indexOf(2)].id
                         )
                     )
                     NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
@@ -1016,7 +1047,9 @@ class AddDidiViewModel @Inject constructor(
                             val inProgressStepRequest = listOf(
                                 EditWorkFlowRequest(
                                     step.workFlowId,
-                                    StepStatus.INPROGRESS.name
+                                    StepStatus.INPROGRESS.name,
+                                    villageId = villageId,
+                                    programsProcessId = step.id
                                 )
                             )
 
@@ -1134,7 +1167,10 @@ class AddDidiViewModel @Inject constructor(
                         apiRequest.add(
                             EditWorkFlowRequest(
                                 stepList[stepList.map { it.orderNumber }.indexOf(2)].workFlowId,
-                                StepStatus.INPROGRESS.name
+                                StepStatus.INPROGRESS.name,
+                                villageId = villageId,
+                                programsProcessId = stepList[stepList.map { it.orderNumber }
+                                    .indexOf(2)].id
                             )
                         )
                         completeStepList.let {
@@ -1145,7 +1181,10 @@ class AddDidiViewModel @Inject constructor(
                                         apiRequest.add(
                                             EditWorkFlowRequest(
                                                 newStep.workFlowId,
-                                                StepStatus.INPROGRESS.name
+                                                StepStatus.INPROGRESS.name,
+                                                villageId = villageId,
+                                                programsProcessId = stepList[stepList.map { it.orderNumber }
+                                                    .indexOf(2)].id
                                             )
                                         )
                                     }

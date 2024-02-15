@@ -12,7 +12,6 @@ import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
-import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
@@ -23,7 +22,36 @@ import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.model.request.PATSummarySaveRequest
 import com.patsurvey.nudge.model.request.SaveMatchSummaryRequest
 import com.patsurvey.nudge.model.response.OptionsItem
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.AbleBodiedFlag
+import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
+import com.patsurvey.nudge.utils.COMPLETED_STRING
+import com.patsurvey.nudge.utils.DIDI_NOT_AVAILABLE
+import com.patsurvey.nudge.utils.DIDI_REJECTED
+import com.patsurvey.nudge.utils.ExclusionType
+import com.patsurvey.nudge.utils.FLAG_RATIO
+import com.patsurvey.nudge.utils.FLAG_WEIGHT
+import com.patsurvey.nudge.utils.LOW_SCORE
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PAT_SURVEY
+import com.patsurvey.nudge.utils.PREF_BPC_PAT_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
+import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.SHGFlag
+import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.USER_BPC
+import com.patsurvey.nudge.utils.USER_CRP
+import com.patsurvey.nudge.utils.VERIFIED_STRING
+import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.calculateScore
+import com.patsurvey.nudge.utils.longToString
+import com.patsurvey.nudge.utils.toWeightageRatio
+import com.patsurvey.nudge.utils.updateLastSyncTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +61,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
+import java.util.Timer
+import java.util.TimerTask
 import javax.inject.Inject
 
 @HiltViewModel
@@ -276,7 +306,10 @@ class SurveySummaryViewModel @Inject constructor(
                             PATSummarySaveRequest(
                                 villageId = repository.prefRepo.getSelectedVillage().id,
                                 surveyId = surveyId,
-                                beneficiaryId = if (didi.serverId == 0) didi.id else didi.serverId,
+                                beneficiaryId = didi.serverId,
+                                cohortName = didiEntity.cohortName,
+                                beneficiaryAddress = didiEntity.address,
+                                guardianName = didiEntity.guardianName,
                                 languageId = repository.prefRepo.getAppLanguageId() ?: 2,
                                 stateId = repository.prefRepo.getSelectedVillage().stateId,
                                 totalScore = didi.score,
@@ -381,9 +414,19 @@ class SurveySummaryViewModel @Inject constructor(
                             if (!repository.prefRepo.isUserBPC()) stepList[stepList.map { it.orderNumber }
                                 .indexOf(4)].workFlowId else stepList[stepList.map { it.orderNumber }
                                 .indexOf(6)].workFlowId, StepStatus.COMPLETED.name,
-                            longToString(repository.prefRepo.getPref(PREF_PAT_COMPLETION_DATE_+repository.prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
+                            longToString(
+                                repository.prefRepo.getPref(
+                                    PREF_PAT_COMPLETION_DATE_ + repository.prefRepo.getSelectedVillage().id,
+                                    System.currentTimeMillis()
+                                )
+                            ),
+                            villageId = villageId,
+                            programsProcessId = if (!repository.prefRepo.isUserBPC()) stepList[stepList.map { it.orderNumber }
+                                .indexOf(4)].id else stepList[stepList.map { it.orderNumber }
+                                .indexOf(6)].id
 
-                        ))
+                        )
+                        )
                     NudgeLogger.d(
                         "SurveySummaryViewModel",
                         "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest"
@@ -443,7 +486,10 @@ class SurveySummaryViewModel @Inject constructor(
                                 val inProgressStepRequest = listOf(
                                     EditWorkFlowRequest(
                                         step.workFlowId,
-                                        StepStatus.INPROGRESS.name
+                                        StepStatus.INPROGRESS.name,
+                                        villageId = step.villageId,
+                                        programsProcessId = step.id
+
                                     )
                                 )
                                 NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> inProgressStepRequest = $inProgressStepRequest")
@@ -679,7 +725,11 @@ class SurveySummaryViewModel @Inject constructor(
                 if(bpcStep.workFlowId>0){
                     val response = repository.editWorkFlow(
                         listOf(
-                            EditWorkFlowRequest(bpcStep.workFlowId, StepStatus.COMPLETED.name)
+                            EditWorkFlowRequest(
+                                bpcStep.workFlowId, StepStatus.COMPLETED.name,
+                                villageId = villageId,
+                                programsProcessId = bpcStep.id
+                            )
                         ) )
                     withContext(Dispatchers.IO){
                         if (response.status.equals(SUCCESS, true)) {

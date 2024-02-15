@@ -46,7 +46,15 @@ data class PATSummarySaveRequest(
     var patExclusionStatus: Int=0,
 
     @SerializedName("shgFlag")
-    val shgFlag: Int? = -1
+    val shgFlag: Int? = -1,
+    @SerializedName("beneficiaryAddress")
+    val beneficiaryAddress: String? = BLANK_STRING,
+
+    @SerializedName("guardianName")
+    val guardianName: String? = BLANK_STRING,
+
+    @SerializedName("cohortName")
+    val cohortName: String? = BLANK_STRING,
 ) {
     fun toJson() : JsonObject {
         val jsonObject = JsonObject()

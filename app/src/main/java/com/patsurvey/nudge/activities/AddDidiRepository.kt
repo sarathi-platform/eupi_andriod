@@ -17,7 +17,6 @@ import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.CasteListDao
-import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
@@ -209,7 +208,7 @@ class AddDidiRepository @Inject constructor(
         transactionId: String?,
         serverId: Int
     ): List<DidiEntity> {
-        return this.didiDao.fetchAllDidiNeedToUpdate(needsToPost, transactionId, serverId)
+        return this.didiDao.fetchAllDidiNeedToUpdate(needsToPost, transactionId)
     }
 
     fun fetchAllDidiNeedToDelete(status: Int): List<DidiEntity> {
@@ -221,7 +220,7 @@ class AddDidiRepository @Inject constructor(
         transactionId: String?,
         serverId: Int
     ): List<DidiEntity> {
-        return didiDao.fetchAllPendingDidiNeedToUpdate(needsToPost, transactionId, serverId)
+        return didiDao.fetchAllPendingDidiNeedToUpdate(needsToPost, transactionId)
     }
 
     fun fetchAllPendingDidiNeedToDelete(
@@ -229,7 +228,7 @@ class AddDidiRepository @Inject constructor(
         transactionId: String?,
         serverId: Int
     ): List<DidiEntity> {
-        return this.didiDao.fetchAllPendingDidiNeedToDelete(status, transactionId, serverId)
+        return this.didiDao.fetchAllPendingDidiNeedToDelete(status, transactionId)
     }
 
     fun deleteDidi(id: Int) {

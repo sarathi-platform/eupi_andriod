@@ -30,7 +30,6 @@ import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.network.isInternetAvailable
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
@@ -103,7 +102,7 @@ class SettingViewModel @Inject constructor(
     var showBPCSyncDialog = mutableStateOf(false)
 
     val lastSyncTime = mutableStateOf(prefRepo.getPref(LAST_SYNC_TIME, 0L))
-
+    var currentRetryCount = 3;
     var syncHelper = SyncHelper(
         this@SettingViewModel,
         prefRepo,
@@ -322,10 +321,17 @@ class SettingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val fetchAllDidiNeedToPostList = didiDao.fetchAllDidiNeedToPost(true, "", 0)
             val fetchPendingDidiList = didiDao.fetchPendingDidi(true, "")
-            val fetchAllDidiNeedToDeleteList = didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, true, "", 0)
-            val fetchAllPendingDidiNeedToDeleteList = didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, "", 0)
-            val fetchAllDidiNeedToUpdateList = didiDao.fetchAllDidiNeedToUpdate(true, "", 0)
-            val fetchAllPendingDidiNeedToUpdateList = didiDao.fetchAllPendingDidiNeedToUpdate(true, "", 0)
+            val fetchAllDidiNeedToDeleteList =
+                didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, true, "", 0)
+            val fetchAllPendingDidiNeedToDeleteList = didiDao.fetchAllPendingDidiNeedToDelete(
+                DidiStatus.DIID_DELETED.ordinal,
+                ""
+            )
+            val fetchAllDidiNeedToUpdateList = didiDao.fetchAllDidiNeedToUpdate(true, "")
+            val fetchAllPendingDidiNeedToUpdateList = didiDao.fetchAllPendingDidiNeedToUpdate(
+                true,
+                ""
+            )
             NudgeLogger.d(
                 "SettingViewModel",
                 "isSecondStepNeedToBeSync -> fetchAllDidiNeedToPostList -> ${fetchAllDidiNeedToPostList.json()};; \n\n fetchPendingDidiList -> ${fetchPendingDidiList.json()};; " +
@@ -376,7 +382,10 @@ class SettingViewModel @Inject constructor(
                 PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + village.id,
                 false
             )
-            NudgeLogger.d("SettingViewModel", "isBPCScoreSaved: village.id -> ${village.id}, isBPCScoreSaved -> $isBpcScoreSaved")
+            NudgeLogger.d(
+                "SettingViewModel",
+                "isBPCScoreSaved: village.id -> ${village.id}, isBPCScoreSaved -> $isBpcScoreSaved"
+            )
             isBpcScoreSavedList.add(isBpcScoreSaved)
         }
         if (isBpcScoreSavedList.contains(false))
@@ -423,7 +432,8 @@ class SettingViewModel @Inject constructor(
                         "\n\n fetchAllDidiNeedsToPostImage -> ${fetchAllDidiNeedsToPostImage.json()};; "
             )
 
-            NudgeLogger.d("SettingViewModel",
+            NudgeLogger.d(
+                "SettingViewModel",
                 "isFourthStepNeedToBeSync -> fetchPATSurveyDidiList.isEmpty() -> ${fetchPATSurveyDidiList.isEmpty()};;" +
                         "\n\n fetchPendingPatStatusDidi.isEmpty() -> ${fetchPendingPatStatusDidi.isEmpty()};; " +
                         "\n\n fetchAllDidiNeedsToPostImage.isEmpty() -> ${fetchAllDidiNeedsToPostImage.isEmpty()};; "
@@ -455,7 +465,7 @@ class SettingViewModel @Inject constructor(
         stepFifthSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val getAllNeedToPostVoDidis = didiDao.getAllNeedToPostVoDidis(true, "")
-            val fetchPendingVOStatusStatusDidi = didiDao.fetchPendingVOStatusStatusDidi(true,"")
+            val fetchPendingVOStatusStatusDidi = didiDao.fetchPendingVOStatusStatusDidi(true, "")
             NudgeLogger.d(
                 "SettingViewModel",
                 "isFifthStepNeedToBeSync -> getAllNeedToPostVoDidis -> ${getAllNeedToPostVoDidis.json()};;" +
@@ -499,7 +509,10 @@ class SettingViewModel @Inject constructor(
             val isFormUploadedForVillage = prefRepo.getPref(
                 PREF_NEED_TO_POST_FORM_C_AND_D_ + prefRepo.getSelectedVillage().id, false
             )
-            NudgeLogger.d("SettingViewModel", "isFormNeedToBeUpload: village.id -> ${village.id}, isFormUploadedForVillage -> $isFormUploadedForVillage")
+            NudgeLogger.d(
+                "SettingViewModel",
+                "isFormNeedToBeUpload: village.id -> ${village.id}, isFormUploadedForVillage -> $isFormUploadedForVillage"
+            )
 
             isFormUploadedList.add(isFormUploadedForVillage)
         }
@@ -599,7 +612,7 @@ class SettingViewModel @Inject constructor(
         syncErrorMessage.value = ""
         showSyncDialog = syncDialog
         resetPosition()
-        if (NudgeCore.isOnline()) {
+        if (true) {
             syncHelper.syncDataToServer(object :
                 NetworkCallbackListener {
                 override fun onSuccess() {
@@ -623,12 +636,29 @@ class SettingViewModel @Inject constructor(
                 }
 
                 override fun onFailed() {
-                    networkErrorMessage.value = SYNC_FAILED
-                    syncErrorMessage.value = SYNC_FAILED
-                    syncPercentage.value = 1f
+                    if (currentRetryCount > 0) {
+                        try {
+                            syncHelper.startSyncTimer(this)
+                            currentRetryCount--;
+
+                        } catch (exception: Exception) {
+                            syncHelper.startSyncTimer(this)
+                            currentRetryCount--;
+                        }
+
+                        NudgeLogger.e(
+                            "SettingViewModel",
+                            "syncDataOnServer -> onFailed Retrying current count is ${currentRetryCount}"
+                        )
+                    } else {
+                        networkErrorMessage.value = SYNC_FAILED
+                        syncErrorMessage.value = SYNC_FAILED
+                        syncPercentage.value = 1f
+                        NudgeLogger.e("SettingViewModel", "syncDataOnServer -> onFailed")
+                    }
 //                        showSyncDialog.value = false
 //                        showLoader.value = false
-                    NudgeLogger.e("SettingViewModel", "syncDataOnServer -> onFailed")
+
                 }
             })
         } else {

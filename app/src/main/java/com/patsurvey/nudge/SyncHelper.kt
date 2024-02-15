@@ -120,7 +120,7 @@ class SyncHelper (
         addTolasToNetwork(networkCallbackListener)
     }
 
-    private fun startSyncTimer(networkCallbackListener: NetworkCallbackListener){
+    fun startSyncTimer(networkCallbackListener: NetworkCallbackListener) {
         val timer = Timer()
         timer.schedule(object : TimerTask(){
             override fun run() {
@@ -197,7 +197,10 @@ class SyncHelper (
 
     fun checkDeleteDidiStatus(networkCallbackListener : NetworkCallbackListener){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal,"",0)
+            val didiList = didiDao.fetchAllPendingDidiNeedToDelete(
+                DidiStatus.DIID_DELETED.ordinal,
+                ""
+            )
             if(didiList.isNotEmpty()) {
                 val ids: ArrayList<String> = arrayListOf()
                 didiList.forEach { didi ->
@@ -376,7 +379,7 @@ class SyncHelper (
 
     private fun checkUpdateDidiStatus(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllPendingDidiNeedToUpdate(true,"",0)
+            val didiList = didiDao.fetchAllPendingDidiNeedToUpdate(true, "")
             if(didiList.isNotEmpty()) {
                 val ids: ArrayList<String> = arrayListOf()
                 didiList.forEach { tola ->
@@ -644,6 +647,7 @@ class SyncHelper (
                     updateTolaNeedTOPostList(tolaList,networkCallbackListener)
                 } else
                     withContext(Dispatchers.Main){
+
                         networkCallbackListener.onFailed()
                     }
 
@@ -953,7 +957,7 @@ class SyncHelper (
                 delay(1000)
                 settingViewModel.syncPercentage.value = 0.34f
             }
-            val didiList = didiDao.fetchAllDidiNeedToUpdate(true,"",0)
+            val didiList = didiDao.fetchAllDidiNeedToUpdate(true, "")
             if (didiList.isNotEmpty()) {
                 val didiRequestList = arrayListOf<EditDidiRequest>()
                 didiList.forEach { didi->
@@ -1065,8 +1069,7 @@ class SyncHelper (
             val didiList = didiDao.getDidisToBeDeleted(
                 activeStatus = DidiStatus.DIID_DELETED.ordinal,
                 needsToPostDeleteStatus = true,
-                transactionId = "",
-                serverId = 0
+                transactionId = ""
             )
             val jsonDidi = JsonArray()
             if (didiList.isNotEmpty()) {
@@ -1129,7 +1132,7 @@ class SyncHelper (
             }
             try {
                 withContext(Dispatchers.IO){
-                    val needToPostDidiList=didiDao.getAllNeedToPostDidiRanking(true, 0)
+                    val needToPostDidiList = didiDao.getAllNeedToPostDidiRanking(true)
                     if (needToPostDidiList.isNotEmpty()) {
                         val didiWealthRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         val didiStepRequestList = arrayListOf<EditDidiWealthRankingRequest>()
@@ -1341,6 +1344,9 @@ class SyncHelper (
                         val patSummarySaveRequest = PATSummarySaveRequest(
                             villageId = didi.villageId,
                             surveyId = surveyId,
+                            cohortName = didiEntity.cohortName,
+                            beneficiaryAddress = didiEntity.address,
+                            guardianName = didiEntity.guardianName,
                             beneficiaryId = didi.serverId,
                             languageId = prefRepo.getAppLanguageId() ?: 2,
                             stateId = stateId,
@@ -1448,7 +1454,10 @@ class SyncHelper (
                     settingViewModel.syncPercentage.value = 0.8f
                 }
                 withContext(Dispatchers.IO){
-                    val needToPostDidiList=didiDao.fetchAllVONeedToPostStatusDidi(needsToPostVo = true, transactionId = "", 0)
+                    val needToPostDidiList = didiDao.fetchAllVONeedToPostStatusDidi(
+                        needsToPostVo = true,
+                        transactionId = ""
+                    )
                     if(needToPostDidiList.isNotEmpty()){
                         val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi->
@@ -1561,7 +1570,7 @@ class SyncHelper (
     fun getStepThreeDataSizeInSync(stepOneMutableString : MutableState<String>){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             var sizeToBeShown = ""
-            val didiWealthList = didiDao.getAllNeedToPostDidiRanking(true, 0)
+            val didiWealthList = didiDao.getAllNeedToPostDidiRanking(true)
             if (didiWealthList.isNotEmpty()) {
                 val jsonDidi = JsonArray()
                 for (didi in didiWealthList) {
@@ -1629,7 +1638,9 @@ class SyncHelper (
                     if (step.workFlowId > 0) {
                         editWorkFlowRequest.add((EditWorkFlowRequest(
                             step.workFlowId,
-                            StepStatus.getStepFromOrdinal(step.isComplete)
+                            StepStatus.getStepFromOrdinal(step.isComplete),
+                            villageId = step.villageId,
+                            programsProcessId = step.id
                         )))
                         needToEditStep.add(step)
                     } else {
@@ -1729,7 +1740,9 @@ class SyncHelper (
                         EditWorkFlowRequest(
                             step.workFlowId,
                             StepStatus.getStepFromOrdinal(step.isComplete),
-                            stepCompletionDate
+                            stepCompletionDate,
+                            villageId = step.villageId,
+                            programsProcessId = step.id
                         )
                     )
                 }

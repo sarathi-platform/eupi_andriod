@@ -19,6 +19,7 @@ data class EditDidiWealthRankingRequest(
     @SerializedName("name") var name: String = "",
     @SerializedName("guardianName") var guardianName: String = "",
     @SerializedName("address") var address: String = "",
+    @SerializedName("cohortName") var cohortName: String = ""
 ) {
     fun toJson() : JsonObject {
         val jsonObject = JsonObject()
