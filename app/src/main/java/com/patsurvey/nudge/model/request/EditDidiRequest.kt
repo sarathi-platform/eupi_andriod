@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.model.request
 
-import androidx.room.ColumnInfo
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import com.patsurvey.nudge.database.DidiEntity
@@ -31,7 +30,9 @@ data class EditDidiRequest(
                 address = didiEntity.address,
                 guardianName = didiEntity.guardianName,
                 castId = didiEntity.castId,
-                cohortId = didiEntity.cohortId
+                cohortId = didiEntity.cohortId,
+                villageId = didiEntity.villageId,
+                cohortName = didiEntity.cohortName
             )
         }
     }

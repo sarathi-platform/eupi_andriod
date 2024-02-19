@@ -12,7 +12,7 @@ plugins {
 def version = "0.1.52"
 def prodVersion = "1.0.5"
 android {
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.nrlm.sarathi"

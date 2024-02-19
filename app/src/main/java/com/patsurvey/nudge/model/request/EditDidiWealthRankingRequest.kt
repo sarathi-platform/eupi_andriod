@@ -6,7 +6,6 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
-import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.COMPLETED_STRING
 import com.patsurvey.nudge.utils.DIDI_NOT_AVAILABLE
 import com.patsurvey.nudge.utils.DIDI_REJECTED
@@ -19,7 +18,6 @@ import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.VERIFIED_STRING
-import com.patsurvey.nudge.utils.VoEndorsementStatus
 
 
 data class EditDidiWealthRankingRequest(
@@ -32,7 +30,6 @@ data class EditDidiWealthRankingRequest(
     @SerializedName("rankingEdit") var rankingEdit: Boolean = true,
     @SerializedName("shgFlag") var shgFlag: String? = BLANK_STRING,
     @SerializedName("ableBodiedFlag") var ableBodiedFlag: String? = BLANK_STRING,
-
     @SerializedName("name") var name: String = "",
     @SerializedName("guardianName") var guardianName: String = "",
     @SerializedName("address") var address: String = "",
