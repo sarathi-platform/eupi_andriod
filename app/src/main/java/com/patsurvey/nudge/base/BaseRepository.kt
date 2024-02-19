@@ -55,7 +55,8 @@ import com.patsurvey.nudge.utils.TIMEOUT_ERROR_MSG
 import com.patsurvey.nudge.utils.UNAUTHORISED_MESSAGE
 import com.patsurvey.nudge.utils.UNREACHABLE_ERROR_MSG
 import com.patsurvey.nudge.utils.getParentEntityMapForEvent
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Job
 import retrofit2.HttpException
 import retrofit2.Response
 import java.io.IOException
@@ -425,6 +426,32 @@ abstract class BaseRepository{
                 depends_on = listOf(),
                 request_payload_size = payload.getSizeInLong(),
                 parentEntity = getParentEntityMapForEvent(eventItem, EventName.RANKING_FLAG_EDIT)
+            ).json()
+        )
+
+    }
+
+    fun createImageUploadEvent(
+        payload: String,
+        mobileNumber: String,
+        userID: String,
+        eventName: EventName
+    ): Events {
+        return Events(
+            name = eventName.name,
+            type = eventName.topicName,
+            createdBy = userID,
+            mobile_number = mobileNumber,
+            request_payload = payload,
+            status = EventSyncStatus.OPEN.name,
+            modified_date = System.currentTimeMillis().toDate(),
+            result = null,
+            consumer_status = BLANK_STRING,
+            metadata = MetadataDto(
+                mission = SELECTION_MISSION,
+                depends_on = listOf(),
+                request_payload_size = payload.getSizeInLong(),
+                parentEntity = mapOf()
             ).json()
         )
 

@@ -6,7 +6,6 @@ import android.os.Environment
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import com.nudge.core.enums.EventName
-import com.nudge.core.eventswriter.entities.EventV1
 import com.nudge.core.json
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
@@ -126,17 +125,24 @@ class PatDidiSummaryViewModel @Inject constructor(
             patDidiSummaryRepository.saveDidiLocalImagePath(finalPathWithCoordinates,didiEntity.id)
             NudgeLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> didiDao.saveLocalImagePath after")
 
-            val eventV1 = EventV1(eventTopic = EventName.UPLOAD_DIDI_IMAGE.topicName,
-                payload = DidiImageUploadRequest(
-                    didiId = didiEntity.id.toString(),
-                    location = didiImageLocation.value,
-                    filePath = photoPath,
-                    userType = if (patDidiSummaryRepository.prefRepo.isUserBPC()) USER_BPC else USER_CRP
-                ).json(),
-                mobileNumber = patDidiSummaryRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
+
+            val payload = DidiImageUploadRequest(
+                didiId = didiEntity.id.toString(),
+                location = didiImageLocation.value,
+                filePath = photoPath,
+                userType = if (patDidiSummaryRepository.prefRepo.isUserBPC()) USER_BPC else USER_CRP
+            ).json()
+
+            val event = patDidiSummaryRepository.createImageUploadEvent(
+                payload = payload,
+                mobileNumber = patDidiSummaryRepository.prefRepo.getMobileNumber(),
+                userID = patDidiSummaryRepository.prefRepo.getUserId(),
+                eventName = EventName.UPLOAD_DIDI_IMAGE,
             )
+
+
             patDidiSummaryRepository.uri = uri
-            // patDidiSummaryRepository.writeImageEventIntoLogFile(eventV1)
+            patDidiSummaryRepository.writeImageEventIntoLogFile(event)
 
         }
     }

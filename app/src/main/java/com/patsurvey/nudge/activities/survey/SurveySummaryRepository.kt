@@ -42,7 +42,6 @@ import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
-import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
 import com.patsurvey.nudge.utils.StepStatus
@@ -335,7 +334,6 @@ class SurveySummaryRepository @Inject constructor(
         eventType: EventType
     ) {
 
-        val eventObserver = NudgeCore.getEventObserver()
 
         val event = this.createEvent(
             eventItem,
@@ -345,11 +343,8 @@ class SurveySummaryRepository @Inject constructor(
 
         if (event?.id?.equals(BLANK_STRING) != true) {
             event?.let {
-                eventObserver?.addEvent(it)
                 val eventDependencies = this.createEventDependency(eventItem, eventName, it)
-                if (eventDependencies.isNotEmpty()) {
-                    eventObserver?.addEventDependencies(eventDependencies)
-                }
+                saveEventToMultipleSources(it, eventDependencies = eventDependencies)
             }
         }
     }

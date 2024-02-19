@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.vo_endorsement
 
+import com.google.gson.Gson
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.KEY_PARENT_ENTITY_ADDRESS
 import com.nudge.core.KEY_PARENT_ENTITY_DADA_NAME
@@ -28,7 +29,6 @@ import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.getParentEntityMapForEvent
 import javax.inject.Inject
 
@@ -71,17 +71,12 @@ class VoEndorsementSummaryRepository @Inject constructor(
         eventName: EventName,
         eventType: EventType
     ) {
-        val eventObserver = NudgeCore.getEventObserver()
 
         val event = this.createEvent(eventItem, eventName, eventType)
 
         if (event?.id?.equals(BLANK_STRING) != true) {
             event?.let {
-                eventObserver?.addEvent(it)
                 val eventDependencies = this.createEventDependency(eventItem, eventName, it)
-                if (eventDependencies.isNotEmpty()) {
-                    eventObserver?.addEventDependencies(eventDependencies)
-                }
                 saveEventToMultipleSources(it, eventDependencies)
             }
         }
@@ -151,16 +146,22 @@ class VoEndorsementSummaryRepository @Inject constructor(
             val eventList = eventsDao.getAllEventsForEventName(dependsOnEvent.name)
             when (eventName) {
                 EventName.SAVE_VO_ENDORSEMENT -> {
+
                     filteredList = eventList.filter {
-                        val eventPayload = (eventItem as DidiEntity)
+                        var editRequest = Gson().fromJson(
+                            it.request_payload,
+                            EditDidiWealthRankingRequest::class.java
+                        )
                         dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_DIDI_NAME)?.equals(eventPayload.name, true)!!
+                            ?.get(KEY_PARENT_ENTITY_DIDI_NAME)?.equals(editRequest.name, true)!!
                                 && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_DADA_NAME)?.equals(eventPayload.guardianName, true)!!
+                            ?.get(KEY_PARENT_ENTITY_DADA_NAME)
+                            ?.equals(editRequest.guardianName, true)!!
                                 && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_ADDRESS).equals(eventPayload.address, true)
+                            ?.get(KEY_PARENT_ENTITY_ADDRESS).equals(editRequest.address, true)
                                 && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_TOLA_NAME)?.equals(eventPayload.cohortName, true)!!
+                            ?.get(KEY_PARENT_ENTITY_TOLA_NAME)
+                            ?.equals(editRequest.cohortName, true)!!
                     }
                 }
                 else -> {

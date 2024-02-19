@@ -39,7 +39,6 @@ import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.TolaApiResponse
 import com.patsurvey.nudge.model.response.WorkFlowResponse
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.getParentEntityMapForEvent
 import com.patsurvey.nudge.utils.updateLastSyncTime
@@ -260,8 +259,6 @@ class TransectWalkRepository @Inject constructor(
         eventName: EventName,
         eventType: EventType
     ) {
-        val eventObserver = NudgeCore.getEventObserver()
-
         val event = this.createEvent(
             eventItem,
             eventName,

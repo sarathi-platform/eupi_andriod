@@ -32,13 +32,13 @@ import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
+import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.WorkFlowResponse
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.getParentEntityMapForEvent
 import javax.inject.Inject
@@ -214,15 +214,19 @@ class WealthRankingSurveyRepository @Inject constructor(
             when (eventName) {
                 EventName.SAVE_WEALTH_RANKING -> {
                     filteredList = eventList.filter {
+                        var didiRequest =
+                            Gson().fromJson(it.request_payload, AddDidiRequest::class.java)
                         val eventPayload = (eventItem as DidiEntity)
                         dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_DIDI_NAME)?.equals(eventPayload.name, true)!!
+                            ?.get(KEY_PARENT_ENTITY_DIDI_NAME)?.equals(didiRequest.name, true)!!
                                 && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_DADA_NAME)?.equals(eventPayload.guardianName, true)!!
+                            ?.get(KEY_PARENT_ENTITY_DADA_NAME)
+                            ?.equals(didiRequest.guardianName, true)!!
                                 && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_ADDRESS).equals(eventPayload.address, true)
+                            ?.get(KEY_PARENT_ENTITY_ADDRESS).equals(didiRequest.address, true)
                                 && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_TOLA_NAME)?.equals(eventPayload.cohortName, true)!!
+                            ?.get(KEY_PARENT_ENTITY_TOLA_NAME)
+                            ?.equals(didiRequest.cohortName, true)!!
                     }
                 }
 
@@ -242,7 +246,6 @@ class WealthRankingSurveyRepository @Inject constructor(
         eventName: EventName,
         eventType: EventType
     ) {
-        val eventObserver = NudgeCore.getEventObserver()
 
         val event = this.createEvent(
             eventItem,
@@ -252,11 +255,7 @@ class WealthRankingSurveyRepository @Inject constructor(
 
         if (event?.id?.equals(BLANK_STRING) != true) {
             event?.let {
-                eventObserver?.addEvent(it)
                 val eventDependencies = this.createEventDependency(eventItem, eventName, it)
-                if (eventDependencies.isNotEmpty()) {
-                    eventObserver?.addEventDependencies(eventDependencies)
-                }
                 saveEventToMultipleSources(it, eventDependencies)
 
             }

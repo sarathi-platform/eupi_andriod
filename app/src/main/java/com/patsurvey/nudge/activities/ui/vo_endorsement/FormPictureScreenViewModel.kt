@@ -567,18 +567,21 @@ class FormPictureScreenViewModel @Inject constructor(
 //                              prefRepo.savePref(pageKey,File(compressedFormC).absolutePath)
                             formList.add(formCFilePart)
 
-                            val eventFormC = EventV1(
-                                eventTopic = EventName.UPLOAD_FORM_IMAGE.topicName,
-                                payload = DocumentUploadRequest(
-                                    villageId = repository.prefRepo.getSelectedVillage().id.toString(),
-                                    userType = if (repository.prefRepo.isUserBPC()) USER_BPC else USER_CRP,
-                                    filePath = it.value,
-                                    formName = "formC"
-                                ).json(),
-                                mobileNumber = repository.prefRepo.getMobileNumber() ?: BLANK_STRING
+                            val payload = DocumentUploadRequest(
+                                villageId = repository.prefRepo.getSelectedVillage().id.toString(),
+                                userType = if (repository.prefRepo.isUserBPC()) USER_BPC else USER_CRP,
+                                filePath = it.value,
+                                formName = "formC"
+                            ).json()
+                            val event = repository.createImageUploadEvent(
+                                payload = payload,
+                                mobileNumber = repository.prefRepo.getMobileNumber(),
+                                userID = repository.prefRepo.getUserId(),
+                                eventName = EventName.UPLOAD_FORM_IMAGE,
                             )
+
                             repository.uri = File(it.value).toUri()
-                            // repository.writeImageEventIntoLogFile(eventFormC)
+                            repository.writeImageEventIntoLogFile(event)
                         }
 
                     }
@@ -611,8 +614,21 @@ class FormPictureScreenViewModel @Inject constructor(
                                 mobileNumber = repository.prefRepo.getMobileNumber() ?: BLANK_STRING
                             )
 
+                            val payload = DocumentUploadRequest(
+                                villageId = repository.prefRepo.getSelectedVillage().id.toString(),
+                                userType = if (repository.prefRepo.isUserBPC()) USER_BPC else USER_CRP,
+                                filePath = it.value,
+                                formName = "formD"
+                            ).json()
+
                             repository.uri = File(it.value).toUri()
-                            //repository.writeImageEventIntoLogFile(eventFormD)
+                            val event = repository.createImageUploadEvent(
+                                payload = payload,
+                                mobileNumber = repository.prefRepo.getMobileNumber(),
+                                userID = repository.prefRepo.getUserId(),
+                                EventName.UPLOAD_FORM_IMAGE
+                            )
+                            repository.writeImageEventIntoLogFile(event)
 
                             /*val eventFormatter: IEventFormatter =
                                 EventWriterFactory().createEventWriter(
