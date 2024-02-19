@@ -183,9 +183,9 @@ fun SettingScreen(
     }
 
     if (viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal) {
-        list.add(SettingOptionModel(1, context.getString(R.string.profile), BLANK_STRING))
-        list.add(SettingOptionModel(2, context.getString(R.string.training_videos), BLANK_STRING))
-        list.add(SettingOptionModel(3, context.getString(R.string.language_text), BLANK_STRING))
+        list.add(SettingOptionModel(2, context.getString(R.string.profile), BLANK_STRING))
+        list.add(SettingOptionModel(4, context.getString(R.string.training_videos), BLANK_STRING))
+        list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
         list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
         /*if (BuildConfig.DEBUG) *//*list.add(
             SettingOptionModel(
@@ -197,6 +197,8 @@ fun SettingScreen(
     } else {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.US)
         val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
+
+        if (viewModel.isSyncEnabled()) {
         list.add(
             SettingOptionModel(
                 1,
@@ -205,6 +207,7 @@ fun SettingScreen(
                     .replace("{LAST_SYNC_TIME}", lastSyncTime.toString())
             )
         )
+        }
         list.add(SettingOptionModel(2, context.getString(R.string.profile), BLANK_STRING))
         list.add(SettingOptionModel(3, context.getString(R.string.forms), BLANK_STRING))
         list.add(SettingOptionModel(4, context.getString(R.string.training_videos), BLANK_STRING))
@@ -412,10 +415,11 @@ fun SettingScreen(
                             viewModel = viewModel,
                             navController = navController
                         ) {
-                            when (index) {
-                                0 -> {
+                            when (item.id) {
+                                1 -> {
                                     viewModel.syncErrorMessage.value = ""
-                                    if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
+                                    if (!viewModel.isSyncEnabled()) {
+
                                         if (!viewModel.prefRepo.isUserBPC()) {
                                             viewModel.showSyncDialog.value = true
                                         } else {
@@ -423,43 +427,35 @@ fun SettingScreen(
                                             isBPCDataNeedToBeSynced.value = false
                                             viewModel.showBPCSyncDialog.value = true
                                         }
-                                   viewModel.syncAllPending(networkSpeed)
-                                    } else navController.navigate(AuthScreen.PROFILE_SCREEN.route)
-                                }
+                                    } else {
+                                        viewModel.syncAllPending(networkSpeed)
+                                    }
 
-                                1 -> {
-                                    if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
-                                        navController.navigate(SettingScreens.PROFILE_SCREEN.route)
-                                    else navController.navigate(AuthScreen.VIDEO_LIST_SCREEN.route)
                                 }
 
                                 2 -> {
-                                    if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
-                                        expanded.value = !expanded.value
-                                    else navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
+                                        navController.navigate(SettingScreens.PROFILE_SCREEN.route)
                                 }
 
                                 3 -> {
-
-                                    if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
-                                        navController.navigate(SettingScreens.VIDEO_LIST_SCREEN.route)
-                                    else
-                                    //navController.navigate(SettingScreens.BUG_LOGGING_SCREEN.route)
-
-                                        viewModel.buildAndShareLogs()
-
-
+                                        expanded.value = !expanded.value
                                 }
 
                                 4 -> {
-                                    navController.navigate(SettingScreens.LANGUAGE_SCREEN.route)
+
+                                        navController.navigate(SettingScreens.VIDEO_LIST_SCREEN.route)
+
                                 }
 
                                 5 -> {
-//                                    navController.navigate(SettingScreens.BUG_LOGGING_SCREEN.route)
+                                    navController.navigate(SettingScreens.LANGUAGE_SCREEN.route)
+                                }
+
+                                6 -> {
                                     viewModel.buildAndShareLogs()
                                 }
-                                6 -> {
+
+                                7 -> {
                                     viewModel.compressEventAndImageData(context.getString(R.string.share_export_file))
                                 }
 
@@ -509,6 +505,7 @@ fun SettingScreen(
 
                 ) {
                     if ((context as MainActivity).isOnline.value) {
+                        if (viewModel.isSyncEnabled()) {
                         if (!viewModel.prefRepo.isUserBPC()) {
                             viewModel.isFirstStepNeedToBeSync(stepOneStatus)
                             viewModel.isSecondStepNeedToBeSync(stepTwoStatus)
@@ -539,17 +536,7 @@ fun SettingScreen(
                                 stepFiveStatus
                             )
                             if (isDataNeedToBeSynced.value == 0 || isDataNeedToBeSynced.value == 2) {
-                                viewModel.performLogout(object : NetworkCallbackListener {
-                                    override fun onFailed() {
-                                        logout(context, viewModel, logout, rootNavController)
-                                        changeGraph.value = true
-                                    }
 
-                                    override fun onSuccess() {
-                                        logout(context, viewModel, logout, rootNavController)
-                                        changeGraph.value = true
-                                    }
-                                })
 //                        RootNavigationGraph(navController = rememberNavController(), prefRepo =viewModel.prefRepo)
                             } else {
                                 viewModel.showAPILoader.value = false
@@ -578,6 +565,19 @@ fun SettingScreen(
                                     }
                                 })
                             }
+                        }
+                        } else {
+                            viewModel.performLogout(object : NetworkCallbackListener {
+                                override fun onFailed() {
+                                    logout(context, viewModel, logout, rootNavController)
+                                    changeGraph.value = true
+                                }
+
+                                override fun onSuccess() {
+                                    logout(context, viewModel, logout, rootNavController)
+                                    changeGraph.value = true
+                                }
+                            })
                         }
                     } else {
                         showToast(

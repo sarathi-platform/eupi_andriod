@@ -13,6 +13,7 @@ import com.nudge.core.database.entities.getDependentEventsId
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
 import com.nudge.core.enums.getDependsOnEventNameForEvent
+import com.nudge.core.getEventDependencyEntityListFromEvents
 import com.nudge.core.getSizeInLong
 import com.nudge.core.json
 import com.nudge.core.model.MetadataDto
@@ -169,7 +170,11 @@ class VoEndorsementSummaryRepository @Inject constructor(
                 }
             }
         }
-
+        eventDependencyList.addAll(
+            filteredList.getEventDependencyEntityListFromEvents(
+                dependentEvent
+            )
+        )
 
 
         return eventDependencyList

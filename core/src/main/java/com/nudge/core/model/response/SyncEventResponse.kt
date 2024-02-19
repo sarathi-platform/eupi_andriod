@@ -1,3 +1,10 @@
 package com.nudge.core.model.response
 
-data class SyncEventResponse(val id:String, val status:List<String>,val  consumerPayload:String,val errorMessage:String)
+import com.google.gson.annotations.SerializedName
+
+data class SyncEventResponse(
+    @SerializedName("clientId") val clientId: String, val status: String,
+    val requestId: String,
+    val result: String,
+    val errorMessage: String
+)

@@ -6,7 +6,6 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.facebook.network.connectionclass.ConnectionClassManager
-import com.facebook.network.connectionclass.ConnectionQuality
 import com.facebook.network.connectionclass.DeviceBandwidthSampler
 import com.nudge.core.getBatchSize
 import dagger.assisted.Assisted
@@ -34,11 +33,13 @@ class SyncUploadWorker @AssistedInject constructor(
                     batchLimit = getBatchSize(connectionQuality)
                 }
                 var totalPendingEventCount = syncApiRepository.getPendingEventCount()
-                while (totalPendingEventCount > 0) {
+
                     val pendingEvents = syncApiRepository.getPendingEventFromDb()
  // Call Before BatchStart
                     DeviceBandwidthSampler.getInstance().startSampling()
-                    syncApiRepository.syncEventInNetwork(pendingEvents)
+                val apiResponse = syncApiRepository.syncEventToServer(pendingEvents)
+                Log.d("UploadWorker", apiResponse.data?.first()?.result ?: "")
+
                     totalPendingEventCount =  syncApiRepository.getPendingEventCount()
 //                    while (totalPendingEventCount>0) {
 //                        val pendingEvent = syncApiRepository.getPendingEventFromDb()
@@ -52,7 +53,7 @@ class SyncUploadWorker @AssistedInject constructor(
 //                    }
                     DeviceBandwidthSampler.getInstance().stopSampling()
                     Result.success()
-                }
+
                 throw SocketTimeoutException()
 
                 // do long running work

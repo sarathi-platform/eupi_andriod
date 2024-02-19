@@ -28,8 +28,12 @@ import androidx.navigation.compose.rememberNavController
 import com.akexorcist.localizationactivity.core.LocalizationActivityDelegate
 import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
 import com.google.android.gms.auth.api.phone.SmsRetriever
+import com.google.firebase.Firebase
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.get
+import com.google.firebase.remoteconfig.remoteConfig
+import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.nudge.core.enums.NetworkSpeed
-import com.nudge.syncmanager.SyncManager
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
@@ -81,6 +85,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
             setTheme(R.style.Android_starter_project_blow_lollipop)
         }
         super.onCreate(savedInstanceState)
+        getSyncEnabled()
         setContent {
             Nudge_Theme {
                 val snackState = rememberSnackBarState()
@@ -314,4 +319,22 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
 
     val currentLanguage: Locale
         get() = localizationDelegate.getLanguage(this)
+
+    fun getSyncEnabled() {
+        val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
+        val configSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 3600
+        }
+        remoteConfig.setConfigSettingsAsync(configSettings)
+        remoteConfig.fetchAndActivate()
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    mViewModel.saveSyncEnabledFromRemoteConfig(
+                        remoteConfig.get("syncEnabled").asBoolean()
+                    )
+
+
+                }
+            }
+    }
 }

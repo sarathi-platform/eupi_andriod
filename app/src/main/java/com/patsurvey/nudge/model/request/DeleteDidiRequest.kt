@@ -20,16 +20,21 @@ data class DeleteDidiRequest(
     var cohortName: String,
     @SerializedName("cohortId")
     var cohortId: Int,
+    @SerializedName("deviceId") var deviceId: String,
+    @SerializedName("villageId") var villageId: Int,
 ) {
     companion object {
         fun getDeleteDidiDetailsRequest(didiEntity: DidiEntity): DeleteDidiRequest {
             return DeleteDidiRequest(
-                id = if (didiEntity.serverId != 0) didiEntity.serverId else didiEntity.id,
+                id = didiEntity.serverId,
                 name = didiEntity.name,
                 address = didiEntity.address,
                 guardianName = didiEntity.guardianName,
                 cohortName = didiEntity.cohortName,
-                cohortId = didiEntity.cohortId
+                cohortId = didiEntity.cohortId,
+                deviceId = didiEntity.localUniqueId,
+                villageId = didiEntity.villageId
+
             )
         }
     }

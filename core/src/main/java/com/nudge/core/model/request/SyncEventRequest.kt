@@ -5,15 +5,15 @@ import com.nudge.core.database.entities.Events
 
 
 data class EventRequest(
-    val id: String,
-    @SerializedName("eventName") val eventName: String,
-    @SerializedName("eventTopic") val eventTopic: String,
+    @SerializedName("elient_id") val id: String,
+    @SerializedName("event_name") val eventName: String,
+    @SerializedName("topic_name") val eventTopic: String,
     @SerializedName("created_by") val createdBy: String,
-    @SerializedName("mobileNo") val mobileNo: String,
+    @SerializedName("mobile_no") val mobileNo: String,
     @SerializedName("payload") val payload: String?,
     @SerializedName("metadata") val metadata: String?,
-    @SerializedName("createdDate") val createdDate: String?,
-    @SerializedName("modifiedDate") val modifiedDate: String?,
+    @SerializedName("created_date") val createdDate: String?,
+    @SerializedName("modified_date") val modifiedDate: String?,
 ) {
 
 
@@ -31,6 +31,7 @@ fun Events.toEventRequest() =
         this.created_date.toString(),
         this.modified_date.toString()
     )
+
 
 
 

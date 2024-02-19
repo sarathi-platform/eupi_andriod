@@ -84,4 +84,6 @@ interface PrefRepo {
 
    fun getUserId(): String
 
+    fun saveIsSyncEnabled(isEnabled: Boolean)
+    fun getISSyncEnabled(): Boolean
 }

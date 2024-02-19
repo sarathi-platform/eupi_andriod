@@ -1,11 +1,13 @@
 package com.nudge.syncmanager
 
-import retrofit2.http.GET
-import com.nudge.syncmanager.model.ConfigResponseModel
 import com.nudge.core.model.ApiResponseModel
+import com.nudge.core.model.request.EventRequest
+import com.nudge.core.model.response.SyncEventResponse
+import retrofit2.http.Body
+import retrofit2.http.POST
 
 interface SyncApiService {
-    @GET("/read-api/config/language/get")
-    suspend fun configDetails() : ApiResponseModel<ConfigResponseModel>
+    @POST("/sync-server/sync/events")
+    suspend fun syncEvent(@Body eventRequest: List<EventRequest>): ApiResponseModel<List<SyncEventResponse>>
 
 }
