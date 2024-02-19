@@ -206,6 +206,16 @@ class QuestionScreenViewModel @Inject constructor(
         _questionEntityStateList.sortedBy { it.questionId }
         
         updateQuestionEntityStateForAnsweredQuestions(questionEntityStateList)
+        updateQuestionEntityStateForConditionalQuestions(questionEntityStateList)
+    }
+
+    private fun updateQuestionEntityStateForConditionalQuestions(questionEntityStateList: SnapshotStateList<QuestionEntityState>) {
+        questionEntityStateList.forEach { questionEntityState ->
+            sectionDetail.value.questionAnswerMapping[questionEntityState.questionId]?.forEach { optionItemEntity ->
+                onEvent(QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption(questionEntityState, optionItemEntity))
+                onEvent(QuestionTypeEvent.UpdateConditionQuestionStateForMultipleOption(questionEntityState, listOf(optionItemEntity)))
+            }
+        }
     }
 
     private fun updateQuestionEntityStateForAnsweredQuestions(questionEntityStateList: SnapshotStateList<QuestionEntityState>) {
@@ -270,6 +280,8 @@ class QuestionScreenViewModel @Inject constructor(
                 _sectionDetail.value = _sectionDetail.value.copy(
                     questionAnswerMapping = questionAnswerMapping
                 )
+
+                _filterSectionList.value = sectionDetail.value
             }
 
             is QuestionScreenEvents.UpdateInputTypeQuestionAnswerEntityForUi -> {
@@ -482,7 +494,9 @@ class QuestionScreenViewModel @Inject constructor(
         val questionToShowIndex = questionEntityStateList.findIndexOfListById(questionToShow?.questionId)
         if (questionToShowIndex != -1) {
             _questionEntityStateList.removeAt(questionToShowIndex)
-            val index = (questionToShow?.questionEntity?.order ?: 0) - 1
+            var index = (questionToShow?.questionEntity?.order ?: 0) - 1
+            if (index > _questionEntityStateList.size)
+                index = _questionEntityStateList.size
             _questionEntityStateList.add(if (index != -1) index else questionToShowIndex, questionToShow!!)
         }
     }
@@ -562,10 +576,10 @@ class QuestionScreenViewModel @Inject constructor(
                 if (isQuestionAlreadyAnswered > 0) {
                     val finalAnswerList: MutableList<OptionItemEntity> = mutableListOf()
                     if (questionEntity.type?.equals(QuestionType.Grid.name) == true) {
-                        finalAnswerList.addAll(existingGridTypeAnswers?.optionItems ?: emptyList())
+//                        finalAnswerList.addAll(existingGridTypeAnswers?.optionItems ?: emptyList())
                         finalAnswerList.addAll(optionsItem)
                     } else {
-                        finalAnswerList.addAll(optionsItem)
+                        finalAnswerList.addAll(optionsItem.distinctBy { it.optionId})
                     }
                     questionScreenUseCase.saveSectionAnswerUseCase.updateSectionAnswerForDidi(
                         didiId = didiId,

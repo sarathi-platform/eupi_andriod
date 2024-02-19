@@ -7,18 +7,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
+import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.Constants.ResultType
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.FormQuestionScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nrlm.baselinesurvey.utils.calculateResultForFormula
 import com.nrlm.baselinesurvey.utils.checkCondition
+import com.nrlm.baselinesurvey.utils.convertFormTypeQuestionListToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.convertQuestionListToOptionItemEntity
+import com.nrlm.baselinesurvey.utils.convertToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -93,9 +99,56 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 showQuestion = true)
             )
             optionItemEntity.conditions?.forEach { conditionsDto ->
-                conditionsDto?.resultList?.forEach {  questionList ->
-                    val mOptionItemEntity = questionList.convertQuestionListToOptionItemEntity(optionItemEntity.sectionId, optionItemEntity.surveyId)
-                    _updatedOptionList.add(OptionItemEntityState(mOptionItemEntity.optionId, mOptionItemEntity, false))
+                when (conditionsDto?.resultType) {
+                    ResultType.Questions.name -> {
+                        conditionsDto?.resultList?.forEach { questionList ->
+                            if (questionList.type?.equals(QuestionType.Form.name, true) == true) {
+                                val mOptionItemEntityList = questionList.convertFormTypeQuestionListToOptionItemEntity(optionItemEntity.sectionId, optionItemEntity.surveyId, optionItemEntity.languageId ?: DEFAULT_LANGUAGE_ID)
+                                mOptionItemEntityList.forEach { mOptionItemEntity ->
+                                    _updatedOptionList.add(
+                                        OptionItemEntityState(
+                                            mOptionItemEntity.optionId,
+                                            mOptionItemEntity,
+                                            false
+                                        )
+                                    )
+                                }
+                            }
+                            val mOptionItemEntity = questionList.convertQuestionListToOptionItemEntity(
+                                optionItemEntity.sectionId,
+                                optionItemEntity.surveyId
+                            )
+                            _updatedOptionList.add(
+                                OptionItemEntityState(
+                                    mOptionItemEntity.optionId,
+                                    mOptionItemEntity,
+                                    false
+                                )
+                            )
+                        }
+                    }
+                    ResultType.Options.name -> {
+                        conditionsDto?.resultList?.forEach { questionList ->
+                            val mOptionItemEntity =
+                                questionList.convertToOptionItemEntity(
+                                    sectionId,
+                                    surveyId,
+                                    questionId,
+                                    languageId = optionItemEntity.languageId ?: DEFAULT_LANGUAGE_ID
+                                )
+
+                            _updatedOptionList.add(
+                                OptionItemEntityState(
+                                    mOptionItemEntity.optionId,
+                                    mOptionItemEntity,
+                                    false
+                                )
+                            )
+                        }
+                    }
+                    ResultType.Formula.name -> {
+
+                    }
                 }
             }
         }
@@ -179,8 +232,32 @@ class QuestionTypeScreenViewModel @Inject constructor(
 
             is QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent -> {
                 viewModelScope.launch(Dispatchers.IO) {
+                    val finalFormQuestionResponseList = event.formQuestionResponseList.toMutableList()
+
+                    updatedOptionList.forEach {
+                        if (it.optionItemEntity?.optionType?.equals(QuestionType.Calculation.name, true) == true) {
+                            it.optionItemEntity?.conditions?.forEach { conditionDto ->
+                                val resultedValue = conditionDto?.calculateResultForFormula(finalFormQuestionResponseList)
+                                if (!resultedValue.isNullOrBlank()) {
+                                    finalFormQuestionResponseList.add(
+                                        FormQuestionResponseEntity(
+                                            id = 0,
+                                            didiId = didiId,
+                                            questionId = finalFormQuestionResponseList.first().questionId,
+                                            surveyId = finalFormQuestionResponseList.first().surveyId,
+                                            sectionId = finalFormQuestionResponseList.first().sectionId,
+                                            referenceId = referenceId,
+                                            optionId = it.optionId ?: -1,
+                                            selectedValue = resultedValue
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    }
+
                     formQuestionScreenUseCase.saveFormQuestionResponseUseCase.saveFormsListIntoDB(
-                        event.formQuestionResponseList
+                        finalFormQuestionResponseList
                     )
                 }
             }
@@ -199,24 +276,63 @@ class QuestionTypeScreenViewModel @Inject constructor(
     }
 
     override fun updateQuestionStateForCondition(conditionResult: Boolean, conditionsDto: ConditionsDto?) {
-        conditionsDto?.resultList?.forEach { questionList ->
-            val tempList = _updatedOptionList.distinctBy { it.optionId }
-            var questionsToShow = tempList.find { it.optionId == questionList.questionId }
-            questionsToShow = questionsToShow?.copy(showQuestion = conditionResult)
-            val questionsToShowIndex = _updatedOptionList.distinctBy { it.optionId }
-                .map { it.optionId }
-                .indexOf(questionsToShow?.optionId)
+        when (conditionsDto?.resultType) {
+            ResultType.Questions.name -> {
+                conditionsDto?.resultList?.forEach { questionList ->
+                    if (questionList.type?.equals(QuestionType.Form.name, true) == true) {
+                        val tempList = _updatedOptionList.distinctBy { it.optionId }
+
+                        questionList.options?.forEach { optItem ->
+                            val questionsToShow = tempList.find { optionItemEntityState ->  optionItemEntityState.optionId == optItem?.optionId }
+
+                            updateQuestionsToShow(questionsToShow, conditionResult)
+                        }
+                    } else {
+                        val tempList = _updatedOptionList.distinctBy { it.optionId }
+                        val questionsToShow = tempList.find { it.optionId == questionList.questionId }
+
+                        updateQuestionsToShow(questionsToShow, conditionResult)
+
+                    }
+                }
+            }
+            ResultType.Options.name -> {
+                conditionsDto.resultList.forEach { questionList ->
+                    val tempList = _updatedOptionList.distinctBy { it.optionId }
+                    val optionToShow = tempList.find { it.optionId == questionList.optionId }
+
+                    updateQuestionsToShow(optionToShow, conditionResult)
+
+                }
+
+            }
+        }
+
+    }
+
+    private fun updateQuestionsToShow(questionsToShow: OptionItemEntityState?, conditionResult: Boolean) {
+
+        if (questionsToShow?.showQuestion == conditionResult)
+            return
+
+        val mQuestionsToShow = questionsToShow?.copy(showQuestion = conditionResult)
+        val questionsToShowIndex = _updatedOptionList.distinctBy { it.optionId }
+            .map { it.optionId }
+            .indexOf(mQuestionsToShow?.optionId)
+        if (questionsToShowIndex != -1) {
             _updatedOptionList.removeAt(questionsToShowIndex)
-            _updatedOptionList.add(questionsToShowIndex, questionsToShow!!)
-            onEvent(
-                QuestionTypeEvent.DeleteFormQuestionOptionResponseEvent(
-                    questionsToShow.optionId,
-                    questionsToShow.optionItemEntity?.questionId,
-                    questionsToShow.optionItemEntity?.sectionId,
-                    questionsToShow.optionItemEntity?.surveyId,
-                    didiId
+            _updatedOptionList.add(questionsToShowIndex, mQuestionsToShow!!)
+            if (!conditionResult) {
+                onEvent(
+                    QuestionTypeEvent.DeleteFormQuestionOptionResponseEvent(
+                        mQuestionsToShow.optionId,
+                        mQuestionsToShow.optionItemEntity?.questionId,
+                        mQuestionsToShow.optionItemEntity?.sectionId,
+                        mQuestionsToShow.optionItemEntity?.surveyId,
+                        didiId
+                    )
                 )
-            )
+            }
         }
     }
 

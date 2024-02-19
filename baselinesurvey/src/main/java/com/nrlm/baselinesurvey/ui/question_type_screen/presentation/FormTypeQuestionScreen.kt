@@ -69,7 +69,7 @@ fun FormTypeQuestionScreen(
 
     val saveButtonActiveState = remember {
         derivedStateOf {
-            referenceId.isNotBlank() || (viewModel.answeredOptionCount.intValue == viewModel.totalOptionSize.value)
+            referenceId.isNotBlank() || (viewModel.answeredOptionCount.intValue >= viewModel.totalOptionSize.value)
         }
     }
 

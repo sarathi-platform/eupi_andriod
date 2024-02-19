@@ -11,10 +11,12 @@ enum class QuestionType {
     InputText,
     SingleSelectDropdown,
     Toggle,
-    InputNumber;
+    InputNumber,
+    Calculation;
 }
 
  enum class ResultType {
-     Option,
-     Questions
+     Options,
+     Questions,
+     Formula
  }

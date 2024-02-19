@@ -35,18 +35,18 @@ data class OptionsItem(
     var optionType: String? = BLANK_STRING,
 
 
-    @SerializedName("questions")
-    @Expose
-    val questionList: List<QuestionList?> = listOf(),
     @SerializedName("conditional")
     @Expose
     val conditional: Boolean = false,
+
     @SerializedName("languageCode")
     @Expose
     val languageCode: String = BLANK_STRING,
+
     @SerializedName("order")
     @Expose
     val order: Int = 0,
+
     @SerializedName("values")
     @Expose
     val values: List<String> = listOf(),
@@ -54,5 +54,7 @@ data class OptionsItem(
     @SerializedName("conditions")
     @Expose
     val conditions: List<ConditionsDto?>? = emptyList()
+
+
 
 )

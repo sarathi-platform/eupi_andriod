@@ -267,7 +267,7 @@ private fun LazyVerticalGridList(
                 }
 
                 QuestionType.Grid.name, QuestionType.MultiSelect.name -> {
-                    GridType(optionItem, _index, selectedIndices, selectedOptionsItem)
+//                    GridType(optionItem, _index, selectedIndices, selectedOptionsItem)
                     Spacer(modifier = Modifier.height(4.dp))
                 }
 
@@ -278,7 +278,7 @@ private fun LazyVerticalGridList(
     }
 }
 
-@Composable
+/*@Composable
 private fun GridType(
     optionItem: OptionItemEntity,
     _index: Int,
@@ -290,7 +290,7 @@ private fun GridType(
         index = _index,
         selectedIndex = selectedIndices
     ) {
-        if (!selectedIndices.contains(it)) {
+        if (!selectedIndice.contains(it)) {
             optionItem.isSelected = true
             selectedIndices.add(it)
         } else {
@@ -304,7 +304,7 @@ private fun GridType(
         }
         //onAnswerSelection(questionIndex, selectedOptionsItem, selectedIndices)
     }
-}
+}*/
 
 @Composable
 fun CreateLazyHorizontalGrid(

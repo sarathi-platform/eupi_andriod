@@ -77,6 +77,7 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.findOptionFromId
+import com.nrlm.baselinesurvey.utils.getSizeOfVisibleQuestions
 import com.nrlm.baselinesurvey.utils.mapFormQuestionResponseToFromResponseObjectDto
 import com.nrlm.baselinesurvey.utils.mapToOptionItem
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
@@ -123,7 +124,12 @@ fun NestedLazyList(
     }
 
     val curPercentage = animateFloatAsState(
-        targetValue = answeredQuestionCount.value.toFloat() / sectionDetails.questionSize.toFloat(),
+        targetValue = (if (answeredQuestionCount.intValue.toFloat() > questionScreenViewModel.questionEntityStateList.getSizeOfVisibleQuestions()
+                .toFloat()
+        ) questionScreenViewModel.questionEntityStateList.getSizeOfVisibleQuestions()
+            .toFloat()
+        else answeredQuestionCount.intValue.toFloat()) / questionScreenViewModel.questionEntityStateList.getSizeOfVisibleQuestions()
+            .toFloat(),
         label = "",
         animationSpec = tween()
     )
@@ -337,6 +343,10 @@ fun NestedLazyList(
                                             answeredQuestionCountIncreased(answeredQuestionCount.value)
                                         }
 
+                                        questionScreenViewModel.onEvent(
+                                            QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(question, listOf(optionItem))
+                                        )
+
                                         questionScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption(question, optionItem))
 
                                         questionScreenViewModel.onEvent(
@@ -400,6 +410,12 @@ fun NestedLazyList(
                                         }
 
                                         questionScreenViewModel.onEvent(
+                                            QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(question, listOf(optionItem))
+                                        )
+
+                                        questionScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption(question, optionItem))
+
+                                        questionScreenViewModel.onEvent(
                                             QuestionScreenEvents.SectionProgressUpdated(
                                                 surveyId = sectionDetails.surveyId,
                                                 sectionId = sectionDetails.sectionId,
@@ -458,13 +474,17 @@ fun NestedLazyList(
                                             answeredQuestionIndices.value.add(questionIndex)
                                             if (selectedIndeciesCount.size <= 1) {
                                                 answeredQuestionCount.value =
-                                                    answeredQuestionCount.value.inc().coerceIn(
+                                                    answeredQuestionCount.intValue.inc().coerceIn(
                                                         0,
                                                         sectionDetails.questionList.size
                                                     )
-                                                answeredQuestionCountIncreased(answeredQuestionCount.value)
+                                                answeredQuestionCountIncreased(answeredQuestionCount.intValue)
                                             }
                                         }
+
+                                        questionScreenViewModel.onEvent(
+                                            QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(question, optionItems)
+                                        )
 
                                         questionScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionQuestionStateForMultipleOption(questionEntityState = question, optionItemEntityList = optionItems))
 

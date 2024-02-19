@@ -34,8 +34,6 @@ import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
 import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
-import com.nrlm.baselinesurvey.model.datamodel.Sections
-import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
@@ -162,7 +160,7 @@ fun List<OptionsItem>.findItemBySectionId(optionId:Int): OptionsItem {
     return this[this.map { it.optionId }.indexOf(optionId)]
 }
 
-val sampleSetcion1 = Sections(
+/*val sampleSetcion1 = Sections(
     sectionId = 1,
     sectionName = "Financial Inclusion",
     sectionOrder = 1,
@@ -199,7 +197,7 @@ val sampleSetcion1 = Sections(
                     optionType = ""
                 )
             ),
-            /*questionImageUrl = "Section1_GovtService.webp",*/
+            *//*questionImageUrl = "Section1_GovtService.webp",*//*
         ),
         QuestionList(
             questionId = 2,
@@ -247,8 +245,8 @@ val sampleSetcion1 = Sections(
                     ""
                 )
             ),
-            /*questionImageUrl =
-            "Section1_2wheeler.webp"*/
+            *//*questionImageUrl =
+            "Section1_2wheeler.webp"*//*
         ),
         QuestionList(
             questionId = 3,
@@ -281,7 +279,7 @@ val sampleSetcion1 = Sections(
                     optionType = ""
                 )
             )
-            /*questionImageUrl = "Section1_ColourTV.webp"*/
+            *//*questionImageUrl = "Section1_ColourTV.webp"*//*
             )
 
     ),
@@ -323,8 +321,8 @@ val sampleSection2 = Sections(
                     optionImage = "",
                     optionType = ""
                 )
-            )/*,
-            questionImageUrl = "Section1and2_AdultFemale_WomanHeaded.webp",*/
+            )*//*,
+            questionImageUrl = "Section1and2_AdultFemale_WomanHeaded.webp",*//*
         ),
         QuestionList(
             questionId = 21,
@@ -384,9 +382,9 @@ val sampleSection2 = Sections(
                     optionType =
                     ""
                 )
-            )/*,
+            )*//*,
             questionImageUrl =
-            "Section1_2wheeler.webp",*/
+            "Section1_2wheeler.webp",*//*
         ),
         QuestionList(
             questionId = 12,
@@ -432,12 +430,12 @@ val sampleSection2 = Sections(
                     optionImage = "",
                     optionType = ""
                 )
-            )/*,
-            questionImageUrl = "Section1_ColourTV.webp",*/
+            )*//*,
+            questionImageUrl = "Section1_ColourTV.webp",*//*
         )
     ),
     contentList = listOf(ContentList(BLANK_STRING, BLANK_STRING))
-)
+)*/
 /*val sampleSetcion3 = Sections(
     sectionId = 3,
     sectionOrder = 1,
@@ -541,7 +539,7 @@ val sampleSection2 = Sections(
             )
     )
 )*/
-val firstSampleList = listOf<Sections>(sampleSetcion1, sampleSection2)
+//val firstSampleList = listOf<Sections>(sampleSetcion1, sampleSection2)
 //val secondSampleList = listOf<Sections>(sampleSetcion3)
 
 fun Context.findActivity(): ComponentActivity? = when (this) {
@@ -649,9 +647,14 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
         optionType = this.type,
         summary = this.questionSummary,
         values = emptyList(),
+        conditional = this.conditional
     )
     val valuesList = mutableListOf<String>()
-    this.options.forEach {
+    val conditions = mutableListOf<ConditionsDto>()
+    this.options?.forEach {
+        it?.conditions?.forEach { condition ->
+            condition?.let { it1 -> conditions.add(it1) }
+        }
         when (it?.optionType) {
             QuestionType.SingleSelectDropdown.name -> {
                 it.values.let { it1 -> valuesList.addAll(it1) }
@@ -662,9 +665,39 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
         }
     }
     optionItemEntity = optionItemEntity.copy(
-        values = valuesList
+        values = valuesList,
+        conditions = conditions
     )
     return optionItemEntity
+}
+
+fun QuestionList.convertFormTypeQuestionListToOptionItemEntity(sectionId: Int, surveyId: Int, languageId: Int): List<OptionItemEntity> {
+    val optionsItemEntityList = mutableListOf<OptionItemEntity>()
+
+    this.options?.forEach { optionsItem ->
+        val optionItemEntity = OptionItemEntity(
+            id = 0,
+            optionId = optionsItem?.optionId,
+            questionId = this.questionId,
+            sectionId = sectionId,
+            surveyId = surveyId,
+            display = optionsItem?.display,
+            weight = optionsItem?.weight,
+            optionValue = optionsItem?.optionValue,
+            summary = optionsItem?.summary,
+            count = optionsItem?.count,
+            optionImage = optionsItem?.optionImage,
+            optionType = optionsItem?.optionType,
+            conditional = true,
+            order = optionsItem?.order ?: -1,
+            values = optionsItem?.values,
+            languageId = languageId,
+            conditions = optionsItem?.conditions
+        )
+        optionsItemEntityList.add(optionItemEntity)
+    }
+
+    return optionsItemEntityList
 }
 
 fun List<FormQuestionResponseEntity>.getResponseForOptionId(optionId: Int): FormQuestionResponseEntity? {
@@ -740,6 +773,27 @@ fun List<OptionItemEntityState>.updateOptionItemEntityListStateForQuestionByCond
     return updatedOptionItemEntityStateList
 }
 
+fun QuestionList.convertToOptionItemEntity(sectionId: Int, surveyId: Int, questionId: Int, languageId: Int): OptionItemEntity {
+    return OptionItemEntity(
+        id = 0,
+        optionId = this.optionId,
+        questionId = questionId,
+        sectionId = sectionId,
+        surveyId = surveyId,
+        display = this.questionDisplay,
+        weight = 0,
+        optionValue = 0,
+        summary = this.questionSummary,
+        count = 0,
+        optionImage = this.imageIcon,
+        optionType = this.type,
+        conditional = this.conditional,
+        order = this.order ?: -1,
+        values = this.values,
+        languageId = languageId,
+        conditions = this.conditions
+    )
+}
 
 //TODO Test and optimize this extension function.
 fun <T> SnapshotStateList<T>.updateListAtIndex(index: Int, item: T?): SnapshotStateList<T> {
@@ -771,6 +825,9 @@ fun ConditionsDto.checkCondition(userInputValue: String): Boolean {
             Operator.IN_BETWEEN -> {
                 userInputValue.toInt() >= condition.first().toInt() && userInputValue.toInt() <= condition.last().toInt()
             }
+            Operator.NOT_EQUAL_TO -> {
+                !userInputValue.equals(condition.first(), ignoreCase = true)
+            }
             /*Operator.LESS_THAN_EQUAL_TO ->{
                 if(totalAmount <= (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){
                     score = it.score.toDouble()
@@ -799,6 +856,32 @@ fun ConditionsDto.checkCondition(userInputValue: String): Boolean {
     }
 }
 
+fun ConditionsDto.calculateResultForFormula(formQuestionResponseEntity: List<FormQuestionResponseEntity>): String {
+    val optionIdList = this.value.extractIdsFromValue()
+    val filteredResponseList = formQuestionResponseEntity.filter { optionIdList?.contains(it.optionId.toString()) == true }.sortedBy { it.optionId }
+    var input = this.value
+
+    if (filteredResponseList.isEmpty())
+        return BLANK_STRING
+
+    optionIdList?.forEach {
+        input = input.replace(it, filteredResponseList.findResponseEntityByOptionId(it.toInt()).selectedValue)
+    }
+    val result = CalculatorUtils.calculate(input)
+
+    Log.d("TAG", "calculateResultForFormula: $result")
+
+    return result.toString()
+}
+
+fun String.extractIdsFromValue(): List<String>? {
+    return this.replace("(", "")?.replace(")", "")?.split(" ")?.filterNot { it.equals("*") || it.equals("-") || it.equals("+") || it.equals("-") }
+}
+
+fun List<FormQuestionResponseEntity>.findResponseEntityByOptionId(optionId: Int): FormQuestionResponseEntity {
+    return this[this.map { it.optionId }.indexOf(optionId)]
+}
+
 fun checkStringOperator(operator:String) = when(operator){
     "==" ->Operator.EQUAL_TO
     "=" ->Operator.EQUAL_TO
@@ -807,5 +890,18 @@ fun checkStringOperator(operator:String) = when(operator){
     ">" ->Operator.MORE_THAN
     ">=" ->Operator.MORE_THAN_EQUAL_TO
     "><" -> Operator.IN_BETWEEN
-    else->{}
+    "<>" -> Operator.NOT_EQUAL_TO
+    "*" -> Operator.MULTIPLY
+    "-" -> Operator.SUBTRACT
+    "+" -> Operator.ADD
+    "/" -> Operator.DIVIDE
+    else->Operator.NO_OPERATOR
+}
+
+fun  SnapshotStateList<QuestionEntityState>.getSizeOfVisibleQuestions(): Int {
+    return this.distinctBy { it.questionId }.filter { it.showQuestion }.size
+}
+
+fun List<OptionItemEntity>.getIndexById(optionId: Int): Int {
+    return this.map { it.optionId }.indexOf(optionId)
 }
