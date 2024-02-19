@@ -17,7 +17,6 @@ import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
-import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.QuestionScreenUseCase
@@ -52,12 +51,7 @@ class QuestionScreenViewModel @Inject constructor(
 
     private val _sectionDetail = mutableStateOf<SectionListItem>(
         SectionListItem(
-            contentList = listOf(
-                ContentList(
-                    BLANK_STRING,
-                    BLANK_STRING
-                )
-            ), languageId = 2
+            languageId = 2
         )
     )
     private val sectionDetail: State<SectionListItem> get() = _sectionDetail
@@ -81,12 +75,7 @@ class QuestionScreenViewModel @Inject constructor(
 
     private val _filterSectionList = mutableStateOf<SectionListItem>(
         SectionListItem(
-            contentList = listOf(
-                ContentList(
-                    BLANK_STRING,
-                    BLANK_STRING
-                )
-            ), languageId = 2
+            languageId = 2
         )
     )
 

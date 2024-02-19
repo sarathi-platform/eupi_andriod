@@ -11,6 +11,7 @@ import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
+import com.nrlm.baselinesurvey.database.dao.ContentDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
@@ -20,6 +21,7 @@ import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
+import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
@@ -35,6 +37,7 @@ import com.nrlm.baselinesurvey.model.request.MissionRequest
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.model.response.BeneficiaryApiResponse
+import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.model.response.MissionResponseModel
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
@@ -52,7 +55,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     val optionItemDao: OptionItemDao,
     val missionEntityDao: MissionEntityDao,
     val missionActivityDao: MissionActivityDao,
-    val activityTaskDao: ActivityTaskDao
+    val activityTaskDao: ActivityTaskDao,
+    val contentDao: ContentDao
 ) : DataLoadingScreenRepository {
     override suspend fun fetchLocalLanguageList(): List<LanguageEntity> {
         return languageListDao.getAllLanguages()
@@ -81,9 +85,14 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
             languageId = languageId
         )
         surveyEntityDao.insertSurvey(surveyEntity)
+        contentDao.deleteContentFroLanguage(surveyResponseModel.surveyId, languageId)
         surveyResponseModel.sections.forEach { section ->
             val subQuestionList = mutableListOf<QuestionList>()
-            sectionEntityDao.deleteSurveySectionFroLanguage(section.sectionId, surveyResponseModel.surveyId, languageId)
+            sectionEntityDao.deleteSurveySectionFroLanguage(
+                section.sectionId,
+                surveyResponseModel.surveyId,
+                languageId
+            )
             val sectionEntity = SectionEntity(
                 id = 0,
                 sectionId = section.sectionId,
@@ -96,8 +105,21 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                 questionSize = section.questionList.size
             )
             sectionEntityDao.insertSection(sectionEntity)
+            val questionContentList = mutableListOf<MutableMap<Int, List<ContentList>>>()
             section.questionList.forEach { question ->
-                saveQuestionAndOptionsToDb(question = question, section, surveyResponseModel, languageId)
+                if (!question?.contentList.isNullOrEmpty()) {
+                    val questionContentMap = mutableMapOf<Int, List<ContentList>>()
+                    questionContentMap[question?.questionId ?: 0] =
+                        question?.contentList?.let { listOf(it.first()) }
+                            ?: listOf()
+                    questionContentList.add(questionContentMap)
+                }
+                saveQuestionAndOptionsToDb(
+                    question = question,
+                    section,
+                    surveyResponseModel,
+                    languageId
+                )
                 question?.options?.forEach { optionItem ->
                     if (optionItem?.conditions?.isNotEmpty()!!) {
                         optionItem.conditions.forEach {
@@ -106,9 +128,28 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     }
                 }
             }
+            val sectionData = section.contentList.first()
+            contentDao.insertContent(
+                ContentEntity(
+                    id = 0,
+                    surveyId = surveyEntity.surveyId,
+                    sectionId = section.sectionId,
+                    contentKey = sectionData.contentKey,
+                    contentType = sectionData.contentType,
+                    contentValue = sectionData.contentValue,
+                    questionContentMapping = questionContentList,
+                    languageId = languageId
+                )
+            )
             subQuestionList.forEach { conditionalItem ->
 //                if (conditionalItem is QuestionList)
-                    saveQuestionAndOptionsToDb(question = conditionalItem, section, surveyResponseModel, languageId, true)
+                saveQuestionAndOptionsToDb(
+                    question = conditionalItem,
+                    section,
+                    surveyResponseModel,
+                    languageId,
+                    true
+                )
                 /*if (conditionalItem is OptionsItem) {
                     saveConditionalOptions(
                         conditionalItem, ,
@@ -119,6 +160,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                 }*/
             }
         }
+
+
     }
 
     private fun saveQuestionAndOptionsToDb(question: QuestionList?, section: Sections, surveyResponseModel: SurveyResponseModel, languageId: Int, isSubQuestionList: Boolean = false) {
@@ -190,7 +233,6 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             Log.e("DataLoadingScreenRepositoryImpl", "saveQuestionAndOptionsToDb: exception, question: $question", ex)
         }
-
     }
 
     private fun saveConditionalOptions(optionsItem: OptionsItem, question: QuestionList, section: Sections, surveyResponseModel: SurveyResponseModel, languageId: Int) {

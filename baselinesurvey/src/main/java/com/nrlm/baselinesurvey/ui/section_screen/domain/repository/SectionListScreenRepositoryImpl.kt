@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.section_screen.domain.repository
 
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.database.dao.ContentDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
@@ -23,6 +24,7 @@ class SectionListScreenRepositoryImpl(
     private val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
     private val optionItemDao: OptionItemDao,
     private val surveyeeEntityDao: SurveyeeEntityDao,
+    private val contentDao: ContentDao
 ): SectionListScreenRepository {
     override fun getSectionsListForDidi(
         didiId: Int,
@@ -44,6 +46,11 @@ class SectionListScreenRepositoryImpl(
                 survey?.surveyId ?: 0,
                 languageId
             )
+            val contentData = contentDao.getContentFromIds(
+                sectionEntity.surveyId,
+                sectionEntity.sectionId,
+                languageId
+            )
 
             val questionOptionMap = mutableMapOf<Int, List<OptionItemEntity>>()
             if (questionList.isNotEmpty()) {
@@ -63,11 +70,12 @@ class SectionListScreenRepositoryImpl(
                     sectionIcon = sectionEntity.sectionIcon,
                     sectionDetails = sectionEntity.sectionDetails,
                     sectionOrder = sectionEntity.sectionOrder,
-                    contentList = emptyList(),
+                    contentData = contentData,
                     languageId = languageId,
                     questionList = questionList,
                     optionsItemMap = questionOptionMap,
-                    questionSize = sectionEntity.questionSize
+                    questionSize = sectionEntity.questionSize,
+                    questionContentMapping = mutableMapOf()
                 )
             )
             val sectionProgressForDidiLocal =

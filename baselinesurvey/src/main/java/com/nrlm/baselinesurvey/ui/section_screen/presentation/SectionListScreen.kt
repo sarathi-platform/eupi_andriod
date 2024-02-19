@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
@@ -350,7 +351,8 @@ fun SectionListScreen(
                                         //TODO Modify code to handle contentList.
                                         selectedSectionDescription.value =
                                             selectedSectionDescription.value.copy(
-                                                textTypeDescriptionContent = sectionStateItem.section.sectionDetails
+                                                textTypeDescriptionContent = sectionStateItem.section.contentData?.contentValue
+                                                    ?: BLANK_STRING
                                             )
 
                                         delay(100)

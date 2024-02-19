@@ -6,6 +6,7 @@ import com.nrlm.baselinesurvey.activity.domain.use_case.IsLoggedInUseCase
 import com.nrlm.baselinesurvey.activity.domain.use_case.MainActivityUseCase
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
+import com.nrlm.baselinesurvey.database.dao.ContentDao
 import com.nrlm.baselinesurvey.database.dao.DidiInfoDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.FormQuestionResponseDao
@@ -261,6 +262,7 @@ object BaselineModule {
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
         optionItemDao: OptionItemDao,
         surveyeeEntityDao: SurveyeeEntityDao,
+        contentDao: ContentDao
     ): SectionListScreenRepository {
         return SectionListScreenRepositoryImpl(
             prefRepo,
@@ -270,7 +272,8 @@ object BaselineModule {
             questionEntityDao,
             didiSectionProgressEntityDao,
             optionItemDao,
-            surveyeeEntityDao
+            surveyeeEntityDao,
+            contentDao
         )
     }
 
@@ -301,7 +304,8 @@ object BaselineModule {
         sectionAnswerEntityDao: SectionAnswerEntityDao,
         optionItemDao: OptionItemDao,
         formQuestionResponseDao: FormQuestionResponseDao,
-        inputTypeQuestionAnswerDao: InputTypeQuestionAnswerDao
+        inputTypeQuestionAnswerDao: InputTypeQuestionAnswerDao,
+        contentDao: ContentDao
     ): QuestionScreenRepository {
         return QuestionScreenRepositoryImpl(
             prefRepo = prefRepo,
@@ -314,7 +318,8 @@ object BaselineModule {
             sectionAnswerEntityDao = sectionAnswerEntityDao,
             optionItemDao = optionItemDao,
             formQuestionResponseDao = formQuestionResponseDao,
-            inputTypeQuestionAnswerDao = inputTypeQuestionAnswerDao
+            inputTypeQuestionAnswerDao = inputTypeQuestionAnswerDao,
+            contentDao
         )
     }
 
@@ -370,6 +375,7 @@ object BaselineModule {
         missionEntityDao: MissionEntityDao,
         missionActivityDao: MissionActivityDao,
         activityTaskDao: ActivityTaskDao,
+        contentDao: ContentDao
     ): DataLoadingScreenRepository {
         return DataLoadingScreenRepositoryImpl(
             prefRepo,
@@ -382,7 +388,8 @@ object BaselineModule {
             optionItemDao,
             missionEntityDao,
             missionActivityDao,
-            activityTaskDao
+            activityTaskDao,
+            contentDao
         )
     }
 

@@ -31,6 +31,8 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_400_px
 import com.nrlm.baselinesurvey.ui.theme.dimen_450_px
+import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
+import com.nrlm.baselinesurvey.ui.theme.quesOptionTextStyle
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
@@ -64,11 +66,25 @@ fun DescriptionContentComponent(
                 Text(
                     text = descriptionContentState.textTypeDescriptionContent/*selectedSectionDescription.value*/,
                     color = textColorDark,
-                    style = smallerTextStyleNormalWeight,
+                    style = if (descriptionContentState.subTextTypeDescriptionContent.isNotBlank()) largeTextStyle else quesOptionTextStyle,
                     modifier = Modifier.padding(horizontal = dimen_10_dp)
                 )
             }
-
+            if (descriptionContentState.subTextTypeDescriptionContent.isNotBlank()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = dimen_18_dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = descriptionContentState.subTextTypeDescriptionContent,
+                        color = textColorDark,
+                        style = quesOptionTextStyle,
+                        modifier = Modifier.padding(horizontal = dimen_10_dp)
+                    )
+                }
+            }
             if (descriptionContentState.imageTypeDescriptionContent != BLANK_STRING) {
                 Box(
                     modifier = Modifier

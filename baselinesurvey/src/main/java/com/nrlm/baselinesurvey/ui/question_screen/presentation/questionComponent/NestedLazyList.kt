@@ -43,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -256,15 +257,16 @@ fun NestedLazyList(
 
                     },
                     actions = {
-
-//                        Icon(
-//                            painterResource(id = R.drawable.info_icon),
-//                            null,
-//                            tint = textColorDark,
-//                            modifier = Modifier.clickable {
-//                                sectionInfoButtonClicked()
-//                            }
-//                        )
+                        if (!sectionDetails.contentData?.contentValue.isNullOrBlank()) {
+                            Icon(
+                                painterResource(id = R.drawable.info_icon),
+                                null,
+                                tint = textColorDark,
+                                modifier = Modifier.clickable {
+                                    sectionInfoButtonClicked()
+                                }
+                            )
+                        }
                     },
                     backgroundColor = white,
                     elevation = 0.dp,
@@ -324,6 +326,8 @@ fun NestedLazyList(
                                     questionIndex = index,
                                     question = question.questionEntity,
                                     showQuestionState = question,
+                                    infoSubTitle = sectionDetails.questionContentMapping[question.questionId]?.first()?.contentValue
+                                        ?: BLANK_STRING,
                                     maxCustomHeight = maxHeight,
                                     optionItemEntityList = optionList!!,
                                     selectedOptionIndex = optionList.indexOf(optionList.find { it.optionId == selectedOption?.optionId })
@@ -384,8 +388,11 @@ fun NestedLazyList(
                                 ListTypeQuestion(
                                     question = question.questionEntity,
                                     showQuestionState = question,
+                                    infoSubTitle = sectionDetails.questionContentMapping[question.questionId]?.first()?.contentValue
+                                        ?: BLANK_STRING,
                                     optionItemEntityList = optionList ?: listOf(),
-                                    selectedOptionIndex = optionList?.find { it.optionId == selectedOption?.optionId }?.optionId ?: -1
+                                    selectedOptionIndex = optionList?.find { it.optionId == selectedOption?.optionId }?.optionId
+                                        ?: -1
                                     /*optionList?.indexOf(selectedOption)
                                         ?: -1*/,
                                     questionIndex = index,
@@ -450,6 +457,8 @@ fun NestedLazyList(
                                     question = question.questionEntity,
                                     showQuestionState = question,
                                     questionIndex = index,
+                                    infoSubTitle = sectionDetails.questionContentMapping[question.questionId]?.first()?.contentValue
+                                        ?: BLANK_STRING,
                                     optionItemEntityList = optionList,
                                     selectedOptionIndices = selectedIndices,
                                     maxCustomHeight = maxHeight,
@@ -582,6 +591,8 @@ fun NestedLazyList(
                                     questionIndex = index,
                                     selectedOptionMapForNumericInputTypeQuestions = selectedOptionMapForNumericInputTypeQuestions,
                                     selectedOption = selectedOption,
+                                    infoSubTitle = sectionDetails.questionContentMapping[question.questionId]?.first()?.contentValue
+                                        ?: BLANK_STRING,
                                     maxCustomHeight = maxHeight,
                                     onAnswerSelection = { questionIndex, optionItem, selectedValue ->
                                         if (!answeredQuestionIndices.value.contains(questionIndex)) {
@@ -632,7 +643,12 @@ fun NestedLazyList(
                                             QuestionType.InputText.name,
                                             QuestionType.SingleSelectDropdown.name -> {
                                                 questionScreenViewModel.onEvent(
-                                                    QuestionScreenEvents.SaveMiscTypeQuestionAnswers(surveyeeId = surveyeeId, questionEntityState = question, optionItemEntity = optionItem, selectedValue = selectedValue)
+                                                    QuestionScreenEvents.SaveMiscTypeQuestionAnswers(
+                                                        surveyeeId = surveyeeId,
+                                                        questionEntityState = question,
+                                                        optionItemEntity = optionItem,
+                                                        selectedValue = selectedValue
+                                                    )
                                                 )
                                             }
                                         }
@@ -640,7 +656,11 @@ fun NestedLazyList(
                                     onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
 
                                     },
-                                    questionDetailExpanded = {}
+                                    questionDetailExpanded = {
+                                        scope.launch {
+                                            queLazyState.animateScrollToItem(it + 3, -10)
+                                        }
+                                    },
                                 )
                             }
                         }

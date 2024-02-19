@@ -32,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
@@ -103,99 +104,106 @@ fun QuestionScreen(
     BackHandler {
         navController.popBackStack()
     }
+    ModelBottomSheetDescriptionContentComponent(
+        sheetContent = {
+            DescriptionContentComponent(
+                buttonClickListener = {
+                    scope.launch {
+                        scaffoldState.hide()
+                    }
+                },
+                imageClickListener = { imageTypeDescriptionContent ->
+                    handleOnMediaTypeDescriptionActions(
+                        viewModel,
+                        navController,
+                        DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
+                        imageTypeDescriptionContent
+                    )
+                },
+                videoLinkClicked = { videoTypeDescriptionContent ->
+                    handleOnMediaTypeDescriptionActions(
+                        viewModel,
+                        navController,
+                        DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
+                        videoTypeDescriptionContent
+                    )
 
-    Scaffold(
-        containerColor = white,
-        modifier = Modifier
-            .padding(top = dimen_10_dp)
-            .fillMaxSize(),
-        bottomBar = {
-            BottomAppBar(containerColor = white, tonalElevation = defaultCardElevation) {
-                Column {
-                    ExtendedFloatingActionButton(
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                },
+                descriptionContentState = DescriptionContentState(
+                    textTypeDescriptionContent = sectionDetails.contentData?.contentValue
+                        ?: BLANK_STRING
+                )
+            )
+        },
+        sheetState = scaffoldState,
+        sheetElevation = 20.dp,
+        sheetBackgroundColor = Color.White,
+        sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
+    ) {
+        if (viewModel.showExpandedImage.value) {
+            ImageExpanderDialogComponent(
+                viewModel.expandedImagePath.value
+            ) {
+                viewModel.showExpandedImage.value = false
+            }
+        }
+        Scaffold(
+            containerColor = white,
+            modifier = Modifier
+                .padding(top = dimen_10_dp)
+                .fillMaxSize(),
+            bottomBar = {
+                BottomAppBar(containerColor = white, tonalElevation = defaultCardElevation) {
+                    Column {
+                        ExtendedFloatingActionButton(
+                            modifier = Modifier
+                                .fillMaxWidth(),
 //                        shape = RoundedCornerShape(bottomStart = roundedCornerRadiusDefault, bottomEnd = roundedCornerRadiusDefault),
-                        shape = RoundedCornerShape(roundedCornerRadiusDefault),
-                        containerColor = if (answeredQuestionCount.value == totalQuestionCount) blueDark else inactiveLightBlue,
-                        contentColor = if (answeredQuestionCount.value == totalQuestionCount) white else inactiveTextBlue,
-                        onClick = {
-                            if (answeredQuestionCount.value == totalQuestionCount) {
-                                viewModel.onEvent(
-                                    QuestionScreenEvents.SectionProgressUpdated(
-                                        surveyId = sectionDetails.surveyId,
-                                        sectionId = sectionDetails.sectionId,
-                                        didiId = surveyeeId,
-                                        SectionStatus.COMPLETED
+                            shape = RoundedCornerShape(roundedCornerRadiusDefault),
+                            containerColor = if (answeredQuestionCount.value == totalQuestionCount) blueDark else inactiveLightBlue,
+                            contentColor = if (answeredQuestionCount.value == totalQuestionCount) white else inactiveTextBlue,
+                            onClick = {
+                                if (answeredQuestionCount.value == totalQuestionCount) {
+                                    viewModel.onEvent(
+                                        QuestionScreenEvents.SectionProgressUpdated(
+                                            surveyId = sectionDetails.surveyId,
+                                            sectionId = sectionDetails.sectionId,
+                                            didiId = surveyeeId,
+                                            SectionStatus.COMPLETED
+                                        )
                                     )
-                                )
-                                viewModel.onEvent(QuestionScreenEvents.SendAnswersToServer(surveyId = sectionDetails.surveyId, sectionId = sectionDetails.sectionId, surveyeeId))
+                                    viewModel.onEvent(
+                                        QuestionScreenEvents.SendAnswersToServer(
+                                            surveyId = sectionDetails.surveyId,
+                                            sectionId = sectionDetails.sectionId,
+                                            surveyeeId
+                                        )
+                                    )
 //                                navigateBackToSurveyeeListScreen(navController)
-                                nextSectionHandler(sectionId)
+                                    nextSectionHandler(sectionId)
+                                }
                             }
+                        ) {
+                            Text(
+                                text = stringResource(R.string.save_next_section_button_text),
+                                style = defaultTextStyle,
+                                color = if (answeredQuestionCount.value == totalQuestionCount) white else inactiveTextBlue
+                            )
+                            Icon(
+                                imageVector = Icons.Default.ArrowForward,
+                                contentDescription = "save section button",
+                                tint = if (answeredQuestionCount.value == totalQuestionCount) white else inactiveTextBlue,
+                                modifier = Modifier.absolutePadding(top = dimen_3_dp)
+                            )
                         }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.save_next_section_button_text),
-                            style = defaultTextStyle,
-                            color = if (answeredQuestionCount.value == totalQuestionCount) white else inactiveTextBlue
-                        )
-                        Icon(
-                            imageVector = Icons.Default.ArrowForward,
-                            contentDescription = "save section button",
-                            tint = if (answeredQuestionCount.value == totalQuestionCount) white else inactiveTextBlue,
-                            modifier = Modifier.absolutePadding(top = dimen_3_dp)
-                        )
                     }
                 }
             }
-        }
-    ) {
+        ) {
 
-        LoaderComponent(visible = loaderState.isLoaderVisible, modifier = Modifier.padding(it))
+            LoaderComponent(visible = loaderState.isLoaderVisible, modifier = Modifier.padding(it))
 
-        if (!loaderState.isLoaderVisible) {
-
-            ModelBottomSheetDescriptionContentComponent(
-                sheetContent = {
-                    DescriptionContentComponent(
-                        buttonClickListener = {
-                            scope.launch {
-                                scaffoldState.hide()
-                            }
-                        },
-                        imageClickListener = { imageTypeDescriptionContent ->
-                            handleOnMediaTypeDescriptionActions(
-                                viewModel,
-                                navController,
-                                DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
-                                imageTypeDescriptionContent
-                            )
-                        },
-                        videoLinkClicked = { videoTypeDescriptionContent ->
-                            handleOnMediaTypeDescriptionActions(
-                                viewModel,
-                                navController,
-                                DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
-                                videoTypeDescriptionContent
-                            )
-
-                        },
-                        descriptionContentState = DescriptionContentState(textTypeDescriptionContent = sectionDetails.sectionDetails)
-                    )
-                },
-                sheetState = scaffoldState,
-                sheetElevation = 20.dp,
-                sheetBackgroundColor = Color.White,
-                sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
-            ) {
-                if (viewModel.showExpandedImage.value) {
-                    ImageExpanderDialogComponent(
-                        viewModel.expandedImagePath.value
-                    ) {
-                        viewModel.showExpandedImage.value = false
-                    }
-                }
+            if (!loaderState.isLoaderVisible) {
 
                 NestedLazyList(
                     navController = navController,
@@ -215,9 +223,12 @@ fun QuestionScreen(
                         answeredQuestionCount.value = count
                     }
                 )
+
             }
         }
+
     }
+
 }
 
 
