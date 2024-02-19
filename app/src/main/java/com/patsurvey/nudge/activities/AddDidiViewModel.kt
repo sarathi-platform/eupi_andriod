@@ -5,6 +5,9 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.viewModelScope
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.nudge.core.enums.EventName
@@ -31,6 +34,31 @@ import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.model.request.PATSummarySaveRequest
 import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.AbleBodiedFlag
+import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
+import com.patsurvey.nudge.utils.DIDI_COUNT
+import com.patsurvey.nudge.utils.DidiStatus
+import com.patsurvey.nudge.utils.FORM_C
+import com.patsurvey.nudge.utils.FORM_D
+import com.patsurvey.nudge.utils.HUSBAND_STRING
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_DIDI_UNAVAILABLE
+import com.patsurvey.nudge.utils.PREF_FORM_PATH
+import com.patsurvey.nudge.utils.PREF_SOCIAL_MAPPING_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.SHGFlag
+import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.SummaryNavigation
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.TYPE_INCLUSION
+import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
+import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.getUniqueIdForEntity
+import com.patsurvey.nudge.utils.longToString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,7 +67,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.util.Timer
+import java.util.TimerTask
 import javax.inject.Inject
 
 @HiltViewModel
@@ -315,17 +344,8 @@ class AddDidiViewModel @Inject constructor(
                 val didiList = addDidiRepository.fetchAllDidiNeedToUpdate(true, "", 0)
                 if (didiList.isNotEmpty()) {
                     val didiRequestList = arrayListOf<EditDidiRequest>()
-                    didiList.forEach { didi ->
-                        didiRequestList.add(
-                            EditDidiRequest(
-                                didi.serverId,
-                                didi.name,
-                                didi.address,
-                                didi.guardianName,
-                                didi.castId,
-                                didi.cohortId
-                            )
-                        )
+                    didiList.forEach { didi->
+                        didiRequestList.add(EditDidiRequest(didi.serverId,didi.name,didi.address,didi.guardianName,didi.castId,didi.cohortId,didi.villageId,didi.cohortName))
                     }
                     NudgeLogger.d("AddDidiViewModel", "updateDidiToNetwork -> didiList: $didiList")
                     val response = addDidiRepository.updateDidis(didiRequestList)
@@ -1048,9 +1068,14 @@ class AddDidiViewModel @Inject constructor(
                             StepStatus.COMPLETED.name, longToString(
                                 addDidiRepository.getPref(
                                     PREF_SOCIAL_MAPPING_COMPLETION_DATE_ + addDidiRepository.getSelectedVillage().id,
-                                    System.currentTimeMillis()
-                                )
-                            )
+                                    System.currentTimeMillis(),
+
+                                    ),
+
+                                ),
+                            villageId = villageId,
+                            programsProcessId = stepList[stepList.map { it.orderNumber }
+                                .indexOf(2)].id
                         )
                     )
                     NudgeLogger.d(
@@ -1109,7 +1134,9 @@ class AddDidiViewModel @Inject constructor(
                             val inProgressStepRequest = listOf(
                                 EditWorkFlowRequest(
                                     step.workFlowId,
-                                    StepStatus.INPROGRESS.name
+                                    StepStatus.INPROGRESS.name,
+                                    villageId = villageId,
+                                    programsProcessId = step.id
                                 )
                             )
 
@@ -1254,7 +1281,10 @@ class AddDidiViewModel @Inject constructor(
                         apiRequest.add(
                             EditWorkFlowRequest(
                                 stepList[stepList.map { it.orderNumber }.indexOf(2)].workFlowId,
-                                StepStatus.INPROGRESS.name
+                                StepStatus.INPROGRESS.name,
+                                villageId = villageId,
+                                programsProcessId = stepList[stepList.map { it.orderNumber }
+                                    .indexOf(2)].id
                             )
                         )
                         completeStepList.let {
@@ -1265,7 +1295,10 @@ class AddDidiViewModel @Inject constructor(
                                         apiRequest.add(
                                             EditWorkFlowRequest(
                                                 newStep.workFlowId,
-                                                StepStatus.INPROGRESS.name
+                                                StepStatus.INPROGRESS.name,
+                                                villageId = villageId,
+                                                programsProcessId = stepList[stepList.map { it.orderNumber }
+                                                    .indexOf(2)].id
                                             )
                                         )
                                     }
@@ -1579,7 +1612,9 @@ class AddDidiViewModel @Inject constructor(
                             didi.address,
                             didi.guardianName,
                             didi.castId,
-                            didi.cohortId
+                            didi.cohortId,
+                            didi.villageId,
+                            didi.cohortName
                         )
                     )
                     val response = addDidiRepository.updateDidis(didiRequestList)

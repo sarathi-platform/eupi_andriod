@@ -6,22 +6,13 @@ import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
-import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.VillageEntity
-import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.NumericAnswerDao
-import com.patsurvey.nudge.database.dao.QuestionListDao
-import com.patsurvey.nudge.database.dao.StepsListDao
-import com.patsurvey.nudge.database.dao.TolaDao
-import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
-import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.FORM_C
@@ -115,15 +106,17 @@ class WealthRankingSurveyViewModel @Inject constructor(
                 )
                 if (dbResponse.workFlowId > 0) {
                     val primaryWorkFlowRequest = listOf(
-                        EditWorkFlowRequest(
-                            stepList[stepList.map { it.orderNumber }.indexOf(3)].workFlowId,
+                        EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(3)].workFlowId,
                             StepStatus.COMPLETED.name,
                             longToString(
                                 repository.prefRepo.getPref(
                                     PREF_WEALTH_RANKING_COMPLETION_DATE_ + repository.prefRepo.getSelectedVillage().id,
                                     System.currentTimeMillis()
                                 )
-                            )
+                            ),
+                            villageId,
+                            programsProcessId = stepList[stepList.map { it.orderNumber }
+                                .indexOf(3)].id
                         )
                     )
                     NudgeLogger.d(
@@ -197,7 +190,9 @@ class WealthRankingSurveyViewModel @Inject constructor(
                             val inProgressStepRequest = listOf(
                                 EditWorkFlowRequest(
                                     step.workFlowId,
-                                    StepStatus.INPROGRESS.name
+                                    StepStatus.INPROGRESS.name,
+                                    villageId = villageId,
+                                    programsProcessId = step.id
                                 )
                             )
                             NudgeLogger.d(
@@ -347,24 +342,14 @@ class WealthRankingSurveyViewModel @Inject constructor(
                     val didiWealthRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                     val didiStepRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                     needToPostDidiList.forEach { didi ->
-                        didiWealthRequestList.add(
-                            EditDidiWealthRankingRequest(
-                                didi.serverId,
-                                StepType.WEALTH_RANKING.name,
-                                didi.wealth_ranking,
-                                rankingEdit = false,
-                                localModifiedDate = System.currentTimeMillis()
-                            )
-                        )
-                        didiStepRequestList.add(
-                            EditDidiWealthRankingRequest(
-                                didi.serverId,
-                                StepType.SOCIAL_MAPPING.name,
-                                StepStatus.COMPLETED.name,
-                                rankingEdit = false,
-                                localModifiedDate = System.currentTimeMillis()
-                            )
-                        )
+                        didiWealthRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, rankingEdit = false, localModifiedDate = System.currentTimeMillis(),  name = didi.name,
+                            address = didi.address,
+                            guardianName = didi.guardianName,
+                            villageId = didi.villageId,))
+                        didiStepRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, rankingEdit = false, localModifiedDate = System.currentTimeMillis(),   name = didi.name,
+                            address = didi.address,
+                            guardianName = didi.guardianName,
+                            villageId = didi.villageId,))
                     }
                     didiWealthRequestList.addAll(didiStepRequestList)
                     NudgeLogger.d(

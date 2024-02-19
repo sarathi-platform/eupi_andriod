@@ -51,6 +51,8 @@ data class AddDidiRequest(
         jsonObject.addProperty("localCreatedDate", localCreatedDate)
         jsonObject.addProperty("localModifiedDate", localModifiedDate)
         jsonObject.addProperty("deviceId", deviceId)
+        jsonObject.addProperty("villageId", villageId)
+        jsonObject.addProperty("cohortName", cohortName)
         return jsonObject
     }
 

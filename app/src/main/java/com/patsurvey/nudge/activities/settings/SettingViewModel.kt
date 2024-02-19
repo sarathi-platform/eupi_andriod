@@ -108,7 +108,7 @@ class SettingViewModel @Inject constructor(
     var showBPCSyncDialog = mutableStateOf(false)
 
     val lastSyncTime = mutableStateOf(prefRepo.getPref(LAST_SYNC_TIME, 0L))
-
+    var currentRetryCount = 3;
     var syncHelper = SyncHelper(
         this@SettingViewModel,
         prefRepo,
@@ -329,11 +329,15 @@ class SettingViewModel @Inject constructor(
             val fetchPendingDidiList = didiDao.fetchPendingDidi(true, "")
             val fetchAllDidiNeedToDeleteList =
                 didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, true, "", 0)
-            val fetchAllPendingDidiNeedToDeleteList =
-                didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, "", 0)
-            val fetchAllDidiNeedToUpdateList = didiDao.fetchAllDidiNeedToUpdate(true, "", 0)
-            val fetchAllPendingDidiNeedToUpdateList =
-                didiDao.fetchAllPendingDidiNeedToUpdate(true, "", 0)
+            val fetchAllPendingDidiNeedToDeleteList = didiDao.fetchAllPendingDidiNeedToDelete(
+                DidiStatus.DIID_DELETED.ordinal,
+                ""
+            )
+            val fetchAllDidiNeedToUpdateList = didiDao.fetchAllDidiNeedToUpdate(true, "")
+            val fetchAllPendingDidiNeedToUpdateList = didiDao.fetchAllPendingDidiNeedToUpdate(
+                true,
+                ""
+            )
             NudgeLogger.d(
                 "SettingViewModel",
                 "isSecondStepNeedToBeSync -> fetchAllDidiNeedToPostList -> ${fetchAllDidiNeedToPostList.json()};; \n\n fetchPendingDidiList -> ${fetchPendingDidiList.json()};; " +
@@ -618,12 +622,29 @@ class SettingViewModel @Inject constructor(
                 }
 
                 override fun onFailed() {
-                    networkErrorMessage.value = SYNC_FAILED
-                    syncErrorMessage.value = SYNC_FAILED
-                    syncPercentage.value = 1f
+                    if (currentRetryCount > 0) {
+                        try {
+                            syncHelper.startSyncTimer(this)
+                            currentRetryCount--;
+
+                        } catch (exception: Exception) {
+                            syncHelper.startSyncTimer(this)
+                            currentRetryCount--;
+                        }
+
+                        NudgeLogger.e(
+                            "SettingViewModel",
+                            "syncDataOnServer -> onFailed Retrying current count is ${currentRetryCount}"
+                        )
+                    } else {
+                        networkErrorMessage.value = SYNC_FAILED
+                        syncErrorMessage.value = SYNC_FAILED
+                        syncPercentage.value = 1f
+                        NudgeLogger.e("SettingViewModel", "syncDataOnServer -> onFailed")
+                    }
 //                        showSyncDialog.value = false
 //                        showLoader.value = false
-                    NudgeLogger.e("SettingViewModel", "syncDataOnServer -> onFailed")
+
                 }
             })
         } else {
