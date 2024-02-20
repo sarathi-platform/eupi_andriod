@@ -418,7 +418,7 @@ fun SettingScreen(
                             when (item.id) {
                                 1 -> {
                                     viewModel.syncErrorMessage.value = ""
-                                    if (!viewModel.isSyncEnabled()) {
+                                    if (viewModel.isSyncEnabled()) {
 
                                         if (!viewModel.prefRepo.isUserBPC()) {
                                             viewModel.showSyncDialog.value = true

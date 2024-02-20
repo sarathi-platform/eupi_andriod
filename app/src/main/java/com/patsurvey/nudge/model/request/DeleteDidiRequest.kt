@@ -16,8 +16,7 @@ data class DeleteDidiRequest(
     @SerializedName("guardianName")
     var guardianName: String,
 
-    @SerializedName("cohortName")
-    var cohortName: String,
+
     @SerializedName("cohortId")
     var cohortId: Int,
     @SerializedName("deviceId") var deviceId: String,
@@ -30,7 +29,6 @@ data class DeleteDidiRequest(
                 name = didiEntity.name,
                 address = didiEntity.address,
                 guardianName = didiEntity.guardianName,
-                cohortName = didiEntity.cohortName,
                 cohortId = didiEntity.cohortId,
                 deviceId = didiEntity.localUniqueId,
                 villageId = didiEntity.villageId

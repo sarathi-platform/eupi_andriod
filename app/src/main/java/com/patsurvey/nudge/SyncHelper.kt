@@ -830,8 +830,9 @@ class SyncHelper (
                                 tola.serverId,
                                 localModifiedDate = System.currentTimeMillis(),
                                 tola.name,
-                                tola.villageId
-                            ).toJson()
+                                tola.villageId,
+                                tola.localUniqueId ?: ""
+                            ).json()
                         )
                     }
                 }
