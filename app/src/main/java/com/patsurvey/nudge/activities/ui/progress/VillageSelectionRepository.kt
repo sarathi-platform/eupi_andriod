@@ -1511,11 +1511,17 @@ class VillageSelectionRepository @Inject constructor(
                             didiWealthRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, rankingEdit = didi.rankingEdit, localModifiedDate = System.currentTimeMillis(),  name = didi.name,
                                 address = didi.address,
                                 guardianName = didi.guardianName,
-                                villageId = didi.villageId,))
+                                villageId = didi.villageId,
+                                deviceId = didi.localUniqueId
+                            )
+                            )
                             didiStepRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, rankingEdit = didi.rankingEdit, localModifiedDate = System.currentTimeMillis(),  name = didi.name,
                                 address = didi.address,
                                 guardianName = didi.guardianName,
-                                villageId = didi.villageId,))
+                                villageId = didi.villageId,
+                                deviceId = didi.localUniqueId
+                            )
+                            )
                         }
                         didiWealthRequestList.addAll(didiStepRequestList)
                         val updateWealthRankResponse = apiService.updateDidiRanking(didiWealthRequestList)
@@ -1724,6 +1730,7 @@ class VillageSelectionRepository @Inject constructor(
                                 address = didiEntity.address,
                                 guardianName = didiEntity.guardianName,
                                 villageId = didi.villageId,
+                                deviceId = didiEntity.localUniqueId
                             )
                         )
                         val stateId = villageListDao.getVillage(didi.villageId).stateId
@@ -1930,12 +1937,18 @@ class VillageSelectionRepository @Inject constructor(
                                         localModifiedDate = System.currentTimeMillis(), rankingEdit = didi.voEndorsementEdit,
                                         address = didi.address,
                                         guardianName = didi.guardianName,
-                                        villageId = didi.villageId,))
+                                        villageId = didi.villageId,
+                                        deviceId = didi.localUniqueId
+                                    )
+                                    )
                                 } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
                                     didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, DidiEndorsementStatus.REJECTED.name,
                                         localModifiedDate = System.currentTimeMillis(), rankingEdit = didi.voEndorsementEdit,  address = didi.address,
                                         guardianName = didi.guardianName,
-                                        villageId = didi.villageId,))
+                                        villageId = didi.villageId,
+                                        deviceId = didi.localUniqueId
+                                    )
+                                    )
                                 }
                             }
                         }
@@ -2573,6 +2586,7 @@ class VillageSelectionRepository @Inject constructor(
                                     address = didiEntity.address,
                                     guardianName = didiEntity.guardianName,
                                     villageId = didi.villageId,
+                                    deviceId = didiEntity.localUniqueId
                                 )
                             )
                             val patSummarySaveRequest = PATSummarySaveRequest(
@@ -2762,6 +2776,7 @@ class VillageSelectionRepository @Inject constructor(
                             address = didi.address,
                             guardianName = didi.guardianName,
                             villageId = didi.villageId,
+                            deviceId = didi.localUniqueId,
                             result = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) DIDI_NOT_AVAILABLE
                             else {
                                 if (didi.forVoEndorsement == 0) DIDI_REJECTED else {

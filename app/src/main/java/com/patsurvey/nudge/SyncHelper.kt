@@ -1147,12 +1147,18 @@ class SyncHelper (
                             didiWealthRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, rankingEdit = didi.rankingEdit, localModifiedDate = System.currentTimeMillis(),  name = didi.name,
                                 address = didi.address,
                                 guardianName = didi.guardianName,
-                                villageId = didi.villageId,))
+                                villageId = didi.villageId,
+                                deviceId = didi.localUniqueId
+                            )
+                            )
                             didiStepRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, rankingEdit = didi.rankingEdit, localModifiedDate = System.currentTimeMillis() ,
                                 name = didi.name,
                                 address = didi.address,
                                 guardianName = didi.guardianName,
-                                villageId = didi.villageId,))
+                                villageId = didi.villageId,
+                                deviceId = didi.localUniqueId
+                            )
+                            )
                         }
                         didiWealthRequestList.addAll(didiStepRequestList)
                         NudgeLogger.d("SyncHelper","updateWealthRankingToNetwork updateDidiRanking Request=> ${Gson().toJson(didiWealthRequestList)}")
@@ -1345,6 +1351,7 @@ class SyncHelper (
                                 address = didiEntity.address,
                                 guardianName = didiEntity.guardianName,
                                 villageId = didi.villageId,
+                                deviceId = didiEntity.localUniqueId
                             )
                         )
                         val stateId = villegeListDao.getVillage(didi.villageId).stateId
@@ -1474,13 +1481,19 @@ class SyncHelper (
                                         localModifiedDate = System.currentTimeMillis(), rankingEdit = didi.voEndorsementEdit,  name = didi.name,
                                         address = didi.address,
                                         guardianName = didi.guardianName,
-                                        villageId = didi.villageId,))
+                                        villageId = didi.villageId,
+                                        deviceId = didi.localUniqueId
+                                    )
+                                    )
                                 } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
                                     didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, DidiEndorsementStatus.REJECTED.name,
                                         localModifiedDate = System.currentTimeMillis(), rankingEdit = didi.voEndorsementEdit,  name = didi.name,
                                         address = didi.address,
                                         guardianName = didi.guardianName,
-                                        villageId = didi.villageId,))
+                                        villageId = didi.villageId,
+                                        deviceId = didi.localUniqueId
+                                    )
+                                    )
                                 }
                             }
                         }
@@ -1586,7 +1599,10 @@ class SyncHelper (
                         name = didi.name,
                         address = didi.address,
                         guardianName = didi.guardianName,
-                        villageId = didi.villageId,).toJson())
+                        villageId = didi.villageId,
+                        deviceId = didi.localUniqueId
+                    ).toJson()
+                    )
                 }
                 sizeToBeShown = getSizeToBeShown(jsonDidi.toString().toByteArray().size)
                 Log.e("num of step 3", "$didiWealthList.size")

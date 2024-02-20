@@ -3,17 +3,15 @@ package com.patsurvey.nudge.activities
 import android.annotation.SuppressLint
 import android.text.TextUtils
 import android.util.Log
-import androidx.compose.runtime.*
-import androidx.lifecycle.viewModelScope
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.nudge.core.enums.EventName
 import com.nudge.core.eventswriter.entities.EventV1
 import com.patsurvey.nudge.CheckDBStatus
-import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
@@ -27,16 +25,15 @@ import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddDidiRequest
-import com.patsurvey.nudge.model.request.AnswerDetailDTOListItem
 import com.patsurvey.nudge.model.request.DeleteDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.model.request.PATSummarySaveRequest
-import com.patsurvey.nudge.utils.*
 import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
 import com.patsurvey.nudge.utils.DIDI_COUNT
 import com.patsurvey.nudge.utils.DidiStatus
@@ -46,6 +43,7 @@ import com.patsurvey.nudge.utils.HUSBAND_STRING
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_DIDI_UNAVAILABLE
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PREF_SOCIAL_MAPPING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QuestionType
@@ -55,9 +53,12 @@ import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.SummaryNavigation
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
+import com.patsurvey.nudge.utils.USER_BPC
+import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.getUniqueIdForEntity
+import com.patsurvey.nudge.utils.json
 import com.patsurvey.nudge.utils.longToString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -553,7 +554,10 @@ class AddDidiViewModel @Inject constructor(
 
                 val eventV1 = EventV1(
                     eventTopic = EventName.ADD_DIDI.topicName,
-                    payload = AddDidiRequest.getRequestObjectForDidi(didiEntity).json(),
+                    payload = AddDidiRequest.getRequestObjectForDidi(
+                        didiEntity,
+                        cohortdeviceId = selectedTolaFromDb?.localUniqueId
+                    ).json(),
                     mobileNumber = addDidiRepository.prefRepo.getMobileNumber() ?: BLANK_STRING
                 )
 
@@ -647,7 +651,11 @@ class AddDidiViewModel @Inject constructor(
                 addDidiRepository.insertDidi(updatedDidi)
                 val eventV1 = EventV1(
                     eventTopic = EventName.ADD_DIDI.topicName,
-                    payload = AddDidiRequest.getRequestObjectForDidi(updatedDidi,selectedTolaEntity?.serverId).json(),
+                    payload = AddDidiRequest.getRequestObjectForDidi(
+                        updatedDidi,
+                        selectedTolaEntity?.serverId,
+                        cohortdeviceId = selectedTolaEntity?.localUniqueId
+                    ).json(),
                     mobileNumber = addDidiRepository.prefRepo.getMobileNumber() ?: BLANK_STRING)
 
 
@@ -848,7 +856,12 @@ class AddDidiViewModel @Inject constructor(
                         if (tola != null) {
                             didi.cohortId = tola.serverId
                         }
-                        jsonDidi.add(AddDidiRequest.getRequestObjectForDidi(didi).toJson())
+                        jsonDidi.add(
+                            AddDidiRequest.getRequestObjectForDidi(
+                                didi,
+                                cohortdeviceId = tola?.localUniqueId
+                            ).toJson()
+                        )
                     }
                     NudgeLogger.d("AddDidiViewModel", "addDidisToNetwork: didiList: $jsonDidi")
                     val response = addDidiRepository.addDidis(jsonDidi)

@@ -44,7 +44,6 @@ import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
@@ -302,6 +301,7 @@ class SurveySummaryViewModel @Inject constructor(
                                 address = didiEntity.address,
                                 guardianName = didiEntity.guardianName,
                                 villageId = didi.villageId,
+                                deviceId = didiEntity.localUniqueId
                             )
                         )
                         answeredDidiList.add(
@@ -664,7 +664,9 @@ class SurveySummaryViewModel @Inject constructor(
                                             name = didi.name,
                                             address = didi.address,
                                             guardianName = didi.guardianName,
-                                            villageId = didi.villageId,                                        )
+                                            villageId = didi.villageId,
+                                            deviceId = didi.localUniqueId
+                                        )
                                     )
                                 )
                                 if (updatedPatResponse.status.equals(SUCCESS, true)) {
@@ -698,6 +700,7 @@ class SurveySummaryViewModel @Inject constructor(
                                                 address = didi.address,
                                                 guardianName = didi.guardianName,
                                                 villageId = didi.villageId,
+                                                deviceId = didi.localUniqueId
                                             )
                                         )
                                     )

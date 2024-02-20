@@ -571,6 +571,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                             comment =comment,
                             cohortName = didi.cohortName,
                             type = BPC_SURVEY_CONSTANT,
+                            deviceId = didi.localUniqueId,
                             result = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) DIDI_NOT_AVAILABLE
                             else {
                                 if (didi.forVoEndorsement == 0) DIDI_REJECTED else {
@@ -768,6 +769,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                     rankingEdit = false,
                                     shgFlag = SHGFlag.fromInt(didi.shgFlag).name,
                                     ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name,
+                                    deviceId = didiEntity.localUniqueId
                                 )
                             )
                             val patSummarySaveRequest = PATSummarySaveRequest(

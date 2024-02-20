@@ -35,7 +35,8 @@ data class EditDidiWealthRankingRequest(
     @SerializedName("address") var address: String = "",
     @SerializedName("cohortId") var cohortId: Int = -1,
     @SerializedName("villageId") var villageId: Int = -1,
-    @SerializedName("cohortName") var cohortName: String = ""
+    @SerializedName("cohortName") var cohortName: String = "",
+    @SerializedName("deviceId") var deviceId: String,
 ) {
 
     companion object {
@@ -51,7 +52,8 @@ data class EditDidiWealthRankingRequest(
                 type = StepType.WEALTH_RANKING.name,
                 result = didiEntity.wealth_ranking,
                 rankingEdit = didiEntity.rankingEdit,
-                localModifiedDate = System.currentTimeMillis()
+                localModifiedDate = System.currentTimeMillis(),
+                deviceId = didiEntity.localUniqueId
             )
         }
 
@@ -67,7 +69,9 @@ data class EditDidiWealthRankingRequest(
                 type = StepType.VO_ENDROSEMENT.name,
                 result = DidiEndorsementStatus.fromIntToString(didiEntity.voEndorsementStatus),
                 rankingEdit = didiEntity.rankingEdit,
-                localModifiedDate = System.currentTimeMillis()
+                localModifiedDate = System.currentTimeMillis(),
+                deviceId = didiEntity.localUniqueId
+
             )
         }
 
@@ -115,7 +119,9 @@ data class EditDidiWealthRankingRequest(
                 result = result,
                 rankingEdit = didi.patEdit,
                 shgFlag = SHGFlag.fromInt(didi.shgFlag).name,
-                ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name
+                ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name,
+                deviceId = didi.localUniqueId
+
             )
         }
     }

@@ -345,11 +345,17 @@ class WealthRankingSurveyViewModel @Inject constructor(
                         didiWealthRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, rankingEdit = false, localModifiedDate = System.currentTimeMillis(),  name = didi.name,
                             address = didi.address,
                             guardianName = didi.guardianName,
-                            villageId = didi.villageId,))
+                            villageId = didi.villageId,
+                            deviceId = didi.localUniqueId
+                        )
+                        )
                         didiStepRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, rankingEdit = false, localModifiedDate = System.currentTimeMillis(),   name = didi.name,
                             address = didi.address,
                             guardianName = didi.guardianName,
-                            villageId = didi.villageId,))
+                            villageId = didi.villageId,
+                            deviceId = didi.localUniqueId
+                        )
+                        )
                     }
                     didiWealthRequestList.addAll(didiStepRequestList)
                     NudgeLogger.d(
