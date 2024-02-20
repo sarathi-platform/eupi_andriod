@@ -147,7 +147,7 @@ class VillageSelectionViewModel @Inject constructor(
     val showLoader = mutableStateOf(false)
 
     val multiVillageRequest = mutableStateOf("2")
-
+    private var checkStatusCount = 0
     val isVoEndorsementComplete = mutableStateOf(mutableMapOf<Int, Boolean>())
     var _filterVillageList = MutableStateFlow(listOf<VillageEntity>())
     val filterVillageList: StateFlow<List<VillageEntity>> get() = _filterVillageList
@@ -1694,16 +1694,12 @@ class VillageSelectionViewModel @Inject constructor(
 
     fun refreshBpcData(context: Context) {
         showLoader.value = true
-        villageSelectionRepository.refreshBpcData(prefRepo = prefRepo, object : NetworkCallbackListener{
+        villageSelectionRepository.checkDidiPatStatus(
+            prefRepo = prefRepo,
+            object : NetworkCallbackListener {
             override fun onSuccess() {
-                CoroutineScope(Dispatchers.IO).launch {
-                    val updatedVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
-                    withContext(Dispatchers.Main) {
-                        _villagList.value = updatedVillageList
-                        delay(100)
-                        showLoader.value = false
-                    }
-                }
+                showLoader.value = false
+
             }
 
             override fun onFailed() {
@@ -1715,12 +1711,20 @@ class VillageSelectionViewModel @Inject constructor(
 
     fun refreshCrpData(context: Context) {
         showLoader.value = true
-        villageSelectionRepository.refreshCrpData(prefRepo = prefRepo, object : NetworkCallbackListener{
+        checkStatusCount = 0
+        villageSelectionRepository.checkStatusForCrp(
+            prefRepo = prefRepo,
+            object : NetworkCallbackListener {
             override fun onSuccess() {
-                showLoader.value = false
+                checkStatusCount++
+                if (checkStatusCount >= 9) {
+                    showLoader.value = false
+                    checkStatusCount = 0
+                }
             }
 
             override fun onFailed() {
+                checkStatusCount++
                 showLoader.value = false
                 showCustomToast(context, context.getString(R.string.refresh_failed_please_try_again))
             }
