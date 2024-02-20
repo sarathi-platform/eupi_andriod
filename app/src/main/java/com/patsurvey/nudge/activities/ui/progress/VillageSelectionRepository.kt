@@ -997,45 +997,31 @@ class VillageSelectionRepository @Inject constructor(
             tola.transactionId?.let { tolaDao.updateTolaTransactionId(tola.id, it) }
         }
         isPendingForCrp = 1
-        startSyncTimerForCrp(prefRepo, networkCallbackListener)
+        checkStatusForCrp(prefRepo, networkCallbackListener)
     }
 
-    private fun startSyncTimerForCrp(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
-        val timer = Timer()
-        timer.schedule(object : TimerTask(){
-            override fun run() {
-                when (isPendingForCrp) {
-                    1 -> {
+    fun checkStatusForCrp(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
+
                         checkTolaAddStatusForCrp(prefRepo, networkCallbackListener)
-                    }
-                    2 -> {
+
                         checkTolaDeleteStatusForCrp(prefRepo, networkCallbackListener)
-                    }
-                    3 -> {
+
                         checkTolaUpdateStatusForCrp(prefRepo, networkCallbackListener)
-                    }
-                    4 -> {
                         checkAddDidiStatusForCrp(prefRepo, networkCallbackListener)
-                    }
-                    5 -> {
                         checkDeleteDidiStatusForCrp(prefRepo, networkCallbackListener)
-                    }
-                    6 -> {
                         checkUpdateDidiStatusForCrp(prefRepo, networkCallbackListener)
-                    }
-                    7 -> {
-                        checkDidiWealthStatusForCrp(prefRepo = prefRepo, networkCallbackListener)
-                    }
-                    8 -> {
-                        checkDidiPatStatus(prefRepo, networkCallbackListener)
-                    }
-                    9 -> {
+
+
+        checkDidiWealthStatusForCrp(prefRepo = prefRepo, networkCallbackListener)
+
+
+        checkDidiPatStatus(prefRepo, networkCallbackListener)
+
                         checkVOStatus(prefRepo, networkCallbackListener)
-                    }
-                }
-            }
-        },pendingTimerTime)
+
+
     }
+
 
     private fun checkTolaAddStatusForCrp(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -1111,7 +1097,7 @@ class VillageSelectionRepository @Inject constructor(
                                 }
                             }
                             isPendingForCrp = 2
-                            startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                            checkStatusForCrp(prefRepo, networkCallbackListener)
                         }
                     }
                 }
@@ -1187,7 +1173,7 @@ class VillageSelectionRepository @Inject constructor(
                                 }
                             }
                             isPendingForCrp = 3
-                            startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                            checkStatusForCrp(prefRepo, networkCallbackListener)
                         }
                     }
                 }
@@ -1282,7 +1268,7 @@ class VillageSelectionRepository @Inject constructor(
                             }
                         }
                         isPendingForCrp = 4
-                        startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                        checkStatusForCrp(prefRepo, networkCallbackListener)
                     }
                 } else {
                     withContext(Dispatchers.Main){
@@ -1362,7 +1348,7 @@ class VillageSelectionRepository @Inject constructor(
                                 }
                             }
                             isPendingForCrp = 5
-                            startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                            checkStatusForCrp(prefRepo, networkCallbackListener)
                         }
                     }
                 }
@@ -1448,7 +1434,7 @@ class VillageSelectionRepository @Inject constructor(
                             }
                         }
                         isPendingForCrp = 6
-                        startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                        checkStatusForCrp(prefRepo, networkCallbackListener)
                     }
                 } else {
                     withContext(Dispatchers.Main){
@@ -1548,7 +1534,7 @@ class VillageSelectionRepository @Inject constructor(
                                     }
                                 }
                                 isPendingForCrp = 7
-                                startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                                checkStatusForCrp(prefRepo, networkCallbackListener)
 
                             } else {
                                 needToPostDidiList.forEach { didi ->
@@ -1788,7 +1774,7 @@ class VillageSelectionRepository @Inject constructor(
                                         didiDao.updateDidiNeedToPostPat(didiIDList[i].id, true)
                                     }
                                     isPendingForCrp = 8
-                                    startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                                    checkStatusForCrp(prefRepo, networkCallbackListener)
                                 }
                                 savePatScoreToServer(scoreDidiList)
                             } else {
@@ -1896,7 +1882,7 @@ class VillageSelectionRepository @Inject constructor(
         }
     }
 
-    private fun checkDidiPatStatus(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
+    fun checkDidiPatStatus(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val didiList = didiDao.fetchPendingPatStatusDidi(true,"")
             if(didiList.isNotEmpty()) {
@@ -1968,7 +1954,7 @@ class VillageSelectionRepository @Inject constructor(
                                     }
                                 }
                                 isPendingForCrp = 9
-                                startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                                checkStatusForCrp(prefRepo, networkCallbackListener)
                             } else {
                                 if (didiListResponse != null) {
                                     for (i in didiRequestList.indices) {
