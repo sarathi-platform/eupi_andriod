@@ -157,7 +157,8 @@ fun MiscQuestionBoxComponent(
                                                     optionsItem.optionItemEntity.display,
                                                     showQuestion = optionsItem,
                                                     defaultValue = selectedOption?.selectedValue
-                                                        ?: ""
+                                                        ?: "",
+                                                    isOnlyNumber = optionsItem?.optionItemEntity?.optionType == QuestionType.InputNumber.name
                                                 ) { inputValue ->
                                                     onAnswerSelection(
                                                         questionIndex,

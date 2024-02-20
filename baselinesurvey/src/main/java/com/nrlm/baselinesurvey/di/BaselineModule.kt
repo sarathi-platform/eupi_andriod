@@ -77,6 +77,8 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.FormQuest
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.GetFormQuestionResponseUseCase
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.SaveFormQuestionResponseUseCase
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.UpdateFormQuestionResponseUseCase
+import com.nrlm.baselinesurvey.ui.search.use_case.GetSectionListForSurveyUseCase
+import com.nrlm.baselinesurvey.ui.search.use_case.SearchScreenUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.repository.SectionListScreenRepository
 import com.nrlm.baselinesurvey.ui.section_screen.domain.repository.SectionListScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSectionListUseCase
@@ -484,6 +486,16 @@ object BaselineModule {
             taskDao,
             surveyeeEntityDao,
             missionEntityDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesSearchScreenUseCase(
+        sectionListScreenRepository: SectionListScreenRepository
+    ): SearchScreenUseCase {
+        return SearchScreenUseCase(
+            getSectionListForSurveyUseCase = GetSectionListForSurveyUseCase(sectionListScreenRepository)
         )
     }
 

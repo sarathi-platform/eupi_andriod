@@ -269,6 +269,9 @@ class QuestionTypeScreenViewModel @Inject constructor(
                     _storeCacheForResponse.add(event.formQuestionResponseEntity)
                 } else {
                     form.selectedValue = event.formQuestionResponseEntity.selectedValue
+                    val index = storeCacheForResponse.map { it.optionId }.indexOf(form.optionId).coerceIn(0, storeCacheForResponse.size)
+                    _storeCacheForResponse.removeAt(index)
+                    _storeCacheForResponse.add(index = index, form)
                 }
                 updateCachedData()
             }
@@ -299,7 +302,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
             ResultType.Options.name -> {
                 conditionsDto.resultList.forEach { questionList ->
                     val tempList = _updatedOptionList.distinctBy { it.optionId }
-                    val optionToShow = tempList.find { it.optionId == questionList.optionId }
+                    val optionToShow = tempList.find { it.optionId == questionList.questionId }
 
                     updateQuestionsToShow(optionToShow, conditionResult)
 

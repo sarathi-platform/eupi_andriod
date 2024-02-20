@@ -19,6 +19,7 @@ import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.Constants.ResultType
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.QuestionScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
@@ -28,6 +29,7 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.Op
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.checkCondition
+import com.nrlm.baselinesurvey.utils.convertToListOfOptionItemEntity
 import com.nrlm.baselinesurvey.utils.findIndexOfListById
 import com.nrlm.baselinesurvey.utils.findQuestionEntityStateById
 import com.nrlm.baselinesurvey.utils.findQuestionForQuestionId
@@ -185,12 +187,13 @@ class QuestionScreenViewModel @Inject constructor(
 
     private fun initQuestionEntityStateList() {
         sectionDetail.value.questionList.forEach { questionEntity ->
-            var questionEntityState = QuestionEntityState(questionId = questionEntity.questionId, questionEntity = questionEntity, optionItemEntityState = emptyList<OptionItemEntityState>(), answerdOptionList = emptyList(), showQuestion = !questionEntity.isConditional)
+            var questionEntityState = QuestionEntityState(questionId = questionEntity.questionId, questionEntity = questionEntity,
+                optionItemEntityState = emptyList(), answerdOptionList = emptyList(), showQuestion = !questionEntity.isConditional)
             val optionItemEntityStateList: List<OptionItemEntityState> = getOptionItemEntityStateListFromMap(
                 sectionDetail.value.optionsItemMap[questionEntity.questionId]
             )
             questionEntityState = questionEntityState.copy(
-                optionItemEntityState = optionItemEntityStateList
+                optionItemEntityState = optionItemEntityStateList.distinctBy { it.optionId}
             )
             sectionDetail.value.optionsItemMap.forEach { optionItemMap ->
 
@@ -389,7 +392,18 @@ class QuestionScreenViewModel @Inject constructor(
             }
 
             is QuestionTypeEvent.UpdateConditionQuestionStateForMultipleOption -> {
-                val conditionalOptions = event.optionItemEntityList.filter { it.conditions?.isNullOrEmpty() != true }
+                event.optionItemEntityList.forEach { optionItemEntity ->
+                    optionItemEntity.conditions?.let {
+                        it.forEach { conditionsDto ->
+                            val conditionCheckResult = conditionsDto?.checkCondition(optionItemEntity.display ?: BLANK_STRING)
+                            if (conditionsDto?.resultType?.equals(ResultType.Questions.name, true) == true)
+                                updateQuestionStateForCondition(conditionResult = conditionCheckResult == true, conditionsDto)
+                            if (conditionsDto?.resultType?.equals(ResultType.Options.name, true) == true)
+                                updateOptionStateForCondition(conditionResult = conditionCheckResult == true, conditionsDto, optionItemEntity)
+                        }
+                    }
+                }
+               /* val conditionalOptions = event.optionItemEntityList.filter { it.conditions?.isNullOrEmpty() != true }
                 conditionalOptions.forEach {
                     it.conditions?.forEach { conditionsDto ->
                         when (event.questionEntityState?.questionEntity?.type) {
@@ -405,7 +419,7 @@ class QuestionScreenViewModel @Inject constructor(
                             }
                         }
                     }
-                }
+                }*/
 
             }
             
@@ -490,11 +504,45 @@ class QuestionScreenViewModel @Inject constructor(
         }
     }
 
+    fun updateOptionStateForCondition(conditionResult: Boolean, conditionsDto: ConditionsDto?, optionItemEntity: OptionItemEntity) {
+        conditionsDto?.let { conditions ->
+            conditions.resultList.forEach { questionList ->
+                var questionToShow = questionEntityStateList.findQuestionEntityStateById(optionItemEntity.questionId)
+                val optionToUpdate = mutableListOf<OptionItemEntityState>()
+                questionList.options?.forEach { opt ->
+                    if (questionToShow?.optionItemEntityState?.map { it.optionId }?.contains(opt?.optionId) == true) {
+                        optionToUpdate.add(questionToShow?.optionItemEntityState?.find { it.optionId == opt?.optionId }!!)
+                    }
+                }
+
+                val updatedOptionItemEntityStateList = mutableListOf<OptionItemEntityState>()
+
+                if (optionToUpdate.isEmpty())
+                    updatedOptionItemEntityStateList.addAll(questionToShow?.optionItemEntityState!!)
+
+                questionToShow?.optionItemEntityState?.forEach { optState ->
+                    if (optionToUpdate.map { it.optionId }.contains(optState.optionId)) {
+                        updatedOptionItemEntityStateList.add(optState.copy(showQuestion = conditionResult))
+                    } else {
+                        updatedOptionItemEntityStateList.add(optState)
+                    }
+                }
+
+                questionToShow = questionToShow?.copy(
+                    optionItemEntityState = updatedOptionItemEntityStateList.distinctBy { it.optionId },
+                    showQuestion = conditionResult
+                )
+
+                updateQuestionEntityStateList(questionToShow)
+            }
+        }
+    }
+
     private fun updateQuestionEntityStateList(questionToShow: QuestionEntityState?) {
         val questionToShowIndex = questionEntityStateList.findIndexOfListById(questionToShow?.questionId)
         if (questionToShowIndex != -1) {
             _questionEntityStateList.removeAt(questionToShowIndex)
-            var index = (questionToShow?.questionEntity?.order ?: 0) - 1
+            var index = if (((questionToShow?.questionEntity?.order ?: 0) - 1) > questionToShowIndex) questionToShowIndex else (questionToShow?.questionEntity?.order ?: 0) - 1
             if (index > _questionEntityStateList.size)
                 index = _questionEntityStateList.size
             _questionEntityStateList.add(if (index != -1) index else questionToShowIndex, questionToShow!!)

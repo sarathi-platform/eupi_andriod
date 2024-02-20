@@ -55,15 +55,4 @@ data class QuestionList (
     @Expose
     val conditional: Boolean = false,
 
-    @SerializedName("optionId")
-    @Expose
-    val optionId: Int,
-
-    @SerializedName("values")
-    @Expose
-    val values: List<String> = emptyList(),
-
-    @SerializedName("conditions")
-    @Expose
-    val conditions: List<ConditionsDto?>? = emptyList()
 )

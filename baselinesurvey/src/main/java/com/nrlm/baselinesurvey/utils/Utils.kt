@@ -36,11 +36,13 @@ import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
+import com.nrlm.baselinesurvey.ui.Constants.ItemType
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
+import com.nrlm.baselinesurvey.ui.search.viewmodel.ComplexSearchState
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -776,7 +778,6 @@ fun List<OptionItemEntityState>.updateOptionItemEntityListStateForQuestionByCond
 fun QuestionList.convertToOptionItemEntity(sectionId: Int, surveyId: Int, questionId: Int, languageId: Int): OptionItemEntity {
     return OptionItemEntity(
         id = 0,
-        optionId = this.optionId,
         questionId = questionId,
         sectionId = sectionId,
         surveyId = surveyId,
@@ -789,9 +790,7 @@ fun QuestionList.convertToOptionItemEntity(sectionId: Int, surveyId: Int, questi
         optionType = this.type,
         conditional = this.conditional,
         order = this.order ?: -1,
-        values = this.values,
-        languageId = languageId,
-        conditions = this.conditions
+        languageId = languageId
     )
 }
 
@@ -904,4 +903,57 @@ fun  SnapshotStateList<QuestionEntityState>.getSizeOfVisibleQuestions(): Int {
 
 fun List<OptionItemEntity>.getIndexById(optionId: Int): Int {
     return this.map { it.optionId }.indexOf(optionId)
+}
+
+fun OptionsItem?.convertToOptionItemEntity(questionId: Int, sectionId: Int, surveyId: Int, languageId: Int): OptionItemEntity {
+    return OptionItemEntity(
+        id = 0,
+        optionId = this?.optionId,
+        questionId = questionId,
+        sectionId = sectionId,
+        surveyId = surveyId,
+        display = this?.display,
+        weight = this?.weight,
+        optionValue = this?.optionValue,
+        summary = this?.summary,
+        count = this?.count,
+        optionImage = this?.optionImage,
+        optionType = this?.optionType,
+        conditional = this?.conditional!!,
+        order = this.order,
+        values = this.values,
+        languageId = languageId,
+        conditions = this.conditions
+    )
+}
+
+fun List<OptionsItem?>?.convertToListOfOptionItemEntity(questionId: Int, sectionId: Int, surveyId: Int, languageId: Int): List<OptionItemEntity> {
+    val optionsItemEntityList = mutableListOf<OptionItemEntity>()
+    this?.forEach {
+        val optionItemEntity = it?.convertToOptionItemEntity(
+            questionId = questionId,
+            sectionId = sectionId,
+            surveyId = surveyId,
+            languageId = languageId
+        )
+        optionsItemEntityList.add(optionItemEntity!!)
+    }
+    return optionsItemEntityList
+}
+
+fun List<SectionListItem>.convertToComplexSearchState(): List<ComplexSearchState> {
+    val complexSearchStateList = mutableListOf<ComplexSearchState>()
+
+    this.forEach { section ->
+        val complexSearchState = ComplexSearchState(section.sectionId, itemType = ItemType.Section, sectionName = section.sectionName, BLANK_STRING, true)
+        complexSearchStateList.add(complexSearchState)
+    }
+    this.forEach { section ->
+        section.questionList.forEach { question ->
+            val complexSearchStateForQuestion = ComplexSearchState(itemId = question.questionId ?: -1, itemType = ItemType.Question, sectionName = section.sectionName, questionTitle = question.questionDisplay ?: BLANK_STRING, isSectionSearchOnly = false)
+            complexSearchStateList.add(complexSearchStateForQuestion)
+        }
+    }
+
+    return complexSearchStateList
 }

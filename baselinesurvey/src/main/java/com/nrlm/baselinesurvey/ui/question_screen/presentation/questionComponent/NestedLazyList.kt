@@ -56,7 +56,9 @@ import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
 import com.nrlm.baselinesurvey.navigation.home.navigateToBaseLineStartScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToFormTypeQuestionScreen
+import com.nrlm.baselinesurvey.navigation.home.navigateToSearchScreen
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.common_components.ComplexSearchComponent
 import com.nrlm.baselinesurvey.ui.common_components.FormResponseCard
 import com.nrlm.baselinesurvey.ui.common_components.GridTypeComponent
 import com.nrlm.baselinesurvey.ui.common_components.ListTypeQuestion
@@ -211,23 +213,9 @@ fun NestedLazyList(
                 .padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
         ) {
             item {
-                SearchWithFilterViewComponent(
-                    placeholderString = stringResource(R.string.search_question_placeholder),
-                    showFilter = false,
-                    onFilterSelected = {
-
-                    },
-                    onSearchValueChange = { queryTerm ->
-                        viewModel.onEvent(
-                            SearchEvent.PerformSearch(
-                                queryTerm,
-                                false,
-                                BLANK_STRING
-                            )
-                        )
-
-                    }
-                )
+                ComplexSearchComponent {
+                    navigateToSearchScreen(navController, sectionDetails.surveyId)
+                }
             }
 
             item {
@@ -278,7 +266,8 @@ fun NestedLazyList(
                     )
             }
 
-            item {
+            // TODO Commenting this until it is fixed.
+            /*item {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LinearProgressIndicator(
                         modifier = Modifier
@@ -304,7 +293,7 @@ fun NestedLazyList(
                         .fillMaxWidth()
                         .height(dimen_8_dp)
                 )
-            }
+            }*/
             item {
                 LazyColumn(
                     state = innerState,
@@ -637,6 +626,32 @@ fun NestedLazyList(
 
                                         when (question.questionEntity.type) {
                                             QuestionType.InputNumber.name -> {
+                                                val mOptItem = optionItem.copy(selectedValue = selectedValue)
+                                                var mInputTypeQuestionAnswerEntity: InputTypeQuestionAnswerEntity? = selectedOptionMapForNumericInputTypeQuestions[mOptItem.optionId]
+                                                if (mInputTypeQuestionAnswerEntity == null) {
+                                                    mInputTypeQuestionAnswerEntity =
+                                                       InputTypeQuestionAnswerEntity(
+                                                            id = 0,
+                                                            didiId = surveyeeId,
+                                                            sectionId = sectionDetails.sectionId,
+                                                            questionId = question.questionId ?: -1,
+                                                            optionId = mOptItem.optionId ?: -1,
+                                                            surveyId = sectionDetails.surveyId,
+                                                            inputValue = mOptItem.selectedValue!!
+                                                        )
+                                                } else {
+                                                    mInputTypeQuestionAnswerEntity = mInputTypeQuestionAnswerEntity.copy(inputValue = mOptItem.selectedValue!!)
+                                                }
+                                                questionScreenViewModel.onEvent(
+                                                    mInputTypeQuestionAnswerEntity.let {
+                                                        QuestionScreenEvents.UpdateInputTypeQuestionAnswerEntityForUi(
+                                                            it
+                                                        )
+                                                    })
+
+                                                questionScreenViewModel.onEvent(
+                                                    QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(question, listOf(mOptionItem))
+                                                )
                                                 questionScreenViewModel.onEvent(
                                                     QuestionScreenEvents.InputTypeQuestionAnswered(
                                                         surveyId = sectionDetails.surveyId,
