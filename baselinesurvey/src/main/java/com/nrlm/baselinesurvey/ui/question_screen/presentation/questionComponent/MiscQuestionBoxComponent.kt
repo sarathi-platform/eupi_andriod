@@ -76,6 +76,7 @@ fun MiscQuestionBoxComponent(
 //    var selectedIndex by remember { mutableIntStateOf(selectedOptionIndex) }
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyListState = rememberLazyListState()
+    val manualMaxHeight = showQuestionState.optionItemEntityState.size * 100
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
             scope.launch { outerState.scrollToItem(outerState.layoutInfo.totalItemsCount) }
@@ -88,7 +89,7 @@ fun MiscQuestionBoxComponent(
                 state = outerState,
                 Orientation.Vertical,
             )
-            .heightIn(min = 100.dp, maxCustomHeight)
+            .heightIn(min = 100.dp, maxCustomHeight + manualMaxHeight.dp)
     ) {
 
         VerticalAnimatedVisibilityComponent(visible = showQuestionState.showQuestion) {
@@ -114,7 +115,7 @@ fun MiscQuestionBoxComponent(
                         LazyColumn(
                             state = outerState,
                             modifier = Modifier
-                                .heightIn(min = 110.dp, max = maxCustomHeight)
+                                .heightIn(min = 110.dp, max = maxCustomHeight + manualMaxHeight.dp)
                         ) {
                             item {
 
@@ -150,7 +151,10 @@ fun MiscQuestionBoxComponent(
                                     modifier = Modifier
                                         .wrapContentWidth()
                                         .padding(horizontal = dimen_16_dp)
-                                        .heightIn(min = 110.dp, max = maxCustomHeight)
+                                        .heightIn(
+                                            min = 110.dp,
+                                            max = maxCustomHeight + manualMaxHeight.dp
+                                        )
                                 ) {
                                     itemsIndexed(
                                         showQuestionState.optionItemEntityState ?: listOf()
