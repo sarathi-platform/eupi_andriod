@@ -63,12 +63,15 @@ fun DescriptionContentComponent(
                     .padding(vertical = dimen_16_dp, horizontal = dimen_18_dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = descriptionContentState.textTypeDescriptionContent/*selectedSectionDescription.value*/,
-                    color = textColorDark,
-                    style = if (descriptionContentState.subTextTypeDescriptionContent.isNotBlank()) largeTextStyle else quesOptionTextStyle,
-                    modifier = Modifier.padding(horizontal = dimen_10_dp)
-                )
+                //TODO need to remove below check after getting correct paraphrase
+                if (descriptionContentState.subTextTypeDescriptionContent.isBlank()) {
+                    Text(
+                        text = descriptionContentState.textTypeDescriptionContent/*selectedSectionDescription.value*/,
+                        color = textColorDark,
+                        style = if (descriptionContentState.subTextTypeDescriptionContent.isNotBlank()) largeTextStyle else quesOptionTextStyle,
+                        modifier = Modifier.padding(horizontal = dimen_10_dp)
+                    )
+                }
             }
             if (descriptionContentState.subTextTypeDescriptionContent.isNotBlank()) {
                 Box(
