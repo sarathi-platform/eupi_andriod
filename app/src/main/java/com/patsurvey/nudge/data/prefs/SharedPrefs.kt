@@ -36,6 +36,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_VO_SUMMARY_OPEN_FROM = "questions_open_from"
         const val PREF_KEY_QUESTIONS_SUMMARY_OPEN_FROM = "questions_summary_open_from"
         const val PREF_KEY_NEED_TO_SCROLL = "questions_need_to_scroll"
+        const val PREF_KEY_SYNC_ENABLED = "sync_enabled"
     }
 
     val prefs: SharedPreferences by lazy {
@@ -225,5 +226,14 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
 
     override fun isNeedQuestionToScroll(): Boolean {
         return prefs.getBoolean(PREF_KEY_NEED_TO_SCROLL,false)
+    }
+
+    override fun saveIsSyncEnabled(isEnabled: Boolean) {
+        prefs.edit().putBoolean(PREF_KEY_SYNC_ENABLED, isEnabled).apply()
+    }
+
+    override fun getISSyncEnabled(): Boolean {
+        return prefs.getBoolean(PREF_KEY_SYNC_ENABLED, true)
+
     }
 }

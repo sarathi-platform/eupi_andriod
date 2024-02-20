@@ -82,4 +82,6 @@ interface PrefRepo {
 
    fun isNeedQuestionToScroll(): Boolean
 
+    fun saveIsSyncEnabled(isEnabled: Boolean)
+    fun getISSyncEnabled(): Boolean
 }

@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_FILE_BACKUP_NAME
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.SyncBPCDataOnServer
@@ -857,9 +858,11 @@ class SettingViewModel @Inject constructor(
     private fun clearSharedPreference() {
         val languageId = prefRepo.getAppLanguageId()
         val language = prefRepo.getAppLanguage()
+        val backupFileName = prefRepo.getPref(PREF_FILE_BACKUP_NAME, "")
         prefRepo.clearSharedPreference()
         prefRepo.saveAppLanguage(language)
         prefRepo.saveAppLanguageId(languageId)
+        prefRepo.savePref(PREF_FILE_BACKUP_NAME, backupFileName ?: "")
     }
 
     fun buildAndShareLogs() {
@@ -896,5 +899,10 @@ class SettingViewModel @Inject constructor(
             }
 
         }
+    }
+
+    fun isSyncEnabled(): Boolean {
+        return prefRepo.getISSyncEnabled()
+
     }
 }
