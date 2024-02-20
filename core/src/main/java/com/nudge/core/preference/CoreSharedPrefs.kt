@@ -3,6 +3,7 @@ package com.nudge.core.preference
 import android.content.Context
 import android.content.SharedPreferences
 import com.nudge.core.LOCAL_BACKUP_FILE_NAME
+import com.nudge.core.toDate
 
 
 class CoreSharedPrefs private constructor(val context: Context) :
@@ -32,8 +33,11 @@ class CoreSharedPrefs private constructor(val context: Context) :
 
     }
 
-    override fun getBackupFileName(): String {
-        return prefs.getString(PREF_FILE_BACKUP_NAME, LOCAL_BACKUP_FILE_NAME)!!
+    override fun getBackupFileName(mobileNo: String): String {
+        return prefs.getString(
+            PREF_FILE_BACKUP_NAME,
+            LOCAL_BACKUP_FILE_NAME + "_" + mobileNo + System.currentTimeMillis().toDate().toString()
+        )!!
 
     }
 

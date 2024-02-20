@@ -1084,8 +1084,9 @@ class VillageSelectionRepository @Inject constructor(
                                 tola.serverId,
                                 localModifiedDate = System.currentTimeMillis(),
                                 tola.name,
-                                tola.villageId
-                            ).toJson()
+                                tola.villageId,
+                                tola.localUniqueId ?: ""
+                            ).json()
                         )
                     }
                 }

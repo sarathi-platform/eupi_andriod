@@ -31,15 +31,16 @@ open class TextFileEventWriter : IEventWriter {
 
     private fun writeEventInFile(context: Context, content: String, mobileNo: String) {
         if (TextUtils.isEmpty(content.trim())) return
-        val fileNameWithExtension =
-            CoreSharedPrefs.getInstance(context).getBackupFileName() + LOCAL_BACKUP_EXTENSION
+        val fileNameWithoutExtension =
+            CoreSharedPrefs.getInstance(context).getBackupFileName(mobileNo)
+        val fileNameWithExtension = fileNameWithoutExtension + LOCAL_BACKUP_EXTENSION
         val finalContent = content + "\n" + EVENT_DELIMETER + "\n"
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val contentValues = ContentValues().apply {
                 put(
                     MediaStore.MediaColumns.DISPLAY_NAME,
-                    CoreSharedPrefs.getInstance(context).getBackupFileName()
+                    fileNameWithoutExtension
                 )
                 put(MediaStore.MediaColumns.MIME_TYPE, textMimeType)
                 put(
@@ -132,6 +133,7 @@ open class TextFileEventWriter : IEventWriter {
                 val fw = FileWriter(filePath, true)
                 fw.write(finalContent)
                 fw.close()
+                CoreSharedPrefs.getInstance(context).setBackupFileName(fileNameWithoutExtension)
             } catch (exception: Exception) {
                 throw exception
             }
