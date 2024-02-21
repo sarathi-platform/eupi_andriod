@@ -25,6 +25,8 @@ import com.nrlm.baselinesurvey.utils.checkCondition
 import com.nrlm.baselinesurvey.utils.convertFormTypeQuestionListToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.convertQuestionListToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.convertToOptionItemEntity
+import com.nrlm.baselinesurvey.utils.findIndexOfListById
+import com.nrlm.baselinesurvey.utils.findIndexOfListByOptionId
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -78,11 +80,13 @@ class QuestionTypeScreenViewModel @Inject constructor(
                     questionId
                 )
 
-            getOptionItemEntityState(surveyId = surveyId, didiId = surveyeeId, sectionId = sectionId, questionId = questionId)
             if (referenceId.isNotBlank()) {
                 this@QuestionTypeScreenViewModel.referenceId = referenceId
                 _formQuestionResponseEntity.value = getFormResponseForReferenceId(referenceId = referenceId)
             }
+
+            getOptionItemEntityState(surveyId = surveyId, didiId = surveyeeId, sectionId = sectionId, questionId = questionId)
+
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
@@ -171,7 +175,30 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 }
             }
         }
+
+        updateAnsweredConditionalQuestion()
+
         totalOptionSize.intValue = updatedOptionList.filter { it.showQuestion}.size
+    }
+
+    //TODO Handle Update for answered question.
+    private fun updateAnsweredConditionalQuestion() {
+        formQuestionResponseEntity.value.distinctBy { it.optionId }.forEach { formQuestionResponseEntity ->
+            updatedOptionList.forEach { optionItemState ->
+                if (optionItemState.optionId == formQuestionResponseEntity.optionId) {
+                    var optionToUpdate = _updatedOptionList.find { it.optionId == optionItemState.optionId }
+
+                    optionToUpdate = optionToUpdate?.copy(showQuestion = true)
+
+                    val optionToUpdateIndex = updatedOptionList.findIndexOfListByOptionId(optionToUpdate?.optionId)
+                    if (optionToUpdateIndex != -1) {
+                        _updatedOptionList.removeAt(optionToUpdateIndex)
+                        _updatedOptionList.add(optionToUpdateIndex, optionToUpdate!!)
+                    }
+
+                }
+            }
+        }
     }
 
     private suspend fun getFormResponseForReferenceId(referenceId: String): List<FormQuestionResponseEntity> {
@@ -274,10 +301,14 @@ class QuestionTypeScreenViewModel @Inject constructor(
                             }
                         }
                     }
-
-                    formQuestionScreenUseCase.saveFormQuestionResponseUseCase.saveFormsListIntoDB(
-                        finalFormQuestionResponseList
-                    )
+                    finalFormQuestionResponseList.forEach {
+                        val existingFormQuestionResponseEntity = formQuestionScreenUseCase.saveFormQuestionResponseUseCase.getOptionItem(it)
+                        if (existingFormQuestionResponseEntity > 0) {
+                            formQuestionScreenUseCase.saveFormQuestionResponseUseCase.updateFromListItemIntoDb(it)
+                        } else {
+                            formQuestionScreenUseCase.saveFormQuestionResponseUseCase.saveFormsListIntoDB(finalFormQuestionResponseList)
+                        }
+                    }
                 }
             }
 

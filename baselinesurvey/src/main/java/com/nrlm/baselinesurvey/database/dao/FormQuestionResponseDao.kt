@@ -55,6 +55,15 @@ interface FormQuestionResponseDao {
         didiId: Int
     )
 
+
+    @Query("SELECT COUNT(*) from $FORM_QUESTION_RESPONSE_TABLE where surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND referenceId = :referenceId AND didiId = :didiId and optionId = :optionId")
+    fun getOptionItem(surveyId: Int,
+                      sectionId: Int,
+                      questionId: Int,
+                      optionId: Int,
+                      referenceId: String,
+                      didiId: Int): Int
+
     @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where referenceId = :referenceId")
     fun getFormResponseForReferenceId(referenceId: String): List<FormQuestionResponseEntity>
 

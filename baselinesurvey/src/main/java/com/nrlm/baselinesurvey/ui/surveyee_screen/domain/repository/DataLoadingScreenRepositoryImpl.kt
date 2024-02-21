@@ -85,6 +85,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         surveyEntityDao.insertSurvey(surveyEntity)
         surveyResponseModel.sections.forEach { section ->
             val subQuestionList = mutableListOf<QuestionList>()
+            val subSubQuestionList = mutableListOf<QuestionList>()
             sectionEntityDao.deleteSurveySectionFroLanguage(section.sectionId, surveyResponseModel.surveyId, languageId)
             val sectionEntity = SectionEntity(
                 id = 0,
@@ -119,6 +120,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                                 }
                             } else {
                                 subQuestionList.addAll(it?.resultList ?: emptyList())
+
                             }
                         }
                     }
@@ -127,6 +129,17 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
             subQuestionList.forEach { conditionalItem ->
                 Log.d("saveSurveyToDb", "subQuestionList.forEach -> ${conditionalItem}")
                 saveQuestionAndOptionsToDb(question = conditionalItem, section, surveyResponseModel, languageId, true)
+                conditionalItem.options?.forEach { subQuestionOption ->
+                    if (subQuestionOption?.conditions != null) {
+                        subQuestionOption.conditions.forEach {
+                            if (it?.resultType?.equals(ResultType.Questions.name, true) == true)
+                                subSubQuestionList.addAll(it.resultList)
+                        }
+                    }
+                }
+            }
+            subSubQuestionList.forEach { subConditionalItem ->
+                saveQuestionAndOptionsToDb(question = subConditionalItem, section, surveyResponseModel, languageId, true)
             }
         }
     }

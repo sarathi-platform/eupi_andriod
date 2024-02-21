@@ -79,6 +79,8 @@ fun QuestionScreen(
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.init(surveyId = surveyId, sectionId = sectionId, surveyeeId = surveyeeId)
         delay(300)
+        viewModel.updateSaveUpdateState()
+        delay(300)
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
     }
 

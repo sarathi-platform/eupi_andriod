@@ -44,9 +44,9 @@ fun EditTextWithTitleComponent(
     val txt = remember {
         mutableStateOf(defaultValue)
     }
-//    if (txt.value.isBlank()) {
-//        txt.value = defaultValue
-//    }
+    if (txt.value.isBlank()) {
+        txt.value = defaultValue
+    }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 

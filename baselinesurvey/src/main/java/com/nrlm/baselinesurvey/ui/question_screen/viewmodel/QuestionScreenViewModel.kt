@@ -31,7 +31,6 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.Op
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.checkCondition
-import com.nrlm.baselinesurvey.utils.convertToListOfOptionItemEntity
 import com.nrlm.baselinesurvey.utils.findIndexOfListById
 import com.nrlm.baselinesurvey.utils.findQuestionEntityStateById
 import com.nrlm.baselinesurvey.utils.findQuestionForQuestionId
@@ -222,13 +221,9 @@ class QuestionScreenViewModel @Inject constructor(
         _questionEntityStateList.sortedBy { it.questionId }
         
         updateQuestionEntityStateForAnsweredQuestions(questionEntityStateList)
+
         updateQuestionEntityStateForConditionalQuestions(questionEntityStateList)
 
-        filterSectionList.value.questionAnswerMapping.forEach {
-            answeredQuestionCount.add(it.key)
-        }
-        totalQuestionCount.intValue = questionEntityStateList.filter { it.showQuestion }.size
-        isSectionCompleted.value = answeredQuestionCount.size == totalQuestionCount.intValue
     }
 
     private fun updateQuestionEntityStateForConditionalQuestions(questionEntityStateList: SnapshotStateList<QuestionEntityState>) {
@@ -241,9 +236,19 @@ class QuestionScreenViewModel @Inject constructor(
     }
 
     private fun updateQuestionEntityStateForAnsweredQuestions(questionEntityStateList: SnapshotStateList<QuestionEntityState>) {
-        questionEntityStateList.forEach {  questionEntityState ->
-            if (sectionDetail.value.questionAnswerMapping.containsKey(questionEntityState.questionId) && !questionEntityState.showQuestion) {
-                updateQuestionStateVisibilityForAnsweredQuestions(questionEntityState.questionId, true)
+        questionEntityStateList.filter { !it.showQuestion }.forEach {  questionEntityState ->
+            Log.d("TAG", "updateQuestionEntityStateForAnsweredQuestions: questionEntityState: ${questionEntityState.questionId}")
+            when (questionEntityState.questionEntity?.type) {
+                QuestionType.InputNumber.name -> {
+                    if (inputTypeQuestionAnswerEntityList.value.map { it.questionId }.contains(questionEntityState.questionId) && !questionEntityState.showQuestion) {
+                        updateQuestionStateVisibilityForAnsweredQuestions(questionEntityState.questionId, true)
+                    }
+                }
+                else -> {
+                    if (sectionDetail.value.questionAnswerMapping.containsKey(questionEntityState.questionId) && !questionEntityState.showQuestion) {
+                        updateQuestionStateVisibilityForAnsweredQuestions(questionEntityState.questionId, true)
+                    }
+                }
             }
         }
 
@@ -376,6 +381,7 @@ class QuestionScreenViewModel @Inject constructor(
                     didiId = event.didiId,
                     inputValue = event.inputValue
                 )
+                answeredQuestionCount.add(event.questionId)
             }
 
             is QuestionScreenEvents.SaveMiscTypeQuestionAnswers -> {
@@ -395,10 +401,44 @@ class QuestionScreenViewModel @Inject constructor(
             }
 
             is QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption ->  {
+                if (event.optionItemEntity.conditions == null) {
+                    if (event.questionEntityState?.questionEntity?.type?.equals(QuestionType.RadioButton.name ,true) == true
+                        || event.questionEntityState?.questionEntity?.type?.equals(QuestionType.List.name ,true) == true) {
+                        val questionToUpdate = questionEntityStateList.find { it.questionId == event.questionEntityState?.questionId }
+                        questionToUpdate?.optionItemEntityState?.forEach { optionItemEntity ->
+                            optionItemEntity.optionItemEntity?.conditions?.forEach { conditionDto ->
+                                updateQuestionStateForCondition(
+                                    conditionResult = false,
+                                    conditionDto
+                                )
+                            }
+                        }
+                    }
+                }
+
                 event.optionItemEntity.conditions?.forEach { conditionsDto ->
                     when (event.questionEntityState?.questionEntity?.type) {
                         QuestionType.RadioButton.name,
                         QuestionType.List.name -> {
+
+                            //Hide conditional questions for the unselected values.
+                            val questionToUpdate = questionEntityStateList.find { it.questionId == event.questionEntityState?.questionId && it.showQuestion }
+                            val unselectedOption = questionToUpdate?.optionItemEntityState?.filter { it.optionId != event.optionItemEntity.optionId }
+                            unselectedOption?.forEach { optionItemEntityState ->
+                                optionItemEntityState.optionItemEntity?.conditions?.forEach { conditionsDto ->
+                                    val mConditionCheckResult = conditionsDto?.checkCondition(event.optionItemEntity.display ?: BLANK_STRING)
+                                    updateQuestionStateForCondition(conditionResult = mConditionCheckResult == true, conditionsDto)
+                                    conditionsDto?.resultList?.forEach { subQuestion ->
+                                        subQuestion.options?.forEach { subQuestionOption ->
+                                            subQuestionOption?.conditions?.forEach { subConditionDto ->
+                                                val mSubConditionCheckResult = subConditionDto?.checkCondition(event.optionItemEntity.display ?: BLANK_STRING)
+                                                updateQuestionStateForCondition(conditionResult = mSubConditionCheckResult == true, subConditionDto)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
                             val conditionCheckResult = conditionsDto?.checkCondition(event.optionItemEntity.display ?: BLANK_STRING)
                             updateQuestionStateForCondition(conditionResult = conditionCheckResult == true, conditionsDto)
                         }
@@ -445,7 +485,9 @@ class QuestionScreenViewModel @Inject constructor(
 
             is QuestionScreenEvents.UpdateAnsweredQuestionCount -> {
                 event.question.questionId?.let { answeredQuestionCount.add(it) }
-                isSectionCompleted.value = answeredQuestionCount.size == totalQuestionCount.intValue
+                totalQuestionCount.intValue = questionEntityStateList.filter { it.showQuestion }.size
+                Log.d("TAG", "UpdateAnsweredQuestionCount: questionEntityStateList.filter { it.showQuestion }.size: ${questionEntityStateList.filter { it.showQuestion }.size} answeredQuestionCount: $answeredQuestionCount ::: totalQuestionCount: ${totalQuestionCount.intValue}")
+                isSectionCompleted.value = answeredQuestionCount.size == totalQuestionCount.intValue || answeredQuestionCount.size > totalQuestionCount.intValue
             }
 
             /*is QuestionScreenEvents.FormTypeQuestionAnswered -> {
@@ -568,9 +610,7 @@ class QuestionScreenViewModel @Inject constructor(
                 index = _questionEntityStateList.size
             _questionEntityStateList.add(if (index != -1) index else questionToShowIndex, questionToShow!!)
             _questionEntityStateList.distinctBy { it.questionId }
-
         }
-        totalQuestionCount.intValue = questionEntityStateList.filter { it.showQuestion }.size
     }
 
     private fun saveInputTypeQuestionAnswer(surveyId: Int,
@@ -708,6 +748,19 @@ class QuestionScreenViewModel @Inject constructor(
         _filterSectionList.value = filterSectionList.value.copy(
             questionList = filteredList
         )
+    }
+
+    fun updateSaveUpdateState() {
+        filterSectionList.value.questionAnswerMapping.forEach {
+            answeredQuestionCount.add(it.key)
+        }
+
+        inputTypeQuestionAnswerEntityList.value.groupBy { it.optionId }.forEach {
+            answeredQuestionCount.add(it.key)
+        }
+        totalQuestionCount.intValue = questionEntityStateList.filter { it.showQuestion }.size
+        Log.d("TAG", "updateSaveUpdateState: questionEntityStateList.filter { it.showQuestion }.size: ${questionEntityStateList.filter { it.showQuestion }.size} answeredQuestionCount: $answeredQuestionCount ::: totalQuestionCount: ${totalQuestionCount.intValue}")
+        isSectionCompleted.value = answeredQuestionCount.size == totalQuestionCount.intValue || answeredQuestionCount.size > totalQuestionCount.intValue
     }
 
 }
