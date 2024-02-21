@@ -277,7 +277,7 @@ fun SectionListScreen(
                                 showExpandedImage.value = true
                             },
                             videoLinkClicked = {
-                                navController.navigate("$VIDEO_PLAYER_SCREEN_ROUTE_NAME/$it")
+                                navController.navigate("$VIDEO_PLAYER_SCREEN_ROUTE_NAME/${it}")
                             },
                             descriptionContentState = selectedSectionDescription.value
                         )
