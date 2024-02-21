@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -43,6 +44,7 @@ import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CircularDidiImage
 import com.patsurvey.nudge.activities.MainActivity
+import com.patsurvey.nudge.activities.decoupledConstraintsForPatCard
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
 import com.patsurvey.nudge.customviews.SearchWithFilterView
@@ -353,37 +355,56 @@ fun ExpandableCard(
                 color = Color.White,
             ) {
                 Column(modifier = Modifier.fillMaxWidth()) {
+
+                    BoxWithConstraints {
+                        val constraintSet = decoupledConstraintsForPatCard()
+                        ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
+                            CircularDidiImage(
+                                didi = didiEntity,
+                                modifier = Modifier.layoutId("didiImage")
+                            ){
+                                onCircularImageClick(didiEntity)
+                            }
+                            Row(
+                                modifier = Modifier
+                                    .layoutId("didiRow")
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = didiEntity.name,
+                                    style = TextStyle(
+                                        color = textColorDark,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontFamily = NotoSans,
+                                        textAlign = TextAlign.Start
+                                    ),
+                                )
+                            }
+
+                            Text(
+                                text = didiEntity.address,
+                                style = TextStyle(
+                                    color = textColorBlueLight,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontFamily = NotoSans
+                                ),
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier.layoutId("houseNumber_1")
+                            )
+                        }
+                    }
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = dimensionResource(id = R.dimen.dp_13))
-                            .padding(top = dimensionResource(id = R.dimen.dp_10)),
+                            .padding(horizontal = dimensionResource(id = R.dimen.dp_13)),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start,
                     ) {
-                        Card(
-                            modifier = Modifier
-                                .width(dimensionResource(id = R.dimen.dp_44))
-                                .height(dimensionResource(id = R.dimen.dp_44)),
-                            backgroundColor = colorResource(id = R.color.placeholder_color),
-                            shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_50)),
-                        ) {
-                            CircularDidiImage(didi = didiEntity, modifier = Modifier){
-                                onCircularImageClick(didiEntity)
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.dp_10)))
 
                         Column {
-                            Text(
-                                text = didiEntity.name,
-                                color = textColorDark,
-                                fontSize = 16.sp,
-                                fontFamily = NotoSans,
-                                fontWeight = FontWeight.SemiBold,
-                                textAlign = TextAlign.Start,
-                            )
                             if (didiEntity.wealth_ranking != WealthRank.NOT_RANKED.rank) {
                                 val wealthRankTextColor = when (didiEntity.wealth_ranking) {
                                     WealthRank.NOT_RANKED.rank -> textColorDark
