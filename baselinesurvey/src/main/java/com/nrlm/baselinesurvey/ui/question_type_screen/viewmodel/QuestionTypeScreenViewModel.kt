@@ -125,6 +125,25 @@ class QuestionTypeScreenViewModel @Inject constructor(
                                     false
                                 )
                             )
+
+                            // TODO Handle later correctly
+                            mOptionItemEntity.conditions?.forEach { conditionsDto2 ->
+                                if (conditionsDto2?.resultType.equals(ResultType.Questions.name, true)) {
+                                    conditionsDto2?.resultList?.forEach { subQuestionList ->
+                                        val mOptionItemEntity2 = subQuestionList.convertQuestionListToOptionItemEntity(
+                                            mOptionItemEntity.sectionId,
+                                            mOptionItemEntity.surveyId
+                                        )
+                                        _updatedOptionList.add(
+                                            OptionItemEntityState(
+                                                mOptionItemEntity2.optionId,
+                                                mOptionItemEntity2,
+                                                false
+                                            )
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                     ResultType.Options.name -> {
@@ -152,7 +171,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 }
             }
         }
-        totalOptionSize.intValue = updatedOptionList.size
+        totalOptionSize.intValue = updatedOptionList.filter { it.showQuestion}.size
     }
 
     private suspend fun getFormResponseForReferenceId(referenceId: String): List<FormQuestionResponseEntity> {
@@ -270,6 +289,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 } else {
                     form.selectedValue = event.formQuestionResponseEntity.selectedValue
                     val index = storeCacheForResponse.map { it.optionId }.indexOf(form.optionId).coerceIn(0, storeCacheForResponse.size)
+
                     _storeCacheForResponse.removeAt(index)
                     _storeCacheForResponse.add(index = index, form)
                 }

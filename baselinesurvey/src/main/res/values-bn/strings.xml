@@ -375,6 +375,7 @@
     <string name="search_question_placeholder">Search Question</string>
     <string name="save_next_section_button_text"><string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>--><![CDATA[Save]]></string></string>
     <string name="ok_text">Ok</string>
+    <string name="save">Save</string>
 
 
 </resources>

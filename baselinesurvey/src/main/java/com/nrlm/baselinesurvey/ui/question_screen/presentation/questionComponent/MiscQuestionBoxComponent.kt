@@ -185,7 +185,8 @@ fun MiscQuestionBoxComponent(
                                                 Spacer(modifier = Modifier.height(dimen_8_dp))
                                             }
 
-                                            QuestionType.SingleSelectDropdown.name -> {
+                                            QuestionType.SingleSelectDropdown.name,
+                                            QuestionType.SingleSelectDropDown.name -> {
                                                 TypeDropDownComponent(
                                                     title = optionsItem.optionItemEntity.display ?: BLANK_STRING,
                                                     hintText = optionsItem.optionItemEntity.selectedValue ?: "Select",

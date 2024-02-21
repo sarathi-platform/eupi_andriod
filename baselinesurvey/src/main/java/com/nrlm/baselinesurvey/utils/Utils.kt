@@ -645,7 +645,7 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
         questionId = this.questionId,
         optionId = this.questionId,
         display = this.questionDisplay,
-        weight = this.options?.first()?.weight,
+        weight = if (options?.isEmpty() == true) 0 else this.options?.first()?.weight,
         optionType = this.type,
         summary = this.questionSummary,
         values = emptyList(),
@@ -658,7 +658,8 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
             condition?.let { it1 -> conditions.add(it1) }
         }
         when (it?.optionType) {
-            QuestionType.SingleSelectDropdown.name -> {
+            QuestionType.SingleSelectDropdown.name,
+            QuestionType.SingleSelectDropDown.name -> {
                 it.values.let { it1 -> valuesList.addAll(it1) }
             }
             else -> {
@@ -827,24 +828,15 @@ fun ConditionsDto.checkCondition(userInputValue: String): Boolean {
             Operator.NOT_EQUAL_TO -> {
                 !userInputValue.equals(condition.first(), ignoreCase = true)
             }
-            /*Operator.LESS_THAN_EQUAL_TO ->{
-                if(totalAmount <= (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){
-                    score = it.score.toDouble()
-                    return@breaking
-                }
+            Operator.LESS_THAN_EQUAL_TO ->{
+                userInputValue.toInt() <= condition.first().toInt()
             }
             Operator.MORE_THAN -> {
-                if(totalAmount > (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){
-                    score = it.score.toDouble()
-                    return@breaking
-                }
+                userInputValue.toInt() > condition.first().toInt()
             }
             Operator.MORE_THAN_EQUAL_TO -> {
-                if(totalAmount >= (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){
-                    score = it.score.toDouble()
-                    return@breaking
-                }
-            }*/
+                userInputValue.toInt() >= condition.first().toInt()
+            }
             else -> {
                 false
             }

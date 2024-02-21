@@ -324,7 +324,8 @@ object BaselineModule {
     @Singleton
     fun providesQuestionScreenUseCase(
         questionScreenRepository: QuestionScreenRepository,
-        formQuestionResponseRepository: FormQuestionResponseRepository
+        formQuestionResponseRepository: FormQuestionResponseRepository,
+        startScreenRepository: StartScreenRepository
     ): QuestionScreenUseCase {
         return QuestionScreenUseCase(
             getSectionUseCase = GetSectionUseCase(questionScreenRepository),
@@ -335,7 +336,8 @@ object BaselineModule {
             getFormQuestionResponseUseCase = GetFormQuestionResponseUseCase(formQuestionResponseRepository),
             saveFormQuestionResponseUseCase = SaveFormQuestionResponseUseCase(formQuestionResponseRepository),
             updateFormQuestionResponseUseCase = UpdateFormQuestionResponseUseCase(formQuestionResponseRepository),
-            deleteFormQuestionResponseUseCase = DeleteFormQuestionResponseUseCase(formQuestionResponseRepository)
+            deleteFormQuestionResponseUseCase = DeleteFormQuestionResponseUseCase(formQuestionResponseRepository),
+            getSurveyeeDetailsUserCase = GetSurveyeeDetailsUserCase(startScreenRepository)
         )
     }
 
