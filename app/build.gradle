@@ -18,7 +18,7 @@ android {
         applicationId "com.nrlm.sarathi"
         minSdk 23
         targetSdk 33
-        versionCode 4
+        versionCode 5
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
