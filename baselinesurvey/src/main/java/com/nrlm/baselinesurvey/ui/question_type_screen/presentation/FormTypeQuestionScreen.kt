@@ -34,14 +34,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DELAY_2_MS
-import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.NestedLazyListForFormQuestions
 import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScreenViewModel
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
+import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
-import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import kotlinx.coroutines.delay
@@ -84,7 +83,7 @@ fun FormTypeQuestionScreen(
                         color = textColorDark,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Start,
-                        style = largeTextStyle
+                        style = defaultTextStyle
                     )
                 },
                 navigationIcon = {
@@ -104,7 +103,7 @@ fun FormTypeQuestionScreen(
                 contentPadding = PaddingValues(dimen_16_dp)
             ) {
                 ButtonPositive(
-                    buttonTitle = questionName,
+                    buttonTitle = "Submit",
                     isActive = saveButtonActiveState.value,
                     isArrowRequired = false
                 ) {
