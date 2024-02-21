@@ -161,8 +161,8 @@ fun NestedLazyList(
                     if (!it.isNullOrEmpty()) {
                         questionScreenViewModel.questionEntityStateList
                             .find { questionEntityState ->
-                                questionEntityState.questionEntity?.questionDisplay.equals(
-                                    "Add Didi",
+                                questionEntityState.questionEntity?.questionSummary.equals(
+                                    "Add details",
                                     false
                                 )
                             }?.let { it1 ->
@@ -588,6 +588,7 @@ fun NestedLazyList(
                                     selectedOption = selectedOption,
                                     maxCustomHeight = maxHeight,
                                     onAnswerSelection = { questionIndex, optionItem, selectedValue ->
+
                                         answeredQuestionCountIncreased(question)
 
 

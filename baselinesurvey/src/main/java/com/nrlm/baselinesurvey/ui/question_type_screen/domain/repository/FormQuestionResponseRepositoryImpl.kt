@@ -116,5 +116,28 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
             surveyeeId = surveyeeId
         )
     }
+
+    override suspend fun updateFromListItemIntoDb(formQuestionResponseEntity: FormQuestionResponseEntity) {
+        formQuestionResponseDao.updateOptionItemValue(
+            surveyId = formQuestionResponseEntity.surveyId,
+            sectionId = formQuestionResponseEntity.sectionId,
+            questionId = formQuestionResponseEntity.questionId,
+            optionId = formQuestionResponseEntity.optionId,
+            selectedValue = formQuestionResponseEntity.selectedValue,
+            referenceId = formQuestionResponseEntity.referenceId,
+            didiId = formQuestionResponseEntity.didiId
+        )
+    }
+
+    override suspend fun getOptionItem(formQuestionResponseEntity: FormQuestionResponseEntity): Int {
+        return formQuestionResponseDao.getOptionItem(surveyId = formQuestionResponseEntity.surveyId,
+            sectionId = formQuestionResponseEntity.sectionId,
+            questionId = formQuestionResponseEntity.questionId,
+            optionId = formQuestionResponseEntity.optionId,
+            referenceId = formQuestionResponseEntity.referenceId,
+            didiId = formQuestionResponseEntity.didiId)
+    }
+
+
 }
 

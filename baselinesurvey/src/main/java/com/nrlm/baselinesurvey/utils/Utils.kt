@@ -737,6 +737,13 @@ fun SnapshotStateList<QuestionEntityState>.findIndexOfListById(questionId: Int?)
     return this.map { it.questionId }.indexOf(questionId)
 }
 
+fun SnapshotStateList<OptionItemEntityState>.findIndexOfListByOptionId(optionId: Int?): Int {
+    if (optionId == null)
+        return  -1
+
+    return this.map { it.optionId }.indexOf(optionId)
+}
+
 fun SnapshotStateList<QuestionEntityState>.findQuestionEntityStateById(questionId: Int?): QuestionEntityState? {
     if (questionId == null)
         return null
