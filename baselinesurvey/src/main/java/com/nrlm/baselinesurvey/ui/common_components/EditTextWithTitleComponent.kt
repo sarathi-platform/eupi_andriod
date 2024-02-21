@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,9 +44,9 @@ fun EditTextWithTitleComponent(
     val txt = remember {
         mutableStateOf(defaultValue)
     }
-    if (txt.value.isBlank()) {
-        txt.value = defaultValue
-    }
+//    if (txt.value.isBlank()) {
+//        txt.value = defaultValue
+//    }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -72,9 +73,15 @@ fun EditTextWithTitleComponent(
                     }
                     onAnswerSelection(txt.value)
                 },
-                keyboardOptions = KeyboardOptions(
+                keyboardOptions = if (isOnlyNumber)
+                    KeyboardOptions(
+                        capitalization = KeyboardCapitalization.None,
+                        autoCorrect = true,
+                        keyboardType = KeyboardType.Number,
+                    )
+                    else KeyboardOptions(
                     imeAction = ImeAction.Done,
-                    keyboardType = if (isOnlyNumber) KeyboardType.Number else KeyboardType.Ascii
+                    keyboardType = KeyboardType.Ascii
                 ),
                 keyboardActions = KeyboardActions(onDone = {
                     focusManager.clearFocus()

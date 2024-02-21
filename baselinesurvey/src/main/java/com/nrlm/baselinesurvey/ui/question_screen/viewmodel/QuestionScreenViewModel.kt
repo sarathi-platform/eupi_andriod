@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.question_screen.viewmodel
 
 import android.util.Log
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -10,6 +11,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
@@ -19,6 +21,7 @@ import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.Constants.ResultType
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.QuestionScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
@@ -28,6 +31,7 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.Op
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.checkCondition
+import com.nrlm.baselinesurvey.utils.convertToListOfOptionItemEntity
 import com.nrlm.baselinesurvey.utils.findIndexOfListById
 import com.nrlm.baselinesurvey.utils.findQuestionEntityStateById
 import com.nrlm.baselinesurvey.utils.findQuestionForQuestionId
@@ -65,9 +69,9 @@ class QuestionScreenViewModel @Inject constructor(
     private val _sectionsList = mutableStateOf<List<SectionEntity>>(emptyList())
     val sectionsList: State<List<SectionEntity>> get() = _sectionsList
 
-    val totalQuestionCount = sectionDetail.value.questionList.size
+    /*val totalQuestionCount = sectionDetail.value.questionList.size
     val answeredQuestionCount =
-        mutableStateOf(sectionDetail.value.questionAnswerMapping.values.size)
+        mutableStateOf(sectionDetail.value.questionAnswerMapping.values.size)*/
 
     val showExpandedImage = mutableStateOf(false)
 
@@ -92,6 +96,11 @@ class QuestionScreenViewModel @Inject constructor(
 
     val filterSectionList: State<SectionListItem> get() = _filterSectionList
 
+    val answeredQuestionCount = mutableSetOf<Int>()
+    val totalQuestionCount = mutableIntStateOf(questionEntityStateList.filter { it.showQuestion }.size)
+
+    val isSectionCompleted = mutableStateOf(false)
+
     fun initQuestionScreenHandler(surveyeeId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _sectionsList.value = questionScreenUseCase.getSectionsListUseCase.invoke(surveyeeId)
@@ -103,7 +112,13 @@ class QuestionScreenViewModel @Inject constructor(
         return questionScreenUseCase.getFormQuestionResponseUseCase.getFormResponsesForQuestionLive(surveyId, sectionId, questionId, didiId)
     }
 
+    suspend fun getDidiInfoObjectLive(didiId: Int): LiveData<List<DidiIntoEntity>> {
+        return questionScreenUseCase.getSurveyeeDetailsUserCase.getDidiInfoObjectLive(didiId)
+    }
+
     var formResponsesForQuestionLive: LiveData<List<FormQuestionResponseEntity>> = MutableLiveData(mutableListOf())
+
+    var didiInfoObjectLive: LiveData<List<DidiIntoEntity>> = MutableLiveData()
 
     var optionItemEntityList = emptyList<OptionItemEntity>()
     suspend fun getFormQuestionsOptionsItemEntityList(surveyId: Int, sectionId: Int, questionId: Int): List<OptionItemEntity> {
@@ -185,12 +200,13 @@ class QuestionScreenViewModel @Inject constructor(
 
     private fun initQuestionEntityStateList() {
         sectionDetail.value.questionList.forEach { questionEntity ->
-            var questionEntityState = QuestionEntityState(questionId = questionEntity.questionId, questionEntity = questionEntity, optionItemEntityState = emptyList<OptionItemEntityState>(), answerdOptionList = emptyList(), showQuestion = !questionEntity.isConditional)
+            var questionEntityState = QuestionEntityState(questionId = questionEntity.questionId, questionEntity = questionEntity,
+                optionItemEntityState = emptyList(), answerdOptionList = emptyList(), showQuestion = !questionEntity.isConditional)
             val optionItemEntityStateList: List<OptionItemEntityState> = getOptionItemEntityStateListFromMap(
                 sectionDetail.value.optionsItemMap[questionEntity.questionId]
             )
             questionEntityState = questionEntityState.copy(
-                optionItemEntityState = optionItemEntityStateList
+                optionItemEntityState = optionItemEntityStateList.distinctBy { it.optionId}
             )
             sectionDetail.value.optionsItemMap.forEach { optionItemMap ->
 
@@ -206,6 +222,22 @@ class QuestionScreenViewModel @Inject constructor(
         _questionEntityStateList.sortedBy { it.questionId }
         
         updateQuestionEntityStateForAnsweredQuestions(questionEntityStateList)
+        updateQuestionEntityStateForConditionalQuestions(questionEntityStateList)
+
+        filterSectionList.value.questionAnswerMapping.forEach {
+            answeredQuestionCount.add(it.key)
+        }
+        totalQuestionCount.intValue = questionEntityStateList.filter { it.showQuestion }.size
+        isSectionCompleted.value = answeredQuestionCount.size == totalQuestionCount.intValue
+    }
+
+    private fun updateQuestionEntityStateForConditionalQuestions(questionEntityStateList: SnapshotStateList<QuestionEntityState>) {
+        questionEntityStateList.forEach { questionEntityState ->
+            sectionDetail.value.questionAnswerMapping[questionEntityState.questionId]?.forEach { optionItemEntity ->
+                onEvent(QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption(questionEntityState, optionItemEntity))
+                onEvent(QuestionTypeEvent.UpdateConditionQuestionStateForMultipleOption(questionEntityState, listOf(optionItemEntity)))
+            }
+        }
     }
 
     private fun updateQuestionEntityStateForAnsweredQuestions(questionEntityStateList: SnapshotStateList<QuestionEntityState>) {
@@ -270,6 +302,8 @@ class QuestionScreenViewModel @Inject constructor(
                 _sectionDetail.value = _sectionDetail.value.copy(
                     questionAnswerMapping = questionAnswerMapping
                 )
+
+                _filterSectionList.value = sectionDetail.value
             }
 
             is QuestionScreenEvents.UpdateInputTypeQuestionAnswerEntityForUi -> {
@@ -368,7 +402,8 @@ class QuestionScreenViewModel @Inject constructor(
                             val conditionCheckResult = conditionsDto?.checkCondition(event.optionItemEntity.display ?: BLANK_STRING)
                             updateQuestionStateForCondition(conditionResult = conditionCheckResult == true, conditionsDto)
                         }
-                        QuestionType.SingleSelectDropdown.name -> {
+                        QuestionType.SingleSelectDropdown.name,
+                        QuestionType.SingleSelectDropDown.name -> {
                             val conditionCheckResult = conditionsDto?.checkCondition(event.optionItemEntity.selectedValue ?: BLANK_STRING)
                             updateQuestionStateForCondition(conditionResult = conditionCheckResult == true, conditionsDto)
                         }
@@ -377,7 +412,18 @@ class QuestionScreenViewModel @Inject constructor(
             }
 
             is QuestionTypeEvent.UpdateConditionQuestionStateForMultipleOption -> {
-                val conditionalOptions = event.optionItemEntityList.filter { it.conditions?.isNullOrEmpty() != true }
+                event.optionItemEntityList.forEach { optionItemEntity ->
+                    optionItemEntity.conditions?.let {
+                        it.forEach { conditionsDto ->
+                            val conditionCheckResult = conditionsDto?.checkCondition(optionItemEntity.display ?: BLANK_STRING)
+                            if (conditionsDto?.resultType?.equals(ResultType.Questions.name, true) == true)
+                                updateQuestionStateForCondition(conditionResult = conditionCheckResult == true, conditionsDto)
+                            if (conditionsDto?.resultType?.equals(ResultType.Options.name, true) == true)
+                                updateOptionStateForCondition(conditionResult = conditionCheckResult == true, conditionsDto, optionItemEntity)
+                        }
+                    }
+                }
+               /* val conditionalOptions = event.optionItemEntityList.filter { it.conditions?.isNullOrEmpty() != true }
                 conditionalOptions.forEach {
                     it.conditions?.forEach { conditionsDto ->
                         when (event.questionEntityState?.questionEntity?.type) {
@@ -393,12 +439,13 @@ class QuestionScreenViewModel @Inject constructor(
                             }
                         }
                     }
-                }
+                }*/
 
             }
-            
-            is QuestionTypeEvent.UpdateConditionQuestionStateForAnsweredQuestions -> {
-                
+
+            is QuestionScreenEvents.UpdateAnsweredQuestionCount -> {
+                event.question.questionId?.let { answeredQuestionCount.add(it) }
+                isSectionCompleted.value = answeredQuestionCount.size == totalQuestionCount.intValue
             }
 
             /*is QuestionScreenEvents.FormTypeQuestionAnswered -> {
@@ -478,13 +525,52 @@ class QuestionScreenViewModel @Inject constructor(
         }
     }
 
+    fun updateOptionStateForCondition(conditionResult: Boolean, conditionsDto: ConditionsDto?, optionItemEntity: OptionItemEntity) {
+        conditionsDto?.let { conditions ->
+            conditions.resultList.forEach { questionList ->
+                var questionToShow = questionEntityStateList.findQuestionEntityStateById(optionItemEntity.questionId)
+                val optionToUpdate = mutableListOf<OptionItemEntityState>()
+                questionList.options?.forEach { opt ->
+                    if (questionToShow?.optionItemEntityState?.map { it.optionId }?.contains(opt?.optionId) == true) {
+                        optionToUpdate.add(questionToShow?.optionItemEntityState?.find { it.optionId == opt?.optionId }!!)
+                    }
+                }
+
+                val updatedOptionItemEntityStateList = mutableListOf<OptionItemEntityState>()
+
+                if (optionToUpdate.isEmpty())
+                    updatedOptionItemEntityStateList.addAll(questionToShow?.optionItemEntityState!!)
+
+                questionToShow?.optionItemEntityState?.forEach { optState ->
+                    if (optionToUpdate.map { it.optionId }.contains(optState.optionId)) {
+                        updatedOptionItemEntityStateList.add(optState.copy(showQuestion = conditionResult))
+                    } else {
+                        updatedOptionItemEntityStateList.add(optState)
+                    }
+                }
+
+                questionToShow = questionToShow?.copy(
+                    optionItemEntityState = updatedOptionItemEntityStateList.distinctBy { it.optionId },
+                    showQuestion = conditionResult
+                )
+
+                updateQuestionEntityStateList(questionToShow)
+            }
+        }
+    }
+
     private fun updateQuestionEntityStateList(questionToShow: QuestionEntityState?) {
         val questionToShowIndex = questionEntityStateList.findIndexOfListById(questionToShow?.questionId)
         if (questionToShowIndex != -1) {
             _questionEntityStateList.removeAt(questionToShowIndex)
-            val index = (questionToShow?.questionEntity?.order ?: 0) - 1
+            var index = if (((questionToShow?.questionEntity?.order ?: 0) - 1) > questionToShowIndex) questionToShowIndex else (questionToShow?.questionEntity?.order ?: 0) - 1
+            if (index > _questionEntityStateList.size)
+                index = _questionEntityStateList.size
             _questionEntityStateList.add(if (index != -1) index else questionToShowIndex, questionToShow!!)
+            _questionEntityStateList.distinctBy { it.questionId }
+
         }
+        totalQuestionCount.intValue = questionEntityStateList.filter { it.showQuestion }.size
     }
 
     private fun saveInputTypeQuestionAnswer(surveyId: Int,
@@ -562,10 +648,10 @@ class QuestionScreenViewModel @Inject constructor(
                 if (isQuestionAlreadyAnswered > 0) {
                     val finalAnswerList: MutableList<OptionItemEntity> = mutableListOf()
                     if (questionEntity.type?.equals(QuestionType.Grid.name) == true) {
-                        finalAnswerList.addAll(existingGridTypeAnswers?.optionItems ?: emptyList())
+//                        finalAnswerList.addAll(existingGridTypeAnswers?.optionItems ?: emptyList())
                         finalAnswerList.addAll(optionsItem)
                     } else {
-                        finalAnswerList.addAll(optionsItem)
+                        finalAnswerList.addAll(optionsItem.distinctBy { it.optionId})
                     }
                     questionScreenUseCase.saveSectionAnswerUseCase.updateSectionAnswerForDidi(
                         didiId = didiId,

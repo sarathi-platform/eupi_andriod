@@ -1,8 +1,10 @@
 package com.nrlm.baselinesurvey.ui.question_screen.domain.use_case
 
+import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.UpdateSurveyStateUserCase
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.GetFormQuestionResponseUseCase
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.SaveFormQuestionResponseUseCase
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.UpdateFormQuestionResponseUseCase
+import com.nrlm.baselinesurvey.ui.start_screen.domain.use_case.GetSurveyeeDetailsUserCase
 
 data class QuestionScreenUseCase(
     val getSectionUseCase: GetSectionUseCase,
@@ -13,5 +15,6 @@ data class QuestionScreenUseCase(
     val getFormQuestionResponseUseCase: GetFormQuestionResponseUseCase,
     val saveFormQuestionResponseUseCase: SaveFormQuestionResponseUseCase,
     val updateFormQuestionResponseUseCase: UpdateFormQuestionResponseUseCase,
-    val deleteFormQuestionResponseUseCase: DeleteFormQuestionResponseUseCase
+    val deleteFormQuestionResponseUseCase: DeleteFormQuestionResponseUseCase,
+    val getSurveyeeDetailsUserCase: GetSurveyeeDetailsUserCase
 )

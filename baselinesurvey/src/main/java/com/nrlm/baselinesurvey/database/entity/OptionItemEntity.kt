@@ -62,10 +62,11 @@ data class OptionItemEntity(
     @SerializedName("type")
     var optionType: String? = BLANK_STRING,
 
-    @SerializedName("questions")
+    /*@SerializedName("questions")
     @Expose
     @TypeConverters(OptionQuestionConverter::class)
-    val questionList: List<QuestionList?>? = listOf(),
+    val questionList: List<QuestionList?>? = listOf(),*/
+
     @SerializedName("conditional")
     @Expose
     val conditional: Boolean = false,

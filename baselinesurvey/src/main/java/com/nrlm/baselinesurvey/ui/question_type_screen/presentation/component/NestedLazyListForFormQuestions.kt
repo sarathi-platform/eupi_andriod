@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component
 
+import android.util.Log
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollBy
@@ -37,6 +38,7 @@ import com.nrlm.baselinesurvey.ui.common_components.RadioOptionTypeComponent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.dimen_100_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_14_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_30_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_64_dp
@@ -122,17 +124,19 @@ fun NestedLazyListForFormQuestions(
                     state = innerState,
                     userScrollEnabled = false,
                     modifier = Modifier
-                        .height(maxHeight), verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
+                        .height(maxHeight), verticalArrangement = Arrangement.spacedBy(dimen_14_dp),
 
                 ) {
                     item {
                         Spacer(modifier = Modifier.width(dimen_24_dp))
                     }
                     itemsIndexed(
-                        items = /*formTypeOption?.options*/questionTypeScreenViewModel.updatedOptionList.distinctBy { it.optionId } ?: emptyList()
+                        items = /*formTypeOption?.options*/questionTypeScreenViewModel.updatedOptionList.distinctBy { it.optionId }.filter { it
+                            .optionItemEntity?.optionType != QuestionType.Form.name}.filter { it.showQuestion } ?: emptyList()
                     ) { index, option ->
                         when (option.optionItemEntity?.optionType) {
-                            QuestionType.SingleSelectDropdown.name -> {
+                            QuestionType.SingleSelectDropdown.name,
+                            QuestionType.SingleSelectDropDown.name-> {
                                 TypeDropDownComponent(
                                     option.optionItemEntity?.display,
                                     option.optionItemEntity.selectedValue ?: "Select",

@@ -39,6 +39,8 @@ import com.nrlm.baselinesurvey.model.response.MissionResponseModel
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
+import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.Constants.ResultType
 import javax.inject.Inject
 
 class DataLoadingScreenRepositoryImpl @Inject constructor(
@@ -96,27 +98,35 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                 questionSize = section.questionList.size
             )
             sectionEntityDao.insertSection(sectionEntity)
+
             section.questionList.forEach { question ->
+                if (section.sectionId == 8) {
+                    Log.d("invoke", "section.questionList.forEach -> ${question} \n\n\n")
+                }
                 saveQuestionAndOptionsToDb(question = question, section, surveyResponseModel, languageId)
                 question?.options?.forEach { optionItem ->
                     if (optionItem?.conditions?.isNotEmpty()!!) {
+                        Log.d("saveSurveyToDb", "optionItem?.conditions?.isNotEmpty() -> ${optionItem.conditions}")
                         optionItem.conditions.forEach {
-                            subQuestionList.addAll(it?.resultList ?: emptyList())
+                            Log.d("saveSurveyToDb", "optionItem.conditions.forEach -> ${it}")
+                            if (it?.resultType?.equals(ResultType.Options.name, true) == true) {
+                                it.resultList.forEach { ques ->
+                                    if (ques.type?.equals(QuestionType.Form.name, true) == true) {
+                                        ques.options?.forEach {
+                                            it?.let { it1 -> saveConditionalOptions(it1, question, section, surveyResponseModel, languageId) }
+                                        }
+                                    }
+                                }
+                            } else {
+                                subQuestionList.addAll(it?.resultList ?: emptyList())
+                            }
                         }
                     }
                 }
             }
             subQuestionList.forEach { conditionalItem ->
-//                if (conditionalItem is QuestionList)
-                    saveQuestionAndOptionsToDb(question = conditionalItem, section, surveyResponseModel, languageId, true)
-                /*if (conditionalItem is OptionsItem) {
-                    saveConditionalOptions(
-                        conditionalItem, ,
-                        section,
-                        surveyResponseModel,
-                        languageId
-                    )
-                }*/
+                Log.d("saveSurveyToDb", "subQuestionList.forEach -> ${conditionalItem}")
+                saveQuestionAndOptionsToDb(question = conditionalItem, section, surveyResponseModel, languageId, true)
             }
         }
     }
@@ -151,7 +161,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     isConditional = isSubQuestionList
                 )
                 questionEntityDao.insertQuestion(questionEntity)
-                question.options.forEach { optionsItem ->
+                question.options?.forEach { optionsItem ->
                     if (optionsItem != null) {
                         optionItemDao.deleteSurveySectionQuestionOptionFroLanguage(
                             optionsItem.optionId!!,
@@ -173,7 +183,6 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                             count = optionsItem.count,
                             optionImage = optionsItem.optionImage,
                             optionType = optionsItem.optionType,
-                            questionList = optionsItem.questionList,
                             conditional = optionsItem.conditional,
                             order = optionsItem.order,
                             values = optionsItem.values,
@@ -181,9 +190,35 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                             conditions = optionsItem.conditions
                         )
                         optionItemDao.insertOption(optionItemEntity)
-                        optionsItem.conditions?.forEach { conditionsDto ->
-//                            if (conditionsDto?.resultType?.equals())
-                        }
+
+                        // TODO handle sub-options for question.
+                        /*optionsItem.conditions?.forEach { conditionsDto ->
+                            if (conditionsDto?.resultType?.equals(ResultType.Options.name) == true) {
+                                conditionsDto.resultList.forEach {
+
+                                }
+                                val subOption = OptionItemEntity(
+                                    id = 0,
+                                    optionId = optionsItem.optionId,
+                                    questionId = question.questionId,
+                                    sectionId = section.sectionId,
+                                    surveyId = surveyResponseModel.surveyId,
+                                    display = optionsItem.display,
+                                    weight = optionsItem.weight,
+                                    optionValue = optionsItem.optionValue,
+                                    summary = optionsItem.summary,
+                                    count = optionsItem.count,
+                                    optionImage = optionsItem.optionImage,
+                                    optionType = optionsItem.optionType,
+                                    questionList = optionsItem.questionList,
+                                    conditional = optionsItem.conditional,
+                                    order = optionsItem.order,
+                                    values = optionsItem.values,
+                                    languageId = languageId,
+                                    conditions = optionsItem.conditions
+                                )
+                            }
+                        }*/
                     }
                 }
             }
@@ -194,27 +229,29 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     private fun saveConditionalOptions(optionsItem: OptionsItem, question: QuestionList, section: Sections, surveyResponseModel: SurveyResponseModel, languageId: Int) {
-        val optionItemEntity = OptionItemEntity(
-            id = 0,
-            optionId = optionsItem.optionId,
-            questionId = question.questionId,
-            sectionId = section.sectionId,
-            surveyId = surveyResponseModel.surveyId,
-            display = optionsItem.display,
-            weight = optionsItem.weight,
-            optionValue = optionsItem.optionValue,
-            summary = optionsItem.summary,
-            count = optionsItem.count,
-            optionImage = optionsItem.optionImage,
-            optionType = optionsItem.optionType,
-            questionList = optionsItem.questionList,
-            conditional = true,
-            order = optionsItem.order,
-            values = optionsItem.values,
-            languageId = languageId,
-            conditions = optionsItem.conditions
-        )
-        optionItemDao.insertOption(optionItemEntity)
+        val isOptionExisting = optionItemDao.isOptionAlreadyPresent(questionId = question.questionId!!, sectionId = section.sectionId, surveyId = surveyResponseModel.surveyId)
+        if (isOptionExisting == 0) {
+            val optionItemEntity = OptionItemEntity(
+                id = 0,
+                optionId = optionsItem.optionId,
+                questionId = question.questionId,
+                sectionId = section.sectionId,
+                surveyId = surveyResponseModel.surveyId,
+                display = optionsItem.display,
+                weight = optionsItem.weight,
+                optionValue = optionsItem.optionValue,
+                summary = optionsItem.summary,
+                count = optionsItem.count,
+                optionImage = optionsItem.optionImage,
+                optionType = optionsItem.optionType,
+                conditional = true,
+                order = optionsItem.order,
+                values = optionsItem.values,
+                languageId = languageId,
+                conditions = optionsItem.conditions
+            )
+            optionItemDao.insertOption(optionItemEntity)
+        }
     }
 
     override fun saveUserDetails(userDetailsResponse: UserDetailsResponse) {

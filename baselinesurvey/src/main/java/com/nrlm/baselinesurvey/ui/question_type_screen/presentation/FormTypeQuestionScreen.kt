@@ -34,6 +34,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DELAY_2_MS
+import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.NestedLazyListForFormQuestions
@@ -69,7 +70,7 @@ fun FormTypeQuestionScreen(
 
     val saveButtonActiveState = remember {
         derivedStateOf {
-            referenceId.isNotBlank() || (viewModel.answeredOptionCount.intValue == viewModel.totalOptionSize.value)
+            referenceId.isNotBlank() || (viewModel.answeredOptionCount.intValue >= viewModel.totalOptionSize.value)
         }
     }
 

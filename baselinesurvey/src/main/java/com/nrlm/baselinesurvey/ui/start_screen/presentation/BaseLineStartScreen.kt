@@ -114,7 +114,7 @@ fun BaseLineStartScreen(
             DoubleButtonBox(
                 modifier = Modifier
                     .shadow(10.dp),
-                positiveButtonText = stringResource(id = R.string.continue_text),
+                positiveButtonText = stringResource(R.string.save),
                 negativeButtonText = stringResource(id = R.string.go_back_text),
                 isPositiveButtonActive = isContinueButtonActive.value,
                 positiveButtonOnClick = {
@@ -133,7 +133,8 @@ fun BaseLineStartScreen(
                             )
                         )
                     }
-                    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
+                    navController.popBackStack()
+//                    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
                 },
                 negativeButtonOnClick = {
                     navController.popBackStack()
@@ -176,7 +177,7 @@ fun BaseLineStartScreen(
                 //  (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (baseLineStartViewModel.isVoterCard.value != -1) && (baseLineStartViewModel.phoneNumber.value.length == 10) && (baseLineStartViewModel.isAdharCard.value != -1)
             }
 
-                EditTextWithTitleComponent(
+                /*EditTextWithTitleComponent(
                     defaultValue = baseLineStartViewModel.aadharNumber.value,
                     title = "Enter Didi's aadhar number",
                     isOnlyNumber = true,
@@ -184,7 +185,7 @@ fun BaseLineStartScreen(
                     maxLength = 12
                 ) {
                     baseLineStartViewModel.aadharNumber.value = it
-                }
+                }*/
                 Spacer(modifier = Modifier.height(8.dp))
 
             Spacer(modifier = Modifier.height(8.dp))

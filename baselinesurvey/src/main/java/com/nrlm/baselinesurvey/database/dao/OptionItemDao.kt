@@ -3,6 +3,7 @@ package com.nrlm.baselinesurvey.database.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import com.nrlm.baselinesurvey.ANSWER_TABLE
 import com.nrlm.baselinesurvey.OPTION_TABLE
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
@@ -58,5 +59,8 @@ interface OptionItemDao {
 
     @Query("Select * from $OPTION_TABLE where surveyId = :surveyId and languageId = :languageId")
     fun getAllOptionForLanguage(surveyId: Int, languageId: Int): List<OptionItemEntity>
+
+    @Query("Select COUNT(*) FROM $ANSWER_TABLE where questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId")
+    fun isOptionAlreadyPresent(questionId: Int, sectionId: Int, surveyId: Int): Int
 
 }

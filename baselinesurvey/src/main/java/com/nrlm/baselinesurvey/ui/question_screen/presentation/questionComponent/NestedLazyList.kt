@@ -56,13 +56,16 @@ import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
 import com.nrlm.baselinesurvey.navigation.home.navigateToBaseLineStartScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToFormTypeQuestionScreen
+import com.nrlm.baselinesurvey.navigation.home.navigateToSearchScreen
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.common_components.ComplexSearchComponent
 import com.nrlm.baselinesurvey.ui.common_components.FormResponseCard
 import com.nrlm.baselinesurvey.ui.common_components.GridTypeComponent
 import com.nrlm.baselinesurvey.ui.common_components.ListTypeQuestion
 import com.nrlm.baselinesurvey.ui.common_components.RadioQuestionBoxComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
+import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenEvents
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.handleOnMediaTypeDescriptionActions
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
@@ -77,6 +80,7 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.findOptionFromId
+import com.nrlm.baselinesurvey.utils.getSizeOfVisibleQuestions
 import com.nrlm.baselinesurvey.utils.mapFormQuestionResponseToFromResponseObjectDto
 import com.nrlm.baselinesurvey.utils.mapToOptionItem
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
@@ -97,7 +101,7 @@ fun NestedLazyList(
     viewModel: BaseViewModel,
     sectionDetails: SectionListItem,
     sectionInfoButtonClicked: () -> Unit,
-    answeredQuestionCountIncreased: (count: Int) -> Unit,
+    answeredQuestionCountIncreased: (question: QuestionEntityState) -> Unit,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -114,7 +118,7 @@ fun NestedLazyList(
         }
     }
 
-    val answeredQuestionCount = remember {
+    /*val answeredQuestionCount = remember {
         mutableIntStateOf(sectionDetails.questionAnswerMapping.size)
     }
 
@@ -123,10 +127,15 @@ fun NestedLazyList(
     }
 
     val curPercentage = animateFloatAsState(
-        targetValue = answeredQuestionCount.value.toFloat() / sectionDetails.questionSize.toFloat(),
+        targetValue = (if (answeredQuestionCount.intValue.toFloat() > questionScreenViewModel.questionEntityStateList.getSizeOfVisibleQuestions()
+                .toFloat()
+        ) questionScreenViewModel.questionEntityStateList.getSizeOfVisibleQuestions()
+            .toFloat()
+        else answeredQuestionCount.intValue.toFloat()) / questionScreenViewModel.questionEntityStateList.getSizeOfVisibleQuestions()
+            .toFloat(),
         label = "",
         animationSpec = tween()
-    )
+    )*/
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -144,14 +153,11 @@ fun NestedLazyList(
                 withContext(Dispatchers.Main) {
                     questionScreenViewModel.formResponsesForQuestionLive.observe(lifecycleOwner) {
                         householdMemberDtoList.value.addAll(it.mapFormQuestionResponseToFromResponseObjectDto(optionItemEntityList))
-                        sectionDetails.questionAnswerMapping.keys.forEach {
-                            if (!answeredQuestionIndices.value.contains(it) || householdMemberDtoList.value.isNotEmpty()) {
-                                answeredQuestionIndices.value.add(it)
-                                answeredQuestionCount.value =
-                                    answeredQuestionCount.value.inc()
-                                        .coerceIn(0, sectionDetails.questionList.size)
-                                answeredQuestionCountIncreased(answeredQuestionCount.value)
-                            }
+
+                        if (it.isNotEmpty()) {
+                            answeredQuestionCountIncreased(
+                                questionScreenViewModel.questionEntityStateList.find {
+                                        questionEntityState ->  questionEntityState.questionId == it.first().questionId }!!)
                         }
                     }
                 }
@@ -159,6 +165,32 @@ fun NestedLazyList(
         }
         onDispose {
             questionScreenViewModel.formResponsesForQuestionLive.removeObservers(lifecycleOwner)
+        }
+    }
+
+    DisposableEffect(key1 = context) {
+        coroutineScope.launch(Dispatchers.IO) {
+            questionScreenViewModel.didiInfoObjectLive = questionScreenViewModel.getDidiInfoObjectLive(surveyeeId)
+            withContext(Dispatchers.Main) {
+                questionScreenViewModel.didiInfoObjectLive.observe(lifecycleOwner) {
+                    if (!it.isNullOrEmpty()) {
+                        questionScreenViewModel.questionEntityStateList
+                            .find { questionEntityState ->
+                                questionEntityState.questionEntity?.questionDisplay.equals(
+                                    "Add Didi",
+                                    false
+                                )
+                            }?.let { it1 ->
+                                answeredQuestionCountIncreased(
+                                    it1
+                                )
+                            }
+                    }
+                }
+            }
+        }
+        onDispose {
+            questionScreenViewModel.didiInfoObjectLive.removeObservers(lifecycleOwner)
         }
     }
 
@@ -205,23 +237,9 @@ fun NestedLazyList(
                 .padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
         ) {
             item {
-                SearchWithFilterViewComponent(
-                    placeholderString = stringResource(R.string.search_question_placeholder),
-                    showFilter = false,
-                    onFilterSelected = {
-
-                    },
-                    onSearchValueChange = { queryTerm ->
-                        viewModel.onEvent(
-                            SearchEvent.PerformSearch(
-                                queryTerm,
-                                false,
-                                BLANK_STRING
-                            )
-                        )
-
-                    }
-                )
+                ComplexSearchComponent {
+                    navigateToSearchScreen(navController, sectionDetails.surveyId)
+                }
             }
 
             item {
@@ -272,7 +290,8 @@ fun NestedLazyList(
                     )
             }
 
-            item {
+            // TODO Commenting this until it is fixed.
+            /*item {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     LinearProgressIndicator(
                         modifier = Modifier
@@ -298,7 +317,7 @@ fun NestedLazyList(
                         .fillMaxWidth()
                         .height(dimen_8_dp)
                 )
-            }
+            }*/
             item {
                 LazyColumn(
                     state = innerState,
@@ -312,7 +331,7 @@ fun NestedLazyList(
                     }
 
                     itemsIndexed(
-                        items = questionScreenViewModel.questionEntityStateList.distinctBy { it.questionId } ?: emptyList()
+                        items = questionScreenViewModel.questionEntityStateList.distinctBy { it.questionId }.filter { it.showQuestion } ?: emptyList()
                     ) { index, question ->
 
                         when (question?.questionEntity?.type) {
@@ -329,13 +348,12 @@ fun NestedLazyList(
                                     selectedOptionIndex = optionList.indexOf(optionList.find { it.optionId == selectedOption?.optionId })
                                         ?: -1,
                                     onAnswerSelection = { questionIndex, optionItem ->
-                                        if (!answeredQuestionIndices.value.contains(question.questionEntity.questionId)) {
-                                            answeredQuestionIndices.value.add(question.questionEntity.questionId!!)
-                                            answeredQuestionCount.value =
-                                                answeredQuestionCount.value.inc()
-                                                    .coerceIn(0, sectionDetails.questionList.size)
-                                            answeredQuestionCountIncreased(answeredQuestionCount.value)
-                                        }
+
+                                        answeredQuestionCountIncreased(question)
+
+                                        questionScreenViewModel.onEvent(
+                                            QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(question, listOf(optionItem))
+                                        )
 
                                         questionScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption(question, optionItem))
 
@@ -391,13 +409,14 @@ fun NestedLazyList(
                                     questionIndex = index,
                                     maxCustomHeight = maxHeight,
                                     onAnswerSelection = { questionIndex, optionItem ->
-                                        if (!answeredQuestionIndices.value.contains(questionIndex)) {
-                                            answeredQuestionIndices.value.add(questionIndex)
-                                            answeredQuestionCount.value =
-                                                answeredQuestionCount.value.inc()
-                                                    .coerceIn(0, sectionDetails.questionList.size)
-                                            answeredQuestionCountIncreased(answeredQuestionCount.value)
-                                        }
+
+                                        answeredQuestionCountIncreased(question)
+
+                                        questionScreenViewModel.onEvent(
+                                            QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(question, listOf(optionItem))
+                                        )
+
+                                        questionScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption(question, optionItem))
 
                                         questionScreenViewModel.onEvent(
                                             QuestionScreenEvents.SectionProgressUpdated(
@@ -454,17 +473,12 @@ fun NestedLazyList(
                                     selectedOptionIndices = selectedIndices,
                                     maxCustomHeight = maxHeight,
                                     onAnswerSelection = { questionIndex, optionItems, selectedIndeciesCount ->
-                                        if (!answeredQuestionIndices.value.contains(questionIndex)) {
-                                            answeredQuestionIndices.value.add(questionIndex)
-                                            if (selectedIndeciesCount.size <= 1) {
-                                                answeredQuestionCount.value =
-                                                    answeredQuestionCount.value.inc().coerceIn(
-                                                        0,
-                                                        sectionDetails.questionList.size
-                                                    )
-                                                answeredQuestionCountIncreased(answeredQuestionCount.value)
-                                            }
-                                        }
+
+                                        answeredQuestionCountIncreased(question)
+
+                                        questionScreenViewModel.onEvent(
+                                            QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(question, optionItems)
+                                        )
 
                                         questionScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionQuestionStateForMultipleOption(questionEntityState = question, optionItemEntityList = optionItems))
 
@@ -519,7 +533,7 @@ fun NestedLazyList(
                                                 navController
                                             )
                                         } else {
-                                            if (householdMemberDtoList.value.size > 0 || !answeredQuestionIndices.value.contains(
+                                            /*if (householdMemberDtoList.value.size > 0 || !answeredQuestionIndices.value.contains(
                                                     questionIndex
                                                 )
                                             ) {
@@ -531,7 +545,7 @@ fun NestedLazyList(
                                                             sectionDetails.questionList.size
                                                         )
                                                 answeredQuestionCountIncreased(answeredQuestionCount.value)
-                                            }
+                                            }*/
                                             navigateToFormTypeQuestionScreen(
                                                 navController,
                                                 question.questionEntity,
@@ -551,7 +565,8 @@ fun NestedLazyList(
                             QuestionType.Input.name,
                             QuestionType.InputText.name,
                             QuestionType.InputNumber.name,
-                            QuestionType.SingleSelectDropdown.name -> {
+                            QuestionType.SingleSelectDropdown.name,
+                            QuestionType.SingleSelectDropDown.name -> {
                                 val selectedOption =
                                     sectionDetails.questionAnswerMapping[question.questionId]?.first()
                                 val optionList = sectionDetails.optionsItemMap[question.questionId]
@@ -584,17 +599,12 @@ fun NestedLazyList(
                                     selectedOption = selectedOption,
                                     maxCustomHeight = maxHeight,
                                     onAnswerSelection = { questionIndex, optionItem, selectedValue ->
-                                        if (!answeredQuestionIndices.value.contains(questionIndex)) {
-                                            answeredQuestionIndices.value.add(questionIndex)
-                                            answeredQuestionCount.value =
-                                                answeredQuestionCount.value.inc()
-                                                    .coerceIn(0, sectionDetails.questionList.size)
-                                            answeredQuestionCountIncreased(answeredQuestionCount.value)
-                                        }
+                                        answeredQuestionCountIncreased(question)
 
 
                                         when (optionItem.optionType) {
-                                            QuestionType.SingleSelectDropdown.name -> {
+                                            QuestionType.SingleSelectDropdown.name,
+                                            QuestionType.SingleSelectDropDown.name -> {
                                                 val mOptionItem = optionItem.copy(selectedValue = selectedValue)
                                                 questionScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption(question, mOptionItem))
                                             }
@@ -617,6 +627,32 @@ fun NestedLazyList(
 
                                         when (question.questionEntity.type) {
                                             QuestionType.InputNumber.name -> {
+                                                val mOptItem = optionItem.copy(selectedValue = selectedValue)
+                                                var mInputTypeQuestionAnswerEntity: InputTypeQuestionAnswerEntity? = selectedOptionMapForNumericInputTypeQuestions[mOptItem.optionId]
+                                                if (mInputTypeQuestionAnswerEntity == null) {
+                                                    mInputTypeQuestionAnswerEntity =
+                                                       InputTypeQuestionAnswerEntity(
+                                                            id = 0,
+                                                            didiId = surveyeeId,
+                                                            sectionId = sectionDetails.sectionId,
+                                                            questionId = question.questionId ?: -1,
+                                                            optionId = mOptItem.optionId ?: -1,
+                                                            surveyId = sectionDetails.surveyId,
+                                                            inputValue = mOptItem.selectedValue!!
+                                                        )
+                                                } else {
+                                                    mInputTypeQuestionAnswerEntity = mInputTypeQuestionAnswerEntity.copy(inputValue = mOptItem.selectedValue!!)
+                                                }
+                                                questionScreenViewModel.onEvent(
+                                                    mInputTypeQuestionAnswerEntity.let {
+                                                        QuestionScreenEvents.UpdateInputTypeQuestionAnswerEntityForUi(
+                                                            it
+                                                        )
+                                                    })
+
+                                                questionScreenViewModel.onEvent(
+                                                    QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(question, listOf(mOptionItem))
+                                                )
                                                 questionScreenViewModel.onEvent(
                                                     QuestionScreenEvents.InputTypeQuestionAnswered(
                                                         surveyId = sectionDetails.surveyId,
@@ -630,7 +666,8 @@ fun NestedLazyList(
                                             }
                                             QuestionType.Input.name,
                                             QuestionType.InputText.name,
-                                            QuestionType.SingleSelectDropdown.name -> {
+                                            QuestionType.SingleSelectDropdown.name,
+                                            QuestionType.SingleSelectDropDown.name -> {
                                                 questionScreenViewModel.onEvent(
                                                     QuestionScreenEvents.SaveMiscTypeQuestionAnswers(surveyeeId = surveyeeId, questionEntityState = question, optionItemEntity = optionItem, selectedValue = selectedValue)
                                                 )
