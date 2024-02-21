@@ -277,6 +277,12 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
 
 }
 
+fun NavGraphBuilder.settingNavGraph(navHostController: NavHostController){
+//    navigation(
+//        route = Graph.SETTING_GRAPH,
+//        startDestination =
+//    )
+}
 fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.ADD_DIDI,
@@ -343,6 +349,7 @@ sealed class HomeScreens(val route: String) {
     object Home_SCREEN : HomeScreens(route = HOME_SCREEN_ROUTE_NAME)
     object MISSION_SCREEN : HomeScreens(route = MISSION_SCREEN_ROUTE_NAME)
     object DIDI_SCREEN : HomeScreens(route = DIDI_SCREEN_ROUTE_NAME)
+    object SETTING_SCREEN : HomeScreens(route = SETTING_ROUTE_NAME)
     object MISSION_SUMMARY_SCREEN :
         HomeScreens(route = "$MISSION_SUMMARY_SCREEN_ROUTE_NAME/{$ARG_MISSION_ID}/{$ARG_MISSION_NAME}/{$ARG_MISSION_DATE}")
 
@@ -368,6 +375,7 @@ const val DIDI_SCREEN_ROUTE_NAME = "didi_screen"
 const val MISSION_SUMMARY_SCREEN_ROUTE_NAME = "mission_summary_screen"
 const val Final_Step_Complition_Screen_ROUTE_NAME = "final_step_complition_screen"
 const val Step_Complition_Screen_ROUTE_NAME = "step_complition_screen"
+const val SETTING_ROUTE_NAME = "setting_screen"
 
 
 fun navigateToBaseLineStartScreen(surveyeeId: Int, survyId: Int, navController: NavController) {
