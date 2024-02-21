@@ -19,6 +19,7 @@ import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.TransactionResponse
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
 import com.nrlm.baselinesurvey.network.GET_CASTE_LIST
+import com.nrlm.baselinesurvey.network.LOGOUT
 import com.nrlm.baselinesurvey.network.SUBPATH_AUTH_GENERATE_OTP
 import com.nrlm.baselinesurvey.network.SUBPATH_AUTH_VALIDATE_OTP
 import com.nrlm.baselinesurvey.network.SUBPATH_CONFIG_GET_LANGUAGE
@@ -78,4 +79,7 @@ interface ApiService {
     suspend fun getCasteList(@Query("languageId") languageId: Int): ApiResponseModel<List<CasteModel>>
 
 
+    @POST(LOGOUT)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun performLogout() : ApiResponseModel<String>
 }

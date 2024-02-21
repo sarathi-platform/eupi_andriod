@@ -1,5 +1,6 @@
-package com.nrlm.baselinesurvey.splash.domain.repository
+package com.nrlm.baselinesurvey.ui.splash.domain.repository
 
+import com.nrlm.baselinesurvey.LANGUAGE_OPEN_FROM_SETTING
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
@@ -35,6 +36,10 @@ class SplashScreenRepositoryImpl @Inject constructor(
 
     override fun isLoggedIn(): Boolean {
         return prefRepo.getAccessToken()?.isNotEmpty() == true
+    }
+
+    override fun saveLanguageOpenFrom() {
+        prefRepo.savePref(LANGUAGE_OPEN_FROM_SETTING,false)
     }
 
 }

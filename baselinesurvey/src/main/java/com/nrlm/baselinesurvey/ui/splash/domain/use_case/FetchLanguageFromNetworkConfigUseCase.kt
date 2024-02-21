@@ -1,9 +1,8 @@
-package com.nrlm.baselinesurvey.splash.domain.use_case
+package com.nrlm.baselinesurvey.ui.splash.domain.use_case
 
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.model.response.ConfigResponseModel
-import com.nrlm.baselinesurvey.splash.domain.repository.SplashScreenRepository
-import java.util.concurrent.Flow
+import com.nrlm.baselinesurvey.ui.splash.domain.repository.SplashScreenRepository
 
 class FetchLanguageFromNetworkConfigUseCase(private val splashScreenRepository: SplashScreenRepository) {
 

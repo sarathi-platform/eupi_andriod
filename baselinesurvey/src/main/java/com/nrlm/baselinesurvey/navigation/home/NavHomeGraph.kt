@@ -17,9 +17,11 @@ import com.nrlm.baselinesurvey.ARG_ACTIVITY_ID
 import com.nrlm.baselinesurvey.ARG_COMPLETION_MESSAGE
 import com.nrlm.baselinesurvey.ARG_DIDI_ID
 import com.nrlm.baselinesurvey.ARG_FORM_QUESTION_RESPONSE_REFERENCE_ID
+import com.nrlm.baselinesurvey.ARG_FROM_HOME
 import com.nrlm.baselinesurvey.ARG_MISSION_DATE
 import com.nrlm.baselinesurvey.ARG_MISSION_ID
 import com.nrlm.baselinesurvey.ARG_MISSION_NAME
+import com.nrlm.baselinesurvey.ARG_MOBILE_NUMBER
 import com.nrlm.baselinesurvey.ARG_QUESTION_ID
 import com.nrlm.baselinesurvey.ARG_QUESTION_NAME
 import com.nrlm.baselinesurvey.ARG_SECTION_ID
@@ -29,15 +31,20 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
+import com.nrlm.baselinesurvey.navigation.AuthScreen
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
+import com.nrlm.baselinesurvey.ui.auth.presentation.LoginScreenComponent
+import com.nrlm.baselinesurvey.ui.auth.presentation.OtpVerificationScreenComponent
 import com.nrlm.baselinesurvey.ui.common_components.FinalStepCompletionScreen
 import com.nrlm.baselinesurvey.ui.common_components.StepCompletionScreen
+import com.nrlm.baselinesurvey.ui.language.presentation.LanguageScreenComponent
 import com.nrlm.baselinesurvey.ui.mission_screen.presentation.MissionScreen_1
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.presentation.MissionSummaryScreen
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenHandler
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.FormTypeQuestionScreen
 import com.nrlm.baselinesurvey.ui.search.presentation.SearchScreens
 import com.nrlm.baselinesurvey.ui.section_screen.presentation.SectionListScreen
+import com.nrlm.baselinesurvey.ui.setting.presentation.SettingBSScreen
 import com.nrlm.baselinesurvey.ui.start_screen.presentation.BaseLineStartScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreen
@@ -46,7 +53,9 @@ import com.nrlm.baselinesurvey.ui.video_player.presentation.FullscreenView
 @Composable
 fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier: Modifier) {
     NavHost(
-        modifier = Modifier.fillMaxSize().then(modifier),
+        modifier = Modifier
+            .fillMaxSize()
+            .then(modifier),
         navController = navController,
         route = Graph.HOME,
         startDestination = HomeScreens.DATA_LOADING_SCREEN.route
@@ -273,16 +282,13 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
 
 
         addDidiNavGraph(navController = navController)
+        settingNavGraph(navHostController = navController)
+        logoutNavGraph(navController=navController)
     }
 
 }
 
-fun NavGraphBuilder.settingNavGraph(navHostController: NavHostController){
-//    navigation(
-//        route = Graph.SETTING_GRAPH,
-//        startDestination =
-//    )
-}
+
 fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.ADD_DIDI,
@@ -325,6 +331,35 @@ fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
 
 }
 
+fun NavGraphBuilder.settingNavGraph(navHostController: NavHostController){
+    navigation(
+        route = Graph.SETTING_GRAPH,
+        startDestination = SettingBSScreens.SETTING_SCREEN.route
+    ){
+        composable(
+            route = SettingBSScreens.SETTING_SCREEN.route
+        )   {
+            SettingBSScreen(viewModel = hiltViewModel(), navController = navHostController)
+        }
+
+        composable(route = SettingBSScreens.LANGUAGE_SCREEN.route
+        ) {
+            LanguageScreenComponent(
+                navController = navHostController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize(),
+                pageFrom = ARG_FROM_HOME
+            )
+
+        }
+    }
+}
+
+sealed class SettingBSScreens(val route: String){
+    object SETTING_SCREEN : SettingBSScreens(route = SETTING_ROUTE_NAME)
+    object LANGUAGE_SCREEN : SettingBSScreens(route =LANGUAGE_SCREEN_ROUTE_NAME )
+}
+
 sealed class HomeScreens(val route: String) {
     object DATA_LOADING_SCREEN : HomeScreens(route = DATA_LOADING_SCREEN_ROUTE_NAME)
     object SECTION_SCREEN :
@@ -349,7 +384,6 @@ sealed class HomeScreens(val route: String) {
     object Home_SCREEN : HomeScreens(route = HOME_SCREEN_ROUTE_NAME)
     object MISSION_SCREEN : HomeScreens(route = MISSION_SCREEN_ROUTE_NAME)
     object DIDI_SCREEN : HomeScreens(route = DIDI_SCREEN_ROUTE_NAME)
-    object SETTING_SCREEN : HomeScreens(route = SETTING_ROUTE_NAME)
     object MISSION_SUMMARY_SCREEN :
         HomeScreens(route = "$MISSION_SUMMARY_SCREEN_ROUTE_NAME/{$ARG_MISSION_ID}/{$ARG_MISSION_NAME}/{$ARG_MISSION_DATE}")
 
@@ -376,6 +410,7 @@ const val MISSION_SUMMARY_SCREEN_ROUTE_NAME = "mission_summary_screen"
 const val Final_Step_Complition_Screen_ROUTE_NAME = "final_step_complition_screen"
 const val Step_Complition_Screen_ROUTE_NAME = "step_complition_screen"
 const val SETTING_ROUTE_NAME = "setting_screen"
+const val LANGUAGE_SCREEN_ROUTE_NAME = "language_screen"
 
 
 fun navigateToBaseLineStartScreen(surveyeeId: Int, survyId: Int, navController: NavController) {
@@ -424,3 +459,58 @@ fun navigateToFormTypeQuestionScreen(navController: NavController, question: Que
     navController.navigate("$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/${question.questionDisplay}/${sectionDetails.surveyId}/${sectionDetails.sectionId}/${question.questionId}/${surveyeeId}?$referenceId")
 
 }
+
+sealed class LogoutBSScreens(val route: String) {
+    object LOG_LOGIN_SCREEN : LogoutBSScreens(route = "login_screen")
+    object LOG_SURVEYEE_LIST_SCREEN : LogoutBSScreens(route = "surveyee_list_screen")
+    object LOG_OTP_VERIFICATION : LogoutBSScreens(route = "otp_verification_screen/{$ARG_MOBILE_NUMBER}")
+
+}
+
+fun NavGraphBuilder.logoutNavGraph(navController: NavHostController){
+    navigation(
+        route = Graph.LOGOUT_GRAPH,
+        startDestination = LogoutBSScreens.LOG_LOGIN_SCREEN.route
+    ){
+        composable(
+            route = LogoutBSScreens.LOG_LOGIN_SCREEN.route
+        )   {
+            LoginScreenComponent(
+                navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+
+        composable(
+            route = AuthScreen.OTP_VERIFICATION.route,
+            arguments = listOf(navArgument(ARG_MOBILE_NUMBER) {
+                type = NavType.StringType
+            })
+        ) {
+            OtpVerificationScreenComponent(
+                navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize(),
+                it.arguments?.getString(ARG_MOBILE_NUMBER).toString()
+            )
+        }
+
+        composable(route = AuthScreen.SURVEYEE_LIST_SCREEN.route) {
+            /*VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()){
+                navController.navigate(AuthScreen.AUTH_SETTING_SCREEN.route)
+            }*/
+//            VillageSelectionScreen()
+            SurveyeeListScreen(
+                viewModel = hiltViewModel(),
+                navController = navController,
+                activityName = "",
+                missionId = 0,
+                activityDate = "",
+                activityId = 0
+            )
+        }
+
+    }
+}
+

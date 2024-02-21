@@ -1,4 +1,4 @@
-package com.nrlm.baselinesurvey.splash.presentaion
+package com.nrlm.baselinesurvey.ui.splash.presentaion
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -31,13 +31,12 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.SPLASH_SCREEN_DURATION
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
-import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.splash.viewModel.SplashScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
 import com.nrlm.baselinesurvey.utils.BaselineCore
-import com.patsurvey.nudge.navigation.AuthScreen
+import com.nrlm.baselinesurvey.navigation.AuthScreen
 import kotlinx.coroutines.delay
 
 @Composable
@@ -70,11 +69,13 @@ fun SplashScreenComponent(
                     }
                 }
             } else {
+                viewModel.splashScreenUseCase.saveLanguageOpenFromUseCase.invoke()
                 delay(ONE_SECOND)
                 viewModel.onEvent<LoaderEvent>(LoaderEvent.UpdateLoaderState(true))
                 viewModel.checkAndAddLanguage()
                 delay(SPLASH_SCREEN_DURATION)
                 viewModel.onEvent<LoaderEvent>(LoaderEvent.UpdateLoaderState(false))
+
                 navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
             }
         } else {

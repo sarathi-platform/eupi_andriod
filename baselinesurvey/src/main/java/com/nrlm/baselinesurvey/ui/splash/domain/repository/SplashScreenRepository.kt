@@ -1,4 +1,4 @@
-package com.nrlm.baselinesurvey.splash.domain.repository
+package com.nrlm.baselinesurvey.ui.splash.domain.repository
 
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
@@ -13,5 +13,8 @@ interface SplashScreenRepository {
     suspend fun checkAndAddDefaultLanguage()
 
     fun isLoggedIn(): Boolean
+
+    fun saveLanguageOpenFrom()
+
 
 }

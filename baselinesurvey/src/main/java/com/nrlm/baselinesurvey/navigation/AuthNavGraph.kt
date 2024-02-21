@@ -1,4 +1,4 @@
-package com.patsurvey.nudge.navigation
+package com.nrlm.baselinesurvey.navigation
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
@@ -12,7 +12,7 @@ import androidx.navigation.navArgument
 import com.nrlm.baselinesurvey.ARG_FROM_HOME
 import com.nrlm.baselinesurvey.ARG_MOBILE_NUMBER
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
-import com.nrlm.baselinesurvey.splash.presentaion.SplashScreenComponent
+import com.nrlm.baselinesurvey.ui.splash.presentaion.SplashScreenComponent
 import com.nrlm.baselinesurvey.ui.auth.presentation.LoginScreenComponent
 import com.nrlm.baselinesurvey.ui.auth.presentation.OtpVerificationScreenComponent
 import com.nrlm.baselinesurvey.ui.language.presentation.LanguageScreenComponent

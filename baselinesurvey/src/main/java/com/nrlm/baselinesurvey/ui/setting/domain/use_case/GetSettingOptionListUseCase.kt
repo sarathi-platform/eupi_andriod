@@ -6,7 +6,5 @@ import com.nudge.core.model.SettingOptionModel
 class GetSettingOptionListUseCase(
     private val repository :SettingBSRepository
 ) {
-    suspend operator fun invoke():List<SettingOptionModel>{
-        return repository.getSettingOptionList()
-    }
+
 }

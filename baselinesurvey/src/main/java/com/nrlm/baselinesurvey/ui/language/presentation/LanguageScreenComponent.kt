@@ -41,6 +41,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.nrlm.baselinesurvey.ARG_FROM_HOME
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
+import com.nrlm.baselinesurvey.LANGUAGE_OPEN_FROM_SETTING
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.ONE_SECOND
 import com.nrlm.baselinesurvey.R
@@ -53,7 +54,7 @@ import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.textColorBlueLight
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.showCustomToast
-import com.patsurvey.nudge.navigation.AuthScreen
+import com.nrlm.baselinesurvey.navigation.AuthScreen
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -188,7 +189,11 @@ fun LanguageScreenComponent(
                             ))
                         }
                     }
-                    navController.navigate(AuthScreen.LOGIN.route)
+                    if(viewModel.prefRepo.getPref(LANGUAGE_OPEN_FROM_SETTING,false)){
+                        navController.popBackStack()
+                    }else {
+                        navController.navigate(AuthScreen.LOGIN.route)
+                    }
 /*
                     viewModel.languageList.value?.get(viewModel.languagePosition.value)?.let {
                         it.id?.let { languageId->
