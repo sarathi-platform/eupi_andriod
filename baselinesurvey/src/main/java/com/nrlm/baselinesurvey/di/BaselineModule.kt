@@ -94,6 +94,7 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingS
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeListScreenRepository
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeListScreenRepositoryImpl
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchCastesFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyeeListFromNetworkUseCase
@@ -399,7 +400,8 @@ object BaselineModule {
             fetchSurveyeeListFromNetworkUseCase = FetchSurveyeeListFromNetworkUseCase(repository),
             fetchUserDetailFromNetworkUseCase = FetchUserDetailFromNetworkUseCase(repository),
             fetchSurveyFromNetworkUseCase = FetchSurveyFromNetworkUseCase(repository),
-            fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository)
+            fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository),
+            fetchCastesFromNetworkUseCase = FetchCastesFromNetworkUseCase(repository)
         )
     }
 

@@ -1,6 +1,10 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository
 
 import android.util.Log
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.PREF_CASTE_LIST
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nrlm.baselinesurvey.PREF_KEY_IDENTITY_NUMBER
@@ -29,6 +33,7 @@ import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
+import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.Sections
@@ -40,6 +45,7 @@ import com.nrlm.baselinesurvey.model.response.MissionResponseModel
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
+import com.nrlm.baselinesurvey.utils.json
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
 import javax.inject.Inject
@@ -332,6 +338,22 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
 
     override suspend fun deleteActivityTasksFromDB() {
         activityTaskDao.deleteActivityTask()
+    }
+
+    override suspend fun getCasteListFromNetwork(languageId: Int): ApiResponseModel<List<CasteModel>> {
+        return apiService.getCasteList(languageId)
+    }
+
+    override fun saveCasteList(castes: String) {
+        prefRepo.savePref(PREF_CASTE_LIST,castes)
+    }
+
+    override fun getCasteList(): List<CasteModel> {
+        val castes = prefRepo.getPref(PREF_CASTE_LIST, BLANK_STRING)
+        return if((castes?.isEmpty() == true) || castes.equals("[]")) emptyList()
+        else{
+            Gson().fromJson(castes, object : TypeToken<List<CasteModel>>() {}.type)
+        }
     }
 
 }

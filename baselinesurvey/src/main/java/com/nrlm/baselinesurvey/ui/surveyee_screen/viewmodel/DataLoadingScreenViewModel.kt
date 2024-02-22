@@ -39,6 +39,7 @@ class DataLoadingScreenViewModel @Inject constructor(
             CoroutineScope(Dispatchers.IO).launch {
                 val fetchUserDetailFromNetworkUseCaseSuccess = fetchDataUseCase.fetchUserDetailFromNetworkUseCase.invoke()
                 if (fetchUserDetailFromNetworkUseCaseSuccess) {
+                    fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke()
                     fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
 
                     val baselineSurveyRequestBodyModel = SurveyRequestBodyModel(

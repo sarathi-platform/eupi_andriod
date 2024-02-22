@@ -5,6 +5,7 @@ import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
+import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.model.response.BeneficiaryApiResponse
@@ -47,4 +48,7 @@ interface DataLoadingScreenRepository {
     suspend fun deleteMissionActivitiesFromDB()
     suspend fun deleteActivityTasksFromDB()
 
+    suspend fun getCasteListFromNetwork(languageId:Int):ApiResponseModel<List<CasteModel>>
+    fun saveCasteList(castes:String)
+    fun getCasteList():List<CasteModel>
 }

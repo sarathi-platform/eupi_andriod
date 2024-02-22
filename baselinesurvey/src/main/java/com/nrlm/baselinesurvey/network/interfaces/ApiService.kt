@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.network.interfaces
 
 import com.nrlm.baselinesurvey.KEY_HEADER_MOBILE
 import com.nrlm.baselinesurvey.KEY_HEADER_TYPE
+import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.model.request.FetchSavedSurveyAnswersRequest
 import com.nrlm.baselinesurvey.model.request.LoginRequest
 import com.nrlm.baselinesurvey.model.request.MissionRequest
@@ -17,6 +18,7 @@ import com.nrlm.baselinesurvey.model.response.SavedSurveyAnswersResponse
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.TransactionResponse
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
+import com.nrlm.baselinesurvey.network.GET_CASTE_LIST
 import com.nrlm.baselinesurvey.network.SUBPATH_AUTH_GENERATE_OTP
 import com.nrlm.baselinesurvey.network.SUBPATH_AUTH_VALIDATE_OTP
 import com.nrlm.baselinesurvey.network.SUBPATH_CONFIG_GET_LANGUAGE
@@ -72,6 +74,8 @@ interface ApiService {
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getBaseLineMission(@Body missionRequest: MissionRequest): ApiResponseModel<List<MissionResponseModel>>
 
-//    @GET("/read-api/config/caste/get")
-//    suspend fun getCasteList(@Query("languageId") languageId: Int): ApiResponseModel<List<CasteEntity>>
+    @GET(GET_CASTE_LIST)
+    suspend fun getCasteList(@Query("languageId") languageId: Int): ApiResponseModel<List<CasteModel>>
+
+
 }
