@@ -31,6 +31,7 @@ import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.navigation.home.MISSION_SUMMARY_SCREEN_ROUTE_NAME
+import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
 import com.nrlm.baselinesurvey.ui.mission_screen.viewmodel.MissionViewModel
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
@@ -80,6 +81,7 @@ fun MissionScreen_1(
                 },
                 actions = {
                     IconButton(onClick = {
+                        navController.navigate(Graph.SETTING_GRAPH)
                     }) {
                         Icon(
                             painter = painterResource(id = R.drawable.more_icon),
@@ -117,7 +119,6 @@ fun MissionScreen_1(
                         onViewStatusClick = {},
                         onStartClick = {
                             navController.navigate("${MISSION_SUMMARY_SCREEN_ROUTE_NAME}/${mission.missionId}/${mission.missionName}/${mission.endDate}")
-                            //navController.navigate("${Step_Complition_Screen_ROUTE_NAME}/${"jfhdkjhkjkd"}")
                         })
                 }
             }

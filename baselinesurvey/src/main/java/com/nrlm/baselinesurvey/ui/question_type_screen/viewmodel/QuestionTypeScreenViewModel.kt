@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -31,6 +32,7 @@ import com.nrlm.baselinesurvey.utils.states.LoaderState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
@@ -87,13 +89,17 @@ class QuestionTypeScreenViewModel @Inject constructor(
 
             getOptionItemEntityState(surveyId = surveyId, didiId = surveyeeId, sectionId = sectionId, questionId = questionId)
 
+            delay(100)
+
+            totalOptionSize.intValue = updatedOptionList.filter { it.showQuestion}.size
+
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
     }
 
-    fun getOptionItemEntityState(surveyId: Int, didiId: Int, sectionId: Int, questionId: Int) {
+    private fun getOptionItemEntityState(surveyId: Int, didiId: Int, sectionId: Int, questionId: Int) {
         formTypeOption = FormTypeOption.getOptionItem(surveyId = surveyId, didiId = didiId, sectionId = sectionId, questionId = questionId, optionItems = optionList.value)
         formTypeOption?.options?.forEach { optionItemEntity ->
             _updatedOptionList.add(
@@ -178,26 +184,31 @@ class QuestionTypeScreenViewModel @Inject constructor(
 
         updateAnsweredConditionalQuestion()
 
-        totalOptionSize.intValue = updatedOptionList.filter { it.showQuestion}.size
     }
 
     //TODO Handle Update for answered question.
     private fun updateAnsweredConditionalQuestion() {
-        formQuestionResponseEntity.value.distinctBy { it.optionId }.forEach { formQuestionResponseEntity ->
-            updatedOptionList.forEach { optionItemState ->
-                if (optionItemState.optionId == formQuestionResponseEntity.optionId) {
-                    var optionToUpdate = _updatedOptionList.find { it.optionId == optionItemState.optionId }
+        val tempList = updatedOptionList.toList()
+        val tempFormQuestionResponseEntityList = formQuestionResponseEntity.value
+        try {
+            tempFormQuestionResponseEntityList.distinctBy { it.optionId }.forEach { formQuestionResponseEntity ->
+                Log.d(TAG, "updateAnsweredConditionalQuestion: formQuestionResponseEntity -> $formQuestionResponseEntity")
+                tempList.forEach { optionItemState ->
+                    if (optionItemState.optionId == formQuestionResponseEntity.optionId) {
+                        var optionToUpdate = tempList.find { it.optionId == optionItemState.optionId }
 
-                    optionToUpdate = optionToUpdate?.copy(showQuestion = true)
+                        optionToUpdate = optionToUpdate?.copy(showQuestion = true)
 
-                    val optionToUpdateIndex = updatedOptionList.findIndexOfListByOptionId(optionToUpdate?.optionId)
-                    if (optionToUpdateIndex != -1) {
-                        _updatedOptionList.removeAt(optionToUpdateIndex)
-                        _updatedOptionList.add(optionToUpdateIndex, optionToUpdate!!)
+                        val optionToUpdateIndex = tempList.findIndexOfListByOptionId(optionToUpdate?.optionId)
+                        if (optionToUpdateIndex != -1) {
+                            _updatedOptionList.removeAt(optionToUpdateIndex)
+                            _updatedOptionList.add(optionToUpdateIndex, optionToUpdate!!)
+                        }
                     }
-
                 }
             }
+        } catch (ex: Exception) {
+            Log.e(TAG, "updateAnsweredConditionalQuestion: exception -> ${ex.localizedMessage}", ex)
         }
     }
 

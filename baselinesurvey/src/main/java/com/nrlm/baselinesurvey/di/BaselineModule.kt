@@ -21,13 +21,13 @@ import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.dao.VillageListDao
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
-import com.nrlm.baselinesurvey.splash.domain.repository.SplashScreenRepository
-import com.nrlm.baselinesurvey.splash.domain.repository.SplashScreenRepositoryImpl
-import com.nrlm.baselinesurvey.splash.domain.use_case.FetchLanguageFromNetworkConfigUseCase
-import com.nrlm.baselinesurvey.splash.domain.use_case.LoggedInUseCase
-import com.nrlm.baselinesurvey.splash.domain.use_case.SaveLanguageConfigUseCase
-import com.nrlm.baselinesurvey.splash.domain.use_case.SaveQuestionImageUseCase
-import com.nrlm.baselinesurvey.splash.domain.use_case.SplashScreenUseCase
+import com.nrlm.baselinesurvey.ui.splash.domain.repository.SplashScreenRepository
+import com.nrlm.baselinesurvey.ui.splash.domain.repository.SplashScreenRepositoryImpl
+import com.nrlm.baselinesurvey.ui.splash.domain.use_case.FetchLanguageFromNetworkConfigUseCase
+import com.nrlm.baselinesurvey.ui.splash.domain.use_case.LoggedInUseCase
+import com.nrlm.baselinesurvey.ui.splash.domain.use_case.SaveLanguageConfigUseCase
+import com.nrlm.baselinesurvey.ui.splash.domain.use_case.SaveQuestionImageUseCase
+import com.nrlm.baselinesurvey.ui.splash.domain.use_case.SplashScreenUseCase
 import com.nrlm.baselinesurvey.ui.auth.repository.LoginScreenRepository
 import com.nrlm.baselinesurvey.ui.auth.repository.LoginScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.auth.repository.OtpVerificationRepository
@@ -40,8 +40,11 @@ import com.nrlm.baselinesurvey.ui.auth.use_case.ResendOtpUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.SaveAccessTokenUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.SaveMobileNumberUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.ValidateOtpUseCase
+import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.CasteListRepository
+import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.CasteListRepositoryImpl
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.SurveyStateRepository
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.SurveyStateRepositoryImpl
+import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.GetCasteListUseCase
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.UpdateSurveyStateUserCase
 import com.nrlm.baselinesurvey.ui.language.domain.repository.LanguageScreenRepository
 import com.nrlm.baselinesurvey.ui.language.domain.repository.LanguageScreenRepositoryImpl
@@ -85,6 +88,12 @@ import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSectionListU
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSectionProgressForDidiUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSurvyeDetails
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.SectionListScreenUseCase
+import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepository
+import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepositoryImpl
+import com.nrlm.baselinesurvey.ui.setting.domain.use_case.GetSettingOptionListUseCase
+import com.nrlm.baselinesurvey.ui.setting.domain.use_case.LogoutUseCase
+import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SettingBSUserCase
+import com.nrlm.baselinesurvey.ui.splash.domain.use_case.SaveLanguageOpenFromUseCase
 import com.nrlm.baselinesurvey.ui.start_screen.domain.repository.StartScreenRepository
 import com.nrlm.baselinesurvey.ui.start_screen.domain.repository.StartScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.start_screen.domain.use_case.GetSurveyeeDetailsUserCase
@@ -94,6 +103,7 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingS
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeListScreenRepository
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeListScreenRepositoryImpl
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchCastesFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyeeListFromNetworkUseCase
@@ -128,7 +138,8 @@ object BaselineModule {
             fetchLanguageConfigFromNetworkUseCase = FetchLanguageFromNetworkConfigUseCase(repository),
             saveLanguageConfigUseCase = SaveLanguageConfigUseCase(repository),
             saveQuestionImageUseCase = SaveQuestionImageUseCase(repository),
-            loggedInUseCase = LoggedInUseCase(repository)
+            loggedInUseCase = LoggedInUseCase(repository),
+            saveLanguageOpenFromUseCase = SaveLanguageOpenFromUseCase(repository)
         )
     }
 
@@ -399,7 +410,8 @@ object BaselineModule {
             fetchSurveyeeListFromNetworkUseCase = FetchSurveyeeListFromNetworkUseCase(repository),
             fetchUserDetailFromNetworkUseCase = FetchUserDetailFromNetworkUseCase(repository),
             fetchSurveyFromNetworkUseCase = FetchSurveyFromNetworkUseCase(repository),
-            fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository)
+            fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository),
+            fetchCastesFromNetworkUseCase = FetchCastesFromNetworkUseCase(repository)
         )
     }
 
@@ -417,12 +429,14 @@ object BaselineModule {
     @Singleton
     fun provideStartSurveyScreenUseCase(
         repository: StartScreenRepository,
-        surveyStateRepository: SurveyStateRepository
+        surveyStateRepository: SurveyStateRepository,
+        casteListRepository: CasteListRepository
     ): StartSurveyScreenUserCase {
         return StartSurveyScreenUserCase(
             getSurveyeeDetailsUserCase = GetSurveyeeDetailsUserCase(repository),
             saveSurveyeeImagePathUseCase = SaveSurveyeeImagePathUseCase(repository),
-            updateSurveyStateUseCase = UpdateSurveyStateUserCase(surveyStateRepository)
+            updateSurveyStateUseCase = UpdateSurveyStateUserCase(surveyStateRepository),
+            getCasteListUseCase = GetCasteListUseCase(casteListRepository)
         )
     }
 
@@ -493,6 +507,26 @@ object BaselineModule {
 
     @Provides
     @Singleton
+    fun provideSettingBSScreenRepository(
+        prefRepo: PrefRepo,
+        apiService: ApiService
+    ): SettingBSRepository {
+        return SettingBSRepositoryImpl(prefRepo, apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun providesSettingScreenUseCase(
+        repository: SettingBSRepository
+    ): SettingBSUserCase {
+        return SettingBSUserCase(
+           getSettingOptionListUseCase = GetSettingOptionListUseCase(repository),
+            logoutUseCase = LogoutUseCase(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
     fun providesSearchScreenUseCase(
         sectionListScreenRepository: SectionListScreenRepository
     ): SearchScreenUseCase {
@@ -501,4 +535,20 @@ object BaselineModule {
         )
     }
 
+    @Provides
+    @Singleton
+    fun provideCasteListRepository(
+        prefRepo: PrefRepo
+    ): CasteListRepository {
+        return CasteListRepositoryImpl(prefRepo)
+    }
+
+    /*@Provides
+    @Singleton
+    fun provideGetCasteListUseCase(
+        casteListRepository: CasteListRepository
+    ): GetCasteListUseCase {
+        return GetCasteListUseCase(casteListRepository)
+    }
+*/
 }

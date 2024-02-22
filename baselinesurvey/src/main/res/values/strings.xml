@@ -415,6 +415,7 @@
     <string name="x_dii_pending" translatable="false">%d %s Pending</string>
     <string name="due_by_x" translatable="false">Due by %s</string>
     <string name="start_by_x_date" translatable="false">Start by %s</string>
+    <string name="export_file" translatable="false">Export File</string>
     <string name="save">Save</string>
 
 </resources>

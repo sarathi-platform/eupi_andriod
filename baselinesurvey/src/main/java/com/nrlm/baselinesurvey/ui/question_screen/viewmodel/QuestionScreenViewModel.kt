@@ -31,6 +31,7 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.Op
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.checkCondition
+import com.nrlm.baselinesurvey.utils.convertToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.findIndexOfListById
 import com.nrlm.baselinesurvey.utils.findQuestionEntityStateById
 import com.nrlm.baselinesurvey.utils.findQuestionForQuestionId
@@ -41,6 +42,7 @@ import com.nrlm.baselinesurvey.utils.updateOptionItemEntityListStateForQuestionB
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -396,6 +398,8 @@ class QuestionScreenViewModel @Inject constructor(
             is QuestionTypeEvent.DeleteFormQuestionResponseEvent -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     questionScreenUseCase.deleteFormQuestionResponseUseCase.invoke(referenceId = event.referenceId)
+                    Log.d("TAG", "onEvent: DeleteFormQuestionResponseEvent -> totalQuestionCount.intValue = ${totalQuestionCount.intValue}, answeredQuestionCount: ${answeredQuestionCount.size}" +
+                            " isSectionCompleted.value = ${answeredQuestionCount.size == totalQuestionCount.intValue || answeredQuestionCount.size > totalQuestionCount.intValue}")
                 }
 
             }
@@ -484,10 +488,18 @@ class QuestionScreenViewModel @Inject constructor(
             }
 
             is QuestionScreenEvents.UpdateAnsweredQuestionCount -> {
-                event.question.questionId?.let { answeredQuestionCount.add(it) }
-                totalQuestionCount.intValue = questionEntityStateList.filter { it.showQuestion }.size
-                Log.d("TAG", "UpdateAnsweredQuestionCount: questionEntityStateList.filter { it.showQuestion }.size: ${questionEntityStateList.filter { it.showQuestion }.size} answeredQuestionCount: $answeredQuestionCount ::: totalQuestionCount: ${totalQuestionCount.intValue}")
-                isSectionCompleted.value = answeredQuestionCount.size == totalQuestionCount.intValue || answeredQuestionCount.size > totalQuestionCount.intValue
+                try {
+                    viewModelScope.launch(Dispatchers.IO) {
+                        event.question.questionId?.let { answeredQuestionCount.add(it) }
+                        totalQuestionCount.intValue = questionEntityStateList.filter { it.showQuestion }.distinctBy { it.questionId }.size
+                        delay(100)
+                        withContext(Dispatchers.Main) {
+                            isSectionCompleted.value = answeredQuestionCount.size == totalQuestionCount.intValue || answeredQuestionCount.size > totalQuestionCount.intValue
+                        }
+                    }
+                } catch (ex: Exception) {
+                    Log.e("TAG", "onEvent: exception; ${ex.message}", ex)
+                }
             }
 
             /*is QuestionScreenEvents.FormTypeQuestionAnswered -> {
@@ -758,9 +770,35 @@ class QuestionScreenViewModel @Inject constructor(
         inputTypeQuestionAnswerEntityList.value.groupBy { it.optionId }.forEach {
             answeredQuestionCount.add(it.key)
         }
-        totalQuestionCount.intValue = questionEntityStateList.filter { it.showQuestion }.size
+        totalQuestionCount.intValue = questionEntityStateList.filter { it.showQuestion }.distinctBy { it.questionId }.size
         Log.d("TAG", "updateSaveUpdateState: questionEntityStateList.filter { it.showQuestion }.size: ${questionEntityStateList.filter { it.showQuestion }.size} answeredQuestionCount: $answeredQuestionCount ::: totalQuestionCount: ${totalQuestionCount.intValue}")
         isSectionCompleted.value = answeredQuestionCount.size == totalQuestionCount.intValue || answeredQuestionCount.size > totalQuestionCount.intValue
+    }
+
+    fun getOptionItemListWithConditionals(): List<OptionItemEntity> {
+        val optionItemList = mutableListOf<OptionItemEntity>()
+        optionItemEntityList.forEach { option ->
+            optionItemList.add(option)
+        }
+
+        optionItemEntityList.forEach { optionItemEntity ->
+            optionItemEntity.conditions?.forEach { conditionsDto ->
+                conditionsDto?.resultList?.forEach { questionItem ->
+                    questionItem.options?.forEach { subOption ->
+                        val option = subOption?.convertToOptionItemEntity(
+                            optionItemEntity.questionId!!,
+                            optionItemEntity.sectionId,
+                            optionItemEntity.surveyId,
+                            optionItemEntity.languageId!!
+                        )
+                        if (option != null)
+                            optionItemList.add(option)
+                    }
+
+                }
+            }
+        }
+        return optionItemList
     }
 
 }

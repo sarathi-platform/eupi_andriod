@@ -84,6 +84,7 @@ const val PREF_KEY_PROFILE_IMAGE="profile_image"
 const val PREF_KEY_ROLE_NAME = "role_name"
 const val PREF_KEY_TYPE_NAME = "type_name"
 const val PREF_STATE_ID = "stateId"
+const val PREF_CASTE_LIST = "caste_list"
 const val PREF_KEY_VO_ENDORSEMENT_STATUS = "voEndorsementStatus"
 const val SNACKBAR_TAG = "snackbar"
 const val SNACKBAR_MESSAGE = "snackbarMessage"
@@ -302,4 +303,6 @@ const val DELAY_2_SEC: Long = 2000
 const val VALUE_NO = "No"
 
 const val CONDITIONS_DELIMITER = ","
+const val LANGUAGE_OPEN_FROM_SETTING = "language_open_from_setting"
+
 

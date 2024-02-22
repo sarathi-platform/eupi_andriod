@@ -618,7 +618,7 @@ fun saveFormQuestionResponseEntity(
 }
 
 fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObjectDto(
-    optionsItemEntityList: List<OptionItemEntity>
+    optionsItemEntityList: List<OptionItemEntity>, questionTag: String
 ): List<FormResponseObjectDto> {
     val householdMembersList = mutableListOf<FormResponseObjectDto>()
     val referenceIdMap = this.groupBy { it.referenceId }
@@ -627,8 +627,21 @@ fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObject
         val householdMemberDetailsMap = mutableMapOf<Int, String>()
         householdMember.referenceId = formQuestionResponseEntityList.key
         householdMember.questionId = formQuestionResponseEntityList.value.first().questionId
+        householdMember.questionTag = questionTag
         formQuestionResponseEntityList.value.forEachIndexed { index, formQuestionResponseEntity ->
-            val option = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }
+            var option = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }
+            if (option==null) {
+                optionsItemEntityList.forEach { optionItemEntity ->
+                    optionItemEntity.conditions?.forEach { conditionsDto ->
+                        conditionsDto?.resultList?.forEach { questionItem ->
+                            option = questionItem.options?.find { it?.optionId == formQuestionResponseEntity.optionId }?.convertToOptionItemEntity(formQuestionResponseEntity.questionId, formQuestionResponseEntity.sectionId, formQuestionResponseEntity.surveyId, optionItemEntity.languageId!!)
+                            if (option != null) {
+                                householdMemberDetailsMap.put(option?.optionId ?: formQuestionResponseEntity.optionId, formQuestionResponseEntity.selectedValue)
+                            }
+                        }
+                    }
+                }
+            }
             householdMemberDetailsMap.put(option?.optionId ?: -1, formQuestionResponseEntity.selectedValue)
             householdMember.memberDetailsMap = householdMemberDetailsMap
         }
@@ -738,6 +751,13 @@ fun SnapshotStateList<QuestionEntityState>.findIndexOfListById(questionId: Int?)
 }
 
 fun SnapshotStateList<OptionItemEntityState>.findIndexOfListByOptionId(optionId: Int?): Int {
+    if (optionId == null)
+        return  -1
+
+    return this.map { it.optionId }.indexOf(optionId)
+}
+
+fun List<OptionItemEntityState>.findIndexOfListByOptionId(optionId: Int?): Int {
     if (optionId == null)
         return  -1
 
