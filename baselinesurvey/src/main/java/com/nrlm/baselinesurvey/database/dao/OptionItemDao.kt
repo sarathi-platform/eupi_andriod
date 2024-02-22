@@ -6,7 +6,6 @@ import androidx.room.Query
 import com.nrlm.baselinesurvey.ANSWER_TABLE
 import com.nrlm.baselinesurvey.OPTION_TABLE
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
-import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 
 @Dao
 interface OptionItemDao {
@@ -29,11 +28,12 @@ interface OptionItemDao {
         languageId: Int
     ): List<OptionItemEntity>
 
-    @Query("Select * from $OPTION_TABLE where  sectionId = :sectionId and surveyId = :surveyId and questionId = :questionId")
+    @Query("Select * from $OPTION_TABLE where  sectionId = :sectionId and surveyId = :surveyId and questionId = :questionId and languageId=:languageId")
     fun getSurveySectionQuestionOptions(
         sectionId: Int,
         surveyId: Int,
         questionId: Int,
+        languageId: Int
     ): List<OptionItemEntity>
 
     @Query("Update $OPTION_TABLE set isSelected = :isSelected where surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND optionId = :optionId")
