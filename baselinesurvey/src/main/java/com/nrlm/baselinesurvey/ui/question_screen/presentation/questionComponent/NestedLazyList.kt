@@ -1,5 +1,7 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponent
 
+import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -33,15 +36,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
@@ -59,10 +65,12 @@ import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenEve
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.handleOnMediaTypeDescriptionActions
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
+import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_80_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
+import com.nrlm.baselinesurvey.ui.theme.h6
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.findOptionFromId
@@ -130,15 +138,14 @@ fun NestedLazyList(
 
     DisposableEffect(key1 = context) {
 
-        sectionDetails.questionList.find { it.type == QuestionType.Form.name }?.questionId?.let { questionId ->
+        sectionDetails.questionList.find { it.type == QuestionType.Form.name }?.let { question ->
             coroutineScope.launch(Dispatchers.IO) {
-                val optionItemEntityList = questionScreenViewModel.getFormQuestionsOptionsItemEntityList(sectionDetails.surveyId, sectionDetails.sectionId, questionId)
+                val optionItemEntityList = questionScreenViewModel.getFormQuestionsOptionsItemEntityList(sectionDetails.surveyId, sectionDetails.sectionId, question.questionId!!)
                 questionScreenViewModel.optionItemEntityList = optionItemEntityList
-                questionScreenViewModel.formResponsesForQuestionLive = questionScreenViewModel.getFormQuestionResponseEntityLive(sectionDetails.surveyId, sectionDetails.sectionId, questionId, surveyeeId)
+                questionScreenViewModel.formResponsesForQuestionLive = questionScreenViewModel.getFormQuestionResponseEntityLive(sectionDetails.surveyId, sectionDetails.sectionId, question.questionId!!, surveyeeId)
                 withContext(Dispatchers.Main) {
                     questionScreenViewModel.formResponsesForQuestionLive.observe(lifecycleOwner) {
-                        householdMemberDtoList.value.addAll(it.mapFormQuestionResponseToFromResponseObjectDto(optionItemEntityList))
-
+                        householdMemberDtoList.value.addAll(it.mapFormQuestionResponseToFromResponseObjectDto(optionItemEntityList, question.tag))
                         if (it.isNotEmpty()) {
                             answeredQuestionCountIncreased(
                                 questionScreenViewModel.questionEntityStateList.find {
@@ -228,11 +235,39 @@ fun NestedLazyList(
             }
 
             item {
-                TopAppBar(
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .background(white), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Filled.ArrowBack,
+                        null,
+                        tint = textColorDark,
+                        modifier = Modifier.clickable {
+                            if (!sectionDetails.sectionName.equals(NO_SECTION, true))
+                                navController.popBackStack()
+                            else
+                                navController.popBackStack(
+                                    HomeScreens.SURVEYEE_LIST_SCREEN.route,
+                                    false
+                                )
+                        })
+
+                    Spacer(modifier = Modifier.size(dimen_8_dp))
+                    if (!sectionDetails.sectionName.equals(NO_SECTION, true))
+                        Text(
+                            text = sectionDetails.sectionName,
+                            color = textColorDark,
+                            style = h6,
+                            textAlign = TextAlign.Center
+                        )
+                    Spacer(modifier = Modifier.size(dimen_8_dp))
+                    Spacer(modifier = Modifier.size(24.dp))
+                }
+                /*TopAppBar(
                     title = {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
+                            horizontalArrangement = Arrangement.Start
                         ) {
                             if (!sectionDetails.sectionName.equals(NO_SECTION, true))
                                 Text(
@@ -260,6 +295,7 @@ fun NestedLazyList(
                     },
                     actions = {
 
+                              Spacer(modifier = Modifier.size(24.dp))
 //                        Icon(
 //                            painterResource(id = R.drawable.info_icon),
 //                            null,
@@ -272,7 +308,7 @@ fun NestedLazyList(
                     backgroundColor = white,
                     elevation = 0.dp,
 
-                    )
+                    )*/
             }
 
             // TODO Commenting this until it is fixed.
@@ -674,9 +710,12 @@ fun NestedLazyList(
                     }
                     item {
                         Column {
+                            val optionItemListWithConditionals: List<OptionItemEntity> =  questionScreenViewModel.getOptionItemListWithConditionals()
                             householdMemberDtoList.value.distinctBy { it.referenceId }.forEach { householdMemberDto ->
                                 FormResponseCard(
                                     householdMemberDto = householdMemberDto,
+                                    optionItemListWithConditionals = optionItemListWithConditionals,
+                                    isPictureRequired = householdMemberDto.questionTag.equals("Household information", true),
                                     viewModel = questionScreenViewModel,
                                     onDelete = {
                                         questionScreenViewModel.onEvent(
@@ -686,6 +725,10 @@ fun NestedLazyList(
                                         )
                                         needToUpdateList.value =
                                             Pair(true, householdMemberDto.referenceId)
+                                        Log.d("TAG", "onEvent: onDelete -> " +
+                                                "otalQuestionCount.intValue = ${questionScreenViewModel.totalQuestionCount.intValue}, answeredQuestionCount: ${questionScreenViewModel.answeredQuestionCount.size}" +
+                                                " isSectionCompleted.value = ${questionScreenViewModel.answeredQuestionCount.size == questionScreenViewModel.totalQuestionCount.intValue 
+                                                        || questionScreenViewModel.answeredQuestionCount.size > questionScreenViewModel.totalQuestionCount.intValue}")
                                     },
                                     onUpdate = {
                                         sectionDetails.questionList.find { it.questionId == householdMemberDto.questionId }
@@ -721,6 +764,10 @@ fun NestedLazyList(
                 this.remove(this.find { it.referenceId == needToUpdateList.value.second })
             }
             needToUpdateList.value = NEED_TO_UPDATE_LIST_DEFAULT_VALUE
+            Log.d("TAG", "onEvent: LaunchedEffect -> " +
+                    "otalQuestionCount.intValue = ${questionScreenViewModel.totalQuestionCount.intValue}, answeredQuestionCount: ${questionScreenViewModel.answeredQuestionCount.size}" +
+                    " isSectionCompleted.value = ${questionScreenViewModel.answeredQuestionCount.size == questionScreenViewModel.totalQuestionCount.intValue
+                            || questionScreenViewModel.answeredQuestionCount.size > questionScreenViewModel.totalQuestionCount.intValue}")
         }
     }
 

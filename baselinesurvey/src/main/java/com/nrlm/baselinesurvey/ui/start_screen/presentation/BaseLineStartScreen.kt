@@ -117,6 +117,7 @@ fun BaseLineStartScreen(
                 positiveButtonText = stringResource(R.string.save),
                 negativeButtonText = stringResource(id = R.string.go_back_text),
                 isPositiveButtonActive = isContinueButtonActive.value,
+                negativeButtonRequired = false,
                 positiveButtonOnClick = {
                     didi.value.didiId?.let {
                         baseLineStartViewModel.onEvent(

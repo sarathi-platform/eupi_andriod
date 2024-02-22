@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.common_components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -32,10 +33,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
@@ -53,6 +57,7 @@ import com.nrlm.baselinesurvey.ui.theme.white
 fun FormResponseCard(
     modifier: Modifier = Modifier,
     householdMemberDto: FormResponseObjectDto,
+    optionItemListWithConditionals: List<OptionItemEntity>,
     viewModel: BaseViewModel,
     isPictureRequired: Boolean = true,
     onDelete: (referenceId: String) -> Unit,
@@ -98,11 +103,109 @@ fun FormResponseCard(
                 }
                 Spacer(modifier = Modifier.width(dimen_14_dp))
                 Column {
-                    Text(text = householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find { it.display?.contains("Name", ignoreCase = true)!! }?.optionId] ?: BLANK_STRING)
-                    Text(text = buildString {
-                        this.append(householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find { it.display?.contains("Relationship", ignoreCase = true)!! }?.optionId] ?: BLANK_STRING)
-                        this.append(" | ")
-                        this.append(householdMemberDto.memberDetailsMap[questionScreenViewModel.optionItemEntityList.find { it.display?.contains("Age", ignoreCase = true)!! }?.optionId] ?: BLANK_STRING)
+                    Log.d("TAG", "FormResponseCard: optionItemListWithConditionals -> $optionItemListWithConditionals")
+                    Text(text = buildAnnotatedString {
+                        if (householdMemberDto.questionTag.equals("Household information")) {
+                            append(householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                it.display?.contains(
+                                    "Name",
+                                    ignoreCase = true
+                                )!!
+                            }?.optionId] ?: BLANK_STRING)
+                        } else if (householdMemberDto.questionTag.equals("Livelihood sources")) {
+                            append(householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                it.display?.contains(
+                                    "sources of income",
+                                    ignoreCase = true
+                                )!!
+                            }?.optionId]  ?: BLANK_STRING)
+
+
+                            var income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                it.display?.contains(
+                                    "(A) Agricultural produce - ",
+                                    ignoreCase = true
+                                )!!
+                            }?.optionId] ?: BLANK_STRING
+
+                            if (income == BLANK_STRING)
+                                income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                    it.display?.contains(
+                                        "(A) Type of livestock - ",
+                                        ignoreCase = true
+                                    )!!
+                                }?.optionId] ?: BLANK_STRING
+
+                            if (income == BLANK_STRING)
+                                income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                    it.display?.contains(
+                                        "Income frequency",
+                                        ignoreCase = true
+                                    )!!
+                                }?.optionId] ?: BLANK_STRING
+
+                            if (income != BLANK_STRING) {
+                                append(" | ")
+                            }
+
+                            append(income)
+                        }
+                        else append(BLANK_STRING)
+                    })
+
+                    Text(text = buildAnnotatedString {
+                        if (householdMemberDto.questionTag.equals("Household information")) {
+                            this.append(householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                it.display?.contains(
+                                    "Relationship",
+                                    ignoreCase = true
+                                )!!
+                            }?.optionId] ?: BLANK_STRING)
+                            this.append(" | ")
+                            this.append(householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                it.display?.contains(
+                                    "Age",
+                                    ignoreCase = true
+                                )!!
+                            }?.optionId] ?: BLANK_STRING)
+                        } else if (householdMemberDto.questionTag.equals("Livelihood sources")) {
+                            append("Total Income: ")
+                            var income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                it.display?.contains(
+                                    "(E) Total Income",
+                                    ignoreCase = true
+                                )!!
+                            }?.optionId] ?: BLANK_STRING
+
+                            if (income == BLANK_STRING)
+                                income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                    it.display?.contains(
+                                        "(D) Total units",
+                                        ignoreCase = true
+                                    )!!
+                                }?.optionId] ?: BLANK_STRING
+
+
+                            if (income == BLANK_STRING)
+                                income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                    it.display?.contains(
+                                        "Average Income",
+                                        ignoreCase = true
+                                    )!!
+                                }?.optionId] ?: BLANK_STRING
+
+                            if (income == BLANK_STRING)
+                                income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                    it.display?.contains(
+                                        "What is the household income from small business in the last 12 months?",
+                                        ignoreCase = true
+                                    )!!
+                                }?.optionId] ?: BLANK_STRING
+
+                            append(income)
+                        } else {
+                            append(BLANK_STRING)
+                        }
                     })
                 }
             }

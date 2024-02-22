@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository
 
 import android.util.Log
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nrlm.baselinesurvey.PREF_KEY_IDENTITY_NUMBER
 import com.nrlm.baselinesurvey.PREF_KEY_NAME
@@ -171,7 +172,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     type = question.type,
                     //  options = question.options,
                     languageId = languageId,
-                    isConditional = isSubQuestionList
+                    isConditional = isSubQuestionList,
+                    tag = question.attributeTag ?: BLANK_STRING
                 )
                 questionEntityDao.insertQuestion(questionEntity)
                 question.options?.forEach { optionsItem ->
