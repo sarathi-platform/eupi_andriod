@@ -40,8 +40,11 @@ import com.nrlm.baselinesurvey.ui.auth.use_case.ResendOtpUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.SaveAccessTokenUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.SaveMobileNumberUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.ValidateOtpUseCase
+import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.CasteListRepository
+import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.CasteListRepositoryImpl
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.SurveyStateRepository
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.SurveyStateRepositoryImpl
+import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.GetCasteListUseCase
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.UpdateSurveyStateUserCase
 import com.nrlm.baselinesurvey.ui.language.domain.repository.LanguageScreenRepository
 import com.nrlm.baselinesurvey.ui.language.domain.repository.LanguageScreenRepositoryImpl
@@ -419,12 +422,14 @@ object BaselineModule {
     @Singleton
     fun provideStartSurveyScreenUseCase(
         repository: StartScreenRepository,
-        surveyStateRepository: SurveyStateRepository
+        surveyStateRepository: SurveyStateRepository,
+        casteListRepository: CasteListRepository
     ): StartSurveyScreenUserCase {
         return StartSurveyScreenUserCase(
             getSurveyeeDetailsUserCase = GetSurveyeeDetailsUserCase(repository),
             saveSurveyeeImagePathUseCase = SaveSurveyeeImagePathUseCase(repository),
-            updateSurveyStateUseCase = UpdateSurveyStateUserCase(surveyStateRepository)
+            updateSurveyStateUseCase = UpdateSurveyStateUserCase(surveyStateRepository),
+            getCasteListUseCase = GetCasteListUseCase(casteListRepository)
         )
     }
 
@@ -503,4 +508,20 @@ object BaselineModule {
         )
     }
 
+    @Provides
+    @Singleton
+    fun provideCasteListRepository(
+        prefRepo: PrefRepo
+    ): CasteListRepository {
+        return CasteListRepositoryImpl(prefRepo)
+    }
+
+    /*@Provides
+    @Singleton
+    fun provideGetCasteListUseCase(
+        casteListRepository: CasteListRepository
+    ): GetCasteListUseCase {
+        return GetCasteListUseCase(casteListRepository)
+    }
+*/
 }
