@@ -1,4 +1,4 @@
-package com.patsurvey.nudge.navigation.home
+package com.nrlm.baselinesurvey.navigation.home
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold

@@ -21,13 +21,13 @@ import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.dao.VillageListDao
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
-import com.nrlm.baselinesurvey.splash.domain.repository.SplashScreenRepository
-import com.nrlm.baselinesurvey.splash.domain.repository.SplashScreenRepositoryImpl
-import com.nrlm.baselinesurvey.splash.domain.use_case.FetchLanguageFromNetworkConfigUseCase
-import com.nrlm.baselinesurvey.splash.domain.use_case.LoggedInUseCase
-import com.nrlm.baselinesurvey.splash.domain.use_case.SaveLanguageConfigUseCase
-import com.nrlm.baselinesurvey.splash.domain.use_case.SaveQuestionImageUseCase
-import com.nrlm.baselinesurvey.splash.domain.use_case.SplashScreenUseCase
+import com.nrlm.baselinesurvey.ui.splash.domain.repository.SplashScreenRepository
+import com.nrlm.baselinesurvey.ui.splash.domain.repository.SplashScreenRepositoryImpl
+import com.nrlm.baselinesurvey.ui.splash.domain.use_case.FetchLanguageFromNetworkConfigUseCase
+import com.nrlm.baselinesurvey.ui.splash.domain.use_case.LoggedInUseCase
+import com.nrlm.baselinesurvey.ui.splash.domain.use_case.SaveLanguageConfigUseCase
+import com.nrlm.baselinesurvey.ui.splash.domain.use_case.SaveQuestionImageUseCase
+import com.nrlm.baselinesurvey.ui.splash.domain.use_case.SplashScreenUseCase
 import com.nrlm.baselinesurvey.ui.auth.repository.LoginScreenRepository
 import com.nrlm.baselinesurvey.ui.auth.repository.LoginScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.auth.repository.OtpVerificationRepository
@@ -88,6 +88,12 @@ import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSectionListU
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSectionProgressForDidiUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSurvyeDetails
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.SectionListScreenUseCase
+import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepository
+import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepositoryImpl
+import com.nrlm.baselinesurvey.ui.setting.domain.use_case.GetSettingOptionListUseCase
+import com.nrlm.baselinesurvey.ui.setting.domain.use_case.LogoutUseCase
+import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SettingBSUserCase
+import com.nrlm.baselinesurvey.ui.splash.domain.use_case.SaveLanguageOpenFromUseCase
 import com.nrlm.baselinesurvey.ui.start_screen.domain.repository.StartScreenRepository
 import com.nrlm.baselinesurvey.ui.start_screen.domain.repository.StartScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.start_screen.domain.use_case.GetSurveyeeDetailsUserCase
@@ -132,7 +138,8 @@ object BaselineModule {
             fetchLanguageConfigFromNetworkUseCase = FetchLanguageFromNetworkConfigUseCase(repository),
             saveLanguageConfigUseCase = SaveLanguageConfigUseCase(repository),
             saveQuestionImageUseCase = SaveQuestionImageUseCase(repository),
-            loggedInUseCase = LoggedInUseCase(repository)
+            loggedInUseCase = LoggedInUseCase(repository),
+            saveLanguageOpenFromUseCase = SaveLanguageOpenFromUseCase(repository)
         )
     }
 
@@ -495,6 +502,26 @@ object BaselineModule {
             taskDao,
             surveyeeEntityDao,
             missionEntityDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSettingBSScreenRepository(
+        prefRepo: PrefRepo,
+        apiService: ApiService
+    ): SettingBSRepository {
+        return SettingBSRepositoryImpl(prefRepo, apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun providesSettingScreenUseCase(
+        repository: SettingBSRepository
+    ): SettingBSUserCase {
+        return SettingBSUserCase(
+           getSettingOptionListUseCase = GetSettingOptionListUseCase(repository),
+            logoutUseCase = LogoutUseCase(repository)
         )
     }
 

@@ -13,8 +13,8 @@ import com.nrlm.baselinesurvey.ARG_STEP_INDEX
 import com.nrlm.baselinesurvey.ARG_SURVEY_ID
 import com.nrlm.baselinesurvey.ARG_VILLAGE_ID
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
-import com.patsurvey.nudge.navigation.authNavGraph
-import com.patsurvey.nudge.navigation.home.HomeNavScreen
+import com.nrlm.baselinesurvey.navigation.authNavGraph
+import com.nrlm.baselinesurvey.navigation.home.HomeNavScreen
 
 
 @Composable

@@ -24,6 +24,7 @@ interface PrefRepo {
     fun saveAppLanguageId(languageId: Int?)
 
     fun settingOpenFrom(): Int
+    fun saveSettingOpenFrom(pageFrom: Int)
 
     fun getFromPage():String
 

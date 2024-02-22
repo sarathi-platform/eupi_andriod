@@ -6,6 +6,10 @@ import com.google.gson.reflect.TypeToken
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.PREF_CASTE_LIST
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.PREF_CASTE_LIST
 import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nrlm.baselinesurvey.PREF_KEY_IDENTITY_NUMBER
 import com.nrlm.baselinesurvey.PREF_KEY_NAME
