@@ -455,6 +455,59 @@ class QuestionScreenViewModel @Inject constructor(
                 }
             }
 
+            is QuestionTypeEvent.UpdateConditionQuestionStateForInputNumberOptions -> {
+
+                if (event.optionItemEntity.conditions == null) {
+                    val questionToUpdate = questionEntityStateList.find { it.questionId == event.questionEntityState?.questionId }
+                    questionToUpdate?.optionItemEntityState?.forEach { optionItemEntity ->
+                        optionItemEntity.optionItemEntity?.conditions?.forEach { conditionDto ->
+                            updateQuestionStateForCondition(
+                                conditionResult = false,
+                                conditionDto
+                            )
+                        }
+                    }
+                }
+
+
+                event.optionItemEntity.conditions?.forEach { conditionsDto ->
+
+                    //Hide conditional questions for the unselected values.
+                    val questionToUpdate = questionEntityStateList.find { it.questionId == event.questionEntityState?.questionId && it.showQuestion }
+                    val unselectedOption = questionToUpdate?.optionItemEntityState?.filter { it.optionId != event.optionItemEntity.optionId }
+                    unselectedOption?.forEach { optionItemEntityState ->
+                        optionItemEntityState.optionItemEntity?.conditions?.forEach { conditionsDto ->
+                            val mConditionCheckResult = conditionsDto?.checkCondition(event.optionItemEntity.display ?: BLANK_STRING)
+                            updateQuestionStateForCondition(conditionResult = mConditionCheckResult == true, conditionsDto)
+                            conditionsDto?.resultList?.forEach { subQuestion ->
+                                subQuestion.options?.forEach { subQuestionOption ->
+                                    subQuestionOption?.conditions?.forEach { subConditionDto ->
+                                        val mSubConditionCheckResult = subConditionDto?.checkCondition(event.optionItemEntity.display ?: BLANK_STRING)
+                                        updateQuestionStateForCondition(conditionResult = mSubConditionCheckResult == true, subConditionDto)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (event.optionItemEntity.selectedValue != "0") {
+                        val conditionCheckResult = conditionsDto?.checkCondition(
+                            event.optionItemEntity.display ?: BLANK_STRING
+                        )
+                        updateQuestionStateForCondition(
+                            conditionResult = conditionCheckResult == true,
+                            conditionsDto
+                        )
+                    } else {
+                        updateQuestionStateForCondition(
+                            conditionResult = false,
+                            conditionsDto
+                        )
+                    }
+
+                }
+            }
+
             is QuestionTypeEvent.UpdateConditionQuestionStateForMultipleOption -> {
                 event.optionItemEntityList.forEach { optionItemEntity ->
                     optionItemEntity.conditions?.let {

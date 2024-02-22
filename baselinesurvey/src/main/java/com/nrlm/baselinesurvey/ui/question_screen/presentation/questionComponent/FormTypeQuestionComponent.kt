@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.ui.common_components.CTAButtonComponent
+import com.nrlm.baselinesurvey.ui.common_components.OutlinedCTAButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.VerticalAnimatedVisibilityComponent
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
@@ -124,18 +125,22 @@ fun FormTypeQuestionComponent(
                                 )
                             }
                             item {
-                                Box(
+                                Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(10.dp)
+                                        .padding(10.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    CTAButtonComponent(
+                                    Spacer(modifier = Modifier.fillMaxWidth().weight(0.2f))
+                                    OutlinedCTAButtonComponent(
                                         tittle = question?.questionSummary,
                                         Modifier
                                             .fillMaxWidth()
+                                            .weight(0.6f)
                                     ) {
                                         onAnswerSelection(questionIndex)
                                     }
+                                    Spacer(modifier = Modifier.fillMaxWidth().weight(0.2f))
                                 }
                             }
                             /*item {

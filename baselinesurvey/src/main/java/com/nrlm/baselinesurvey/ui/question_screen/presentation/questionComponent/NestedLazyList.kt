@@ -688,6 +688,10 @@ fun NestedLazyList(
                                                     )
                                                 )
                                             }
+                                            QuestionType.InputNumber.name -> {
+                                                val mOptionItem = optionItem.copy(selectedValue = selectedValue)
+                                                questionScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionQuestionStateForInputNumberOptions(question, mOptionItem))
+                                            }
                                         }
 
 
