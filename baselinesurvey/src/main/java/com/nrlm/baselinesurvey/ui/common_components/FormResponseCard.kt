@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -22,7 +23,6 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
@@ -38,13 +39,21 @@ import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
+import com.nrlm.baselinesurvey.ui.theme.black1
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
+import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
+import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_14_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
+import com.nrlm.baselinesurvey.ui.theme.greyLightColor
+import com.nrlm.baselinesurvey.ui.theme.redDark
+import com.nrlm.baselinesurvey.ui.theme.redOffline
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
+import com.nrlm.baselinesurvey.ui.theme.smallTextStyleWithNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.white
 import java.util.Locale
 
@@ -92,6 +101,7 @@ fun FormResponseCard(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Spacer(modifier = Modifier.width(dimen_14_dp))
                 if (isPictureRequired) {
                     Box(modifier = Modifier.padding(start = 16.dp)) {
                         CircularImageViewComponent(
@@ -113,12 +123,14 @@ fun FormResponseCard(
                                 )!!
                             }?.optionId] ?: BLANK_STRING)
                         } else if (householdMemberDto.questionTag.equals("Livelihood sources")) {
-                            append(householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                it.display?.contains(
-                                    "sources of income",
-                                    ignoreCase = true
-                                )!!
-                            }?.optionId]  ?: BLANK_STRING)
+                            append(
+                                householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                    it.display?.contains(
+                                        "sources of income",
+                                        ignoreCase = true
+                                    )!!
+                                }?.optionId]  ?: BLANK_STRING
+                            )
 
                             Log.d("TAG", "FormResponseCard: option: ${optionItemListWithConditionals.find {
                                 it.display?.contains(
@@ -201,10 +213,11 @@ fun FormResponseCard(
                                 )!!
                             }?.optionId] ?: BLANK_STRING
 
-                            append(name)
+                            append("Name: $name")
 
-                        } else append(BLANK_STRING)
-                    })
+                        }
+                        else append(BLANK_STRING)
+                    }, style = smallTextStyleWithNormalWeight)
 
                     Text(text = buildAnnotatedString {
                         if (householdMemberDto.questionTag.equals("Household information")) {
@@ -223,40 +236,51 @@ fun FormResponseCard(
                             }?.optionId] ?: BLANK_STRING)
                             this.append(" yrs")
                         } else if (householdMemberDto.questionTag.equals("Livelihood sources")) {
-                            append("Total Income: ")
-                            var income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                it.display?.contains(
-                                    "(E) Total Income",
-                                    ignoreCase = true
-                                )!!
-                            }?.optionId] ?: BLANK_STRING
-
-                            if (income == BLANK_STRING)
-                                income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                            if ((householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
                                     it.display?.contains(
-                                        "(D) Total units",
+                                        "sources of income",
                                         ignoreCase = true
                                     )!!
-                                }?.optionId] ?: BLANK_STRING
+                                }?.optionId]  ?: BLANK_STRING) != "No income") {
+                                append("Total Income: ₹")
+                                var income =
+                                    householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                        it.display?.contains(
+                                            "(E) Total Income",
+                                            ignoreCase = true
+                                        )!!
+                                    }?.optionId] ?: BLANK_STRING
+
+                                if (income == BLANK_STRING)
+                                    income =
+                                        householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                            it.display?.contains(
+                                                "(D) Total units",
+                                                ignoreCase = true
+                                            )!!
+                                        }?.optionId] ?: BLANK_STRING
 
 
-                            if (income == BLANK_STRING)
-                                income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                    it.display?.contains(
-                                        "Average Income",
-                                        ignoreCase = true
-                                    )!!
-                                }?.optionId] ?: BLANK_STRING
+                                if (income == BLANK_STRING)
+                                    income =
+                                        householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                            it.display?.contains(
+                                                "Average Income",
+                                                ignoreCase = true
+                                            )!!
+                                        }?.optionId] ?: BLANK_STRING
 
-                            if (income == BLANK_STRING)
-                                income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                    it.display?.contains(
-                                        "What is the household income from small business in the last 12 months?",
-                                        ignoreCase = true
-                                    )!!
-                                }?.optionId] ?: BLANK_STRING
+                                if (income == BLANK_STRING)
+                                    income =
+                                        householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                            it.display?.contains(
+                                                "What is the household income from small business in the last 12 months?",
+                                                ignoreCase = true
+                                            )!!
+                                        }?.optionId] ?: BLANK_STRING
 
-                            append(income)
+                                append(income)
+                            }
                         } else if (householdMemberDto.questionTag.equals("Public Infra")) {
                             val avgCost = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
                                 it.display?.trim()?.contains(
@@ -265,26 +289,26 @@ fun FormResponseCard(
                                 )!!
                             }?.optionId] ?: BLANK_STRING
 
-                            append("Average Cost: $avgCost")
+                            append("Average Cost: ₹ $avgCost")
 
                         } else if (householdMemberDto.questionTag.contains("key programme", true)) {
-                            var name = BLANK_STRING
-                            name = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                            var influenceType = BLANK_STRING
+                            influenceType = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
                                 it.display?.contains(
                                     "Influence type",
                                     ignoreCase = true
                                 )!!
                             }?.optionId] ?: BLANK_STRING
 
-                            append(name)
+                            append("Influence type: $influenceType")
 
                         } else {
                             append(BLANK_STRING)
                         }
-                    })
+                    }, style = smallTextStyleWithNormalWeight)
                 }
             }
-            Spacer(modifier = Modifier.height(dimen_8_dp))
+            Spacer(modifier = Modifier.height(dimen_16_dp))
             Divider(thickness = dimen_1_dp, modifier = Modifier.fillMaxWidth(), color = borderGreyLight)
             Row(modifier = Modifier
                 .fillMaxWidth()
@@ -300,8 +324,7 @@ fun FormResponseCard(
                     color = borderGreyLight,
                     modifier = Modifier
                         .fillMaxHeight()  //fill the max height
-                        .width(10.dp)
-                        .weight(1f)
+                        .width(1.dp)
                 )
                 TextButton(onClick = { onDelete(householdMemberDto.referenceId) }, modifier = Modifier
                     .fillMaxWidth()

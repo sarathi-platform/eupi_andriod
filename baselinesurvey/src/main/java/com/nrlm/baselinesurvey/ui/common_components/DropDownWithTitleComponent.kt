@@ -79,32 +79,34 @@ fun <T> DropDownWithTitleComponent(
         modifier = modifier,
         horizontalAlignment = Alignment.Start
     ) {
-        Text(
-            text = buildAnnotatedString {
-                withStyle(
-                    style = SpanStyle(
-                        color = textColorDark,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = NotoSans
-                    )
-                ) {
-                    append(title)
-                }
-                if (isRequiredField) {
+        if (title.isNotBlank()) {
+            Text(
+                text = buildAnnotatedString {
                     withStyle(
                         style = SpanStyle(
-                            color = red,
-                            fontSize = 14.sp,
+                            color = textColorDark,
+                            fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = NotoSans
                         )
                     ) {
-                        append("*")
+                        append(title)
+                    }
+                    if (isRequiredField) {
+                        withStyle(
+                            style = SpanStyle(
+                                color = red,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = NotoSans
+                            )
+                        ) {
+                            append("*")
+                        }
                     }
                 }
-            }
-        )
+            )
+        }
         CustomOutlineTextField(
             value = selectedItem,
             onValueChange = {

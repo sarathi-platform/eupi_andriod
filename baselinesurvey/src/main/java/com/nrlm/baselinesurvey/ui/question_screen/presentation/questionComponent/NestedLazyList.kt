@@ -142,7 +142,8 @@ fun NestedLazyList(
 
         try {
             coroutineScope.launch(Dispatchers.IO) {
-                sectionDetails.questionList.find { it.type == QuestionType.Form.name }?.let { question ->
+                mQuestionEntity.forEach { question ->
+                    if (question.questionEntity?.type?.equals(QuestionType.Form.name, true) == true) {
                         val optionItemEntityList =
                             questionScreenViewModel.getFormQuestionsOptionsItemEntityList(
                                 sectionDetails.surveyId,
@@ -159,11 +160,13 @@ fun NestedLazyList(
                                 surveyeeId
                             )
                         withContext(Dispatchers.Main) {
-                            questionScreenViewModel.formResponsesForQuestionLive.observe(lifecycleOwner) {
+                            questionScreenViewModel.formResponsesForQuestionLive.observe(
+                                lifecycleOwner
+                            ) {
                                 householdMemberDtoList.value.addAll(
                                     it.mapFormQuestionResponseToFromResponseObjectDto(
                                         optionItemEntityList,
-                                        question.tag
+                                        question.questionEntity.tag ?: BLANK_STRING
                                     )
                                 )
                                 if (it.isNotEmpty()) {
@@ -173,6 +176,7 @@ fun NestedLazyList(
                                 }
                             }
                         }
+                    }
                 }
             }
         } catch (ex: Exception) {

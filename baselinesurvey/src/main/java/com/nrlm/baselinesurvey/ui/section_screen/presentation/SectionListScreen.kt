@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
@@ -83,6 +84,7 @@ import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -99,7 +101,6 @@ fun SectionListScreen(
 ) {
 
     val loaderState = viewModel.loaderState.value
-    lateinit var didiDetail: SurveyeeEntity
 
     LaunchedEffect(key1 = true) {
         viewModel.init(didiId, surveyId)
@@ -129,6 +130,7 @@ fun SectionListScreen(
     }
 
     BackHandler {
+        BaselineCore.setCurrentActivityName(BLANK_STRING)
         navigateBackToSurveyeeListScreen(navController)
     }
 
@@ -140,7 +142,10 @@ fun SectionListScreen(
                 backgroundColor = white,
             ) {
                 IconButton(
-                    onClick = { navigateBackToSurveyeeListScreen(navController) },
+                    onClick = {
+                        BaselineCore.setCurrentActivityName(BLANK_STRING)
+                        navigateBackToSurveyeeListScreen(navController)
+                    },
                     modifier = Modifier
                 ) {
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back Button")
@@ -153,7 +158,7 @@ fun SectionListScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.CenterStart),
-                        text = viewModel.didiName.value,
+                        text = if (!BaselineCore.getCurrentActivityName().equals("Conduct Hamlet Survey")) viewModel.didiDetails?.didiName ?: BLANK_STRING else viewModel.didiDetails?.cohortName ?: BLANK_STRING,
                         style = largeTextStyle
                     )
                     Box(
@@ -239,6 +244,7 @@ fun SectionListScreen(
                         isArrowRequired = false,
                         isActive = true
                     ) {
+                        BaselineCore.setCurrentActivityName(BLANK_STRING)
                         navigateBackToSurveyeeListScreen(navController)
 
                     }

@@ -51,6 +51,7 @@ import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SurveyState
@@ -208,11 +209,13 @@ fun AllSurveyeeListTab(
                                 //Todo add proper tex
                                 primaryButtonText = "Start " + activityName.split(" ")[1],
                                 buttonClicked = { buttonName, surveyeeId ->
+                                    BaselineCore.setCurrentActivityName(activityName)
                                     handleButtonClick(
                                         buttonName,
                                         surveyeeId,
                                         activityId,
-                                        navController
+                                        navController,
+                                        activityName
                                     )
                                 }
                             )

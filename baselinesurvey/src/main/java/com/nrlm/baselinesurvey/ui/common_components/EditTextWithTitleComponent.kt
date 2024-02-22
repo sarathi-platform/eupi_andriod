@@ -26,6 +26,7 @@ import com.nrlm.baselinesurvey.ui.theme.borderGrey
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
+import com.nrlm.baselinesurvey.utils.onlyNumberField
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -53,11 +54,13 @@ fun EditTextWithTitleComponent(
                 .fillMaxWidth()
                 .padding(horizontal = 2.dp)
         ) {
-            Text(
-                text = title ?: "select",
-                style = defaultTextStyle,
-                color = textColorDark
-            )
+            if (title?.isNotBlank() == true) {
+                Text(
+                    text = title ?: "select",
+                    style = defaultTextStyle,
+                    color = textColorDark
+                )
+            }
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -65,7 +68,13 @@ fun EditTextWithTitleComponent(
                 value = txt.value,
                 onValueChange = {
                     if (it.length <= maxLength) {
-                        txt.value = it
+                        if (isOnlyNumber) {
+                            if (onlyNumberField(it)) {
+                                txt.value = it
+                            }
+                        } else {
+                            txt.value = it
+                        }
                     }
                     onAnswerSelection(txt.value)
                 },

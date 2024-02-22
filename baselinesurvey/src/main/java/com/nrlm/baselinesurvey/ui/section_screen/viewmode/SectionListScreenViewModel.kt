@@ -36,6 +36,7 @@ class SectionListScreenViewModel @Inject constructor(
     private val _sectionItemStateList = mutableStateOf(mutableListOf<SectionState>())
     val sectionItemStateList: State<List<SectionState>> get() = _sectionItemStateList
     val didiName = mutableStateOf("")
+    var didiDetails: SurveyeeEntity? = null
 
     val sampleVideoPath = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6ParticipatoryWealthRanking.mp4"
 
@@ -75,8 +76,9 @@ class SectionListScreenViewModel @Inject constructor(
                                 }
                             )
                             _sectionItemStateList.value.add(sectionState)
-                            val didiDetails = sectionScreenUseCase.getSurvyeDetails.getSurveyeDetails(didiId = didiId)
-                            didiName.value = didiDetails.didiName
+                            val mDidiDetails = sectionScreenUseCase.getSurvyeDetails.getSurveyeDetails(didiId = didiId)
+                            didiDetails = mDidiDetails
+                            didiName.value = mDidiDetails.didiName
 //                            isSurveyCompletedForDidi.value = didiDetails.surveyStatus != SurveyState.COMPLETED.ordinal
                             allSessionCompleted.value = isAllSessionCompleted()
 

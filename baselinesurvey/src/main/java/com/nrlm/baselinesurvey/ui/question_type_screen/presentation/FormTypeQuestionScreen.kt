@@ -109,7 +109,7 @@ fun FormTypeQuestionScreen(
                 ) {
                     viewModel.onEvent(
                         QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent(
-                            viewModel.formQuestionResponseEntity.value
+                            viewModel.storeCacheForResponse
                         )
                     )
                     navController.popBackStack()

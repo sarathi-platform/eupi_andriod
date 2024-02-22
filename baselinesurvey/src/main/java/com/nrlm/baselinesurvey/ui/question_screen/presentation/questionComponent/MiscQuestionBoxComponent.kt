@@ -145,7 +145,7 @@ fun MiscQuestionBoxComponent(
                                     modifier = Modifier
                                         .wrapContentWidth()
                                         .padding(horizontal = dimen_16_dp)
-                                        .heightIn(min = 110.dp, max = maxCustomHeight)
+                                        .heightIn(min = 80.dp, max = maxCustomHeight)
                                 ) {
                                     itemsIndexed(
                                         showQuestionState.optionItemEntityState ?: listOf()

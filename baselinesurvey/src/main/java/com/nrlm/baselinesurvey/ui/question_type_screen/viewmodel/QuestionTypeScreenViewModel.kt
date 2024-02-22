@@ -292,6 +292,14 @@ class QuestionTypeScreenViewModel @Inject constructor(
             is QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     val finalFormQuestionResponseList = event.formQuestionResponseList.toMutableList()
+                    val unchangedValues = mutableListOf<FormQuestionResponseEntity>()
+                    formQuestionResponseEntity.value.forEach { formQuestionResponseEntity ->
+                        finalFormQuestionResponseList.forEach { finalFormQuestionResponseItem ->
+                            if (formQuestionResponseEntity.optionId != finalFormQuestionResponseItem.optionId)
+                                unchangedValues.add(formQuestionResponseEntity)
+                        }
+                    }
+                    finalFormQuestionResponseList.addAll(unchangedValues)
 
                     updatedOptionList.forEach {
                         if (it.optionItemEntity?.optionType?.equals(QuestionType.Calculation.name, true) == true) {
@@ -404,9 +412,9 @@ class QuestionTypeScreenViewModel @Inject constructor(
     }
 
     private fun updateCachedData() {
-        _formQuestionResponseEntity.value = storeCacheForResponse
+//        _formQuestionResponseEntity.value = storeCacheForResponse
         totalOptionSize.intValue = optionList.value.size
-        answeredOptionCount.intValue = formQuestionResponseEntity.value.size
+        answeredOptionCount.intValue = (answeredOptionCount.intValue + storeCacheForResponse.size).coerceIn(0, totalOptionSize.intValue)
     }
 
 }

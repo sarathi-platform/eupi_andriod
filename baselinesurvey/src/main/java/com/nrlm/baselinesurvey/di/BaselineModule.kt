@@ -481,7 +481,8 @@ object BaselineModule {
             ),
             saveFormQuestionResponseUseCase = SaveFormQuestionResponseUseCase(formQuestionResponse),
             updateFormQuestionResponseUseCase = UpdateFormQuestionResponseUseCase(formQuestionResponse),
-            deleteFormQuestionOptionResponseUseCase = DeleteFormQuestionOptionResponseUseCase(formQuestionResponse)
+            deleteFormQuestionOptionResponseUseCase = DeleteFormQuestionOptionResponseUseCase(formQuestionResponse),
+            deleteFormQuestionResponseUseCase = DeleteFormQuestionResponseUseCase(formQuestionResponse)
         )
     }
 
