@@ -53,7 +53,6 @@ import coil.compose.AsyncImage
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
-import com.nrlm.baselinesurvey.navigation.home.SECTION_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.ui.common_components.BlueButtonWithIcon
 import com.nrlm.baselinesurvey.ui.common_components.ButtonOutline
@@ -94,13 +93,10 @@ fun BaseLineStartScreen(
         baseLineStartViewModel.getDidiDetails(didiId)
     }
 
-
-    //val didiInfoDetail = baseLineStartViewModel.didiInfo
-
     val isContinueButtonActive =
         derivedStateOf {
             (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (baseLineStartViewModel.isVoterCard.value != -1) && (baseLineStartViewModel.phoneNumber.value.length == 10) &&
-                    ((baseLineStartViewModel.isAdharCard.value != -1) && ((baseLineStartViewModel.isAdharCard.value == 2) || (baseLineStartViewModel.isAdharCard.value == 1 && baseLineStartViewModel.aadharNumber.value.length == 12)))
+                    ((baseLineStartViewModel.isAdharCard.value != -1))
         }
 
 

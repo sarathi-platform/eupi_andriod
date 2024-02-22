@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.common_components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -22,6 +23,7 @@ import com.nrlm.baselinesurvey.ui.theme.lightGray2
 import com.nrlm.baselinesurvey.ui.theme.redOffline
 import com.nrlm.baselinesurvey.ui.theme.white
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun RadioButtonOptionComponent(
     modifier: Modifier = Modifier,
@@ -55,21 +57,13 @@ fun RadioButtonOptionComponent(
                     white
                 } else {
                     //TODO need to remove this condition when get image from backend
-                    if (optionsItem.display.equals(
-                            "YES",
-                            false
-                        ) || optionsItem.display.equals("Good", false)
-                    )
+                    if (index == 0)
                         greenActiveIcon
                     else
                         redOffline
                 },
                 //TODO need to remove this condition when get image from backend
-                icon = if (optionsItem.display.equals(
-                        "YES",
-                        false
-                    ) || optionsItem.display.equals("Good", false)
-                )
+                icon = if (index == 0)
                     painterResource(id = R.drawable.icon_check)
                 else
                     painterResource(id = R.drawable.icon_close)
