@@ -42,26 +42,9 @@ class DataLoadingScreenViewModel @Inject constructor(
                     fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke()
                     fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
 
-                    val baselineSurveyRequestBodyModel = SurveyRequestBodyModel(
-                        languageId = 2,
-                        surveyName = "BASELINE",
-                        referenceId = 2,
-                        referenceType = "STATE"
-                    )
-                    fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-                        baselineSurveyRequestBodyModel
-                    )
-                    val hamletSurveyRequestBodyModel = SurveyRequestBodyModel(
-                        languageId = 2,
-                        surveyName = "HAMLET",
-                        referenceId = 3,
-                        referenceType = "STATE"
-                    )
-                    fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-                        hamletSurveyRequestBodyModel
-                    )
-
                     fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
+                    fetchSurveyForAllLanguages()
+
                 } else {
                     withContext(Dispatchers.Main) {
                         onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -79,5 +62,70 @@ class DataLoadingScreenViewModel @Inject constructor(
             onEvent(LoaderEvent.UpdateLoaderState(false))
             callBack()
         }
+    }
+
+    private suspend fun fetchSurveyForAllLanguages() {
+        val baselineSurveyRequestBodyModel = SurveyRequestBodyModel(
+            languageId = 2,
+            surveyName = "BASELINE",
+            referenceId = 2,
+            referenceType = "STATE"
+        )
+        fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+            baselineSurveyRequestBodyModel
+        )
+
+        val hamletSurveyRequestBodyModel = SurveyRequestBodyModel(
+            languageId = 2,
+            surveyName = "HAMLET",
+            referenceId = 3,
+            referenceType = "STATE"
+        )
+        fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+            hamletSurveyRequestBodyModel
+        )
+
+        val baselineSurveyRequestBodyModelForKokBorok = SurveyRequestBodyModel(
+            languageId = 6,
+            surveyName = "BASELINE",
+            referenceId = 2,
+            referenceType = "STATE"
+        )
+        fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+            baselineSurveyRequestBodyModelForKokBorok
+        )
+
+        val baselineSurveyRequestBodyModelForBangla = SurveyRequestBodyModel(
+            languageId = 3,
+            surveyName = "BASELINE",
+            referenceId = 5,
+            referenceType = "STATE"
+        )
+        fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+            baselineSurveyRequestBodyModelForBangla
+        )
+
+        val hamletSurveyRequestBodyModelForBangla = SurveyRequestBodyModel(
+            languageId = 3,
+            surveyName = "HAMLET",
+            referenceId = 5,
+            referenceType = "STATE"
+        )
+        fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+            hamletSurveyRequestBodyModelForBangla
+        )
+
+        /*val hamletSurveyRequestBodyModelForKokborok = SurveyRequestBodyModel(
+            languageId = 3,
+            surveyName = "HAMLET",
+            referenceId = 5,
+            referenceType = "STATE"
+        )
+        fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+            hamletSurveyRequestBodyModelForKokborok
+        )*/
+
+
+
     }
 }

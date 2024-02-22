@@ -5,11 +5,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.PREF_CASTE_LIST
-import com.nrlm.baselinesurvey.BLANK_STRING
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.PREF_CASTE_LIST
 import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nrlm.baselinesurvey.PREF_KEY_IDENTITY_NUMBER
 import com.nrlm.baselinesurvey.PREF_KEY_NAME
@@ -49,7 +44,6 @@ import com.nrlm.baselinesurvey.model.response.MissionResponseModel
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
-import com.nrlm.baselinesurvey.utils.json
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
 import javax.inject.Inject
