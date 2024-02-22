@@ -12,9 +12,11 @@ import com.nrlm.baselinesurvey.utils.findItemBySectionId
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SectionState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nrlm.baselinesurvey.utils.states.SurveyState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -38,6 +40,8 @@ class SectionListScreenViewModel @Inject constructor(
     val sampleVideoPath = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6ParticipatoryWealthRanking.mp4"
 
     val allSessionCompleted = mutableStateOf(false)
+
+    val isSurveyCompletedForDidi = mutableStateOf(true)
 
     fun init(didiId: Int, surveyId: Int) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -71,8 +75,9 @@ class SectionListScreenViewModel @Inject constructor(
                                 }
                             )
                             _sectionItemStateList.value.add(sectionState)
-                            didiName.value =
-                                sectionScreenUseCase.getSurvyeDetails.getSurveyeDetails(didiId = didiId).didiName
+                            val didiDetails = sectionScreenUseCase.getSurvyeDetails.getSurveyeDetails(didiId = didiId)
+                            didiName.value = didiDetails.didiName
+//                            isSurveyCompletedForDidi.value = didiDetails.surveyStatus != SurveyState.COMPLETED.ordinal
                             allSessionCompleted.value = isAllSessionCompleted()
 
                         }

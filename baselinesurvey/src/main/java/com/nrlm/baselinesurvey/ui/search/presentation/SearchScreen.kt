@@ -26,11 +26,13 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -52,6 +54,7 @@ import com.nrlm.baselinesurvey.ui.search.viewmodel.SearchScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGrey
+import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
@@ -59,17 +62,25 @@ import com.nrlm.baselinesurvey.ui.theme.smallTextStyleWithNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.unselectedTabColor
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.showCustomToast
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreens(
     modifier: Modifier = Modifier,
     viewModel: SearchScreenViewModel,
+    surveyId: Int,
     navController: NavController
 ) {
     val searchText = viewModel.searchText.collectAsState()
     val isSearching = viewModel.isSearching.collectAsState()
-    val searchItems = viewModel.searchItems.collectAsState()
+    val searchItems = viewModel.complexSearchStateList
+
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.initSearch(surveyId)
+    }
 
     var selectedTabIndex = remember { mutableIntStateOf(0) }
 
@@ -112,7 +123,7 @@ fun SearchScreens(
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         tint = blueDark,
-                        contentDescription = "seach icon",
+                        contentDescription = "search icon",
                         modifier = Modifier
                             .absolutePadding(top = 3.dp)
                             .clickable {
@@ -129,7 +140,10 @@ fun SearchScreens(
                             modifier = Modifier
                                 .absolutePadding(top = 2.dp)
                                 .clickable {
-                                    viewModel.onSearchTextChange("", viewModel.searchTabFilter.value)
+                                    viewModel.onSearchTextChange(
+                                        "",
+                                        viewModel.searchTabFilter.value
+                                    )
                                 }
                         )
                     }
@@ -188,13 +202,13 @@ fun SearchScreens(
                 )
 
                 Text(
-                    text = if (searchText.value.isNotBlank() && searchItems.value.isEmpty()) "No Data Found" else searchText.value,
+                    text = if (searchText.value.isNotBlank() && searchItems.isEmpty()) "No Data Found" else searchText.value,
                     style = smallTextStyle,
                     color = textColorDark
                 )
 
                 LazyColumn(modifier = Modifier.background(white)) {
-                    itemsIndexed(searchItems.value) { index, item ->
+                    itemsIndexed(viewModel.filteredComplexSearchStateList) { index, item ->
                         Text(text = buildAnnotatedString {
                             withStyle(
                                 style = SpanStyle(
@@ -228,7 +242,11 @@ fun SearchScreens(
                                     append(item.questionTitle)
                                 }
                             }
+                        }, modifier = Modifier.clickable {
+                            showCustomToast(context, "item-> sectionName${item.sectionName}," +
+                                    " questionTitle: ${item.questionTitle}")
                         })
+                        Spacer(modifier = Modifier.fillMaxWidth().height(dimen_10_dp))
                     }
                 }
             }

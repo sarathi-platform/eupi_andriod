@@ -114,9 +114,10 @@ fun BaseLineStartScreen(
             DoubleButtonBox(
                 modifier = Modifier
                     .shadow(10.dp),
-                positiveButtonText = stringResource(id = R.string.continue_text),
+                positiveButtonText = stringResource(R.string.save),
                 negativeButtonText = stringResource(id = R.string.go_back_text),
                 isPositiveButtonActive = isContinueButtonActive.value,
+                negativeButtonRequired = false,
                 positiveButtonOnClick = {
                     didi.value.didiId?.let {
                         baseLineStartViewModel.onEvent(
@@ -133,7 +134,8 @@ fun BaseLineStartScreen(
                             )
                         )
                     }
-                    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
+                    navController.popBackStack()
+//                    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
                 },
                 negativeButtonOnClick = {
                     navController.popBackStack()

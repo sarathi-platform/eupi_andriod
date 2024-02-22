@@ -10,6 +10,7 @@ enum class QuestionType {
     Input,
     InputText,
     SingleSelectDropdown,
+    SingleSelectDropDown,
     Toggle,
     InputNumber,
     Calculation;

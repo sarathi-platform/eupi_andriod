@@ -63,6 +63,7 @@ import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToQuestionScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToSearchScreen
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
+import com.nrlm.baselinesurvey.ui.common_components.ComplexSearchComponent
 import com.nrlm.baselinesurvey.ui.common_components.SectionItemComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.DescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ImageExpanderDialogComponent
@@ -296,32 +297,8 @@ fun SectionListScreen(
                     ) {
 
                         item {
-                            OutlinedButton(modifier = Modifier.background(color = white, shape = RoundedCornerShape(6.dp)),
-                                shape = RoundedCornerShape(6.dp),
-                                border = BorderStroke(1.dp, borderGrey),
-                                onClick = {
-                                    navigateToSearchScreen(navController)
-                                }
-                            ) {
-                                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.icon_search),
-                                        tint = placeholderGrey,
-                                        contentDescription = "seach icon",
-                                        modifier = Modifier.absolutePadding(top = 3.dp)
-                                    )
-                                    Spacer(modifier = Modifier
-                                        .fillMaxHeight()
-                                        .width(dimen_10_dp))
-                                    Text(
-                                        text = "Search Question",
-                                        style = TextStyle(
-                                            fontFamily = NotoSans,
-                                            fontWeight = FontWeight.SemiBold,
-                                            fontSize = 14.sp
-                                        ), color = placeholderGrey
-                                    )
-                                }
+                            ComplexSearchComponent {
+                                navigateToSearchScreen(navController, surveyId)
                             }
                         }
 

@@ -20,4 +20,15 @@ class SaveFormQuestionResponseUseCase(private val repository: FormQuestionRespon
             formQuestionResponseEntity
         )
     }
+
+    suspend fun updateFromListItemIntoDb(
+        formQuestionResponseEntity: FormQuestionResponseEntity
+    ) {
+        repository.updateFromListItemIntoDb(formQuestionResponseEntity)
+    }
+
+    suspend fun getOptionItem(formQuestionResponseEntity: FormQuestionResponseEntity): Int {
+        return repository.getOptionItem(formQuestionResponseEntity)
+    }
+
 }

@@ -31,7 +31,7 @@ import com.nrlm.baselinesurvey.ui.theme.white
 @Composable
 fun CTAButtonComponent(
     tittle: String? = BLANK_STRING,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     isActive: Boolean = true,
     textColor: Color = Color.White,
     onClick: () -> Unit

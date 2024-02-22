@@ -69,5 +69,10 @@ data class QuestionEntity(
     @SerializedName("isConditional")
     @Expose
     @ColumnInfo(name = "isConditional")
-    var isConditional: Boolean = false
+    var isConditional: Boolean = false,
+
+    @SerializedName("tag")
+    @Expose
+    @ColumnInfo(name = "tag")
+    var tag: String = BLANK_STRING
 )
