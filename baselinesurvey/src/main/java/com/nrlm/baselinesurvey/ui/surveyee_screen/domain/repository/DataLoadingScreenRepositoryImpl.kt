@@ -334,6 +334,14 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         missionActivityDao.deleteActivities()
     }
 
+    override suspend fun updateActivityStatusForMission(
+        missionId: Int,
+        activityComplete: Int,
+        pendingActivity: Int
+    ) {
+        missionEntityDao.updateMissionStatus(missionId, activityComplete, pendingActivity)
+    }
+
     override suspend fun deleteActivityTasksFromDB() {
         activityTaskDao.deleteActivityTask()
     }

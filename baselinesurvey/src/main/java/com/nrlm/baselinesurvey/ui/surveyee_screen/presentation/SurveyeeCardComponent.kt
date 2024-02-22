@@ -153,7 +153,8 @@ fun SurveyeeCardComponent(
                     horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    CircularImageViewComponent(modifier = Modifier, surveyeeState.imagePath)
+                    if (!surveyeeState.activityName.equals("Conduct Hamlet Survey"))
+                        CircularImageViewComponent(modifier = Modifier, surveyeeState.imagePath)
                     Column(
                         modifier = Modifier
                             .weight(1f)
@@ -162,11 +163,11 @@ fun SurveyeeCardComponent(
                         horizontalAlignment = Alignment.Start
                     ) {
                         Text(
-                            text = surveyeeState.surveyeeDetails.didiName,
+                            text =  if (!surveyeeState.activityName.equals("Conduct Hamlet Survey")) surveyeeState.surveyeeDetails.didiName else surveyeeState.surveyeeDetails.cohortName,
                             style = mediumTextStyle,
                             color = brownDark
                         )
-                        if (surveyeeState.subtitle != BLANK_STRING) {
+                        if (surveyeeState.subtitle != BLANK_STRING && !surveyeeState.activityName.equals("Conduct Hamlet Survey")) {
                             Text(
                                 text = surveyeeState.subtitle,
                                 style = smallTextStyleMediumWeight,
@@ -187,7 +188,8 @@ fun SurveyeeCardComponent(
                                 Spacer(modifier = Modifier.width(dimen_3_dp))
                                 Text(
 
-                                    text = surveyeeState.address.toLowerCase(Locale.current).toCamelCase(),
+                                    text = if (!surveyeeState.activityName.equals("Conduct Hamlet Survey")) surveyeeState.address.toLowerCase(Locale.current).toCamelCase()
+                                    else surveyeeState.surveyeeDetails.villageName.toLowerCase().toCamelCase(),
                                     style = smallTextStyleMediumWeight,
                                     color = textColorDark
                                 )
@@ -345,6 +347,7 @@ fun SurveyeeCardPreview() {
                 surveyeeDetails = didi,
                 subtitle = didi.didiName,
                 address = didi.houseNo + ",  " + didi.cohortName,
+                activityName =  "Conduct Hamlet Survey",
                 surveyState = SurveyState.NOT_STARTED
             ),
             showCheckBox = true,

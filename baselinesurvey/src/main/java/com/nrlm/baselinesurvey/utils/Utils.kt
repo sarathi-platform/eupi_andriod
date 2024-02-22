@@ -629,7 +629,8 @@ fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObject
         householdMember.questionId = formQuestionResponseEntityList.value.first().questionId
         householdMember.questionTag = questionTag
         formQuestionResponseEntityList.value.forEachIndexed { index, formQuestionResponseEntity ->
-            var option = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }
+            householdMemberDetailsMap.put(formQuestionResponseEntity.optionId, formQuestionResponseEntity.selectedValue)
+            /*var option = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }
             if (option==null) {
                 optionsItemEntityList.forEach { optionItemEntity ->
                     optionItemEntity.conditions?.forEach { conditionsDto ->
@@ -641,8 +642,8 @@ fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObject
                         }
                     }
                 }
-            }
-            householdMemberDetailsMap.put(option?.optionId ?: -1, formQuestionResponseEntity.selectedValue)
+            }*/
+
             householdMember.memberDetailsMap = householdMemberDetailsMap
         }
         householdMembersList.add(householdMember)

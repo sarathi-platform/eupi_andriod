@@ -51,4 +51,8 @@ interface DataLoadingScreenRepository {
     suspend fun getCasteListFromNetwork(languageId:Int):ApiResponseModel<List<CasteModel>>
     fun saveCasteList(castes:String)
     fun getCasteList():List<CasteModel>
+
+    suspend fun updateActivityStatusForMission(missionId: Int,
+                                               activityComplete: Int,
+                                               pendingActivity: Int)
 }
