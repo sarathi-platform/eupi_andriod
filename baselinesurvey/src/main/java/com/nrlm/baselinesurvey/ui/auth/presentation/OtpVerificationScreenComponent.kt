@@ -280,7 +280,6 @@ fun OtpVerificationScreenComponent(
     LaunchedEffect(key1 = viewModel.validateApiSuccess.value) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
         if (viewModel.validateApiSuccess.value) {
-            Log.d("TAG", "OtpVerificationScreenComponent: ${navController.graph.route} ")
             if(navController.graph.route?.equals(Graph.HOME,true) == true){
                 //Commented for now
 
