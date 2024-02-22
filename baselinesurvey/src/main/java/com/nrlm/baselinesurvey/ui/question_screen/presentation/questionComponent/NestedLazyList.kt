@@ -140,38 +140,43 @@ fun NestedLazyList(
             .filter { it.showQuestion } ?: emptyList()
     DisposableEffect(key1 = context) {
 
-        sectionDetails.questionList.find { it.type == QuestionType.Form.name }?.let { question ->
+        try {
             coroutineScope.launch(Dispatchers.IO) {
-                val optionItemEntityList =
-                    questionScreenViewModel.getFormQuestionsOptionsItemEntityList(
-                        sectionDetails.surveyId,
-                        sectionDetails.sectionId,
-                        question.questionId!!
-                    )
-                questionScreenViewModel.optionItemEntityList = optionItemEntityList
-                questionScreenViewModel.formResponsesForQuestionLive =
-                    questionScreenViewModel.getFormQuestionResponseEntityLive(
-                        sectionDetails.surveyId,
-                        sectionDetails.sectionId,
-                        question.questionId!!,
-                        surveyeeId
-                    )
-                withContext(Dispatchers.Main) {
-                    questionScreenViewModel.formResponsesForQuestionLive.observe(lifecycleOwner) {
-                        householdMemberDtoList.value.addAll(
-                            it.mapFormQuestionResponseToFromResponseObjectDto(
-                                optionItemEntityList,
-                                question.tag
+                sectionDetails.questionList.find { it.type == QuestionType.Form.name }?.let { question ->
+                        val optionItemEntityList =
+                            questionScreenViewModel.getFormQuestionsOptionsItemEntityList(
+                                sectionDetails.surveyId,
+                                sectionDetails.sectionId,
+                                question.questionId!!
                             )
-                        )
-                        if (it.isNotEmpty()) {
-                            answeredQuestionCountIncreased(
-                                questionScreenViewModel.questionEntityStateList.find { questionEntityState -> questionEntityState.questionId == it.first().questionId }!!
+
+                        questionScreenViewModel.optionItemEntityList = optionItemEntityList
+                        questionScreenViewModel.formResponsesForQuestionLive =
+                            questionScreenViewModel.getFormQuestionResponseEntityLive(
+                                sectionDetails.surveyId,
+                                sectionDetails.sectionId,
+                                question.questionId!!,
+                                surveyeeId
                             )
+                        withContext(Dispatchers.Main) {
+                            questionScreenViewModel.formResponsesForQuestionLive.observe(lifecycleOwner) {
+                                householdMemberDtoList.value.addAll(
+                                    it.mapFormQuestionResponseToFromResponseObjectDto(
+                                        optionItemEntityList,
+                                        question.tag
+                                    )
+                                )
+                                if (it.isNotEmpty()) {
+                                    answeredQuestionCountIncreased(
+                                        questionScreenViewModel.questionEntityStateList.find { questionEntityState -> questionEntityState.questionId == it.first().questionId }!!
+                                    )
+                                }
+                            }
                         }
-                    }
                 }
             }
+        } catch (ex: Exception) {
+            Log.e("TAG", "NestedLazyList -> DisposableEffect -> exception: ${ex.message} ", ex)
         }
         onDispose {
             questionScreenViewModel.formResponsesForQuestionLive.removeObservers(lifecycleOwner)
@@ -180,23 +185,27 @@ fun NestedLazyList(
 
     DisposableEffect(key1 = context) {
         coroutineScope.launch(Dispatchers.IO) {
-            questionScreenViewModel.didiInfoObjectLive = questionScreenViewModel.getDidiInfoObjectLive(surveyeeId)
-            withContext(Dispatchers.Main) {
-                questionScreenViewModel.didiInfoObjectLive.observe(lifecycleOwner) {
-                    if (!it.isNullOrEmpty()) {
-                        questionScreenViewModel.questionEntityStateList
-                            .find { questionEntityState ->
-                                questionEntityState.questionEntity?.questionSummary.equals(
-                                    "Add didi details",
-                                    false
-                                )
-                            }?.let { it1 ->
-                                answeredQuestionCountIncreased(
-                                    it1
-                                )
-                            }
+            try {
+                questionScreenViewModel.didiInfoObjectLive = questionScreenViewModel.getDidiInfoObjectLive(surveyeeId)
+                withContext(Dispatchers.Main) {
+                    questionScreenViewModel.didiInfoObjectLive.observe(lifecycleOwner) {
+                        if (!it.isNullOrEmpty()) {
+                            questionScreenViewModel.questionEntityStateList
+                                .find { questionEntityState ->
+                                    questionEntityState.questionEntity?.questionSummary.equals(
+                                        "Add didi details",
+                                        false
+                                    )
+                                }?.let { it1 ->
+                                    answeredQuestionCountIncreased(
+                                        it1
+                                    )
+                                }
+                        }
                     }
                 }
+            } catch (ex: Exception) {
+                Log.e("TAG", "NestedLazyList -> DisposableEffect: exception -> ${ex.message}", ex)
             }
         }
         onDispose {
@@ -788,8 +797,7 @@ fun NestedLazyList(
                     }
                     item {
                         Column {
-                            val optionItemListWithConditionals: List<OptionItemEntity> =
-                                questionScreenViewModel.getOptionItemListWithConditionals()
+                            val optionItemListWithConditionals: List<OptionItemEntity> = questionScreenViewModel.getOptionItemListWithConditionals()
                             householdMemberDtoList.value.distinctBy { it.referenceId }
                                 .forEach { householdMemberDto ->
                                     FormResponseCard(

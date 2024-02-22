@@ -76,6 +76,7 @@ class SurveyeeScreenViewModel @Inject constructor(
                     imagePath = surveyeeEntity.crpImageName,
                     subtitle = surveyeeEntity.dadaName,
                     address = getSurveyeeAddress(surveyeeEntity),
+                    activityName = activityName,
                     surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
                 )
 
@@ -91,7 +92,7 @@ class SurveyeeScreenViewModel @Inject constructor(
                     activityId
                 ).isAllTask
 
-            if (_thisWeekSurveyeeListState.value.isNotEmpty()) {
+            /*if (_thisWeekSurveyeeListState.value.isNotEmpty()) {
                 _thisWeekSurveyeeListState.value.clear()
             }
             surveyeeListFromDb.filter { it.movedToThisWeek }.forEach { surveyeeEntity ->
@@ -105,7 +106,7 @@ class SurveyeeScreenViewModel @Inject constructor(
                 _thisWeekSurveyeeListState.value.add(surveyeeState)
             }
 //            }
-            _thisWeekFilteredSurveyeeListState.value = _thisWeekSurveyeeListState.value
+            _thisWeekFilteredSurveyeeListState.value = _thisWeekSurveyeeListState.value*/
 
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -113,7 +114,7 @@ class SurveyeeScreenViewModel @Inject constructor(
         }
     }
 
-    fun getThisWeekSurveyeeList() {
+    /*fun getThisWeekSurveyeeList() {
         CoroutineScope(Dispatchers.IO).launch {
             val surveyeeListFromDb = surveyeeScreenUseCase.getSurveyeeListUseCase.invoke(0, "")
             surveyeeListFromDb.filter { it.movedToThisWeek }.forEach { surveyeeEntity ->
@@ -130,7 +131,7 @@ class SurveyeeScreenViewModel @Inject constructor(
             _thisWeekFilteredSurveyeeListState.value = _thisWeekSurveyeeListState.value
         }
 
-    }
+    }*/
 
 
     override fun <T> onEvent(event: T) {
@@ -167,7 +168,7 @@ class SurveyeeScreenViewModel @Inject constructor(
                             event.moveDidisToNextWeek
                         )
                         showMoveDidisBanner.value = true
-                        getThisWeekSurveyeeList()
+//                        getThisWeekSurveyeeList()
                     }
                 }
             }
@@ -178,7 +179,7 @@ class SurveyeeScreenViewModel @Inject constructor(
                             event.didiId,
                             event.moveDidisToNextWeek
                         )
-                        getThisWeekSurveyeeList()
+//                        getThisWeekSurveyeeList()
                     }
                 }
             }

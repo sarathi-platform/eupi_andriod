@@ -108,7 +108,6 @@ fun FormResponseCard(
                 }
                 Spacer(modifier = Modifier.width(dimen_14_dp))
                 Column {
-                    Log.d("TAG", "FormResponseCard: optionItemListWithConditionals -> $optionItemListWithConditionals")
                     Text(text = buildAnnotatedString {
                         if (householdMemberDto.questionTag.equals("Household information")) {
                             append(householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
@@ -124,6 +123,18 @@ fun FormResponseCard(
                                     ignoreCase = true
                                 )!!
                             }?.optionId]  ?: BLANK_STRING)
+
+                            Log.d("TAG", "FormResponseCard: option: ${optionItemListWithConditionals.find {
+                                it.display?.contains(
+                                    "sources of income",
+                                    ignoreCase = true
+                                )!!
+                            }} \n\n\n source of income: ${householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                it.display?.contains(
+                                    "sources of income",
+                                    ignoreCase = true
+                                )!!
+                            }?.optionId]  ?: BLANK_STRING}")
 
 
                             var income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
@@ -155,7 +166,7 @@ fun FormResponseCard(
 
                             append(income)
                         } else if (householdMemberDto.questionTag.equals("Public Infra")) {
-                            val questionState = fromTypeQuestionList.find { it.questionId == householdMemberDto.questionId }
+                            val questionState = fromTypeQuestionList.filter { it.questionEntity?.type == QuestionType.Form.name }.find { it.questionId == householdMemberDto.questionId }
                             var source = when (questionState?.questionEntity?.questionDisplay) {
                                 "To the block office",
                                 "To the nearest primary health care centre",
@@ -180,9 +191,20 @@ fun FormResponseCard(
                             }?.optionId] ?: BLANK_STRING
 
                             if (mode != BLANK_STRING)
-                                append("|")
+                                append(" | ")
 
                             append(mode)
+
+                        } else if (householdMemberDto.questionTag.contains("key programme", true)) {
+                            var name = BLANK_STRING
+                            name = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                it.display?.contains(
+                                    "Name",
+                                    ignoreCase = true
+                                )!!
+                            }?.optionId] ?: BLANK_STRING
+
+                            append(name)
 
                         }
                         else append(BLANK_STRING)
@@ -248,6 +270,17 @@ fun FormResponseCard(
 
                             append("Average Cost: $avgCost")
 
+                        } else if (householdMemberDto.questionTag.contains("key programme", true)) {
+                            var name = BLANK_STRING
+                            name = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                it.display?.contains(
+                                    "Influence type",
+                                    ignoreCase = true
+                                )!!
+                            }?.optionId] ?: BLANK_STRING
+
+                            append(name)
+
                         }
                         else {
                             append(BLANK_STRING)
@@ -271,7 +304,8 @@ fun FormResponseCard(
                     color = borderGreyLight,
                     modifier = Modifier
                         .fillMaxHeight()  //fill the max height
-                        .width(1.dp)
+                        .width(10.dp)
+                        .weight(1f)
                 )
                 TextButton(onClick = { onDelete(householdMemberDto.referenceId) }, modifier = Modifier
                     .fillMaxWidth()

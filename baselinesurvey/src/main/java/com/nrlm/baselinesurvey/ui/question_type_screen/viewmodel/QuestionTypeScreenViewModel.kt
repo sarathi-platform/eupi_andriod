@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.snapshots.StateObject
+import androidx.compose.runtime.snapshots.StateRecord
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
@@ -186,7 +188,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
 
     }
 
-    //TODO Handle Update for answered question.
+    //TODO Handle Update for answered question seperate index search and list update logic.
     private fun updateAnsweredConditionalQuestion() {
         val tempList = updatedOptionList.toList()
         val tempFormQuestionResponseEntityList = formQuestionResponseEntity.value

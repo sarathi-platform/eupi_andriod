@@ -542,9 +542,10 @@ class QuestionScreenViewModel @Inject constructor(
 
             is QuestionScreenEvents.UpdateAnsweredQuestionCount -> {
                 try {
+                    val tempList = questionEntityStateList.toList()
                     viewModelScope.launch(Dispatchers.IO) {
                         event.question.questionId?.let { answeredQuestionCount.add(it) }
-                        totalQuestionCount.intValue = questionEntityStateList.filter { it.showQuestion }.distinctBy { it.questionId }.size
+                        totalQuestionCount.intValue = tempList.filter { it.showQuestion }.distinctBy { it.questionId }.size
                         delay(100)
                         withContext(Dispatchers.Main) {
                             isSectionCompleted.value = answeredQuestionCount.size == totalQuestionCount.intValue || answeredQuestionCount.size > totalQuestionCount.intValue
@@ -836,18 +837,19 @@ class QuestionScreenViewModel @Inject constructor(
 
         optionItemEntityList.forEach { optionItemEntity ->
             optionItemEntity.conditions?.forEach { conditionsDto ->
-                conditionsDto?.resultList?.forEach { questionItem ->
-                    questionItem.options?.forEach { subOption ->
-                        val option = subOption?.convertToOptionItemEntity(
-                            optionItemEntity.questionId!!,
-                            optionItemEntity.sectionId,
-                            optionItemEntity.surveyId,
-                            optionItemEntity.languageId!!
-                        )
-                        if (option != null)
-                            optionItemList.add(option)
+                if (conditionsDto?.resultType?.equals(ResultType.Questions.name, true) == true) {
+                    conditionsDto?.resultList?.forEach { questionItem ->
+                        questionItem.options?.forEach { subOption ->
+                            val option = subOption?.convertToOptionItemEntity(
+                                optionItemEntity.questionId!!,
+                                optionItemEntity.sectionId,
+                                optionItemEntity.surveyId,
+                                optionItemEntity.languageId!!
+                            )
+                            if (option != null)
+                                optionItemList.add(option)
+                        }
                     }
-
                 }
             }
         }
