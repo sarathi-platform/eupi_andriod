@@ -548,7 +548,7 @@ fun NestedLazyList(
                                     onAnswerSelection = { questionIndex ->
                                         //TODO need to be dynamic..
                                         if (question.questionEntity.questionSummary.equals(
-                                                "Add details",
+                                                "Add didi details",
                                                 false
                                             )
                                         ) {
@@ -633,6 +633,10 @@ fun NestedLazyList(
                                             QuestionType.SingleSelectDropDown.name -> {
                                                 val mOptionItem = optionItem.copy(selectedValue = selectedValue)
                                                 questionScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption(question, mOptionItem))
+                                            }
+                                            QuestionType.InputNumber.name -> {
+                                                val mOptionItem = optionItem.copy(selectedValue = selectedValue)
+                                                questionScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionQuestionStateForInputNumberOptions(question, mOptionItem))
                                             }
                                         }
 
