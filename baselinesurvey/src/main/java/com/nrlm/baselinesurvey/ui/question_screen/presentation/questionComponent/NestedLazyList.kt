@@ -135,6 +135,9 @@ fun NestedLazyList(
         mutableStateOf(mutableListOf<FormResponseObjectDto>())
     }
 
+    val mQuestionEntity =
+        questionScreenViewModel.questionEntityStateList.distinctBy { it.questionId }
+            .filter { it.showQuestion } ?: emptyList()
     DisposableEffect(key1 = context) {
 
         sectionDetails.questionList.find { it.type == QuestionType.Form.name }?.let { question ->
@@ -371,8 +374,7 @@ fun NestedLazyList(
                     }
 
                     itemsIndexed(
-                        items = questionScreenViewModel.questionEntityStateList.distinctBy { it.questionId }
-                            .filter { it.showQuestion } ?: emptyList()
+                        items = mQuestionEntity
                     ) { index, question ->
 
                         when (question?.questionEntity?.type) {
