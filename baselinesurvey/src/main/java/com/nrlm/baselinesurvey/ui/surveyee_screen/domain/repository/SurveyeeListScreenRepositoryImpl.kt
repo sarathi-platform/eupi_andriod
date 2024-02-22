@@ -39,6 +39,11 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
     ): List<SurveyeeEntity> {
         val didiList = mutableListOf<SurveyeeEntity>()
         getActivityTasks(missionId = missionId, activityName = activityName).forEach { task ->
+            if (task.activityName.equals("Conduct Hamlet Survey", true)){
+                val mDidiList = surveyeeEntityDao.getAllDidis()
+                didiList.addAll(mDidiList.filter { it.cohortId == task.didiId }.distinctBy { it.cohortId })
+            }
+
             if (surveyeeEntityDao.isDidiExist(task.didiId)) {
                 didiList.add(surveyeeEntityDao.getDidi(task.didiId))
             }

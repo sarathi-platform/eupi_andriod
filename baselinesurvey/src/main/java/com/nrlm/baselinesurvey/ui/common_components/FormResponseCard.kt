@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,6 +42,7 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
+import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
@@ -52,6 +54,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.greyLightColor
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.white
+import java.util.Locale
 
 @Composable
 fun FormResponseCard(
@@ -65,6 +68,8 @@ fun FormResponseCard(
 ) {
 
     val questionScreenViewModel = viewModel as QuestionScreenViewModel
+
+    val fromTypeQuestionList = questionScreenViewModel.questionEntityStateList.filter { it.questionEntity?.type == QuestionType.Form.name }.toList()
 
     Card(
         elevation = CardDefaults.cardElevation(
@@ -149,6 +154,36 @@ fun FormResponseCard(
                             }
 
                             append(income)
+                        } else if (householdMemberDto.questionTag.equals("Public Infra")) {
+                            val questionState = fromTypeQuestionList.find { it.questionId == householdMemberDto.questionId }
+                            var source = when (questionState?.questionEntity?.questionDisplay) {
+                                "To the block office",
+                                "To the nearest primary health care centre",
+                                "To the nearest government school",
+                                "To the nearest permanent market",
+                                "To the nearest bank"-> {
+                                    questionState.questionEntity.questionDisplay?.replace("To the ", BLANK_STRING)?.capitalize(Locale.ROOT)
+                                }
+                                else -> {
+                                    BLANK_STRING
+                                }
+                            }
+
+                            append(source)
+
+                            var mode = BLANK_STRING
+                            mode = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                it.display?.contains(
+                                    "Acess to public transportation",
+                                    ignoreCase = true
+                                )!!
+                            }?.optionId] ?: BLANK_STRING
+
+                            if (mode != BLANK_STRING)
+                                append("|")
+
+                            append(mode)
+
                         }
                         else append(BLANK_STRING)
                     })
@@ -203,7 +238,18 @@ fun FormResponseCard(
                                 }?.optionId] ?: BLANK_STRING
 
                             append(income)
-                        } else {
+                        } else if (householdMemberDto.questionTag.equals("Public Infra")) {
+                            val avgCost = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                it.display?.trim()?.contains(
+                                    "Average travel cost ".trim(),
+                                    ignoreCase = true
+                                )!!
+                            }?.optionId] ?: BLANK_STRING
+
+                            append("Average Cost: $avgCost")
+
+                        }
+                        else {
                             append(BLANK_STRING)
                         }
                     })

@@ -20,6 +20,12 @@ class FetchMissionDataFromNetworkUseCase(
                     repository.deleteActivityTasksFromDB()
                     var activityTaskSize = 0
                     missionApiResponse.forEach { mission ->
+                        repository.saveMissionToDB(
+                            MissionEntity.getMissionEntity(
+                                activityTaskSize = activityTaskSize,
+                                mission = mission
+                            )
+                        )
                         mission.activities.forEach { activity ->
                             repository.saveMissionsActivityToDB(
                                 MissionActivityEntity.getMissionActivityEntity(
@@ -29,23 +35,19 @@ class FetchMissionDataFromNetworkUseCase(
                                 )
                             )
                             activity.tasks.forEach { task ->
-                                repository.saveActivityTaskToDB(
-                                    ActivityTaskEntity.getActivityTaskEntity(
-                                        missionId = mission.missionId,
-                                        activityId = activity.activityId,
-                                        activityName = activity.activityName,
-                                        task = task
+                                if (task.didiId != null) {
+                                    repository.saveActivityTaskToDB(
+                                        ActivityTaskEntity.getActivityTaskEntity(
+                                            missionId = mission.missionId,
+                                            activityId = activity.activityId,
+                                            activityName = activity.activityName,
+                                            task = task
+                                        )
                                     )
-                                )
+                                }
                             }
                             activityTaskSize += activity.tasks.size
                         }
-                        repository.saveMissionToDB(
-                            MissionEntity.getMissionEntity(
-                                activityTaskSize = activityTaskSize,
-                                mission = mission
-                            )
-                        )
                     }
                     return true
                 }
