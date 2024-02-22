@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.domain.repository
 
 import androidx.lifecycle.LiveData
+import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.FormQuestionResponseDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
@@ -9,7 +10,8 @@ import javax.inject.Inject
 
 class FormQuestionResponseRepositoryImpl @Inject constructor(
     private val optionItemDao: OptionItemDao,
-    private val formQuestionResponseDao: FormQuestionResponseDao
+    private val formQuestionResponseDao: FormQuestionResponseDao,
+    private val prefRepo: PrefRepo
 ) : FormQuestionResponseRepository {
     override suspend fun getFormQuestionOptions(
         surveyId: Int,
@@ -19,7 +21,13 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
         return optionItemDao.getSurveySectionQuestionOptions(
             surveyId = surveyId,
             sectionId = sectionId,
-            questionId = questionId)
+            questionId = questionId,
+            languageId = getSelectedLanguage()
+        )
+    }
+
+    fun getSelectedLanguage(): Int {
+        return prefRepo.getAppLanguageId() ?: 2
     }
 
     override suspend fun getFormResponsesForQuestion(
