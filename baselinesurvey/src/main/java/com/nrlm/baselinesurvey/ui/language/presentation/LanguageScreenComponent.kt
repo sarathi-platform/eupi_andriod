@@ -189,44 +189,11 @@ fun LanguageScreenComponent(
                             ))
                         }
                     }
-                    if(viewModel.prefRepo.getPref(LANGUAGE_OPEN_FROM_SETTING,false)){
+                    if(viewModel.getLanguageScreenOpenFrom()){
                         navController.popBackStack()
                     }else {
                         navController.navigate(AuthScreen.LOGIN.route)
                     }
-/*
-                    viewModel.languageList.value?.get(viewModel.languagePosition.value)?.let {
-                        it.id?.let { languageId->
-                            viewModel.languageRepository.prefRepo.saveAppLanguageId(languageId)
-                            if(!pageFrom.equals(ARG_FROM_HOME,true)){
-                                viewModel.updateSelectedVillage(languageId){
-                                    isLanguageVillageAvailable.value=false
-//                                    viewModel.prefRepo.saveAppLanguageId(2)
-                                }
-                            }
-                        }
-                        it.langCode?.let { code ->
-                            if(isLanguageVillageAvailable.value){
-                                viewModel.languageRepository.prefRepo.saveAppLanguage(code)
-                                (context as MainActivity).setLanguage(code)
-                            }else{
-                                viewModel.languageRepository.prefRepo.saveAppLanguage("en")
-                                (context as MainActivity).setLanguage("en")
-                            }
-                        }
-                    }
-
-*/
-                   /* if(viewModel.languageRepository.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal){
-                        navController.popBackStack(AuthScreen.AUTH_SETTING_SCREEN.route, false)
-                    }else {
-                        if (pageFrom.equals(ARG_FROM_HOME, true))
-                            navController.navigate(AuthScreen.LOGIN.route)
-                        else {
-                            viewModel.languageRepository.prefRepo.savePref(PREF_OPEN_FROM_HOME, false)
-                            navController.popBackStack(Se.SETTING_SCREEN.route, false)
-                        }
-                    }*/
                 } catch (ex: Exception) {
                     BaselineLogger.e("LanguageScreen", "Continue Button click", ex)
                 }

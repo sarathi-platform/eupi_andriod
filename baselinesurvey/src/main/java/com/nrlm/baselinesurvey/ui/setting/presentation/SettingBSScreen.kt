@@ -57,8 +57,15 @@ fun SettingBSScreen(
        onItemClick = { index,option->
             when(option.tag){
                 SettingTagEnum.LANGUAGE.name -> {
-                    viewModel?.openLanguagePageFrom()
+                    viewModel?.saveLanguagePageFrom()
                     navController.navigate(SettingBSScreens.LANGUAGE_SCREEN.route)
+                }
+                SettingTagEnum.PROFILE.name ->{
+                navController.navigate(SettingBSScreens.PROFILE_SCREEN.route)
+
+                }
+                SettingTagEnum.SHARE_LOGS.name ->{
+                    viewModel?.buildAndShareLogs()
                 }
             }
        },
