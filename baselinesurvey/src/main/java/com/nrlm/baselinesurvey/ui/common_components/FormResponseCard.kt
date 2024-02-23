@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.ui.common_components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +18,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,7 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
@@ -39,23 +37,18 @@ import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
-import com.nrlm.baselinesurvey.ui.theme.black1
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
-import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
-import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_14_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
-import com.nrlm.baselinesurvey.ui.theme.greyLightColor
-import com.nrlm.baselinesurvey.ui.theme.redDark
-import com.nrlm.baselinesurvey.ui.theme.redOffline
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleWithNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.white
 import java.util.Locale
+import com.nrlm.baselinesurvey.R
 
 @Composable
 fun FormResponseCard(
@@ -118,7 +111,7 @@ fun FormResponseCard(
                         if (householdMemberDto.questionTag.equals("Household information")) {
                             append(householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
                                 it.display?.contains(
-                                    "Name",
+                                    stringResource(id = R.string.name_comparision),
                                     ignoreCase = true
                                 )!!
                             }?.optionId] ?: BLANK_STRING)
@@ -126,7 +119,7 @@ fun FormResponseCard(
                             append(
                                 householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
                                     it.display?.contains(
-                                        "sources of income",
+                                        stringResource(id = R.string.income_source_comparision),
                                         ignoreCase = true
                                     )!!
                                 }?.optionId]  ?: BLANK_STRING
@@ -135,7 +128,7 @@ fun FormResponseCard(
 
                             var income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
                                 it.display?.contains(
-                                    "(A) Agricultural produce - ",
+                                    stringResource(id = R.string.agriculture_produce_comparision),
                                     ignoreCase = true
                                 )!!
                             }?.optionId] ?: BLANK_STRING
@@ -143,7 +136,7 @@ fun FormResponseCard(
                             if (income == BLANK_STRING)
                                 income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
                                     it.display?.contains(
-                                        "(A) Type of livestock - ",
+                                        stringResource(id = R.string.livestock_comparision),
                                         ignoreCase = true
                                     )!!
                                 }?.optionId] ?: BLANK_STRING
@@ -151,7 +144,7 @@ fun FormResponseCard(
                             if (income == BLANK_STRING)
                                 income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
                                     it.display?.equals(
-                                        "Income frequency",
+                                        stringResource(id = R.string.income_frequency_comparision),
                                         ignoreCase = true
                                     )!!
                                 }?.optionId] ?: BLANK_STRING
@@ -196,7 +189,7 @@ fun FormResponseCard(
                             var name = BLANK_STRING
                             name = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
                                 it.display?.contains(
-                                    "Name",
+                                    stringResource(id = R.string.name_comparision),
                                     ignoreCase = true
                                 )!!
                             }?.optionId] ?: BLANK_STRING
@@ -211,14 +204,14 @@ fun FormResponseCard(
                         if (householdMemberDto.questionTag.equals("Household information")) {
                             this.append(householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
                                 it.display?.contains(
-                                    "Relationship",
+                                    stringResource(id = R.string.relationship_comparision),
                                     ignoreCase = true
                                 )!!
                             }?.optionId] ?: BLANK_STRING)
                             this.append(" | ")
                             this.append(householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
                                 it.display?.contains(
-                                    "Age",
+                                    stringResource(id = R.string.age_comparision),
                                     ignoreCase = true
                                 )!!
                             }?.optionId] ?: BLANK_STRING)
@@ -226,15 +219,15 @@ fun FormResponseCard(
                         } else if (householdMemberDto.questionTag.equals("Livelihood sources")) {
                             if ((householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
                                     it.display?.contains(
-                                        "sources of income",
+                                        stringResource(id = R.string.income_source_comparision),
                                         ignoreCase = true
                                     )!!
-                                }?.optionId]  ?: BLANK_STRING) != "No income") {
-                                append("Total Income: ₹")
+                                }?.optionId]  ?: BLANK_STRING) != stringResource(id = R.string.no_income_comparision)) {
+                                append(stringResource(R.string.total_income_lable))
                                 var income =
                                     householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
                                         it.display?.contains(
-                                            "(E) Total Income",
+                                            stringResource(id = R.string.total_income_comparision),
                                             ignoreCase = true
                                         )!!
                                     }?.optionId] ?: BLANK_STRING
@@ -243,7 +236,7 @@ fun FormResponseCard(
                                     income =
                                         householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
                                             it.display?.contains(
-                                                "(D) Total units",
+                                                stringResource(id = R.string.total_unit_comparision),
                                                 ignoreCase = true
                                             )!!
                                         }?.optionId] ?: BLANK_STRING
@@ -252,7 +245,7 @@ fun FormResponseCard(
                                 if (income == BLANK_STRING)
                                     optionItemListWithConditionals.filter {
                                         it.display?.equals(
-                                            "Income",
+                                            stringResource(id = R.string.income_comparision),
                                             ignoreCase = true
                                         )!!
                                     }.forEach {
@@ -267,7 +260,7 @@ fun FormResponseCard(
                                     income =
                                         householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
                                             it.display?.contains(
-                                                "What is the household income from small business in the last 12 months?",
+                                                stringResource(id = R.string.small_business_comparision),
                                                 ignoreCase = true
                                             )!!
                                         }?.optionId] ?: BLANK_STRING
