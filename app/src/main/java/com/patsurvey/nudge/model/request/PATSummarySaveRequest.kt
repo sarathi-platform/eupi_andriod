@@ -61,8 +61,10 @@ data class PATSummarySaveRequest(
     @SerializedName("cohortName")
     val cohortName: String? = BLANK_STRING,
     @SerializedName("externalSystemId")
-    val externalSystemId: String? = BLANK_STRING
-) {
+    val externalSystemId: String? = BLANK_STRING,
+    @SerializedName("deviceId") var deviceId: String? = BLANK_STRING,
+
+    ) {
 
     companion object {
         fun getPatSummarySaveRequest(
@@ -90,7 +92,8 @@ data class PATSummarySaveRequest(
                 beneficiaryAddress = didiEntity.address,
                 cohortName = didiEntity.cohortName,
                 guardianName = didiEntity.guardianName,
-                answerDetailDTOList = answerDetailDTOList
+                answerDetailDTOList = answerDetailDTOList,
+                deviceId = didiEntity.localUniqueId
             )
         }
     }

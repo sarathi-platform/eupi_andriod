@@ -27,7 +27,6 @@ import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.utils.ACCEPTED
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
@@ -36,7 +35,6 @@ import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PAT_SURVEY
 import com.patsurvey.nudge.utils.PREF_FORM_C_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_D_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
@@ -291,10 +289,15 @@ class FormPictureScreenViewModel @Inject constructor(
 
                                 val updateVoStatusRequest = listOf(
                                     EditDidiWealthRankingRequest(
-                                        if (didi.serverId == 0) didi.id else didi.serverId,
+                                         didi.serverId,
                                         StepType.VO_ENDROSEMENT.name,
                                         ACCEPTED,
-                                        rankingEdit = false
+                                        rankingEdit = false,
+                                        name = didi.name,
+                                        address = didi.address,
+                                        guardianName = didi.guardianName,
+                                        villageId = didi.villageId,
+                                        deviceId = didi.localUniqueId
                                     )
                                 )
                                 NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> updateVoStatusRequest:" +
@@ -347,10 +350,15 @@ class FormPictureScreenViewModel @Inject constructor(
 
                                 val updateVoStatusRequest = listOf(
                                     EditDidiWealthRankingRequest(
-                                        if (didi.serverId == 0) didi.id else didi.serverId,
+                                        didi.serverId,
                                         StepType.VO_ENDROSEMENT.name,
                                         DidiEndorsementStatus.REJECTED.name,
-                                        rankingEdit = false
+                                        rankingEdit = false,
+                                        name = didi.name,
+                                        address = didi.address,
+                                        guardianName = didi.guardianName,
+                                        villageId = didi.villageId,
+                                        deviceId = didi.localUniqueId
                                     )
                                 )
                                 NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> updateVoStatusRequest:" +
@@ -425,8 +433,10 @@ class FormPictureScreenViewModel @Inject constructor(
                     val primaryWorkFlowRequest = listOf(
                         EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(5)].workFlowId,
                             StepStatus.COMPLETED.name, longToString(repository.prefRepo.getPref(
-                                PREF_VO_ENDORSEMENT_COMPLETION_DATE_ +repository.prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
-                        )
+                                PREF_VO_ENDORSEMENT_COMPLETION_DATE_ +repository.prefRepo.getSelectedVillage().id,System.currentTimeMillis())),
+                            villageId,
+                            programsProcessId = stepList[stepList.map { it.orderNumber }
+                                .indexOf(5)].id)
                     )
                     NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
 
@@ -473,7 +483,9 @@ class FormPictureScreenViewModel @Inject constructor(
                                 EditWorkFlowRequest(
                                     bpcStep.workFlowId,
                                     StepStatus.INPROGRESS.name,
-                                    System.currentTimeMillis().toString()
+                                    System.currentTimeMillis().toString(),
+                                    villageId,
+                                    programsProcessId = bpcStep.id
                                 )
                             )
                             val bpcStepWorkFlowResponse =

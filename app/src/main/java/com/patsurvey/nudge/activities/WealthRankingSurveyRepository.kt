@@ -112,7 +112,7 @@ class WealthRankingSurveyRepository @Inject constructor(
         return stepsListDao.isStepComplete(stepId, prefRepo.getSelectedVillage().id)
     }
     fun getAllNeedToPostDidiRanking(needsToPostRanking: Boolean): List<DidiEntity>{
-        return didiDao.getAllNeedToPostDidiRanking(needsToPostRanking, 0)
+        return didiDao.getAllNeedToPostDidiRanking(needsToPostRanking)
     }
     suspend fun updateDidiRanking(didiWealthRankingRequest: List<EditDidiWealthRankingRequest>): ApiResponseModel<List<DidiEntity>>{
         NudgeLogger.d("WealthRankingSurveyRepository","updateDidiRanking Request=> ${Gson().toJson(didiWealthRankingRequest)}")

@@ -452,7 +452,7 @@ class AddDidiRepository @Inject constructor(
         transactionId: String?,
         serverId: Int
     ): List<DidiEntity> {
-        return this.didiDao.fetchAllDidiNeedToUpdate(needsToPost, transactionId, serverId)
+        return this.didiDao.fetchAllDidiNeedToUpdate(needsToPost, transactionId)
     }
 
     fun fetchAllDidiNeedToDelete(status: Int): List<DidiEntity> {
@@ -464,7 +464,7 @@ class AddDidiRepository @Inject constructor(
         transactionId: String?,
         serverId: Int
     ): List<DidiEntity> {
-        return didiDao.fetchAllPendingDidiNeedToUpdate(needsToPost, transactionId, serverId)
+        return didiDao.fetchAllPendingDidiNeedToUpdate(needsToPost, transactionId)
     }
 
     fun fetchAllPendingDidiNeedToDelete(
@@ -472,7 +472,7 @@ class AddDidiRepository @Inject constructor(
         transactionId: String?,
         serverId: Int
     ): List<DidiEntity> {
-        return this.didiDao.fetchAllPendingDidiNeedToDelete(status, transactionId, serverId)
+        return this.didiDao.fetchAllPendingDidiNeedToDelete(status, transactionId)
     }
 
     fun deleteDidi(id: Int) {

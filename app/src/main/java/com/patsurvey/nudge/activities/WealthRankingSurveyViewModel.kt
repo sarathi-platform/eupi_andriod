@@ -108,15 +108,17 @@ class WealthRankingSurveyViewModel @Inject constructor(
                 )
                 if (dbResponse.workFlowId > 0) {
                     val primaryWorkFlowRequest = listOf(
-                        EditWorkFlowRequest(
-                            stepList[stepList.map { it.orderNumber }.indexOf(3)].workFlowId,
+                        EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(3)].workFlowId,
                             StepStatus.COMPLETED.name,
                             longToString(
                                 repository.prefRepo.getPref(
                                     PREF_WEALTH_RANKING_COMPLETION_DATE_ + repository.prefRepo.getSelectedVillage().id,
                                     System.currentTimeMillis()
                                 )
-                            )
+                            ),
+                            villageId,
+                            programsProcessId = stepList[stepList.map { it.orderNumber }
+                                .indexOf(3)].id
                         )
                     )
                     NudgeLogger.d(
@@ -190,7 +192,9 @@ class WealthRankingSurveyViewModel @Inject constructor(
                             val inProgressStepRequest = listOf(
                                 EditWorkFlowRequest(
                                     step.workFlowId,
-                                    StepStatus.INPROGRESS.name
+                                    StepStatus.INPROGRESS.name,
+                                    villageId = villageId,
+                                    programsProcessId = step.id
                                 )
                             )
                             NudgeLogger.d(
@@ -337,23 +341,19 @@ class WealthRankingSurveyViewModel @Inject constructor(
                     val didiWealthRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                     val didiStepRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                     needToPostDidiList.forEach { didi ->
-                        didiWealthRequestList.add(
-                            EditDidiWealthRankingRequest(
-                                didi.serverId,
-                                StepType.WEALTH_RANKING.name,
-                                didi.wealth_ranking,
-                                rankingEdit = false,
-                                localModifiedDate = System.currentTimeMillis()
-                            )
+                        didiWealthRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, rankingEdit = false, localModifiedDate = System.currentTimeMillis(),  name = didi.name,
+                            address = didi.address,
+                            guardianName = didi.guardianName,
+                            villageId = didi.villageId,
+                            deviceId = didi.localUniqueId
                         )
-                        didiStepRequestList.add(
-                            EditDidiWealthRankingRequest(
-                                didi.serverId,
-                                StepType.SOCIAL_MAPPING.name,
-                                StepStatus.COMPLETED.name,
-                                rankingEdit = false,
-                                localModifiedDate = System.currentTimeMillis()
-                            )
+                        )
+                        didiStepRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, rankingEdit = false, localModifiedDate = System.currentTimeMillis(),   name = didi.name,
+                            address = didi.address,
+                            guardianName = didi.guardianName,
+                            villageId = didi.villageId,
+                            deviceId = didi.localUniqueId
+                        )
                         )
                     }
                     didiWealthRequestList.addAll(didiStepRequestList)

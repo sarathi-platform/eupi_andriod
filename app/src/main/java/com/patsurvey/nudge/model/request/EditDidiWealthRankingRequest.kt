@@ -6,7 +6,6 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
-import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.COMPLETED_STRING
 import com.patsurvey.nudge.utils.DIDI_NOT_AVAILABLE
 import com.patsurvey.nudge.utils.DIDI_REJECTED
@@ -19,7 +18,6 @@ import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.VERIFIED_STRING
-import com.patsurvey.nudge.utils.VoEndorsementStatus
 
 
 data class EditDidiWealthRankingRequest(
@@ -32,13 +30,13 @@ data class EditDidiWealthRankingRequest(
     @SerializedName("rankingEdit") var rankingEdit: Boolean = true,
     @SerializedName("shgFlag") var shgFlag: String? = BLANK_STRING,
     @SerializedName("ableBodiedFlag") var ableBodiedFlag: String? = BLANK_STRING,
-
     @SerializedName("name") var name: String = "",
     @SerializedName("guardianName") var guardianName: String = "",
     @SerializedName("address") var address: String = "",
     @SerializedName("cohortId") var cohortId: Int = -1,
     @SerializedName("villageId") var villageId: Int = -1,
-    @SerializedName("cohortName") var cohortName: String = ""
+    @SerializedName("cohortName") var cohortName: String = "",
+    @SerializedName("deviceId") var deviceId: String,
 ) {
 
     companion object {
@@ -54,7 +52,8 @@ data class EditDidiWealthRankingRequest(
                 type = StepType.WEALTH_RANKING.name,
                 result = didiEntity.wealth_ranking,
                 rankingEdit = didiEntity.rankingEdit,
-                localModifiedDate = System.currentTimeMillis()
+                localModifiedDate = System.currentTimeMillis(),
+                deviceId = didiEntity.localUniqueId
             )
         }
 
@@ -70,7 +69,9 @@ data class EditDidiWealthRankingRequest(
                 type = StepType.VO_ENDROSEMENT.name,
                 result = DidiEndorsementStatus.fromIntToString(didiEntity.voEndorsementStatus),
                 rankingEdit = didiEntity.rankingEdit,
-                localModifiedDate = System.currentTimeMillis()
+                localModifiedDate = System.currentTimeMillis(),
+                deviceId = didiEntity.localUniqueId
+
             )
         }
 
@@ -118,7 +119,9 @@ data class EditDidiWealthRankingRequest(
                 result = result,
                 rankingEdit = didi.patEdit,
                 shgFlag = SHGFlag.fromInt(didi.shgFlag).name,
-                ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name
+                ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name,
+                deviceId = didi.localUniqueId
+
             )
         }
     }

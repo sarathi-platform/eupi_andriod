@@ -193,11 +193,11 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
 
         connectionLiveData = ConnectionMonitor(this)
         connectionLiveData.observe(this) { isNetworkAvailable ->
-            isOnline.value = isNetworkAvailable.isOnline && (isNetworkAvailable.speedType != NetworkSpeed.POOR|| isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN)
+            isOnline.value = isNetworkAvailable.isOnline && (isNetworkAvailable.speedType != NetworkSpeed.POOR.toString() || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN.toString())
             connectionSpeed.value = isNetworkAvailable.connectionSpeed
-            connectionSpeedType.value = isNetworkAvailable.speedType.toString()
+            connectionSpeedType.value = isNetworkAvailable.speedType
             NudgeCore.updateIsOnline(isNetworkAvailable.isOnline
-                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN))
+                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR.toString() || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN.toString()))
         }
 
         startSmartUserConsent()

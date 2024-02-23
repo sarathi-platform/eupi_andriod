@@ -536,7 +536,17 @@ fun SettingScreen(
                                 stepFiveStatus
                             )
                             if (isDataNeedToBeSynced.value == 0 || isDataNeedToBeSynced.value == 2) {
+                                viewModel.performLogout(object : NetworkCallbackListener {
+                                    override fun onFailed() {
+                                        logout(context, viewModel, logout, rootNavController)
+                                        changeGraph.value = true
+                                    }
 
+                                    override fun onSuccess() {
+                                        logout(context, viewModel, logout, rootNavController)
+                                        changeGraph.value = true
+                                    }
+                                })
 //                        RootNavigationGraph(navController = rememberNavController(), prefRepo =viewModel.prefRepo)
                             } else {
                                 viewModel.showAPILoader.value = false

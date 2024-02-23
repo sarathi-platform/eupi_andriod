@@ -193,6 +193,7 @@ class SurveySummaryViewModel @Inject constructor(
                         calculateDidiScore(didiId = didi.id)
                         delay(100)
                         didi.score = repository.getDidiScoreFromDb(didi.id)
+                        val didiEntity = repository.getDidiFromDB(didi.id)
                         var qList: ArrayList<AnswerDetailDTOListItem> = arrayListOf()
                         val needToPostQuestionsList = repository.getAllNeedToPostQuesForDidi(didi.id)
                         if (needToPostQuestionsList.isNotEmpty()) {
@@ -282,7 +283,7 @@ class SurveySummaryViewModel @Inject constructor(
                             }
                         scoreDidiList.add(
                             EditDidiWealthRankingRequest(
-                                id = if (didi.serverId == 0) didi.id else didi.serverId,
+                                id =  didi.serverId,
                                 score = didi.score,
                                 comment = comment,
                                 type = if (repository.prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
@@ -300,14 +301,22 @@ class SurveySummaryViewModel @Inject constructor(
                                 },
                                 rankingEdit = false,
                                 shgFlag = SHGFlag.fromInt(didi.shgFlag).name,
-                                ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name
+                                ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name,
+                                name = didi.name,
+                                address = didiEntity.address,
+                                guardianName = didiEntity.guardianName,
+                                villageId = didi.villageId,
+                                deviceId = didiEntity.localUniqueId
                             )
                         )
                         answeredDidiList.add(
                             PATSummarySaveRequest(
                                 villageId = repository.prefRepo.getSelectedVillage().id,
                                 surveyId = surveyId,
-                                beneficiaryId = if (didi.serverId == 0) didi.id else didi.serverId,
+                                beneficiaryId = didi.serverId,
+                                cohortName = didiEntity.cohortName,
+                                beneficiaryAddress = didiEntity.address,
+                                guardianName = didiEntity.guardianName,
                                 languageId = repository.prefRepo.getAppLanguageId() ?: 2,
                                 stateId = repository.prefRepo.getSelectedVillage().stateId,
                                 totalScore = didi.score,
@@ -412,9 +421,19 @@ class SurveySummaryViewModel @Inject constructor(
                             if (!repository.prefRepo.isUserBPC()) stepList[stepList.map { it.orderNumber }
                                 .indexOf(4)].workFlowId else stepList[stepList.map { it.orderNumber }
                                 .indexOf(6)].workFlowId, StepStatus.COMPLETED.name,
-                            longToString(repository.prefRepo.getPref(PREF_PAT_COMPLETION_DATE_+repository.prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
+                            longToString(
+                                repository.prefRepo.getPref(
+                                    PREF_PAT_COMPLETION_DATE_ + repository.prefRepo.getSelectedVillage().id,
+                                    System.currentTimeMillis()
+                                )
+                            ),
+                            villageId = villageId,
+                            programsProcessId = if (!repository.prefRepo.isUserBPC()) stepList[stepList.map { it.orderNumber }
+                                .indexOf(4)].id else stepList[stepList.map { it.orderNumber }
+                                .indexOf(6)].id
 
-                        ))
+                        )
+                        )
                     NudgeLogger.d(
                         "SurveySummaryViewModel",
                         "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest"
@@ -474,7 +493,10 @@ class SurveySummaryViewModel @Inject constructor(
                                 val inProgressStepRequest = listOf(
                                     EditWorkFlowRequest(
                                         step.workFlowId,
-                                        StepStatus.INPROGRESS.name
+                                        StepStatus.INPROGRESS.name,
+                                        villageId = step.villageId,
+                                        programsProcessId = step.id
+
                                     )
                                 )
                                 NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> inProgressStepRequest = $inProgressStepRequest")
@@ -643,7 +665,12 @@ class SurveySummaryViewModel @Inject constructor(
                                             comment = if ((didi.score
                                                     ?: 0.0) < passingScore
                                             ) LOW_SCORE else "",
-                                            localModifiedDate = System.currentTimeMillis()
+                                            localModifiedDate = System.currentTimeMillis(),
+                                            name = didi.name,
+                                            address = didi.address,
+                                            guardianName = didi.guardianName,
+                                            villageId = didi.villageId,
+                                            deviceId = didi.localUniqueId
                                         )
                                     )
                                 )
@@ -673,7 +700,12 @@ class SurveySummaryViewModel @Inject constructor(
                                                 result = PatSurveyStatus.NOT_AVAILABLE.name,
                                                 score = 0.0,
                                                 comment = TYPE_EXCLUSION,
-                                                localModifiedDate = System.currentTimeMillis()
+                                                localModifiedDate = System.currentTimeMillis(),
+                                                name = didi.name,
+                                                address = didi.address,
+                                                guardianName = didi.guardianName,
+                                                villageId = didi.villageId,
+                                                deviceId = didi.localUniqueId
                                             )
                                         )
                                     )
@@ -705,7 +737,11 @@ class SurveySummaryViewModel @Inject constructor(
                 if(bpcStep.workFlowId>0){
                     val response = repository.editWorkFlow(
                         listOf(
-                            EditWorkFlowRequest(bpcStep.workFlowId, StepStatus.COMPLETED.name)
+                            EditWorkFlowRequest(
+                                bpcStep.workFlowId, StepStatus.COMPLETED.name,
+                                villageId = villageId,
+                                programsProcessId = bpcStep.id
+                            )
                         ) )
                     withContext(Dispatchers.IO){
                         if (response.status.equals(SUCCESS, true)) {
