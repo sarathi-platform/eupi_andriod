@@ -20,6 +20,7 @@ import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.LocationCoordinates
+import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.SUCCESS
@@ -129,7 +130,11 @@ class PatDidiSummaryViewModel @Inject constructor(
             val payload = DidiImageUploadRequest(
                 didiId = didiEntity.id.toString(),
                 location = didiImageLocation.value,
-                filePath = photoPath,
+                filePath = compressImage(
+                    photoPath,
+                    NudgeCore.getAppContext(),
+                    getFileNameFromURL(uri.path ?: "")
+                ) ?: "",
                 userType = if (patDidiSummaryRepository.prefRepo.isUserBPC()) USER_BPC else USER_CRP
             ).json()
 
@@ -137,7 +142,7 @@ class PatDidiSummaryViewModel @Inject constructor(
                 payload = payload,
                 mobileNumber = patDidiSummaryRepository.prefRepo.getMobileNumber(),
                 userID = patDidiSummaryRepository.prefRepo.getUserId(),
-                eventName = EventName.UPLOAD_DIDI_IMAGE,
+                eventName = if (patDidiSummaryRepository.prefRepo.isUserBPC()) EventName.BPC_IMAGE else EventName.CRP_IMAGE,
             )
 
 

@@ -4,4 +4,7 @@ interface CorePrefRepo {
 
     fun getBackupFileName(mobileNo: String): String
     fun setBackupFileName(fileName: String)
+
+    fun getImageBackupFileName(mobileNo: String): String
+    fun setImageBackupFileName(fileName: String)
 }

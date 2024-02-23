@@ -5,7 +5,7 @@ import com.nudge.core.database.entities.Events
 
 
 data class EventRequest(
-    @SerializedName("elient_id") val id: String,
+    @SerializedName("client_id") val id: String,
     @SerializedName("event_name") val eventName: String,
     @SerializedName("topic_name") val eventTopic: String,
     @SerializedName("created_by") val createdBy: String,

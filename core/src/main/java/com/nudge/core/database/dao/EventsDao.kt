@@ -20,7 +20,7 @@ interface EventsDao {
     @Query("SELECT * from $EventsTable")
     fun getAllEvent(): List<Events>
 
-    @Query("SELECT * from $EventsTable where name = :eventName")
+    @Query("SELECT * from $EventsTable where name = :eventName ORDER BY created_date DESC")
     fun getAllEventsForEventName(eventName: String): List<Events>
 
     @Query("SELECT * from $EventsTable where status in (:status)  ORDER BY id DESC LIMIT 10")

@@ -37,17 +37,19 @@ open class TextFileEventWriter : IEventWriter {
         eventsDao: EventsDao,
         eventDependencyDao: EventDependencyDao
     ) {
-        writeEventInFile(context, event.toEventRequest().json(), mobileNo)
+        writeEventInFile(context, event.toEventRequest().json(), mobileNo, uri)
     }
 
     override suspend fun getEventWriteType(): EventWriterName {
         return EventWriterName.FILE_EVENT_WRITER
     }
 
-    private fun writeEventInFile(context: Context, content: String, mobileNo: String) {
+
+    private fun writeEventInFile(context: Context, content: String, mobileNo: String, uri: Uri?) {
         if (TextUtils.isEmpty(content.trim())) return
-        val fileNameWithoutExtension =
-            CoreSharedPrefs.getInstance(context).getBackupFileName(mobileNo)
+        val fileNameWithoutExtension = if (uri == null) CoreSharedPrefs.getInstance(context)
+            .getBackupFileName(mobileNo) else CoreSharedPrefs.getInstance(context)
+            .getImageBackupFileName(mobileNo)
         val fileNameWithExtension = fileNameWithoutExtension + LOCAL_BACKUP_EXTENSION
         val finalContent = content + "\n" + EVENT_DELIMETER + "\n"
 
@@ -126,8 +128,16 @@ open class TextFileEventWriter : IEventWriter {
                         savedFileCursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)
                     if (nameIndex > -1) {
                         val displayName = savedFileCursor.getString(nameIndex)
-                        CoreSharedPrefs.getInstance(context)
-                            .setBackupFileName(displayName.substringBeforeLast("."))
+
+                        if (uri != null) {
+                            CoreSharedPrefs.getInstance(context)
+                                .setImageBackupFileName(displayName.substringBeforeLast("."))
+                        } else {
+                            CoreSharedPrefs.getInstance(context)
+                                .setBackupFileName(displayName.substringBeforeLast("."))
+                        }
+
+
                         Log.d("File created", displayName)
 
                     }
@@ -148,7 +158,13 @@ open class TextFileEventWriter : IEventWriter {
                 val fw = FileWriter(filePath, true)
                 fw.write(finalContent)
                 fw.close()
-                CoreSharedPrefs.getInstance(context).setBackupFileName(fileNameWithoutExtension)
+                if (uri != null) {
+                    CoreSharedPrefs.getInstance(context)
+                        .setImageBackupFileName(fileNameWithoutExtension)
+                } else {
+                    CoreSharedPrefs.getInstance(context)
+                        .setBackupFileName(fileNameWithoutExtension)
+                }
             } catch (exception: Exception) {
                 throw exception
             }

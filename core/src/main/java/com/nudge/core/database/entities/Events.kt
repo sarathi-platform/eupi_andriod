@@ -4,8 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventsTable
 import com.nudge.core.database.converters.DateConverter
@@ -61,7 +59,10 @@ data class Events (
     val error_message: String? = BLANK_STRING,
 
     @ColumnInfo("metadata")
-    val metadata: String?
+    val metadata: String?,
+
+    @ColumnInfo("payloadLocalId")
+    val payloadLocalId: String?
 
 ) {
     companion object {
@@ -77,7 +78,8 @@ data class Events (
                 result = BLANK_STRING,
                 consumer_status = BLANK_STRING,
                 metadata = null,
-                mobile_number = BLANK_STRING
+                mobile_number = BLANK_STRING,
+                payloadLocalId = BLANK_STRING
             )
         }
     }

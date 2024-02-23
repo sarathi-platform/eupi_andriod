@@ -840,14 +840,14 @@ class TransectWalkViewModel @Inject constructor(
                 serverId = tolaList.value[getIndexOfTola(id)].serverId,
                 localCreatedDate = tolaList.value[getIndexOfTola(id)].localCreatedDate,
                 localModifiedDate = System.currentTimeMillis(),
-                localUniqueId = getUniqueIdForEntity()
+                localUniqueId = tolaList.value[getIndexOfTola(id)].localUniqueId
             )
 //            transectWalkRepository.tolaInsert(updatedTola)
             transectWalkRepository.updateTolaName(id, newName)
             val localTola = transectWalkRepository.getTola(id)
             transectWalkRepository.saveEvent(
                 eventItem = localTola,
-                eventName = EventName.ADD_TOLA,
+                eventName = EventName.UPDATE_TOLA,
                 eventType = EventType.STATEFUL
             )
 

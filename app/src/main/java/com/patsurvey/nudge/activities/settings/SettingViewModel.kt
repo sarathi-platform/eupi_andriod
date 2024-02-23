@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities.settings
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.CountDownTimer
 import android.os.Environment
 import android.util.Log
@@ -15,6 +16,7 @@ import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.enums.NetworkSpeed
 import com.nudge.core.json
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_FILE_BACKUP_NAME
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_IMAGE_FILE_BACKUP_NAME
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.SyncBPCDataOnServer
@@ -110,6 +112,7 @@ class SettingViewModel @Inject constructor(
     private val _optionList = MutableStateFlow(listOf<SettingOptionModel>())
     val optionList: StateFlow<List<SettingOptionModel>> get() = _optionList
     val showLoader = mutableStateOf(false)
+    val showExportLoader = mutableStateOf(false)
     val showAPILoader = mutableStateOf(false)
     var showSyncDialog = mutableStateOf(false)
     var showBPCSyncDialog = mutableStateOf(false)
@@ -866,10 +869,13 @@ class SettingViewModel @Inject constructor(
         val languageId = prefRepo.getAppLanguageId()
         val language = prefRepo.getAppLanguage()
         val backupFileName = prefRepo.getPref(PREF_FILE_BACKUP_NAME, LOCAL_BACKUP_FILE_NAME)
+        val backupImageFileName =
+            prefRepo.getPref(PREF_IMAGE_FILE_BACKUP_NAME, LOCAL_BACKUP_FILE_NAME)
         prefRepo.clearSharedPreference()
         prefRepo.saveAppLanguage(language)
         prefRepo.saveAppLanguageId(languageId)
         prefRepo.savePref(PREF_FILE_BACKUP_NAME, backupFileName ?: "")
+        prefRepo.savePref(PREF_IMAGE_FILE_BACKUP_NAME, backupImageFileName ?: "")
     }
 
     fun buildAndShareLogs() {
@@ -914,27 +920,44 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    fun compressEventAndImageData(title: String) {
+    fun compressEventData(title: String) {
+
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
+                showExportLoader.value = true
                 val compression = ZipFileCompression()
                 val fileUri = compression.compressBackupFiles(
                     NudgeCore.getAppContext(),
                     prefRepo.getMobileNumber() ?: ""
                 )
-                val shareIntent = Intent(Intent.ACTION_SEND)
-                shareIntent.setType(ZIP_MIME_TYPE)
-                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri)
-                shareIntent.putExtra(Intent.EXTRA_TITLE, title)
-                val chooserIntent = Intent.createChooser(shareIntent, title)
-                NudgeCore.startExternalApp(chooserIntent)
+
+                val imageUri = compression.compressBackupImages(
+                    NudgeCore.getAppContext(),
+                    prefRepo.getMobileNumber() ?: ""
+                )
+
+                openShareSheet(imageUri, fileUri, title)
+                showExportLoader.value = false
+
 
             } catch (exception: Exception) {
                 NudgeLogger.e("Compression", exception.message ?: "")
                 exception.printStackTrace()
+                showExportLoader.value = false
+
             }
 
         }
+    }
+
+    private fun openShareSheet(imageUri: Uri?, fileUri: Uri?, title: String) {
+        val fileUris = listOf(fileUri, imageUri)
+        val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
+        shareIntent.setType(ZIP_MIME_TYPE)
+        shareIntent.putExtra(Intent.EXTRA_STREAM, ArrayList(fileUris))
+        shareIntent.putExtra(Intent.EXTRA_TITLE, title)
+        val chooserIntent = Intent.createChooser(shareIntent, title)
+        NudgeCore.startExternalApp(chooserIntent)
     }
 
     fun isSyncEnabled(): Boolean {

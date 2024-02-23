@@ -343,7 +343,9 @@
     <string name="you_want_to_delete_video">You want to delete %1$s</string>
     <string name="share_logs">Share Logs</string>
     <string name="export_file" translatable="false">Export file</string>
+    <string name="export_image" translatable="false">Export image</string>
     <string name="share_export_file" translatable="false">Share exported file</string>
+    <string name="share_export_image" translatable="false">Share exported image</string>
     <string name="earning_member_can_not_be_more_than_family_members">Earning members cannot be more than family members</string>
     <string name="match_percentage_should_be_more_than_70">The Match % should be more than 70%</string>
     <string name="delete_and_retake">Delete &amp; Retake</string>

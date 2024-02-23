@@ -122,6 +122,7 @@ abstract class BaseRepository{
             status = EventSyncStatus.OPEN.name,
             modified_date = System.currentTimeMillis().toDate(),
             result = null,
+            payloadLocalId = patSummarySaveRequest.deviceId,
             consumer_status = BLANK_STRING,
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,
@@ -146,6 +147,7 @@ abstract class BaseRepository{
             modified_date = System.currentTimeMillis().toDate(),
             result = null,
             consumer_status = BLANK_STRING,
+            payloadLocalId = patScoreSaveEvent.deviceId,
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,
                 depends_on = listOf(),
@@ -198,6 +200,7 @@ abstract class BaseRepository{
             modified_date = System.currentTimeMillis().toDate(),
             result = null,
             consumer_status = BLANK_STRING,
+            payloadLocalId = "",
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,
                 depends_on = listOf(),
@@ -421,6 +424,7 @@ abstract class BaseRepository{
             modified_date = System.currentTimeMillis().toDate(),
             result = null,
             consumer_status = BLANK_STRING,
+            payloadLocalId = "",
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,
                 depends_on = listOf(),
@@ -447,6 +451,7 @@ abstract class BaseRepository{
             modified_date = System.currentTimeMillis().toDate(),
             result = null,
             consumer_status = BLANK_STRING,
+            payloadLocalId = "",
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,
                 depends_on = listOf(),

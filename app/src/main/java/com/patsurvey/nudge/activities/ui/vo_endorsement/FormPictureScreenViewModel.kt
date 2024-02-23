@@ -9,7 +9,6 @@ import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
-import com.nudge.core.eventswriter.entities.EventV1
 import com.nudge.core.json
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
@@ -591,10 +590,10 @@ class FormPictureScreenViewModel @Inject constructor(
                                 payload = payload,
                                 mobileNumber = repository.prefRepo.getMobileNumber(),
                                 userID = repository.prefRepo.getUserId(),
-                                eventName = EventName.UPLOAD_FORM_IMAGE,
+                                eventName = EventName.FORM_C_TOPIC,
                             )
 
-                            repository.uri = File(it.value).toUri()
+                            repository.uri = File(compressedFormC).toUri()
                             repository.writeImageEventIntoLogFile(event)
                         }
 
@@ -617,16 +616,6 @@ class FormPictureScreenViewModel @Inject constructor(
                             )
 //                                prefRepo.savePref(pageKey,File(compressedFormD).absolutePath)
                             formList.add(formDFilePart)
-                            val eventFormD = EventV1(
-                                eventTopic = EventName.UPLOAD_FORM_IMAGE.topicName,
-                                payload = DocumentUploadRequest(
-                                    villageId = repository.prefRepo.getSelectedVillage().id.toString(),
-                                    userType = if (repository.prefRepo.isUserBPC()) USER_BPC else USER_CRP,
-                                    filePath = it.value,
-                                    formName = "formD"
-                                ).json(),
-                                mobileNumber = repository.prefRepo.getMobileNumber() ?: BLANK_STRING
-                            )
 
                             val payload = DocumentUploadRequest(
                                 villageId = repository.prefRepo.getSelectedVillage().id.toString(),
@@ -635,12 +624,12 @@ class FormPictureScreenViewModel @Inject constructor(
                                 formName = "formD"
                             ).json()
 
-                            repository.uri = File(it.value).toUri()
+                            repository.uri = File(compressedFormD).toUri()
                             val event = repository.createImageUploadEvent(
                                 payload = payload,
                                 mobileNumber = repository.prefRepo.getMobileNumber(),
                                 userID = repository.prefRepo.getUserId(),
-                                EventName.UPLOAD_FORM_IMAGE
+                                EventName.FORM_D_TOPIC
                             )
                             repository.writeImageEventIntoLogFile(event)
 

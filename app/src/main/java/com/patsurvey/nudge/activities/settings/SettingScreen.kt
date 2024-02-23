@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -87,6 +88,7 @@ import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.MainTitle
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.black100Percent
+import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
 import com.patsurvey.nudge.activities.ui.theme.didiDetailItemStyle
 import com.patsurvey.nudge.activities.ui.theme.greenDark
@@ -394,7 +396,7 @@ fun SettingScreen(
                 .padding(top = it.calculateTopPadding())
                 .fillMaxSize()
         ) {
-            val (mainBox, logoutButton, versionBox) = createRefs()
+            val (mainBox, logoutButton, versionBox, circularLoader) = createRefs()
 
             Column(modifier = Modifier
                 .background(Color.White)
@@ -456,7 +458,8 @@ fun SettingScreen(
                                 }
 
                                 7 -> {
-                                    viewModel.compressEventAndImageData(context.getString(R.string.share_export_file))
+                                    //viewModel.showExportLoader.value=true
+                                    viewModel.compressEventData(context.getString(R.string.share_export_file))
                                 }
 
                                 else -> {
@@ -595,6 +598,27 @@ fun SettingScreen(
                             context.getString(R.string.logout_no_internet_error_message)
                         )
                     }
+                }
+            }
+            if (viewModel.showExportLoader.value) {
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .clickable {
+
+                    }
+                    .constrainAs(circularLoader) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
+                        top.linkTo(parent.top)
+                    }) {
+                    CircularProgressIndicator(
+                        color = blueDark,
+                        modifier = Modifier
+                            .size(28.dp)
+                            .align(Alignment.Center)
+                    )
                 }
             }
             if (viewModel.showSyncDialog.value) {

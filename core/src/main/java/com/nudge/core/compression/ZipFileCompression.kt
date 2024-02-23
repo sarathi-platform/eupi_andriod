@@ -18,16 +18,21 @@ class ZipFileCompression : IFileCompressor {
     override suspend fun compressBackupFiles(context: Context, mobileNo: String): Uri? {
 
         val zipFileName = "${mobileNo}_sarathi_${System.currentTimeMillis()}_"
-        compressData(
-            context,
-            zipFileName + "image",
-            Environment.DIRECTORY_PICTURES + SARATHI_DIRECTORY_NAME + "/" + mobileNo
-        )
+
         return compressData(
             context,
             zipFileName + "file",
             Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + mobileNo
         );
+    }
+
+    override suspend fun compressBackupImages(context: Context, mobileNo: String): Uri? {
+        val zipFileName = "${mobileNo}_sarathi_${System.currentTimeMillis()}_"
+        return compressData(
+            context,
+            zipFileName + "image",
+            Environment.DIRECTORY_PICTURES + SARATHI_DIRECTORY_NAME + "/" + mobileNo
+        )
     }
 
     override fun getCompressionType(): String {

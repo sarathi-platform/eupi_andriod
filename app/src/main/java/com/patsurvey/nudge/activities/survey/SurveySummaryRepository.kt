@@ -295,6 +295,7 @@ class SurveySummaryRepository @Inject constructor(
                     status = EventSyncStatus.OPEN.name,
                     modified_date = System.currentTimeMillis().toDate(),
                     result = null,
+                    payloadLocalId = "",
                     consumer_status = BLANK_STRING,
                     metadata = MetadataDto(
                         mission = SELECTION_MISSION,

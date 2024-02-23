@@ -189,8 +189,8 @@ class PatSectionSummaryRepository @Inject constructor(
     ): List<EventDependencyEntity> {
         val eventDependencyList = mutableListOf<EventDependencyEntity>()
         var filteredList = listOf<Events>()
-
-        eventName.getDependsOnEventNameForEvent().forEach { dependsOnEvent ->
+        var dependentEventsName = eventName.getDependsOnEventNameForEvent()
+        for (dependsOnEvent in dependentEventsName) {
             val eventList = eventsDao.getAllEventsForEventName(dependsOnEvent.name)
             when (eventName) {
                 EventName.SAVE_PAT_ANSWERS, EventName.SAVE_PAT_SCORE -> {
@@ -217,10 +217,24 @@ class PatSectionSummaryRepository @Inject constructor(
                     filteredList = emptyList()
                 }
             }
+            if (filteredList.isNotEmpty()) {
+                break
+            }
+
         }
 
-        eventDependencyList.addAll(filteredList.getEventDependencyEntityListFromEvents(dependentEvent))
 
+        if (filteredList.isNotEmpty()) {
+
+            val immediateDependentOn = ArrayList<Events>()
+            immediateDependentOn.add(filteredList.last())
+
+            eventDependencyList.addAll(
+                immediateDependentOn.getEventDependencyEntityListFromEvents(
+                    dependentEvent
+                )
+            )
+        }
         return eventDependencyList
     }
 

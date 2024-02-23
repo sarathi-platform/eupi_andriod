@@ -6,5 +6,6 @@ import android.net.Uri
 interface IFileCompressor {
 
    suspend fun compressBackupFiles(context: Context,mobileNo:String): Uri?
+    suspend fun compressBackupImages(context: Context, mobileNo: String): Uri?
     fun getCompressionType():String
 }

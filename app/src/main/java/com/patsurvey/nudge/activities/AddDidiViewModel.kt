@@ -620,7 +620,7 @@ class AddDidiViewModel @Inject constructor(
                 addDidiRepository.insertDidi(updatedDidi)
                 addDidiRepository.saveEvent(
                     updatedDidi,
-                    EventName.ADD_DIDI,
+                    EventName.UPDATE_DIDI,
                     EventType.STATEFUL
                 )
 

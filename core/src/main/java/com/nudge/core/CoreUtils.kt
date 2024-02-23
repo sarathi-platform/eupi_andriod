@@ -16,6 +16,16 @@ fun Long.toDate(dateFormat: Long = System.currentTimeMillis(), timeZone: TimeZon
     return parser.parse(parser.format(dateTime))!!
 }
 
+fun Long.toDateInMMDDYYFormat(
+    dateFormat: Long = System.currentTimeMillis(),
+    timeZone: TimeZone = TimeZone.getTimeZone("UTC")
+): String {
+    val dateTime = Date(this)
+    val parser = SimpleDateFormat("MM/dd/yyyy_MM_HH_mm_ss", Locale.getDefault())
+    parser.timeZone = timeZone
+    return parser.format(dateTime)
+}
+
 fun Date.formatTo(dateFormat: String, timeZone: TimeZone = TimeZone.getDefault()): String {
     val formatter = SimpleDateFormat(dateFormat, Locale.getDefault())
     formatter.timeZone = timeZone

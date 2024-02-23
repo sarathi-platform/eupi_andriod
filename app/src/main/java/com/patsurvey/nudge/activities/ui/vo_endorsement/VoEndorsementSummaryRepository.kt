@@ -1,11 +1,6 @@
 package com.patsurvey.nudge.activities.ui.vo_endorsement
 
-import com.google.gson.Gson
 import com.nudge.core.EventSyncStatus
-import com.nudge.core.KEY_PARENT_ENTITY_ADDRESS
-import com.nudge.core.KEY_PARENT_ENTITY_DADA_NAME
-import com.nudge.core.KEY_PARENT_ENTITY_DIDI_NAME
-import com.nudge.core.KEY_PARENT_ENTITY_TOLA_NAME
 import com.nudge.core.SELECTION_MISSION
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
@@ -109,6 +104,7 @@ class VoEndorsementSummaryRepository @Inject constructor(
                     status = EventSyncStatus.OPEN.name,
                     modified_date = System.currentTimeMillis().toDate(),
                     result = null,
+                    payloadLocalId = eventItem.localUniqueId,
                     consumer_status = BLANK_STRING,
                     metadata = MetadataDto(
                         mission = SELECTION_MISSION,
@@ -143,40 +139,40 @@ class VoEndorsementSummaryRepository @Inject constructor(
         val eventDependencyList = mutableListOf<EventDependencyEntity>()
         var filteredList = listOf<Events>()
 
-        eventName.getDependsOnEventNameForEvent().forEach { dependsOnEvent ->
+        var dependentEventsName = eventName.getDependsOnEventNameForEvent()
+        for (dependsOnEvent in dependentEventsName) {
             val eventList = eventsDao.getAllEventsForEventName(dependsOnEvent.name)
             when (eventName) {
                 EventName.SAVE_VO_ENDORSEMENT -> {
 
                     filteredList = eventList.filter {
-                        var editRequest = Gson().fromJson(
-                            it.request_payload,
-                            EditDidiWealthRankingRequest::class.java
-                        )
-                        dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_DIDI_NAME)?.equals(editRequest.name, true)!!
-                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_DADA_NAME)
-                            ?.equals(editRequest.guardianName, true)!!
-                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_ADDRESS).equals(editRequest.address, true)
-                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_TOLA_NAME)
-                            ?.equals(editRequest.cohortName, true)!!
+                        it.payloadLocalId == dependentEvent.payloadLocalId
                     }
                 }
                 else -> {
                     filteredList = emptyList()
                 }
             }
+
+            if (filteredList.isNotEmpty()) {
+                break
+            }
+
+
         }
-        eventDependencyList.addAll(
-            filteredList.getEventDependencyEntityListFromEvents(
-                dependentEvent
+
+
+        if (filteredList.isNotEmpty()) {
+
+            val immediateDependentOn = ArrayList<Events>()
+            immediateDependentOn.add(filteredList.first())
+
+            eventDependencyList.addAll(
+                immediateDependentOn.getEventDependencyEntityListFromEvents(
+                    dependentEvent
+                )
             )
-        )
-
-
+        }
         return eventDependencyList
     }
 }

@@ -2,10 +2,6 @@ package com.patsurvey.nudge.activities
 
 import com.google.gson.Gson
 import com.nudge.core.EventSyncStatus
-import com.nudge.core.KEY_PARENT_ENTITY_ADDRESS
-import com.nudge.core.KEY_PARENT_ENTITY_DADA_NAME
-import com.nudge.core.KEY_PARENT_ENTITY_DIDI_NAME
-import com.nudge.core.KEY_PARENT_ENTITY_TOLA_NAME
 import com.nudge.core.SELECTION_MISSION
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
@@ -32,7 +28,6 @@ import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
-import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.model.response.ApiResponseModel
@@ -176,6 +171,7 @@ class WealthRankingSurveyRepository @Inject constructor(
                     status = EventSyncStatus.OPEN.name,
                     modified_date = System.currentTimeMillis().toDate(),
                     result = null,
+                    payloadLocalId = (eventItem as DidiEntity).localUniqueId,
                     consumer_status = BLANK_STRING,
                     metadata = MetadataDto(
                         mission = SELECTION_MISSION,
@@ -209,24 +205,13 @@ class WealthRankingSurveyRepository @Inject constructor(
         val eventDependencyList = mutableListOf<EventDependencyEntity>()
         var filteredList = listOf<Events>()
 
-        eventName.getDependsOnEventNameForEvent().forEach { dependsOnEvent ->
+        var dependentEventsName = eventName.getDependsOnEventNameForEvent()
+        for (dependsOnEvent in dependentEventsName) {
             val eventList = eventsDao.getAllEventsForEventName(dependsOnEvent.name)
             when (eventName) {
                 EventName.SAVE_WEALTH_RANKING -> {
                     filteredList = eventList.filter {
-                        var didiRequest =
-                            Gson().fromJson(it.request_payload, AddDidiRequest::class.java)
-                        val eventPayload = (eventItem as DidiEntity)
-                        dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_DIDI_NAME)?.equals(didiRequest.name, true)!!
-                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_DADA_NAME)
-                            ?.equals(didiRequest.guardianName, true)!!
-                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_ADDRESS).equals(didiRequest.address, true)
-                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_TOLA_NAME)
-                            ?.equals(didiRequest.cohortName, true)!!
+                        it.payloadLocalId == dependentEvent.payloadLocalId
                     }
                 }
 
@@ -234,10 +219,22 @@ class WealthRankingSurveyRepository @Inject constructor(
                     filteredList = emptyList()
                 }
             }
+            if (filteredList.isNotEmpty()) {
+                break
+            }
         }
 
-        eventDependencyList.addAll(filteredList.getEventDependencyEntityListFromEvents(dependentEvent))
+        if (filteredList.isNotEmpty()) {
 
+            val immediateDependentOn = ArrayList<Events>()
+            immediateDependentOn.add(filteredList.first())
+
+            eventDependencyList.addAll(
+                immediateDependentOn.getEventDependencyEntityListFromEvents(
+                    dependentEvent
+                )
+            )
+        }
         return eventDependencyList
     }
 

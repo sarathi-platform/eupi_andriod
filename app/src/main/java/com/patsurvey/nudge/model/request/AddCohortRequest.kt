@@ -53,3 +53,8 @@ fun String.getAddCohortRequestPayloadFromString(): AddCohortRequest? {
     val type = object : TypeToken<AddCohortRequest?>() {}.type
     return Gson().fromJson(this, type)
 }
+
+fun String.getAddDidiRequestPayloadFromString(): AddDidiRequest? {
+    val type = object : TypeToken<AddDidiRequest?>() {}.type
+    return Gson().fromJson(this, type)
+}

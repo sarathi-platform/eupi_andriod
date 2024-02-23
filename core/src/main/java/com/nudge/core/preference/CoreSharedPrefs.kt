@@ -3,7 +3,8 @@ package com.nudge.core.preference
 import android.content.Context
 import android.content.SharedPreferences
 import com.nudge.core.LOCAL_BACKUP_FILE_NAME
-import com.nudge.core.toDate
+import com.nudge.core.LOCAL_BACKUP__IMAGE_FILE_NAME
+import com.nudge.core.toDateInMMDDYYFormat
 
 
 class CoreSharedPrefs private constructor(val context: Context) :
@@ -11,6 +12,7 @@ class CoreSharedPrefs private constructor(val context: Context) :
     companion object {
         const val PREFS_NAME = "secured_nudge_prefs"
         const val PREF_FILE_BACKUP_NAME = "file_backup_name"
+        const val PREF_IMAGE_FILE_BACKUP_NAME = "image_file_backup_name"
 
         @Volatile
         private var INSTANCE: CoreSharedPrefs? = null
@@ -36,7 +38,8 @@ class CoreSharedPrefs private constructor(val context: Context) :
     override fun getBackupFileName(mobileNo: String): String {
         return prefs.getString(
             PREF_FILE_BACKUP_NAME,
-            LOCAL_BACKUP_FILE_NAME + "_" + mobileNo + System.currentTimeMillis().toDate().toString()
+            LOCAL_BACKUP_FILE_NAME + "_" + mobileNo + System.currentTimeMillis()
+                .toDateInMMDDYYFormat()
         )!!
 
     }
@@ -45,5 +48,17 @@ class CoreSharedPrefs private constructor(val context: Context) :
 
         prefs.edit().putString(PREF_FILE_BACKUP_NAME, fileName).apply()
 
+    }
+
+    override fun getImageBackupFileName(mobileNo: String): String {
+        return prefs.getString(
+            PREF_IMAGE_FILE_BACKUP_NAME,
+            LOCAL_BACKUP__IMAGE_FILE_NAME + "_" + mobileNo + System.currentTimeMillis()
+                .toDateInMMDDYYFormat()
+        )!!
+    }
+
+    override fun setImageBackupFileName(fileName: String) {
+        prefs.edit().putString(PREF_IMAGE_FILE_BACKUP_NAME, fileName).apply()
     }
 }
