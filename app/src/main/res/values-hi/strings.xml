@@ -25,9 +25,9 @@
     <string name="poor_didi_item_text">गरीब दीदी</string>
     <string name="medium_didi_item_text">मध्यम वर्ग दीदी</string>
     <string name="rich_didi_item_text">अमीर दीदी</string>
-    <string name="poor_didi_item_text_plural">गरीब दीदीया</string>
+    <string name="poor_didi_item_text_plural">गरीब दीदियाँ</string>
     <string name="medium_didi_item_text_plural">मध्यम वर्ग दीदियाँ</string>
-    <string name="rich_didi_item_text_plural">अमीर दीदीयां</string>
+    <string name="rich_didi_item_text_plural">अमीर दीदियाँ</string>
     <string name="more_item_text">अधिक विकल्प</string>
     <string name="online_text">ऑनलाइन</string>
     <string name="offline_text">ऑफलाइन</string>
@@ -52,7 +52,7 @@
     <string name="search_video">वीडियो खोजें</string>
     <string name="search_village">गांव खोजेंं</string>
     <string name="otp_text">ओ.टी.पी.</string>
-    <string name="count_didis_pending_plural">%1s दीदीयां बाक़ी है</string>
+    <string name="count_didis_pending_plural">%1s दीदियाँ बाक़ी है</string>
     <string name="count_didis_pending_singular">%1s दीदी बाक़ी है</string>
     <string name="expiry_login_verify_otp">%s s</string>
     <string name="social_mapping">सामाजिक मानचित्रण</string>
@@ -92,7 +92,7 @@
     <string name="cancel_tola_text">रद्द करें</string>
     <string name="get_location_text">लोकेशन प्राप्त करे</string>
     <string name="location_unavailable">लोकेशन उपलब्ध नहीं है</string>
-    <string name="seletc_village_screen_text">गाँव और ग्राम संगठन का चयन करें</string>
+    <string name="seletc_village_screen_text">गाँव व ग्राम संगठन का चयन करें</string>
     <string name="complete_didi_addition">दीदी को जोड़ने का काम पूरा करे</string>
     <string name="user_id_text">पहचान संख्या:</string>
     <string name="empty_tola_string">कोई मोहल्ला जोड़ा नहीं गया</string>
@@ -110,7 +110,7 @@
     <string name="social_mapping_sub_text_plural">%1$s दीदीयों की पहचान की गई</string>
     <string name="wealth_ranking_sub_text_plural">%1$s गरीब दीदी पहचान की गई</string>
     <string name="pat_sub_text_singular">%1$s अति गरीब दीदी VO को भेजी गई</string>
-    <string name="pat_sub_text_plural">%1$s अति गरीब दीदीयां  VO को भेजी गई</string>
+    <string name="pat_sub_text_plural">%1$s अति गरीब दीदियाँ VO को भेजी गई</string>
     <string name="vo_endorsement_sub_text_singular">%1$s अति गरीब दीदी का अनुमोदन किया गया</string>
     <string name="vo_endorsement_sub_text_plural">%1$s अति गरीब दिदीयों का अनुमोदन किया गया</string>
     <string name="empty_didis_string">कोई दीदी नहीं जोड़ी गई</string>
@@ -179,14 +179,14 @@
     <string name="form_d_photo_button_text">फ़ॉर्म D का फ़ोटो ले</string>
     <string name="pat_completed_box_title">PAT पूर्ण  हुआ</string>
     <string name="didi_not_available_text_singular">दीदी उपलब्ध नहीं है</string>
-    <string name="didi_not_available_text_plural">दीदीयां मौजूद नहीं है</string>
+    <string name="didi_not_available_text_plural">दीदियाँ मौजूद नहीं है</string>
     <string name="send_for_vo_text">सबको VO अनुमोदन के लिए भेजें</string>
     <string name="didi_pat_complete_text">दीदीयों का PAT पूरा हो गया</string>
     <string name="didi_endorsed_text_plural">दीदियाँ अनुमोदित</string>
     <string name="didi_endorsed_text_singula">दीदी अनुमदित</string>
     <string name="didi_rejected_text_plural">दीदियाँ रद्द किया</string>
     <string name="didi_rejected_text_singula">दीदी अनुमदित</string>
-    <string name="didi_not_available_sub_heading_text">दीदीयां मौजूद नहीं है</string>
+    <string name="didi_not_available_sub_heading_text">दीदियाँ मौजूद नहीं है</string>
     <string name="accept">स्वीकार करे</string>
     <string name="reject">रद्द</string>
     <string name="endorse">अनुमोदन करना</string>
@@ -232,7 +232,7 @@
     <string name="bpc_didi_screen_title">दीदीयों की सूची जिनका PAT सत्यापन के लिए स्वतः  चयन किया गया</string>
     <string name="bpc_final_pat_submition_message">क्या आप इस ग्राम संगठन को BPM अनुमोदन के लिए जमा करना चाहते है</string>
     <string name="didi_selected_text_singular">%1$s दीदी चुनी गई</string>
-    <string name="didi_selected_text_plural">%1$s दीदीया  चुनी गई</string>
+    <string name="didi_selected_text_plural">%1$s दीदियाँ  चुनी गई</string>
     <string name="didi_replace_button">बदलें</string>
     <string name="submit_pat_verification">PAT सत्यापन  जमा करे</string>
     <string name="comparison_screen_heading_plural">{COUNT} PAT  सत्यापित  दीदीयों  का सारांश</string>
@@ -261,8 +261,8 @@
     <string name="bpc_result_text">BPC परिणाम</string>
     <string name="permission_dialog_prompt_message">कैमरा अनुमति आवश्यक है, कृपया अनुमति दें</string>
     <string name="permission_required_prompt_title">अनुमति आवश्यक</string>
-    <string name="ultra_poor_didis_verified_text_plural">%1$s अति गरीब दीदीयां सत्यापित की गई</string>
-    <string name="ultra_poor_didis_verified_text_singular">%1$s अति गरीब दीदीयां सत्यापित की गई</string>
+    <string name="ultra_poor_didis_verified_text_plural">%1$s अति गरीब दीदियाँ सत्यापित की गई</string>
+    <string name="ultra_poor_didis_verified_text_singular">%1$s अति गरीब दीदियाँ सत्यापित की गई</string>
     <string name="no_data_form_a_not_generated_text">कोई जानकारी उपलब्ध नही है ! फॉर्म A उत्पन्न नही हुआ</string>
     <string name="no_data_form_b_not_generated_text">कोई जानकारी उपलब्ध नही है ! फॉर्म B उत्पन्न नही हुआ</string>
     <string name="no_data_form_c_not_generated_text">कोई जानकारी उपलब्ध नही है ! फॉर्म C उत्पन्न नही हुआ</string>
