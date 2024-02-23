@@ -50,9 +50,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
-import com.nrlm.baselinesurvey.navigation.home.SECTION_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.ui.common_components.BlueButtonWithIcon
 import com.nrlm.baselinesurvey.ui.common_components.ButtonOutline
@@ -93,13 +93,10 @@ fun BaseLineStartScreen(
         baseLineStartViewModel.getDidiDetails(didiId)
     }
 
-
-    //val didiInfoDetail = baseLineStartViewModel.didiInfo
-
     val isContinueButtonActive =
         derivedStateOf {
             (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (baseLineStartViewModel.isVoterCard.value != -1) && (baseLineStartViewModel.phoneNumber.value.length == 10) &&
-                    ((baseLineStartViewModel.isAdharCard.value != -1) && ((baseLineStartViewModel.isAdharCard.value == 2) || (baseLineStartViewModel.isAdharCard.value == 1 && baseLineStartViewModel.aadharNumber.value.length == 12)))
+                    ((baseLineStartViewModel.isAdharCard.value != -1))
         }
 
 
@@ -114,9 +111,10 @@ fun BaseLineStartScreen(
             DoubleButtonBox(
                 modifier = Modifier
                     .shadow(10.dp),
-                positiveButtonText = stringResource(id = R.string.continue_text),
+                positiveButtonText = stringResource(R.string.save),
                 negativeButtonText = stringResource(id = R.string.go_back_text),
                 isPositiveButtonActive = isContinueButtonActive.value,
+                negativeButtonRequired = false,
                 positiveButtonOnClick = {
                     didi.value.didiId?.let {
                         baseLineStartViewModel.onEvent(
@@ -133,7 +131,8 @@ fun BaseLineStartScreen(
                             )
                         )
                     }
-                    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
+                    navController.popBackStack()
+//                    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
                 },
                 negativeButtonOnClick = {
                     navController.popBackStack()
@@ -165,7 +164,7 @@ fun BaseLineStartScreen(
             }
             TextDetails(title = "Didi : ", data = didi.value.didiName)
             TextDetails(title = "Dada : ", data = didi.value.dadaName)
-            TextDetails(title = "Caste : ", data = getCasteName(didi.value.casteId))
+            TextDetails(title = "Caste : ", data = getCasteName(didi.value.casteId, baseLineStartViewModel))
             YesNoButtonComponent(
                 defaultValue = baseLineStartViewModel.isAdharCard.value,
                 title = "Does Didi have aadhar card?"
@@ -682,30 +681,8 @@ fun BaseLineStartScreenPreview(
     }
 }
 
-private fun getCasteName(casteId: Int): String {
-    var casteName = ""
-    when (casteId) {
-        1 -> {
-            casteName = "GEN"
-        }
+private fun getCasteName(casteId: Int, baseLineStartViewModel: BaseLineStartViewModel): String {
+    var casteList = baseLineStartViewModel.getCasteList()
 
-        2 -> {
-            casteName = "OBC"
-
-        }
-
-        3 -> {
-            casteName = "SC"
-
-        }
-
-        4 -> {
-            casteName = "ST"
-        }
-
-        else -> {
-            casteName = "ST"
-        }
-    }
-    return casteName
+    return casteList.find { it.casteId == casteId }?.casteName ?: BLANK_STRING
 }

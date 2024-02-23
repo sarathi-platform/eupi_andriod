@@ -67,4 +67,6 @@ sealed class QuestionScreenEvents {
     data class UpdateQuestionAnswerMappingForUi(val question: QuestionEntityState, val mOptionItem: List<OptionItemEntity>): QuestionScreenEvents()
 
     data class UpdateInputTypeQuestionAnswerEntityForUi(val inputTypeQuestionAnswerEntity: InputTypeQuestionAnswerEntity)
+
+    data class UpdateAnsweredQuestionCount(val question: QuestionEntityState)
 }

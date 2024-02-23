@@ -38,5 +38,7 @@ sealed class QuestionTypeEvent {
 
     data class UpdateConditionQuestionStateForMultipleOption(val questionEntityState: QuestionEntityState?, val optionItemEntityList: List<OptionItemEntity>)
 
+    data class UpdateConditionQuestionStateForInputNumberOptions(val questionEntityState: QuestionEntityState?, val optionItemEntity: OptionItemEntity)
+
     data class UpdateConditionQuestionStateForAnsweredQuestions(val questionEntityState: QuestionEntityState?, val answeredOptionItemEntityList: List<OptionItemEntity>)
 }

@@ -1,8 +1,7 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.absolutePadding
@@ -23,8 +22,6 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,8 +29,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
+import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.DescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ImageExpanderDialogComponent
@@ -77,6 +76,12 @@ fun QuestionScreen(
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.init(surveyId = surveyId, sectionId = sectionId, surveyeeId = surveyeeId)
         delay(300)
+        viewModel.updateSaveUpdateState()
+        delay(300)
+        Log.d("TAG", "onEvent: QuestionScreen LaunchedEffect -> " +
+                "otalQuestionCount.intValue = ${viewModel.totalQuestionCount.intValue}, answeredQuestionCount: ${viewModel.answeredQuestionCount.size}" +
+                " isSectionCompleted.value = ${viewModel.answeredQuestionCount.size == viewModel.totalQuestionCount.intValue
+                        || viewModel.answeredQuestionCount.size > viewModel.totalQuestionCount.intValue}")
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
     }
 
@@ -84,10 +89,10 @@ fun QuestionScreen(
         rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = false)
     val scope = rememberCoroutineScope()
 
-    val totalQuestionCount = sectionDetails.questionList.size
-    val answeredQuestionCount = remember { mutableIntStateOf(sectionDetails.questionAnswerMapping.size) }
+//    val totalQuestionCount = sectionDetails.questionList.size
+//    val answeredQuestionCount = remember { mutableIntStateOf(sectionDetails.questionAnswerMapping.size) }
 
-    val curPercentage = animateFloatAsState(
+    /*val curPercentage = animateFloatAsState(
         targetValue =
         if (totalQuestionCount != 0)
             (answeredQuestionCount.value.toFloat() / totalQuestionCount.toFloat()).coerceIn(
@@ -98,7 +103,7 @@ fun QuestionScreen(
             0F,
         label = "",
         animationSpec = tween()
-    )
+    )*/
 
     BackHandler {
         navController.popBackStack()
@@ -117,10 +122,10 @@ fun QuestionScreen(
                             .fillMaxWidth(),
 //                        shape = RoundedCornerShape(bottomStart = roundedCornerRadiusDefault, bottomEnd = roundedCornerRadiusDefault),
                         shape = RoundedCornerShape(roundedCornerRadiusDefault),
-                        containerColor = if (answeredQuestionCount.value == totalQuestionCount) blueDark else inactiveLightBlue,
-                        contentColor = if (answeredQuestionCount.value == totalQuestionCount) white else inactiveTextBlue,
+                        containerColor = if (viewModel.isSectionCompleted.value) blueDark else inactiveLightBlue,
+                        contentColor = if (viewModel.isSectionCompleted.value) white else inactiveTextBlue,
                         onClick = {
-                            if (answeredQuestionCount.value == totalQuestionCount) {
+                            if (viewModel.isSectionCompleted.value) {
                                 viewModel.onEvent(
                                     QuestionScreenEvents.SectionProgressUpdated(
                                         surveyId = sectionDetails.surveyId,
@@ -129,21 +134,24 @@ fun QuestionScreen(
                                         SectionStatus.COMPLETED
                                     )
                                 )
-                                viewModel.onEvent(QuestionScreenEvents.SendAnswersToServer(surveyId = sectionDetails.surveyId, sectionId = sectionDetails.sectionId, surveyeeId))
-//                                navigateBackToSurveyeeListScreen(navController)
-                                nextSectionHandler(sectionId)
+//                                viewModel.onEvent(QuestionScreenEvents.SendAnswersToServer(surveyId = sectionDetails.surveyId, sectionId = sectionDetails.sectionId, surveyeeId))
+
+                                if (sectionDetails.sectionName.equals(NO_SECTION, true))
+                                    navigateBackToSurveyeeListScreen(navController)
+                                else
+                                    nextSectionHandler(sectionId)
                             }
                         }
                     ) {
                         Text(
                             text = stringResource(R.string.save_next_section_button_text),
                             style = defaultTextStyle,
-                            color = if (answeredQuestionCount.value == totalQuestionCount) white else inactiveTextBlue
+                            color = if (viewModel.isSectionCompleted.value) white else inactiveTextBlue
                         )
                         Icon(
                             imageVector = Icons.Default.ArrowForward,
                             contentDescription = "save section button",
-                            tint = if (answeredQuestionCount.value == totalQuestionCount) white else inactiveTextBlue,
+                            tint = if (viewModel.isSectionCompleted.value) white else inactiveTextBlue,
                             modifier = Modifier.absolutePadding(top = dimen_3_dp)
                         )
                     }
@@ -211,8 +219,8 @@ fun QuestionScreen(
                             }
                         }
                     },
-                    answeredQuestionCountIncreased = { count ->
-                        answeredQuestionCount.value = count
+                    answeredQuestionCountIncreased = { question ->
+                        viewModel.onEvent(QuestionScreenEvents.UpdateAnsweredQuestionCount(question))
                     }
                 )
             }

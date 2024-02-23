@@ -19,6 +19,7 @@ import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
+import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SurveyStateEvents
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.start_screen.domain.use_case.StartSurveyScreenUserCase
@@ -258,6 +259,10 @@ class BaseLineStartViewModel @Inject constructor(
 
 
         saveFilePathInDb(photoPath, location, didiEntity = didiEntity)
+    }
+
+    fun getCasteList(): List<CasteModel> {
+        return startSurveyScreenUserCase.getCasteListUseCase.invoke()
     }
 
 }

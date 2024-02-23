@@ -20,7 +20,6 @@ import coil.compose.rememberImagePainter
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.theme.brownDark
-import com.nrlm.baselinesurvey.ui.theme.brownLightBorderColor
 import com.nrlm.baselinesurvey.ui.theme.yellowBg
 import java.io.File
 
@@ -30,8 +29,8 @@ fun CircularImageViewComponent(modifier: Modifier = Modifier, imagePath: String 
         modifier = modifier
             .border(width = 2.dp, shape = CircleShape, color = brownDark)
             .clip(CircleShape)
-            .width(75.dp)
-            .height(75.dp)
+            .width(55.dp)
+            .height(55.dp)
             .background(color = yellowBg)
             .then(modifier)
     ) {
@@ -49,8 +48,8 @@ fun CircularImageViewComponent(modifier: Modifier = Modifier, imagePath: String 
                 modifier = Modifier
                     .align(Alignment.Center)
                     .aspectRatio(1f, matchHeightConstraintsFirst = true)
-                    .width(75.dp)
-                    .height(75.dp)
+                    .width(45.dp)
+                    .height(45.dp)
             )
         } else {
             Image(
@@ -58,8 +57,8 @@ fun CircularImageViewComponent(modifier: Modifier = Modifier, imagePath: String 
                 contentDescription = "didi image placeholder",
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .width(65.dp)
-                    .height(68.dp)
+                    .width(45.dp)
+                    .height(48.dp)
             )
         }
 

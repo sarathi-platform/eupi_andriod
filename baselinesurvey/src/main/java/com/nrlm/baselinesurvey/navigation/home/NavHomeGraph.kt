@@ -221,8 +221,15 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
             )
         }
 
-        composable(route = HomeScreens.SearchScreen.route) {
-            SearchScreens(viewModel = hiltViewModel(), navController = navController)
+        composable(route = HomeScreens.SearchScreen.route, arguments = listOf(
+            navArgument(
+                name = ARG_SURVEY_ID
+            ) {
+                type = NavType.IntType
+            }
+        )) {
+            SearchScreens(viewModel = hiltViewModel(), navController = navController, surveyId = it
+                .arguments?.getInt(ARG_SURVEY_ID) ?: -1)
         }
 
         composable(route = HomeScreens.Home_SCREEN.route) {
@@ -388,7 +395,7 @@ sealed class HomeScreens(val route: String) {
     object BaseLineStartScreen :
         HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}/{$ARG_SURVEY_ID}")
 
-    object SearchScreen : HomeScreens(route = SEARCH_SCREEN_ROUTE_NAME)
+    object SearchScreen : HomeScreens(route = "$SEARCH_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}")
     object Home_SCREEN : HomeScreens(route = HOME_SCREEN_ROUTE_NAME)
     object MISSION_SCREEN : HomeScreens(route = MISSION_SCREEN_ROUTE_NAME)
     object DIDI_SCREEN : HomeScreens(route = DIDI_SCREEN_ROUTE_NAME)
@@ -460,8 +467,8 @@ fun navigateToSectionListScreen(surveyeeId: Int, surveyeId: Int, navController: 
     navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$surveyeeId/$surveyeId")
 }
 
-fun navigateToSearchScreen(navController: NavController) {
-    navController.navigate(HomeScreens.SearchScreen.route)
+fun navigateToSearchScreen(navController: NavController, surveyeId: Int) {
+    navController.navigate("$SEARCH_SCREEN_ROUTE_NAME/$surveyeId")
 }
 
 fun navigateToFormTypeQuestionScreen(navController: NavController, question: QuestionEntity, sectionDetails: SectionListItem, surveyeeId: Int, referenceId: String = BLANK_STRING) {

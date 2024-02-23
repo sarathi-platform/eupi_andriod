@@ -50,7 +50,7 @@ fun MissionSummaryScreen(
         modifier = Modifier.fillMaxSize(),
         containerColor = white,
         bottomBar = {
-        Box(
+        /*Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp)
@@ -63,7 +63,7 @@ fun MissionSummaryScreen(
             ) {
                 navigateBackToMissionScreen(navController)
             }
-        }
+        }*/
 
     }
     ) {
@@ -91,7 +91,7 @@ fun MissionSummaryScreen(
                     itemsIndexed(
                         items = activities
                     ) { index, activity ->
-                        var subTitle = if (activity.activityId == 1) "Didi's" else "Hamlet's "
+                        var subTitle = if (activity.activityId == 1) "Didis" else "Hamlets"
                         StepsBox(
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                             boxTitle = activity.activityName,
