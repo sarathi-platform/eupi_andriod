@@ -12,6 +12,7 @@ import com.nrlm.baselinesurvey.PREF_KEY_PROFILE_IMAGE
 import com.nrlm.baselinesurvey.PREF_KEY_ROLE_NAME
 import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
 import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
+import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
 import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
@@ -44,6 +45,8 @@ import com.nrlm.baselinesurvey.model.response.MissionResponseModel
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
+import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nrlm.baselinesurvey.utils.json
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
 import javax.inject.Inject
@@ -274,6 +277,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override fun saveUserDetails(userDetailsResponse: UserDetailsResponse) {
+        BaselineLogger.d("User Details        ","Mobile Number: ${prefRepo.getPref(PREF_MOBILE_NUMBER,BLANK_STRING)}")
+        BaselineLogger.d("User Details        ","User Email: ${userDetailsResponse.email}")
         prefRepo.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: "")
         prefRepo.savePref(PREF_KEY_NAME, userDetailsResponse.name ?: "")
         prefRepo.savePref(PREF_KEY_EMAIL, userDetailsResponse.email ?: "")

@@ -91,6 +91,7 @@ fun SplashScreenComponent(
                         }
                     }
                 } else {
+                    viewModel.splashScreenUseCase.saveLanguageOpenFromUseCase.invoke()
                     navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
                 }
             }

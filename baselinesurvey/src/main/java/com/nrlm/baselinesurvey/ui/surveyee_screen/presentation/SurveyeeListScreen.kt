@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ALL_TAB
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.THIS_WEEK_TAB
 import com.nrlm.baselinesurvey.navigation.home.Step_Complition_Screen_ROUTE_NAME
@@ -201,7 +202,8 @@ fun handleButtonClick(
     buttonName: ButtonName,
     surveyeeId: Int,
     surveyId: Int,
-    navController: NavController
+    navController: NavController,
+    activityName: String = BLANK_STRING
 ) {
     when (buttonName) {
         is ButtonName.START_BUTTON -> {

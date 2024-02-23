@@ -163,7 +163,7 @@ fun SurveyeeCardComponent(
                         horizontalAlignment = Alignment.Start
                     ) {
                         Text(
-                            text =  if (!surveyeeState.activityName.equals("Conduct Hamlet Survey")) surveyeeState.surveyeeDetails.didiName else surveyeeState.surveyeeDetails.cohortName,
+                            text =  surveyeeState.surveyeeDetails.didiName/*if (!surveyeeState.activityName.equals("Conduct Hamlet Survey")) surveyeeState.surveyeeDetails.didiName else surveyeeState.surveyeeDetails.cohortName*/,
                             style = mediumTextStyle,
                             color = brownDark
                         )

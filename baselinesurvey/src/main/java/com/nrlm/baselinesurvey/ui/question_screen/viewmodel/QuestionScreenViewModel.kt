@@ -509,6 +509,30 @@ class QuestionScreenViewModel @Inject constructor(
             }
 
             is QuestionTypeEvent.UpdateConditionQuestionStateForMultipleOption -> {
+                val mOptionItemList = event.questionEntityState?.optionItemEntityState?.toList()
+                val unselectedOptions = mutableListOf<OptionItemEntityState>()
+                mOptionItemList?.forEach {
+                    event.optionItemEntityList?.map { it.optionId }?.forEach { selectOptionId ->
+                        if (it.optionId != selectOptionId) {
+                            unselectedOptions.add(it)
+                        }
+                    }
+                }
+
+                /*unselectedOptions.distinctBy { it.optionId }.forEach { optionItemEntityState ->
+                    optionItemEntityState.optionItemEntity?.conditions?.let {
+                        it.forEach { conditionsDto ->
+                            event.optionItemEntityList.forEach { optionItemEntity ->
+                                val conditionCheckResult = conditionsDto?.checkCondition(optionItemEntity.display  ?: BLANK_STRING)
+                                if (conditionsDto?.resultType?.equals(ResultType.Questions.name, true) == true)
+                                    updateQuestionStateForCondition(conditionResult = conditionCheckResult == true, conditionsDto)
+                                if (conditionsDto?.resultType?.equals(ResultType.Options.name, true) == true)
+                                    updateOptionStateForCondition(conditionResult = conditionCheckResult == true, conditionsDto, optionItemEntityState.optionItemEntity)
+                            }
+                        }
+                    }
+                }*/
+
                 event.optionItemEntityList.forEach { optionItemEntity ->
                     optionItemEntity.conditions?.let {
                         it.forEach { conditionsDto ->

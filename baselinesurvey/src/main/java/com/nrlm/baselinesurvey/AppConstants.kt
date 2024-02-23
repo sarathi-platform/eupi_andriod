@@ -294,6 +294,7 @@ const val ARG_ACTIVITY_DATE = "activity_date"
 const val ARG_MISSION_ID = "mission_id"
 const val ARG_MISSION_NAME = "mission_name"
 const val ARG_MISSION_DATE = "mission_date"
+const val ARG_ACTIVITY_NAME = "activity_name"
 
 const val DELAY_1_MS: Long = 100
 const val DELAY_2_MS:Long = 200

@@ -71,6 +71,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.h6
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.findOptionFromId
 import com.nrlm.baselinesurvey.utils.mapFormQuestionResponseToFromResponseObjectDto
 import com.nrlm.baselinesurvey.utils.mapToOptionItem
@@ -142,7 +143,8 @@ fun NestedLazyList(
 
         try {
             coroutineScope.launch(Dispatchers.IO) {
-                sectionDetails.questionList.find { it.type == QuestionType.Form.name }?.let { question ->
+                mQuestionEntity.forEach { question ->
+                    if (question.questionEntity?.type?.equals(QuestionType.Form.name, true) == true) {
                         val optionItemEntityList =
                             questionScreenViewModel.getFormQuestionsOptionsItemEntityList(
                                 sectionDetails.surveyId,
@@ -159,11 +161,13 @@ fun NestedLazyList(
                                 surveyeeId
                             )
                         withContext(Dispatchers.Main) {
-                            questionScreenViewModel.formResponsesForQuestionLive.observe(lifecycleOwner) {
+                            questionScreenViewModel.formResponsesForQuestionLive.observe(
+                                lifecycleOwner
+                            ) {
                                 householdMemberDtoList.value.addAll(
                                     it.mapFormQuestionResponseToFromResponseObjectDto(
                                         optionItemEntityList,
-                                        question.tag
+                                        question.questionEntity.tag ?: BLANK_STRING
                                     )
                                 )
                                 if (it.isNotEmpty()) {
@@ -173,6 +177,7 @@ fun NestedLazyList(
                                 }
                             }
                         }
+                    }
                 }
             }
         } catch (ex: Exception) {
@@ -630,6 +635,7 @@ fun NestedLazyList(
                                                         )
                                                 answeredQuestionCountIncreased(answeredQuestionCount.value)
                                             }*/
+                                            BaselineCore.setReferenceId(BLANK_STRING)
                                             navigateToFormTypeQuestionScreen(
                                                 navController,
                                                 question.questionEntity,
@@ -828,12 +834,12 @@ fun NestedLazyList(
                                         onUpdate = {
                                             sectionDetails.questionList.find { it.questionId == householdMemberDto.questionId }
                                                 ?.let { it1 ->
+                                                    BaselineCore.setReferenceId(householdMemberDto.referenceId)
                                                     navigateToFormTypeQuestionScreen(
                                                         navController = navController,
                                                         question = it1,
                                                         sectionDetails = sectionDetails,
-                                                        surveyeeId = surveyeeId,
-                                                        referenceId = householdMemberDto.referenceId
+                                                        surveyeeId = surveyeeId
                                                     )
                                                 }
                                         })

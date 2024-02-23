@@ -80,4 +80,8 @@ class LanguageScreenViewModel @Inject constructor(
 
     }
 
+    fun getLanguageScreenOpenFrom():Boolean{
+        return languageScreenUseCase.getLanguageScreenOpenFromUserCase.invoke()
+    }
+
 }

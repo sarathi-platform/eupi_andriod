@@ -8,6 +8,7 @@ import android.util.Log
 import android.util.SparseArray
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.util.forEach
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BaselineApplication
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
@@ -27,6 +28,23 @@ object BaselineCore {
     private var eventObservations = SparseArray<EventObserverInterface>()
 
     val autoReadOtp = mutableStateOf("")
+
+    private var currentActivityName: String = BLANK_STRING
+
+    private var referenceId: String = BLANK_STRING
+
+    fun getCurrentActivityName() = currentActivityName
+
+    fun setCurrentActivityName(activityName: String) {
+        currentActivityName = activityName
+    }
+
+    fun getReferenceId() = referenceId
+
+    fun setReferenceId(mReferenceId: String) {
+        referenceId = mReferenceId
+    }
+
 
     fun init() {
         downloader = AndroidDownloader(BaselineApplication.applicationContext())
