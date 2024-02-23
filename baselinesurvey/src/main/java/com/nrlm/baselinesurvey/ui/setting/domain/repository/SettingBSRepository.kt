@@ -7,4 +7,6 @@ interface SettingBSRepository {
     suspend fun performLogout(): ApiResponseModel<String>
 
     fun clearSharedPref()
+
+    fun saveLanguageScreenOpenFrom()
 }

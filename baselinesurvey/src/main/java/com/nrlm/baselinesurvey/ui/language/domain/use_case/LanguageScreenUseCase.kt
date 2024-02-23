@@ -6,4 +6,5 @@ data class LanguageScreenUseCase(
     val saveSelectedVillageUseCase: SaveSelectedVillageUseCase,
     val getVillageDetailUseCase: GetVillageDetailUseCase,
     val saveSelectedLanguageUseCase: SaveSelectedLanguageUseCase,
+    val getLanguageScreenOpenFromUserCase: GetLanguageScreenOpenFromUserCase
 )
