@@ -243,8 +243,8 @@ fun SearchScreens(
                                 }
                             }
                         }, modifier = Modifier.clickable {
-                            showCustomToast(context, "item-> sectionName${item.sectionName}," +
-                                    " questionTitle: ${item.questionTitle}")
+                           /*showCustomToast(context, "item-> sectionName${item.sectionName}," +
+                                    " questionTitle: ${item.questionTitle}")*/
                         })
                         Spacer(modifier = Modifier.fillMaxWidth().height(dimen_10_dp))
                     }

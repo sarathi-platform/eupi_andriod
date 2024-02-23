@@ -71,6 +71,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.h6
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.findOptionFromId
 import com.nrlm.baselinesurvey.utils.mapFormQuestionResponseToFromResponseObjectDto
 import com.nrlm.baselinesurvey.utils.mapToOptionItem
@@ -634,6 +635,7 @@ fun NestedLazyList(
                                                         )
                                                 answeredQuestionCountIncreased(answeredQuestionCount.value)
                                             }*/
+                                            BaselineCore.setReferenceId(BLANK_STRING)
                                             navigateToFormTypeQuestionScreen(
                                                 navController,
                                                 question.questionEntity,
@@ -832,12 +834,12 @@ fun NestedLazyList(
                                         onUpdate = {
                                             sectionDetails.questionList.find { it.questionId == householdMemberDto.questionId }
                                                 ?.let { it1 ->
+                                                    BaselineCore.setReferenceId(householdMemberDto.referenceId)
                                                     navigateToFormTypeQuestionScreen(
                                                         navController = navController,
                                                         question = it1,
                                                         sectionDetails = sectionDetails,
-                                                        surveyeeId = surveyeeId,
-                                                        referenceId = householdMemberDto.referenceId
+                                                        surveyeeId = surveyeeId
                                                     )
                                                 }
                                         })

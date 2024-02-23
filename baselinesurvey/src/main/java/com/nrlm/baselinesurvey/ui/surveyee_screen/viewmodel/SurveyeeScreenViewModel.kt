@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.nrlm.baselinesurvey.ALL_TAB
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_TOLA_TITLE
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
@@ -71,14 +72,20 @@ class SurveyeeScreenViewModel @Inject constructor(
                 _surveyeeListState.value.clear()
             }
             surveyeeListFromDb.forEach { surveyeeEntity ->
-                val surveyeeState = SurveyeeCardState(
+                var surveyeeState = SurveyeeCardState(
                     surveyeeDetails = surveyeeEntity,
-                    imagePath = surveyeeEntity.crpImageName,
+                    imagePath = BLANK_STRING,
                     subtitle = surveyeeEntity.dadaName,
                     address = getSurveyeeAddress(surveyeeEntity),
                     activityName = activityName,
                     surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
                 )
+                if (surveyeeEntity.crpImageLocalPath.isNotEmpty()) {
+                    val imagePath = surveyeeEntity.crpImageLocalPath.split("|").first()
+                    surveyeeState = surveyeeState.copy(
+                        imagePath = imagePath
+                    )
+                }
 
                 _surveyeeListState.value.add(surveyeeState)
             }

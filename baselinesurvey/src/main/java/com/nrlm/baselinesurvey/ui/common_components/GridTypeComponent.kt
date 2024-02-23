@@ -146,7 +146,7 @@ fun GridTypeComponent(
                                     modifier = Modifier.padding(horizontal = dimen_16_dp)
                                 ) {
                                     HtmlText(
-                                        text = "${question.questionId} .",
+                                        text = "${question.questionId}. ",
                                         style = TextStyle(
                                             fontFamily = NotoSans,
                                             fontWeight = FontWeight.SemiBold,

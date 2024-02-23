@@ -37,6 +37,26 @@ class FetchSurveyeeListFromNetworkUseCase(
                     }
 
                 }
+
+                apiResponse.data?.didiList?.distinctBy { it.cohortName }?.forEach {
+                    if (!localSurveyeeEntityList.map { surveyeeEntity -> surveyeeEntity.didiId }.contains(it.cohortId)) {
+                        val hamletSurveyEntity = SurveyeeEntity(
+                            id = 0,
+                            userId = it.userId,
+                            didiId = it.cohortId ?: -1,
+                            didiName = it.cohortName ?: BLANK_STRING,
+                            dadaName = BLANK_STRING,
+                            casteId = -1,
+                            cohortId = it.cohortId ?: -1,
+                            cohortName = BLANK_STRING,
+                            houseNo = BLANK_STRING,
+                            villageId = it.villageId ?: -1,
+                            villageName = it.villageName ?: BLANK_STRING,
+                            ableBodied = BLANK_STRING
+                        )
+                        repository.saveSurveyeeList(hamletSurveyEntity)
+                    }
+                }
                 return true
             } else {
                 return false

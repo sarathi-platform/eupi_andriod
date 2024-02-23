@@ -71,6 +71,7 @@ import com.nrlm.baselinesurvey.ui.description_component.presentation.ImageExpand
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.section_screen.viewmode.SectionListScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
+import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGrey
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_14_dp
@@ -158,8 +159,9 @@ fun SectionListScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.CenterStart),
-                        text = if (!BaselineCore.getCurrentActivityName().equals("Conduct Hamlet Survey")) viewModel.didiDetails?.didiName ?: BLANK_STRING else viewModel.didiDetails?.cohortName ?: BLANK_STRING,
-                        style = largeTextStyle
+                        text = viewModel.didiDetails?.didiName ?: BLANK_STRING/*if (!BaselineCore.getCurrentActivityName().equals("Conduct Hamlet Survey")) viewModel.didiDetails?.didiName ?: BLANK_STRING else viewModel.didiDetails?.cohortName ?: BLANK_STRING*/,
+                        style = largeTextStyle,
+                        color = blueDark
                     )
                     Box(
                         Modifier

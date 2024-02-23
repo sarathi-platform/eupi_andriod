@@ -51,6 +51,7 @@ import com.nrlm.baselinesurvey.ui.start_screen.presentation.BaseLineStartScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreen
 import com.nrlm.baselinesurvey.ui.video_player.presentation.FullscreenView
+import com.nrlm.baselinesurvey.utils.BaselineCore
 
 @Composable
 fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier: Modifier) {
@@ -187,9 +188,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
             navArgument(name = ARG_DIDI_ID) {
                 type = NavType.IntType
             },
-            navArgument(name = ARG_FORM_QUESTION_RESPONSE_REFERENCE_ID) {
-                type = NavType.StringType
-            }
+
         )) {
             FormTypeQuestionScreen(
                 navController = navController,
@@ -199,7 +198,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
                 it.arguments?.getInt(ARG_SECTION_ID) ?: -1,
                 it.arguments?.getInt(ARG_QUESTION_ID) ?: -1,
                 surveyeeId = it.arguments?.getInt(ARG_DIDI_ID) ?: -1,
-                referenceId = it.arguments?.getString(ARG_FORM_QUESTION_RESPONSE_REFERENCE_ID) ?: BLANK_STRING
+                referenceId = BaselineCore.getReferenceId()
             )
         }
         composable(route = HomeScreens.BaseLineStartScreen.route, arguments = listOf(
@@ -471,8 +470,8 @@ fun navigateToSearchScreen(navController: NavController, surveyeId: Int) {
     navController.navigate("$SEARCH_SCREEN_ROUTE_NAME/$surveyeId")
 }
 
-fun navigateToFormTypeQuestionScreen(navController: NavController, question: QuestionEntity, sectionDetails: SectionListItem, surveyeeId: Int, referenceId: String = BLANK_STRING) {
-    navController.navigate("$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/${question.questionDisplay}/${sectionDetails.surveyId}/${sectionDetails.sectionId}/${question.questionId}/${surveyeeId}?$referenceId")
+fun navigateToFormTypeQuestionScreen(navController: NavController, question: QuestionEntity, sectionDetails: SectionListItem, surveyeeId: Int) {
+    navController.navigate("$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/${question.questionDisplay}/${sectionDetails.surveyId}/${sectionDetails.sectionId}/${question.questionId}/${surveyeeId}")
 
 }
 

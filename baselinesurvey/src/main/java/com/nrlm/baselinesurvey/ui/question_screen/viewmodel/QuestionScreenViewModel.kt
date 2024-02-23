@@ -519,7 +519,7 @@ class QuestionScreenViewModel @Inject constructor(
                     }
                 }
 
-                unselectedOptions.distinctBy { it.optionId }.forEach { optionItemEntityState ->
+                /*unselectedOptions.distinctBy { it.optionId }.forEach { optionItemEntityState ->
                     optionItemEntityState.optionItemEntity?.conditions?.let {
                         it.forEach { conditionsDto ->
                             event.optionItemEntityList.forEach { optionItemEntity ->
@@ -531,7 +531,7 @@ class QuestionScreenViewModel @Inject constructor(
                             }
                         }
                     }
-                }
+                }*/
 
                 event.optionItemEntityList.forEach { optionItemEntity ->
                     optionItemEntity.conditions?.let {

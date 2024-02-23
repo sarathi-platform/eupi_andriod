@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.presentation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -43,6 +44,7 @@ import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import kotlinx.coroutines.delay
 
 @Composable
@@ -73,6 +75,10 @@ fun FormTypeQuestionScreen(
         }
     }
 
+    BackHandler {
+        BaselineCore.setReferenceId(BLANK_STRING)
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -88,6 +94,7 @@ fun FormTypeQuestionScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = {
+                        BaselineCore.setReferenceId(BLANK_STRING)
                         navController.popBackStack()
                     }) {
                         Icon(Icons.Filled.ArrowBack, null, tint = textColorDark)
@@ -107,6 +114,7 @@ fun FormTypeQuestionScreen(
                     isActive = saveButtonActiveState.value,
                     isArrowRequired = false
                 ) {
+                    BaselineCore.setReferenceId(BLANK_STRING)
                     viewModel.onEvent(
                         QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent(
                             viewModel.storeCacheForResponse

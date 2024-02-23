@@ -31,10 +31,18 @@ object BaselineCore {
 
     private var currentActivityName: String = BLANK_STRING
 
+    private var referenceId: String = BLANK_STRING
+
     fun getCurrentActivityName() = currentActivityName
 
     fun setCurrentActivityName(activityName: String) {
         currentActivityName = activityName
+    }
+
+    fun getReferenceId() = referenceId
+
+    fun setReferenceId(mReferenceId: String) {
+        referenceId = mReferenceId
     }
 
 

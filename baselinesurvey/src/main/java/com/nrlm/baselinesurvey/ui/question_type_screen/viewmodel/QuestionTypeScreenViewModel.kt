@@ -84,8 +84,10 @@ class QuestionTypeScreenViewModel @Inject constructor(
                     questionId
                 )
 
+            BaselineLogger.d(TAG, "init: referenceId: ${this@QuestionTypeScreenViewModel.referenceId}")
             if (referenceId.isNotBlank()) {
                 this@QuestionTypeScreenViewModel.referenceId = referenceId
+                BaselineLogger.d(TAG, "init: referenceId after update: ${this@QuestionTypeScreenViewModel.referenceId}")
                 _formQuestionResponseEntity.value = getFormResponseForReferenceId(referenceId = referenceId)
             }
 

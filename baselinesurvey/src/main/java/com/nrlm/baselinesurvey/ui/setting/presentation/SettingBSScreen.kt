@@ -33,18 +33,18 @@ fun SettingBSScreen(
         val lastSyncTimeInMS = System.currentTimeMillis()
         val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.US)
         val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
-        list.add(
+        /*list.add(
             SettingOptionModel(
                 1,
                 context.getString(R.string.sync_up),
                 context.getString(R.string.last_syncup_text)
                     .replace("{LAST_SYNC_TIME}", lastSyncTime.toString())
             ,SettingTagEnum.SYNC_NOW.name)
-        )
+        )*/
         list.add(SettingOptionModel(2, context.getString(R.string.profile), BLANK_STRING,SettingTagEnum.PROFILE.name))
         list.add(SettingOptionModel(3, context.getString(R.string.language_text), BLANK_STRING,SettingTagEnum.LANGUAGE.name))
         list.add(SettingOptionModel(4, context.getString(R.string.share_logs), BLANK_STRING,SettingTagEnum.SHARE_LOGS.name))
-        list.add(SettingOptionModel(5, context.getString(R.string.export_file), BLANK_STRING,SettingTagEnum.EXPORT_FILE.name))
+//        list.add(SettingOptionModel(5, context.getString(R.string.export_file), BLANK_STRING,SettingTagEnum.EXPORT_FILE.name))
         viewModel?._optionList?.value=list
     }
 

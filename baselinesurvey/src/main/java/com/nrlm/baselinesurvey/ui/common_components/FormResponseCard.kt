@@ -132,18 +132,6 @@ fun FormResponseCard(
                                 }?.optionId]  ?: BLANK_STRING
                             )
 
-                            Log.d("TAG", "FormResponseCard: option: ${optionItemListWithConditionals.find {
-                                it.display?.contains(
-                                    "sources of income",
-                                    ignoreCase = true
-                                )!!
-                            }} \n\n\n source of income: ${householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                it.display?.contains(
-                                    "sources of income",
-                                    ignoreCase = true
-                                )!!
-                            }?.optionId]  ?: BLANK_STRING}")
-
 
                             var income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
                                 it.display?.contains(
@@ -162,7 +150,7 @@ fun FormResponseCard(
 
                             if (income == BLANK_STRING)
                                 income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                    it.display?.contains(
+                                    it.display?.equals(
                                         "Income frequency",
                                         ignoreCase = true
                                     )!!
@@ -262,13 +250,18 @@ fun FormResponseCard(
 
 
                                 if (income == BLANK_STRING)
-                                    income =
-                                        householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                            it.display?.contains(
-                                                "Average Income",
-                                                ignoreCase = true
-                                            )!!
-                                        }?.optionId] ?: BLANK_STRING
+                                    optionItemListWithConditionals.filter {
+                                        it.display?.equals(
+                                            "Income",
+                                            ignoreCase = true
+                                        )!!
+                                    }.forEach {
+                                        if (income == BLANK_STRING) {
+                                            income =
+                                                householdMemberDto.memberDetailsMap[it.optionId] ?: BLANK_STRING
+                                        }
+                                        return@forEach
+                                    }
 
                                 if (income == BLANK_STRING)
                                     income =
@@ -313,13 +306,13 @@ fun FormResponseCard(
             Row(modifier = Modifier
                 .fillMaxWidth()
             ) {
-                TextButton(onClick = { onUpdate(householdMemberDto.referenceId) }, modifier = Modifier
+                /*TextButton(onClick = { onUpdate(householdMemberDto.referenceId) }, modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = blueDark)
                 ) {
                     Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit Button", tint = blueDark)
-                }
+                }*/
                 Divider(
                     color = borderGreyLight,
                     modifier = Modifier
