@@ -64,47 +64,6 @@ import kotlinx.coroutines.withContext
 import java.util.Collections
 import java.util.Timer
 import java.util.TimerTask
-import com.patsurvey.nudge.utils.AbleBodiedFlag
-import com.patsurvey.nudge.utils.ApiResponseFailException
-import com.patsurvey.nudge.utils.ApiType
-import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
-import com.patsurvey.nudge.utils.COMPLETED_STRING
-import com.patsurvey.nudge.utils.DIDI_NOT_AVAILABLE
-import com.patsurvey.nudge.utils.DIDI_REJECTED
-import com.patsurvey.nudge.utils.ExclusionType
-import com.patsurvey.nudge.utils.FLAG_RATIO
-import com.patsurvey.nudge.utils.FLAG_WEIGHT
-import com.patsurvey.nudge.utils.LOW_SCORE
-import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PAT_SURVEY
-import com.patsurvey.nudge.utils.PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_
-import com.patsurvey.nudge.utils.PREF_BPC_PAT_COMPLETION_DATE_
-import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
-import com.patsurvey.nudge.utils.PatSurveyStatus
-import com.patsurvey.nudge.utils.QuestionType
-import com.patsurvey.nudge.utils.SHGFlag
-import com.patsurvey.nudge.utils.SUCCESS
-import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.TYPE_EXCLUSION
-import com.patsurvey.nudge.utils.USER_BPC
-import com.patsurvey.nudge.utils.USER_CRP
-import com.patsurvey.nudge.utils.VERIFIED_STRING
-import com.patsurvey.nudge.utils.calculateScore
-import com.patsurvey.nudge.utils.json
-import com.patsurvey.nudge.utils.longToString
-import com.patsurvey.nudge.utils.toWeightageRatio
-import com.patsurvey.nudge.utils.updateLastSyncTime
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.Collections
-import java.util.Timer
-import java.util.TimerTask
 
 class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                           val prefRepo: PrefRepo,

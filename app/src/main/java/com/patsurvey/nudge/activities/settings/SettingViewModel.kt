@@ -15,7 +15,6 @@ import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.enums.NetworkSpeed
 import com.nudge.core.json
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_FILE_BACKUP_NAME
-import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_FILE_BACKUP_NAME
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.SyncBPCDataOnServer
@@ -116,7 +115,7 @@ class SettingViewModel @Inject constructor(
     var showBPCSyncDialog = mutableStateOf(false)
 
     val lastSyncTime = mutableStateOf(prefRepo.getPref(LAST_SYNC_TIME, 0L))
-    var currentRetryCount = 3;
+    var currentRetryCount = 3
     var syncHelper = SyncHelper(
         this@SettingViewModel,
         prefRepo,
@@ -637,7 +636,7 @@ class SettingViewModel @Inject constructor(
 
                         } catch (exception: Exception) {
                             syncHelper.startSyncTimer(this)
-                            currentRetryCount--;
+                            currentRetryCount--
                         }
 
                         NudgeLogger.e(
