@@ -173,8 +173,10 @@ fun NestedLazyList(
                                     )
                                 )
                                 if (it.isNotEmpty()) {
+                                 val questionEntityStateList =
+                                     questionScreenViewModel.questionEntityStateList.toList()
                                     answeredQuestionCountIncreased(
-                                        questionScreenViewModel.questionEntityStateList.find { questionEntityState -> questionEntityState.questionId == it.first().questionId }!!
+                                        questionEntityStateList.find { questionEntityState -> questionEntityState.questionId == it.first().questionId }!!
                                     )
                                 }
                             }

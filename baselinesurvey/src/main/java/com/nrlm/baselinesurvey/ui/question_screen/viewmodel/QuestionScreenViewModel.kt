@@ -848,9 +848,12 @@ class QuestionScreenViewModel @Inject constructor(
         inputTypeQuestionAnswerEntityList.value.groupBy { it.optionId }.forEach {
             answeredQuestionCount.add(it.key)
         }
-        totalQuestionCount.intValue = questionEntityStateList.filter { it.showQuestion }.distinctBy { it.questionId }.size
-        Log.d("TAG", "updateSaveUpdateState: questionEntityStateList.filter { it.showQuestion }.size: ${questionEntityStateList.filter { it.showQuestion }.size} answeredQuestionCount: $answeredQuestionCount ::: totalQuestionCount: ${totalQuestionCount.intValue}")
-        isSectionCompleted.value = answeredQuestionCount.size == totalQuestionCount.intValue || answeredQuestionCount.size > totalQuestionCount.intValue
+        val qesList = questionEntityStateList.toList()
+        totalQuestionCount.intValue =
+            qesList.filter { it.showQuestion }.distinctBy { it.questionId }.size
+        // Log.d("TAG", "updateSaveUpdateState: questionEntityStateList.filter { it.showQuestion }.size: ${questionEntityStateList.filter { it.showQuestion }.size} answeredQuestionCount: $answeredQuestionCount ::: totalQuestionCount: ${totalQuestionCount.intValue}")
+        isSectionCompleted.value =
+            answeredQuestionCount.size == totalQuestionCount.intValue || answeredQuestionCount.size > totalQuestionCount.intValue
     }
 
     fun getOptionItemListWithConditionals(): List<OptionItemEntity> {
