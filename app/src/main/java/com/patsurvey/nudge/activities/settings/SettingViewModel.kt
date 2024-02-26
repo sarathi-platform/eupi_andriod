@@ -9,14 +9,16 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.facebook.network.connectionclass.DeviceBandwidthSampler
-import com.nudge.core.LOCAL_BACKUP_FILE_NAME
+import com.nudge.core.NUDGE_DATABASE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.enums.NetworkSpeed
+import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.json
-import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_FILE_BACKUP_NAME
+import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_IMAGE_FILE_BACKUP_NAME
+import com.nudge.core.renameFile
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.SyncBPCDataOnServer
@@ -69,8 +71,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileInputStream
 import java.io.IOException
 import java.net.URL
+import java.nio.channels.FileChannel
 import java.util.Timer
 import java.util.TimerTask
 import javax.inject.Inject
@@ -868,13 +872,14 @@ class SettingViewModel @Inject constructor(
     private fun clearSharedPreference() {
         val languageId = prefRepo.getAppLanguageId()
         val language = prefRepo.getAppLanguage()
-        val backupFileName = prefRepo.getPref(PREF_FILE_BACKUP_NAME, LOCAL_BACKUP_FILE_NAME)
         val backupImageFileName =
-            prefRepo.getPref(PREF_IMAGE_FILE_BACKUP_NAME, LOCAL_BACKUP_FILE_NAME)
+            prefRepo.getPref(
+                PREF_IMAGE_FILE_BACKUP_NAME,
+                getDefaultBackUpFileName(prefRepo.getMobileNumber())
+            )
         prefRepo.clearSharedPreference()
         prefRepo.saveAppLanguage(language)
         prefRepo.saveAppLanguageId(languageId)
-        prefRepo.savePref(PREF_FILE_BACKUP_NAME, backupFileName ?: "")
         prefRepo.savePref(PREF_IMAGE_FILE_BACKUP_NAME, backupImageFileName ?: "")
     }
 
@@ -937,6 +942,18 @@ class SettingViewModel @Inject constructor(
                 )
 
                 openShareSheet(imageUri, fileUri, title)
+                val oldName = CoreSharedPrefs.getInstance(NudgeCore.getAppContext())
+                    .getBackupFileName(prefRepo.getMobileNumber())
+                val isRenamed = renameFile(
+                    NudgeCore.getAppContext(),
+                    oldName + ".txt",
+                    newName = oldName.replace("current", "old") + ".txt",
+                    prefRepo.getMobileNumber()
+                )
+                if (isRenamed) {
+                    CoreSharedPrefs.getInstance(NudgeCore.getAppContext())
+                        .setBackupFileName(getDefaultBackUpFileName(prefRepo.getMobileNumber()))
+                }
                 showExportLoader.value = false
 
 
@@ -950,6 +967,17 @@ class SettingViewModel @Inject constructor(
         }
     }
 
+    fun exportDbFile() {
+        var currentDbFile = NudgeCore.getAppContext().getDatabasePath(NUDGE_DATABASE)
+        val src: FileChannel = FileInputStream(currentDbFile)
+            .getChannel()
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.setType("application/x-sqlite3")
+        // shareIntent.putExtra(Intent.EXTRA_STREAM, uriFromFile(NudgeCore.getAppContext(),src))
+        shareIntent.putExtra(Intent.EXTRA_TITLE, "")
+        val chooserIntent = Intent.createChooser(shareIntent, "title")
+        NudgeCore.startExternalApp(chooserIntent)
+    }
     private fun openShareSheet(imageUri: Uri?, fileUri: Uri?, title: String) {
         val fileUris = listOf(fileUri, imageUri)
         val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)

@@ -1694,12 +1694,22 @@ class VillageSelectionViewModel @Inject constructor(
 
     fun refreshBpcData(context: Context) {
         showLoader.value = true
+        villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) {
+            checkStatusCount++
+            if (checkStatusCount >= 2) {
+                showLoader.value = false
+                checkStatusCount = 0
+            }
+        }
         villageSelectionRepository.checkDidiPatStatus(
             prefRepo = prefRepo,
             object : NetworkCallbackListener {
             override fun onSuccess() {
-                showLoader.value = false
-
+                checkStatusCount++
+                if (checkStatusCount >= 2) {
+                    showLoader.value = false
+                    checkStatusCount = 0
+                }
             }
 
             override fun onFailed() {
@@ -1712,12 +1722,19 @@ class VillageSelectionViewModel @Inject constructor(
     fun refreshCrpData(context: Context) {
         showLoader.value = true
         checkStatusCount = 0
+        villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) {
+            checkStatusCount++
+            if (checkStatusCount >= 10) {
+                showLoader.value = false
+                checkStatusCount = 0
+            }
+        }
         villageSelectionRepository.checkStatusForCrp(
             prefRepo = prefRepo,
             object : NetworkCallbackListener {
             override fun onSuccess() {
                 checkStatusCount++
-                if (checkStatusCount >= 9) {
+                if (checkStatusCount >= 10) {
                     showLoader.value = false
                     checkStatusCount = 0
                 }

@@ -3761,13 +3761,14 @@ class VillageSelectionRepository @Inject constructor(
                 val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                 val localLanguageList = languageListDao.getAllLanguages()
                 val villageReq= createMultiLanguageVillageRequest(localLanguageList)
-//                if (forceRefresh)
+                if (!forceRefresh) {
                 if (!localVillageList.isNullOrEmpty()) {
                     val stateId = localVillageList[0].stateId
                     userAndVillageDetailsModel = UserAndVillageDetailsModel(true, localVillageList, stateId = stateId)
 //                    _villagList.value = localVillageList
 //                    _filterVillageList.value = villageList.value
                     apiSuccess(userAndVillageDetailsModel)
+                }
                 } else {
                     NudgeLogger.d("VillageSelectionRepository", "fetchUserAndVillageDetails -> villageReq: $villageReq")
                     val response = apiService.userAndVillageListAPI(villageReq)
