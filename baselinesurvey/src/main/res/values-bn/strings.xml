@@ -373,8 +373,7 @@
     <string name="this_week_tab_title">This Week</string>
     <string name="all_tab_title">All</string>
     <string name="search_question_placeholder">অনুসন্ধান প্রশ্ন</string>
-    <string name="save_next_section_button_text"><string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>-->
-        <![CDATA[সংরক্ষণ]]></string></string>
+    <string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>--><![CDATA[সংরক্ষণ]]></string>
     <string name="ok_text">ঠিক আছে</string>
     <string name="save">সংরক্ষণ</string>
 
@@ -399,6 +398,15 @@
     <string name="add_didi_details_label">Add didi details</string>
     <string name="household_information_comparision">Household information</string>
     <string name="total_income_lable">মোট আয়: ₹</string>
+    <string name="influence_type_comparision_and_label">প্রভাবের ধরন</string>
+    <string name="acess_to_public_transportation_comparision">পাবলিক ট্রান্সপোর্টে অ্যাক্সেস </string>
+    <string name="to_the_block_office_comparision">ব্লক অফিসে</string>
+    <string name="to_the_nearest_primary_health_care_centre_comparision">নিকটতম প্রাথমিক স্বাস্থ্যসেবা কেন্দ্রে</string>
+    <string name="to_the_nearest_government_school_comparision">কাছের সরকারি স্কুলে</string>
+    <string name="to_the_nearest_permanent_market_comparision">কাছের স্থায়ী বাজারে</string>
+    <string name="to_the_nearest_bank_comparsion">কাছের ব্যাঙ্কে</string>
+    <string name="to_the_replacement_string">""</string>
+    <string name="average_travel_cost_comparision">"গড় ভ্রমণ খরচ"</string>
 
 
 </resources>

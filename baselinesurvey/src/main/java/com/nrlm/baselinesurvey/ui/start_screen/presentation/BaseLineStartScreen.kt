@@ -104,7 +104,8 @@ fun BaseLineStartScreen(
 
 
     BackHandler {
-        navigateBackToSurveyeeListScreen(navController)
+        navController.popBackStack()
+//        navigateBackToSurveyeeListScreen(navController)
     }
 
     Scaffold(modifier = Modifier

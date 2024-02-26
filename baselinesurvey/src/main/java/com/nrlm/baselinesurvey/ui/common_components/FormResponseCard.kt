@@ -157,12 +157,13 @@ fun FormResponseCard(
                         } else if (householdMemberDto.questionTag.equals("Public Infra")) {
                             val questionState = fromTypeQuestionList.filter { it.questionEntity?.type == QuestionType.Form.name }.find { it.questionId == householdMemberDto.questionId }
                             var source = when (questionState?.questionEntity?.questionDisplay) {
-                                "To the block office",
-                                "To the nearest primary health care centre",
-                                "To the nearest government school",
-                                "To the nearest permanent market",
-                                "To the nearest bank"-> {
-                                    questionState.questionEntity.questionDisplay?.replace("To the ", BLANK_STRING)?.capitalize(Locale.ROOT)
+                                stringResource(R.string.to_the_block_office_comparision),
+                                stringResource(R.string.to_the_nearest_primary_health_care_centre_comparision),
+                                stringResource(R.string.to_the_nearest_government_school_comparision),
+                                stringResource(R.string.to_the_nearest_permanent_market_comparision),
+                                stringResource(R.string.to_the_nearest_bank_comparsion) -> {
+                                    questionState.questionEntity.questionDisplay?.replace(
+                                        stringResource(R.string.to_the_replacement_string), BLANK_STRING)?.capitalize(Locale.ROOT)
                                 }
 
                                 else -> {
@@ -175,7 +176,7 @@ fun FormResponseCard(
                             var mode = BLANK_STRING
                             mode = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
                                 it.display?.contains(
-                                    "Acess to public transportation",
+                                    stringResource(R.string.acess_to_public_transportation_comparision),
                                     ignoreCase = true
                                 )!!
                             }?.optionId] ?: BLANK_STRING
@@ -194,7 +195,7 @@ fun FormResponseCard(
                                 )!!
                             }?.optionId] ?: BLANK_STRING
 
-                            append("Name: $name")
+                            append("${stringResource(id = R.string.name_comparision)}: $name")
 
                         }
                         else append(BLANK_STRING)
@@ -270,7 +271,7 @@ fun FormResponseCard(
                         } else if (householdMemberDto.questionTag.equals("Public Infra")) {
                             val avgCost = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
                                 it.display?.trim()?.contains(
-                                    "Average travel cost ".trim(),
+                                    stringResource(R.string.average_travel_cost_comparision).trim(),
                                     ignoreCase = true
                                 )!!
                             }?.optionId] ?: BLANK_STRING
@@ -281,12 +282,12 @@ fun FormResponseCard(
                             var influenceType = BLANK_STRING
                             influenceType = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
                                 it.display?.contains(
-                                    "Influence type",
+                                    stringResource(R.string.influence_type_comparision_and_label),
                                     ignoreCase = true
                                 )!!
                             }?.optionId] ?: BLANK_STRING
 
-                            append("Influence type: $influenceType")
+                            append("${stringResource(R.string.influence_type_comparision_and_label)}: $influenceType")
 
                         } else {
                             append(BLANK_STRING)

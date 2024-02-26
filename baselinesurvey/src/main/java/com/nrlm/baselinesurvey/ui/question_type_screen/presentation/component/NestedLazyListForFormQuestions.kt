@@ -231,21 +231,6 @@ fun NestedLazyListForFormQuestions(
                                     }
                                 )
                             }
-
-                            /*QuestionType.Toggle.name-> {
-                                SwitchComponent(option.optionItemEntity.display, formQuestionResponseEntity.value.getResponseForOptionId(option.optionId ?: -1)?.selectedValue ?: VALUE_NO) { value ->
-                                    questionTypeScreenViewModel.formTypeOption?.let { it1 ->
-                                        onSaveFormTypeOption(
-                                            storeGivenAnswered(
-                                                it1, option.optionId ?: 0, value,
-                                                referenceId = questionTypeScreenViewModel.referenceId
-                                            )
-                                        )
-                                    }
-                                }
-//
-                            }
-                            }*/
                         }
                     }
                     item {
