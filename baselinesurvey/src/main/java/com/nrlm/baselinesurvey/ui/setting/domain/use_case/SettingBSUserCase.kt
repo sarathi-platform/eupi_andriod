@@ -1,5 +1,7 @@
 package com.nrlm.baselinesurvey.ui.setting.domain.use_case
 
-data class SettingBSUserCase (
+import javax.inject.Inject
+
+data class SettingBSUserCase @Inject constructor(
     val getSettingOptionListUseCase: GetSettingOptionListUseCase
 )

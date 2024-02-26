@@ -29,21 +29,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.navigation.NavController
-import com.nrlm.baselinesurvey.EXPANSTION_TRANSITION_DURATION
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
-import com.nrlm.baselinesurvey.ui.common_components.ToolbarComponent
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
+import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
 import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark50
 import com.nrlm.baselinesurvey.ui.theme.white
-import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nudge.core.model.SettingOptionModel
-import com.patsurvey.nudge.navigation.AuthScreen
-import java.util.Locale
 
 @Composable
 fun CommonSettingScreen(
@@ -56,15 +51,7 @@ fun CommonSettingScreen(
     Scaffold(
         backgroundColor = white,
         modifier = Modifier.fillMaxSize(),
-        topBar = {
-            ToolbarComponent(
-                title = title,
-                modifier = Modifier
-            ) {
-                onBackClick()
 
-            }
-        },
         bottomBar = {
             Box(
                 modifier = Modifier
