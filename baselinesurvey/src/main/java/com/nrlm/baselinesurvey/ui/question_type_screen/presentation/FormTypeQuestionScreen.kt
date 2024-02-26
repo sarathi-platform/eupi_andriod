@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,6 +36,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DELAY_2_MS
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.NestedLazyListForFormQuestions
@@ -110,7 +112,7 @@ fun FormTypeQuestionScreen(
                 contentPadding = PaddingValues(dimen_16_dp)
             ) {
                 ButtonPositive(
-                    buttonTitle = "Submit",
+                    buttonTitle = stringResource(id = R.string.submit),
                     isActive = saveButtonActiveState.value,
                     isArrowRequired = false
                 ) {

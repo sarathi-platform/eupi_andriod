@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="english" translatable="false">English</string>
     <string name="hindi" translatable="false">हिंदी</string>
     <string name="bangla" translatable="false">হিন্দি</string>
@@ -373,7 +373,8 @@
     <string name="this_week_tab_title">This Week</string>
     <string name="all_tab_title">All</string>
     <string name="search_question_placeholder">Search Question</string>
-    <string name="save_next_section_button_text"><string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>--><![CDATA[Save]]></string></string>
+    <string name="save_next_section_button_text"><string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>-->
+        <![CDATA[সংরক্ষণ]]></string></string>
     <string name="ok_text">Ok</string>
     <string name="save">Save</string>
 
