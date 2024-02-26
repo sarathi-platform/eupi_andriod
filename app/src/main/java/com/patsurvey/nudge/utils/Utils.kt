@@ -523,6 +523,76 @@ var videoList = listOf(
         url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M11Assamese.mp4",
         thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M11.png"
     ),
+    VideoItem(
+        id = 34,
+        title = "सारथी ऐप में लॉग इन करें",
+        description = "सारथी ऐप में लॉग इन कैसे करें",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2Hindi.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2.png"
+    ),
+    VideoItem(
+        id = 35,
+        title = "ऐप सिंहावलोकन",
+        description = "सारथी ऐप का संक्षिप्त परिचय",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3Hindi.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3.png"
+    ),
+    VideoItem(
+        id = 36,
+        title = "ट्रांसेक्ट वॉक",
+        description = "ट्रांसेक्ट वॉक के दौरान सारथी ऐप का उपयोग कैसे करें",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4Hindi.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4.png"
+    ),
+    VideoItem(
+        id = 37,
+        title = "सामाजिक मानचित्रण",
+        description = "सोशल मैपिंग के दौरान दीदी विवरण कैसे दर्ज करें",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5Hindi.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5.png"
+    ),
+    VideoItem(
+        id = 38,
+        title = "सहभागी धन रैंकिंग",
+        description = "दीदी की संपत्ति रैंकिंग कैसे दर्ज करें",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6Hindi.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6.png"
+    ),
+    VideoItem(
+        id = 39,
+        title = "पीएटी सर्वेक्षण - अवलोकन",
+        description = "सारथी ऐप पर पीएटी सर्वेक्षण का परिचय",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7Hindi.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7.png"
+    ),
+    VideoItem(
+        id = 40,
+        title = "PAT सर्वेक्षण भरना - भाग 1",
+        description = "PAT सर्वेक्षण कैसे भरें - भाग 1",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8HindiPart1.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.1.png"
+    ),
+    VideoItem(
+        id = 41,
+        title = "PAT सर्वेक्षण भरना - भाग 2",
+        description = "PAT सर्वेक्षण कैसे भरें - भाग 2",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8HindiPart2.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.2.png"
+    ),
+    VideoItem(
+        id = 42,
+        title = "डिजिटल फॉर्म बी और वीओ समर्थन के लिए जमा करें",
+        description = "डिजिटल फॉर्म बी कैसे डाउनलोड करें और वीओ अनुमोदन के लिए जमा करें",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9Hindi.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9.png"
+    ),
+    VideoItem(
+        id = 43,
+        title = "वीओ अनुमोदन",
+        description = "वीओ समर्थन कैसे रिकॉर्ड करें",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10Hindi.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10.png"
+    )
 
     /*VideoItem(
         id = 24,
