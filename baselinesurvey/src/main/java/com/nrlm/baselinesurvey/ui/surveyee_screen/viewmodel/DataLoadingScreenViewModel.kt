@@ -115,17 +115,15 @@ class DataLoadingScreenViewModel @Inject constructor(
             hamletSurveyRequestBodyModelForBangla
         )
 
-        /*val hamletSurveyRequestBodyModelForKokborok = SurveyRequestBodyModel(
-            languageId = 3,
+        val hamletSurveyRequestBodyModelForKokborok = SurveyRequestBodyModel(
+            languageId = 6,
             surveyName = "HAMLET",
-            referenceId = 5,
+            referenceId = 3,
             referenceType = "STATE"
         )
         fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
             hamletSurveyRequestBodyModelForKokborok
-        )*/
-
-
+        )
 
     }
 }
