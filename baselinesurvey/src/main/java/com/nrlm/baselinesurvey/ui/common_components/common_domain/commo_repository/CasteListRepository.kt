@@ -6,4 +6,5 @@ interface CasteListRepository {
 
     fun getCasteList(): List<CasteModel>
 
+    fun getSelectedLanguage(): Int
 }

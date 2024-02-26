@@ -54,7 +54,6 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
-import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.ui.common_components.BlueButtonWithIcon
 import com.nrlm.baselinesurvey.ui.common_components.ButtonOutline
 import com.nrlm.baselinesurvey.ui.common_components.DialogComponent
@@ -694,7 +693,7 @@ fun BaseLineStartScreenPreview(
 }
 
 private fun getCasteName(casteId: Int, baseLineStartViewModel: BaseLineStartViewModel): String {
-    var casteList = baseLineStartViewModel.getCasteList()
+    var casteList = baseLineStartViewModel.getCasteListForSelectedLanguage()
 
     return casteList.find { it.casteId == casteId }?.casteName ?: BLANK_STRING
 }

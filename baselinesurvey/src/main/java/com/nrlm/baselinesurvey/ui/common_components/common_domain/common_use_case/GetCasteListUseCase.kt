@@ -6,7 +6,8 @@ import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_reposito
 class GetCasteListUseCase(private val repository: CasteListRepository) {
 
     operator fun invoke(): List<CasteModel> {
-        return repository.getCasteList()
+        val selectedLanguage = repository.getSelectedLanguage()
+        return repository.getCasteList().filter { it.languageId == selectedLanguage }
     }
 
 }
