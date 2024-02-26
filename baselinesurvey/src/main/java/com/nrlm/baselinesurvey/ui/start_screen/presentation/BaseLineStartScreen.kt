@@ -162,12 +162,12 @@ fun BaseLineStartScreen(
                     openSettings(localContext)
                 }
             }
-            TextDetails(title = "Didi : ", data = didi.value.didiName)
-            TextDetails(title = "Dada : ", data = didi.value.dadaName)
-            TextDetails(title = "Caste : ", data = getCasteName(didi.value.casteId, baseLineStartViewModel))
+            TextDetails(title = stringResource(R.string.didi_title), data = didi.value.didiName)
+            TextDetails(title = stringResource(R.string.dada_title), data = didi.value.dadaName)
+            TextDetails(title = stringResource(R.string.caste_titile), data = getCasteName(didi.value.casteId, baseLineStartViewModel))
             YesNoButtonComponent(
                 defaultValue = baseLineStartViewModel.isAdharCard.value,
-                title = "Does Didi have aadhar card?"
+                title = stringResource(R.string.aadhar_card_titile)
             ) {
                 baseLineStartViewModel.isAdharCard.value = it
                 baseLineStartViewModel.adharCardState.value =
@@ -189,14 +189,14 @@ fun BaseLineStartScreen(
             Spacer(modifier = Modifier.height(8.dp))
             YesNoButtonComponent(
                 defaultValue = baseLineStartViewModel.isVoterCard.value,
-                title = "Does didi have voter card?"
+                title = stringResource(R.string.voter_card_title)
             ) {
                 baseLineStartViewModel.isVoterCard.value = it
             }
             Spacer(modifier = Modifier.height(10.dp))
             EditTextWithTitleComponent(
                 defaultValue = baseLineStartViewModel.phoneNumber.value,
-                title = "Enter didi's family phone number",
+                title = stringResource(R.string.phone_number_title),
                 showQuestion = OptionItemEntityState.getEmptyStateObject()
                     .copy(showQuestion = true),
                 isOnlyNumber = true,

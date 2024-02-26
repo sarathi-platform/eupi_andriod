@@ -39,11 +39,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_SECTION
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
@@ -198,8 +200,8 @@ fun NestedLazyList(
                             questionScreenViewModel.questionEntityStateList
                                 .find { questionEntityState ->
                                     questionEntityState.questionEntity?.questionSummary.equals(
-                                        "Add didi details",
-                                        false
+                                        context.getString(R.string.add_didi_details_label),
+                                        true
                                     )
                                 }?.let { it1 ->
                                     answeredQuestionCountIncreased(
@@ -612,8 +614,8 @@ fun NestedLazyList(
                                     onAnswerSelection = { questionIndex ->
                                         //TODO need to be dynamic..
                                         if (question.questionEntity.questionSummary.equals(
-                                                "Add didi details",
-                                                false
+                                                context.getString(R.string.add_didi_details_label),
+                                                true
                                             )
                                         ) {
                                             navigateToBaseLineStartScreen(
@@ -810,7 +812,7 @@ fun NestedLazyList(
                                         householdMemberDto = householdMemberDto,
                                         optionItemListWithConditionals = optionItemListWithConditionals,
                                         isPictureRequired = householdMemberDto.questionTag.equals(
-                                            "Household information",
+                                            stringResource(R.string.household_information_comparision),
                                             true
                                         ),
                                         viewModel = questionScreenViewModel,

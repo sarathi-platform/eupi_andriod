@@ -377,5 +377,27 @@
     <string name="ok_text">Ok</string>
     <string name="save">Save</string>
 
+    <string name="name_comparision">নাম</string>
+    <string name="age_comparision">বয়স</string>
+    <string name="relationship_comparision">সম্পর্ক</string>
+    <string name="income_source_comparision">আয়ের উৎস</string>
+    <string name="agriculture_produce_comparision">(ক) কৃষিপণ্য- </string>
+    <string name="livestock_comparision">(ক) গবাদি পশুর ধরন - </string>
+    <string name="income_frequency_comparision">আয় ফ্রিকোয়েন্সি</string>
+    <string name="no_income_comparision">কোন আয়</string>
+    <string name="total_income_comparision">(ঙ) মোট আয়</string>
+    <string name="total_unit_comparision">(D) মোট একক</string>
+    <string name="income_comparision">আয়</string>
+    <string name="small_business_comparision">গত 12 মাসে ছোট ব্যবসা থেকে পরিবারের আয় কত?</string>
+    <string name="didi_title">"দিদির নাম: "</string>
+    <string name="dada_title">"দাদা নাম: "</string>
+    <string name="caste_titile">"জাত: "</string>
+    <string name="aadhar_card_titile">আপনার কি আধার কার্ড আছে?</string>
+    <string name="voter_card_title">আপনার ভোটার কার্ড আছে?</string>
+    <string name="phone_number_title">দিদির পরিবারের ফোন নম্বর দিন</string>
+    <string name="add_didi_details_label">Add didi details</string>
+    <string name="household_information_comparision">Household information</string>
+    <string name="total_income_lable">মোট আয়: ₹</string>
+
 
 </resources>
