@@ -1,26 +1,30 @@
 package com.nrlm.baselinesurvey.network.interfaces
 
-import com.google.gson.JsonObject
 import com.nrlm.baselinesurvey.KEY_HEADER_MOBILE
 import com.nrlm.baselinesurvey.KEY_HEADER_TYPE
+import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.model.request.FetchSavedSurveyAnswersRequest
 import com.nrlm.baselinesurvey.model.request.LoginRequest
+import com.nrlm.baselinesurvey.model.request.MissionRequest
 import com.nrlm.baselinesurvey.model.request.OtpRequest
 import com.nrlm.baselinesurvey.model.request.SaveSurveyRequestModel
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.model.response.BeneficiaryApiResponse
 import com.nrlm.baselinesurvey.model.response.ConfigResponseModel
+import com.nrlm.baselinesurvey.model.response.MissionResponseModel
 import com.nrlm.baselinesurvey.model.response.OtpVerificationModel
 import com.nrlm.baselinesurvey.model.response.SavedSurveyAnswersResponse
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.TransactionResponse
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
+import com.nrlm.baselinesurvey.network.GET_CASTE_LIST
 import com.nrlm.baselinesurvey.network.SUBPATH_AUTH_GENERATE_OTP
 import com.nrlm.baselinesurvey.network.SUBPATH_AUTH_VALIDATE_OTP
 import com.nrlm.baselinesurvey.network.SUBPATH_CONFIG_GET_LANGUAGE
 import com.nrlm.baselinesurvey.network.SUBPATH_FETCH_SURVEY_FROM_NETWORK
 import com.nrlm.baselinesurvey.network.SUBPATH_GET_DIDI_LIST
+import com.nrlm.baselinesurvey.network.SUBPATH_GET_MISSION
 import com.nrlm.baselinesurvey.network.SUBPATH_GET_SAVED_SURVEY
 import com.nrlm.baselinesurvey.network.SUBPATH_SAVE_SURVEY_ANSWES
 import com.nrlm.baselinesurvey.network.SUBPATH_USER_VIEW
@@ -54,7 +58,9 @@ interface ApiService {
 
     @POST(SUBPATH_FETCH_SURVEY_FROM_NETWORK)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun getSurveyFromNetwork(@Body surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<SurveyResponseModel>
+//    suspend fun getSurveyFromNetwork(@Body surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<List<SurveyResponseModel>>
+        suspend fun getSurveyFromNetwork(@Body surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<SurveyResponseModel>
+
 
     @POST(SUBPATH_SAVE_SURVEY_ANSWES)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
@@ -64,7 +70,12 @@ interface ApiService {
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun fetchSavedSurveyAnswersFromServer(@Body savedSurveyAnswersRequest: FetchSavedSurveyAnswersRequest): ApiResponseModel<List<SavedSurveyAnswersResponse>>
 
-    @POST("/read-api/custom/log")
-    suspend fun addLogs(@Body logsBody: String): JsonObject?
+    @POST(SUBPATH_GET_MISSION)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun getBaseLineMission(@Body missionRequest: MissionRequest): ApiResponseModel<List<MissionResponseModel>>
+
+    @GET(GET_CASTE_LIST)
+    suspend fun getCasteList(@Query("languageId") languageId: Int): ApiResponseModel<List<CasteModel>>
+
 
 }

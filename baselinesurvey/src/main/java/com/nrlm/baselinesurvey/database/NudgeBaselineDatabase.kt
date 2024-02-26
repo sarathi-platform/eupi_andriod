@@ -6,23 +6,40 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.nrlm.baselinesurvey.database.converters.BeneficiaryStepConverter
+import com.nrlm.baselinesurvey.database.converters.ConditionsDtoConvertor
 import com.nrlm.baselinesurvey.database.converters.IntConverter
+import com.nrlm.baselinesurvey.database.converters.OptionQuestionConverter
 import com.nrlm.baselinesurvey.database.converters.QuestionsOptionsConverter
+import com.nrlm.baselinesurvey.database.converters.StringConverter
+import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
+import com.nrlm.baselinesurvey.database.dao.DidiInfoDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
-import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
+import com.nrlm.baselinesurvey.database.dao.FormQuestionResponseDao
+import com.nrlm.baselinesurvey.database.dao.InputTypeQuestionAnswerDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
+import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
+import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
+import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionAnswerEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
+import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.dao.VillageListDao
+import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
+import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
-import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
+import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
+import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
+import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
+import com.nrlm.baselinesurvey.database.entity.MissionEntity
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyEntity
+import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.database.entity.VillageEntity
 import java.sql.SQLException
 
@@ -37,13 +54,23 @@ const val NUDGE_BASELINE_DATABASE_VERSION = 1
         SurveyEntity::class,
         SectionEntity::class,
         QuestionEntity::class,
+        OptionItemEntity::class,
+        MissionEntity::class,
+        MissionActivityEntity::class,
+        ActivityTaskEntity::class,
+        DidiIntoEntity::class,
         DidiSectionProgressEntity::class,
-        SectionAnswerEntity::class
+        SectionAnswerEntity::class,
+        FormQuestionResponseEntity::class,
+        InputTypeQuestionAnswerEntity::class
     ],
     version = NUDGE_BASELINE_DATABASE_VERSION,
     exportSchema = false
 )
-@TypeConverters(IntConverter::class, BeneficiaryStepConverter::class, QuestionsOptionsConverter::class)
+@TypeConverters(
+    IntConverter::class, BeneficiaryStepConverter::class, QuestionsOptionsConverter::class,
+    OptionQuestionConverter::class, StringConverter::class, ConditionsDtoConvertor::class
+)
 abstract class NudgeBaselineDatabase: RoomDatabase()  {
 
     abstract fun villageListDao(): VillageListDao
@@ -57,10 +84,20 @@ abstract class NudgeBaselineDatabase: RoomDatabase()  {
     abstract fun sectionEntityDao(): SectionEntityDao
 
     abstract fun questionEntityDao(): QuestionEntityDao
+    abstract fun optionItemDao(): OptionItemDao
+
+    abstract fun missionEntityDao(): MissionEntityDao
+    abstract fun didiInfoEntityDao(): DidiInfoDao
+    abstract fun missionActivityEntityDao(): MissionActivityDao
+    abstract fun activityTaskEntityDao(): ActivityTaskDao
 
     abstract fun didiSectionProgressEntityDao(): DidiSectionProgressEntityDao
 
     abstract fun sectionAnswerEntityDao(): SectionAnswerEntityDao
+
+    abstract fun formQuestionResponseDao(): FormQuestionResponseDao
+
+    abstract fun inputTypeQuestionAnswerDao(): InputTypeQuestionAnswerDao
 
 
     companion object {

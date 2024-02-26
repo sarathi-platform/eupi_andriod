@@ -3,14 +3,10 @@ package com.nrlm.baselinesurvey.database.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
-import androidx.room.TypeConverters
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.QUESTION_TABLE
-import com.nrlm.baselinesurvey.database.converters.QuestionsOptionsConverter
-import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 
 @Entity(tableName = QUESTION_TABLE)
 data class QuestionEntity(
@@ -34,12 +30,6 @@ data class QuestionEntity(
     @Expose
     @ColumnInfo(name = "surveyId")
     val surveyId: Int,
-
-    @SerializedName("options")
-    @Expose
-    @ColumnInfo(name = "options")
-    @TypeConverters(QuestionsOptionsConverter::class)
-    var options: List<OptionsItem> = emptyList(),
 
     @SerializedName("questionImageUrl")
     @Expose
@@ -71,28 +61,13 @@ data class QuestionEntity(
     @ColumnInfo(name = "order")
     var order: Int? = 0,
 
-    /* @SerializedName("questionFlag")
-     @Expose
-     @ColumnInfo(name = "questionFlag")
-     var questionFlag: String? = BLANK_STRING,
-
-     @SerializedName("json")
-     @Expose
-     @ColumnInfo(name = "json")
-     var json: String? = BLANK_STRING,
-
-     @SerializedName("actionType")
-     @Expose
-     @ColumnInfo(name = "actionType")
-     var actionType: String? = BLANK_STRING,
-
-    @SerializedName("orderNumber")
-    @Expose
-    @ColumnInfo(name = "orderNumber")
-    var sectionOrderNumber: Int? = 0,*/
-
     @SerializedName("languageId")
     @Expose
     @ColumnInfo(name = "languageId")
     var languageId: Int? = 1,
+
+    @SerializedName("isConditional")
+    @Expose
+    @ColumnInfo(name = "isConditional")
+    var isConditional: Boolean = false
 )

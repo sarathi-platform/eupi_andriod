@@ -48,6 +48,8 @@ fun HomeUserScreen(
             },
             onNavigateToSetting = {
                 navController.navigate(Graph.SETTING_GRAPH)
+            }, onBackClick = {
+                navController.navigate(HomeScreens.VILLAGE_SELECTION_SCREEN.route)
             }
         )
     }

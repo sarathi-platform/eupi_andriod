@@ -3,7 +3,7 @@ package com.nrlm.baselinesurvey.model.request
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 
 data class Options(
 
@@ -37,7 +37,7 @@ data class Options(
 
 ) {
     companion object {
-        fun getOptionsFromOptionsItems(optionItems: List<OptionsItem>) : List<Options> {
+        fun getOptionsFromOptionsItems(optionItems: List<OptionItemEntity>): List<Options> {
             val optionsList = mutableListOf<Options>()
             optionItems.forEach {
                 optionsList.add(
@@ -48,7 +48,7 @@ data class Options(
                         weight = it.weight ?: 0,
                         display = it.display ?: BLANK_STRING,
                         count = it.count ?: 0,
-                        selected = false
+                        selected = it.isSelected ?: false
                     )
                 )
             }

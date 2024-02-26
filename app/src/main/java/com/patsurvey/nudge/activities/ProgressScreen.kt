@@ -112,7 +112,8 @@ fun ProgressScreen(
     viewModel: ProgressScreenViewModel,
     stepsNavHostController: NavHostController,
     onNavigateToStep:(Int, Int, Int, Boolean) ->Unit,
-    onNavigateToSetting:()->Unit
+    onNavigateToSetting:()->Unit,
+    onBackClick:()->Unit
 ) {
     LaunchedEffect(key1 = Unit) {
         viewModel.init()
@@ -155,20 +156,21 @@ fun ProgressScreen(
     }
 
     BackHandler {
-        viewModel.showAppExitDialog.value = true
+            onBackClick()
+//        viewModel.showAppExitDialog.value = true
     }
 
-    if(viewModel.showAppExitDialog.value){
-        showCustomDialog(
-            title = stringResource(id = R.string.are_you_sure),
-            message =stringResource(id = R.string.do_you_want_to_exit_the_app),
-            positiveButtonTitle = stringResource(id = R.string.exit),
-            negativeButtonTitle = stringResource(id = R.string.cancel),
-            onNegativeButtonClick = {viewModel.showAppExitDialog.value =false},
-            onPositiveButtonClick = {
-                (context as? MainActivity)?.finish()
-            })
-    }
+//    if(viewModel.showAppExitDialog.value){
+//        showCustomDialog(
+//            title = stringResource(id = R.string.are_you_sure),
+//            message =stringResource(id = R.string.do_you_want_to_exit_the_app),
+//            positiveButtonTitle = stringResource(id = R.string.exit),
+//            negativeButtonTitle = stringResource(id = R.string.cancel),
+//            onNegativeButtonClick = {viewModel.showAppExitDialog.value =false},
+//            onPositiveButtonClick = {
+//                (context as? MainActivity)?.finish()
+//            })
+//    }
 
     Surface(
         modifier = Modifier
@@ -327,8 +329,11 @@ fun ProgressScreen(
                                     PREF_KEY_IDENTITY_NUMBER,
                                     BLANK_STRING
                                 ) ?: "",
-                                isUserBPC = false,
-                                onBackClick = {}
+                                isBackButtonShow = true,
+                                isBPCUser = false,
+                                onBackClick = {
+                                    onBackClick()
+                                }
                             )
                         }
 
@@ -703,14 +708,15 @@ fun StepBoxPreview(){
 @Preview(showBackground = true)
 @Composable
 fun UserDataViewPreview(){
-    UserDataView(name = "Sarathi BPC", identity = "1212", isUserBPC = true, onBackClick = {})
+    UserDataView(name = "Sarathi BPC", identity = "1212", isBackButtonShow = true, isBPCUser = true,onBackClick = {})
 }
 @Composable
 fun UserDataView(
     modifier: Modifier = Modifier,
     name: String,
     identity: String,
-    isUserBPC:Boolean,
+    isBPCUser:Boolean,
+    isBackButtonShow:Boolean,
     onBackClick:()->Unit
 ) {
     ConstraintLayout() {
@@ -724,7 +730,7 @@ fun UserDataView(
                 .then(modifier)
         ) {
             Row {
-                if(isUserBPC) {
+                if(isBackButtonShow) {
                     Icon(
                         Icons.Default.ArrowBack,
                         contentDescription = "Negative Button",
@@ -746,7 +752,7 @@ fun UserDataView(
                 )
             }
 
-            if(!isUserBPC) {
+            if(!isBPCUser) {
                 Text(
                     text = stringResource(R.string.user_id_text) + identity,
                     color = textColorDark,

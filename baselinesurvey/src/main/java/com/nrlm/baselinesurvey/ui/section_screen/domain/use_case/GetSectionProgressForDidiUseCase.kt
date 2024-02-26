@@ -7,8 +7,12 @@ class GetSectionProgressForDidiUseCase (
     private val repository: SectionListScreenRepository
 ) {
 
-    operator fun invoke(didiId: Int, languageId:Int): List<DidiSectionProgressEntity> {
-        return repository.getSectionProgressForDidi(didiId, languageId)
+    operator fun invoke(
+        didiId: Int,
+        surveyId: Int,
+        languageId: Int
+    ): List<DidiSectionProgressEntity> {
+        return repository.getSectionProgressForDidi(didiId, surveyId, languageId)
     }
 
 //    fun getSectionProgressStatusForDidi(didiId: Int, sectionId: Int, surveyId: Int): DidiSectionProgressEntity

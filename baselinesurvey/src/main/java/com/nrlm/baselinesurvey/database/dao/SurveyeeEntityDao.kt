@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.database.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -19,6 +18,9 @@ interface SurveyeeEntityDao {
 
     @Query("Select * FROM $SURVEYEE_TABLE where didiId = :didiId")
     fun getDidi(didiId: Int): SurveyeeEntity
+
+    @Query("Select * FROM $SURVEYEE_TABLE where didiId in(:didiId)")
+    fun isDidiExist(didiId: Int): Boolean
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertDidi(didi: SurveyeeEntity)

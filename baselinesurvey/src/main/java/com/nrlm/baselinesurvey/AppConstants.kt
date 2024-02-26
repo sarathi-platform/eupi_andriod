@@ -7,8 +7,8 @@ const val DEFAULT_LANGUAGE_CODE="en"
 const val DEFAULT_LANGUAGE_NAME = "English"
 const val DEFAULT_LANGUAGE_LOCAL_NAME = "English"
 const val MOBILE_NUMBER_LENGTH=10
-const val ASSET_VALUE_LENGTH=8
-const val MAXIMUM_RANGE=99999
+const val ASSET_VALUE_LENGTH = 8
+const val MAXIMUM_RANGE = 999999
 const val OTP_LENGTH = 6
 var OTP_RESEND_DURATION: Long = 30 * 1000
 var EXPANSTION_TRANSITION_DURATION: Int = 450
@@ -28,6 +28,7 @@ const val KEY_DEVICE_DETAILS = "device_detail"
 const val ACCESS_TOKEN = "ACCESS_TOKEN"
 const val PREF_MOBILE_NUMBER = "pref_mobile_number"
 const val SUCCESS = "SUCCESS"
+const val SUCCESS_CODE = "200"
 const val FAIL = "FAIL"
 const val SPLASH_SCREEN_DURATION = 2000L
 const val ONE_SECOND = 2000L
@@ -36,6 +37,11 @@ const val FINAL_STEP_COMPLETION_DELAY = 3000L
 const val NUDGE_BASELINE_DATABASE = "NudgeBaselineDatabase"
 const val VILLAGE_TABLE_NAME = "village_table"
 const val LANGUAGE_TABLE_NAME = "language_table"
+const val MISSION_TABLE_NAME = "mission_table"
+const val ACTIVITY_TABLE_NAME = "activity_table"
+const val TASK_TABLE_NAME = "task_table"
+const val CASTE_TABLE_NAME = "caste_table"
+const val DIDI_INFO_TABLE_NAME = "didi_info_table"
 const val NUMERIC_TABLE_NAME = "numeric_table"
 const val OPTION_TABLE_NAME = "option_table"
 const val USER_TABLE_NAME = "user_table"
@@ -50,6 +56,10 @@ const val TOLA_TABLE = "tola_table"
 const val TOLA_COUNT = "tola_count"
 const val DIDI_COUNT = "didi_count"
 const val QUESTION_TABLE = "question_table"
+const val OPTION_TABLE = "option_table"
+const val FORM_QUESTION_RESPONSE_TABLE = "form_question_response_table"
+const val INPUT_TYPE_QUESTION_ANSWER_TABLE = "input_type_question_answer_entity"
+
 const val DIDI_SECTION_PROGRESS_TABLE = "didi_section_progress_table"
 const val TRAINING_VIDEO_TABLE = "training_video_table"
 const val BPC_SUMMARY_TABLE = "bpc_summary_table"
@@ -74,6 +84,7 @@ const val PREF_KEY_PROFILE_IMAGE="profile_image"
 const val PREF_KEY_ROLE_NAME = "role_name"
 const val PREF_KEY_TYPE_NAME = "type_name"
 const val PREF_STATE_ID = "stateId"
+const val PREF_CASTE_LIST = "caste_list"
 const val PREF_KEY_VO_ENDORSEMENT_STATUS = "voEndorsementStatus"
 const val SNACKBAR_TAG = "snackbar"
 const val SNACKBAR_MESSAGE = "snackbarMessage"
@@ -88,6 +99,9 @@ const val ARG_VILLAGE_ID = "villageId"
 const val ARG_DIDI_DETAILS_ID = "didi_details_id"
 const val ARG_STEP_ID = "stepId"
 const val ARG_DIDI_ID = "didiId"
+
+const val ARG_FORM_QUESTION_RESPONSE_REFERENCE_ID = "formQuestionResponseReferenceId"
+
 const val ARG_DIDI_STATUS = "didi_status"
 const val ARG_SECTION_TYPE = "section_type"
 const val ARG_QUESTION_INDEX = "question_index"
@@ -263,6 +277,8 @@ const val PREF_KEY_NEED_TO_SCROLL = "questions_need_to_scroll"
 const val NO_SECTION = "NO_SECTION"
 const val ARG_SECTION_ID = "section_id"
 const val ARG_SURVEY_ID = "survey_id"
+const val ARG_QUESTION_NAME = "question_name"
+const val ARG_QUESTION_ID = "question_id"
 
 const val THIS_WEEK_TAB = "This Week"
 const val ALL_TAB = "All"
@@ -270,6 +286,21 @@ const val ALL_TAB = "All"
 const val QUESTION_DATA_TAB = "Questions Data"
 const val SECTION_INFORMATION_TAB = "Section Information"
 
-const val BASE_LINE = "BASE_LINE"
+const val BASE_LINE = "BASELINE"
+const val HAMLET = "HAMLET"
 const val ARG_VIDEO_PATH = "video_path"
+const val ARG_ACTIVITY_ID = "activity_id"
+const val ARG_ACTIVITY_DATE = "activity_date"
+const val ARG_MISSION_ID = "mission_id"
+const val ARG_MISSION_NAME = "mission_name"
+const val ARG_MISSION_DATE = "mission_date"
+
+const val DELAY_1_MS: Long = 100
+const val DELAY_2_MS:Long = 200
+const val DELAY_1_SEC: Long = 1000
+const val DELAY_2_SEC: Long = 2000
+
+const val VALUE_NO = "No"
+
+const val CONDITIONS_DELIMITER = ","
 

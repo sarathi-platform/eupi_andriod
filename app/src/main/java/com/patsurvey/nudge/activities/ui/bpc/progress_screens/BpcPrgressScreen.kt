@@ -292,7 +292,8 @@ fun BpcProgressScreen(
                                         PREF_KEY_IDENTITY_NUMBER,
                                         BLANK_STRING
                                     ) ?: "",
-                                    isUserBPC = true
+                                    isBackButtonShow = true,
+                                    isBPCUser = true
                                 ){
                                     onBackClick()
                                 }

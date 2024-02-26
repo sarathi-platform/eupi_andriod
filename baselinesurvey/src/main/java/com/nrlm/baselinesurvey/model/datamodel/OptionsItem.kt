@@ -1,11 +1,12 @@
 package com.nrlm.baselinesurvey.model.datamodel
 
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.BLANK_STRING
 
 data class OptionsItem(
 
-    @SerializedName("display")
+    @SerializedName("description")
     val display: String? = null,
 
     @SerializedName("weight")
@@ -17,11 +18,8 @@ data class OptionsItem(
     @SerializedName("optionValue")
     val optionValue: Int? = null,
 
-    @SerializedName("summary")
+    @SerializedName("paraphrase")
     val summary: String? = null,
-
-/*    @SerializedName("isSelected")
-    val isSelected: Boolean? = false,*/
 
     @SerializedName("count")
     var count: Int? = 0,
@@ -31,9 +29,32 @@ data class OptionsItem(
     var optionImage: String? = BLANK_STRING,*/
 
     @SerializedName("optionImage")
-    var optionImage: Int? = 0,
+    var optionImage: String? = BLANK_STRING,
 
-    @SerializedName("optionType")
+    @SerializedName("type")
     var optionType: String? = BLANK_STRING,
 
-    )
+
+    @SerializedName("conditional")
+    @Expose
+    val conditional: Boolean = false,
+
+    @SerializedName("languageCode")
+    @Expose
+    val languageCode: String = BLANK_STRING,
+
+    @SerializedName("order")
+    @Expose
+    val order: Int = 0,
+
+    @SerializedName("values")
+    @Expose
+    val values: List<String> = listOf(),
+
+    @SerializedName("conditions")
+    @Expose
+    val conditions: List<ConditionsDto?>? = emptyList()
+
+
+
+)

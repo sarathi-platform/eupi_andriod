@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -9,11 +10,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.NO_SECTION
-import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
+import com.nrlm.baselinesurvey.navigation.home.navigateBackToDidiScreen
+import com.nrlm.baselinesurvey.navigation.home.navigateBackToSectionListScreen
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
-import com.nrlm.baselinesurvey.utils.getSectionIndexById
-import com.nrlm.baselinesurvey.utils.getSectionIndexByOrder
 
+
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnrememberedMutableState")
 @Composable
 fun QuestionScreenHandler(
     navController: NavController,
@@ -35,22 +37,24 @@ fun QuestionScreenHandler(
         QuestionScreen(
             navController = navController,
             viewModel = viewModel,
+            surveyId = surveyId,
             surveyeeId = didiId,
             sectionId = selectedSectionId.value
         ) { currentSectionId ->
             if (sectionsList.size == 1 && sectionsList[0].sectionName.equals(NO_SECTION, true)) {
-                navigateBackToSurveyeeListScreen(navController)
+                navigateBackToDidiScreen(navController)
             } else {
-                try {
+                navController.navigateBackToSectionListScreen(surveyeeId = didiId, surveyeId = surveyId)
+               /* try {
                     // TODO @Anupam Update this when order number is received from backend
-                    /*val currentSection = sectionsList[sectionsList.getSectionIndexById(selectedSectionId.value)]
-                    selectedSectionId.value = sectionsList[sectionsList.getSectionIndexByOrder(currentSection.sectionOrder + 1)].sectionId*/
+                    *//*val currentSection = sectionsList[sectionsList.getSectionIndexById(selectedSectionId.value)]
+                    selectedSectionId.value = sectionsList[sectionsList.getSectionIndexByOrder(currentSection.sectionOrder + 1)].sectionId*//*
 
                     // TODO @Anupam Temp Solution only until order number is not received from backend
-                        navigateBackToSurveyeeListScreen(navController)
+                    navigateBackToDidiScreen(navController)
                 } catch (ex: Exception) {
-                    navigateBackToSurveyeeListScreen(navController)
-                }
+                    navigateBackToDidiScreen(navController)
+                }*/
             }
         }
     }

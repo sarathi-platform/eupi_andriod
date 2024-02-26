@@ -18,6 +18,7 @@ import com.nrlm.baselinesurvey.RESPONSE_CODE_UNAUTHORIZED
 import com.nrlm.baselinesurvey.TIMEOUT_ERROR_MSG
 import com.nrlm.baselinesurvey.UNAUTHORISED_MESSAGE
 import com.nrlm.baselinesurvey.UNREACHABLE_ERROR_MSG
+import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
 import com.nrlm.baselinesurvey.model.datamodel.ErrorModel
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -29,6 +30,8 @@ import java.net.SocketTimeoutException
 abstract class BaseViewModel : ViewModel(){
 
     abstract fun <T> onEvent(event: T)
+
+    open fun updateQuestionStateForCondition(conditionResult: Boolean, conditionsDto: ConditionsDto?) {}
 
     open fun performSearchQuery(queryTerm: String, isFilterApplied: Boolean, fromScreen: String) {}
 

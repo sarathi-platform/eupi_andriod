@@ -21,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.greyBorder
@@ -29,7 +30,7 @@ import com.nrlm.baselinesurvey.ui.theme.white
 
 @Composable
 fun CTAButtonComponent(
-    tittle: String,
+    tittle: String? = BLANK_STRING,
     modifier: Modifier,
     isActive: Boolean = true,
     textColor: Color = Color.White,
@@ -53,16 +54,18 @@ fun CTAButtonComponent(
             .then(modifier),
         contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text = tittle,
-            color = if (isActive) white else greyBorder,
-            style = /*buttonTextStyle*/TextStyle(
-                fontFamily = NotoSans,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp
-            ),
-            textAlign = TextAlign.Center
-        )
+        tittle?.let {
+            Text(
+                text = it,
+                color = if (isActive) white else greyBorder,
+                style = /*buttonTextStyle*/TextStyle(
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp
+                ),
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 

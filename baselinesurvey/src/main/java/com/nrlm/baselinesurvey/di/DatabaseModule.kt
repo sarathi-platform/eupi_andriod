@@ -68,11 +68,40 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDidiSectionProgressEntityDao(db: NudgeBaselineDatabase) = db.didiSectionProgressEntityDao()
+    fun provideOptionEntityDao(db: NudgeBaselineDatabase) = db.optionItemDao()
+
+    @Provides
+    @Singleton
+    fun provideMissionEntityDao(db: NudgeBaselineDatabase) = db.missionEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideDidiInfoEntityDao(db: NudgeBaselineDatabase) = db.didiInfoEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideMissionActivityEntityDao(db: NudgeBaselineDatabase) = db.missionActivityEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideActivityTaskEntityDao(db: NudgeBaselineDatabase) = db.activityTaskEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideDidiSectionProgressEntityDao(db: NudgeBaselineDatabase) =
+        db.didiSectionProgressEntityDao()
 
     @Provides
     @Singleton
     fun provideSectionAnswerEntityDao(db: NudgeBaselineDatabase) = db.sectionAnswerEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideFormQuestionResponseDao(db: NudgeBaselineDatabase) = db.formQuestionResponseDao()
+
+    @Provides
+    @Singleton
+    fun provideInputTypeQuestionAnswerDao(db: NudgeBaselineDatabase) = db.inputTypeQuestionAnswerDao()
 
     /*@Provides
     @Singleton

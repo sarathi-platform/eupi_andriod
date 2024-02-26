@@ -1,7 +1,6 @@
 package com.nrlm.baselinesurvey.ui.common_components
 
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.material3.Switch
@@ -11,7 +10,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,25 +21,30 @@ import com.nrlm.baselinesurvey.ui.theme.switchColor
 import com.nrlm.baselinesurvey.ui.theme.white
 
 @Composable
-fun SwitchComponent(title: String) {
-    var checked by remember { mutableStateOf(false) }
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-
-        ) {
+fun SwitchComponent(
+    title: String?,
+    defaultValue: String = "No",
+    onAnswerSelection: (selectValue: String) -> Unit
+) {
+    var defaultChecked = defaultValue.equals("Yes", false)
+    var checked by remember { mutableStateOf(defaultChecked) }
+    Row {
         Text(
             modifier = Modifier.weight(0.7F),
-            text = title,
+            text = title ?: "Sectect",
             textAlign = TextAlign.Start,
             style = largeTextStyle,
             color = black100Percent
         )
         Switch(
             checked = checked,
-            onCheckedChange = { checked = it },
+            onCheckedChange = {
+                checked = it
+                val selectedValue = if (checked) "Yes" else "No"
+                onAnswerSelection(selectedValue)
+            },
             modifier = Modifier
-                .padding(10.dp)
+                .padding(1.dp)
                 .weight(0.3f),
             colors = SwitchDefaults.colors(
                 checkedThumbColor = white,
@@ -62,5 +65,5 @@ fun SwitchComponent(title: String) {
 @Preview(showBackground = true)
 @Composable
 fun SwitchComponentPreview() {
-    SwitchComponent("Married")
+    SwitchComponent("Married") {}
 }
