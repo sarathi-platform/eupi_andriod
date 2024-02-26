@@ -261,7 +261,7 @@ class BaseLineStartViewModel @Inject constructor(
         saveFilePathInDb(photoPath, location, didiEntity = didiEntity)
     }
 
-    fun getCasteList(): List<CasteModel> {
+    fun getCasteListForSelectedLanguage(): List<CasteModel> {
         return startSurveyScreenUserCase.getCasteListUseCase.invoke()
     }
 

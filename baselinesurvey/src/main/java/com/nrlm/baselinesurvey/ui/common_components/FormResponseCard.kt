@@ -143,7 +143,7 @@ fun FormResponseCard(
 
                             if (income == BLANK_STRING)
                                 income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                    it.display?.equals(
+                                    it.display?.contains(
                                         stringResource(id = R.string.income_frequency_comparision),
                                         ignoreCase = true
                                     )!!

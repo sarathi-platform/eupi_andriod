@@ -18,4 +18,10 @@ class CasteListRepositoryImpl @Inject constructor(
             Gson().fromJson(casteList, object : TypeToken<List<CasteModel>>() {}.type)
         }
     }
+
+    override fun getSelectedLanguage(): Int {
+        return prefRepo.getAppLanguageId() ?: 2
+    }
+
+
 }
