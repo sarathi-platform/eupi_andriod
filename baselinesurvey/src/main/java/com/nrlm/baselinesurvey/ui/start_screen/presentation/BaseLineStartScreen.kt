@@ -53,6 +53,7 @@ import coil.compose.AsyncImage
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
+import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.ui.common_components.BlueButtonWithIcon
 import com.nrlm.baselinesurvey.ui.common_components.ButtonOutline
@@ -73,6 +74,7 @@ import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.openSettings
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.uriFromFile
+import kotlinx.coroutines.flow.StateFlow
 
 @SuppressLint("StateFlowValueCalledInComposition", "UnrememberedMutableState")
 @Composable
@@ -116,21 +118,7 @@ fun BaseLineStartScreen(
                 isPositiveButtonActive = isContinueButtonActive.value,
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
-                    didi.value.didiId?.let {
-                        baseLineStartViewModel.onEvent(
-                            SurveyStateEvents.UpdateDidiSurveyStatus(
-                                it,
-                                didiInfo = DidiIntoEntity(
-                                    didiId = it,
-                                    isAdharCard = baseLineStartViewModel.isAdharCard.value,
-                                    isVoterCard = baseLineStartViewModel.isVoterCard.value,
-                                    adharNumber = baseLineStartViewModel.aadharNumber.value,
-                                    phoneNumber = baseLineStartViewModel.phoneNumber.value
-                                ),
-                                SurveyState.INPROGRESS
-                            )
-                        )
-                    }
+                    updateDidiDetails(didi, baseLineStartViewModel)
                     navController.popBackStack()
 //                    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
                 },
@@ -172,6 +160,7 @@ fun BaseLineStartScreen(
                 baseLineStartViewModel.isAdharCard.value = it
                 baseLineStartViewModel.adharCardState.value =
                     baseLineStartViewModel.adharCardState.value.copy(showQuestion = baseLineStartViewModel.isAdharTxtVisible.value)
+                updateDidiDetails(didi, baseLineStartViewModel)
                 //  (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (baseLineStartViewModel.isVoterCard.value != -1) && (baseLineStartViewModel.phoneNumber.value.length == 10) && (baseLineStartViewModel.isAdharCard.value != -1)
             }
 
@@ -192,6 +181,7 @@ fun BaseLineStartScreen(
                 title = stringResource(R.string.voter_card_title)
             ) {
                 baseLineStartViewModel.isVoterCard.value = it
+                updateDidiDetails(didi, baseLineStartViewModel)
             }
             Spacer(modifier = Modifier.height(10.dp))
             EditTextWithTitleComponent(
@@ -645,6 +635,27 @@ fun BaseLineStartScreen(
                     .padding(bottom = it.calculateBottomPadding() + defaultBottomBarPadding)
             )
         }
+    }
+}
+
+private fun updateDidiDetails(
+    didi: StateFlow<SurveyeeEntity>,
+    baseLineStartViewModel: BaseLineStartViewModel
+) {
+    didi.value.didiId?.let {
+        baseLineStartViewModel.onEvent(
+            SurveyStateEvents.UpdateDidiSurveyStatus(
+                it,
+                didiInfo = DidiIntoEntity(
+                    didiId = it,
+                    isAdharCard = baseLineStartViewModel.isAdharCard.value,
+                    isVoterCard = baseLineStartViewModel.isVoterCard.value,
+                    adharNumber = baseLineStartViewModel.aadharNumber.value,
+                    phoneNumber = baseLineStartViewModel.phoneNumber.value
+                ),
+                SurveyState.INPROGRESS
+            )
+        )
     }
 }
 
