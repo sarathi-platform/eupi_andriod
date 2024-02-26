@@ -403,7 +403,7 @@
     <string name="this_week_tab_title">This Week</string>
     <string name="all_tab_title">All</string>
     <string name="search_question_placeholder">Search Question</string>
-    <string name="save_next_section_button_text"><![CDATA[Save & Next Section]]></string>
+    <string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>--><![CDATA[Save]]></string>
     <string name="ok_text">Ok</string>
     <string name="home" translatable="false">Home</string>
     <string name="mission" translatable="false">Missions</string>
@@ -417,25 +417,34 @@
     <string name="save">Save</string>
 
 
-    <string name="name_comparision">Name</string>
-    <string name="age_comparision">Age</string>
-    <string name="relationship_comparision">Relationship</string>
-    <string name="income_source_comparision">sources of income</string>
+    <string name="name_comparision">Mung</string>
+    <string name="age_comparision">Umor</string>
+    <string name="relationship_comparision">Aibibai baksa halok</string>
+    <string name="income_source_comparision">nukhungo ajimungni</string>
     <string name="agriculture_produce_comparision">(A) Hukbarni manwi - </string>
     <string name="livestock_comparision">(A) Malmatani dal - </string>
     <string name="income_frequency_comparision">Income frequency</string>
-    <string name="no_income_comparision">No income</string>
+    <string name="no_income_comparision">Mwsaphano ajimung kwrwi</string>
     <string name="total_income_comparision">(E) Total Income</string>
     <string name="total_unit_comparision">(D) Total units</string>
     <string name="income_comparision">Income</string>
     <string name="small_business_comparision">Chikon baniani bagwi: thanai tal chinwio chikon baniani simi nukhungni bebak ajimung?</string>
-    <string name="didi_title">"Aibini mung: "</string>
+    <string name="didi_title">"Aibi: "</string>
     <string name="dada_title">"Ata: "</string>
-    <string name="caste_titile">"Caste: "</string>
+    <string name="caste_titile">"Dopha: "</string>
     <string name="aadhar_card_titile">Nini Aadhar Card de tong?</string>
     <string name="voter_card_title">Nini Voter Card de tong?</string>
     <string name="phone_number_title">Aibini nukhungni phone number rwdi</string>
     <string name="add_didi_details_label">Add didi details</string>
     <string name="household_information_comparision">Nukhungni kokthum (Choyaui)</string>
     <string name="total_income_lable">Total Income: ₹</string>
+    <string name="influence_type_comparision_and_label">Tangphan-ni dal</string>
+    <string name="acess_to_public_transportation_comparision">Public Transportbai manjumung</string>
+    <string name="to_the_block_office_comparision">Block office-o</string>
+    <string name="to_the_nearest_primary_health_care_centre_comparision">Ganani puile beremni sakham khoro</string>
+    <string name="to_the_nearest_government_school_comparision">Ganani haphangni rwngnogo</string>
+    <string name="to_the_nearest_permanent_market_comparision">Ganani tongsuknai hatio</string>
+    <string name="to_the_nearest_bank_comparsion">Ganani Banko</string>
+    <string name="to_the_replacement_string">"Ganani "</string>
+    <string name="average_travel_cost_comparision">"Bebaktwi beraimung rang baima"</string>
 </resources>

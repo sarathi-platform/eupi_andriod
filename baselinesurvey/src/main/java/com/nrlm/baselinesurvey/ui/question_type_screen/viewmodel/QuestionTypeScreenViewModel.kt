@@ -399,7 +399,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
         if (questionsToShowIndex != -1) {
             _updatedOptionList.removeAt(questionsToShowIndex)
             _updatedOptionList.add(questionsToShowIndex, mQuestionsToShow!!)
-            if (!conditionResult) {
+            /*if (!conditionResult) {
                 onEvent(
                     QuestionTypeEvent.DeleteFormQuestionOptionResponseEvent(
                         mQuestionsToShow.optionId,
@@ -409,7 +409,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
                         didiId
                     )
                 )
-            }
+            }*/
         }
     }
 
