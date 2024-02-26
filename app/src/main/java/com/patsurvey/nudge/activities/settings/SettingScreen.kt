@@ -189,6 +189,8 @@ fun SettingScreen(
         list.add(SettingOptionModel(4, context.getString(R.string.training_videos), BLANK_STRING))
         list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
         list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
+        list.add(SettingOptionModel(7, stringResource(id = R.string.export_file), BLANK_STRING))
+
         /*if (BuildConfig.DEBUG) *//*list.add(
             SettingOptionModel(
                 6,

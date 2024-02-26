@@ -32,7 +32,7 @@ fun Long.toDateInMMDDYYFormat(
     timeZone: TimeZone = TimeZone.getTimeZone("UTC")
 ): String {
     val dateTime = Date(this)
-    val parser = SimpleDateFormat("MM_dd_yyyy_MM_HH_mm_ss", Locale.getDefault())
+    val parser = SimpleDateFormat("MM_dd_yyyy_MM_HH_mm_ss_SSS", Locale.getDefault())
     return parser.format(dateTime)
 }
 
