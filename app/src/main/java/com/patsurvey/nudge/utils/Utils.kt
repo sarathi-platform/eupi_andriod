@@ -1339,12 +1339,23 @@ suspend fun getPatSummarySaveEventPayload(didiEntity: DidiEntity, answerDao: Ans
     return patSummarySaveRequest
 }
 
-suspend fun getPatScoreSaveEvent(didiEntity: DidiEntity, questionListDao: QuestionListDao, prefRepo: PrefRepo): EditDidiWealthRankingRequest {
+suspend fun getPatScoreSaveEvent(
+    didiEntity: DidiEntity,
+    questionListDao: QuestionListDao,
+    prefRepo: PrefRepo,
+    tolaDeviceId: String,
+    tolaServerId: Int
+): EditDidiWealthRankingRequest {
     val passingMark = questionListDao.getPassingScore()
     val patScoreSaveRequest = EditDidiWealthRankingRequest.getRequestPayloadForPatScoreSave(
         didiEntity,
         passingMark,
-        isBpcUserType = prefRepo.isUserBPC()
+        isBpcUserType = prefRepo.isUserBPC(),
+        tolaDeviceId = tolaDeviceId,
+        tolaServerId = tolaServerId
+
+
+
     )
     return patScoreSaveRequest
 }

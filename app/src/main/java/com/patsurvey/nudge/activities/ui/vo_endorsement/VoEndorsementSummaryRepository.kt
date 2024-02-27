@@ -23,6 +23,7 @@ import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.getParentEntityMapForEvent
@@ -33,6 +34,7 @@ class VoEndorsementSummaryRepository @Inject constructor(
     val answerDao: AnswerDao,
     val questionListDao: QuestionListDao,
     val stepsListDao: StepsListDao,
+    val tolaDao: TolaDao
 ):BaseRepository() {
     fun getAllQuestionsForLanguage():List<QuestionEntity>{
         return questionListDao.getAllQuestionsForLanguage(prefRepo.getAppLanguageId()?:2)
@@ -93,7 +95,15 @@ class VoEndorsementSummaryRepository @Inject constructor(
 
         when(eventName) {
             EventName.SAVE_VO_ENDORSEMENT -> {
-                val requestPayload = EditDidiWealthRankingRequest.getRequestPayloadForVoEndorsement(eventItem).json()
+                val didiEntity = (eventItem as DidiEntity)
+                val selectedTolaEntity = tolaDao.fetchSingleTolaFromServerId(didiEntity.cohortId)
+
+
+                val requestPayload = EditDidiWealthRankingRequest.getRequestPayloadForVoEndorsement(
+                    eventItem,
+                    tolaDeviceId = selectedTolaEntity?.localUniqueId ?: "",
+                    tolaServerId = selectedTolaEntity?.serverId ?: 0
+                ).json()
 
                 var updateDidiEndorsementStatusEvent = Events(
                     name = eventName.name,

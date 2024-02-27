@@ -314,7 +314,16 @@ class AddDidiRepository @Inject constructor(
                 return savePatSummeryEvent
             }
             EventName.SAVE_PAT_SCORE -> {
-                val requestPayload = getPatScoreSaveEvent(didiEntity = (eventItem as DidiEntity), questionListDao = questionListDao, prefRepo = prefRepo)
+                val selectedTolaEntity =
+                    fetchSingleTolaFromServerId((eventItem as DidiEntity).cohortId)
+
+                val requestPayload = getPatScoreSaveEvent(
+                    didiEntity = (eventItem as DidiEntity),
+                    questionListDao = questionListDao,
+                    prefRepo = prefRepo,
+                    selectedTolaEntity?.localUniqueId ?: "",
+                    selectedTolaEntity?.serverId ?: 0
+                )
 
                 var savePatScoreEvent = getPatSaveScoreEvent(eventItem = eventItem, eventName = eventName, eventType = eventType, patScoreSaveEvent = requestPayload, prefRepo = prefRepo)
 

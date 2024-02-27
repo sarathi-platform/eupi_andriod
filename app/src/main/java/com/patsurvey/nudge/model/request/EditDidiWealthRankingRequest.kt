@@ -37,45 +37,65 @@ data class EditDidiWealthRankingRequest(
     @SerializedName("villageId") var villageId: Int = -1,
     @SerializedName("cohortName") var cohortName: String = "",
     @SerializedName("deviceId") var deviceId: String,
-) {
+    @SerializedName("cohortDeviceId") var cohortDeviceId: String? = "",
+
+    ) {
 
     companion object {
-        fun getRequestPayloadForWealthRanking(didiEntity: DidiEntity): EditDidiWealthRankingRequest {
+        fun getRequestPayloadForWealthRanking(
+            didiEntity: DidiEntity,
+            tolaDeviceId: String,
+            tolaServerId: Int
+        ): EditDidiWealthRankingRequest {
             return EditDidiWealthRankingRequest(
                 id = didiEntity.serverId,
                 name = didiEntity.name,
                 guardianName = didiEntity.guardianName,
                 address = didiEntity.address,
-                cohortId = didiEntity.cohortId,
+                cohortId = tolaServerId,
                 cohortName = didiEntity.cohortName,
                 villageId = didiEntity.villageId,
                 type = StepType.WEALTH_RANKING.name,
                 result = didiEntity.wealth_ranking,
                 rankingEdit = didiEntity.rankingEdit,
                 localModifiedDate = System.currentTimeMillis(),
-                deviceId = didiEntity.localUniqueId
+                deviceId = didiEntity.localUniqueId,
+                cohortDeviceId = tolaDeviceId,
+
             )
         }
 
-        fun getRequestPayloadForVoEndorsement(didiEntity: DidiEntity): EditDidiWealthRankingRequest {
+        fun getRequestPayloadForVoEndorsement(
+            didiEntity: DidiEntity,
+            tolaDeviceId: String,
+            tolaServerId: Int
+        ): EditDidiWealthRankingRequest {
+
             return EditDidiWealthRankingRequest(
                 id = didiEntity.serverId,
                 name = didiEntity.name,
                 guardianName = didiEntity.guardianName,
                 address = didiEntity.address,
-                cohortId = didiEntity.cohortId,
+                cohortId = tolaServerId,
                 cohortName = didiEntity.cohortName,
                 villageId = didiEntity.villageId,
                 type = StepType.VO_ENDROSEMENT.name,
                 result = DidiEndorsementStatus.fromIntToString(didiEntity.voEndorsementStatus),
                 rankingEdit = didiEntity.rankingEdit,
                 localModifiedDate = System.currentTimeMillis(),
-                deviceId = didiEntity.localUniqueId
+                deviceId = didiEntity.localUniqueId,
+                cohortDeviceId = tolaDeviceId
 
             )
         }
 
-        fun getRequestPayloadForPatScoreSave(didi: DidiEntity, passingMark: Int, isBpcUserType: Boolean): EditDidiWealthRankingRequest {
+        fun getRequestPayloadForPatScoreSave(
+            didi: DidiEntity,
+            passingMark: Int,
+            isBpcUserType: Boolean,
+            tolaDeviceId: String,
+            tolaServerId: Int
+        ): EditDidiWealthRankingRequest {
             val comment = if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
                 PatSurveyStatus.NOT_AVAILABLE.name
             } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
@@ -110,7 +130,7 @@ data class EditDidiWealthRankingRequest(
                 name = didi.name,
                 guardianName = didi.guardianName,
                 address = didi.address,
-                cohortId = didi.cohortId,
+                cohortId = tolaServerId,
                 cohortName = didi.cohortName,
                 villageId = didi.villageId,
                 score = didi.score,
@@ -120,7 +140,8 @@ data class EditDidiWealthRankingRequest(
                 rankingEdit = didi.patEdit,
                 shgFlag = SHGFlag.fromInt(didi.shgFlag).name,
                 ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name,
-                deviceId = didi.localUniqueId
+                deviceId = didi.localUniqueId,
+                cohortDeviceId = tolaDeviceId
 
             )
         }

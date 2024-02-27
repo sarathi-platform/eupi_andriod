@@ -25,6 +25,7 @@ import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.QuestionType
@@ -40,6 +41,7 @@ class PatSectionSummaryRepository @Inject constructor(
     private val answerDao: AnswerDao,
     private val numericAnswerDao: NumericAnswerDao,
     private val stepsListDao: StepsListDao,
+    private val tolaDao: TolaDao
 ):BaseRepository() {
 
     fun getAllStepsForVillage():List<StepListEntity>{
@@ -162,7 +164,17 @@ class PatSectionSummaryRepository @Inject constructor(
                 return savePatSummeryEvent
             }
             EventName.SAVE_PAT_SCORE -> {
-                val requestPayload = getPatScoreSaveEvent(didiEntity = (eventItem as DidiEntity), questionListDao = questionListDao, prefRepo = prefRepo)
+                val didiEntity = (eventItem as DidiEntity)
+                val selectedTolaEntity = tolaDao.fetchSingleTolaFromServerId(didiEntity.cohortId)
+
+
+                val requestPayload = getPatScoreSaveEvent(
+                    didiEntity = (eventItem as DidiEntity),
+                    questionListDao = questionListDao,
+                    prefRepo = prefRepo,
+                    tolaDeviceId = selectedTolaEntity?.localUniqueId ?: "",
+                    tolaServerId = selectedTolaEntity?.serverId ?: 0
+                )
 
                 var savePatScoreEvent = getPatSaveScoreEvent(eventItem = eventItem, eventName = eventName, eventType = eventType, patScoreSaveEvent = requestPayload, prefRepo = prefRepo)
 
