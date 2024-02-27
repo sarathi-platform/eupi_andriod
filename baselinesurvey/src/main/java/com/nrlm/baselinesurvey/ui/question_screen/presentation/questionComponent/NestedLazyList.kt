@@ -397,7 +397,6 @@ fun NestedLazyList(
                     itemsIndexed(
                         items = mQuestionEntity
                     ) { index, question ->
-                        Log.d("TAG", "Inside NestedLazyList: index: $index, question: ${question.questionEntity?.questionDisplay}, showQuestion: ${question.showQuestion}")
                         when (question?.questionEntity?.type) {
                             QuestionType.RadioButton.name -> {
                                 val selectedOption =
