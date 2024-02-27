@@ -865,6 +865,7 @@ fun ConditionsDto.checkCondition(userInputValue: String): Boolean {
             Operator.MORE_THAN_EQUAL_TO -> {
                 userInputValue.toInt() >= condition.first().toInt()
             }
+
             else -> {
                 false
             }
@@ -875,21 +876,34 @@ fun ConditionsDto.checkCondition(userInputValue: String): Boolean {
     }
 }
 
+fun isNumeric(toCheck: String): Boolean {
+    val regex = "-?[0-9]+(\\.[0-9]+)?".toRegex()
+    return toCheck.matches(regex)
+}
+
 fun ConditionsDto.calculateResultForFormula(formQuestionResponseEntity: List<FormQuestionResponseEntity>): String {
     val optionIdList = this.value.extractIdsFromValue()
-    val filteredResponseList = formQuestionResponseEntity.filter { optionIdList?.contains(it.optionId.toString()) == true }.sortedBy { it.optionId }
+    val filteredResponseList =
+        formQuestionResponseEntity.filter { optionIdList?.contains(it.optionId.toString()) == true }
+            .sortedBy { it.optionId }
     var input = this.value
 
     if (filteredResponseList.isEmpty())
         return BLANK_STRING
-
-    optionIdList?.forEach {
-        input = input.replace(it, filteredResponseList.findResponseEntityByOptionId(it.toInt()).selectedValue)
+    val tempList = ArrayList<String>()
+    input.split("").filter { it != "" }.forEach { va ->
+        if (va.isNotEmpty() && isNumeric(va)) {
+            tempList.add(filteredResponseList.findResponseEntityByOptionId(va.toInt()).selectedValue)
+        } else {
+            tempList.add(va)
+        }
     }
-    val result = CalculatorUtils.calculate(input)
-
+    var actualvalue = BLANK_STRING
+    for (v in tempList) {
+        actualvalue += v
+    }
+    val result = CalculatorUtils.calculate(actualvalue)
     Log.d("TAG", "calculateResultForFormula: $result")
-
     return result.toString()
 }
 
