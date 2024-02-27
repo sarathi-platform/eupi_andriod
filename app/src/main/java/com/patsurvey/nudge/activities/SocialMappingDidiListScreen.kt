@@ -276,7 +276,13 @@ fun SocialMappingDidiListScreen(
                         ),
                         modifier = Modifier.padding(vertical = (screenHeight / 4).dp)
                     )
-                    val listState = rememberLazyListState()
+                    var listState = rememberLazyListState()
+
+                    if (didiViewModel.getFromPage()
+                            .equals(ARG_FROM_PAT_SURVEY, true)
+                    ){
+                        listState = rememberForeverLazyListState(key = PAT_SURVEY)
+                    }
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
