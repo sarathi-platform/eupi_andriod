@@ -31,6 +31,7 @@ import com.patsurvey.nudge.utils.getFileNameFromURL
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -130,11 +131,7 @@ class PatDidiSummaryViewModel @Inject constructor(
             val payload = DidiImageUploadRequest(
                 didiId = didiEntity.id.toString(),
                 location = didiImageLocation.value,
-                filePath = compressImage(
-                    photoPath,
-                    NudgeCore.getAppContext(),
-                    getFileNameFromURL(uri.path ?: "")
-                ) ?: "",
+                filePath = photoPath ?: "",
                 userType = if (patDidiSummaryRepository.prefRepo.isUserBPC()) USER_BPC else USER_CRP
             ).json()
 
@@ -144,10 +141,16 @@ class PatDidiSummaryViewModel @Inject constructor(
                 userID = patDidiSummaryRepository.prefRepo.getUserId(),
                 eventName = if (patDidiSummaryRepository.prefRepo.isUserBPC()) EventName.BPC_IMAGE else EventName.CRP_IMAGE,
             )
-
-
-            patDidiSummaryRepository.uri = uri
+            //TODO Remove delay and fix cropping issue without delay
+            delay(500)
+            val compressedDidi = compressImage(
+                photoPath,
+                NudgeCore.getAppContext(),
+                getFileNameFromURL(uri.path ?: "")
+            )
+            patDidiSummaryRepository.uri = File(compressedDidi).toUri()
             patDidiSummaryRepository.writeImageEventIntoLogFile(event)
+
 
         }
     }
