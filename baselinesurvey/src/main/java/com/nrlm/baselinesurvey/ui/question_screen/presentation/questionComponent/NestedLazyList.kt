@@ -174,10 +174,10 @@ fun NestedLazyList(
                                     )
                                 )
                                 if (it.isNotEmpty()) {
-                                 val questionEntityStateList =
-                                     questionScreenViewModel.questionEntityStateList.toList()
+                                    val questionEntityStateList =
+                                        questionScreenViewModel.questionEntityStateList.toList()
                                     answeredQuestionCountIncreased(
-                                       questionEntityStateList.find { questionEntityState -> questionEntityState.questionId == it.first().questionId }!!,
+                                        questionEntityStateList.find { questionEntityState -> questionEntityState.questionId == it.first().questionId }!!,
                                         false
                                     )
                                 }
@@ -397,7 +397,7 @@ fun NestedLazyList(
                     itemsIndexed(
                         items = mQuestionEntity
                     ) { index, question ->
-
+                        Log.d("TAG", "Inside NestedLazyList: index: $index, question: ${question.questionEntity?.questionDisplay}, showQuestion: ${question.showQuestion}")
                         when (question?.questionEntity?.type) {
                             QuestionType.RadioButton.name -> {
                                 val selectedOption =

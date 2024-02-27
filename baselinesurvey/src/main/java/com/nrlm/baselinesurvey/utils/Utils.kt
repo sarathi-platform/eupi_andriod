@@ -891,7 +891,7 @@ fun ConditionsDto.calculateResultForFormula(formQuestionResponseEntity: List<For
     if (filteredResponseList.isEmpty())
         return BLANK_STRING
     val tempList = ArrayList<String>()
-    input.split("").filter { it != "" }.forEach { va ->
+    input.split(" ").filter { it != "" }.forEach { va ->
         if (va.isNotEmpty() && isNumeric(va)) {
             tempList.add(filteredResponseList.findResponseEntityByOptionId(va.toInt()).selectedValue)
         } else {
