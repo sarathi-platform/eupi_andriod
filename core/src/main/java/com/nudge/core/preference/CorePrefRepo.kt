@@ -7,4 +7,6 @@ interface CorePrefRepo {
 
     fun getImageBackupFileName(mobileNo: String): String
     fun setImageBackupFileName(fileName: String)
+    fun isFileExported(): Boolean
+    fun setFileExported(isExported: Boolean)
 }

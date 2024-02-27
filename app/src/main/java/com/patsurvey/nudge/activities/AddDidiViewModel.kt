@@ -207,6 +207,9 @@ class AddDidiViewModel @Inject constructor(
     }
 
     private fun deleteDidisToNetwork(networkCallbackListener: NetworkCallbackListener) {
+        if (!isSyncEnabled(prefRepo = addDidiRepository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch (Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("AddDidiViewModel", "deleteDidisToNetwork -> called")
             try {
@@ -318,6 +321,9 @@ class AddDidiViewModel @Inject constructor(
     }
 
     fun updateDidiToNetwork(networkCallbackListener: NetworkCallbackListener){
+        if (!isSyncEnabled(prefRepo = addDidiRepository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("AddDidiViewModel", "updateDidiToNetwork -> called")
             try {
@@ -808,6 +814,9 @@ class AddDidiViewModel @Inject constructor(
 
 
     fun addDidisToNetwork(networkCallbackListener: NetworkCallbackListener) {
+        if (!isSyncEnabled(prefRepo = addDidiRepository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("AddDidiViewModel", "addDidisToNetwork called")
             try {
@@ -1027,6 +1036,9 @@ class AddDidiViewModel @Inject constructor(
         stepId: Int,
         networkCallbackListener: NetworkCallbackListener
     ) {
+        if (!isSyncEnabled(prefRepo = addDidiRepository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> called")
             try {
@@ -1240,7 +1252,7 @@ class AddDidiViewModel @Inject constructor(
                     }
                 }
                 try {
-                    if (isOnline) {
+                    if (isOnline && isSyncEnabled(prefRepo = addDidiRepository.prefRepo)) {
                         val apiRequest = mutableListOf<EditWorkFlowRequest>()
                         apiRequest.add(
                             EditWorkFlowRequest(
@@ -1469,7 +1481,7 @@ class AddDidiViewModel @Inject constructor(
                     }
                 }
             }
-            if (isOnline) {
+            if (isOnline && isSyncEnabled(prefRepo = addDidiRepository.prefRepo)) {
                 deleteDidisToNetwork(networkCallbackListener)
             } else {
                 networkCallbackListener.onSuccess()
@@ -1575,6 +1587,9 @@ class AddDidiViewModel @Inject constructor(
     }
 
     fun updateDidiToNetwork(didi: DidiEntity, networkCallbackListener: NetworkCallbackListener) {
+        if (!isSyncEnabled(prefRepo = addDidiRepository.prefRepo)) {
+            return
+        }
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 if (didi.serverId != 0) {

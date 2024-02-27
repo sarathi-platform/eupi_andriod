@@ -14,11 +14,8 @@ import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.enums.NetworkSpeed
-import com.nudge.core.getDefaultBackUpFileName
-import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.json
 import com.nudge.core.preference.CoreSharedPrefs
-import com.nudge.core.renameFile
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.SyncBPCDataOnServer
@@ -934,33 +931,8 @@ class SettingViewModel @Inject constructor(
                     NudgeCore.getAppContext(),
                     prefRepo.getMobileNumber() ?: ""
                 )
-
                 openShareSheet(imageUri, fileUri, title)
-                val oldName = CoreSharedPrefs.getInstance(NudgeCore.getAppContext())
-                    .getBackupFileName(prefRepo.getMobileNumber())
-                val oldImageBackupFileName = CoreSharedPrefs.getInstance(NudgeCore.getAppContext())
-                    .getImageBackupFileName(prefRepo.getMobileNumber())
-                val isRenamed = renameFile(
-                    NudgeCore.getAppContext(),
-                    oldName + ".txt",
-                    newName = oldName.replace("current", "old") + ".txt",
-                    prefRepo.getMobileNumber()
-                )
-                if (isRenamed) {
-                    CoreSharedPrefs.getInstance(NudgeCore.getAppContext())
-                        .setBackupFileName(getDefaultBackUpFileName(prefRepo.getMobileNumber()))
-                }
-
-                val isRenamedImageFile = renameFile(
-                    NudgeCore.getAppContext(),
-                    oldImageBackupFileName + ".txt",
-                    newName = oldImageBackupFileName.replace("current", "old") + ".txt",
-                    prefRepo.getMobileNumber()
-                )
-                if (isRenamedImageFile) {
-                    CoreSharedPrefs.getInstance(NudgeCore.getAppContext())
-                        .setImageBackupFileName(getDefaultImageBackUpFileName(prefRepo.getMobileNumber()))
-                }
+                CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setFileExported(true)
                 showExportLoader.value = false
 
 

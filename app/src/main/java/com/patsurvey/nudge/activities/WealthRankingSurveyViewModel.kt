@@ -92,6 +92,9 @@ class WealthRankingSurveyViewModel @Inject constructor(
         stepId: Int,
         networkCallbackListener: NetworkCallbackListener
     ) {
+        if (!isSyncEnabled(prefRepo = repository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> called")
             try {
@@ -330,6 +333,9 @@ class WealthRankingSurveyViewModel @Inject constructor(
     }
 
     fun updateWealthRankingToNetwork(networkCallbackListener: NetworkCallbackListener) {
+        if (!isSyncEnabled(prefRepo = repository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             try {
                 val needToPostDidiList = repository.getAllNeedToPostDidiRanking(true)

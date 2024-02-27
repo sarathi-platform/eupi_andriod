@@ -18,9 +18,12 @@ import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventWriterName
+import com.nudge.core.getDefaultBackUpFileName
+import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.json
 import com.nudge.core.model.request.toEventRequest
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.renameFile
 import java.io.File
 import java.io.FileWriter
 
@@ -47,6 +50,8 @@ open class TextFileEventWriter : IEventWriter {
 
     private fun writeEventInFile(context: Context, content: String, mobileNo: String, uri: Uri?) {
         if (TextUtils.isEmpty(content.trim())) return
+
+        splitFile(context, mobileNo)
         val fileNameWithoutExtension = if (uri == null) CoreSharedPrefs.getInstance(context)
             .getBackupFileName(mobileNo) else CoreSharedPrefs.getInstance(context)
             .getImageBackupFileName(mobileNo)
@@ -99,6 +104,9 @@ open class TextFileEventWriter : IEventWriter {
                             }
                         }
                     }
+                }
+                if (fileUri == null) {
+                    fileUri = context.contentResolver.insert(extVolumeUri, contentValues)
                 }
 
                 cursor.close()
@@ -169,6 +177,38 @@ open class TextFileEventWriter : IEventWriter {
                 throw exception
             }
 
+        }
+    }
+
+    private fun splitFile(context: Context, mobileNo: String) {
+        val coreSharedPrefs = CoreSharedPrefs.getInstance(context)
+        if (CoreSharedPrefs.getInstance(context).isFileExported()) {
+            val oldName = coreSharedPrefs
+                .getBackupFileName(mobileNo)
+            val oldImageBackupFileName = coreSharedPrefs
+                .getImageBackupFileName(mobileNo)
+            val isRenamed = renameFile(
+                context,
+                oldName + ".txt",
+                newName = oldName.replace("current", "old") + ".txt",
+                mobileNo
+            )
+            if (isRenamed) {
+                coreSharedPrefs
+                    .setBackupFileName(getDefaultBackUpFileName(mobileNo))
+            }
+
+            val isRenamedImageFile = renameFile(
+                context,
+                oldImageBackupFileName + ".txt",
+                newName = oldImageBackupFileName.replace("current", "old") + ".txt",
+                mobileNo
+            )
+            if (isRenamedImageFile) {
+                coreSharedPrefs
+                    .setImageBackupFileName(getDefaultImageBackUpFileName(mobileNo))
+            }
+            coreSharedPrefs.setFileExported(false)
         }
     }
 }

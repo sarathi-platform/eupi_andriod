@@ -165,6 +165,9 @@ class SurveySummaryViewModel @Inject constructor(
 
     @SuppressLint("SuspiciousIndentation")
     fun savePATSummeryToServer(networkCallbackListener: NetworkCallbackListener){
+        if (!isSyncEnabled(prefRepo = repository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             try {
                 var didiIDList = emptyList<PATDidiStatusModel>()
@@ -408,6 +411,9 @@ class SurveySummaryViewModel @Inject constructor(
     }
 
     fun callWorkFlowAPI(villageId: Int,stepId: Int, networkCallbackListener: NetworkCallbackListener){
+        if (!isSyncEnabled(prefRepo = repository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> called")
             try {
@@ -646,7 +652,11 @@ class SurveySummaryViewModel @Inject constructor(
     }
 
     fun updateBpcPatStatusToNetwork(networkCallbackListener: NetworkCallbackListener) {
+        if (!isSyncEnabled(prefRepo = repository.prefRepo)) {
+            return
+        }
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
             val needToPostPatdidi =
                 repository.getAllNeedToPostPATDidi(true)
             val passingScore = repository.getPassingScore()
@@ -730,6 +740,9 @@ class SurveySummaryViewModel @Inject constructor(
     }
 
     fun callWorkFlowAPIForBpc(villageId: Int, stepId: Int, networkCallbackListener: NetworkCallbackListener) {
+        if (!isSyncEnabled(prefRepo = repository.prefRepo)) {
+            return
+        }
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val stepList = repository.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
@@ -786,6 +799,7 @@ class SurveySummaryViewModel @Inject constructor(
                 insertBpcMatchScoreEvent(villageId, passingScore, bpcStep, didiList.value)
 
 
+                if (isSyncEnabled(prefRepo = repository.prefRepo)) {
                 repository.writeBpcMatchScoreEvent(villageId, passingScore, bpcStep, didiList.value)
 
                 val matchPercentage = calculateMatchPercentage(didiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }, passingScore)
@@ -807,6 +821,7 @@ class SurveySummaryViewModel @Inject constructor(
                 }
                 if(!saveMatchSummaryResponse.lastSyncTime.isNullOrEmpty()){
                     updateLastSyncTime(repository.prefRepo,saveMatchSummaryResponse.lastSyncTime)
+                }
                 }
             } catch (ex: Exception){
                 repository.prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + repository.prefRepo.getSelectedVillage().id, false)

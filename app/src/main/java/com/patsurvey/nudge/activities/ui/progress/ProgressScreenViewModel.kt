@@ -243,6 +243,9 @@ class ProgressScreenViewModel @Inject constructor(
     }
 
     fun callWorkFlowAPI(villageId: Int, stepId: Int, programId: Int) {
+        if (!isSyncEnabled(prefRepo = progressScreenRepository.prefRepo)) {
+            return
+        }
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val dbResponse = progressScreenRepository.getStepForVillage(villageId, stepId)

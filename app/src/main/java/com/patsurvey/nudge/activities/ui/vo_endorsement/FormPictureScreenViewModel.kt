@@ -421,6 +421,9 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     fun callWorkFlowAPI(villageId: Int,stepId: Int, networkCallbackListener: NetworkCallbackListener){
+        if (!isSyncEnabled(prefRepo = repository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> called")
             try {
@@ -663,7 +666,7 @@ class FormPictureScreenViewModel @Inject constructor(
                         "multipart/form-data".toMediaTypeOrNull(),
                         if (repository.prefRepo.isUserBPC()) USER_BPC else USER_CRP
                     )
-                if (isOnline) {
+                if (isOnline && isSyncEnabled(prefRepo = repository.prefRepo)) {
                     val response = repository.uploadDocument(
                         formList = formList,
                         villageId = requestVillageId,

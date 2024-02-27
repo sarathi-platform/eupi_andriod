@@ -238,7 +238,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     }
 
     override fun getISSyncEnabled(): Boolean {
-        return prefs.getBoolean(PREF_KEY_SYNC_ENABLED, true)
+        return prefs.getBoolean(PREF_KEY_SYNC_ENABLED, false)
 
     }
 }

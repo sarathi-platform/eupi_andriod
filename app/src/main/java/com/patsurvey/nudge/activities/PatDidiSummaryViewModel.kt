@@ -201,6 +201,9 @@ class PatDidiSummaryViewModel @Inject constructor(
     }
 
     fun uploadDidiImage(context: Context, uri: String, didiId: Int, location: String) {
+        if (!isSyncEnabled(prefRepo = patDidiSummaryRepository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             withContext(Dispatchers.IO) {
                 try {

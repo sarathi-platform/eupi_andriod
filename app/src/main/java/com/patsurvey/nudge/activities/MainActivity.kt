@@ -46,6 +46,7 @@ import com.patsurvey.nudge.navigation.navgraph.RootNavigationGraph
 import com.patsurvey.nudge.smsread.SmsBroadcastReceiver
 import com.patsurvey.nudge.utils.ConnectionMonitor
 import com.patsurvey.nudge.utils.NudgeCore
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.SENDER_NUMBER
 import com.patsurvey.nudge.utils.showCustomToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -331,6 +332,14 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
         remoteConfig.fetchAndActivate()
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
+                    Log.d(
+                        "SyncEnabled",
+                        "sync enabled " + remoteConfig.get("syncEnabled").asBoolean()
+                    )
+                    NudgeLogger.d(
+                        "SyncEnabled",
+                        "sync enabled " + remoteConfig.get("syncEnabled").asBoolean()
+                    )
                     mViewModel.saveSyncEnabledFromRemoteConfig(
                         remoteConfig.get("syncEnabled").asBoolean()
                     )
