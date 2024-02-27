@@ -14,6 +14,7 @@ import com.facebook.network.connectionclass.ConnectionQuality
 import com.google.gson.Gson
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
+import com.nudge.core.utils.CoreLogger
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -116,54 +117,60 @@ fun getUriUsingDisplayName(context: Context, oldName: String): Uri? {
 }
 
 fun renameFile(context: Context, oldName: String, newName: String, mobileNumber: String): Boolean {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        val contentResolver: ContentResolver = context.contentResolver
-        val oldFileUri: Uri? = getUriUsingDisplayName(context, oldName)
-        if (oldFileUri == null) {
-            return false
-        }
-        val values = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, newName)
-        }
+    try {
 
-        val parentUri: Uri = MediaStore.Files.getContentUri("external")
-        var newFileUri: Uri? = null
 
-        // Update the file name in MediaStore
-        val rowsAffected = contentResolver.update(oldFileUri, values, null, null)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val contentResolver: ContentResolver = context.contentResolver
+            val oldFileUri: Uri? = getUriUsingDisplayName(context, oldName)
+            if (oldFileUri == null) {
+                return false
+            }
+            val values = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, newName)
+            }
 
-        if (rowsAffected > 0) {
-            // Retrieve the ID of the renamed file
-            val fileId = ContentUris.parseId(oldFileUri)
-            newFileUri = ContentUris.withAppendedId(parentUri, fileId)
-        }
+            val parentUri: Uri = MediaStore.Files.getContentUri("external")
+            var newFileUri: Uri? = null
 
-        // Optionally, you can handle the renaming success or failure
-        if (newFileUri != null) {
-            return true
-            // Renaming succeeded
-            // You can notify the user or take further action if needed
+            // Update the file name in MediaStore
+            val rowsAffected = contentResolver.update(oldFileUri, values, null, null)
+
+            if (rowsAffected > 0) {
+                // Retrieve the ID of the renamed file
+                val fileId = ContentUris.parseId(oldFileUri)
+                newFileUri = ContentUris.withAppendedId(parentUri, fileId)
+            }
+
+            // Optionally, you can handle the renaming success or failure
+            if (newFileUri != null) {
+                return true
+                // Renaming succeeded
+                // You can notify the user or take further action if needed
+            } else {
+                return false
+                // Renaming failed
+                // You can notify the user or take further action if needed
+            }
         } else {
-            return false
-            // Renaming failed
-            // You can notify the user or take further action if needed
-        }
-    } else {
-        val fileDirectory = File(
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-            "$SARATHI_DIRECTORY_NAME/$mobileNumber"
-        )
-        if (!fileDirectory.exists()) {
-            fileDirectory.mkdirs()
-        }
-        val oldFile = File(fileDirectory, oldName)
-        val newFile = File(fileDirectory, newName)
-        return oldFile.renameTo(newFile)
+            val fileDirectory = File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                "$SARATHI_DIRECTORY_NAME/$mobileNumber"
+            )
+            if (!fileDirectory.exists()) {
+                fileDirectory.mkdirs()
+            }
+            val oldFile = File(fileDirectory, oldName)
+            val newFile = File(fileDirectory, newName)
+            return oldFile.renameTo(newFile)
 
 
+        }
+
+    } catch (exception: Exception) {
+        CoreLogger.e(context, "File Rename", exception.message ?: "")
+        return false
     }
-
-
 }
 
 fun getDefaultBackUpFileName(mobileNo: String): String {

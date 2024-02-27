@@ -15,9 +15,9 @@ import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.enums.NetworkSpeed
 import com.nudge.core.getDefaultBackUpFileName
+import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.json
 import com.nudge.core.preference.CoreSharedPrefs
-import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_IMAGE_FILE_BACKUP_NAME
 import com.nudge.core.renameFile
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
@@ -872,15 +872,9 @@ class SettingViewModel @Inject constructor(
     private fun clearSharedPreference() {
         val languageId = prefRepo.getAppLanguageId()
         val language = prefRepo.getAppLanguage()
-        val backupImageFileName =
-            prefRepo.getPref(
-                PREF_IMAGE_FILE_BACKUP_NAME,
-                getDefaultBackUpFileName(prefRepo.getMobileNumber())
-            )
         prefRepo.clearSharedPreference()
         prefRepo.saveAppLanguage(language)
         prefRepo.saveAppLanguageId(languageId)
-        prefRepo.savePref(PREF_IMAGE_FILE_BACKUP_NAME, backupImageFileName ?: "")
     }
 
     fun buildAndShareLogs() {
@@ -944,6 +938,8 @@ class SettingViewModel @Inject constructor(
                 openShareSheet(imageUri, fileUri, title)
                 val oldName = CoreSharedPrefs.getInstance(NudgeCore.getAppContext())
                     .getBackupFileName(prefRepo.getMobileNumber())
+                val oldImageBackupFileName = CoreSharedPrefs.getInstance(NudgeCore.getAppContext())
+                    .getImageBackupFileName(prefRepo.getMobileNumber())
                 val isRenamed = renameFile(
                     NudgeCore.getAppContext(),
                     oldName + ".txt",
@@ -953,6 +949,17 @@ class SettingViewModel @Inject constructor(
                 if (isRenamed) {
                     CoreSharedPrefs.getInstance(NudgeCore.getAppContext())
                         .setBackupFileName(getDefaultBackUpFileName(prefRepo.getMobileNumber()))
+                }
+
+                val isRenamedImageFile = renameFile(
+                    NudgeCore.getAppContext(),
+                    oldImageBackupFileName + ".txt",
+                    newName = oldImageBackupFileName.replace("current", "old") + ".txt",
+                    prefRepo.getMobileNumber()
+                )
+                if (isRenamedImageFile) {
+                    CoreSharedPrefs.getInstance(NudgeCore.getAppContext())
+                        .setImageBackupFileName(getDefaultImageBackUpFileName(prefRepo.getMobileNumber()))
                 }
                 showExportLoader.value = false
 

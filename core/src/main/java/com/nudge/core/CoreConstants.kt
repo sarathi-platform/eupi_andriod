@@ -34,7 +34,7 @@ const val KEY_PARENT_ENTITY_DADA_NAME = "dadaName"
 const val KEY_PARENT_ENTITY_ADDRESS = "didiAddress"
 
 const val LOCAL_BACKUP_FILE_NAME = "Sarathi_event_backup_current"
-const val LOCAL_BACKUP__IMAGE_FILE_NAME = "Sarathi_event_backup_Image"
+const val LOCAL_BACKUP__IMAGE_FILE_NAME = "Sarathi_event_backup_Image_current"
 const val SARATHI_DIRECTORY_NAME="/SARATHI"
 const val LOCAL_BACKUP_EXTENSION=".txt"
 const val EVENT_DELIMETER="~@-"

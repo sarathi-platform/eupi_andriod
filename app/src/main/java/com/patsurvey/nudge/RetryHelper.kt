@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.nudge.core.getDefaultBackUpFileName
+import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.analytics.EventParams
@@ -1249,6 +1250,12 @@ object RetryHelper {
                             CoreSharedPrefs.getInstance(NudgeCore.getAppContext())
                                 .setBackupFileName(
                                     getDefaultBackUpFileName(
+                                        prefRepo?.getMobileNumber() ?: ""
+                                    )
+                                )
+                            CoreSharedPrefs.getInstance(NudgeCore.getAppContext())
+                                .setImageBackupFileName(
+                                    getDefaultImageBackUpFileName(
                                         prefRepo?.getMobileNumber() ?: ""
                                     )
                                 )
