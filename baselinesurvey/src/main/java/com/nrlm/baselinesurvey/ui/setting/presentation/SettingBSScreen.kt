@@ -64,7 +64,9 @@ fun SettingBSScreen(
                 navController.navigate(SettingBSScreens.PROFILE_SCREEN.route)
 
                 }
-                SettingTagEnum.SHARE_LOGS.name ->{
+                SettingTagEnum.SHARE_LOGS.name,
+//                SettingTagEnum.EXPORT_FILE.name //TODO Temp for training purpose only, remove this when backup file code is added.
+                -> {
                     viewModel?.buildAndShareLogs()
                 }
             }

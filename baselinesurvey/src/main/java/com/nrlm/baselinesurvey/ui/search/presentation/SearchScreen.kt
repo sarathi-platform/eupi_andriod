@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -44,9 +45,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ALL_TAB
+import com.nrlm.baselinesurvey.ARG_FROM_QUESTION_SCREEN
+import com.nrlm.baselinesurvey.ARG_FROM_SECTION_SCREEN
 import com.nrlm.baselinesurvey.QUESTION_DATA_TAB
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.SECTION_INFORMATION_TAB
+import com.nrlm.baselinesurvey.navigation.home.navigateToSelectedSectionFromSearch
 import com.nrlm.baselinesurvey.ui.common_components.CustomOutlineTextField
 import com.nrlm.baselinesurvey.ui.common_components.SearchTab
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
@@ -70,6 +74,8 @@ fun SearchScreens(
     modifier: Modifier = Modifier,
     viewModel: SearchScreenViewModel,
     surveyId: Int,
+    surveyeeId: Int,
+    fromScreen: String = ARG_FROM_SECTION_SCREEN,
     navController: NavController
 ) {
     val searchText = viewModel.searchText.collectAsState()
@@ -243,6 +249,8 @@ fun SearchScreens(
                                 }
                             }
                         }, modifier = Modifier.clickable {
+                            navController.navigateToSelectedSectionFromSearch(surveyId = surveyId, didiId = surveyeeId,
+                                sectionId = if (item.itemParentId != -1) item.itemParentId else item.itemId, isFromQuestionSearch = fromScreen == ARG_FROM_QUESTION_SCREEN)
                            /*showCustomToast(context, "item-> sectionName${item.sectionName}," +
                                     " questionTitle: ${item.questionTitle}")*/
                         })

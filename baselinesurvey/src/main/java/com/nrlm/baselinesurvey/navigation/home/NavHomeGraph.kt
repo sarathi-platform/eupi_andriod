@@ -18,6 +18,8 @@ import com.nrlm.baselinesurvey.ARG_COMPLETION_MESSAGE
 import com.nrlm.baselinesurvey.ARG_DIDI_ID
 import com.nrlm.baselinesurvey.ARG_FORM_QUESTION_RESPONSE_REFERENCE_ID
 import com.nrlm.baselinesurvey.ARG_FROM_HOME
+import com.nrlm.baselinesurvey.ARG_FROM_SCREEN
+import com.nrlm.baselinesurvey.ARG_FROM_SECTION_SCREEN
 import com.nrlm.baselinesurvey.ARG_MISSION_DATE
 import com.nrlm.baselinesurvey.ARG_MISSION_ID
 import com.nrlm.baselinesurvey.ARG_MISSION_NAME
@@ -225,10 +227,21 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
                 name = ARG_SURVEY_ID
             ) {
                 type = NavType.IntType
+            },
+            navArgument(
+                name = ARG_DIDI_ID
+            ) {
+                type = NavType.IntType
+            },
+            navArgument(
+                name = ARG_FROM_SCREEN
+            ) {
+                type = NavType.StringType
             }
         )) {
             SearchScreens(viewModel = hiltViewModel(), navController = navController, surveyId = it
-                .arguments?.getInt(ARG_SURVEY_ID) ?: -1)
+                .arguments?.getInt(ARG_SURVEY_ID) ?: -1, surveyeeId = it.arguments?.getInt(ARG_DIDI_ID) ?: -1, fromScreen = it.arguments?.getString(
+                ARG_FROM_SCREEN) ?: ARG_FROM_SECTION_SCREEN)
         }
 
         composable(route = HomeScreens.Home_SCREEN.route) {
@@ -394,7 +407,7 @@ sealed class HomeScreens(val route: String) {
     object BaseLineStartScreen :
         HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}/{$ARG_SURVEY_ID}")
 
-    object SearchScreen : HomeScreens(route = "$SEARCH_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}")
+    object SearchScreen : HomeScreens(route = "$SEARCH_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_DIDI_ID}/{$ARG_FROM_SCREEN}")
     object Home_SCREEN : HomeScreens(route = HOME_SCREEN_ROUTE_NAME)
     object MISSION_SCREEN : HomeScreens(route = MISSION_SCREEN_ROUTE_NAME)
     object DIDI_SCREEN : HomeScreens(route = DIDI_SCREEN_ROUTE_NAME)
@@ -453,6 +466,12 @@ fun NavController.navigateBackToSectionListScreen(surveyeeId: Int, surveyeId: In
     navigateToSectionListScreen(surveyeeId = surveyeeId, surveyeId = surveyeId, this)
 }
 
+fun NavController.navigateToSelectedSectionFromSearch(didiId: Int, sectionId: Int, surveyId: Int, isFromQuestionSearch: Boolean = true) {
+    if (isFromQuestionSearch) {
+        this.popBackStack(HomeScreens.SECTION_SCREEN.route, true)
+    }
+    navigateToQuestionScreen(didiId = didiId, sectionId = sectionId, surveyId = surveyId, navController = this)
+}
 fun navigateToQuestionScreen(
     didiId: Int,
     sectionId: Int,
@@ -466,8 +485,8 @@ fun navigateToSectionListScreen(surveyeeId: Int, surveyeId: Int, navController: 
     navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$surveyeeId/$surveyeId")
 }
 
-fun navigateToSearchScreen(navController: NavController, surveyeId: Int) {
-    navController.navigate("$SEARCH_SCREEN_ROUTE_NAME/$surveyeId")
+fun navigateToSearchScreen(navController: NavController, surveyeId: Int, surveyeeId: Int, fromScreen: String) {
+    navController.navigate("$SEARCH_SCREEN_ROUTE_NAME/$surveyeId/$surveyeeId/$fromScreen")
 }
 
 fun navigateToFormTypeQuestionScreen(navController: NavController, question: QuestionEntity, sectionDetails: SectionListItem, surveyeeId: Int) {

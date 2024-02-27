@@ -126,6 +126,7 @@ class SearchScreenViewModel @Inject constructor(
 
 data class ComplexSearchState(
     val itemId: Int,
+    val itemParentId: Int = -1,
     val itemType: ItemType,
     val sectionName: String,
     val questionTitle: String,

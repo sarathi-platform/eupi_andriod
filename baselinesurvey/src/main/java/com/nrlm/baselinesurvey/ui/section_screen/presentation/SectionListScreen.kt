@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import com.nrlm.baselinesurvey.ARG_FROM_SECTION_SCREEN
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
@@ -306,7 +307,7 @@ fun SectionListScreen(
 
                         item {
                             ComplexSearchComponent {
-                                navigateToSearchScreen(navController, surveyId)
+                                navigateToSearchScreen(navController, surveyId, surveyeeId = didiId, fromScreen = ARG_FROM_SECTION_SCREEN)
                             }
                         }
 

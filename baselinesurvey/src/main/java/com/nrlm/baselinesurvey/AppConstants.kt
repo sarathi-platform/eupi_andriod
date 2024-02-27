@@ -306,4 +306,7 @@ const val VALUE_NO = "No"
 const val CONDITIONS_DELIMITER = ","
 const val LANGUAGE_OPEN_FROM_SETTING = "language_open_from_setting"
 
+const val ARG_FROM_SECTION_SCREEN = "from_section_screen"
+const val ARG_FROM_QUESTION_SCREEN = "from_question_screen"
+
 

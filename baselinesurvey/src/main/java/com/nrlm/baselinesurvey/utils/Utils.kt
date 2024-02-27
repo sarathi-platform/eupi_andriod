@@ -979,12 +979,12 @@ fun List<SectionListItem>.convertToComplexSearchState(): List<ComplexSearchState
     val complexSearchStateList = mutableListOf<ComplexSearchState>()
 
     this.forEach { section ->
-        val complexSearchState = ComplexSearchState(section.sectionId, itemType = ItemType.Section, sectionName = section.sectionName, BLANK_STRING, true)
+        val complexSearchState = ComplexSearchState(section.sectionId, itemType = ItemType.Section, sectionName = section.sectionName, questionTitle = BLANK_STRING, isSectionSearchOnly = true)
         complexSearchStateList.add(complexSearchState)
     }
     this.forEach { section ->
         section.questionList.forEach { question ->
-            val complexSearchStateForQuestion = ComplexSearchState(itemId = question.questionId ?: -1, itemType = ItemType.Question, sectionName = section.sectionName, questionTitle = question.questionDisplay ?: BLANK_STRING, isSectionSearchOnly = false)
+            val complexSearchStateForQuestion = ComplexSearchState(itemId = question.questionId ?: -1, itemParentId = question.sectionId, itemType = ItemType.Question, sectionName = section.sectionName, questionTitle = question.questionDisplay ?: BLANK_STRING, isSectionSearchOnly = false)
             complexSearchStateList.add(complexSearchStateForQuestion)
         }
     }

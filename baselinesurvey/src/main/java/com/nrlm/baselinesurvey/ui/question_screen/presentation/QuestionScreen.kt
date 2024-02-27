@@ -219,8 +219,8 @@ fun QuestionScreen(
                             }
                         }
                     },
-                    answeredQuestionCountIncreased = { question ->
-                        viewModel.onEvent(QuestionScreenEvents.UpdateAnsweredQuestionCount(question))
+                    answeredQuestionCountIncreased = { question, isAllMultipleTypeQuestionUnanswered ->
+                        viewModel.onEvent(QuestionScreenEvents.UpdateAnsweredQuestionCount(question, isAllMultipleTypeQuestionUnanswered))
                     }
                 )
             }

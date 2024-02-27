@@ -43,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.nrlm.baselinesurvey.ARG_FROM_QUESTION_SCREEN
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
@@ -95,7 +96,7 @@ fun NestedLazyList(
     viewModel: BaseViewModel,
     sectionDetails: SectionListItem,
     sectionInfoButtonClicked: () -> Unit,
-    answeredQuestionCountIncreased: (question: QuestionEntityState) -> Unit,
+    answeredQuestionCountIncreased: (question: QuestionEntityState, isAllMultipleTypeQuestionUnanswered: Boolean ) -> Unit,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -176,7 +177,8 @@ fun NestedLazyList(
                                  val questionEntityStateList =
                                      questionScreenViewModel.questionEntityStateList.toList()
                                     answeredQuestionCountIncreased(
-                                        questionEntityStateList.find { questionEntityState -> questionEntityState.questionId == it.first().questionId }!!
+                                       questionEntityStateList.find { questionEntityState -> questionEntityState.questionId == it.first().questionId }!!,
+                                        false
                                     )
                                 }
                             }
@@ -207,7 +209,8 @@ fun NestedLazyList(
                                     )
                                 }?.let { it1 ->
                                     answeredQuestionCountIncreased(
-                                        it1
+                                        it1,
+                                        false
                                     )
                                 }
                         }
@@ -266,7 +269,7 @@ fun NestedLazyList(
         ) {
             item {
                 ComplexSearchComponent {
-                    navigateToSearchScreen(navController, sectionDetails.surveyId)
+                    navigateToSearchScreen(navController, sectionDetails.surveyId, surveyeeId, fromScreen = ARG_FROM_QUESTION_SCREEN)
                 }
             }
 
@@ -410,7 +413,7 @@ fun NestedLazyList(
                                         ?: -1,
                                     onAnswerSelection = { questionIndex, optionItem ->
 
-                                        answeredQuestionCountIncreased(question)
+                                        answeredQuestionCountIncreased(question, false)
 
                                         questionScreenViewModel.onEvent(
                                             QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(
@@ -480,7 +483,7 @@ fun NestedLazyList(
                                     maxCustomHeight = maxHeight,
                                     onAnswerSelection = { questionIndex, optionItem ->
 
-                                        answeredQuestionCountIncreased(question)
+                                        answeredQuestionCountIncreased(question, false)
 
                                         questionScreenViewModel.onEvent(
                                             QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(
@@ -555,7 +558,7 @@ fun NestedLazyList(
                                     maxCustomHeight = maxHeight,
                                     onAnswerSelection = { questionIndex, optionItems, selectedIndeciesCount ->
 
-                                        answeredQuestionCountIncreased(question)
+                                        answeredQuestionCountIncreased(question, optionItems.isEmpty())
 
                                         questionScreenViewModel.onEvent(
                                             QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(
@@ -694,7 +697,7 @@ fun NestedLazyList(
                                     maxCustomHeight = maxHeight,
                                     onAnswerSelection = { questionIndex, optionItem, selectedValue ->
 
-                                        answeredQuestionCountIncreased(question)
+                                        answeredQuestionCountIncreased(question, false)
 
 
                                         when (optionItem.optionType) {
