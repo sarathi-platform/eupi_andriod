@@ -206,7 +206,7 @@ fun SocialMappingDidiListScreen(
                     if (didiViewModel.getFromPage()
                             .equals(ARG_FROM_PAT_SURVEY, true)
                     ){
-                        listState = rememberForeverLazyListState(key = "OverView")
+                        listState = rememberForeverLazyListState(key = PAT_SURVEY)
                     }
                     LazyColumn(
                         modifier = Modifier
