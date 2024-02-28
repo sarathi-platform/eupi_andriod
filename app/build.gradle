@@ -10,7 +10,7 @@ plugins {
 
 }
 def version = "0.1.60"
-def prodVersion = "1.1.0"
+def prodVersion = "1.1.2"
 android {
     compileSdk 34
 
@@ -18,7 +18,7 @@ android {
         applicationId "com.nrlm.sarathi"
         minSdk 23
         targetSdk 33
-        versionCode 5
+        versionCode 6
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
