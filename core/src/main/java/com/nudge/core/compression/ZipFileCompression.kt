@@ -26,12 +26,17 @@ class ZipFileCompression : IFileCompressor {
         );
     }
 
-    override suspend fun compressBackupImages(context: Context, mobileNo: String): Uri? {
+    //TODO need to be remove mobile Number parameter
+    override suspend fun compressBackupImages(
+        context: Context,
+        mobileNo: String,
+        filePath: String
+    ): Uri? {
         val zipFileName = "${mobileNo}_sarathi_${System.currentTimeMillis()}_"
         return compressData(
             context,
             zipFileName + "image",
-            Environment.DIRECTORY_PICTURES + SARATHI_DIRECTORY_NAME + "/" + mobileNo
+            filePath
         )
     }
 

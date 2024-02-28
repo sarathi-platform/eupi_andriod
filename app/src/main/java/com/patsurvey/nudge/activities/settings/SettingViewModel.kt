@@ -12,6 +12,7 @@ import com.facebook.network.connectionclass.DeviceBandwidthSampler
 import com.nudge.core.NUDGE_DATABASE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
+import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.enums.NetworkSpeed
 import com.nudge.core.getDefaultBackUpFileName
@@ -50,7 +51,6 @@ import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
-import com.patsurvey.nudge.utils.LogWriter
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_
@@ -62,6 +62,7 @@ import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TolaStatus
 import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.uriFromFile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -72,12 +73,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URL
-import java.nio.channels.FileChannel
+import java.util.Random
 import java.util.Timer
 import java.util.TimerTask
 import javax.inject.Inject
+import android.net.Uri as Uri1
 
 
 @HiltViewModel
@@ -878,12 +881,14 @@ class SettingViewModel @Inject constructor(
     }
 
     fun buildAndShareLogs() {
-        NudgeLogger.d("SettingViewModel", "buildAndShareLogs---------------")
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val context = MyApplication.applicationContext()
-            exportLocalData(context)
-            LogWriter.buildSupportLogAndShare()
-        }
+        //  exportDbFile()
+        exportImage()
+//        NudgeLogger.d("SettingViewModel", "buildAndShareLogs---------------")
+//        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+//            val context = MyApplication.applicationContext()
+//          //  exportLocalData(context)
+//           // LogWriter.buildSupportLogAndShare()
+//        }
     }
 
     suspend fun exportLocalData(context: Context) {
@@ -915,10 +920,55 @@ class SettingViewModel @Inject constructor(
                 Log.e("TAG", "Error while downloading image.")
             }
             Log.d("D", ConnectionMonitor.DoesNetworkHaveInternet.getNetworkStrength().toString())
-            NudgeCore.getEventObserver()?.syncPendingEvent(NudgeCore.getAppContext(),networkSpeed)
+            NudgeCore.getEventObserver()?.syncPendingEvent(NudgeCore.getAppContext(), networkSpeed)
         }
     }
 
+    fun getAllFilesInDirectory(directoryPath: String?): MutableList<Pair<String, Uri>> {
+        val fileList: MutableList<Pair<String, Uri>> = ArrayList()
+        val directory = File(directoryPath)
+        if (directory.exists() && directory.isDirectory) {
+            val files = directory.listFiles()
+            if (files != null) {
+                for (file in files) {
+                    if (file.isFile) {
+                        fileList.add(
+                            Pair(
+                                first = file.name,
+                                uriFromFile(NudgeCore.getAppContext(), file)
+                            )
+                        )
+                    }
+                }
+            }
+        }
+        return fileList
+    }
+
+    private fun exportImage() {
+        try {
+            CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+                val filePath =
+                    NudgeCore.getAppContext()
+                        .getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path
+                val zipFileDirectory = NudgeCore.getAppContext()
+                    .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path
+
+                val zipFileUri = File(zipFileDirectory, "Export_Image.zip")
+                val fileUris = getAllFilesInDirectory(filePath)
+                ZipManager.zip(
+                    fileUris,
+                    uriFromFile(NudgeCore.getAppContext(), zipFileUri),
+                    NudgeCore.getAppContext()
+                )
+                openShareSheet(
+                    uriFromFile(NudgeCore.getAppContext(), zipFileUri), null, "Image Sanding..."
+                )
+            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+    }
     fun compressEventData(title: String) {
 
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -975,17 +1025,42 @@ class SettingViewModel @Inject constructor(
     }
 
     fun exportDbFile() {
-        var currentDbFile = NudgeCore.getAppContext().getDatabasePath(NUDGE_DATABASE)
-        val src: FileChannel = FileInputStream(currentDbFile)
-            .getChannel()
-        val shareIntent = Intent(Intent.ACTION_SEND)
-        shareIntent.setType("application/x-sqlite3")
-        // shareIntent.putExtra(Intent.EXTRA_STREAM, uriFromFile(NudgeCore.getAppContext(),src))
-        shareIntent.putExtra(Intent.EXTRA_TITLE, "")
-        val chooserIntent = Intent.createChooser(shareIntent, "title")
+        var backupDB: File? = null
+        try {
+            val sd = NudgeCore.getAppContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+            val currentDBPath =
+                NudgeCore.getAppContext().getDatabasePath(NUDGE_DATABASE).path
+            val currentDB = File(currentDBPath)
+            backupDB = File(sd, "NudgeDatabase")
+            if (currentDB.exists()) {
+                val src = FileInputStream(currentDB)
+                    .channel
+                val dst = FileOutputStream(backupDB)
+                    .channel
+                dst.transferFrom(src, 0, src.size())
+                src.close()
+                dst.close()
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+        val emailIntent = Intent(Intent.ACTION_SEND)
+        emailIntent.setType("*/*")
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf("ritik.singh@tothenew.com"))
+
+        val r = Random()
+
+        emailIntent.putExtra(
+            Intent.EXTRA_SUBJECT,
+            "Local db " + r.nextInt()
+        )
+        val uri = backupDB?.let { uriFromFile(NudgeCore.getAppContext(), it) }
+        emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
+        val chooserIntent = Intent.createChooser(emailIntent, "Export database")
         NudgeCore.startExternalApp(chooserIntent)
     }
-    private fun openShareSheet(imageUri: Uri?, fileUri: Uri?, title: String) {
+
+    private fun openShareSheet(imageUri: Uri1?, fileUri: Uri1?, title: String) {
         val fileUris = listOf(fileUri, imageUri)
         val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
         shareIntent.setType(ZIP_MIME_TYPE)
