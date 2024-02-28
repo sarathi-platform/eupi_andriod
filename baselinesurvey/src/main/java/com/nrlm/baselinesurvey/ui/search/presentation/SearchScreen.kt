@@ -80,7 +80,7 @@ fun SearchScreens(
 ) {
     val searchText = viewModel.searchText.collectAsState()
     val isSearching = viewModel.isSearching.collectAsState()
-    val searchItems = viewModel.complexSearchStateList
+    val searchItems = viewModel.complexSearchStateList.value
 
     val context = LocalContext.current
 

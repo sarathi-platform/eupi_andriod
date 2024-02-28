@@ -269,11 +269,20 @@ class SurveyeeScreenViewModel @Inject constructor(
         if (fromScreen == ALL_TAB) {
             val map = mutableMapOf<String, MutableList<SurveyeeCardState>>()
             surveyeeListState.value.forEachIndexed { index, surveyeeCardState ->
-                if (map.contains(surveyeeCardState.surveyeeDetails.cohortName)) {
-                    map[surveyeeCardState.surveyeeDetails.cohortName]?.add(surveyeeCardState)
+                if (!surveyeeCardState.surveyeeDetails.cohortName.equals(NO_TOLA_TITLE, true)) {
+                    if (map.contains(surveyeeCardState.surveyeeDetails.cohortName)) {
+                        map[surveyeeCardState.surveyeeDetails.cohortName]?.add(surveyeeCardState)
+                    } else {
+                        map[surveyeeCardState.surveyeeDetails.cohortName] =
+                            mutableListOf(surveyeeCardState)
+                    }
                 } else {
-                    map[surveyeeCardState.surveyeeDetails.cohortName] =
-                        mutableListOf(surveyeeCardState)
+                    if (map.contains(surveyeeCardState.surveyeeDetails.villageName)) {
+                        map[surveyeeCardState.surveyeeDetails.villageName]?.add(surveyeeCardState)
+                    } else {
+                        map[surveyeeCardState.surveyeeDetails.villageName] =
+                            mutableListOf(surveyeeCardState)
+                    }
                 }
             }
             tolaMapList = map
@@ -294,7 +303,7 @@ class SurveyeeScreenViewModel @Inject constructor(
 
 
     private fun getSurveyeeAddress(surveyeeEntity: SurveyeeEntity): String {
-        return if (surveyeeEntity.cohortName.equals(NO_TOLA_TITLE, true))
+        return if (!surveyeeEntity.cohortName.equals(NO_TOLA_TITLE, true))
             surveyeeEntity.houseNo + ", " + surveyeeEntity.cohortName
         else
             surveyeeEntity.houseNo + ", " + surveyeeEntity.villageName

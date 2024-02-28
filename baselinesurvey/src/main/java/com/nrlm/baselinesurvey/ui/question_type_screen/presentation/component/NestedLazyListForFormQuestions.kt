@@ -55,7 +55,7 @@ fun NestedLazyListForFormQuestions(
     viewModel: BaseViewModel,
     onSaveFormTypeOption: (questionTypeEvent: QuestionTypeEvent) -> Unit,
     saveCacheFormData: (formQuestionResponseEntity: FormQuestionResponseEntity) -> Unit,
-    answeredQuestionCountIncreased: (count: Int) -> Unit,
+    answeredQuestionCountIncreased: () -> Unit,
     ) {
     val scope = rememberCoroutineScope()
     val questionTypeScreenViewModel = (viewModel as QuestionTypeScreenViewModel)
@@ -155,16 +155,19 @@ fun NestedLazyListForFormQuestions(
                                             )
                                         )
                                     }
+                                    answeredQuestionCountIncreased()
                                 }
                             }
                             QuestionType.Input.name,
                             QuestionType.InputText.name,
-                            QuestionType.InputNumber.name-> {
+                            QuestionType.InputNumberEditText.name-> {
+                                Log.d("TAG", "EditTextWithTitleComponent: ${option?.optionItemEntity?.display}, type: ${option.optionItemEntity.optionType}")
+
                                 EditTextWithTitleComponent(
                                     option.optionItemEntity.display,
                                     showQuestion = option,
                                     defaultValue = formQuestionResponseEntity.value.getResponseForOptionId(option.optionId ?: -1)?.selectedValue ?: BLANK_STRING,
-                                    isOnlyNumber = option.optionItemEntity.optionType == QuestionType.InputNumber.name
+                                    isOnlyNumber = option.optionItemEntity.optionType == QuestionType.InputNumber.name || option.optionItemEntity.optionType == QuestionType.InputNumberEditText.name
                                 ) { value ->
                                     questionTypeScreenViewModel.formTypeOption.let { it1 ->
                                         if (!option.optionItemEntity.conditions.isNullOrEmpty()) {
@@ -184,7 +187,7 @@ fun NestedLazyListForFormQuestions(
                                             )
                                         )
                                     }
-
+                                    answeredQuestionCountIncreased()
                                 }
                             }
 
@@ -205,6 +208,7 @@ fun NestedLazyListForFormQuestions(
                                                 )
                                             )
                                         }
+                                        answeredQuestionCountIncreased()
                                     }
                                 )
                             }
@@ -228,6 +232,7 @@ fun NestedLazyListForFormQuestions(
                                                 )
                                             )
                                         }
+                                        answeredQuestionCountIncreased()
                                     }
                                 )
                             }
