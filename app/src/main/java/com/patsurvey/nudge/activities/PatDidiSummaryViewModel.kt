@@ -5,8 +5,10 @@ import android.net.Uri
 import android.os.Environment
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
+import com.nudge.core.database.entities.getDependentEventsId
 import com.nudge.core.enums.EventName
 import com.nudge.core.json
+import com.nudge.core.model.getMetaDataDtoFromString
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.survey.PatDidiSummaryRepository
@@ -126,21 +128,37 @@ class PatDidiSummaryViewModel @Inject constructor(
             NudgeLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> didiDao.saveLocalImagePath before = didiId: ${didiEntity.id}, finalPathWithCoordinates: $finalPathWithCoordinates")
             patDidiSummaryRepository.saveDidiLocalImagePath(finalPathWithCoordinates,didiEntity.id)
             NudgeLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> didiDao.saveLocalImagePath after")
+            val selectedTolaEntity =
+                patDidiSummaryRepository.getTolaFromServerId(didiEntity.cohortId)
 
 
-            val payload = DidiImageUploadRequest(
-                didiId = didiEntity.id.toString(),
+            val payload = DidiImageUploadRequest.getRequestObjectForDidiUploadImage(
+                didi = didiEntity,
                 location = didiImageLocation.value,
                 filePath = photoPath ?: "",
-                userType = if (patDidiSummaryRepository.prefRepo.isUserBPC()) USER_BPC else USER_CRP
+                userType = if (patDidiSummaryRepository.prefRepo.isUserBPC()) USER_BPC else USER_CRP,
+                tolaServerId = selectedTolaEntity?.serverId,
+                cohortdeviceId = selectedTolaEntity?.localUniqueId
             ).json()
 
-            val event = patDidiSummaryRepository.createImageUploadEvent(
+            var imageUploadEvent = patDidiSummaryRepository.createImageUploadEvent(
                 payload = payload,
+                payloadlocalId = didiEntity.localUniqueId,
                 mobileNumber = patDidiSummaryRepository.prefRepo.getMobileNumber(),
                 userID = patDidiSummaryRepository.prefRepo.getUserId(),
                 eventName = if (patDidiSummaryRepository.prefRepo.isUserBPC()) EventName.BPC_IMAGE else EventName.CRP_IMAGE,
             )
+            val dependsOn = patDidiSummaryRepository.createEventDependency(
+                didiEntity,
+                if (patDidiSummaryRepository.prefRepo.isUserBPC()) EventName.BPC_IMAGE else EventName.CRP_IMAGE,
+                imageUploadEvent
+            )
+            val metadata = imageUploadEvent.metadata?.getMetaDataDtoFromString()
+            val updatedMetaData = metadata?.copy(depends_on = dependsOn.getDependentEventsId())
+            imageUploadEvent = imageUploadEvent.copy(
+                metadata = updatedMetaData?.json()
+            )
+
             //TODO Remove delay and fix cropping issue without delay
             delay(500)
             val compressedDidi = compressImage(
@@ -149,7 +167,7 @@ class PatDidiSummaryViewModel @Inject constructor(
                 getFileNameFromURL(uri.path ?: "")
             )
             patDidiSummaryRepository.uri = File(compressedDidi).toUri()
-            patDidiSummaryRepository.writeImageEventIntoLogFile(event)
+            patDidiSummaryRepository.writeImageEventIntoLogFile(imageUploadEvent, dependsOn)
 
 
         }

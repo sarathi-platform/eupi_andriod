@@ -594,10 +594,11 @@ class FormPictureScreenViewModel @Inject constructor(
                                 mobileNumber = repository.prefRepo.getMobileNumber(),
                                 userID = repository.prefRepo.getUserId(),
                                 eventName = EventName.FORM_C_TOPIC,
+                                payloadlocalId = ""
                             )
 
                             repository.uri = File(compressedFormC).toUri()
-                            repository.writeImageEventIntoLogFile(event)
+                            repository.writeImageEventIntoLogFile(event, listOf())
                         }
 
                     }
@@ -632,9 +633,11 @@ class FormPictureScreenViewModel @Inject constructor(
                                 payload = payload,
                                 mobileNumber = repository.prefRepo.getMobileNumber(),
                                 userID = repository.prefRepo.getUserId(),
-                                EventName.FORM_D_TOPIC
+                                eventName = EventName.FORM_D_TOPIC,
+                                payloadlocalId = ""
+
                             )
-                            repository.writeImageEventIntoLogFile(event)
+                            repository.writeImageEventIntoLogFile(event, listOf())
 
                             /*val eventFormatter: IEventFormatter =
                                 EventWriterFactory().createEventWriter(
