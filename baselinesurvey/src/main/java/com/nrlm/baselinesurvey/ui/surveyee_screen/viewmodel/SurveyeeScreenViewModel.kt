@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.BLANK_STRING
@@ -14,6 +15,7 @@ import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListEvents
+import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
@@ -61,6 +63,10 @@ class SurveyeeScreenViewModel @Inject constructor(
     var isEnableNextBTn =
         mutableStateOf(false)
 
+    val isFilterAppliedState = mutableStateOf(FilterListState())
+    val pageFrom = mutableStateOf(ALL_TAB)
+
+
 
     @SuppressLint("SuspiciousIndentation")
     fun init(missionId: Int, activityName: String, activityId: Int) {
@@ -98,6 +104,9 @@ class SurveyeeScreenViewModel @Inject constructor(
                 allTaskDone() && !surveyeeScreenUseCase.getActivityStateFromDBUseCase.getActivity(
                     activityId
                 ).isAllTask
+
+            filterList(pageFrom.value)
+
 
             /*if (_thisWeekSurveyeeListState.value.isNotEmpty()) {
                 _thisWeekSurveyeeListState.value.clear()
