@@ -1238,7 +1238,8 @@ fun IncrementDecrementView(modifier: Modifier,
                            onValueChange: (String) -> Unit,
                            onLimitFailed: (String) -> Unit){
     var currentCount by remember {
-        mutableStateOf(if(currentValue<=0) BLANK_STRING else currentValue.toString())
+        mutableStateOf(
+            if(currentValue<=0) BLANK_STRING else currentValue.toString())
     }
     Column(modifier = Modifier
         .fillMaxWidth()
@@ -1334,7 +1335,7 @@ fun IncrementDecrementView(modifier: Modifier,
                         if (questionFlag.equals(QUESTION_FLAG_RATIO, true)) {
                             val otherOptionValueCount =
                                 findOptionValueCount(optionList, optionValue ?: 1)
-                            val newCurrentCount = incDecValue(0, currentCount)
+                            val newCurrentCount = incDecValue(0, currentCount,optionValue==1)
                             val intCnt =
                                 if (newCurrentCount.isEmpty()) 0 else newCurrentCount.toInt()
                             if (optionValue == 1) {
@@ -1494,14 +1495,16 @@ fun findOptionValueCount(optionList: List<OptionsItem>, optionValue:Int):Int{
     return 0
 }
 
-fun incDecValue(operation:Int,value:String):String{
+fun incDecValue(operation:Int,value:String,isDefaultValueOne:Boolean=false):String{
     var intValue=0
     if(value.isNotEmpty()){
         intValue=value.toInt()
     }
 
     if(operation==0){
-        if(intValue>0)
+        if(isDefaultValueOne && intValue>1){
+            intValue--
+        }else if(intValue>0)
             intValue--
     }else{
         if(intValue<MAXIMUM_RANGE){

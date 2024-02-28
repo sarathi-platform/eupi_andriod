@@ -62,6 +62,7 @@ import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.IncrementDecrementView
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
 import com.patsurvey.nudge.utils.roundOffDecimalPoints
 import com.patsurvey.nudge.utils.showToast
 import kotlinx.coroutines.launch
@@ -151,9 +152,12 @@ val context = LocalContext.current
             ) {
                 LazyColumn(modifier = Modifier.fillMaxWidth(), state = lazyColumnListState) {
                     itemsIndexed(optionList.sortedBy { it.optionValue }.filter { it.optionType == BLANK_STRING }) { index, option ->
+                        if (questionFlag.equals(QUESTION_FLAG_RATIO, true) && option.optionValue==1){
+                            option.count=1
+                        }
                         IncrementDecrementView(modifier = Modifier,
                             option.display ?: BLANK_STRING,
-                            option.count ?: 0,
+                            currentValue = option.count ?: 0,
                             questionFlag = questionFlag,
                             optionImageUrl = option.optionImage?: BLANK_STRING,
                             optionValue = option.optionValue,
