@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.analytics.AnalyticsHelper
+import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
@@ -195,10 +196,14 @@ abstract class BaseViewModel : ViewModel(){
 
     open suspend fun updateWorkflowStatus(stepStatus: StepStatus, villageId: Int, stepId: Int) {}
     open fun addRankingFlagEditEvent(iisUserBpc: Boolean = false, stepId: Int) {}
-    open fun addDidiNotAvailableEvent(didiId: Int) {}
+    open fun addDidiNotAvailableEvent(didiId: Int) {
+    }
 
     open fun addNotAvailableDidiPatScoreEventForDidi(didiId: Int) {}
+    open fun isSyncEnabled(prefRepo: PrefRepo): Boolean {
+        return prefRepo.getISSyncEnabled()
 
+    }
 
 }
 

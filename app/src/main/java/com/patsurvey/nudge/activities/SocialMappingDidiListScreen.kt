@@ -130,6 +130,7 @@ import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.ExclusionType
+import com.patsurvey.nudge.utils.PAT_SURVEY
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.ShowDidisFromTola
@@ -138,6 +139,7 @@ import com.patsurvey.nudge.utils.SummaryNavigation
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.rememberForeverLazyListState
 import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.showDidiImageDialog
 import com.patsurvey.nudge.utils.showToast
@@ -276,7 +278,13 @@ fun SocialMappingDidiListScreen(
                         ),
                         modifier = Modifier.padding(vertical = (screenHeight / 4).dp)
                     )
-                    val listState = rememberLazyListState()
+                    var listState = rememberLazyListState()
+
+                    if (didiViewModel.getFromPage()
+                            .equals(ARG_FROM_PAT_SURVEY, true)
+                    ){
+                        listState = rememberForeverLazyListState(key = PAT_SURVEY)
+                    }
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()

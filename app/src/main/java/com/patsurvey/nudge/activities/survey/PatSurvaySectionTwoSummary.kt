@@ -156,11 +156,11 @@ fun PatSurvaySectionTwoSummaryScreen(
                 showDialog.value = it
             }, positiveButtonClicked = {
 
-                patSectionSummaryViewModel.savePATEvent()
                 patSectionSummaryViewModel.setPATSection2Complete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
                 patSectionSummaryViewModel.setPATSurveyComplete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
                 patSectionSummaryViewModel.updateExclusionStatus(didi.value.id,ExclusionType.NO_EXCLUSION.ordinal,
                     BLANK_STRING)
+                patSectionSummaryViewModel.savePATEvent()
                 if(patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()){
 
                     navController.popBackStack(BpcDidiListScreens.BPC_DIDI_LIST.route, inclusive = false)

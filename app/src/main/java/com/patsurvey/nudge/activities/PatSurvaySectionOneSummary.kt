@@ -295,7 +295,7 @@ fun PatSurvaySectionSummaryScreen(
                     PatSurveyStatus.COMPLETED.ordinal
                 )
 
-                patSectionSummaryViewModel.savePATEvent()
+
                 if (patSectionSummaryViewModel.isYesSelected.value) {
                     var exclusionType = ExclusionType.SIMPLE_EXCLUSION.ordinal
 
@@ -316,9 +316,11 @@ fun PatSurvaySectionSummaryScreen(
                     } else {
                         showPatCompletion.value = true
                     }
+                    patSectionSummaryViewModel.savePATEvent()
                 } else {
                     patSectionSummaryViewModel.updateExclusionStatus(didi.value.id,ExclusionType.NO_EXCLUSION.ordinal,
                         TYPE_EXCLUSION)
+                    patSectionSummaryViewModel.savePATEvent()
                     if(patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()){
                         navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION/0")
                     }else navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION/0")

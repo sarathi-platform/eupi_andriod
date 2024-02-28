@@ -5,8 +5,10 @@ import android.net.Uri
 import android.os.Environment
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
+import com.nudge.core.database.entities.getDependentEventsId
 import com.nudge.core.enums.EventName
 import com.nudge.core.json
+import com.nudge.core.model.getMetaDataDtoFromString
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.survey.PatDidiSummaryRepository
@@ -31,6 +33,7 @@ import com.patsurvey.nudge.utils.getFileNameFromURL
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -125,29 +128,47 @@ class PatDidiSummaryViewModel @Inject constructor(
             NudgeLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> didiDao.saveLocalImagePath before = didiId: ${didiEntity.id}, finalPathWithCoordinates: $finalPathWithCoordinates")
             patDidiSummaryRepository.saveDidiLocalImagePath(finalPathWithCoordinates,didiEntity.id)
             NudgeLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> didiDao.saveLocalImagePath after")
+            val selectedTolaEntity =
+                patDidiSummaryRepository.getTolaFromServerId(didiEntity.cohortId)
 
 
-            val payload = DidiImageUploadRequest(
-                didiId = didiEntity.id.toString(),
+            val payload = DidiImageUploadRequest.getRequestObjectForDidiUploadImage(
+                didi = didiEntity,
                 location = didiImageLocation.value,
-                filePath = compressImage(
-                    photoPath,
-                    NudgeCore.getAppContext(),
-                    getFileNameFromURL(uri.path ?: "")
-                ) ?: "",
-                userType = if (patDidiSummaryRepository.prefRepo.isUserBPC()) USER_BPC else USER_CRP
+                filePath = photoPath ?: "",
+                userType = if (patDidiSummaryRepository.prefRepo.isUserBPC()) USER_BPC else USER_CRP,
+                tolaServerId = selectedTolaEntity?.serverId,
+                cohortdeviceId = selectedTolaEntity?.localUniqueId
             ).json()
 
-            val event = patDidiSummaryRepository.createImageUploadEvent(
+            var imageUploadEvent = patDidiSummaryRepository.createImageUploadEvent(
                 payload = payload,
+                payloadlocalId = didiEntity.localUniqueId,
                 mobileNumber = patDidiSummaryRepository.prefRepo.getMobileNumber(),
                 userID = patDidiSummaryRepository.prefRepo.getUserId(),
                 eventName = if (patDidiSummaryRepository.prefRepo.isUserBPC()) EventName.BPC_IMAGE else EventName.CRP_IMAGE,
             )
+            val dependsOn = patDidiSummaryRepository.createEventDependency(
+                didiEntity,
+                if (patDidiSummaryRepository.prefRepo.isUserBPC()) EventName.BPC_IMAGE else EventName.CRP_IMAGE,
+                imageUploadEvent
+            )
+            val metadata = imageUploadEvent.metadata?.getMetaDataDtoFromString()
+            val updatedMetaData = metadata?.copy(depends_on = dependsOn.getDependentEventsId())
+            imageUploadEvent = imageUploadEvent.copy(
+                metadata = updatedMetaData?.json()
+            )
 
+            //TODO Remove delay and fix cropping issue without delay
+            delay(500)
+            val compressedDidi = compressImage(
+                photoPath,
+                NudgeCore.getAppContext(),
+                getFileNameFromURL(uri.path ?: "")
+            )
+            patDidiSummaryRepository.uri = File(compressedDidi).toUri()
+            patDidiSummaryRepository.writeImageEventIntoLogFile(imageUploadEvent, dependsOn)
 
-            patDidiSummaryRepository.uri = uri
-            patDidiSummaryRepository.writeImageEventIntoLogFile(event)
 
         }
     }
@@ -198,6 +219,9 @@ class PatDidiSummaryViewModel @Inject constructor(
     }
 
     fun uploadDidiImage(context: Context, uri: String, didiId: Int, location: String) {
+        if (!isSyncEnabled(prefRepo = patDidiSummaryRepository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             withContext(Dispatchers.IO) {
                 try {

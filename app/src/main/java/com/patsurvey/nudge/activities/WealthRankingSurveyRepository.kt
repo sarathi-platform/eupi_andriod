@@ -158,8 +158,15 @@ class WealthRankingSurveyRepository @Inject constructor(
 
         when (eventName) {
             EventName.SAVE_WEALTH_RANKING -> {
+                val didiEntity = (eventItem as DidiEntity)
+                val selectedTolaEntity = tolaDao.fetchSingleTolaFromServerId(didiEntity.cohortId)
+
                 val requestPayload = EditDidiWealthRankingRequest
-                    .getRequestPayloadForWealthRanking(didiEntity = (eventItem as DidiEntity))
+                    .getRequestPayloadForWealthRanking(
+                        didiEntity = didiEntity,
+                        tolaDeviceId = selectedTolaEntity?.localUniqueId ?: "",
+                        tolaServerId = selectedTolaEntity?.serverId ?: 0
+                    )
                     .json()
 
                 var saveWealthRankingEvent = Events(

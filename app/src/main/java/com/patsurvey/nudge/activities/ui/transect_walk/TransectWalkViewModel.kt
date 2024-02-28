@@ -149,6 +149,9 @@ class TransectWalkViewModel @Inject constructor(
     }
 
     fun addTolasToNetwork(networkCallbackListener: NetworkCallbackListener) {
+        if (!isSyncEnabled(prefRepo = transectWalkRepository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("TransectWalkViewModel", "addTolasToNetwork: called")
             try {
@@ -354,6 +357,9 @@ class TransectWalkViewModel @Inject constructor(
     }
 
     private fun deleteTolaToNetwork(networkCallbackListener: NetworkCallbackListener) {
+        if (!isSyncEnabled(prefRepo = transectWalkRepository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("TransectWalkViewModel", "deleteTolaToNetwork called")
             try {
@@ -446,6 +452,9 @@ class TransectWalkViewModel @Inject constructor(
     }
 
     private fun updateTolasToNetwork(networkCallbackListener: NetworkCallbackListener) {
+        if (!isSyncEnabled(prefRepo = transectWalkRepository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("TransectWalkViewModel", "updateTolasToNetwork: called")
             try {
@@ -728,7 +737,7 @@ class TransectWalkViewModel @Inject constructor(
                                 }
                             }
                     }
-                    if (isOnline) {
+                    if (isOnline && isSyncEnabled(transectWalkRepository.prefRepo)) {
                         val tolaToBeDeleted = transectWalkRepository.fetchSingleTola(tolaId)
                         if (tolaToBeDeleted?.serverId != 0) {
                             val jsonArray = JsonArray()
@@ -790,7 +799,7 @@ class TransectWalkViewModel @Inject constructor(
                     )
                 }
 
-                if (isOnline) {
+                if (isOnline && isSyncEnabled(prefRepo = transectWalkRepository.prefRepo)) {
                     val jsonArray = JsonArray()
                     didiList.forEach {
                         val jsonObject = JsonObject()
@@ -857,7 +866,7 @@ class TransectWalkViewModel @Inject constructor(
             withContext(Dispatchers.Main) {
                 _tolaList.value = updatedTolaList
             }
-            if (isOnline && updatedTola.serverId != 0) {
+            if (isOnline && updatedTola.serverId != 0 && isSyncEnabled(transectWalkRepository.prefRepo)) {
                 val jsonTola = JsonArray()
                 jsonTola.add(EditCohortRequest.getRequestObjectForTola(updatedTola).toJson())
                 val response = transectWalkRepository.editCohort(jsonTola)
@@ -1017,7 +1026,7 @@ class TransectWalkViewModel @Inject constructor(
                 }
             }
             try {
-                if (isOnline) {
+                if (isOnline && isSyncEnabled(prefRepo = transectWalkRepository.prefRepo)) {
                     val apiRequest = mutableListOf<EditWorkFlowRequest>()
                     apiRequest.add(
                         EditWorkFlowRequest(
@@ -1133,6 +1142,9 @@ class TransectWalkViewModel @Inject constructor(
         stepId: Int,
         networkCallbackListener: NetworkCallbackListener
     ) {
+        if (!isSyncEnabled(prefRepo = transectWalkRepository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> called")
             try {

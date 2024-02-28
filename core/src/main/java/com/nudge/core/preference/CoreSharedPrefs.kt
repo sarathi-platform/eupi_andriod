@@ -12,6 +12,7 @@ class CoreSharedPrefs private constructor(val context: Context) :
         const val PREFS_NAME = "secured_nudge_prefs"
         const val PREF_FILE_BACKUP_NAME = "file_backup_name"
         const val PREF_IMAGE_FILE_BACKUP_NAME = "image_file_backup_name"
+        const val PREF_IMAGE_FILE_EXPORTED_NAME = "is_file_exorted"
 
         @Volatile
         private var INSTANCE: CoreSharedPrefs? = null
@@ -58,4 +59,16 @@ class CoreSharedPrefs private constructor(val context: Context) :
     override fun setImageBackupFileName(fileName: String) {
         prefs.edit().putString(PREF_IMAGE_FILE_BACKUP_NAME, fileName).apply()
     }
+
+    override fun isFileExported(): Boolean {
+        return prefs.getBoolean(
+            PREF_IMAGE_FILE_EXPORTED_NAME,
+            false
+        )
+    }
+
+    override fun setFileExported(isExported: Boolean) {
+        prefs.edit().putBoolean(PREF_IMAGE_FILE_EXPORTED_NAME, isExported).apply()
+    }
+
 }

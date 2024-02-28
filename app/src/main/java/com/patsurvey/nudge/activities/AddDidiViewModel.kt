@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.nudge.core.enums.EventName
@@ -207,6 +208,9 @@ class AddDidiViewModel @Inject constructor(
     }
 
     private fun deleteDidisToNetwork(networkCallbackListener: NetworkCallbackListener) {
+        if (!isSyncEnabled(prefRepo = addDidiRepository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch (Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("AddDidiViewModel", "deleteDidisToNetwork -> called")
             try {
@@ -318,6 +322,9 @@ class AddDidiViewModel @Inject constructor(
     }
 
     fun updateDidiToNetwork(networkCallbackListener: NetworkCallbackListener){
+        if (!isSyncEnabled(prefRepo = addDidiRepository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("AddDidiViewModel", "updateDidiToNetwork -> called")
             try {
@@ -808,6 +815,9 @@ class AddDidiViewModel @Inject constructor(
 
 
     fun addDidisToNetwork(networkCallbackListener: NetworkCallbackListener) {
+        if (!isSyncEnabled(prefRepo = addDidiRepository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("AddDidiViewModel", "addDidisToNetwork called")
             try {
@@ -1027,6 +1037,9 @@ class AddDidiViewModel @Inject constructor(
         stepId: Int,
         networkCallbackListener: NetworkCallbackListener
     ) {
+        if (!isSyncEnabled(prefRepo = addDidiRepository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> called")
             try {
@@ -1240,7 +1253,7 @@ class AddDidiViewModel @Inject constructor(
                     }
                 }
                 try {
-                    if (isOnline) {
+                    if (isOnline && isSyncEnabled(prefRepo = addDidiRepository.prefRepo)) {
                         val apiRequest = mutableListOf<EditWorkFlowRequest>()
                         apiRequest.add(
                             EditWorkFlowRequest(
@@ -1469,7 +1482,7 @@ class AddDidiViewModel @Inject constructor(
                     }
                 }
             }
-            if (isOnline) {
+            if (isOnline && isSyncEnabled(prefRepo = addDidiRepository.prefRepo)) {
                 deleteDidisToNetwork(networkCallbackListener)
             } else {
                 networkCallbackListener.onSuccess()
@@ -1575,6 +1588,9 @@ class AddDidiViewModel @Inject constructor(
     }
 
     fun updateDidiToNetwork(didi: DidiEntity, networkCallbackListener: NetworkCallbackListener) {
+        if (!isSyncEnabled(prefRepo = addDidiRepository.prefRepo)) {
+            return
+        }
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 if (didi.serverId != 0) {
@@ -1714,6 +1730,29 @@ class AddDidiViewModel @Inject constructor(
             updateWorkflowEvent?.let { event ->
                 addDidiRepository.saveEventToMultipleSources(event, listOf())
             }
+        }
+    }
+
+    override fun addDidiNotAvailableEvent(didiId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val didiEntity = addDidiRepository.getDidi(didiId)
+            addDidiRepository.saveEvent(
+                eventItem = didiEntity,
+                eventName = EventName.SAVE_PAT_ANSWERS,
+                eventType = EventType.STATEFUL
+            )
+
+        }
+    }
+
+    override fun addNotAvailableDidiPatScoreEventForDidi(didiId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val didiEntity = addDidiRepository.getDidi(didiId)
+            addDidiRepository.saveEvent(
+                eventItem = didiEntity,
+                eventName = EventName.SAVE_PAT_SCORE,
+                EventType.STATEFUL
+            )
         }
     }
 

@@ -8,7 +8,6 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.MyApplication
-import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.RetryHelper.crpPatQuestionApiLanguageId
 import com.patsurvey.nudge.RetryHelper.retryApiList
@@ -41,7 +40,6 @@ import com.patsurvey.nudge.database.dao.TrainingVideoDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.download.FileType
-import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.GetQuestionListRequest
@@ -101,7 +99,6 @@ import com.patsurvey.nudge.utils.formatRatio
 import com.patsurvey.nudge.utils.getAuthImagePath
 import com.patsurvey.nudge.utils.getImagePath
 import com.patsurvey.nudge.utils.intToString
-import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import com.patsurvey.nudge.utils.videoList
@@ -1695,57 +1692,17 @@ class VillageSelectionViewModel @Inject constructor(
     fun refreshBpcData(context: Context) {
         showLoader.value = true
         villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) {
-            checkStatusCount++
-            if (checkStatusCount >= 2) {
-                showLoader.value = false
-                checkStatusCount = 0
-            }
-        }
-        villageSelectionRepository.checkDidiPatStatus(
-            prefRepo = prefRepo,
-            object : NetworkCallbackListener {
-            override fun onSuccess() {
-                checkStatusCount++
-                if (checkStatusCount >= 2) {
-                    showLoader.value = false
-                    checkStatusCount = 0
-                }
-            }
+            showLoader.value = false
 
-            override fun onFailed() {
-                showLoader.value = false
-                showCustomToast(context, context.getString(R.string.refresh_failed_please_try_again))
-            }
-        })
+        }
     }
 
     fun refreshCrpData(context: Context) {
         showLoader.value = true
-        checkStatusCount = 0
         villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) {
-            checkStatusCount++
-            if (checkStatusCount >= 10) {
                 showLoader.value = false
-                checkStatusCount = 0
-            }
-        }
-        villageSelectionRepository.checkStatusForCrp(
-            prefRepo = prefRepo,
-            object : NetworkCallbackListener {
-            override fun onSuccess() {
-                checkStatusCount++
-                if (checkStatusCount >= 10) {
-                    showLoader.value = false
-                    checkStatusCount = 0
-                }
             }
 
-            override fun onFailed() {
-                checkStatusCount++
-                showLoader.value = false
-                showCustomToast(context, context.getString(R.string.refresh_failed_please_try_again))
-            }
-        })
     }
 
 

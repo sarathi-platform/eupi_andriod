@@ -12,9 +12,11 @@ import com.nudge.core.enums.EventFormatterName
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
 import com.nudge.core.enums.EventWriterName
+import com.nudge.core.enums.getDependsOnEventNameForEvent
 import com.nudge.core.eventswriter.EventWriterFactory
 import com.nudge.core.eventswriter.IEventFormatter
 import com.nudge.core.eventswriter.entities.EventV1
+import com.nudge.core.getEventDependencyEntityListFromEvents
 import com.nudge.core.getSizeInLong
 import com.nudge.core.json
 import com.nudge.core.model.MetadataDto
@@ -32,6 +34,7 @@ import com.patsurvey.nudge.model.dataModel.RankingEditEvent
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.PATSummarySaveRequest
 import com.patsurvey.nudge.model.request.UpdateWorkflowRequest
+import com.patsurvey.nudge.model.request.getAddDidiRequestPayloadFromString
 import com.patsurvey.nudge.network.NetworkResult
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.ApiResponseFailException
@@ -99,7 +102,51 @@ abstract class BaseRepository{
     }
 
     open suspend fun <T> createEventDependency(eventItem: T, eventName: EventName, dependentEvent: Events): List<EventDependencyEntity> {
-        return emptyList()
+        val eventDependencyList = mutableListOf<EventDependencyEntity>()
+        var filteredList = listOf<Events>()
+        var dependentEventsName = eventName.getDependsOnEventNameForEvent()
+        for (dependsOnEvent in dependentEventsName) {
+            val eventList = eventsDao.getAllEventsForEventName(dependsOnEvent.name)
+            when (eventName) {
+                EventName.CRP_IMAGE -> {
+                    filteredList = eventList.filter {
+                        val eventPayload =
+                            dependentEvent.request_payload?.getAddDidiRequestPayloadFromString()
+                        it.payloadLocalId == eventPayload?.cohortDeviceId
+                    }
+                }
+
+                EventName.BPC_IMAGE -> {
+                    filteredList = eventList.filter {
+                        it.payloadLocalId == dependentEvent.payloadLocalId
+                    }
+
+                }
+
+                else -> {
+                    filteredList = emptyList()
+                }
+            }
+
+            if (filteredList.isNotEmpty()) {
+                break
+            }
+
+        }
+
+
+        if (filteredList.isNotEmpty()) {
+
+            val immediateDependentOn = ArrayList<Events>()
+            immediateDependentOn.add(filteredList.first())
+
+            eventDependencyList.addAll(
+                immediateDependentOn.getEventDependencyEntityListFromEvents(
+                    dependentEvent
+                )
+            )
+        }
+        return eventDependencyList
     }
 
     open suspend fun <T> saveEvent(
@@ -368,14 +415,17 @@ abstract class BaseRepository{
      }
     }
 
-    open suspend fun writeImageEventIntoLogFile(event: Events) {
+    open suspend fun writeImageEventIntoLogFile(
+        event: Events,
+        eventDependencies: List<EventDependencyEntity>
+    ) {
         val  eventFormatter: IEventFormatter = getEventFormatter()
         try {
 
 
         eventFormatter.saveAndFormatEvent(
             event = event,
-            dependencyEntity = listOf(),
+            dependencyEntity = eventDependencies,
             listOf(
                 EventWriterName.FILE_EVENT_WRITER,
                 EventWriterName.IMAGE_EVENT_WRITER,
@@ -394,7 +444,6 @@ abstract class BaseRepository{
     }
 
     var uri: Uri? = null
-
     fun createStepUpdateEvent(stepStatus: String, stepListEntity: StepListEntity, mobileNumber: String): EventV1 {
         val payload = UpdateWorkflowRequest.getUpdateWorkflowRequest(stepListEntity, stepStatus).json()
         return EventV1(
@@ -439,6 +488,7 @@ abstract class BaseRepository{
         payload: String,
         mobileNumber: String,
         userID: String,
+        payloadlocalId: String,
         eventName: EventName
     ): Events {
         return Events(
@@ -451,7 +501,7 @@ abstract class BaseRepository{
             modified_date = System.currentTimeMillis().toDate(),
             result = null,
             consumer_status = BLANK_STRING,
-            payloadLocalId = "",
+            payloadLocalId = payloadlocalId,
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,
                 depends_on = listOf(),
@@ -459,6 +509,7 @@ abstract class BaseRepository{
                 parentEntity = mapOf()
             ).json()
         )
+
 
     }
 

@@ -421,6 +421,9 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     fun callWorkFlowAPI(villageId: Int,stepId: Int, networkCallbackListener: NetworkCallbackListener){
+        if (!isSyncEnabled(prefRepo = repository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> called")
             try {
@@ -591,10 +594,11 @@ class FormPictureScreenViewModel @Inject constructor(
                                 mobileNumber = repository.prefRepo.getMobileNumber(),
                                 userID = repository.prefRepo.getUserId(),
                                 eventName = EventName.FORM_C_TOPIC,
+                                payloadlocalId = ""
                             )
 
                             repository.uri = File(compressedFormC).toUri()
-                            repository.writeImageEventIntoLogFile(event)
+                            repository.writeImageEventIntoLogFile(event, listOf())
                         }
 
                     }
@@ -629,9 +633,11 @@ class FormPictureScreenViewModel @Inject constructor(
                                 payload = payload,
                                 mobileNumber = repository.prefRepo.getMobileNumber(),
                                 userID = repository.prefRepo.getUserId(),
-                                EventName.FORM_D_TOPIC
+                                eventName = EventName.FORM_D_TOPIC,
+                                payloadlocalId = ""
+
                             )
-                            repository.writeImageEventIntoLogFile(event)
+                            repository.writeImageEventIntoLogFile(event, listOf())
 
                             /*val eventFormatter: IEventFormatter =
                                 EventWriterFactory().createEventWriter(
@@ -663,7 +669,7 @@ class FormPictureScreenViewModel @Inject constructor(
                         "multipart/form-data".toMediaTypeOrNull(),
                         if (repository.prefRepo.isUserBPC()) USER_BPC else USER_CRP
                     )
-                if (isOnline) {
+                if (isOnline && isSyncEnabled(prefRepo = repository.prefRepo)) {
                     val response = repository.uploadDocument(
                         formList = formList,
                         villageId = requestVillageId,

@@ -1320,7 +1320,11 @@ private fun getAllNumericAnswersForDidi(didiId: Int, numericAnswerDao: NumericAn
 }
 
 private fun getSurveyId(questionId: Int, questionListDao: QuestionListDao): Int {
-    return questionListDao.getQuestion(questionId).surveyId ?: 0
+    val questionList = questionListDao.getQuestion(questionId)
+    if (questionList != null) {
+        return questionList.surveyId ?: 0
+    }
+    return 0
 }
 
 suspend fun getPatSummarySaveEventPayload(didiEntity: DidiEntity, answerDao: AnswerDao, numericAnswerDao: NumericAnswerDao, questionListDao: QuestionListDao, prefRepo: PrefRepo): PATSummarySaveRequest {
@@ -1331,7 +1335,10 @@ suspend fun getPatSummarySaveEventPayload(didiEntity: DidiEntity, answerDao: Ans
         didiEntity = didiEntity,
         answerDetailDTOList = answerDetailDTOListItem,
         languageId = (prefRepo.getAppLanguageId() ?: 2),
-        surveyId = getSurveyId(sectionAnswerEntityList.first().questionId, questionListDao),
+        surveyId = getSurveyId(
+            sectionAnswerEntityList?.firstOrNull()?.questionId ?: 0,
+            questionListDao
+        ),
         villageEntity = prefRepo.getSelectedVillage(),
         userType = if((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true)) USER_BPC else USER_CRP
     )
@@ -1339,12 +1346,23 @@ suspend fun getPatSummarySaveEventPayload(didiEntity: DidiEntity, answerDao: Ans
     return patSummarySaveRequest
 }
 
-suspend fun getPatScoreSaveEvent(didiEntity: DidiEntity, questionListDao: QuestionListDao, prefRepo: PrefRepo): EditDidiWealthRankingRequest {
+suspend fun getPatScoreSaveEvent(
+    didiEntity: DidiEntity,
+    questionListDao: QuestionListDao,
+    prefRepo: PrefRepo,
+    tolaDeviceId: String,
+    tolaServerId: Int
+): EditDidiWealthRankingRequest {
     val passingMark = questionListDao.getPassingScore()
     val patScoreSaveRequest = EditDidiWealthRankingRequest.getRequestPayloadForPatScoreSave(
         didiEntity,
         passingMark,
-        isBpcUserType = prefRepo.isUserBPC()
+        isBpcUserType = prefRepo.isUserBPC(),
+        tolaDeviceId = tolaDeviceId,
+        tolaServerId = tolaServerId
+
+
+
     )
     return patScoreSaveRequest
 }
