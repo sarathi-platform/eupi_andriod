@@ -316,19 +316,21 @@ fun NestedLazyList(
                             style = h6,
                             textAlign = TextAlign.Center
                         )
-                    // if(!sectionDetails.contentData.isNullOrEmpty()){
-                    Icon(
-                        painterResource(id = R.drawable.info_icon),
-                        null,
-                        tint = textColorDark,
-                        modifier = Modifier.clickable {
-                            sectionInfoButtonClicked()
-                        }
-                    )
-                    //  }
+                    if (!sectionDetails.contentData.isNullOrEmpty()) {
+                        Icon(
+                            painterResource(id = R.drawable.info_icon),
+                            null,
+                            tint = textColorDark,
+                            modifier = Modifier.clickable {
+                                sectionInfoButtonClicked()
+                            }
+                        )
+                    } else {
+                        Spacer(modifier = Modifier.size(dimen_8_dp))
+                        Spacer(modifier = Modifier.size(24.dp))
+                    }
 
-                    //Spacer(modifier = Modifier.size(dimen_8_dp))
-                    // Spacer(modifier = Modifier.size(24.dp))
+
                 }
                 /*TopAppBar(
                     title = {
@@ -646,10 +648,13 @@ fun NestedLazyList(
                             }
 
                             QuestionType.Form.name -> {
+                                val contents =
+                                    sectionDetails.questionContentMapping[question.questionId]
                                 FormTypeQuestionComponent(
                                     question = question.questionEntity,
                                     showQuestionState = question,
                                     questionIndex = index,
+                                    contests = contents,
                                     maxCustomHeight = maxHeight,
                                     onAnswerSelection = { questionIndex ->
                                         //TODO need to be dynamic..

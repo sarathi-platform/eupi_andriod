@@ -1022,7 +1022,7 @@ class QuestionScreenViewModel @Inject constructor(
     ): Map<String, ContentEntity> {
         val map = mutableMapOf<String, ContentEntity>()
         _filterSectionList.value.contentData?.forEach { contentEntity ->
-            contentEntity?.let { map.put(it.contentKey, contentEntity) }
+            contentEntity?.let { map.put(it.contentType, contentEntity) }
         }
         return map
     }
