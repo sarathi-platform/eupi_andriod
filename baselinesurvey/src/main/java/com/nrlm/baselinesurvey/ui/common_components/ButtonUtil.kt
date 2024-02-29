@@ -24,6 +24,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
@@ -109,6 +110,7 @@ fun ButtonPositive(
     modifier: Modifier = Modifier,
     buttonTitle: String,
     isArrowRequired: Boolean = true,
+    isLeftArrow: Boolean = false,
     isActive: Boolean = false,
     textColor: Color = Color.White,
     iconTintColor: Color = Color.White,
@@ -139,6 +141,15 @@ fun ButtonPositive(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
+            if (isArrowRequired && isLeftArrow) {
+                Icon(
+                    Icons.Default.ArrowBack,
+                    contentDescription = "Positive Button",
+                    tint = if (isActive) iconTintColor else greyBorder,
+                    modifier = Modifier
+                        .absolutePadding(top = 2.dp, left = 2.dp, right = 10.dp)
+                )
+            }
             Text(
                 text = buttonTitle,
                 color = if (isActive) white else greyBorder,
@@ -149,7 +160,7 @@ fun ButtonPositive(
                 ),
                 textAlign = TextAlign.Center
             )
-            if (isArrowRequired) {
+            if (isArrowRequired && !isLeftArrow) {
                 Icon(
                     Icons.Default.ArrowForward,
                     contentDescription = "Positive Button",
@@ -322,6 +333,19 @@ fun DoubleButtonBoxPreview() {
         positiveButtonOnClick = {},
         negativeButtonOnClick = {}
     )
+}
+
+@Composable
+@Preview
+fun ButtonPositivePerview() {
+    ButtonPositive(
+        buttonTitle = "fdhjhfkjd",
+        isArrowRequired = false,
+        isActive = true
+    ) {
+
+    }
+
 }
 
 

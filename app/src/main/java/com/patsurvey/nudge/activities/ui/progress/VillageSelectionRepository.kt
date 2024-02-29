@@ -8,6 +8,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
+import com.nudge.core.json
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.MainActivity
@@ -28,7 +29,6 @@ import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
-import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.PoorDidiListDao
@@ -120,7 +120,6 @@ import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.VERIFIED_STRING
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_STEP_ORDER
-import com.patsurvey.nudge.utils.VillageListDiffUtil
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.calculateScore
 import com.patsurvey.nudge.utils.compressImage
@@ -134,7 +133,6 @@ import com.patsurvey.nudge.utils.getFormSubPath
 import com.patsurvey.nudge.utils.getImagePath
 import com.patsurvey.nudge.utils.getVideoPath
 import com.patsurvey.nudge.utils.intToString
-import com.patsurvey.nudge.utils.json
 import com.patsurvey.nudge.utils.longToString
 import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.toWeightageRatio
@@ -999,45 +997,31 @@ class VillageSelectionRepository @Inject constructor(
             tola.transactionId?.let { tolaDao.updateTolaTransactionId(tola.id, it) }
         }
         isPendingForCrp = 1
-        startSyncTimerForCrp(prefRepo, networkCallbackListener)
+        checkStatusForCrp(prefRepo, networkCallbackListener)
     }
 
-    private fun startSyncTimerForCrp(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
-        val timer = Timer()
-        timer.schedule(object : TimerTask(){
-            override fun run() {
-                when (isPendingForCrp) {
-                    1 -> {
+    fun checkStatusForCrp(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
+
                         checkTolaAddStatusForCrp(prefRepo, networkCallbackListener)
-                    }
-                    2 -> {
+
                         checkTolaDeleteStatusForCrp(prefRepo, networkCallbackListener)
-                    }
-                    3 -> {
+
                         checkTolaUpdateStatusForCrp(prefRepo, networkCallbackListener)
-                    }
-                    4 -> {
                         checkAddDidiStatusForCrp(prefRepo, networkCallbackListener)
-                    }
-                    5 -> {
                         checkDeleteDidiStatusForCrp(prefRepo, networkCallbackListener)
-                    }
-                    6 -> {
                         checkUpdateDidiStatusForCrp(prefRepo, networkCallbackListener)
-                    }
-                    7 -> {
-                        checkDidiWealthStatusForCrp(prefRepo = prefRepo, networkCallbackListener)
-                    }
-                    8 -> {
-                        checkDidiPatStatus(prefRepo, networkCallbackListener)
-                    }
-                    9 -> {
+
+
+        checkDidiWealthStatusForCrp(prefRepo = prefRepo, networkCallbackListener)
+
+
+        checkDidiPatStatus(prefRepo, networkCallbackListener)
+
                         checkVOStatus(prefRepo, networkCallbackListener)
-                    }
-                }
-            }
-        },pendingTimerTime)
+
+
     }
+
 
     private fun checkTolaAddStatusForCrp(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -1084,8 +1068,11 @@ class VillageSelectionRepository @Inject constructor(
                         jsonTola.add(
                             DeleteTolaRequest(
                                 tola.serverId,
-                                localModifiedDate = System.currentTimeMillis()
-                            ).toJson()
+                                localModifiedDate = System.currentTimeMillis(),
+                                tola.name,
+                                tola.villageId,
+                                tola.localUniqueId ?: ""
+                            ).json()
                         )
                     }
                 }
@@ -1110,7 +1097,7 @@ class VillageSelectionRepository @Inject constructor(
                                 }
                             }
                             isPendingForCrp = 2
-                            startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                            checkStatusForCrp(prefRepo, networkCallbackListener)
                         }
                     }
                 }
@@ -1186,7 +1173,7 @@ class VillageSelectionRepository @Inject constructor(
                                 }
                             }
                             isPendingForCrp = 3
-                            startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                            checkStatusForCrp(prefRepo, networkCallbackListener)
                         }
                     }
                 }
@@ -1281,7 +1268,7 @@ class VillageSelectionRepository @Inject constructor(
                             }
                         }
                         isPendingForCrp = 4
-                        startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                        checkStatusForCrp(prefRepo, networkCallbackListener)
                     }
                 } else {
                     withContext(Dispatchers.Main){
@@ -1332,8 +1319,7 @@ class VillageSelectionRepository @Inject constructor(
             val didiList = didiDao.getDidisToBeDeleted(
                 activeStatus = DidiStatus.DIID_DELETED.ordinal,
                 needsToPostDeleteStatus = true,
-                transactionId = "",
-                serverId = 0
+                transactionId = ""
             )
             val jsonDidi = JsonArray()
             if (didiList.isNotEmpty()) {
@@ -1362,7 +1348,7 @@ class VillageSelectionRepository @Inject constructor(
                                 }
                             }
                             isPendingForCrp = 5
-                            startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                            checkStatusForCrp(prefRepo, networkCallbackListener)
                         }
                     }
                 }
@@ -1383,7 +1369,10 @@ class VillageSelectionRepository @Inject constructor(
 
     private fun checkDeleteDidiStatusForCrp(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal,"",0)
+            val didiList = didiDao.fetchAllPendingDidiNeedToDelete(
+                DidiStatus.DIID_DELETED.ordinal,
+                ""
+            )
             if(didiList.isNotEmpty()) {
                 val ids: ArrayList<String> = arrayListOf()
                 didiList.forEach { didi ->
@@ -1416,11 +1405,11 @@ class VillageSelectionRepository @Inject constructor(
 
     private fun updateDidiToNetworkForCrp(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllDidiNeedToUpdate(true,"",0)
+            val didiList = didiDao.fetchAllDidiNeedToUpdate(true, "")
             if (didiList.isNotEmpty()) {
                 val didiRequestList = arrayListOf<EditDidiRequest>()
                 didiList.forEach { didi->
-                    didiRequestList.add(EditDidiRequest(didi.serverId,didi.name,didi.address,didi.guardianName,didi.castId,didi.cohortId))
+                    didiRequestList.add(EditDidiRequest(didi.serverId,didi.name,didi.address,didi.guardianName,didi.castId,didi.cohortId,didi.villageId,didi.cohortName))
                 }
                 NudgeLogger.d("VillageSelectionRepository","updateDidiToNetworkForCrp updateDidis Request=> ${didiRequestList.json()}")
                 val response = apiService.updateDidis(didiRequestList)
@@ -1445,7 +1434,7 @@ class VillageSelectionRepository @Inject constructor(
                             }
                         }
                         isPendingForCrp = 6
-                        startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                        checkStatusForCrp(prefRepo, networkCallbackListener)
                     }
                 } else {
                     withContext(Dispatchers.Main){
@@ -1475,7 +1464,7 @@ class VillageSelectionRepository @Inject constructor(
 
     private fun checkUpdateDidiStatusForCrp(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllPendingDidiNeedToUpdate(true,"",0)
+            val didiList = didiDao.fetchAllPendingDidiNeedToUpdate(true, "")
             if(didiList.isNotEmpty()) {
                 val ids: ArrayList<String> = arrayListOf()
                 didiList.forEach { tola ->
@@ -1514,13 +1503,25 @@ class VillageSelectionRepository @Inject constructor(
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
-                    val needToPostDidiList=didiDao.getAllNeedToPostDidiRanking(true, 0)
+                    val needToPostDidiList = didiDao.getAllNeedToPostDidiRanking(true)
                     if (needToPostDidiList.isNotEmpty()) {
                         val didiWealthRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         val didiStepRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi ->
-                            didiWealthRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, rankingEdit = didi.rankingEdit, localModifiedDate = System.currentTimeMillis()))
-                            didiStepRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, rankingEdit = didi.rankingEdit, localModifiedDate = System.currentTimeMillis()))
+                            didiWealthRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, rankingEdit = didi.rankingEdit, localModifiedDate = System.currentTimeMillis(),  name = didi.name,
+                                address = didi.address,
+                                guardianName = didi.guardianName,
+                                villageId = didi.villageId,
+                                deviceId = didi.localUniqueId
+                            )
+                            )
+                            didiStepRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, rankingEdit = didi.rankingEdit, localModifiedDate = System.currentTimeMillis(),  name = didi.name,
+                                address = didi.address,
+                                guardianName = didi.guardianName,
+                                villageId = didi.villageId,
+                                deviceId = didi.localUniqueId
+                            )
+                            )
                         }
                         didiWealthRequestList.addAll(didiStepRequestList)
                         val updateWealthRankResponse = apiService.updateDidiRanking(didiWealthRequestList)
@@ -1539,7 +1540,7 @@ class VillageSelectionRepository @Inject constructor(
                                     }
                                 }
                                 isPendingForCrp = 7
-                                startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                                checkStatusForCrp(prefRepo, networkCallbackListener)
 
                             } else {
                                 needToPostDidiList.forEach { didi ->
@@ -1618,6 +1619,7 @@ class VillageSelectionRepository @Inject constructor(
                         calculateDidiScore(didiId = didi.id, prefRepo = prefRepo)
                         delay(100)
                         didi.score = didiDao.getDidiScoreFromDb(didi.id)
+                        val didiEntity= didiDao.getDidi(didi.id)
                         val qList: java.util.ArrayList<AnswerDetailDTOListItem> = arrayListOf()
                         val needToPostQuestionsList = answerDao.getAllNeedToPostQuesForDidi(didi.id)
                         if (needToPostQuestionsList.isNotEmpty()) {
@@ -1706,7 +1708,7 @@ class VillageSelectionRepository @Inject constructor(
                             }
                         scoreDidiList.add(
                             EditDidiWealthRankingRequest(
-                                id = if (didi.serverId == 0) didi.id else didi.serverId,
+                                id = didi.serverId,
                                 score = didi.score,
                                 comment = comment,
                                 type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
@@ -1724,7 +1726,11 @@ class VillageSelectionRepository @Inject constructor(
                                 },
                                 rankingEdit = didi.patEdit,
                                 shgFlag = SHGFlag.fromInt(didi.shgFlag).name,
-                                ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name
+                                ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name,
+                                address = didiEntity.address,
+                                guardianName = didiEntity.guardianName,
+                                villageId = didi.villageId,
+                                deviceId = didiEntity.localUniqueId
                             )
                         )
                         val stateId = villageListDao.getVillage(didi.villageId).stateId
@@ -1732,6 +1738,9 @@ class VillageSelectionRepository @Inject constructor(
                             PATSummarySaveRequest(
                                 villageId = didi.villageId,
                                 surveyId = surveyId,
+                                cohortName = didiEntity.cohortName,
+                                beneficiaryAddress = didiEntity.address,
+                                guardianName = didiEntity.guardianName,
                                 beneficiaryId = didi.serverId,
                                 languageId = prefRepo.getAppLanguageId() ?: 2,
                                 stateId = stateId,
@@ -1772,7 +1781,7 @@ class VillageSelectionRepository @Inject constructor(
                                         didiDao.updateDidiNeedToPostPat(didiIDList[i].id, true)
                                     }
                                     isPendingForCrp = 8
-                                    startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                                    checkStatusForCrp(prefRepo, networkCallbackListener)
                                 }
                                 savePatScoreToServer(scoreDidiList)
                             } else {
@@ -1880,7 +1889,7 @@ class VillageSelectionRepository @Inject constructor(
         }
     }
 
-    private fun checkDidiPatStatus(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
+    fun checkDidiPatStatus(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val didiList = didiDao.fetchPendingPatStatusDidi(true,"")
             if(didiList.isNotEmpty()) {
@@ -1915,17 +1924,31 @@ class VillageSelectionRepository @Inject constructor(
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
-                    val needToPostDidiList=didiDao.fetchAllVONeedToPostStatusDidi(needsToPostVo = true, transactionId = "", 0)
+                    val needToPostDidiList = didiDao.fetchAllVONeedToPostStatusDidi(
+                        needsToPostVo = true,
+                        transactionId = ""
+                    )
                     if(needToPostDidiList.isNotEmpty()){
                         val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi->
                             didi.voEndorsementStatus.let {
                                 if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
                                     didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, ACCEPTED,
-                                        localModifiedDate = System.currentTimeMillis(), rankingEdit = didi.voEndorsementEdit))
+                                        localModifiedDate = System.currentTimeMillis(), rankingEdit = didi.voEndorsementEdit,
+                                        address = didi.address,
+                                        guardianName = didi.guardianName,
+                                        villageId = didi.villageId,
+                                        deviceId = didi.localUniqueId
+                                    )
+                                    )
                                 } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
                                     didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, DidiEndorsementStatus.REJECTED.name,
-                                        localModifiedDate = System.currentTimeMillis(), rankingEdit = didi.voEndorsementEdit))
+                                        localModifiedDate = System.currentTimeMillis(), rankingEdit = didi.voEndorsementEdit,  address = didi.address,
+                                        guardianName = didi.guardianName,
+                                        villageId = didi.villageId,
+                                        deviceId = didi.localUniqueId
+                                    )
+                                    )
                                 }
                             }
                         }
@@ -1944,7 +1967,7 @@ class VillageSelectionRepository @Inject constructor(
                                     }
                                 }
                                 isPendingForCrp = 9
-                                startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                                checkStatusForCrp(prefRepo, networkCallbackListener)
                             } else {
                                 if (didiListResponse != null) {
                                     for (i in didiRequestList.indices) {
@@ -2130,7 +2153,9 @@ class VillageSelectionRepository @Inject constructor(
                     if (step.workFlowId > 0) {
                         editWorkFlowRequest.add((EditWorkFlowRequest(
                             step.workFlowId,
-                            StepStatus.getStepFromOrdinal(step.isComplete)
+                            StepStatus.getStepFromOrdinal(step.isComplete),
+                            villageId = step.villageId,
+                            programsProcessId = step.id
                         )))
                         needToEditStep.add(step)
                     } else {
@@ -2222,7 +2247,9 @@ class VillageSelectionRepository @Inject constructor(
                     EditWorkFlowRequest(
                         step.workFlowId,
                         StepStatus.getStepFromOrdinal(step.isComplete),
-                        stepCompletionDate
+                        stepCompletionDate,
+                        villageId = step.villageId,
+                        programsProcessId = step.id
                     )
                 )
             }
@@ -2443,6 +2470,7 @@ class VillageSelectionRepository @Inject constructor(
                     val didiIDList= answerDao.fetchPATSurveyDidiList()
                     if(didiIDList.isNotEmpty()){
                         didiIDList.forEach { didi->
+                            val didiEntity = didiDao.getDidi(didi.id)
                             NudgeLogger.d("VillageSelectionRepository", "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
                             val qList: java.util.ArrayList<AnswerDetailDTOListItem> = arrayListOf()
                             calculateDidiScore(didiId = didi.id, prefRepo)
@@ -2535,7 +2563,7 @@ class VillageSelectionRepository @Inject constructor(
                                 }
                             scoreDidiList.add(
                                 EditDidiWealthRankingRequest(
-                                    id = if (didi.serverId == 0) didi.id else didi.serverId,
+                                    id = didi.serverId,
                                     score = didi.score,
                                     comment = comment,
                                     type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
@@ -2553,12 +2581,20 @@ class VillageSelectionRepository @Inject constructor(
                                     },
                                     rankingEdit = false,
                                     shgFlag = SHGFlag.fromInt(didi.shgFlag).name,
-                                    ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name
+                                    ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name,
+                                    name = didi.name,
+                                    address = didiEntity.address,
+                                    guardianName = didiEntity.guardianName,
+                                    villageId = didi.villageId,
+                                    deviceId = didiEntity.localUniqueId
                                 )
                             )
                             val patSummarySaveRequest = PATSummarySaveRequest(
                                 villageId = didi.villageId,
                                 surveyId = surveyId,
+                                cohortName = didiEntity.cohortName,
+                                beneficiaryAddress = didiEntity.address,
+                                guardianName = didiEntity.guardianName,
                                 beneficiaryId = if (didi.serverId == 0) didi.id else didi.serverId,
                                 languageId = prefRepo.getAppLanguageId() ?: 2,
                                 stateId = prefRepo.getSelectedVillage().stateId,
@@ -2733,10 +2769,14 @@ class VillageSelectionRepository @Inject constructor(
                     }
                     didiRequestList.add(
                         EditDidiWealthRankingRequest(
-                            id = if (didi.serverId == 0) didi.id else didi.serverId,
+                            id = didi.serverId,
                             score = didi.score,
                             comment =comment,
                             type = BPC_SURVEY_CONSTANT,
+                            address = didi.address,
+                            guardianName = didi.guardianName,
+                            villageId = didi.villageId,
+                            deviceId = didi.localUniqueId,
                             result = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) DIDI_NOT_AVAILABLE
                             else {
                                 if (didi.forVoEndorsement == 0) DIDI_REJECTED else {
@@ -2884,7 +2924,9 @@ class VillageSelectionRepository @Inject constructor(
                     if (bpcStep.workFlowId > 0) {
                         editWorkFlowRequest.add((EditWorkFlowRequest(
                             bpcStep.workFlowId,
-                            StepStatus.getStepFromOrdinal(bpcStep.isComplete)
+                            StepStatus.getStepFromOrdinal(bpcStep.isComplete),
+                            villageId = bpcStep.villageId,
+                            programsProcessId = bpcStep.id
                         )))
                         needToEditStep.add(bpcStep)
                     } else {
@@ -2957,7 +2999,9 @@ class VillageSelectionRepository @Inject constructor(
                         EditWorkFlowRequest(
                             step.workFlowId,
                             StepStatus.getStepFromOrdinal(step.isComplete),
-                            stepCompletionDate
+                            stepCompletionDate,
+                            villageId = step.villageId,
+                            programsProcessId = step.id
                         )
                     )
                 }
@@ -3717,13 +3761,14 @@ class VillageSelectionRepository @Inject constructor(
                 val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                 val localLanguageList = languageListDao.getAllLanguages()
                 val villageReq= createMultiLanguageVillageRequest(localLanguageList)
-//                if (forceRefresh)
+                if (!forceRefresh) {
                 if (!localVillageList.isNullOrEmpty()) {
                     val stateId = localVillageList[0].stateId
                     userAndVillageDetailsModel = UserAndVillageDetailsModel(true, localVillageList, stateId = stateId)
 //                    _villagList.value = localVillageList
 //                    _filterVillageList.value = villageList.value
                     apiSuccess(userAndVillageDetailsModel)
+                }
                 } else {
                     NudgeLogger.d("VillageSelectionRepository", "fetchUserAndVillageDetails -> villageReq: $villageReq")
                     val response = apiService.userAndVillageListAPI(villageReq)

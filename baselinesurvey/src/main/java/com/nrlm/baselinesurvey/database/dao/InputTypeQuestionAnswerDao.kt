@@ -1,0 +1,55 @@
+package com.nrlm.baselinesurvey.database.dao
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.nrlm.baselinesurvey.INPUT_TYPE_QUESTION_ANSWER_TABLE
+import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
+
+@Dao
+interface InputTypeQuestionAnswerDao {
+
+    @Query("SELECT * from $INPUT_TYPE_QUESTION_ANSWER_TABLE where surveyId = :surveyId AND sectionId = :sectionId AND questionId = :questionId AND didiId = :didiId")
+    fun getInputTypeAnswersForQuestion(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        didiId: Int
+    ): List<InputTypeQuestionAnswerEntity>
+
+    @Query("SELECT * from $INPUT_TYPE_QUESTION_ANSWER_TABLE where surveyId = :surveyId AND sectionId = :sectionId AND didiId = :didiId")
+    fun getInputTypeAnswersForQuestionForDidi(
+        surveyId: Int,
+        sectionId: Int,
+        didiId: Int
+    ): List<InputTypeQuestionAnswerEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun saveInputTypeAnswersForQuestion(inputTypeQuestionAnswerEntity: InputTypeQuestionAnswerEntity)
+
+    @Query("UPDATE $INPUT_TYPE_QUESTION_ANSWER_TABLE set inputValue = :inputValue where " +
+            "surveyId = :surveyId " +
+            "AND sectionId = :sectionId " +
+            "AND questionId = :questionId " +
+            "AND didiId = :didiId " +
+            "AND optionId = :optionId ")
+    fun updateInputTypeAnswersForQuestion(
+        surveyId: Int,
+        sectionId: Int,
+        didiId: Int,
+        questionId: Int,
+        optionId: Int,
+        inputValue: String
+    )
+
+    @Query("SELECT COUNT(*) from $INPUT_TYPE_QUESTION_ANSWER_TABLE where surveyId = :surveyId AND sectionId = :sectionId AND questionId = :questionId AND didiId = :didiId AND optionId = :optionItemId")
+    fun isQuestionAlreadyAnswered(
+        surveyId: Int,
+        sectionId: Int,
+        didiId: Int,
+        questionId: Int,
+        optionItemId: Int
+    ): Int
+
+}

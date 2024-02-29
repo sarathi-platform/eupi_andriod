@@ -27,6 +27,14 @@ object DatabaseModule {
             .build()
 
 
+//    @Provides
+//    @Singleton
+//    fun provideSyncDatabase(@ApplicationContext context: Context) =
+//        Room.databaseBuilder(context, com.nudge.core.database.SyncManagerDatabase::class.java,
+//            com.nudge.core.SYNC_MANAGER_DATABASE
+//        )
+//            .fallbackToDestructiveMigration()
+//            .build()
     @Provides
     @Singleton
     fun provideSyncDatabase(@ApplicationContext context: Context) =
@@ -60,7 +68,28 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDidiSectionProgressEntityDao(db: NudgeBaselineDatabase) = db.didiSectionProgressEntityDao()
+    fun provideOptionEntityDao(db: NudgeBaselineDatabase) = db.optionItemDao()
+
+    @Provides
+    @Singleton
+    fun provideMissionEntityDao(db: NudgeBaselineDatabase) = db.missionEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideDidiInfoEntityDao(db: NudgeBaselineDatabase) = db.didiInfoEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideMissionActivityEntityDao(db: NudgeBaselineDatabase) = db.missionActivityEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideActivityTaskEntityDao(db: NudgeBaselineDatabase) = db.activityTaskEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideDidiSectionProgressEntityDao(db: NudgeBaselineDatabase) =
+        db.didiSectionProgressEntityDao()
 
     @Provides
     @Singleton
@@ -68,5 +97,13 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun providesEventsDao(syncDb: SyncManagerDatabase) = syncDb.eventsDao()
+    fun provideFormQuestionResponseDao(db: NudgeBaselineDatabase) = db.formQuestionResponseDao()
+
+    @Provides
+    @Singleton
+    fun provideInputTypeQuestionAnswerDao(db: NudgeBaselineDatabase) = db.inputTypeQuestionAnswerDao()
+
+    /*@Provides
+    @Singleton
+    fun providesEventsDao(syncDb: com.nudge.core.database.SyncManagerDatabase) = syncDb.eventsDao()*/
 }

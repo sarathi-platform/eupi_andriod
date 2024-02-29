@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.model.response.ContentList
-import com.nrlm.baselinesurvey.model.response.QuestionList
 
 data class Sections(
     @SerializedName("sectionId")
@@ -16,24 +15,31 @@ data class Sections(
     @Expose
     val sectionName: String = NO_SECTION,
 
-    @SerializedName("sectionOrder")
+    @SerializedName("order")
     @Expose
     val sectionOrder: Int = 1,
 
-    @SerializedName("sectionDetails")
+    @SerializedName("description")
     @Expose
     val sectionDetails: String = BLANK_STRING,
 
-    @SerializedName("sectionIcon")
+    @SerializedName("imageIcon")
     @Expose
     val sectionIcon: String = BLANK_STRING,
 //    val sectionIcon: Int = 0,
 
-    @SerializedName("contentList")
+    @SerializedName("contents")
     @Expose
     val contentList: List<ContentList>,
 
-    @SerializedName("questionList")
+    @SerializedName("questions")
     @Expose
-    val questionList: List<QuestionList?> = listOf()
+    val questionList: List<QuestionList?> = listOf(),
+
+    @SerializedName("languageCode")
+    @Expose
+    val languageCode: String = BLANK_STRING,
+    @SerializedName("paraphrase")
+    @Expose
+    val paraphrase: String = BLANK_STRING,
 )

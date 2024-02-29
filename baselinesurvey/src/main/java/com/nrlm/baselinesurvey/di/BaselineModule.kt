@@ -5,13 +5,20 @@ import com.nrlm.baselinesurvey.activity.domain.repository.MainActivityRepository
 import com.nrlm.baselinesurvey.activity.domain.use_case.IsLoggedInUseCase
 import com.nrlm.baselinesurvey.activity.domain.use_case.MainActivityUseCase
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
+import com.nrlm.baselinesurvey.database.dao.DidiInfoDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
-import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
+import com.nrlm.baselinesurvey.database.dao.FormQuestionResponseDao
+import com.nrlm.baselinesurvey.database.dao.InputTypeQuestionAnswerDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
+import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
+import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
+import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionAnswerEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
+import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.dao.VillageListDao
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.splash.domain.repository.SplashScreenRepository
@@ -44,19 +51,40 @@ import com.nrlm.baselinesurvey.ui.language.domain.use_case.GetVillageDetailUseCa
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.LanguageScreenUseCase
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.SaveSelectedLanguageUseCase
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.SaveSelectedVillageUseCase
+import com.nrlm.baselinesurvey.ui.mission_screen.domain.repository.MissionScreenRepository
+import com.nrlm.baselinesurvey.ui.mission_screen.domain.repository.MissionScreenRepositoryImpl
+import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.FetchMissionDataFromNetworkUseCase
+import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.GetMissionListFromDbUseCase
+import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.MissionScreenUseCase
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.repository.MissionSummaryScreenRepository
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.repository.MissionSummaryScreenRepositoryImpl
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.GetMissionActivitiesFromDBUseCase
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.MissionSummaryScreenUseCase
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.UpdateMisisonState
 import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepository
 import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepositoryImpl
+import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.DeleteFormQuestionOptionResponseUseCase
+import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.DeleteFormQuestionResponseUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.GetSectionAnswersUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.GetSectionUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.GetSectionsListUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.QuestionScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.SaveSectionAnswerUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.UpdateSectionProgressUseCase
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.repository.FormQuestionResponseRepository
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.repository.FormQuestionResponseRepositoryImpl
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.FormQuestionScreenUseCase
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.GetFormQuestionResponseUseCase
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.SaveFormQuestionResponseUseCase
+import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.UpdateFormQuestionResponseUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.repository.SectionListScreenRepository
 import com.nrlm.baselinesurvey.ui.section_screen.domain.repository.SectionListScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSectionListUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSectionProgressForDidiUseCase
+import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSurvyeDetails
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.SectionListScreenUseCase
+import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepository
+import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepositoryImpl
 import com.nrlm.baselinesurvey.ui.start_screen.domain.repository.StartScreenRepository
 import com.nrlm.baselinesurvey.ui.start_screen.domain.repository.StartScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.start_screen.domain.use_case.GetSurveyeeDetailsUserCase
@@ -66,10 +94,12 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingS
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeListScreenRepository
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeListScreenRepositoryImpl
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchCastesFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyeeListFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchUserDetailFromNetworkUseCase
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.GetActivityStateFromDBUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.GetSurveyeeListUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.MoveSurveyeeToThisWeekUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
@@ -112,6 +142,33 @@ object BaselineModule {
             saveSelectedVillageUseCase = SaveSelectedVillageUseCase(languageScreenRepository),
             getVillageDetailUseCase = GetVillageDetailUseCase(languageScreenRepository),
             saveSelectedLanguageUseCase = SaveSelectedLanguageUseCase(languageScreenRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideMissionScreenUseCase(
+        missionScreenRepository: MissionScreenRepository,
+        dataLoadingScreenRepository: DataLoadingScreenRepository
+    ): MissionScreenUseCase {
+        return MissionScreenUseCase(
+            fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(
+                dataLoadingScreenRepository
+            ),
+            getMissionListFromDbUseCase = GetMissionListFromDbUseCase(missionScreenRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideMissionSummaryScreenUseCase(
+        missionSummaryScreenRepository: MissionSummaryScreenRepository
+    ): MissionSummaryScreenUseCase {
+        return MissionSummaryScreenUseCase(
+            getMissionActivitiesFromDBUseCase = GetMissionActivitiesFromDBUseCase(
+                missionSummaryScreenRepository,
+            ),
+            updateMisisonState = UpdateMisisonState(missionSummaryScreenRepository)
         )
     }
 
@@ -170,9 +227,18 @@ object BaselineModule {
         prefRepo: PrefRepo,
         apiService: ApiService,
         surveyeeEntityDao: SurveyeeEntityDao,
-        languageListDao: LanguageListDao
+        languageListDao: LanguageListDao,
+        activityTaskDao: ActivityTaskDao,
+        missionActivityDao: MissionActivityDao
     ): SurveyeeListScreenRepository {
-        return SurveyeeListScreenRepositoryImpl(prefRepo, apiService, surveyeeEntityDao, languageListDao)
+        return SurveyeeListScreenRepositoryImpl(
+            prefRepo,
+            apiService,
+            surveyeeEntityDao,
+            languageListDao,
+            activityTaskDao,
+            missionActivityDao
+        )
     }
 
     @Provides
@@ -180,7 +246,10 @@ object BaselineModule {
     fun provideSurveyeeScreenUseCase(surveyeeListScreenRepository: SurveyeeListScreenRepository): SurveyeeScreenUseCase {
         return SurveyeeScreenUseCase(
             getSurveyeeListUseCase = GetSurveyeeListUseCase(surveyeeListScreenRepository),
-            moveSurveyeeToThisWeek = MoveSurveyeeToThisWeekUseCase(surveyeeListScreenRepository)
+            moveSurveyeeToThisWeek = MoveSurveyeeToThisWeekUseCase(surveyeeListScreenRepository),
+            getActivityStateFromDBUseCase = GetActivityStateFromDBUseCase(
+                surveyeeListScreenRepository
+            )
         )
     }
 
@@ -192,9 +261,20 @@ object BaselineModule {
         surveyEntityDao: SurveyEntityDao,
         sectionEntityDao: SectionEntityDao,
         questionEntityDao: QuestionEntityDao,
-        didiSectionProgressEntityDao: DidiSectionProgressEntityDao
+        didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
+        optionItemDao: OptionItemDao,
+        surveyeeEntityDao: SurveyeeEntityDao,
     ): SectionListScreenRepository {
-        return SectionListScreenRepositoryImpl(prefRepo, apiService, surveyEntityDao, sectionEntityDao, questionEntityDao, didiSectionProgressEntityDao)
+        return SectionListScreenRepositoryImpl(
+            prefRepo,
+            apiService,
+            surveyEntityDao,
+            sectionEntityDao,
+            questionEntityDao,
+            didiSectionProgressEntityDao,
+            optionItemDao,
+            surveyeeEntityDao
+        )
     }
 
     @Provides
@@ -204,7 +284,10 @@ object BaselineModule {
     ): SectionListScreenUseCase {
         return SectionListScreenUseCase(
             getSectionListUseCase = GetSectionListUseCase(sectionListScreenRepository),
-            getSectionProgressForDidiUseCase = GetSectionProgressForDidiUseCase(sectionListScreenRepository)
+            getSectionProgressForDidiUseCase = GetSectionProgressForDidiUseCase(
+                sectionListScreenRepository
+            ),
+            getSurvyeDetails = GetSurvyeDetails(sectionListScreenRepository)
         )
     }
 
@@ -218,22 +301,42 @@ object BaselineModule {
         sectionEntityDao: SectionEntityDao,
         questionEntityDao: QuestionEntityDao,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
-        sectionAnswerEntityDao: SectionAnswerEntityDao
+        sectionAnswerEntityDao: SectionAnswerEntityDao,
+        optionItemDao: OptionItemDao,
+        formQuestionResponseDao: FormQuestionResponseDao,
+        inputTypeQuestionAnswerDao: InputTypeQuestionAnswerDao
     ): QuestionScreenRepository {
-        return QuestionScreenRepositoryImpl(prefRepo, apiService, surveyeeEntityDao, surveyEntityDao, sectionEntityDao, questionEntityDao, didiSectionProgressEntityDao, sectionAnswerEntityDao)
+        return QuestionScreenRepositoryImpl(
+            prefRepo = prefRepo,
+            apiService = apiService,
+            surveyeeEntityDao = surveyeeEntityDao,
+            surveyEntityDao = surveyEntityDao,
+            sectionEntityDao = sectionEntityDao,
+            questionEntityDao = questionEntityDao,
+            didiSectionProgressEntityDao = didiSectionProgressEntityDao,
+            sectionAnswerEntityDao = sectionAnswerEntityDao,
+            optionItemDao = optionItemDao,
+            formQuestionResponseDao = formQuestionResponseDao,
+            inputTypeQuestionAnswerDao = inputTypeQuestionAnswerDao
+        )
     }
 
     @Provides
     @Singleton
     fun providesQuestionScreenUseCase(
-        questionScreenRepository: QuestionScreenRepository
+        questionScreenRepository: QuestionScreenRepository,
+        formQuestionResponseRepository: FormQuestionResponseRepository
     ): QuestionScreenUseCase {
         return QuestionScreenUseCase(
             getSectionUseCase = GetSectionUseCase(questionScreenRepository),
             getSectionsListUseCase = GetSectionsListUseCase(questionScreenRepository),
             updateSectionProgressUseCase = UpdateSectionProgressUseCase(questionScreenRepository),
             saveSectionAnswerUseCase = SaveSectionAnswerUseCase(questionScreenRepository),
-            getSectionAnswersUseCase = GetSectionAnswersUseCase(questionScreenRepository)
+            getSectionAnswersUseCase = GetSectionAnswersUseCase(questionScreenRepository),
+            getFormQuestionResponseUseCase = GetFormQuestionResponseUseCase(formQuestionResponseRepository),
+            saveFormQuestionResponseUseCase = SaveFormQuestionResponseUseCase(formQuestionResponseRepository),
+            updateFormQuestionResponseUseCase = UpdateFormQuestionResponseUseCase(formQuestionResponseRepository),
+            deleteFormQuestionResponseUseCase = DeleteFormQuestionResponseUseCase(formQuestionResponseRepository)
         )
     }
 
@@ -265,9 +368,25 @@ object BaselineModule {
         surveyeeEntityDao: SurveyeeEntityDao,
         surveyEntityDao: SurveyEntityDao,
         sectionEntityDao: SectionEntityDao,
-        questionEntityDao: QuestionEntityDao
+        questionEntityDao: QuestionEntityDao,
+        optionItemDao: OptionItemDao,
+        missionEntityDao: MissionEntityDao,
+        missionActivityDao: MissionActivityDao,
+        activityTaskDao: ActivityTaskDao,
     ): DataLoadingScreenRepository {
-        return DataLoadingScreenRepositoryImpl(prefRepo, apiService, languageListDao, surveyeeEntityDao, surveyEntityDao, sectionEntityDao, questionEntityDao)
+        return DataLoadingScreenRepositoryImpl(
+            prefRepo,
+            apiService,
+            languageListDao,
+            surveyeeEntityDao,
+            surveyEntityDao,
+            sectionEntityDao,
+            questionEntityDao,
+            optionItemDao,
+            missionEntityDao,
+            missionActivityDao,
+            activityTaskDao
+        )
     }
 
     @Provides
@@ -278,7 +397,9 @@ object BaselineModule {
         return FetchDataUseCase(
             fetchSurveyeeListFromNetworkUseCase = FetchSurveyeeListFromNetworkUseCase(repository),
             fetchUserDetailFromNetworkUseCase = FetchUserDetailFromNetworkUseCase(repository),
-            fetchSurveyFromNetworkUseCase = FetchSurveyFromNetworkUseCase(repository)
+            fetchSurveyFromNetworkUseCase = FetchSurveyFromNetworkUseCase(repository),
+            fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository),
+            fetchCastesFromNetworkUseCase = FetchCastesFromNetworkUseCase(repository)
         )
     }
 
@@ -286,9 +407,10 @@ object BaselineModule {
     @Singleton
     fun provideStartSurveyScreenRepository(
         prefRepo: PrefRepo,
-        surveyeeEntityDao: SurveyeeEntityDao
+        surveyeeEntityDao: SurveyeeEntityDao,
+        didiInfoDao: DidiInfoDao
     ): StartScreenRepository {
-        return StartScreenRepositoryImpl(prefRepo, surveyeeEntityDao)
+        return StartScreenRepositoryImpl(prefRepo, surveyeeEntityDao, didiInfoDao)
     }
 
     @Provides
@@ -309,9 +431,73 @@ object BaselineModule {
     fun provideSurveyStateRepository(
         prefRepo: PrefRepo,
         surveyeeEntityDao: SurveyeeEntityDao,
-        didiSectionProgressEntityDao: DidiSectionProgressEntityDao
+        didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
+        didiInfoDao: DidiInfoDao
     ): SurveyStateRepository {
-        return SurveyStateRepositoryImpl(prefRepo, surveyeeEntityDao, didiSectionProgressEntityDao)
+        return SurveyStateRepositoryImpl(
+            prefRepo,
+            surveyeeEntityDao,
+            didiSectionProgressEntityDao,
+            didiInfoDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFormQuestionResponseRepository(
+        optionItemDao: OptionItemDao,
+        formQuestionResponseDao: FormQuestionResponseDao
+    ): FormQuestionResponseRepository {
+        return FormQuestionResponseRepositoryImpl(optionItemDao = optionItemDao, formQuestionResponseDao = formQuestionResponseDao)
+    }
+
+    @Provides
+    @Singleton
+    fun providesQuestionTypeScreenUseCase(
+        formQuestionResponse: FormQuestionResponseRepository
+    ): FormQuestionScreenUseCase {
+        return FormQuestionScreenUseCase(
+            getFormQuestionResponseUseCase = GetFormQuestionResponseUseCase(
+                formQuestionResponse
+            ),
+            saveFormQuestionResponseUseCase = SaveFormQuestionResponseUseCase(formQuestionResponse),
+            updateFormQuestionResponseUseCase = UpdateFormQuestionResponseUseCase(formQuestionResponse),
+            deleteFormQuestionOptionResponseUseCase = DeleteFormQuestionOptionResponseUseCase(formQuestionResponse)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideMissionRepository(
+        missionEntityDao: MissionEntityDao,
+        missionActivityDao: MissionActivityDao
+    ): MissionScreenRepository {
+        return MissionScreenRepositoryImpl(missionEntityDao, missionActivityDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMissionSummaryRepository(
+        missionActivityDao: MissionActivityDao,
+        taskDao: ActivityTaskDao,
+        surveyeeEntityDao: SurveyeeEntityDao,
+        missionEntityDao: MissionEntityDao
+    ): MissionSummaryScreenRepository {
+        return MissionSummaryScreenRepositoryImpl(
+            missionActivityDao,
+            taskDao,
+            surveyeeEntityDao,
+            missionEntityDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSettingBSScreenRepository(
+        prefRepo: PrefRepo,
+        apiService: ApiService
+    ): SettingBSRepository {
+        return SettingBSRepositoryImpl(prefRepo, apiService)
     }
 
 }

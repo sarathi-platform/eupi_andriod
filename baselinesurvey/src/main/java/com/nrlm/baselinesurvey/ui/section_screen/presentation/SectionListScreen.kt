@@ -17,8 +17,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -31,7 +31,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -41,7 +40,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -49,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -58,10 +57,12 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToQuestionScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToSearchScreen
+import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.SectionItemComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.DescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ImageExpanderDialogComponent
@@ -75,7 +76,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_30_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_6_dp
+import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.lightBlue
 import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
@@ -92,13 +93,15 @@ fun SectionListScreen(
     navController: NavController,
     viewModel: SectionListScreenViewModel,
     modifier: Modifier = Modifier,
-    didiId: Int
+    didiId: Int,
+    surveyId: Int
 ) {
 
     val loaderState = viewModel.loaderState.value
+    lateinit var didiDetail: SurveyeeEntity
 
     LaunchedEffect(key1 = true) {
-        viewModel.init(didiId)
+        viewModel.init(didiId, surveyId)
     }
 
     val sectionsList = viewModel.sectionItemStateList.value
@@ -130,6 +133,7 @@ fun SectionListScreen(
 
     Scaffold(
         backgroundColor = white,
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 backgroundColor = white,
@@ -144,7 +148,13 @@ fun SectionListScreen(
                     Modifier
                         .fillMaxWidth()
                         .weight(1f)) {
-
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.CenterStart),
+                        text = viewModel.didiName.value,
+                        style = largeTextStyle
+                    )
                     Box(
                         Modifier
                             .padding(dimen_1_dp)
@@ -155,16 +165,16 @@ fun SectionListScreen(
                             .align(Alignment.CenterEnd)
                             .zIndex(1f)
                     ) {
-                        Image(
-                            modifier = Modifier
-                                .padding(5.dp)
-                                .clickable {
-                                    if (!isBannerExpanded.value)
-                                        isBannerExpanded.value = true
-                                },
-                            painter = painterResource(id = R.drawable.info_icon),
-                            contentDescription = ""
-                        )
+//                        Image(
+//                            modifier = Modifier
+//                                .padding(5.dp)
+//                                .clickable {
+//                                    if (!isBannerExpanded.value)
+//                                        isBannerExpanded.value = true
+//                                },
+//                            painter = painterResource(id = R.drawable.info_icon),
+//                            contentDescription = ""
+//                        )
                     }
                     this@TopAppBar.AnimatedVisibility(
                         visible = isBannerExpanded.value,
@@ -215,6 +225,24 @@ fun SectionListScreen(
                     }
                 }
             }
+        },
+        bottomBar = {
+            if (viewModel.allSessionCompleted.value) {
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
+                        .padding(vertical = dimensionResource(id = R.dimen.dp_15))
+                ) {
+                    ButtonPositive(
+                        buttonTitle = "Submit ${if (surveyId == 1) "BaseLine" else "Hamlet"} for ${viewModel.didiName.value}",
+                        isArrowRequired = false,
+                        isActive = true
+                    ) {
+                        navigateBackToSurveyeeListScreen(navController)
+
+                    }
+                }
+            }
         }
     ) {
         it
@@ -233,6 +261,9 @@ fun SectionListScreen(
                 navigateToQuestionScreen(didiId, sectionsList[0].section.sectionId, surveyId = sectionsList[0].section.surveyId, navController)
             } else {
                 ModelBottomSheetDescriptionContentComponent(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(it),
                     sheetContent = {
                         DescriptionContentComponent(
                             buttonClickListener = {
@@ -257,10 +288,11 @@ fun SectionListScreen(
                 ) {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(dimen_14_dp),
-                        modifier = Modifier.padding(
-                            horizontal = dimen_16_dp,
-                            vertical = dimen_16_dp
-                        )
+                        modifier = Modifier
+                            .padding(
+                                horizontal = dimen_16_dp
+                            )
+                            .padding(top = dimen_16_dp)
                     ) {
 
                         item {
@@ -303,9 +335,15 @@ fun SectionListScreen(
 
                         itemsIndexed(items = sectionsList) { index, sectionStateItem ->
                             SectionItemComponent(
+                                index,
                                 sectionStateItem = sectionStateItem,
                                 onclick = {
-                                    navigateToQuestionScreen(didiId = didiId, sectionId = sectionStateItem.section.sectionId, sectionStateItem.section.surveyId, navController)
+                                    navigateToQuestionScreen(
+                                        didiId = didiId,
+                                        sectionId = sectionStateItem.section.sectionId,
+                                        sectionStateItem.section.surveyId,
+                                        navController
+                                    )
                                 },
                                 onDetailIconClicked = {
                                     scope.launch {

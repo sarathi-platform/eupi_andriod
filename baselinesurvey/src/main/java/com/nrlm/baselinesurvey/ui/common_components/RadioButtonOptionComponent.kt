@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.greenActiveIcon
 import com.nrlm.baselinesurvey.ui.theme.lightGray2
@@ -27,8 +27,8 @@ fun RadioButtonOptionComponent(
     modifier: Modifier = Modifier,
     index: Int,
     selectedIndex: Int,
-    optionsItem:OptionsItem,
-    onOptionSelected: (OptionsItem) -> Unit
+    optionsItem: OptionItemEntity,
+    onOptionSelected: (OptionItemEntity) -> Unit
 ) {
     Column(modifier = Modifier
         .fillMaxWidth()
@@ -54,12 +54,22 @@ fun RadioButtonOptionComponent(
                 iconTintColor = if (selectedIndex == index) {
                     white
                 } else {
-                    if (optionsItem.optionValue == 1)
+                    //TODO need to remove this condition when get image from backend
+                    if (optionsItem.display.equals(
+                            "YES",
+                            false
+                        ) || optionsItem.display.equals("Good", false)
+                    )
                         greenActiveIcon
                     else
                         redOffline
                 },
-                icon = if (optionsItem.optionValue == 1)
+                //TODO need to remove this condition when get image from backend
+                icon = if (optionsItem.display.equals(
+                        "YES",
+                        false
+                    ) || optionsItem.display.equals("Good", false)
+                )
                     painterResource(id = R.drawable.icon_check)
                 else
                     painterResource(id = R.drawable.icon_close)

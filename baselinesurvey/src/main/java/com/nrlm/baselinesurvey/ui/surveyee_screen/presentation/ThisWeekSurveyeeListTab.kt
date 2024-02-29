@@ -61,6 +61,7 @@ fun ThisWeekSurvyeeListTab(
     pullRefreshState: PullRefreshState,
     viewModel: SurveyeeScreenViewModel,
     navController: NavController,
+    activityId: Int,
     onActionEvent: (surveyeeListScreenActions: SurveyeeListScreenActions) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -182,7 +183,12 @@ fun ThisWeekSurvyeeListTab(
                                     showMoveSurveyeeBannerVisibilityPair.value = Pair(true, surveyeeCardState.surveyeeDetails)
                                 },
                                 buttonClicked = { buttonName, surveyeeId ->
-                                    handleButtonClick(buttonName, surveyeeId, navController)
+                                    handleButtonClick(
+                                        buttonName,
+                                        surveyeeId,
+                                        activityId,
+                                        navController
+                                    )
                                 }
                             )
                         }
@@ -195,7 +201,12 @@ fun ThisWeekSurvyeeListTab(
                                 showCheckBox = isSelectionEnabled.value,
                                 fromScreen = THIS_WEEK_TAB,
                                 buttonClicked = { buttonName, surveyeeId ->
-                                    handleButtonClick(buttonName, surveyeeId, navController)
+                                    handleButtonClick(
+                                        buttonName,
+                                        surveyeeId,
+                                        activityId,
+                                        navController
+                                    )
                                 },
                                 checkBoxChecked = { surveyeeEntity, isChecked ->
                                     onActionEvent(SurveyeeListScreenActions.CheckBoxClicked(isChecked, surveyeeEntity))

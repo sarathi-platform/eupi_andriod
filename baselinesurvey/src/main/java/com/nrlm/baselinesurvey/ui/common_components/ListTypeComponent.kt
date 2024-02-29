@@ -1,6 +1,8 @@
 package com.nrlm.baselinesurvey.ui.common_components
 
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -23,12 +25,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -41,17 +42,17 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
+import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.languageItemActiveBg
-import com.nrlm.baselinesurvey.ui.theme.lightGray2
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
@@ -64,10 +65,12 @@ import kotlinx.coroutines.launch
 fun ListTypeQuestion(
     modifier: Modifier = Modifier,
     question: QuestionEntity,
+    showQuestionState: QuestionEntityState = QuestionEntityState.getEmptyStateObject(),
+    optionItemEntityList: List<OptionItemEntity>?,
     questionIndex: Int,
     selectedOptionIndex: Int = -1,
     maxCustomHeight: Dp,
-    onAnswerSelection: (questionIndex: Int, optionItem: OptionsItem) -> Unit,
+    onAnswerSelection: (questionIndex: Int, optionItem: OptionItemEntity) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
 ) {
@@ -81,7 +84,7 @@ fun ListTypeQuestion(
         }
     }
 
-    val selectedIndex = remember { mutableStateOf(selectedOptionIndex) }
+    val selectedIndex = remember { mutableIntStateOf(selectedOptionIndex) }
 
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
@@ -98,94 +101,98 @@ fun ListTypeQuestion(
             )
             .heightIn(min = 100.dp, maxCustomHeight)
     ) {
-        Card(
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = defaultCardElevation
-            ),
-            shape = RoundedCornerShape(roundedCornerRadiusDefault),
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = minHeight, max = maxHeight)
-                .background(white)
-                .clickable {
-                }
-                .then(modifier)
-        ) {
-            Column(modifier = Modifier.background(white)) {
-                Column(
-                    Modifier.padding(top = dimen_16_dp),
-                    verticalArrangement = Arrangement.spacedBy(
-                        dimen_10_dp
-                    )
-                ) {
-                    LazyColumn(
-                        state = outerState,
-                        modifier = Modifier
-                            .heightIn(min = 110.dp, max = maxCustomHeight)
+
+        VerticalAnimatedVisibilityComponent(visible = showQuestionState.showQuestion) {
+            Card(
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = defaultCardElevation
+                ),
+                shape = RoundedCornerShape(roundedCornerRadiusDefault),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = minHeight, max = maxHeight)
+                    .background(white)
+                    .clickable {
+                    }
+                    .then(modifier)
+            ) {
+                Column(modifier = Modifier.background(white)) {
+                    Column(
+                        Modifier.padding(top = dimen_16_dp),
+                        verticalArrangement = Arrangement.spacedBy(
+                            dimen_10_dp
+                        )
                     ) {
+                        LazyColumn(
+                            state = outerState,
+                            modifier = Modifier
+                                .heightIn(min = 110.dp, max = maxCustomHeight)
+                        ) {
 
-                        item {
-                            Row(modifier = Modifier.padding(horizontal = dimen_16_dp)) {
-                                HtmlText(
-                                    text = "${question.questionId}. ",
-                                    style = TextStyle(
-                                        fontFamily = NotoSans,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontSize = 14.sp,
-                                        color = textColorDark
-                                    ),
-                                )
+                            item {
+                                Row(modifier = Modifier.padding(horizontal = dimen_16_dp)) {
+                                    HtmlText(
+                                        text = "${question.questionId}. ",
+                                        style = TextStyle(
+                                            fontFamily = NotoSans,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontSize = 14.sp,
+                                            color = textColorDark
+                                        ),
+                                    )
 
-                                HtmlText(
-                                    text = "${question.questionDisplay}",
-                                    style = TextStyle(
-                                        fontFamily = NotoSans,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontSize = 14.sp,
-                                        color = textColorDark
-                                    ),
-                                )
-                            }
-                        }
-                        
-                        item {
-                            Spacer(modifier = Modifier
-                                .fillMaxWidth()
-                                .height(dimen_16_dp))
-                        }
-
-                        item {
-                            LazyColumn(
-                                userScrollEnabled = false,
-                                state = innerState,
-                                modifier = Modifier
-                                    .wrapContentWidth()
-                                    .padding(horizontal = dimen_16_dp)
-                                    .heightIn(min = 110.dp, max = maxCustomHeight)
-                            ) {
-                                itemsIndexed(
-                                    question.options ?: emptyList()
-                                ) { _index: Int, optionsItem: OptionsItem ->
-                                    OptionCard(
-                                        buttonTitle = optionsItem.display ?: BLANK_STRING,
-                                        index = _index,
-                                        selectedIndex = selectedIndex.value,
-                                    ) {
-                                        selectedIndex.value = questionIndex
-                                        onAnswerSelection(questionIndex, optionsItem)
-                                    }
-                                    Spacer(modifier = Modifier.height(dimen_8_dp))
+                                    HtmlText(
+                                        text = "${question.questionDisplay}",
+                                        style = TextStyle(
+                                            fontFamily = NotoSans,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontSize = 14.sp,
+                                            color = textColorDark
+                                        ),
+                                    )
                                 }
                             }
-                        }
 
-                        item {
-                            Spacer(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(dimen_10_dp)
-                            )
-                            Divider(
+                            item {
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(dimen_16_dp)
+                                )
+                            }
+
+                            item {
+                                LazyColumn(
+                                    userScrollEnabled = false,
+                                    state = innerState,
+                                    modifier = Modifier
+                                        .wrapContentWidth()
+                                        .padding(horizontal = dimen_16_dp)
+                                        .heightIn(min = 110.dp, max = maxCustomHeight)
+                                ) {
+                                    itemsIndexed(
+                                        optionItemEntityList ?: listOf()
+                                    ) { _index: Int, optionsItem: OptionItemEntity ->
+                                        OptionCard(
+                                            optionItem = optionsItem,
+                                            index = _index,
+                                            selectedIndex = selectedIndex.value,
+                                        ) {
+                                            selectedIndex.value = it
+                                            onAnswerSelection(questionIndex, optionsItem)
+                                        }
+                                        Spacer(modifier = Modifier.height(dimen_8_dp))
+                                    }
+                                }
+                            }
+
+                            item {
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(dimen_10_dp)
+                                )
+                            /*Divider(
                                 thickness = dimen_1_dp,
                                 color = lightGray2,
                                 modifier = Modifier.fillMaxWidth()
@@ -195,12 +202,19 @@ fun ListTypeQuestion(
                                 questionIndex,
                                 question,
                                 imageClickListener = { imageTypeDescriptionContent ->
-                                    onMediaTypeDescriptionAction(DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT, imageTypeDescriptionContent)
+                                    onMediaTypeDescriptionAction(
+                                        DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
+                                        imageTypeDescriptionContent
+                                    )
                                 },
                                 videoLinkClicked = { videoTypeDescriptionContent ->
-                                    onMediaTypeDescriptionAction(DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT, videoTypeDescriptionContent)
+                                    onMediaTypeDescriptionAction(
+                                        DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
+                                        videoTypeDescriptionContent
+                                    )
                                 }
-                            )
+                            )*/
+                            }
                         }
                     }
                 }
@@ -212,7 +226,7 @@ fun ListTypeQuestion(
 
 @Preview(showBackground = true)
 @Composable
- fun ListTypeQuestionPreview() {
+fun ListTypeQuestionPreview() {
     val optionList = mutableListOf<OptionsItem>()
     for (i in 1..5) {
         optionList.add(OptionsItem("Option Value $i", i + 1, i, 1, "Summery"))
@@ -228,94 +242,73 @@ fun ListTypeQuestion(
         "List",
         gotoQuestionId =
         22,
-        options = listOf(
-            OptionsItem(
-                optionId =
-                30,
-                display =
-                "At least <b>1 adult </b> literate member who has <b> Passed Class 10</b>",
-                weight =
-                0,
-                summary =
-                "At least 1 adult > Class 10",
-                optionValue =
-                1,
-                optionImage =
-                0,
-                optionType =
-                ""
-            ),
-            OptionsItem(
-                optionId =
-                31,
-                display =
-                "At least <b>1 adult</b> literate member who can read, write Bangle/ Kok Book but has <b>not Passed Class 10</b>",
-                weight =
-                1,
-                summary =
-                "At least 1 literate adult < Class 10",
-                optionValue =
-                2,
-                optionImage =
-                0,
-                optionType =
-                ""
-            ),
-            OptionsItem(
-                optionId =
-                32,
-                display =
-                "\"<b>No adult</b> in the family is literate (cannot read or write Bangle / Kok-Bangle)",
-                weight =
-                2,
-                summary =
-                "No literate adult",
-                optionValue =
-                3,
-                optionImage =
-                0,
-                optionType =
-                ""
-            )
-        ),
         questionImageUrl = "Section1_2wheeler.webp",
         surveyId = 1
     )
-    BoxWithConstraints() {
+
+    val option1 = OptionItemEntity(
+        optionId = 1,
+        display = "YES",
+        weight = 1,
+        summary = "YES",
+        optionValue = 1,
+        // optionImage = R.drawable.icon_check,
+        optionImage = "",
+        optionType = "",
+        surveyId = 1,
+        questionId = 1,
+        id = 1
+    )
+
+    val option2 = OptionItemEntity(
+        optionId = 2,
+        display = "NO",
+        weight = 0,
+        summary = "NO",
+        optionValue = 0,
+        // optionImage = R.drawable.icon_close,
+        optionImage = "",
+        optionType = "",
+        surveyId = 1,
+        questionId = 1,
+        id = 1
+    )
+    val optionItemEntity = listOf(option1, option2)
+    BoxWithConstraints {
 
         ListTypeQuestion(
             modifier = Modifier.padding(10.dp),
             question = question,
-            onAnswerSelection = {
-                                questionIndex, optionItem ->
-            },
-            questionDetailExpanded = {},
             questionIndex = 1,
             maxCustomHeight = maxHeight,
+            optionItemEntityList = optionItemEntity,
+            onAnswerSelection = { questionIndex, optionItem ->
+            },
             onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
 
             }
-        )
+        ) {}
     }
 }
 
 @Composable
-private fun OptionCard(
+public fun OptionCard(
     modifier: Modifier = Modifier,
-    buttonTitle: String,
+    optionItem: OptionItemEntity,
     index: Int,
     selectedIndex: Int,
     onOptionSelected: (Int) -> Unit
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .clip(RoundedCornerShape(6.dp))
-        .background(if (selectedIndex == index) blueDark else languageItemActiveBg)
-        .clickable {
-            onOptionSelected(index)
-        }
-        .padding(horizontal = 10.dp)
-        .then(modifier)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(6.dp))
+            .background(if (optionItem.optionId == selectedIndex) blueDark else languageItemActiveBg)
+            .clickable {
+                onOptionSelected(optionItem.optionId ?: -1)
+            }
+            .padding(horizontal = 10.dp)
+            .then(modifier)) {
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.TopStart,
@@ -325,13 +318,13 @@ private fun OptionCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 HtmlText(
-                    text = buttonTitle,
+                    text = optionItem.display ?: BLANK_STRING,
                     style = TextStyle(
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.Normal,
                         fontSize = 14.sp
                     ),
-                    color = if (selectedIndex == index) white else textColorDark
+                    color = if (optionItem.optionId == selectedIndex) white else textColorDark
                 )
             }
         }
@@ -347,6 +340,19 @@ private fun OptionCard(
 @Preview(showBackground = true)
 @Composable
 fun OptionCardPreview() {
-    OptionCard(modifier = Modifier, "Option", index = 0, onOptionSelected = {}, selectedIndex = 0)
+    val option = OptionItemEntity(
+        optionId = 1,
+        display = "Milk and milk products",
+        weight = 1,
+        summary = "Milk and milk products",
+        optionValue = 1,
+        // optionImage = R.drawable.icon_check,
+        optionImage = "",
+        optionType = "",
+        surveyId = 1,
+        questionId = 1,
+        id = 1
+    )
+    OptionCard(modifier = Modifier, option, index = 0, onOptionSelected = {}, selectedIndex = 1)
 }
 

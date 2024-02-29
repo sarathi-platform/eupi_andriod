@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
@@ -16,15 +17,15 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BaselineApplication.Companion.appScopeLaunch
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
+import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SurveyStateEvents
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.start_screen.domain.use_case.StartSurveyScreenUserCase
 import com.nrlm.baselinesurvey.ui.start_screen.presentation.StartSurveyScreenEvents
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LocationCoordinates
 import com.nrlm.baselinesurvey.utils.LocationUtil
-import com.nrlm.baselinesurvey.utils.states.SurveyState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,11 +50,31 @@ class BaseLineStartViewModel @Inject constructor(
     var updatedLocalPath = mutableStateOf(BLANK_STRING)
 
     var didiImageLocation = mutableStateOf("{0.0,0.0}")
+    val isAdharCard =
+        mutableStateOf(-1)
+
+    val aadharNumber =
+        mutableStateOf(BLANK_STRING)
+
+    val phoneNumber =
+        mutableStateOf(BLANK_STRING)
+
+    val isVoterCard =
+        mutableStateOf(-1)
 
     private val _didiEntity = MutableStateFlow(
         SurveyeeEntity.getEmptySurveyeeEntity()
     )
+    private val _didiInfo = MutableStateFlow(
+        DidiIntoEntity.getEmptyDidiIntoEntity()
+    )
     val didiEntity: StateFlow<SurveyeeEntity> get() = _didiEntity
+    val didiInfo: StateFlow<DidiIntoEntity> get() = _didiInfo
+
+    var isAdharTxtVisible = derivedStateOf {
+        isAdharCard.value == 1
+    }
+    val adharCardState = mutableStateOf(OptionItemEntityState.getEmptyStateObject())
 
     fun getFileName(context: Context, didi: SurveyeeEntity): File {
         val directory = getImagePath(context)
@@ -80,7 +101,11 @@ class BaseLineStartViewModel @Inject constructor(
             }
             is SurveyStateEvents.UpdateDidiSurveyStatus -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    startSurveyScreenUserCase.updateSurveyStateUseCase.invoke(event.didiId, event.didiSurveyState)
+                    startSurveyScreenUserCase.updateSurveyStateUseCase.invoke(
+                        event.didiId,
+                        event.didiSurveyState
+                    )
+                    startSurveyScreenUserCase.updateSurveyStateUseCase.saveDidiInfoInDB(event.didiInfo)
                 }
             }
         }
@@ -115,6 +140,11 @@ class BaseLineStartViewModel @Inject constructor(
     fun getDidiDetails(didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _didiEntity.emit(startSurveyScreenUserCase.getSurveyeeDetailsUserCase.invoke(didiId))
+            _didiInfo.emit(
+                startSurveyScreenUserCase.getSurveyeeDetailsUserCase.getDidiIndoDetail(
+                    didiId
+                )
+            )
             if (!_didiEntity.value.crpImageLocalPath.isNullOrEmpty()) {
                 photoUri.value = if (didiEntity.value.crpImageLocalPath.contains("|"))
                     didiEntity.value.crpImageLocalPath.split("|")[0].toUri()
@@ -122,6 +152,11 @@ class BaseLineStartViewModel @Inject constructor(
                     _didiEntity.value.crpImageLocalPath.toUri()
                 shouldShowPhoto.value = true
             }
+            isAdharCard.value = didiInfo.value?.isAdharCard ?: -1
+            adharCardState.value = adharCardState.value.copy(showQuestion = isAdharTxtVisible.value)
+            phoneNumber.value = didiInfo.value?.phoneNumber ?: BLANK_STRING
+            isVoterCard.value = didiInfo.value?.isVoterCard ?: -1
+            aadharNumber.value = didiInfo.value?.adharNumber ?: BLANK_STRING
         }
     }
 

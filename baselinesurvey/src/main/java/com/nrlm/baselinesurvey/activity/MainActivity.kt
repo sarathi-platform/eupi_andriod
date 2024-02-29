@@ -18,13 +18,14 @@ import com.akexorcist.localizationactivity.core.LocalizationActivityDelegate
 import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
 import com.nrlm.baselinesurvey.activity.viewmodel.MainActivityViewModel
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.navigation.navgraph.RootNavigationGraph
+import com.nrlm.baselinesurvey.ui.common_components.NetworkBanner
 import com.nrlm.baselinesurvey.ui.theme.The_nudgeTheme
+import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.ConnectionMonitor
 import com.nrlm.baselinesurvey.navigation.navgraph.RootNavigationGraph
 import com.nrlm.baselinesurvey.ui.common_components.NetworkBanner
-import com.nudge.syncmanager.TestEvent
-import com.nudge.syncmanager.getSampleEvent
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 import javax.inject.Inject
@@ -41,13 +42,12 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     private lateinit var connectionLiveData: ConnectionMonitor
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mViewModel.onEvent(TestEvent.SampleEvent(getSampleEvent()))
         setContent {
             The_nudgeTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = white
                 ) {
                     ConstraintLayout() {
                         val (networkBanner, mainContent) = createRefs()
@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                             start.linkTo(parent.start)
                             bottom.linkTo(parent.bottom)
                             height = Dimension.fillToConstraints
-                        }) {
+                        }.fillMaxSize()) {
                             RootNavigationGraph(navController = rememberNavController(), sharedPrefs)
                         }
                     }

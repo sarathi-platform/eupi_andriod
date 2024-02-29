@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,26 +57,39 @@ class SurveyeeScreenViewModel @Inject constructor(
     val checkedItemsState = mutableStateOf(mutableSetOf<Int>())
 
     val showMoveDidisBanner = mutableStateOf(false)
+    var isEnableNextBTn =
+        mutableStateOf(false)
 
-    fun init() {
+
+    @SuppressLint("SuspiciousIndentation")
+    fun init(missionId: Int, activityName: String, activityId: Int) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-//            if (_surveyeeListState.value.isEmpty()) {
-                val surveyeeListFromDb = surveyeeScreenUseCase.getSurveyeeListUseCase.invoke()
+            val surveyeeListFromDb =
+                surveyeeScreenUseCase.getSurveyeeListUseCase.invoke(missionId, activityName)
             if (_surveyeeListState.value.isNotEmpty()) {
                 _surveyeeListState.value.clear()
             }
             surveyeeListFromDb.forEach { surveyeeEntity ->
-                    val surveyeeState = SurveyeeCardState(
-                        surveyeeDetails = surveyeeEntity,
-                        imagePath = surveyeeEntity.crpImageName,
-                        subtitle = surveyeeEntity.dadaName,
-                        address = getSurveyeeAddress(surveyeeEntity),
-                        surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
-                    )
-                    _surveyeeListState.value.add(surveyeeState)
-                }
-                _filteredSurveyeeListState.value = _surveyeeListState.value
+                val surveyeeState = SurveyeeCardState(
+                    surveyeeDetails = surveyeeEntity,
+                    imagePath = surveyeeEntity.crpImageName,
+                    subtitle = surveyeeEntity.dadaName,
+                    address = getSurveyeeAddress(surveyeeEntity),
+                    surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
+                )
+
+                _surveyeeListState.value.add(surveyeeState)
+            }
+            _filteredSurveyeeListState.value = _surveyeeListState.value
+            surveyeeScreenUseCase.getActivityStateFromDBUseCase.getActivitiesStatus(
+                activityId = activityId,
+                _surveyeeListState.value
+            )
+            isEnableNextBTn.value =
+                allTaskDone() && !surveyeeScreenUseCase.getActivityStateFromDBUseCase.getActivity(
+                    activityId
+                ).isAllTask
 
             if (_thisWeekSurveyeeListState.value.isNotEmpty()) {
                 _thisWeekSurveyeeListState.value.clear()
@@ -101,7 +115,7 @@ class SurveyeeScreenViewModel @Inject constructor(
 
     fun getThisWeekSurveyeeList() {
         CoroutineScope(Dispatchers.IO).launch {
-            val surveyeeListFromDb = surveyeeScreenUseCase.getSurveyeeListUseCase.invoke()
+            val surveyeeListFromDb = surveyeeScreenUseCase.getSurveyeeListUseCase.invoke(0, "")
             surveyeeListFromDb.filter { it.movedToThisWeek }.forEach { surveyeeEntity ->
                 val surveyeeState = SurveyeeCardState(
                     surveyeeDetails = surveyeeEntity,
@@ -168,6 +182,27 @@ class SurveyeeScreenViewModel @Inject constructor(
                     }
                 }
             }
+
+            is SurveyeeListEvents.UpdateActivityStatus -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    if (event.surveyList != null) {
+                        surveyeeScreenUseCase.getActivityStateFromDBUseCase.getActivitiesStatus(
+                            event.activityId,
+                            event.surveyList
+                        )
+                    }
+                }
+            }
+
+            is SurveyeeListEvents.UpdateActivityAllTask -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    surveyeeScreenUseCase.getActivityStateFromDBUseCase.getActivitiesAllTaskStatus(
+                        event.activityId,
+                        event.isAllTask
+                    )
+                }
+            }
+
         }
     }
 
@@ -243,9 +278,18 @@ class SurveyeeScreenViewModel @Inject constructor(
 
     private fun getSurveyeeAddress(surveyeeEntity: SurveyeeEntity): String {
         return if (surveyeeEntity.cohortName.equals(NO_TOLA_TITLE, true))
-            surveyeeEntity.houseNo + "," + surveyeeEntity.cohortName
+            surveyeeEntity.houseNo + ", " + surveyeeEntity.cohortName
         else
-            surveyeeEntity.houseNo + "," + surveyeeEntity.villageName
+            surveyeeEntity.houseNo + ", " + surveyeeEntity.villageName
     }
+
+    fun allTaskDone(): Boolean {
+        var isFlag = false
+        filteredSurveyeeListState.value.forEach { task ->
+            isFlag = task.surveyState.ordinal == 2
+        }
+        return isFlag
+    }
+
 
 }

@@ -258,3 +258,7 @@ data class DidiEntity(
         fun getDidiId(didiEntity: DidiEntity)=if(didiEntity.serverId  == 0) didiEntity.id else didiEntity.serverId
     }
 }
+
+fun DidiEntity.getDidiId(): Int {
+    return if (this.serverId != 0) this.serverId else this.id
+}

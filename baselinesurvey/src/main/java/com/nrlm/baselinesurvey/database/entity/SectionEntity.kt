@@ -50,4 +50,5 @@ data class SectionEntity(
     @Expose
     @ColumnInfo(name = "languageId")
     val languageId: Int,
+    val questionSize: Int = 0
 )

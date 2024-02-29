@@ -4,6 +4,7 @@ import androidx.compose.ui.unit.dp
 
 val defaultCardElevation = 10.dp
 val roundedCornerRadiusDefault = 6.dp
+val defaultBottomBarPadding = 70.dp
 
 val dimen_1_dp = 1.dp
 val dimen_2_dp = 2.dp
@@ -24,7 +25,10 @@ val dimen_24_dp = 24.dp
 val dimen_30_dp = 30.dp
 
 val dimen_56_dp = 56.dp
+val dimen_64_dp = 64.dp
 val dimen_80_dp = 80.dp
+
+val dimen_100_dp = 100.dp
 
 val dimen_450_px = 450
 val dimen_400_px = 400

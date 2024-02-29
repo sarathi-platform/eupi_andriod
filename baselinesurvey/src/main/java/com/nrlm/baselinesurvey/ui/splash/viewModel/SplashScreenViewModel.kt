@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.nrlm.baselinesurvey.SPLASH_SCREEN_DURATION
 import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.splash.domain.use_case.SplashScreenUseCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
@@ -50,7 +51,18 @@ class SplashScreenViewModel @Inject constructor(
                 val languageConfigResponse = splashScreenUseCase.fetchLanguageConfigFromNetworkUseCase.invoke()
                 if (languageConfigResponse.status.equals(SUCCESS, true)) {
                     languageConfigResponse.data?.let { configResponseModel ->
-                        splashScreenUseCase.saveLanguageConfigUseCase.invoke(configResponseModel.languageList)
+
+                        /**
+                         * Please Remove this code after Backend Add new language
+                         */
+                        val langList:ArrayList<LanguageEntity> = arrayListOf()
+                        langList.addAll(configResponseModel.languageList)
+                        langList.add(LanguageEntity(id = 6, orderNumber = 6, langCode = "ky",
+                            language = "Kokborok",
+                            localName = "Kokborok"
+                        ))
+
+                        splashScreenUseCase.saveLanguageConfigUseCase.invoke(langList)
                         BaselineCore.downloadQuestionImages(configResponseModel.image_profile_link)
                         delay(SPLASH_SCREEN_DURATION)
                         withContext(Dispatchers.Main) {

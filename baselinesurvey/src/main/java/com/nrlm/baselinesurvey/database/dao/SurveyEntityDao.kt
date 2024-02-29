@@ -21,5 +21,4 @@ interface SurveyEntityDao {
     @Query("Delete from $SURVEY_TABLE where surveyId = :surveyId and languageId = :languageId")
     fun deleteSurveyFroLanguage(surveyId: Int, languageId: Int)
 
-
 }

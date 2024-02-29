@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material3.LinearProgressIndicator
@@ -34,17 +33,19 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.navigation.home.navigateToBaseLineStartScreen
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.MoveSurveyeesUpdateBannerComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.SurveyeeScreenViewModel
+import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
+import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
+import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.progressIndicatorColor
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
@@ -64,8 +65,10 @@ fun AllSurveyeeListTab(
     isSelectionEnabled: MutableState<Boolean>,
     navController: NavController,
     onActionEvent: (surveyeeListScreenActions: SurveyeeListScreenActions) -> Unit,
-    modifier: Modifier = Modifier
-
+    modifier: Modifier = Modifier,
+    activityName: String,
+    activityDate: String,
+    activityId: Int,
 ) {
 
     val surveyeeList = viewModel.filteredSurveyeeListState.value
@@ -101,6 +104,27 @@ fun AllSurveyeeListTab(
                             white
                         )
                 ) {
+
+                    item {
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 10.dp),
+                                text = activityName,
+                                style = largeTextStyle,
+                                color = blueDark
+                            )
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 10.dp, bottom = 10.dp),
+                                text = stringResource(id = R.string.due_by_x, activityDate),
+                                style = newMediumTextStyle,
+                                color = black100Percent
+                            )
+                        }
+                    }
                     item {
                         SearchWithFilterViewComponent(
                             placeholderString = stringResource(id = R.string.search_didis),
@@ -166,7 +190,12 @@ fun AllSurveyeeListTab(
                                 showCheckBox = !isSelectionEnabled.value,
                                 fromScreen = ALL_TAB,
                                 checkBoxChecked = { surveyeeEntity, isChecked ->
-                                    onActionEvent(SurveyeeListScreenActions.CheckBoxClicked(isChecked, surveyeeEntity))
+                                    onActionEvent(
+                                        SurveyeeListScreenActions.CheckBoxClicked(
+                                            isChecked,
+                                            surveyeeEntity
+                                        )
+                                    )
                                 },
                                 moveDidiToThisWeek = { surveyeeCardState, moveToThisWeek ->
                                     viewModel.onEvent(
@@ -176,8 +205,15 @@ fun AllSurveyeeListTab(
                                         )
                                     )
                                 },
+                                //Todo add proper tex
+                                primaryButtonText = "Start " + activityName.split(" ")[1],
                                 buttonClicked = { buttonName, surveyeeId ->
-                                    handleButtonClick(buttonName, surveyeeId, navController)
+                                    handleButtonClick(
+                                        buttonName,
+                                        surveyeeId,
+                                        activityId,
+                                        navController
+                                    )
                                 }
                             )
                         }
@@ -189,7 +225,12 @@ fun AllSurveyeeListTab(
                                 showCheckBox = !isSelectionEnabled.value,
                                 fromScreen = ALL_TAB,
                                 buttonClicked = { buttonName, surveyeeId ->
-                                    handleButtonClick(buttonName, surveyeeId, navController)
+                                    handleButtonClick(
+                                        buttonName,
+                                        surveyeeId,
+                                        activityId,
+                                        navController
+                                    )
                                 },
                                 checkBoxChecked = { surveyeeEntity, isChecked ->
                                     onActionEvent(SurveyeeListScreenActions.CheckBoxClicked(isChecked, surveyeeEntity))
@@ -226,11 +267,11 @@ fun AllSurveyeeListTab(
             }
         }
 
-        PullRefreshIndicator(
-            refreshing = loaderState.isLoaderVisible,
-            state = pullRefreshState,
-            modifier = Modifier.align(Alignment.TopCenter),
-            contentColor = blueDark,
-        )
+//        PullRefreshIndicator(
+//            refreshing = loaderState.isLoaderVisible,
+//            state = pullRefreshState,
+//            modifier = Modifier.align(Alignment.TopCenter),
+//            contentColor = blueDark,
+//        )
     }
 }

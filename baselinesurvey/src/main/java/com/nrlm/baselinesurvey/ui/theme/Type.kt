@@ -127,3 +127,8 @@ val buttonTextStyle = TextStyle(
     fontWeight = FontWeight.SemiBold,
     fontSize = 16.sp
 )
+val mediumBoldTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.Bold,
+    fontSize = 18.sp
+)

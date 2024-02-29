@@ -3,20 +3,27 @@ package com.nudge.syncmanager.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.nudge.syncmanager.database.converters.DateConverter
-import com.nudge.syncmanager.database.dao.EventsDao
-import com.nudge.syncmanager.database.entities.Events
+import com.nudge.core.SYNC_MANAGER_DB_VERSION
+import com.nudge.core.database.converters.DateConverter
+import com.nudge.core.database.converters.ListConvertor
+import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.entities.EventDependencyEntity
+import com.nudge.core.database.entities.Events
 
 @Database(
     entities = [
-        Events::class
+        Events::class,
+        EventDependencyEntity::class
     ],
-    version = 1,
+    version = SYNC_MANAGER_DB_VERSION,
     exportSchema = false
 )
-@TypeConverters(DateConverter::class)
-abstract class SyncManagerDatabase: RoomDatabase() {
+@TypeConverters(DateConverter::class, ListConvertor::class)
+abstract class SyncManagerDatabase : RoomDatabase() {
 
     abstract fun eventsDao(): EventsDao
+
+    abstract fun eventsDependencyDao(): EventDependencyDao
 
 }

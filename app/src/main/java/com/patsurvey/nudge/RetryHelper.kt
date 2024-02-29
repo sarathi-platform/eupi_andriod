@@ -5,6 +5,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import com.nudge.core.getDefaultBackUpFileName
+import com.nudge.core.getDefaultImageBackUpFileName
+import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.analytics.EventParams
 import com.patsurvey.nudge.analytics.Events
@@ -46,6 +49,7 @@ import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DOUBLE_ZERO
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.FAIL
+import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PAT_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.PREF_BPC_PAT_COMPLETION_DATE_
@@ -1243,6 +1247,18 @@ object RetryHelper {
                     if (response?.status.equals(SUCCESS, true)) {
                         response?.data?.let {
                             prefRepo?.saveAccessToken(it.token)
+                            CoreSharedPrefs.getInstance(NudgeCore.getAppContext())
+                                .setBackupFileName(
+                                    getDefaultBackUpFileName(
+                                        prefRepo?.getMobileNumber() ?: ""
+                                    )
+                                )
+                            CoreSharedPrefs.getInstance(NudgeCore.getAppContext())
+                                .setImageBackupFileName(
+                                    getDefaultImageBackUpFileName(
+                                        prefRepo?.getMobileNumber() ?: ""
+                                    )
+                                )
                         }
                         withContext(Dispatchers.Main) {
                             onOtpResponse(true, response?.message ?: "Login Successful")

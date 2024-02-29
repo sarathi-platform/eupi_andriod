@@ -11,27 +11,45 @@ import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
 import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
-import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
+import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
-import com.nrlm.baselinesurvey.database.entity.LanguageEntity
+import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
+import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
+import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
+import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.utils.createMultiLanguageVillageRequest
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.count
-import kotlinx.coroutines.flow.onEach
+import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
 import javax.inject.Inject
 
 class SurveyeeListScreenRepositoryImpl @Inject constructor(
     private val prefRepo: PrefRepo,
     private val apiService: ApiService,
     private val surveyeeEntityDao: SurveyeeEntityDao,
-    private val languageListDao: LanguageListDao
+    private val languageListDao: LanguageListDao,
+    private val activityTaskDao: ActivityTaskDao,
+    private val activityDao: MissionActivityDao
 ): SurveyeeListScreenRepository {
 
-    override suspend fun getSurveyeeList(): List<SurveyeeEntity> {
-        return surveyeeEntityDao.getAllDidis()
+    override suspend fun getSurveyeeList(
+        missionId: Int,
+        activityName: String
+    ): List<SurveyeeEntity> {
+        val didiList = mutableListOf<SurveyeeEntity>()
+        getActivityTasks(missionId = missionId, activityName = activityName).forEach { task ->
+            if (surveyeeEntityDao.isDidiExist(task.didiId)) {
+                didiList.add(surveyeeEntityDao.getDidi(task.didiId))
+            }
+        }
+        return didiList
     }
+
+
+
+
+
 
     override suspend fun getSurveyeeListFromNetwork(): Boolean {
         try {
@@ -101,5 +119,55 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
     ) {
         surveyeeEntityDao.moveSurveyeeToThisWeek(didiId, moveDidisToNextWeek)
     }
+
+    override suspend fun getActivityTasks(
+        missionId: Int,
+        activityName: String
+    ): List<ActivityTaskEntity> {
+        return activityTaskDao.getActivityTask(missionId, activityName)
+    }
+
+    override suspend fun getMissionActivitiesStatusFromDB(
+        activityId: Int,
+        surveyeeCardState: List<SurveyeeCardState>
+    ) {
+        var activities = activityDao.getActivitiesFormIds(activityId)
+        val tasks = activityTaskDao.getActivityTaskFromIds(activities.activityId)
+        activityDao.updateActivityStatus(
+            activityId,
+            SurveyState.INPROGRESS.ordinal,
+            activities.activityTaskSize
+        )
+        var activityCompleteInc = 0
+        var activityPending = activities.pendingDidi
+
+        surveyeeCardState.forEach { surveyeeCardState ->
+            if (surveyeeCardState.surveyState == SurveyState.COMPLETED) {
+                ++activityCompleteInc
+                activityPending = --activities.pendingDidi
+            }
+
+        }
+        val complete =
+            if (activities.activityTaskSize == activityCompleteInc) SurveyState.COMPLETED.ordinal else SurveyState.INPROGRESS.ordinal
+        activityDao.updateActivityStatus(
+            activityId,
+            complete,
+            activities.activityTaskSize - activityCompleteInc
+        )
+
+    }
+
+    override suspend fun getMissionActivitiesAllTaskStatusFromDB(
+        activityId: Int,
+        isAllTask: Boolean
+    ) {
+        activityDao.updateActivityStatus(activityId, isAllTask)
+    }
+
+    override suspend fun getActivitiyStatusFromDB(activityId: Int): MissionActivityEntity {
+        return activityDao.getActivity(activityId)
+    }
+
 
 }

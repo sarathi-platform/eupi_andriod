@@ -4,11 +4,8 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationListener
 import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,7 +20,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -52,84 +51,105 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.activity.MainActivity
-import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
+import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
 import com.nrlm.baselinesurvey.navigation.home.SECTION_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.ui.common_components.BlueButtonWithIcon
 import com.nrlm.baselinesurvey.ui.common_components.ButtonOutline
 import com.nrlm.baselinesurvey.ui.common_components.DialogComponent
 import com.nrlm.baselinesurvey.ui.common_components.DoubleButtonBox
+import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
+import com.nrlm.baselinesurvey.ui.common_components.YesNoButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SurveyStateEvents
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.start_screen.viewmodel.BaseLineStartViewModel
+import com.nrlm.baselinesurvey.ui.theme.defaultBottomBarPadding
+import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.languageItemActiveBg
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
-import com.nrlm.baselinesurvey.ui.theme.smallTextStyleWithNormalWeight
+import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark50
 import com.nrlm.baselinesurvey.utils.BaselineLogger
-import com.nrlm.baselinesurvey.utils.LocationCoordinates
-import com.nrlm.baselinesurvey.utils.LocationUtil
 import com.nrlm.baselinesurvey.utils.openSettings
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.uriFromFile
-import java.util.function.Consumer
 
-@SuppressLint("StateFlowValueCalledInComposition")
+@SuppressLint("StateFlowValueCalledInComposition", "UnrememberedMutableState")
 @Composable
 fun BaseLineStartScreen(
     navController: NavHostController,
     baseLineStartViewModel: BaseLineStartViewModel,
-    didiId: Int
+    didiId: Int,
+    surveyId: Int
 ) {
     val localContext = LocalContext.current
     val screenHeight = LocalConfiguration.current.screenHeightDp
     val shouldRequestPermission = remember {
         mutableStateOf(false)
     }
+
     val didi = baseLineStartViewModel.didiEntity
     LaunchedEffect(key1 = true) {
         baseLineStartViewModel.getDidiDetails(didiId)
     }
 
-    val isContinueButtonActive by remember {
+
+    //val didiInfoDetail = baseLineStartViewModel.didiInfo
+
+    val isContinueButtonActive =
         derivedStateOf {
-            baseLineStartViewModel.photoUri.value != Uri.EMPTY
+            (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (baseLineStartViewModel.isVoterCard.value != -1) && (baseLineStartViewModel.phoneNumber.value.length == 10) &&
+                    ((baseLineStartViewModel.isAdharCard.value != -1) && ((baseLineStartViewModel.isAdharCard.value == 2) || (baseLineStartViewModel.isAdharCard.value == 1 && baseLineStartViewModel.aadharNumber.value.length == 12)))
         }
-    }
+
+
 
     BackHandler {
         navigateBackToSurveyeeListScreen(navController)
     }
 
     Scaffold(modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal = 16.dp),
+        .fillMaxSize(),
         bottomBar = {
             DoubleButtonBox(
                 modifier = Modifier
                     .shadow(10.dp),
                 positiveButtonText = stringResource(id = R.string.continue_text),
                 negativeButtonText = stringResource(id = R.string.go_back_text),
-                isPositiveButtonActive = isContinueButtonActive,
+                isPositiveButtonActive = isContinueButtonActive.value,
                 positiveButtonOnClick = {
                     didi.value.didiId?.let {
-                        baseLineStartViewModel.onEvent(SurveyStateEvents.UpdateDidiSurveyStatus(
-                            it, SurveyState.INPROGRESS)
+                        baseLineStartViewModel.onEvent(
+                            SurveyStateEvents.UpdateDidiSurveyStatus(
+                                it,
+                                didiInfo = DidiIntoEntity(
+                                    didiId = it,
+                                    isAdharCard = baseLineStartViewModel.isAdharCard.value,
+                                    isVoterCard = baseLineStartViewModel.isVoterCard.value,
+                                    adharNumber = baseLineStartViewModel.aadharNumber.value,
+                                    phoneNumber = baseLineStartViewModel.phoneNumber.value
+                                ),
+                                SurveyState.INPROGRESS
+                            )
                         )
                     }
-                    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId")
+                    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
                 },
                 negativeButtonOnClick = {
-                    navigateBackToSurveyeeListScreen(navController)
+                    navController.popBackStack()
+//                    navigateBackToSurveyeeListScreen(navController)
                 }
             )
         }
     ) {
+
+        val scrollState = rememberScrollState()
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 6.dp)
-                .padding(top = it.calculateTopPadding() + 6.dp),
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(top = it.calculateTopPadding() + 6.dp)
+                .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             if (shouldRequestPermission.value) {
@@ -143,9 +163,48 @@ fun BaseLineStartScreen(
                     openSettings(localContext)
                 }
             }
-            TextDetails(title = "Didi: ", data = didi.value.didiName)
-            TextDetails(title = "Dada: ", data = didi.value.dadaName)
-            TextDetails(title = "Caste: ", data = didi.value.casteId.toString())
+            TextDetails(title = "Didi : ", data = didi.value.didiName)
+            TextDetails(title = "Dada : ", data = didi.value.dadaName)
+            TextDetails(title = "Caste : ", data = getCasteName(didi.value.casteId))
+            YesNoButtonComponent(
+                defaultValue = baseLineStartViewModel.isAdharCard.value,
+                title = "Does Didi have aadhar card?"
+            ) {
+                baseLineStartViewModel.isAdharCard.value = it
+                baseLineStartViewModel.adharCardState.value =
+                    baseLineStartViewModel.adharCardState.value.copy(showQuestion = baseLineStartViewModel.isAdharTxtVisible.value)
+                //  (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (baseLineStartViewModel.isVoterCard.value != -1) && (baseLineStartViewModel.phoneNumber.value.length == 10) && (baseLineStartViewModel.isAdharCard.value != -1)
+            }
+
+                /*EditTextWithTitleComponent(
+                    defaultValue = baseLineStartViewModel.aadharNumber.value,
+                    title = "Enter Didi's aadhar number",
+                    isOnlyNumber = true,
+                    showQuestion = baseLineStartViewModel.adharCardState.value,
+                    maxLength = 12
+                ) {
+                    baseLineStartViewModel.aadharNumber.value = it
+                }*/
+                Spacer(modifier = Modifier.height(8.dp))
+
+            Spacer(modifier = Modifier.height(8.dp))
+            YesNoButtonComponent(
+                defaultValue = baseLineStartViewModel.isVoterCard.value,
+                title = "Does didi have voter card?"
+            ) {
+                baseLineStartViewModel.isVoterCard.value = it
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            EditTextWithTitleComponent(
+                defaultValue = baseLineStartViewModel.phoneNumber.value,
+                title = "Enter didi's family phone number",
+                showQuestion = OptionItemEntityState.getEmptyStateObject()
+                    .copy(showQuestion = true),
+                isOnlyNumber = true,
+                maxLength = 10,
+            ) {
+                baseLineStartViewModel.phoneNumber.value = it
+            }
             Spacer(modifier = Modifier.height(10.dp))
 
             var hasImage by remember {
@@ -160,7 +219,11 @@ fun BaseLineStartScreen(
                         "rememberLauncherForActivityResult -> onResult = success: $success"
                     )
                     if (success) {
-                        baseLineStartViewModel.onEvent(StartSurveyScreenEvents.SaveImagePathForSurveyee(localContext))
+                        baseLineStartViewModel.onEvent(
+                            StartSurveyScreenEvents.SaveImagePathForSurveyee(
+                                localContext
+                            )
+                        )
                     } else {
                         baseLineStartViewModel.shouldShowPhoto.value =
                             baseLineStartViewModel.photoUri.value != Uri.EMPTY
@@ -577,21 +640,24 @@ fun BaseLineStartScreen(
 //                                patDidiSummaryViewModel.shouldShowCamera.value = true
                 }
             }
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = it.calculateBottomPadding() + defaultBottomBarPadding)
+            )
         }
-
     }
 }
 
 @Composable
 fun TextDetails(title: String, data: String) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Text(text = title, style = smallTextStyleWithNormalWeight)
+        Text(text = title, style = defaultTextStyle, color = textColorDark)
         Text(
             text = data, style = smallTextStyle
         )
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
@@ -614,4 +680,32 @@ fun BaseLineStartScreenPreview(
             color = textColorDark50
         )
     }
+}
+
+private fun getCasteName(casteId: Int): String {
+    var casteName = ""
+    when (casteId) {
+        1 -> {
+            casteName = "GEN"
+        }
+
+        2 -> {
+            casteName = "OBC"
+
+        }
+
+        3 -> {
+            casteName = "SC"
+
+        }
+
+        4 -> {
+            casteName = "ST"
+        }
+
+        else -> {
+            casteName = "ST"
+        }
+    }
+    return casteName
 }

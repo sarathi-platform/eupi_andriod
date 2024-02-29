@@ -5,8 +5,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.nrlm.baselinesurvey.ANSWER_TABLE
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
-import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 
 @Dao
 interface SectionAnswerEntityDao {
@@ -26,18 +26,19 @@ interface SectionAnswerEntityDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(answers: List<SectionAnswerEntity>)
 
-    @Query("Update $ANSWER_TABLE set optionItems = :optionItems, questionType=:questionType, questionSummary=:questionSummary where didiId = :didiId AND questionId = :questionId AND sectionId = :sectionId")
+    @Query("Update $ANSWER_TABLE set optionItems = :optionItems, questionType=:questionType, questionSummary=:questionSummary where didiId = :didiId AND questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId")
     fun updateAnswer(
         didiId: Int,
         sectionId: Int,
         questionId: Int,
-        optionItems: List<OptionsItem>,
+        surveyId: Int,
+        optionItems: List<OptionItemEntity>,
         questionType: String,
         questionSummary: String
     )
 
-    @Query("Select COUNT(*) FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId AND sectionId = :sectionId")
-    fun isQuestionAlreadyAnswered(didiId: Int, questionId: Int, sectionId: Int): Int
+    @Query("Select COUNT(*) FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId")
+    fun isQuestionAlreadyAnswered(didiId: Int, questionId: Int, sectionId: Int, surveyId: Int): Int
 
 
 }

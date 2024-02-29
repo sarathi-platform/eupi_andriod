@@ -28,7 +28,12 @@ import androidx.navigation.compose.rememberNavController
 import com.akexorcist.localizationactivity.core.LocalizationActivityDelegate
 import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
 import com.google.android.gms.auth.api.phone.SmsRetriever
-import com.nudge.syncmanager.SyncManager
+import com.google.firebase.Firebase
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.get
+import com.google.firebase.remoteconfig.remoteConfig
+import com.google.firebase.remoteconfig.remoteConfigSettings
+import com.nudge.core.enums.NetworkSpeed
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
@@ -40,8 +45,8 @@ import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.navigation.navgraph.RootNavigationGraph
 import com.patsurvey.nudge.smsread.SmsBroadcastReceiver
 import com.patsurvey.nudge.utils.ConnectionMonitor
-import com.patsurvey.nudge.utils.NetworkSpeed
 import com.patsurvey.nudge.utils.NudgeCore
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.SENDER_NUMBER
 import com.patsurvey.nudge.utils.showCustomToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -81,7 +86,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
             setTheme(R.style.Android_starter_project_blow_lollipop)
         }
         super.onCreate(savedInstanceState)
-        SyncManager()
+        getSyncEnabled()
         setContent {
             Nudge_Theme {
                 val snackState = rememberSnackBarState()
@@ -189,11 +194,13 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
 
         connectionLiveData = ConnectionMonitor(this)
         connectionLiveData.observe(this) { isNetworkAvailable ->
-            isOnline.value = isNetworkAvailable.isOnline && (isNetworkAvailable.speedType != NetworkSpeed.POOR.toString() || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN.toString())
+            isOnline.value =
+                isNetworkAvailable.isOnline && (isNetworkAvailable.speedType != NetworkSpeed.POOR || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN)
             connectionSpeed.value = isNetworkAvailable.connectionSpeed
-            connectionSpeedType.value = isNetworkAvailable.speedType
+            connectionSpeedType.value = isNetworkAvailable.speedType.toString()
             NudgeCore.updateIsOnline(isNetworkAvailable.isOnline
-                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR.toString() || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN.toString()))
+                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN)
+            )
         }
 
         startSmartUserConsent()
@@ -315,4 +322,30 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
 
     val currentLanguage: Locale
         get() = localizationDelegate.getLanguage(this)
+
+    fun getSyncEnabled() {
+        val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
+        val configSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 3600
+        }
+        remoteConfig.setConfigSettingsAsync(configSettings)
+        remoteConfig.fetchAndActivate()
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    Log.d(
+                        "SyncEnabled",
+                        "sync enabled " + remoteConfig.get("syncEnabled").asBoolean()
+                    )
+                    NudgeLogger.d(
+                        "SyncEnabled",
+                        "sync enabled " + remoteConfig.get("syncEnabled").asBoolean()
+                    )
+                    mViewModel.saveSyncEnabledFromRemoteConfig(
+                        remoteConfig.get("syncEnabled").asBoolean()
+                    )
+
+
+                }
+            }
+    }
 }
