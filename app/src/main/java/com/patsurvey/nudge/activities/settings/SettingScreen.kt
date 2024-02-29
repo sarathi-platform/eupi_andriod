@@ -431,8 +431,6 @@ fun SettingScreen(
                                             isBPCDataNeedToBeSynced.value = false
                                             viewModel.showBPCSyncDialog.value = true
                                         }
-                                    } else {
-                                        viewModel.syncAllPending(networkSpeed)
                                     }
 
                                 }
