@@ -48,6 +48,7 @@ fun SurveyeeCardWithTolaFilterComponent(
     surveyeeStateList: List<SurveyeeCardState>,
     showCheckBox: Boolean,
     fromScreen: String,
+    primaryButtonText: String = "Start Baseline",
     checkBoxChecked: (surveyeeEntity: SurveyeeEntity, isChecked: Boolean) -> Unit,
     moveDidiToThisWeek: (surveyeeCardState: SurveyeeCardState, moveToThisWeek: Boolean) -> Unit,
     buttonClicked: (buttonName: ButtonName, surveyeeId: Int) -> Unit
@@ -111,6 +112,7 @@ fun SurveyeeCardWithTolaFilterComponent(
                     surveyeeState = surveyeeCardState,
                     showCheckBox = showCheckBox,
                     fromScreen = fromScreen,
+                    primaryButtonText = primaryButtonText,
                     checkBoxChecked = { surveyeeEntity, isChecked ->
                         checkBoxChecked(surveyeeEntity, isChecked)
                     },

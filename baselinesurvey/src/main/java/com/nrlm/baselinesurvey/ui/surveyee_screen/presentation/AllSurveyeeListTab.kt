@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.presentation
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -230,6 +231,7 @@ fun AllSurveyeeListTab(
                                 surveyeeStateList = surveyeeListWithTolaFilter[key] ?: emptyList(),
                                 showCheckBox = !isSelectionEnabled.value,
                                 fromScreen = ALL_TAB,
+                                primaryButtonText = "Start " + activityName.split(" ")[1],
                                 buttonClicked = { buttonName, surveyeeId ->
                                     handleButtonClick(
                                         buttonName,
