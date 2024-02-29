@@ -449,5 +449,7 @@
     <string name="to_the_nearest_bank_comparsion">To the nearest bank</string>
     <string name="to_the_replacement_string">"To the "</string>
     <string name="average_travel_cost_comparision">"Average travel cost "</string>
+    <string name="questions_data_tab_title">Questions Data</string>
+    <string name="section_information_tab_title">Section Information</string>
 
 </resources>

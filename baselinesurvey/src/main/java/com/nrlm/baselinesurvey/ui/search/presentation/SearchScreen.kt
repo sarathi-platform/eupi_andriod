@@ -192,7 +192,9 @@ fun SearchScreens(
                             },
                             text = {
                                 Text(
-                                    text = if (tab == ALL_TAB) stringResource(id = R.string.all_tab_title) else if (tab == QUESTION_DATA_TAB) "Questions Data" else "Section Information",
+                                    text = if (tab == ALL_TAB) stringResource(id = R.string.all_tab_title) else if (tab == QUESTION_DATA_TAB) stringResource(
+                                        R.string.questions_data_tab_title
+                                    ) else stringResource(R.string.section_information_tab_title),
                                     style = if (tabIndex == selectedTabIndex.intValue) smallTextStyle else smallTextStyleWithNormalWeight
                                 )
                             },
@@ -254,7 +256,9 @@ fun SearchScreens(
                            /*showCustomToast(context, "item-> sectionName${item.sectionName}," +
                                     " questionTitle: ${item.questionTitle}")*/
                         })
-                        Spacer(modifier = Modifier.fillMaxWidth().height(dimen_10_dp))
+                        Spacer(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(dimen_10_dp))
                     }
                 }
             }

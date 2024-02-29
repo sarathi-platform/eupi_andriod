@@ -14,8 +14,6 @@ import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.enums.NetworkSpeed
 import com.nudge.core.json
 import com.nudge.core.preference.CoreSharedPrefs
-import androidx.lifecycle.viewModelScope
-import com.nudge.core.database.dao.EventsDao
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.SyncBPCDataOnServer
@@ -39,7 +37,6 @@ import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
-import com.patsurvey.nudge.model.request.AddCohortRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.ConnectionMonitor
@@ -58,11 +55,8 @@ import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
 import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.Tola
 import com.patsurvey.nudge.utils.TolaStatus
 import com.patsurvey.nudge.utils.WealthRank
-import com.patsurvey.nudge.utils.getSampleEvent
-import com.patsurvey.nudge.utils.json
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
