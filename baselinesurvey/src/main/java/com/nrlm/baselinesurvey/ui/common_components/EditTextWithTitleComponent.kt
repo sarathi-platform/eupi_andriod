@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.common_components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,6 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.MAXIMUM_RANGE_LENGTH
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.theme.borderGrey
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
@@ -70,7 +72,9 @@ fun EditTextWithTitleComponent(
                     if (it.length <= maxLength) {
                         if (isOnlyNumber) {
                             if (onlyNumberField(it)) {
-                                txt.value = it
+                                if (it.length <= MAXIMUM_RANGE_LENGTH) {
+                                    txt.value = it
+                                }
                             }
                         } else {
                             txt.value = it
@@ -78,22 +82,25 @@ fun EditTextWithTitleComponent(
                     }
                     onAnswerSelection(txt.value)
                 },
-                keyboardOptions = if (isOnlyNumber)
+                keyboardOptions = if (isOnlyNumber) {
                     KeyboardOptions(
                         imeAction = ImeAction.Done,
                         capitalization = KeyboardCapitalization.None,
                         autoCorrect = true,
                         keyboardType = KeyboardType.Number,
                     )
-                else KeyboardOptions(
-                    imeAction = ImeAction.Done,
-                    keyboardType = KeyboardType.Ascii
-                ),
+                } else {
+                    KeyboardOptions(
+                        imeAction = ImeAction.Done,
+                        keyboardType = KeyboardType.Ascii
+                    )
+                },
                 keyboardActions = KeyboardActions(onDone = {
                     focusManager.clearFocus()
                     keyboardController?.hide()
                     onAnswerSelection(txt.value)
                 }),
+                maxLines = 2,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = placeholderGrey,
                     unfocusedBorderColor = borderGrey,

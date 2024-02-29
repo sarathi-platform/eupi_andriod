@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.search.viewmodel
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -31,8 +32,8 @@ class SearchScreenViewModel @Inject constructor(
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
 
-    private val _complexSearchStateList = mutableStateListOf<ComplexSearchState>()
-    val complexSearchStateList: SnapshotStateList<ComplexSearchState> get() = _complexSearchStateList
+    private val _complexSearchStateList = mutableStateOf(mutableListOf<ComplexSearchState>())
+    val complexSearchStateList: State<List<ComplexSearchState>> get() = _complexSearchStateList
 
     private var _filteredComplexSearchStateList = mutableStateListOf<ComplexSearchState>()
     val filteredComplexSearchStateList: SnapshotStateList<ComplexSearchState> get() = _filteredComplexSearchStateList
@@ -42,8 +43,11 @@ class SearchScreenViewModel @Inject constructor(
             val selectedLanguageId =
                 searchScreenUserCase.getSectionListForSurveyUseCase.getSelectedLanguage()
             val sectionDetail = searchScreenUserCase.getSectionListForSurveyUseCase.invoke(surveyId, selectedLanguageId)
-            val complexSearchStateList = sectionDetail.convertToComplexSearchState()
-            _complexSearchStateList.addAll(complexSearchStateList)
+            val mComplexSearchStateList = sectionDetail.convertToComplexSearchState()
+            if (complexSearchStateList.value.isNotEmpty()) {
+                _complexSearchStateList.value.clear()
+            }
+            _complexSearchStateList.value.addAll(mComplexSearchStateList)
         }
     }
 
@@ -52,7 +56,7 @@ class SearchScreenViewModel @Inject constructor(
         val filterList = ArrayList<ComplexSearchState>()
         when (tabFilter) {
             SearchTab.SECTION_INFORMATION_TAB -> {
-                val mLocalList = complexSearchStateList.filter { it.isSectionSearchOnly }
+                val mLocalList = complexSearchStateList.value.filter { it.isSectionSearchOnly }
 
                 if (queryTerm.isNotEmpty()) {
                     mLocalList.forEach { complexSearchState ->
@@ -65,7 +69,7 @@ class SearchScreenViewModel @Inject constructor(
                 }
             }
             SearchTab.QUESTION_DATA_TAB -> {
-                val mLocalList = complexSearchStateList
+                val mLocalList = complexSearchStateList.value
                 if (queryTerm.isNotEmpty()) {
                     mLocalList.forEach { complexSearchState ->
                         if (complexSearchState.questionTitle.contains(queryTerm, true)) {
@@ -77,7 +81,7 @@ class SearchScreenViewModel @Inject constructor(
                 }
             }
             else -> {
-                val mLocalList = complexSearchStateList
+                val mLocalList = complexSearchStateList.value
                 if (queryTerm.isNotEmpty()) {
                     mLocalList.forEach { complexSearchState ->
                         if (complexSearchState.questionTitle.contains(queryTerm, true)

@@ -73,7 +73,7 @@ fun FormTypeQuestionScreen(
 
     val saveButtonActiveState = remember {
         derivedStateOf {
-            referenceId.isNotBlank() || (viewModel.answeredOptionCount.intValue >= viewModel.totalOptionSize.value)
+            referenceId.isNotBlank() || (viewModel.answeredOptionCount.intValue >= viewModel.totalOptionSize.intValue)
         }
     }
 
@@ -154,8 +154,9 @@ fun FormTypeQuestionScreen(
                 if (!viewModel.loaderState.value.isLoaderVisible) {
                     NestedLazyListForFormQuestions(
                         viewModel = viewModel,
-                        answeredQuestionCountIncreased = { count ->
-                            viewModel.answeredOptionCount.value = count
+                        answeredQuestionCountIncreased = {
+                            viewModel.updateCachedData()
+//                            viewModel.answeredOptionCount.value = count
                         },
                         onSaveFormTypeOption = { questionTypeEvent ->
                             viewModel.onEvent(

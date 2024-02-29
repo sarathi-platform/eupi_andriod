@@ -3,12 +3,14 @@ package com.nrlm.baselinesurvey
 import androidx.compose.ui.unit.dp
 
 const val BLANK_STRING=""
+const val ZERO_RESULT = "0"
 const val DEFAULT_LANGUAGE_CODE="en"
 const val DEFAULT_LANGUAGE_NAME = "English"
 const val DEFAULT_LANGUAGE_LOCAL_NAME = "English"
 const val MOBILE_NUMBER_LENGTH=10
 const val ASSET_VALUE_LENGTH = 8
 const val MAXIMUM_RANGE = 999999
+const val MAXIMUM_RANGE_LENGTH = 12
 const val OTP_LENGTH = 6
 var OTP_RESEND_DURATION: Long = 30 * 1000
 var EXPANSTION_TRANSITION_DURATION: Int = 450

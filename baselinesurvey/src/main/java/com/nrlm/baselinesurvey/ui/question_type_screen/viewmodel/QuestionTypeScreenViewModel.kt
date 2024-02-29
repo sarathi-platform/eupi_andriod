@@ -285,10 +285,10 @@ class QuestionTypeScreenViewModel @Inject constructor(
                         updateQuestionStateForCondition(false, conditionsDto)
                     }
                 }
-                totalOptionSize.intValue = updatedOptionList.filter { it.showQuestion }.size
+                /*totalOptionSize.intValue = updatedOptionList.filter { it.showQuestion }.size
                 if (answeredOptionCount.intValue > totalOptionSize.intValue) {
                     answeredOptionCount.intValue = totalOptionSize.intValue
-                }
+                }*/
             }
 
             is QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent -> {
@@ -413,10 +413,13 @@ class QuestionTypeScreenViewModel @Inject constructor(
         }
     }
 
-    private fun updateCachedData() {
+    fun updateCachedData() {
 //        _formQuestionResponseEntity.value = storeCacheForResponse
-        totalOptionSize.intValue = optionList.value.size
-        answeredOptionCount.intValue = (answeredOptionCount.intValue + storeCacheForResponse.size).coerceIn(0, totalOptionSize.intValue)
+        val tempList = updatedOptionList.toList()
+        totalOptionSize.intValue = tempList.distinctBy { it.optionId }.filter { it
+            .optionItemEntity?.optionType != QuestionType.Form.name && it.optionItemEntity?.optionType != QuestionType.Calculation.name }.filter { it.showQuestion }.size
+        answeredOptionCount.intValue = (storeCacheForResponse.size).coerceIn(0, totalOptionSize.intValue)
+        Log.d(TAG, "updateCachedData: storeCacheForResponse.size: ${storeCacheForResponse.size}, totalOptionSize.intValue: ${totalOptionSize.intValue}, answeredOptionCount.intValue: ${answeredOptionCount.intValue}")
     }
 
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -29,6 +30,8 @@ import androidx.constraintlayout.compose.Dimension
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
+import com.nrlm.baselinesurvey.ui.theme.dimen_20_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_40_dp
 import com.nrlm.baselinesurvey.ui.theme.greenLight
 import com.nrlm.baselinesurvey.ui.theme.greenOnline
 import com.nrlm.baselinesurvey.ui.theme.greyBorder
@@ -179,6 +182,8 @@ fun SectionItemComponent(
 
 
                 }
+//                Spacer(modifier = Modifier.size(dimen_40_dp))
+
                 if (sectionStateItem.section.contentData?.isNotEmpty() == true) {
                     IconButton(
                         onClick = { onDetailIconClicked(sectionStateItem.section.sectionId) },

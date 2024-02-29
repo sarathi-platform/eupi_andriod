@@ -13,6 +13,7 @@ enum class QuestionType {
     SingleSelectDropDown,
     Toggle,
     InputNumber,
+    InputNumberEditText,
     Calculation;
 }
 

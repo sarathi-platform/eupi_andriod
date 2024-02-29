@@ -22,6 +22,7 @@ import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_NAME
+import com.nrlm.baselinesurvey.ZERO_RESULT
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
@@ -882,29 +883,35 @@ fun isNumeric(toCheck: String): Boolean {
 }
 
 fun ConditionsDto.calculateResultForFormula(formQuestionResponseEntity: List<FormQuestionResponseEntity>): String {
-    val optionIdList = this.value.extractIdsFromValue()
-    val filteredResponseList =
-        formQuestionResponseEntity.filter { optionIdList?.contains(it.optionId.toString()) == true }
-            .sortedBy { it.optionId }
-    var input = this.value
+    try {
+        val optionIdList = this.value.extractIdsFromValue()
+        val filteredResponseList =
+            formQuestionResponseEntity.filter { optionIdList?.contains(it.optionId.toString()) == true }
+                .sortedBy { it.optionId }
+        var input = this.value
 
-    if (filteredResponseList.isEmpty())
-        return BLANK_STRING
-    val tempList = ArrayList<String>()
-    input.split(" ").filter { it != "" }.forEach { va ->
-        if (va.isNotEmpty() && isNumeric(va)) {
-            tempList.add(filteredResponseList.findResponseEntityByOptionId(va.toInt()).selectedValue)
-        } else {
-            tempList.add(va)
+        if (filteredResponseList.isEmpty())
+            return BLANK_STRING
+        val tempList = ArrayList<String>()
+        input.split(" ").filter { it != "" }.forEach { va ->
+            if (va.isNotEmpty() && isNumeric(va)) {
+                tempList.add(filteredResponseList.findResponseEntityByOptionId(va.toInt()).selectedValue)
+            } else {
+                tempList.add(va)
+            }
         }
+        var actualvalue = BLANK_STRING
+        for (v in tempList) {
+            actualvalue += v
+        }
+        val result = CalculatorUtils.calculate(actualvalue)
+        Log.d("TAG", "calculateResultForFormula: $result")
+        return result.toString()
+    } catch (ex: Exception) {
+        BaselineLogger.e("Utils", "calculateResultForFormula -> exception: ${ex.message}", ex)
+        return ZERO_RESULT
     }
-    var actualvalue = BLANK_STRING
-    for (v in tempList) {
-        actualvalue += v
-    }
-    val result = CalculatorUtils.calculate(actualvalue)
-    Log.d("TAG", "calculateResultForFormula: $result")
-    return result.toString()
+
 }
 
 fun String.extractIdsFromValue(): List<String>? {

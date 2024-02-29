@@ -56,7 +56,7 @@ class FetchSurveyeeListFromNetworkUseCase(
                             dadaName = BLANK_STRING,
                             casteId = -1,
                             cohortId = it.cohortId ?: -1,
-                            cohortName = BLANK_STRING,
+                            cohortName = it.villageName ?: BLANK_STRING,
                             houseNo = BLANK_STRING,
                             villageId = it.villageId ?: -1,
                             villageName = it.villageName ?: BLANK_STRING,

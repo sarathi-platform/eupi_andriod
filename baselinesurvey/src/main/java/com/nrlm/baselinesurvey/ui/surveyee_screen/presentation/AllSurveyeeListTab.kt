@@ -22,6 +22,7 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.THIS_WEEK_TAB
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.MoveSurveyeesUpdateBannerComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
@@ -76,13 +78,14 @@ fun AllSurveyeeListTab(
 
     val surveyeeListWithTolaFilter = viewModel.tolaMapSurveyeeListState.value
 
-    val isFilterAppliedState = remember {
-        mutableStateOf(FilterListState())
-    }
 
     val linearProgress = remember {
         mutableStateOf(0.0f)
     }
+    LaunchedEffect(key1 = true){
+        viewModel.pageFrom.value= ALL_TAB
+    }
+
 
     Box {
         Column(
@@ -129,15 +132,15 @@ fun AllSurveyeeListTab(
                     item {
                         SearchWithFilterViewComponent(
                             placeholderString = stringResource(id = R.string.search_didis),
-                            filterSelected = isFilterAppliedState.value.isFilterApplied,
+                            filterSelected = viewModel.isFilterAppliedState.value.isFilterApplied,
                             onFilterSelected = {
                                 if (surveyeeList.isNotEmpty()) {
-                                    isFilterAppliedState.value = isFilterAppliedState.value.copy(
+                                    viewModel.isFilterAppliedState.value = viewModel.isFilterAppliedState.value.copy(
                                         isFilterApplied = !it
                                     )
                                     onActionEvent(
                                         SurveyeeListScreenActions.IsFilterApplied(
-                                            isFilterAppliedState.value
+                                            viewModel.isFilterAppliedState.value
                                         )
                                     )
                                     viewModel.onEvent(SearchEvent.FilterList(ALL_TAB))
@@ -147,7 +150,7 @@ fun AllSurveyeeListTab(
                                 viewModel.onEvent(
                                     SearchEvent.PerformSearch(
                                         queryTerm,
-                                        isFilterAppliedState.value.isFilterApplied,
+                                        viewModel.isFilterAppliedState.value.isFilterApplied,
                                         ALL_TAB
                                     )
                                 )
@@ -184,7 +187,7 @@ fun AllSurveyeeListTab(
                         MoveSurveyeesUpdateBannerComponent(showBanner = viewModel.showMoveDidisBanner, surveyeeIdList = viewModel.checkedItemsState.value)
                     }
 
-                    if (!isFilterAppliedState.value.isFilterApplied) {
+                    if (!viewModel.isFilterAppliedState.value.isFilterApplied) {
                         itemsIndexed(items = surveyeeList) { index, item ->
                             SurveyeeCardComponent(
                                 surveyeeState = item,
