@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.survey
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -60,6 +61,7 @@ import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.IncrementDecrementView
+import com.patsurvey.nudge.utils.NumericQuestionsErrorEnum
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
@@ -216,7 +218,8 @@ val context = LocalContext.current
                                     onSubmitClick(2)
                                 }
                             }, onLimitFailed = {
-                                showToast(context, context.getString(R.string.earning_member_can_not_be_more_than_family_members))
+                                Log.d("TAG", "NumericFieldTypeQuestion: onLimitFailed: $it")
+//                                showToast(context, context.getString(R.string.earning_member_can_not_be_more_than_family_members))
                             })
                     }
 

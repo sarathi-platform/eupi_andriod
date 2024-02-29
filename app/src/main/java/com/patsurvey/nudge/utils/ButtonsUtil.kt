@@ -2,7 +2,6 @@ package com.patsurvey.nudge.utils
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -1332,7 +1331,7 @@ fun IncrementDecrementView(modifier: Modifier,
                 Row(modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        var isValidCount = true
+                        var errorType = NumericQuestionsErrorEnum.NO_ERROR.name
                         if (questionFlag.equals(QUESTION_FLAG_RATIO, true)) {
                             val otherOptionValueCount =
                                 findOptionValueCount(optionList, optionValue ?: 1)
@@ -1341,19 +1340,17 @@ fun IncrementDecrementView(modifier: Modifier,
                                 if (newCurrentCount.isEmpty()) 0 else newCurrentCount.toInt()
                             if (optionValue == 1) {
                                 if (intCnt < otherOptionValueCount)
-                                    isValidCount = false
+                                   errorType=NumericQuestionsErrorEnum.TOTAL_FAMILY_MEMBER_NOT_LESS_THAN_EARNING_MEMBER_ERROR.name
 
                                 if(intCnt<=1)
-                                    isValidCount=false
-
-                                Log.d("TAG", "IncrementDecrementView Total Family: $optionValue :: $intCnt :: $otherOptionValueCount")
+                                    errorType=NumericQuestionsErrorEnum.TOTAL_FAMILY_MEMBER_LOW_LIMIT_ERROR.name
                             }
                         }
 
-                        if (isValidCount) {
+                        if (errorType == NumericQuestionsErrorEnum.NO_ERROR.name) {
                             currentCount = incDecValue(0, currentCount)
                             onDecrementClick(if (currentCount.isEmpty()) 0 else currentCount.toInt())
-                        } else onLimitFailed("Low Limit")
+                        } else onLimitFailed(errorType)
                     }, horizontalArrangement = Arrangement.Center){
                     Icon(
                         painter = painterResource(id = R.drawable.minus_icon),
@@ -1376,28 +1373,31 @@ fun IncrementDecrementView(modifier: Modifier,
                     readOnly = false,
                     onValueChange = {
                         if(onlyNumberField(it)) {
-                            var isValidCount = true
+                            var errorType=NumericQuestionsErrorEnum.NO_ERROR.name
                             if (questionFlag.equals(QUESTION_FLAG_RATIO, true)) {
                                 val otherOptionValueCount =  findOptionValueCount(optionList,optionValue?:1)
                                 val intCnt =
                                     if (it.isEmpty()) 0 else it.toInt()
                                 if (optionValue == 1) {
                                     if (intCnt < otherOptionValueCount)
-                                        isValidCount = false
+                                        errorType=NumericQuestionsErrorEnum.TOTAL_FAMILY_MEMBER_NOT_LESS_THAN_EARNING_MEMBER_ERROR.name
+
+                                    if(intCnt<=1)
+                                        errorType=NumericQuestionsErrorEnum.TOTAL_FAMILY_MEMBER_LOW_LIMIT_ERROR.name
                                 }
 
                                 if (optionValue == 2) {
                                     if (intCnt > (otherOptionValueCount ?: 0))
-                                        isValidCount = false
+                                        errorType = NumericQuestionsErrorEnum.EARNING_MEMBERS_NOT_MORE_THAN_FAMILY_MEMBER_ERROR.name
                                 }
                             }
-                            if(isValidCount) {
+                            if(errorType == NumericQuestionsErrorEnum.NO_ERROR.name) {
                                 val currentIt = if (it.isEmpty()) 0 else it.toInt()
                                 if (currentIt <= MAXIMUM_RANGE) {
                                     currentCount = it.ifEmpty { "" }
                                     onValueChange(it)
                                 }
-                            }else onLimitFailed("Limit Entered Exceeded")
+                            }else onLimitFailed(errorType)
                             }
                     },
                     placeholder = {
@@ -1457,7 +1457,7 @@ fun IncrementDecrementView(modifier: Modifier,
                     )
                 )
                 .clickable {
-                    var isValidCount = true
+                    var errorType=NumericQuestionsErrorEnum.NO_ERROR.name
                     if (questionFlag.equals(QUESTION_FLAG_RATIO, true)) {
                         val otherOptionValueCount =
                             findOptionValueCount(optionList, optionValue ?: 1)
@@ -1466,13 +1466,13 @@ fun IncrementDecrementView(modifier: Modifier,
                             if (newCurrentCount.isEmpty()) 0 else newCurrentCount.toInt()
                         if (optionValue == 2) {
                             if (intCnt > (otherOptionValueCount ?: 0))
-                                isValidCount = false
+                                 errorType = NumericQuestionsErrorEnum.EARNING_MEMBERS_NOT_MORE_THAN_FAMILY_MEMBER_ERROR.name
                         }
                     }
-                    if (isValidCount) {
+                    if (errorType == NumericQuestionsErrorEnum.NO_ERROR.name) {
                         currentCount = incDecValue(1, currentCount)
                         onIncrementClick(if (currentCount.isEmpty()) 0 else currentCount.toInt())
-                    } else onLimitFailed("Limit Exceeded")
+                    } else onLimitFailed(errorType)
 
                 },
                 contentAlignment = Alignment.Center){
