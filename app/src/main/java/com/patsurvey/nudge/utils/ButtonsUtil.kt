@@ -2,6 +2,7 @@ package com.patsurvey.nudge.utils
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -1335,12 +1336,17 @@ fun IncrementDecrementView(modifier: Modifier,
                         if (questionFlag.equals(QUESTION_FLAG_RATIO, true)) {
                             val otherOptionValueCount =
                                 findOptionValueCount(optionList, optionValue ?: 1)
-                            val newCurrentCount = incDecValue(0, currentCount,optionValue==1)
+                            val newCurrentCount = incDecValue(0, currentCount, optionValue == 1)
                             val intCnt =
                                 if (newCurrentCount.isEmpty()) 0 else newCurrentCount.toInt()
                             if (optionValue == 1) {
                                 if (intCnt < otherOptionValueCount)
                                     isValidCount = false
+
+                                if(intCnt<=1)
+                                    isValidCount=false
+
+                                Log.d("TAG", "IncrementDecrementView Total Family: $optionValue :: $intCnt :: $otherOptionValueCount")
                             }
                         }
 
