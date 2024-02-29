@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.ui.language.presentation.LanguageSelectionEvent
 import com.nrlm.baselinesurvey.ui.language.presentation.LanguagesState
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.LanguageScreenUseCase
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LanguageScreenViewModel @Inject constructor(
-    private val languageScreenUseCase: LanguageScreenUseCase
+    private val languageScreenUseCase: LanguageScreenUseCase,
+    val prefRepo: PrefRepo
 ): BaseViewModel() {
 
     private val _languagesState = mutableStateOf<LanguagesState>(LanguagesState())
@@ -71,11 +73,19 @@ class LanguageScreenViewModel @Inject constructor(
                     }
                 }
             }
+
             is LanguageSelectionEvent.ChangeAppLanguage -> {
-                languageScreenUseCase.saveSelectedLanguageUseCase.saveSelectedLanguageCode(event.mainActivity, event.languageCode)
+                languageScreenUseCase.saveSelectedLanguageUseCase.saveSelectedLanguageCode(
+                    event.mainActivity,
+                    event.languageCode
+                )
             }
         }
 
+    }
+
+    fun getLanguageScreenOpenFrom(): Boolean {
+        return languageScreenUseCase.getLanguageScreenOpenFromUserCase.invoke()
     }
 
 }

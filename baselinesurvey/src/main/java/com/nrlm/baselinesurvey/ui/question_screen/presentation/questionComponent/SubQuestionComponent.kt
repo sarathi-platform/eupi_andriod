@@ -136,7 +136,6 @@ private fun getOptionList(
             count = optionsItem?.count,
             optionImage = optionsItem?.optionImage,
             optionType = optionsItem?.optionType,
-            questionList = optionsItem?.questionList,
             conditional = optionsItem?.conditional ?: false,
             order = optionsItem?.order ?: 0,
             values = optionsItem?.values,

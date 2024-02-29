@@ -10,15 +10,18 @@ import com.nrlm.baselinesurvey.database.entity.ContentEntity
 @Dao
 interface ContentDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertContent(contentEntity: ContentEntity)
+    fun insertContent(contents: List<ContentEntity>)
 
-    @Query("SELECT * FROM $CONTENT_TABLE_NAME where sectionId=:sectionId  and surveyId=:surveyId and languageId=:languageId")
-    fun getContentFromIds(surveyId: Int, sectionId: Int, languageId: Int): ContentEntity
+    @Query("SELECT * FROM $CONTENT_TABLE_NAME where contentKey=:contentkey")
+    fun getContentFromIds(contentkey: String): ContentEntity
+
+//    @Query("SELECT * FROM $CONTENT_TABLE_NAME where contentKey=:contentkey")
+//    fun isContentFromIds(contentkey: String): Boolean
 
     @Query("DELETE FROM $CONTENT_TABLE_NAME")
     fun deleteContent()
 
-    @Query("Delete from $CONTENT_TABLE_NAME where surveyId = :surveyId and languageId = :languageId")
-    fun deleteContentFroLanguage(surveyId: Int, languageId: Int)
+//    @Query("Delete from $CONTENT_TABLE_NAME where surveyId = :surveyId and languageId = :languageId")
+//    fun deleteContentFroLanguage(surveyId: Int, languageId: Int)
 
 }

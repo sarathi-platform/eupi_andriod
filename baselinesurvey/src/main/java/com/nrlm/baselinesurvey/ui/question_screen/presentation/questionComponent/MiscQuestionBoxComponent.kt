@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
@@ -63,7 +64,7 @@ fun MiscQuestionBoxComponent(
     modifier: Modifier = Modifier,
     questionIndex: Int,
     question: QuestionEntity,
-    infoSubTitle: String? = BLANK_STRING,
+    contests: List<ContentEntity?>? = listOf(),
     showQuestionState: QuestionEntityState = QuestionEntityState.getEmptyStateObject(),
     selectedOptionMapForNumericInputTypeQuestions: Map<Int, InputTypeQuestionAnswerEntity>,
     selectedOption: OptionItemEntity?,
@@ -76,20 +77,22 @@ fun MiscQuestionBoxComponent(
 //    var selectedIndex by remember { mutableIntStateOf(selectedOptionIndex) }
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyListState = rememberLazyListState()
-    val manualMaxHeight = showQuestionState.optionItemEntityState.size * 100
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
             scope.launch { outerState.scrollToItem(outerState.layoutInfo.totalItemsCount) }
         println("outer ${outerState.layoutInfo.visibleItemsInfo.map { it.index }}")
         println("inner ${innerState.layoutInfo.visibleItemsInfo.map { it.index }}")
     }
+
+    val manualMaxHeight = (showQuestionState.optionItemEntityState.size * 100).dp
+
     BoxWithConstraints(
         modifier = modifier
             .scrollable(
                 state = outerState,
                 Orientation.Vertical,
             )
-            .heightIn(min = 100.dp, maxCustomHeight + manualMaxHeight.dp)
+            .heightIn(min = 100.dp, maxCustomHeight + manualMaxHeight)
     ) {
 
         VerticalAnimatedVisibilityComponent(visible = showQuestionState.showQuestion) {
@@ -115,7 +118,7 @@ fun MiscQuestionBoxComponent(
                         LazyColumn(
                             state = outerState,
                             modifier = Modifier
-                                .heightIn(min = 110.dp, max = maxCustomHeight + manualMaxHeight.dp)
+                                .heightIn(min = 110.dp, max = maxCustomHeight + manualMaxHeight)
                         ) {
                             item {
 
@@ -152,8 +155,8 @@ fun MiscQuestionBoxComponent(
                                         .wrapContentWidth()
                                         .padding(horizontal = dimen_16_dp)
                                         .heightIn(
-                                            min = 110.dp,
-                                            max = maxCustomHeight + manualMaxHeight.dp
+                                            min = 80.dp,
+                                            max = maxCustomHeight + manualMaxHeight
                                         )
                                 ) {
                                     itemsIndexed(
@@ -166,7 +169,8 @@ fun MiscQuestionBoxComponent(
                                                     optionsItem.optionItemEntity.display,
                                                     showQuestion = optionsItem,
                                                     defaultValue = selectedOption?.selectedValue
-                                                        ?: ""
+                                                        ?: "",
+                                                    isOnlyNumber = optionsItem?.optionItemEntity?.optionType == QuestionType.InputNumber.name
                                                 ) { inputValue ->
                                                     onAnswerSelection(
                                                         questionIndex,
@@ -193,10 +197,13 @@ fun MiscQuestionBoxComponent(
                                                 Spacer(modifier = Modifier.height(dimen_8_dp))
                                             }
 
-                                            QuestionType.SingleSelectDropdown.name -> {
+                                            QuestionType.SingleSelectDropdown.name,
+                                            QuestionType.SingleSelectDropDown.name -> {
                                                 TypeDropDownComponent(
-                                                    title = optionsItem.optionItemEntity.display ?: BLANK_STRING,
-                                                    hintText = optionsItem.optionItemEntity.selectedValue ?: "Select",
+                                                    title = optionsItem.optionItemEntity.display
+                                                        ?: BLANK_STRING,
+                                                    hintText = optionsItem.optionItemEntity.selectedValue
+                                                        ?: "Select",
                                                     showQuestionState = optionsItem,
                                                     sources = optionsItem.optionItemEntity.values,
                                                     selectOptionText = selectedOption?.selectedValue
@@ -220,7 +227,7 @@ fun MiscQuestionBoxComponent(
                                         .fillMaxWidth()
                                         .height(dimen_10_dp)
                                 )
-                                if (infoSubTitle?.isNotBlank() == true) {
+                                if (contests?.isNotEmpty() == true) {
                                     Divider(
                                         thickness = dimen_1_dp,
                                         color = lightGray2,
@@ -229,8 +236,8 @@ fun MiscQuestionBoxComponent(
                                     ExpandableDescriptionContentComponent(
                                         questionDetailExpanded,
                                         questionIndex,
-                                        question,
-                                        subTitle = infoSubTitle,
+                                        contents = contests,
+                                        subTitle = BLANK_STRING,
                                         imageClickListener = { imageTypeDescriptionContent ->
                                             onMediaTypeDescriptionAction(
                                                 DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,

@@ -5,7 +5,6 @@ import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
-import com.nrlm.baselinesurvey.model.response.ContentList
 
 data class SectionListItem(
 
@@ -25,12 +24,12 @@ data class SectionListItem(
 
 //    val sectionIcon: Int = 0,
 
-    val contentData: ContentEntity? = null,
+    val contentData: List<ContentEntity?>? = null,
 
     val questionList: List<QuestionEntity> = listOf(),
 
     val questionAnswerMapping: Map<Int, List<OptionItemEntity>> = mapOf(),
-    val questionContentMapping: Map<Int, List<ContentList>> = mapOf(),
+    val questionContentMapping: Map<Int, List<ContentEntity>> = mapOf(),
 
     val languageId: Int,
     val optionsItemMap: Map<Int, List<OptionItemEntity>> = mapOf()

@@ -8,6 +8,7 @@ import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
+import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
@@ -46,12 +47,13 @@ class SectionListScreenRepositoryImpl(
                 survey?.surveyId ?: 0,
                 languageId
             )
-            val contentData = contentDao.getContentFromIds(
-                sectionEntity.surveyId,
-                sectionEntity.sectionId,
-                languageId
-            )
-
+            val contents = mutableListOf<ContentEntity>()
+            for (content in sectionEntity.contentEntities) {
+                val contentEntity = content.contentKey?.let { contentDao.getContentFromIds(it) }
+                if (contentEntity != null) {
+                    contents.add(contentEntity)
+                }
+            }
             val questionOptionMap = mutableMapOf<Int, List<OptionItemEntity>>()
             if (questionList.isNotEmpty()) {
                 for (question in questionList) {
@@ -70,7 +72,7 @@ class SectionListScreenRepositoryImpl(
                     sectionIcon = sectionEntity.sectionIcon,
                     sectionDetails = sectionEntity.sectionDetails,
                     sectionOrder = sectionEntity.sectionOrder,
-                    contentData = contentData,
+                    contentData = contents,
                     languageId = languageId,
                     questionList = questionList,
                     optionsItemMap = questionOptionMap,
@@ -102,6 +104,69 @@ class SectionListScreenRepositoryImpl(
                     SectionStatus.INPROGRESS.ordinal
                 )
             }*/
+        }
+        return sectionList
+    }
+
+    override fun getSectionListForSurvey(surveyId: Int, languageId: Int): List<SectionListItem> {
+        val survey = surveyEntityDao.getSurveyDetailForLanguage(surveyId, languageId)
+        val sectionEntityList =
+            sectionEntityDao.getAllSectionForSurveyInLanguage(survey?.surveyId ?: 0, languageId)
+        val sectionList = mutableListOf<SectionListItem>()
+        sectionEntityList.forEach { sectionEntity ->
+            val questionList = questionEntityDao.getSurveySectionQuestionForLanguage(
+                sectionEntity.sectionId,
+                survey?.surveyId ?: 0,
+                languageId
+            )
+            val optionItemList = optionItemDao.getSurveySectionQuestionOptionForLanguage(
+                sectionEntity.sectionId,
+                survey?.surveyId ?: 0,
+                languageId
+            )
+
+            val questionOptionMap = mutableMapOf<Int, List<OptionItemEntity>>()
+            if (questionList.isNotEmpty()) {
+                for (question in questionList) {
+                    val options = optionItemList.filter { it.questionId == question.questionId }
+                    if (!questionOptionMap.containsKey(question.questionId)) {
+                        questionOptionMap[question.questionId!!] = options
+                    }
+                }
+            }
+
+            sectionList.add(
+                SectionListItem(
+                    sectionId = sectionEntity.sectionId,
+                    sectionName = sectionEntity.sectionName,
+                    surveyId = sectionEntity.surveyId,
+                    sectionIcon = sectionEntity.sectionIcon,
+                    sectionDetails = sectionEntity.sectionDetails,
+                    sectionOrder = sectionEntity.sectionOrder,
+                   // contentList = emptyList(),
+                    languageId = languageId,
+                    questionList = questionList,
+                    optionsItemMap = questionOptionMap,
+                    questionSize = sectionEntity.questionSize
+                )
+            )
+            val sectionProgressForDidiLocal =
+                didiSectionProgressEntityDao.getSectionProgressForDidi(
+                    survey?.surveyId ?: 0,
+                    sectionEntity.sectionId,
+                    0
+                )
+            if (sectionProgressForDidiLocal == null) {
+                didiSectionProgressEntityDao.addDidiSectionProgress(
+                    DidiSectionProgressEntity(
+                        id = 0,
+                        sectionEntity.surveyId,
+                        sectionEntity.sectionId,
+                        0,
+                        sectionStatus = SectionStatus.INPROGRESS.ordinal
+                    )
+                )
+            }
         }
         return sectionList
     }

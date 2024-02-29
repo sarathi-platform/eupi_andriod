@@ -85,6 +85,7 @@ const val PREF_KEY_PROFILE_IMAGE="profile_image"
 const val PREF_KEY_ROLE_NAME = "role_name"
 const val PREF_KEY_TYPE_NAME = "type_name"
 const val PREF_STATE_ID = "stateId"
+const val PREF_CASTE_LIST = "caste_list"
 const val PREF_KEY_VO_ENDORSEMENT_STATUS = "voEndorsementStatus"
 const val SNACKBAR_TAG = "snackbar"
 const val SNACKBAR_MESSAGE = "snackbarMessage"
@@ -294,13 +295,19 @@ const val ARG_ACTIVITY_DATE = "activity_date"
 const val ARG_MISSION_ID = "mission_id"
 const val ARG_MISSION_NAME = "mission_name"
 const val ARG_MISSION_DATE = "mission_date"
+const val ARG_ACTIVITY_NAME = "activity_name"
 
 const val DELAY_1_MS: Long = 100
-const val DELAY_2_MS:Long = 200
+const val DELAY_2_MS: Long = 200
 const val DELAY_1_SEC: Long = 1000
 const val DELAY_2_SEC: Long = 2000
 
 const val VALUE_NO = "No"
 
 const val CONDITIONS_DELIMITER = ","
+const val LANGUAGE_OPEN_FROM_SETTING = "language_open_from_setting"
+
+const val ARG_FROM_SECTION_SCREEN = "from_section_screen"
+const val ARG_FROM_QUESTION_SCREEN = "from_question_screen"
+
 

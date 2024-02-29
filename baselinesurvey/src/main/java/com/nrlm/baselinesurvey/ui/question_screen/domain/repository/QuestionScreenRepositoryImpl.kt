@@ -14,6 +14,7 @@ import com.nrlm.baselinesurvey.database.dao.SectionAnswerEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
+import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
@@ -24,7 +25,6 @@ import com.nrlm.baselinesurvey.model.request.AnswerDetailDTOList
 import com.nrlm.baselinesurvey.model.request.Options
 import com.nrlm.baselinesurvey.model.request.SaveSurveyRequestModel
 import com.nrlm.baselinesurvey.model.request.SectionList
-import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.json
@@ -67,25 +67,30 @@ class QuestionScreenRepositoryImpl @Inject constructor(
             survey?.surveyId ?: 0,
             languageId
         )
-        val contentData = contentDao.getContentFromIds(surveyId, sectionId, languageId)
+        val contents = mutableListOf<ContentEntity>()
+        for (content in sectionEntity.contentEntities) {
+            val contentEntity = content.contentKey?.let { contentDao.getContentFromIds(it) }
+            if (contentEntity != null) {
+                contents.add(contentEntity)
+            }
+        }
         val questionOptionMap = mutableMapOf<Int, List<OptionItemEntity>>()
-        val questionContentMap = mutableMapOf<Int, List<ContentList>>()
-
+        val questionContentMap = mutableMapOf<Int, List<ContentEntity>>()
         if (questionList.isNotEmpty()) {
             for (question in questionList) {
-                contentData.questionContentMapping.forEach { questionContent ->
-                    question.questionId?.let {
-                        questionContent[question.questionId]?.let { it1 ->
-                            questionContentMap.put(
-                                it,
-                                it1
-                            )
-                        }
-                    }
-                }
                 val options = optionList.filter { it.questionId == question.questionId }
                 if (!questionOptionMap.containsKey(question.questionId)) {
                     questionOptionMap[question.questionId!!] = options
+                }
+            }
+            for (question in questionList) {
+                for (content in question.contentEntities) {
+                    val contents = mutableListOf<ContentEntity>()
+                    val contentEntity = content.contentKey?.let { contentDao.getContentFromIds(it) }
+                    if (contentEntity != null) {
+                        contents.add(contentEntity)
+                        question.questionId?.let { questionContentMap.put(it, contents) }
+                    }
                 }
             }
         }
@@ -99,7 +104,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
             sectionDetails = sectionEntity.sectionDetails,
             sectionOrder = sectionEntity.sectionOrder,
             questionContentMapping = questionContentMap,
-            contentData = contentData,
+            contentData = contents,
             languageId = languageId,
             questionList = questionList,
             optionsItemMap = questionOptionMap,

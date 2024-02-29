@@ -41,6 +41,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.nrlm.baselinesurvey.ARG_FROM_HOME
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
+import com.nrlm.baselinesurvey.LANGUAGE_OPEN_FROM_SETTING
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.ONE_SECOND
 import com.nrlm.baselinesurvey.R
@@ -53,7 +54,7 @@ import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.textColorBlueLight
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.showCustomToast
-import com.patsurvey.nudge.navigation.AuthScreen
+import com.nrlm.baselinesurvey.navigation.AuthScreen
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -179,49 +180,27 @@ fun LanguageScreenComponent(
                             )
                         }
                         if (viewModel.isLanguageVillageAvailable.value) {
-                            viewModel.onEvent(LanguageSelectionEvent.ChangeAppLanguage((context as MainActivity),
-                                languagesState.languageList[languagesState.selectedLanguageId].langCode ?: DEFAULT_LANGUAGE_CODE
-                            ))
+                            viewModel.onEvent(
+                                LanguageSelectionEvent.ChangeAppLanguage(
+                                    (context as MainActivity),
+                                    languagesState.languageList[languagesState.selectedLanguageId].langCode
+                                        ?: DEFAULT_LANGUAGE_CODE
+                                )
+                            )
                         } else {
-                            viewModel.onEvent(LanguageSelectionEvent.ChangeAppLanguage((context as MainActivity),
-                                DEFAULT_LANGUAGE_CODE
-                            ))
+                            viewModel.onEvent(
+                                LanguageSelectionEvent.ChangeAppLanguage(
+                                    (context as MainActivity),
+                                    DEFAULT_LANGUAGE_CODE
+                                )
+                            )
                         }
                     }
-                    navController.navigate(AuthScreen.LOGIN.route)
-/*
-                    viewModel.languageList.value?.get(viewModel.languagePosition.value)?.let {
-                        it.id?.let { languageId->
-                            viewModel.languageRepository.prefRepo.saveAppLanguageId(languageId)
-                            if(!pageFrom.equals(ARG_FROM_HOME,true)){
-                                viewModel.updateSelectedVillage(languageId){
-                                    isLanguageVillageAvailable.value=false
-//                                    viewModel.prefRepo.saveAppLanguageId(2)
-                                }
-                            }
-                        }
-                        it.langCode?.let { code ->
-                            if(isLanguageVillageAvailable.value){
-                                viewModel.languageRepository.prefRepo.saveAppLanguage(code)
-                                (context as MainActivity).setLanguage(code)
-                            }else{
-                                viewModel.languageRepository.prefRepo.saveAppLanguage("en")
-                                (context as MainActivity).setLanguage("en")
-                            }
-                        }
+                    if (viewModel.getLanguageScreenOpenFrom()) {
+                        navController.popBackStack()
+                    } else {
+                        navController.navigate(AuthScreen.LOGIN.route)
                     }
-
-*/
-                   /* if(viewModel.languageRepository.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal){
-                        navController.popBackStack(AuthScreen.AUTH_SETTING_SCREEN.route, false)
-                    }else {
-                        if (pageFrom.equals(ARG_FROM_HOME, true))
-                            navController.navigate(AuthScreen.LOGIN.route)
-                        else {
-                            viewModel.languageRepository.prefRepo.savePref(PREF_OPEN_FROM_HOME, false)
-                            navController.popBackStack(Se.SETTING_SCREEN.route, false)
-                        }
-                    }*/
                 } catch (ex: Exception) {
                     BaselineLogger.e("LanguageScreen", "Continue Button click", ex)
                 }

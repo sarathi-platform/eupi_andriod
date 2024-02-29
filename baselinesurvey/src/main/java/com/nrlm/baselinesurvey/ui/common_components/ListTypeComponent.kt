@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
@@ -66,7 +67,7 @@ import kotlinx.coroutines.launch
 fun ListTypeQuestion(
     modifier: Modifier = Modifier,
     question: QuestionEntity,
-    infoSubTitle: String? = BLANK_STRING,
+    contests: List<ContentEntity?>? = listOf(),
     showQuestionState: QuestionEntityState = QuestionEntityState.getEmptyStateObject(),
     optionItemEntityList: List<OptionItemEntity>?,
     questionIndex: Int,
@@ -134,7 +135,7 @@ fun ListTypeQuestion(
                             item {
                                 Row(modifier = Modifier.padding(horizontal = dimen_16_dp)) {
                                     HtmlText(
-                                        text = "${question.questionId}. ",
+                                        text = "${questionIndex + 1}. ",
                                         style = TextStyle(
                                             fontFamily = NotoSans,
                                             fontWeight = FontWeight.SemiBold,
@@ -194,7 +195,7 @@ fun ListTypeQuestion(
                                         .fillMaxWidth()
                                         .height(dimen_10_dp)
                                 )
-                                if (infoSubTitle?.isNotBlank() == true) {
+                                if (contests?.isNotEmpty() == true) {
                                     Divider(
                                         thickness = dimen_1_dp,
                                         color = lightGray2,
@@ -203,8 +204,8 @@ fun ListTypeQuestion(
                                     ExpandableDescriptionContentComponent(
                                         questionDetailExpanded,
                                         questionIndex,
-                                        question,
-                                        subTitle = infoSubTitle,
+                                        subTitle = BLANK_STRING,
+                                        contents = contests,
                                         imageClickListener = { imageTypeDescriptionContent ->
                                             onMediaTypeDescriptionAction(
                                                 DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,

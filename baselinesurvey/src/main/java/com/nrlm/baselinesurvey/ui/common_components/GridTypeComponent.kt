@@ -31,7 +31,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -46,9 +45,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
+import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
@@ -57,13 +58,16 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_20_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_5_dp
 import com.nrlm.baselinesurvey.ui.theme.languageItemActiveBg
 import com.nrlm.baselinesurvey.ui.theme.lightGray2
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
+import com.nrlm.baselinesurvey.utils.getIndexById
 import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
@@ -71,7 +75,7 @@ import kotlinx.coroutines.launch
 fun GridTypeComponent(
     modifier: Modifier = Modifier,
     question: QuestionEntity,
-    infoSubTitle: String? = BLANK_STRING,
+    contests: List<ContentEntity?>? = listOf(),
     showQuestionState: QuestionEntityState = QuestionEntityState.getEmptyStateObject(),
     optionItemEntityList: List<OptionItemEntity>,
     questionIndex: Int,
@@ -91,10 +95,10 @@ fun GridTypeComponent(
         }
     }
 
-    val selectedIndices = remember { mutableStateListOf<Int>() }
-    selectedIndices.addAll(selectedOptionIndices)
+    val selectedIndices = remember { mutableStateOf(mutableSetOf<Int>()) }
+    selectedIndices.value.addAll(selectedOptionIndices)
 
-    val selectedOptionsItem = remember { mutableListOf<OptionItemEntity>() }
+    val selectedOptionsItem = remember { mutableSetOf<OptionItemEntity>() }
 
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
@@ -142,7 +146,7 @@ fun GridTypeComponent(
                                     modifier = Modifier.padding(horizontal = dimen_16_dp)
                                 ) {
                                     HtmlText(
-                                        text = "${question.questionId} .",
+                                        text = "${questionIndex + 1}. ",
                                         style = TextStyle(
                                             fontFamily = NotoSans,
                                             fontWeight = FontWeight.SemiBold,
@@ -178,33 +182,165 @@ fun GridTypeComponent(
                                             .heightIn(min = 110.dp, max = maxCustomHeight),
                                         horizontalArrangement = Arrangement.Center
                                     ) {
-                                        itemsIndexed(optionItemEntityList?.sortedBy { it.optionValue }
+                                        itemsIndexed(optionItemEntityList.sortedBy { it.optionId }
                                             ?: emptyList()) { _index, optionItem ->
-                                            GridOptionCard(
-                                                optionItem = optionItem,
-                                                index = _index,
-                                                selectedIndex = selectedIndices
+                                            if (optionItem.optionType?.equals(
+                                                    QuestionType.Grid.name,
+                                                    true
+                                                ) == true
+                                                || optionItem.optionType?.equals(
+                                                    QuestionType.MultiSelect.name,
+                                                    true
+                                                ) == true
                                             ) {
-                                                if (!selectedIndices.contains(it)) {
-                                                    //optionItem.isSelected=true
-                                                    selectedIndices.add(it)
-                                                } else {
-                                                    // optionItem.isSelected=false
-                                                    selectedIndices.remove(it)
-                                                }
+                                                GridOptionCard(
+                                                    optionItem = optionItem,
+                                                    index = _index,
+                                                    selectedIndex = selectedIndices.value.toList()
+                                                ) { selectedOptionId ->
 
-                                                if (!selectedOptionsItem.contains(optionItem)) {
-                                                    // optionItem.isSelected = !optionItem.isSelected!!
-                                                    selectedOptionsItem.add(optionItem)
-                                                } else {
-                                                    selectedOptionsItem.remove(optionItem)
-                                                }
+                                                    try {
+                                                        if (!selectedIndices.value.contains(
+                                                                selectedOptionId
+                                                            )
+                                                        ) {
+                                                            selectedIndices.value.add(
+                                                                selectedOptionId
+                                                            )
+                                                            selectedOptionsItem.add(
+                                                                optionItemEntityList[optionItemEntityList.getIndexById(
+                                                                    selectedOptionId
+                                                                )]
+                                                            )
+                                                        } else {
+                                                            selectedIndices.value.remove(
+                                                                selectedOptionId
+                                                            )
+                                                            selectedOptionsItem.remove(
+                                                                optionItemEntityList[optionItemEntityList.getIndexById(
+                                                                    selectedOptionId
+                                                                )]
+                                                            )
+                                                        }
 
-                                                onAnswerSelection(questionIndex, selectedOptionsItem, selectedIndices)
+                                                        optionItemEntityList.forEach { optionItemEntity ->
+                                                            if (selectedIndices.value.contains(
+                                                                    optionItemEntity.optionId
+                                                                )
+                                                            ) {
+                                                                selectedOptionsItem.add(
+                                                                    optionItemEntityList[
+                                                                        optionItemEntityList.getIndexById(
+                                                                            optionItemEntity.optionId!!
+                                                                        )
+                                                                    ]
+                                                                )
+                                                            }
+                                                        }
+
+                                                        onAnswerSelection(
+                                                            questionIndex,
+                                                            selectedOptionsItem.toList(),
+                                                            selectedOptionIndices
+                                                        )
+                                                    } catch (ex: Exception) {
+                                                        BaselineLogger.e(
+                                                            "GridTypeComponent",
+                                                            "GridOptionCard onOptionSelected exception -> ${ex.localizedMessage}",
+                                                            ex
+                                                        )
+                                                    }
+                                                }
+                                                Spacer(modifier = Modifier.height(4.dp))
                                             }
-                                            Spacer(modifier = Modifier.height(4.dp))
                                         }
 
+                                    }
+                                }
+                            }
+
+                            (optionItemEntityList.sortedBy { it.optionId }.filter { it.conditional }
+                                ?: emptyList<OptionItemEntity>()).forEachIndexed() { index, optionItem ->
+                                item {
+
+                                    if (optionItem.optionType?.equals(
+                                            QuestionType.InputNumber.name,
+                                            true
+                                        ) == true
+                                        || optionItem.optionType?.equals(
+                                            QuestionType.InputText.name,
+                                            true
+                                        ) == true
+                                        || optionItem.optionType?.equals(
+                                            QuestionType.Input.name,
+                                            true
+                                        ) == true
+                                    ) {
+                                        val optionItemEntityState =
+                                            showQuestionState.optionItemEntityState.find { it.optionId == optionItem.optionId }
+                                        Box(modifier = Modifier.padding(horizontal = dimen_20_dp)) {
+                                            EditTextWithTitleComponent(
+                                                optionItem.display,
+                                                showQuestion = optionItemEntityState,
+                                                defaultValue = optionItemEntityState?.optionItemEntity?.selectedValue
+                                                    ?: BLANK_STRING,
+                                                isOnlyNumber = optionItemEntityState?.optionItemEntity?.optionType == QuestionType.InputNumber.name
+                                            ) { value ->
+                                                val updatedOptionItem =
+                                                    optionItem.copy(selectedValue = value)
+                                                try {
+                                                    if (!selectedIndices.value.contains(
+                                                            updatedOptionItem.optionId
+                                                        )
+                                                    ) {
+                                                        selectedIndices.value.add(
+                                                            updatedOptionItem.optionId!!
+                                                        )
+                                                        selectedOptionsItem.add(
+                                                            optionItemEntityList[optionItemEntityList.getIndexById(
+                                                                updatedOptionItem.optionId!!
+                                                            )]
+                                                        )
+                                                    } else {
+                                                        selectedIndices.value.remove(
+                                                            updatedOptionItem.optionId
+                                                        )
+                                                        selectedOptionsItem.remove(
+                                                            optionItemEntityList[optionItemEntityList.getIndexById(
+                                                                updatedOptionItem.optionId!!
+                                                            )]
+                                                        )
+                                                    }
+
+                                                    optionItemEntityList.forEach { optionItemEntity ->
+                                                        if (selectedIndices.value.contains(
+                                                                optionItemEntity.optionId
+                                                            )
+                                                        ) {
+                                                            selectedOptionsItem.add(
+                                                                optionItemEntityList[
+                                                                    optionItemEntityList.getIndexById(
+                                                                        optionItemEntity.optionId!!
+                                                                    )
+                                                                ]
+                                                            )
+                                                        }
+                                                    }
+
+                                                    onAnswerSelection(
+                                                        questionIndex,
+                                                        selectedOptionsItem.toList(),
+                                                        selectedOptionIndices
+                                                    )
+                                                } catch (ex: Exception) {
+                                                    BaselineLogger.e(
+                                                        "GridTypeComponent",
+                                                        "GridOptionCard onOptionSelected exception -> ${ex.localizedMessage}",
+                                                        ex
+                                                    )
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -214,7 +350,7 @@ fun GridTypeComponent(
                                         .fillMaxWidth()
                                         .padding(bottom = 10.dp)
                                 )
-                                if (infoSubTitle?.isNotBlank() == true) {
+                                if (contests?.isNotEmpty() == true) {
                                     Divider(
                                         thickness = dimen_1_dp,
                                         color = lightGray2,
@@ -223,8 +359,8 @@ fun GridTypeComponent(
                                     ExpandableDescriptionContentComponent(
                                         questionDetailExpanded,
                                         questionIndex,
-                                        question,
-                                        subTitle = infoSubTitle,
+                                        contents = contests,
+                                        subTitle = BLANK_STRING,
                                         imageClickListener = { imageTypeDescriptionContent ->
                                             onMediaTypeDescriptionAction(
                                                 DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,

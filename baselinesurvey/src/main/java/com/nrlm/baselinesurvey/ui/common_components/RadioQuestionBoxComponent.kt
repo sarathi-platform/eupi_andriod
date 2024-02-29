@@ -43,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.model.datamodel.QuestionList
@@ -68,7 +69,7 @@ fun RadioQuestionBoxComponent(
     modifier: Modifier = Modifier,
     questionIndex: Int,
     question: QuestionEntity,
-    infoSubTitle: String? = BLANK_STRING,
+    contests: List<ContentEntity?>? = listOf(),
     showQuestionState: QuestionEntityState = QuestionEntityState.getEmptyStateObject(),
     optionItemEntityList: List<OptionItemEntity>,
     selectedOptionIndex: Int = -1,
@@ -200,7 +201,7 @@ fun RadioQuestionBoxComponent(
                                         .fillMaxWidth()
                                         .height(dimen_10_dp)
                                 )
-                                if (infoSubTitle?.isNotBlank() == true) {
+                                if (contests?.isNotEmpty() == true) {
                                     Divider(
                                         thickness = dimen_1_dp,
                                         color = lightGray2,
@@ -209,8 +210,8 @@ fun RadioQuestionBoxComponent(
                                     ExpandableDescriptionContentComponent(
                                         questionDetailExpanded,
                                         questionIndex,
-                                        question,
-                                        subTitle = infoSubTitle,
+                                        subTitle = BLANK_STRING,
+                                        contents = contests,
                                         imageClickListener = { imageTypeDescriptionContent ->
                                             onMediaTypeDescriptionAction(
                                                 DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
@@ -251,7 +252,9 @@ fun RadioQuestionBoxComponentPreview(
         type = "RadioButton",
         gotoQuestionId = 2,
         questionImageUrl = "Section1_GovtService.webp",
-        surveyId = 1
+        surveyId = 1,
+        isConditional = true,
+
     )
 
     val option1 = OptionItemEntity(

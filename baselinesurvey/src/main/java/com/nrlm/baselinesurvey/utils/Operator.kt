@@ -6,5 +6,11 @@ enum class Operator {
     LESS_THAN_EQUAL_TO,
     MORE_THAN,
     MORE_THAN_EQUAL_TO,
-    IN_BETWEEN;
+    IN_BETWEEN,
+    NOT_EQUAL_TO,
+    MULTIPLY,
+    SUBTRACT,
+    ADD,
+    DIVIDE,
+    NO_OPERATOR;
 }

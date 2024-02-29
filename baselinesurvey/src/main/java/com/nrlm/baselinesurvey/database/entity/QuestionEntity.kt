@@ -3,10 +3,13 @@ package com.nrlm.baselinesurvey.database.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.QUESTION_TABLE
+import com.nrlm.baselinesurvey.database.converters.ContentListConverter
+import com.nrlm.baselinesurvey.model.response.ContentList
 
 @Entity(tableName = QUESTION_TABLE)
 data class QuestionEntity(
@@ -69,5 +72,12 @@ data class QuestionEntity(
     @SerializedName("isConditional")
     @Expose
     @ColumnInfo(name = "isConditional")
-    var isConditional: Boolean = false
+    var isConditional: Boolean = false,
+
+    @SerializedName("tag")
+    @Expose
+    @ColumnInfo(name = "tag")
+    var tag: String = BLANK_STRING,
+    @TypeConverters(ContentListConverter::class)
+    val contentEntities: List<ContentList> = listOf()
 )

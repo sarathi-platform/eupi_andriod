@@ -9,10 +9,8 @@ import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.OPTION_TABLE
 import com.nrlm.baselinesurvey.database.converters.ConditionsDtoConvertor
-import com.nrlm.baselinesurvey.database.converters.OptionQuestionConverter
 import com.nrlm.baselinesurvey.database.converters.StringConverter
 import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
-import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 
 @Entity(tableName = OPTION_TABLE)
 data class OptionItemEntity(
@@ -62,10 +60,11 @@ data class OptionItemEntity(
     @SerializedName("type")
     var optionType: String? = BLANK_STRING,
 
-    @SerializedName("questions")
+    /*@SerializedName("questions")
     @Expose
     @TypeConverters(OptionQuestionConverter::class)
-    val questionList: List<QuestionList?>? = listOf(),
+    val questionList: List<QuestionList?>? = listOf(),*/
+
     @SerializedName("conditional")
     @Expose
     val conditional: Boolean = false,

@@ -7,6 +7,7 @@ import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.nrlm.baselinesurvey.database.converters.BeneficiaryStepConverter
 import com.nrlm.baselinesurvey.database.converters.ConditionsDtoConvertor
+import com.nrlm.baselinesurvey.database.converters.ContentListConverter
 import com.nrlm.baselinesurvey.database.converters.ContentMapConverter
 import com.nrlm.baselinesurvey.database.converters.IntConverter
 import com.nrlm.baselinesurvey.database.converters.OptionQuestionConverter
@@ -78,6 +79,7 @@ const val NUDGE_BASELINE_DATABASE_VERSION = 1
     OptionQuestionConverter::class,
     StringConverter::class,
     ConditionsDtoConvertor::class,
+    ContentListConverter::class,
     ContentMapConverter::class
 )
 abstract class NudgeBaselineDatabase: RoomDatabase()  {

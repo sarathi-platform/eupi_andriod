@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.utils
 
 enum class PageFrom {
+    SPLASH_PAGE,
     HOME_PAGE,
     VILLAGE_PAGE,
     DIDI_LIST_PAGE,

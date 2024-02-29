@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_error_message_text">No network available</string>
+
+    <string name="english" translatable="false">English</string>
+    <string name="hindi" translatable="false">हिंदी</string>
+    <string name="bangla" translatable="false">হিন্দি</string>
+    <string name="gujrati" translatable="false">હિન્દી</string>
+    <string name="kannada" translatable="false">ಹಿಂದಿ</string>
+
+    <string name="mark_complete_text">Complete Para / Tola Addition</string>
+    <string name="go_back_text">Go Back</string>
+
+    <string name="progress_item_text">Progress</string>
+    <string name="didis_item_text_plural">Didis</string>
+    <string name="didis_item_text_singular">Didi</string>
+    <string name="didis_list_text">List of Didis</string>
+    <string name="poor_didi_item_text">Poor Didi</string>
+    <string name="medium_didi_item_text">Medium Didi</string>
+    <string name="rich_didi_item_text">Rich Didi</string>
+    <string name="poor_didi_item_text_plural">Poor Didis</string>
+    <string name="medium_didi_item_text_plural">Medium Didis</string>
+    <string name="rich_didi_item_text_plural">Rich Didis</string>
+    <string name="more_item_text">More</string>
+
+    <string name="online_text">Online</string>
+    <string name="offline_text">Offline</string>
+    <string name="choose_language">Choose Language</string>
+    <string name="continue_text">Continue</string>
+    <string name="continue_pat_text">Continue PAT</string>
+    <string name="enter_mobile_number">Enter Mobile Number</string>
+    <string name="mobile_text">Mobile</string>
+    <string name="enter_mobile_text">Enter Mobile</string>
+    <string name="verification_text">Verification</string>
+    <string name="get_otp">Get OTP</string>
+    <string name="otp_will_be_sent_to_this_number">OTP will be sent to this number</string>
+    <string name="transect_wale_title">Transect Walk</string>
+    <string name="invalid_mobile_number">Invalid Mobile Number</string>
+    <string name="submit">Submit</string>
+    <string name="resend_otp">Resend OTP</string>
+    <string name="ranking_text">Ranking:</string>
+    <string name="poor_text">Poor</string>
+    <string name="medium_text">Medium</string>
+    <string name="rich_text">Rich</string>
+    <string name="search_didis">Search Didis</string>
+    <string name="search_video">Search Video</string>
+    <string name="otp_text" translatable="false">OTP</string>
+    <string name="count_didis_pending_plural">%1s Didis Pending</string>
+    <string name="count_didis_pending_singular">%1s Didi Pending</string>
+    <string name="expiry_login_verify_otp" translatable="false">Resend OTP in %s</string>
+    <string name="social_mapping">Social Mapping</string>
+    <string name="showing_added_tolas">Showing %s added Paras / Tolas</string>
+    <string name="showing">Showing</string>
+    <string name="added_tolas">added Paras / Tolas</string>
+    <string name="title_activity_social_mapping">SocialMappingActivity</string>
+    <string name="not_added">Not added</string>
+    <string name="mark_as_completed">Mark as completed</string>
+    <string name="village_text">Village</string>
+    <string name="vo_name">VO Name</string>
+    <string name="total">Total</string>
+    <string name="participation_date_wealth_ranking">Date </string>
+    <string name="add_didi">Add Didi</string>
+    <string name="update_didi">Update Didi</string>
+    <string name="house_number">House Number</string>
+    <string name="didi_name">Didi Name</string>
+    <string name="dada_name">Husband / Father\'s Name</string>
+    <string name="dada">Husband / Father</string>
+    <string name="enter">Enter</string>
+    <string name="caste">Caste</string>
+    <string name="tola">Para / Tola</string>
+    <string name="select">Select</string>
+    <string name="pat_survey">PAT Survey</string>
+
+    <string name="particaptory_wealth_ranking_survey_text">Participatory Wealth Ranking Summary</string>
+    <string name="particaptory_wealth_ranking_text">Participatory Wealth Ranking</string>
+    <string name="complete_wealth_ranking_btn_text" translatable="false">Complete Wealth Ranking</string>
+
+    <string name="add_tola">Add Para / Tola</string>
+    <string name="enter_otp_text">Enter OTP</string>
+    <string name="otp_send_to_mobile_number_message">OTP sent to %1$s mobile number</string>
+    <string name="otp_send_to_mobile_number_message_for_relogin">OTP sent to {MOBILE_NUMBER} mobile number</string>
+    <string name="otp_resend_to_mobile_number_message">OTP resent to %1$s mobile number</string>
+    <string name="otp_resend_to_mobile_number_message_for_relogin">OTP resent to {MOBILE_NUMBER} mobile number</string>
+    <string name="delete_tola_text">Delete Para / Tola</string>
+    <string name="save_tola_text">Save</string>
+
+    <string name="tola_name_text">Para / Tola Name</string>
+    <string name="cancel_tola_text">Cancel</string>
+    <string name="get_location_text">Get Location</string>
+    <string name="location_unavailable">Location not available</string>
+
+    <string name="seletc_village_screen_text">Select Village &amp; VO</string>
+
+    <string name="complete_didi_addition">Complete Didi Addition</string>
+    <string name="user_id_text">"ID: "</string>
+    <string name="empty_tola_string">No Paras / Tolas Added</string>
+    <string name="tola_conirmation_text_plural">Total %1$s new Paras / Tolas have \nbeen added successfully</string>
+    <string name="tola_conirmation_text_singular">Total %1$s new Para / Tola has \nbeen added successfully</string>
+    <string name="complete_transect_walk_text">Complete Transect Walk</string>
+    <string name="transect_walk_completed_message">Transect walk for {VILLAGE_NAME} \nis completed</string>
+    <string name="wealth_ranking_completed_message">Participatory Wealth Ranking for {VILLAGE_NAME} \nis completed</string>
+    <string name="complete_social_walk_text">Complete Social Mapping</string>
+    <string name="review_wealth_ranking">Review Wealth Ranking</string>
+
+    <string name="social_mapping_completed_message">Social Mapping for {VILLAGE_NAME} \nis completed</string>
+    <string name="didi_conirmation_text_plural">%1$s new Didis have \nbeen added successfully</string>
+    <string name="didi_conirmation_text_singular">%1$s new Didi has \nbeen added successfully</string>
+
+    <string name="transect_walk_sub_text_plural">%1$s Paras / Tolas Done</string>
+
+    <string name="social_mapping_sub_text_plural">%1$s Didis Identified</string>
+    <string name="wealth_ranking_sub_text_plural">%1$s Poor Didis Identified</string>
+    <string name="pat_sub_text_singular">%1$s Ultra Poor Didi sent for VO Endorsement</string>
+    <string name="pat_sub_text_plural">%1$s Ultra Poor Didis sent for VO Endorsement</string>
+    <string name="vo_endorsement_sub_text_singular">%1$s Ultra Poor Didi Endorsed</string>
+    <string name="vo_endorsement_sub_text_plural">%1$s Ultra Poor Didis Endorsed</string>
+
+    <string name="empty_didis_string">No Didis Added</string>
+    <string name="didi_has_been_successfully_added">%1$s has been successfully added.</string>
+    <string name="tola_successfully_added">{TOLA_NAME} Para / Tola Added</string>
+    <string name="tola_updated">{TOLA_NAME} Para / Tola Updated</string>
+    <string name="tola_deleted">{TOLA_NAME} Para / Tola Deleted</string>
+    <string name="tola_already_exist">Para / Tola already exists.</string>
+    <string name="didi_has_been_successfully_updated">Didi details have been successfully updated.</string>
+
+    <!--   Updated 03-10-2023 -->
+    <string name="didi_already_exist">A didi with same name, husband name, tola and house number already exists.</string>
+    <string name="location_added_text">Location Added</string>
+    <string name="pat_survey_title">PAT Survey</string>
+    <string name="didi">Aibi</string>
+    <string name="section_number">Section %d</string>
+    <string name="not_avaliable">Not Available</string>
+    <string name="start_pat">Start PAT</string>
+    <string name="done_text">Done</string>
+    <string name="yes_text">Yes</string>
+    <string name="share_button_text">Share</string>
+    <string name="download_button_text">Download</string>
+    <string name="downloading_button_text">Downloading</string>
+    <string name="option_yes">Yes</string>
+    <string name="option_no">No</string>
+    <string name="no_photo_available_text">No Photo Available</string>
+    <string name="enter_name_text">Enter Name</string>
+    <string name="enter_tola_name_message">Enter Para / Tola Name</string>
+
+    <string name="pat_survey_section_1">PAT Survey - Section 1</string>
+    <string name="pat_survey_section_2">PAT Survey - Section 2</string>
+    <string name="pat_survey_complete">PAT Survey</string>
+    <string name="result_summary">Summary Result</string>
+    <string name="summary_text">Summary</string>
+    <string name="complete_section_1_text">Complete Section 1</string>
+    <plurals name="didis_added">
+        <item quantity="one">Didi Added</item>
+        <item quantity="other">Didis Added</item>
+    </plurals>
+    <plurals name="poor_didis_pending_text">
+        <item quantity="one">Poor Didi Pending</item>
+        <item quantity="other">Poor Didis Pending</item>
+    </plurals>
+    <string name="logout">Logout</string>
+    <string name="this_section_is_in_progress">This Section is InProgress state</string>
+    <string name="sync_up">Sync Data Now</string>
+    <string name="last_syncup_text">Last Synced: {LAST_SYNC_TIME}</string>
+    <string name="profile">Profile</string>
+    <string name="forms">Forms</string>
+    <string name="training_videos">Training Videos</string>
+    <string name="language_text">Language</string>
+    <string name="productive_asset_owned_by_family"><!--Productive asset owned by Family-->Earning ratio</string>
+    <string name="total_productive_asset_value"> ₹ %1$s/-</string>
+    <string name="complete_pat_survey">Complete PAT Survey</string>
+    <string name="complete">Complete</string>
+    <string name="complete_section_2">Complete Section 2</string>
+    <string name="show">Show</string>
+    <string name="pat_survey_completion_text">PAT Survey - Completed</string>
+    <string name="next">Next</string>
+    <string name="didi_pat_comption_dialog">You are submitting PAT for {DIDI_NAME}.</string>
+    <string name="confirmation_dialog_titile">Are you sure?</string>
+    <string name="section_1_text">"Section 1: "</string>
+    <string name="section_2_text">"Section 2: "</string>
+    <string name="vo_endorsement_screen_title">List of Didis for VO Endorsement</string>
+    <string name="start_endorsement">Start Endorsement</string>
+    <string name="pat_completed">PAT Completed</string>
+    <string name="didi_not_available">Didi not available</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="you_are_submitting_wealth_ranking_for_count_didis">You are submitting the wealth ranking for %1$s Didis.</string>
+    <string name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">You are sending %1$s PAT completed Didis for VO Endorsement</string>
+    <string name="send_all_for_vo_endorsement">Send All For VO Endorsement</string>
+    <string name="pat_survey_completed_message">PAT Survey for {VILLAGE_NAME} \nis completed</string>
+    <string name="vo_endorsement_completed_message">VO Endorsement for {VILLAGE_NAME} \nis completed</string>
+    <string name="form_c_photo_button_text">Take picture of form C</string>
+    <string name="form_d_photo_button_text">Take picture of form D</string>
+    <string name="pat_completed_box_title">PAT Completed</string>
+    <string name="didi_not_available_text_singular">Didi not available</string>
+    <string name="didi_not_available_text_plural">Didis not available</string>
+    <string name="send_for_vo_text">Send All For VO Endorsement</string>
+    <string name="didi_pat_complete_text">Didis PAT completed</string>
+    <string name="didi_endorsed_text_plural">Didis Endorsed</string>
+    <string name="didi_endorsed_text_singula">Didi Endorsed</string>
+    <string name="didi_rejected_text_plural">Didis Rejected</string>
+    <string name="didi_rejected_text_singula">Didi Rejected</string>
+    <string name="didi_not_available_sub_heading_text">Didis Not Available</string>
+    <string name="accept">Accept</string>
+    <string name="reject">Reject</string>
+    <string name="endorse">Endorse</string>
+    <string name="endorsed">Endorsed</string>
+    <string name="rejected">Rejected</string>
+
+    <string name="shg_question_text">Is Didi part of SHG?</string>
+    <string name="confirm_text">Confirm</string>
+    <string name="finish">Finish</string>
+
+    <string name="no_internet">Not Connected</string>
+    <string name="connected">Connected</string>
+    <string name="sync_your_data">Sync Your Data</string>
+    <string name="your_data_already_synced">Your Data is already Synced</string>
+    <string name="data_synced_successfully">Data Synced Successfully</string>
+    <string name="sync">Sync</string>
+    <string name="battery">Battery</string>
+    <string name="mobile_data">Mobile Data</string>
+    <string name="estimated_time_required">Estimated Time Required</string>
+    <string name="size">Size</string>
+    <string name="syncing">Syncing</string>
+    <string name="continue_pat">Continue PAT</string>
+    <string name="pat_completion_dialog_message_plural">You are sending {COUNT} PAT completed Didis for VO Endorsement.</string>
+    <string name="pat_completion_dialog_message_singular">You are sending {COUNT} PAT completed Didi for VO Endorsement.</string>
+
+    <string name="vo_endorsement_completion_dialog_message_plural">You are doing the final submission for {COUNT} endorsed didis.</string>
+    <string name="vo_endorsement_completion_dialog_message_singular">You are doing the final submission for {COUNT} endorsed didi.</string>
+    <string name="form_picture_screen_title">Add Images of Forms</string>
+    <string name="view">View Form</string>
+    <string name="pat_inprogresee_status_text">In Progress</string>
+    <string name="wealth_ranking_status_not_started_text">Wealth Ranking Not started</string>
+    <string name="wealth_ranking_status_complete_text">Wealth Ranking Done - {RANK}</string>
+    <string name="pat_in_progress_status_text">PAT Survey in Progress</string>
+    <string name="pat_completed_status_text">PAT Survey Completed - {PAT_STATUS}</string>
+    <string name="vo_endorsement_status_text">VO Endorsement Completed - {VO_STATUS}</string>
+    <string name="no_didis_availble_for_vo_endorsement">No Didis available for VO Endorsement.</string>
+    <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
+
+    <string name="step_1">Step 1</string>
+    <string name="sync_status">BPC Verification</string>
+    <string name="step_2">Step 2</string>
+    <string name="step_3">Step 3</string>
+    <string name="step_4">Step 4</string>
+    <string name="step_5">Step 5</string>
+    <string name="vo_endorsement">VO Endorsement</string>
+    <string name="close">Close</string>
+    <string name="add_more">Add More</string>
+    <string name="bpc_didi_screen_title">List of Didis auto selected For PAT Verification</string>
+    <string name="bpc_final_pat_submition_message">Do you want to submit this VO for BPM Approval?</string>
+
+    <string name="didi_selected_text_singular">%1$s Didi Selected</string>
+    <string name="didi_selected_text_plural">%1$s Didis Selected</string>
+    <string name="didi_replace_button">Replace</string>
+    <string name="submit_pat_verification">Submit PAT Verification</string>
+
+    <string name="comparison_screen_heading_plural">Summary of {COUNT} PAT verified Didis</string>
+    <string name="comparison_screen_heading_singular">Summary of {COUNT} PAT verified Didi</string>
+    <string name="crp_score_text">CRP Score:</string>
+    <string name="bpc_score_text">BPC Score:</string>
+    <string name="match_percentage_box_text">{PERCENTAGE}% Ultra poor match on PAT verification.</string>
+    <string name="summary_tolas_added_text_plural">Paras / Tolas Added</string>
+    <string name="summary_didis_mobilised_text_plural">Didis Mobilised</string>
+    <string name="summary_wealth_ranking_text_plural">Didis Marked as poor in PWR</string>
+    <string name="summary_vo_endoresement_text_plural">Didis sent for VO Endorsement</string>
+    <string name="unmatched_text">Unmatched</string>
+    <string name="matched_text">Matched</string>
+
+    <string name="review_and_submit_button_text">Review and Submit</string>
+    <string name="bpc_add_more_didi_screen_title">List of additional didis available for verification</string>
+    <string name="showing_text">Showing</string>
+    <string name="result_text_singular">result</string>
+    <string name="result_text_plural">results</string>
+    <string name="didis_endorsed_by_vo_plural">Didis Endorsed by VO</string>
+    <string name="didi_endorsed_by_vo_singular">Didi Endorsed by VO</string>
+    <string name="summary_vo_endoresement_text_singular">Didi sent for VO Endorsement</string>
+    <string name="summary_wealth_ranking_text_singular">Didi Marked as poor in PWR</string>
+    <string name="summary_didis_mobilised_text_singular">Didi Mobilised</string>
+    <string name="summary_tolas_added_text_singular">Para / Tola Added</string>
+    <string name="enter_amount">Enter Amount</string>
+
+    <string name="bpc_result_text">BPC Result:</string>
+    <string name="permission_dialog_prompt_message">Camera Permission required, please grant permission.</string>
+    <string name="permission_required_prompt_title">Permission Required</string>
+    <string name="ultra_poor_didis_verified_text_plural">"%1$s Ultra poor Didis verified"</string>
+    <string name="ultra_poor_didis_verified_text_singular">"%1$s Ultra poor Didis verified"</string>
+    <string name="no_data_form_a_not_generated_text">No Data! Form A not generated</string>
+    <string name="no_data_form_b_not_generated_text">No Data! Form B not generated</string>
+    <string name="no_data_form_c_not_generated_text">No Data! Form C not generated</string>
+    <string name="no_form_available_yet_text">No Form available yet.</string>
+    <string name="digital_form_a_title">Digital Form A</string>
+    <string name="digital_form_b_title">Digital Form B</string>
+    <string name="digital_form_c_title">Digital Form C</string>
+    <string name="settings_screen_title">Settings</string>
+    <string name="logout_sync_error_message">Sync is required before logout,Please sync your data before logout.</string>
+    <string name="logout_no_internet_error_message">No Internet Available, Please connect with internet</string>
+    <string name="min_battery_text">(Min 30% required)</string>
+    <string name="do_not_close_app_message">Please don\'t close the app or switch off the phone.</string>
+    <string name="vo_endorsement_completed_village_banner_text">VO Endorsement completed</string>
+    <string name="bpc_verification_completed_village_banner_text">BPC Verification Completed</string>
+    <string name="empty_tola_success_message">This Village does not have any Para / Tola.</string>
+
+    <string name="total_poor_didis">Total Poor Didis</string>
+    <string name="total_ultra_poor_didis">Total Ultra Poor Didis</string>
+    <string name="wealth_ranking_sub_text_singular">%1$s Poor Didi Identified</string>
+    <string name="social_mapping_sub_text_singular">%1$s Didi Identified</string>
+    <string name="transect_walk_sub_text_singular">%1$s Para / Tola Done</string>
+    <string name="added_tolas_text_plural"> added Paras / Tolas</string>
+    <string name="added_tolas_text_singular"> added Para / Tola</string>
+    <string name="take_photo_text">Take Photo</string>
+    <string name="retake_photo_text">Retake Photo</string>
+    <string name="previous_step_not_complete_messgae_text">Previous Step Not Complete.</string>
+    <string name="vo_endorsement_inprogress_village_banner_text">VO Endorsement In progress</string>
+    <string name="latest_status_text">"Latest Status: "</string>
+    <string name="ranking_text_rich">RICH</string>
+    <string name="ranking_text_medium">MEDIUM</string>
+    <string name="ranking_text_poor">POOR</string>
+    <string name="crp_group_name_text">CRP Group Name</string>
+    <string name="current_status_text">Current Status:</string>
+    <string name="pat_completed_for_didi_singular">PAT completed for %1$s new didi</string>
+    <string name="pat_completed_for_didi_plural">PAT completed for %1$s new didis</string>
+    <string name="pat_marked_not_available_singular">%1$s didi marked as Not Available</string>
+    <string name="pat_marked_not_available_plural">%1$s didis marked as Not Available</string>
+    <string name="pat_didi_sent_to_vo_endorsement_singular">%1$s Ultrapoor didis sent for VO Endorsement.</string>
+    <string name="pat_didi_sent_to_vo_endorsement_plural">%1$s Ultrapoor didis sent for VO Endorsement.</string>
+
+    <string name="pat_didi_sent_to_bpm_approval_singular">%1$s Ultrapoor didi sent for BPM Approval.</string>
+    <string name="pat_didi_sent_to_bpm_approval_plural">%1$s Ultrapoor didis sent for BPM Approval.</string>
+    <string name="link_form_c">Link Form C</string>
+    <string name="link_form_d">Link Form D</string>
+    <string name="step_transect_walk">Transect Walk</string>
+    <string name="step_social_mapping">Social Mapping</string>
+    <string name="step_participatory_wealth_ranking">Participatory Wealth Ranking</string>
+    <string name="step_pat_survey">Pat Survey</string>
+    <string name="step_vo_endorsement">VO Endorsement</string>
+    <string name="step_bpc_verification">BPC Verification</string>
+    <string name="profile_name">Name</string>
+    <string name="profile_email">Email</string>
+    <string name="profile_phone">Phone Number</string>
+    <string name="profile_identity_num">Identity Number</string>
+    <string name="user_profile_text">User Profile</string>
+    <string name="edit_didi">Edit</string>
+    <string name="delete_didi">Delete</string>
+    <string name="you_want_to_delete_video">You want to delete %1$s</string>
+    <string name="share_logs">Share Logs</string>
+    <string name="earning_member_can_not_be_more_than_family_members">Earning members cannot be more than family members</string>
+    <string name="match_percentage_should_be_more_than_70">The Match % should be more than 70%</string>
+    <string name="delete_and_retake">Delete &amp; Retake</string>
+    <string name="if_more_than_5_pages_please_uload_last_page">If more than 5 pages, please upload the last page.</string>
+    <string name="vo_endorsement_completed">VO Endorsement \nCompleted</string>
+    <string name="no_didis_available_to_add_or_replace">No Didis available to add or replace.</string>
+    <string name="online_sync_successful">Online Sync Successful</string>
+    <string name="sync_failed">Sync Failed</string>
+    <string name="digital_form_a_downloded">Digital Form A Downloaded</string>
+    <string name="digital_form_b_downloded">Digital Form B Downloaded</string>
+    <string name="digital_form_c_downloded">Digital Form C Downloaded</string>
+    <string name="something_went_wrong_unable_to_download_form">Something went wrong, unable to download form.</string>
+
+    <string name="location_permission_dialog_prompt_message">Location Permission required, please grant permission.</string>
+    <string name="empty_tola_button_text">Continue without Para / Tola addition</string>
+    <string name="add_more_list_empty_string">No Didi\'s available to add or replace.</string>
+
+    <string name="pat_selected_status_text">PAT Selected</string>
+    <string name="pat_rejected_status_text">PAT Rejected</string>
+    <string name="vo_selected_status_text">VO Endorsed</string>
+    <string name="vo_rejected_status_text">VO Rejected</string>
+    <string name="pat_not_available_status_text">PAT Not Available</string>
+    <string name="cannot_delete_tola_message_text">Cannot delete this Para / Tola as Didis are assigned to it</string>
+
+    <string name="max_5_pages_can_be_captured">Max 5 Pages can be captured</string>
+    <string name="click_to_refresh">Click to Refresh</string>
+    <string name="heading_value_of_other_productive_assests">Value of other productive assets</string>
+    <string name="heading_earning_ration">Earning ratio</string>
+    <string name="session_expired_dialog_title">Session Expired!</string>
+    <string name="session_epire_otp_message">Please enter OTP to re-login.</string>
+    <string name="session_restored_message">Session Restored</string>
+    <string name="location_permission_not_granted_message">Location Permission Not Granted</string>
+    <string name="wealth_ranking_summary_empty_text">No didi marked as {CATEGORY}</string>
+    <string name="pat_summary_not_available_empty_text">No didi marked as not available</string>
+    <string name="pat_summary_completed_empty_text">No didi whose PAT was completed</string>
+    <string name="vo_summary_rejected_empty_text">No didi rejected by VO</string>
+    <string name="vo_summary_endorsed_empty_text">No didi endorsed by VO</string>
+    <string name="social_mapping_complete_status_text">Social Mapping Done</string>
+    <string name="page_name_text">Page</string>
+
+    <string name="storage_permission_dialog_prompt_message">Storage permission required, please grant permission.</string>
+    <string name="you_are_submitting_wealth_ranking_for_count_didis_singular">You are submitting the wealth ranking for %1$s Didi.</string>
+
+    <string name="go_back_to_section_1_summary">Section 1 summary</string>
+    <string name="exclusion_error_message">The PAT for this didi ends here.</string>
+    <string name="bpc_pat_survey_complete">BPC PAT Survey</string>
+
+    <!-- Updated 03-10-2023-->
+    <string name="pat_success_message_plural">PAT Survey for {TOTAL_COUNT} new Didis has been submitted</string>
+    <string name="pat_success_message_singular">PAT Survey for {TOTAL_COUNT} new Didi has been submitted</string>
+
+    <string name="total_pat_attempted_string">Total PAT Attempted</string>
+    <string name="didis_marked_as_not_available_string">Didis marked as Not Available</string>
+    <string name="able_bodied_women_flag_text">Are there able-bodied \nwomen in the family?</string>
+    <string name="something_went_wrong">Something went wrong.</string>
+    <string name="score_comparison_section_1_text">Section 1</string>
+    <string name="village_is_not_vo_endorsed_right_now">Village is not VO Endorsed Right Now!</string>
+    <string name="refresh_failed_please_try_again">Refresh Failed, Please try again!</string>
+    <string name="this_week_tab_title">This Week</string>
+    <string name="all_tab_title">All</string>
+    <string name="search_question_placeholder">Search Question</string>
+    <string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>--><![CDATA[Save]]></string>
+    <string name="ok_text">Ok</string>
+    <string name="home" translatable="false">Home</string>
+    <string name="mission" translatable="false">Missions</string>
+    <string name="task" translatable="false">Task</string>
+    <string name="day_tab" translatable="false">Day</string>
+    <string name="search" translatable="false">Search</string>
+    <string name="x_dii_pending" translatable="false">%d %sPending</string>
+    <string name="due_by_x" translatable="false">Due by %s</string>
+    <string name="start_by_x_date" translatable="false">Start by %s</string>
+
+    <string name="save">Save</string>
+
+
+    <string name="name_comparision">Mung</string>
+    <string name="age_comparision">Umor</string>
+    <string name="relationship_comparision">Aibibai baksa halok</string>
+    <string name="income_source_comparision">nukhungo ajimungni</string>
+    <string name="agriculture_produce_comparision">(A) Hukbarni manwi - </string>
+    <string name="livestock_comparision">(A) Malmatani dal - </string>
+    <string name="income_frequency_comparision">Income frequency</string>
+    <string name="no_income_comparision">Mwsaphano ajimung kwrwi</string>
+    <string name="total_income_comparision">(E) Total Income</string>
+    <string name="total_unit_comparision">(D) Total units</string>
+    <string name="income_comparision">Income</string>
+    <string name="small_business_comparision">Chikon baniani bagwi: thanai tal chinwio chikon baniani simi nukhungni bebak ajimung?</string>
+    <string name="didi_title">"Aibi: "</string>
+    <string name="dada_title">"Ata: "</string>
+    <string name="caste_titile">"Dopha: "</string>
+    <string name="aadhar_card_titile">Nini Aadhar Card de tong?</string>
+    <string name="voter_card_title">Nini Voter Card de tong?</string>
+    <string name="phone_number_title">Aibini nukhungni phone number rwdi</string>
+    <string name="add_didi_details_label">Add didi details</string>
+    <string name="household_information_comparision">Nukhungni kokthum (Choyaui)</string>
+    <string name="total_income_lable">Total Income: ₹</string>
+    <string name="influence_type_comparision_and_label">Tangphan-ni dal</string>
+    <string name="acess_to_public_transportation_comparision">Public Transportbai manjumung</string>
+    <string name="to_the_block_office_comparision">Block office-o</string>
+    <string name="to_the_nearest_primary_health_care_centre_comparision">Ganani puile beremni sakham khoro</string>
+    <string name="to_the_nearest_government_school_comparision">Ganani haphangni rwngnogo</string>
+    <string name="to_the_nearest_permanent_market_comparision">Ganani tongsuknai hatio</string>
+    <string name="to_the_nearest_bank_comparsion">Ganani Banko</string>
+    <string name="to_the_replacement_string">"Ganani "</string>
+    <string name="average_travel_cost_comparision">"Bebaktwi beraimung rang baima"</string>
+</resources>

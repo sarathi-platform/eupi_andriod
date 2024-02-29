@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.database.entity.QuestionEntity
+import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.ui.description_component.presentation.DescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.descriptionBoxBackgroundLightBlue
@@ -31,7 +31,7 @@ import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
 fun ExpandableDescriptionContentComponent(
     questionDetailExpanded: (index: Int) -> Unit,
     index: Int,
-    question: QuestionEntity?,
+    contents: List<ContentEntity?>?,
     subTitle: String? = BLANK_STRING,
     imageClickListener: (imageTypeDescriptionContent: String) -> Unit,
     videoLinkClicked: (videoTypeDescriptionContent: String) -> Unit,
@@ -44,7 +44,12 @@ fun ExpandableDescriptionContentComponent(
     val descriptionContentState = remember {
         mutableStateOf(
             DescriptionContentState(
-                textTypeDescriptionContent = question?.questionSummary ?: BLANK_STRING,
+                textTypeDescriptionContent = getContentData(contents, "text")?.contentValue
+                    ?: BLANK_STRING,
+                imageTypeDescriptionContent = getContentData(contents, "image")?.contentValue
+                    ?: BLANK_STRING,
+                videoTypeDescriptionContent = getContentData(contents, "video")?.contentValue
+                    ?: BLANK_STRING,
                 subTextTypeDescriptionContent = subTitle ?: BLANK_STRING
             )
         )
@@ -96,4 +101,18 @@ fun ExpandableDescriptionContentComponent(
             }
         }
     }
+}
+
+fun getContentData(
+    contents: List<ContentEntity?>?,
+    contentType: String
+): ContentEntity? {
+    contents?.let { contentsData ->
+        for (content in contentsData) {
+            if (content?.contentType.equals(contentType, true)) {
+                return content!!
+            }
+        }
+    }
+    return null
 }

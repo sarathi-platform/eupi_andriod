@@ -30,7 +30,7 @@ data class QuestionList (
 
     @SerializedName("options")
     @Expose
-    var options: List<OptionsItem?> = listOf(),
+    var options: List<OptionsItem?>? = emptyList(),
 
     @SerializedName("paraphrase")
     @Expose
@@ -51,5 +51,8 @@ data class QuestionList (
     @SerializedName("languageCode")
     @Expose
     val languageCode: String = BLANK_STRING,
+    @SerializedName("conditional")
+    @Expose
+    val conditional: Boolean = false,
 
     )

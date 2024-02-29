@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.auth.presentation
 
 import android.annotation.SuppressLint
 import android.os.CountDownTimer
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -62,7 +63,8 @@ import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
-import com.patsurvey.nudge.navigation.AuthScreen
+import com.nrlm.baselinesurvey.navigation.AuthScreen
+import com.nrlm.baselinesurvey.navigation.home.LogoutBSScreens
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import java.text.SimpleDateFormat
@@ -278,15 +280,16 @@ fun OtpVerificationScreenComponent(
     LaunchedEffect(key1 = viewModel.validateApiSuccess.value) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
         if (viewModel.validateApiSuccess.value) {
-
-            if(navController.graph.route?.equals(Graph.HOME,true) == true){
+            if(navController.graph.route?.equals(Graph.HOME,true) == true) {
                 //Commented for now
-                /* navController.navigate(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route){
-                     launchSingleTop=true
-                     popUpTo(AuthScreen.START_SCREEN.route){
-                         inclusive=true
-                     }
-                 }*/
+
+                navController.navigate(route = Graph.HOME) {
+                    launchSingleTop = true
+                    popUpTo(AuthScreen.START_SCREEN.route) {
+                        inclusive = true
+                    }
+                }
+
                 viewModel.validateApiSuccess.value
             }else{
                 navController.navigate(route = Graph.HOME){
