@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -34,9 +35,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -819,6 +822,42 @@ fun showCustomDialogPreview(){
         onNegativeButtonClick = {},
         onPositiveButtonClick = {}
     )
+}
+
+private val SaveMap = mutableMapOf<String, KeyParams>()
+
+private data class KeyParams(
+    val params: String = "",
+    val index: Int,
+    val scrollOffset: Int
+)
+
+
+@Composable
+fun rememberForeverLazyListState(
+    key: String,
+    params: String = "",
+    initialFirstVisibleItemIndex: Int = 0,
+    initialFirstVisibleItemScrollOffset: Int = 0
+): LazyListState {
+    val scrollState = rememberSaveable(saver = LazyListState.Saver) {
+        var savedValue = SaveMap[key]
+        if (savedValue?.params != params) savedValue = null
+        val savedIndex = savedValue?.index ?: initialFirstVisibleItemIndex
+        val savedOffset = savedValue?.scrollOffset ?: initialFirstVisibleItemScrollOffset
+        LazyListState(
+            savedIndex,
+            savedOffset
+        )
+    }
+    DisposableEffect(Unit) {
+        onDispose {
+            val lastIndex = scrollState.firstVisibleItemIndex
+            val lastOffset = scrollState.firstVisibleItemScrollOffset
+            SaveMap[key] = KeyParams(params, lastIndex, lastOffset)
+        }
+    }
+    return scrollState
 }
 
 

@@ -55,6 +55,7 @@ import com.nrlm.baselinesurvey.ui.theme.textColorBlueLight
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.navigation.AuthScreen
+import com.patsurvey.nudge.navigation.AuthScreen
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalPermissionsApi::class)

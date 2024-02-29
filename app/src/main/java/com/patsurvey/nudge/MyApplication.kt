@@ -5,9 +5,13 @@ import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.net.Network
+import androidx.hilt.work.HiltWorkerFactory
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
 import com.akexorcist.localizationactivity.core.LocalizationApplicationDelegate
+import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventsDao
+import com.nudge.syncmanager.SyncManager
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.NudgeLogger.e
@@ -20,14 +24,25 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.Locale
+import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 @HiltAndroidApp
-class MyApplication: Application() {
+class MyApplication: Application(), androidx.work.Configuration.Provider {
+    @Inject
+    lateinit var workerFactory : HiltWorkerFactory
+    @Inject
+    lateinit var eventsDao: EventsDao
+
+    @Inject
+    lateinit var eventDependencyDao: EventDependencyDao
+    @Inject
+    lateinit var syncManager: SyncManager
+
 
     private fun init() {
         instance = this
-        NudgeCore.init(applicationContext)
+        NudgeCore.initEventObserver(syncManager)
     }
 
     override fun onCreate() {
@@ -48,7 +63,7 @@ class MyApplication: Application() {
     }
 
     private fun cleanUp() {
-        NudgeCore.cleanUp()
+        NudgeCore.cleanUp(syncManager)
     }
 
 
@@ -77,6 +92,7 @@ class MyApplication: Application() {
         private fun scope(): CoroutineScope {
             return applicationScope
         }
+
 
         fun appScopeLaunch(coroutineContext: CoroutineContext = Dispatchers.Default, tag: String = TAG, message: String? = "appScopeLaunch", func: suspend () -> Unit): Job? {
             try {
@@ -128,5 +144,10 @@ class MyApplication: Application() {
 
     override fun getResources(): Resources {
         return localizationDelegate.getResources(baseContext, super.getResources())
+    }
+
+    override fun getWorkManagerConfiguration(): androidx.work.Configuration {
+       return androidx.work.Configuration.Builder()
+            .setWorkerFactory(workerFactory).build()
     }
 }

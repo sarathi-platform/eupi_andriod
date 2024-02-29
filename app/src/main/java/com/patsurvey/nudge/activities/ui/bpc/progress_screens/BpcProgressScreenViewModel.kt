@@ -3,27 +3,16 @@ package com.patsurvey.nudge.activities.ui.bpc.progress_screens
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.base.BaseViewModel
-import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcSummaryEntity
-import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.VillageEntity
-import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.BpcSummaryDao
-import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.QuestionListDao
-import com.patsurvey.nudge.database.dao.StepsListDao
-import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
-import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.ApiResponseFailException
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -36,7 +25,6 @@ import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
-import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import com.patsurvey.nudge.utils.calculateScore
 import com.patsurvey.nudge.utils.toWeightageRatio
 import com.patsurvey.nudge.utils.updateLastSyncTime
@@ -48,7 +36,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Collections
 import javax.inject.Inject
 
 @HiltViewModel
@@ -94,7 +81,7 @@ class BpcProgressScreenViewModel @Inject constructor(
                     appScopeLaunch(Dispatchers.IO) {
                         delay(100)
                         setBpcVerificationCompleteForVillages()
-                        repository.updateVillageDataLoadStatus(getSelectedVillage().id, true)
+                        repository.updateVillageDataLoadStatus(getSelectedVillage().id, 1)
                         delay(200)
                         withContext(Dispatchers.Main) {
                             showLoader.value = false
@@ -184,6 +171,9 @@ class BpcProgressScreenViewModel @Inject constructor(
     }
 
     fun callWorkFlowApiToGetWorkFlowId() {
+        if (!isSyncEnabled(prefRepo = repository.prefRepo)) {
+            return
+        }
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val dbResponse =

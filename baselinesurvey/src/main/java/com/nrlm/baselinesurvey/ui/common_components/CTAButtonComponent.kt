@@ -28,18 +28,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
-import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
-import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.greyBorder
 import com.nrlm.baselinesurvey.ui.theme.languageItemActiveBg
-import com.nrlm.baselinesurvey.ui.theme.lightGray2
-import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
-import com.nrlm.baselinesurvey.ui.theme.searchFieldBg
 import com.nrlm.baselinesurvey.ui.theme.white
 
 @Composable

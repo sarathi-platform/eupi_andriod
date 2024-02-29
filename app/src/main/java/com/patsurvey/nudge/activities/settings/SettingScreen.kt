@@ -5,10 +5,7 @@ import android.content.Context.BATTERY_SERVICE
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.BatteryManager
-import android.util.Log
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
@@ -29,6 +26,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -80,10 +78,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.enums.NetworkSpeed
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
@@ -91,6 +88,7 @@ import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.MainTitle
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.black100Percent
+import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
 import com.patsurvey.nudge.activities.ui.theme.didiDetailItemStyle
 import com.patsurvey.nudge.activities.ui.theme.greenDark
@@ -122,7 +120,6 @@ import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.ConnectionMonitor
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
-import com.patsurvey.nudge.utils.NetworkSpeed
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PageFrom
@@ -132,7 +129,6 @@ import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.showToast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -157,6 +153,7 @@ fun SettingScreen(
         mutableStateOf(true)
     }
 
+    var networkSpeed :NetworkSpeed =NetworkSpeed.UNKNOWN
     val lifecycleOwner = LocalLifecycleOwner.current
 
     DisposableEffect(key1 = context) {
@@ -166,9 +163,11 @@ fun SettingScreen(
             NudgeLogger.d("SettingScreen",
                 "DisposableEffect: connectionLiveData.observe isNetworkAvailable -> isNetworkAvailable.isOnline = ${isNetworkAvailable.isOnline}, isNetworkAvailable.connectionSpeed = ${isNetworkAvailable.connectionSpeed}, isNetworkAvailable.speedType = ${isNetworkAvailable.speedType}")
             extraNetworkCheck.value = isNetworkAvailable.isOnline
-                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR.toString() || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN.toString())
+                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR|| isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN)
             NudgeCore.updateIsOnline(isNetworkAvailable.isOnline
-                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR.toString() || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN.toString()))
+                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN))
+
+        networkSpeed = isNetworkAvailable.speedType
         }
         onDispose {
             connectionLiveData.removeObservers(lifecycleOwner)
@@ -186,10 +185,12 @@ fun SettingScreen(
     }
 
     if (viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal) {
-        list.add(SettingOptionModel(1, context.getString(R.string.profile), BLANK_STRING))
-        list.add(SettingOptionModel(2, context.getString(R.string.training_videos), BLANK_STRING))
-        list.add(SettingOptionModel(3, context.getString(R.string.language_text), BLANK_STRING))
+        list.add(SettingOptionModel(2, context.getString(R.string.profile), BLANK_STRING))
+        list.add(SettingOptionModel(4, context.getString(R.string.training_videos), BLANK_STRING))
+        list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
         list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
+        list.add(SettingOptionModel(7, stringResource(id = R.string.export_file), BLANK_STRING))
+
         /*if (BuildConfig.DEBUG) *//*list.add(
             SettingOptionModel(
                 6,
@@ -200,6 +201,8 @@ fun SettingScreen(
     } else {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.US)
         val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
+
+        if (viewModel.isSyncEnabled()) {
         list.add(
             SettingOptionModel(
                 1,
@@ -208,12 +211,13 @@ fun SettingScreen(
                     .replace("{LAST_SYNC_TIME}", lastSyncTime.toString())
             )
         )
+        }
         list.add(SettingOptionModel(2, context.getString(R.string.profile), BLANK_STRING))
         list.add(SettingOptionModel(3, context.getString(R.string.forms), BLANK_STRING))
         list.add(SettingOptionModel(4, context.getString(R.string.training_videos), BLANK_STRING))
         list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
         list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
-//        list.add(SettingOptionModel(7, stringResource(R.string.export_data_test), BLANK_STRING))
+        list.add(SettingOptionModel(7, stringResource(id = R.string.export_file), BLANK_STRING))
         /*if (BuildConfig.DEBUG) *//*list.add(
             SettingOptionModel(
                 6,
@@ -394,7 +398,7 @@ fun SettingScreen(
                 .padding(top = it.calculateTopPadding())
                 .fillMaxSize()
         ) {
-            val (mainBox, logoutButton, versionBox) = createRefs()
+            val (mainBox, logoutButton, versionBox, circularLoader) = createRefs()
 
             Column(modifier = Modifier
                 .background(Color.White)
@@ -415,10 +419,11 @@ fun SettingScreen(
                             viewModel = viewModel,
                             navController = navController
                         ) {
-                            when (index) {
-                                0 -> {
+                            when (item.id) {
+                                1 -> {
                                     viewModel.syncErrorMessage.value = ""
-                                    if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
+                                    if (viewModel.isSyncEnabled()) {
+
                                         if (!viewModel.prefRepo.isUserBPC()) {
                                             viewModel.showSyncDialog.value = true
                                         } else {
@@ -426,38 +431,35 @@ fun SettingScreen(
                                             isBPCDataNeedToBeSynced.value = false
                                             viewModel.showBPCSyncDialog.value = true
                                         }
-                                    } else navController.navigate(AuthScreen.PROFILE_SCREEN.route)
-                                }
+                                    }
 
-                                1 -> {
-                                    if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
-                                        navController.navigate(SettingScreens.PROFILE_SCREEN.route)
-                                    else navController.navigate(AuthScreen.VIDEO_LIST_SCREEN.route)
                                 }
 
                                 2 -> {
-                                    if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
-                                        expanded.value = !expanded.value
-                                    else navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
+                                        navController.navigate(SettingScreens.PROFILE_SCREEN.route)
                                 }
 
                                 3 -> {
-                                    if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
-                                        navController.navigate(SettingScreens.VIDEO_LIST_SCREEN.route)
-                                    else
-                                    //navController.navigate(SettingScreens.BUG_LOGGING_SCREEN.route)
-
-                                        viewModel.buildAndShareLogs()
-
+                                        expanded.value = !expanded.value
                                 }
 
                                 4 -> {
-                                    navController.navigate(SettingScreens.LANGUAGE_SCREEN.route)
+
+                                        navController.navigate(SettingScreens.VIDEO_LIST_SCREEN.route)
+
                                 }
 
                                 5 -> {
-//                                    navController.navigate(SettingScreens.BUG_LOGGING_SCREEN.route)
+                                    navController.navigate(SettingScreens.LANGUAGE_SCREEN.route)
+                                }
+
+                                6 -> {
                                     viewModel.buildAndShareLogs()
+                                }
+
+                                7 -> {
+                                    //viewModel.showExportLoader.value=true
+                                    viewModel.compressEventData(context.getString(R.string.share_export_file))
                                 }
 
                                 else -> {
@@ -506,6 +508,7 @@ fun SettingScreen(
 
                 ) {
                     if ((context as MainActivity).isOnline.value) {
+                        if (viewModel.isSyncEnabled()) {
                         if (!viewModel.prefRepo.isUserBPC()) {
                             viewModel.isFirstStepNeedToBeSync(stepOneStatus)
                             viewModel.isSecondStepNeedToBeSync(stepTwoStatus)
@@ -576,12 +579,46 @@ fun SettingScreen(
                                 })
                             }
                         }
+                        } else {
+                            viewModel.performLogout(object : NetworkCallbackListener {
+                                override fun onFailed() {
+                                    logout(context, viewModel, logout, rootNavController)
+                                    changeGraph.value = true
+                                }
+
+                                override fun onSuccess() {
+                                    logout(context, viewModel, logout, rootNavController)
+                                    changeGraph.value = true
+                                }
+                            })
+                        }
                     } else {
                         showToast(
                             context,
                             context.getString(R.string.logout_no_internet_error_message)
                         )
                     }
+                }
+            }
+            if (viewModel.showExportLoader.value) {
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .clickable {
+
+                    }
+                    .constrainAs(circularLoader) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
+                        top.linkTo(parent.top)
+                    }) {
+                    CircularProgressIndicator(
+                        color = blueDark,
+                        modifier = Modifier
+                            .size(28.dp)
+                            .align(Alignment.Center)
+                    )
                 }
             }
             if (viewModel.showSyncDialog.value) {

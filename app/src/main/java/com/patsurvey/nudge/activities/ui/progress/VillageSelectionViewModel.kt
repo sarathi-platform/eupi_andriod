@@ -8,7 +8,6 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.MyApplication
-import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.RetryHelper.crpPatQuestionApiLanguageId
 import com.patsurvey.nudge.RetryHelper.retryApiList
@@ -41,7 +40,6 @@ import com.patsurvey.nudge.database.dao.TrainingVideoDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.download.FileType
-import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.GetQuestionListRequest
@@ -101,7 +99,6 @@ import com.patsurvey.nudge.utils.formatRatio
 import com.patsurvey.nudge.utils.getAuthImagePath
 import com.patsurvey.nudge.utils.getImagePath
 import com.patsurvey.nudge.utils.intToString
-import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import com.patsurvey.nudge.utils.videoList
@@ -147,7 +144,7 @@ class VillageSelectionViewModel @Inject constructor(
     val showLoader = mutableStateOf(false)
 
     val multiVillageRequest = mutableStateOf("2")
-
+    private var checkStatusCount = 0
     val isVoEndorsementComplete = mutableStateOf(mutableMapOf<Int, Boolean>())
     var _filterVillageList = MutableStateFlow(listOf<VillageEntity>())
     val filterVillageList: StateFlow<List<VillageEntity>> get() = _filterVillageList
@@ -1694,37 +1691,18 @@ class VillageSelectionViewModel @Inject constructor(
 
     fun refreshBpcData(context: Context) {
         showLoader.value = true
-        villageSelectionRepository.refreshBpcData(prefRepo = prefRepo, object : NetworkCallbackListener{
-            override fun onSuccess() {
-                CoroutineScope(Dispatchers.IO).launch {
-                    val updatedVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
-                    withContext(Dispatchers.Main) {
-                        _villagList.value = updatedVillageList
-                        delay(100)
-                        showLoader.value = false
-                    }
-                }
-            }
+        villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) {
+            showLoader.value = false
 
-            override fun onFailed() {
-                showLoader.value = false
-                showCustomToast(context, context.getString(R.string.refresh_failed_please_try_again))
-            }
-        })
+        }
     }
 
     fun refreshCrpData(context: Context) {
         showLoader.value = true
-        villageSelectionRepository.refreshCrpData(prefRepo = prefRepo, object : NetworkCallbackListener{
-            override fun onSuccess() {
+        villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) {
                 showLoader.value = false
             }
 
-            override fun onFailed() {
-                showLoader.value = false
-                showCustomToast(context, context.getString(R.string.refresh_failed_please_try_again))
-            }
-        })
     }
 
 

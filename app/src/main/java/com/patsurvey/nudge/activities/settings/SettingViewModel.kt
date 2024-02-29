@@ -1,11 +1,19 @@
 package com.patsurvey.nudge.activities.settings
 
 import android.content.Context
+import android.content.Intent
 import android.os.CountDownTimer
 import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.facebook.network.connectionclass.DeviceBandwidthSampler
+import com.nudge.core.ZIP_MIME_TYPE
+import com.nudge.core.compression.ZipFileCompression
+import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.enums.NetworkSpeed
+import com.nudge.core.json
+import com.nudge.core.preference.CoreSharedPrefs
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.database.dao.EventsDao
 import com.patsurvey.nudge.MyApplication
@@ -33,8 +41,8 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.model.request.AddCohortRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.network.isInternetAvailable
 import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.ConnectionMonitor
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
@@ -64,9 +72,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.IOException
+import java.net.URL
 import java.util.Timer
 import java.util.TimerTask
 import javax.inject.Inject
+import android.net.Uri as Uri1
+
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
@@ -104,12 +116,13 @@ class SettingViewModel @Inject constructor(
     private val _optionList = MutableStateFlow(listOf<SettingOptionModel>())
     val optionList: StateFlow<List<SettingOptionModel>> get() = _optionList
     val showLoader = mutableStateOf(false)
+    val showExportLoader = mutableStateOf(false)
     val showAPILoader = mutableStateOf(false)
     var showSyncDialog = mutableStateOf(false)
     var showBPCSyncDialog = mutableStateOf(false)
 
     val lastSyncTime = mutableStateOf(prefRepo.getPref(LAST_SYNC_TIME, 0L))
-
+    var currentRetryCount = 3
     var syncHelper = SyncHelper(
         this@SettingViewModel,
         prefRepo,
@@ -328,10 +341,17 @@ class SettingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val fetchAllDidiNeedToPostList = didiDao.fetchAllDidiNeedToPost(true, "", 0)
             val fetchPendingDidiList = didiDao.fetchPendingDidi(true, "")
-            val fetchAllDidiNeedToDeleteList = didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, true, "", 0)
-            val fetchAllPendingDidiNeedToDeleteList = didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, "", 0)
-            val fetchAllDidiNeedToUpdateList = didiDao.fetchAllDidiNeedToUpdate(true, "", 0)
-            val fetchAllPendingDidiNeedToUpdateList = didiDao.fetchAllPendingDidiNeedToUpdate(true, "", 0)
+            val fetchAllDidiNeedToDeleteList =
+                didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, true, "", 0)
+            val fetchAllPendingDidiNeedToDeleteList = didiDao.fetchAllPendingDidiNeedToDelete(
+                DidiStatus.DIID_DELETED.ordinal,
+                ""
+            )
+            val fetchAllDidiNeedToUpdateList = didiDao.fetchAllDidiNeedToUpdate(true, "")
+            val fetchAllPendingDidiNeedToUpdateList = didiDao.fetchAllPendingDidiNeedToUpdate(
+                true,
+                ""
+            )
             NudgeLogger.d(
                 "SettingViewModel",
                 "isSecondStepNeedToBeSync -> fetchAllDidiNeedToPostList -> ${fetchAllDidiNeedToPostList.json()};; \n\n fetchPendingDidiList -> ${fetchPendingDidiList.json()};; " +
@@ -382,7 +402,10 @@ class SettingViewModel @Inject constructor(
                 PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + village.id,
                 false
             )
-            NudgeLogger.d("SettingViewModel", "isBPCScoreSaved: village.id -> ${village.id}, isBPCScoreSaved -> $isBpcScoreSaved")
+            NudgeLogger.d(
+                "SettingViewModel",
+                "isBPCScoreSaved: village.id -> ${village.id}, isBPCScoreSaved -> $isBpcScoreSaved"
+            )
             isBpcScoreSavedList.add(isBpcScoreSaved)
         }
         if (isBpcScoreSavedList.contains(false))
@@ -429,7 +452,8 @@ class SettingViewModel @Inject constructor(
                         "\n\n fetchAllDidiNeedsToPostImage -> ${fetchAllDidiNeedsToPostImage.json()};; "
             )
 
-            NudgeLogger.d("SettingViewModel",
+            NudgeLogger.d(
+                "SettingViewModel",
                 "isFourthStepNeedToBeSync -> fetchPATSurveyDidiList.isEmpty() -> ${fetchPATSurveyDidiList.isEmpty()};;" +
                         "\n\n fetchPendingPatStatusDidi.isEmpty() -> ${fetchPendingPatStatusDidi.isEmpty()};; " +
                         "\n\n fetchAllDidiNeedsToPostImage.isEmpty() -> ${fetchAllDidiNeedsToPostImage.isEmpty()};; "
@@ -461,7 +485,7 @@ class SettingViewModel @Inject constructor(
         stepFifthSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val getAllNeedToPostVoDidis = didiDao.getAllNeedToPostVoDidis(true, "")
-            val fetchPendingVOStatusStatusDidi = didiDao.fetchPendingVOStatusStatusDidi(true,"")
+            val fetchPendingVOStatusStatusDidi = didiDao.fetchPendingVOStatusStatusDidi(true, "")
             NudgeLogger.d(
                 "SettingViewModel",
                 "isFifthStepNeedToBeSync -> getAllNeedToPostVoDidis -> ${getAllNeedToPostVoDidis.json()};;" +
@@ -505,7 +529,10 @@ class SettingViewModel @Inject constructor(
             val isFormUploadedForVillage = prefRepo.getPref(
                 PREF_NEED_TO_POST_FORM_C_AND_D_ + prefRepo.getSelectedVillage().id, false
             )
-            NudgeLogger.d("SettingViewModel", "isFormNeedToBeUpload: village.id -> ${village.id}, isFormUploadedForVillage -> $isFormUploadedForVillage")
+            NudgeLogger.d(
+                "SettingViewModel",
+                "isFormNeedToBeUpload: village.id -> ${village.id}, isFormUploadedForVillage -> $isFormUploadedForVillage"
+            )
 
             isFormUploadedList.add(isFormUploadedForVillage)
         }
@@ -609,12 +636,29 @@ class SettingViewModel @Inject constructor(
                 }
 
                 override fun onFailed() {
-                    networkErrorMessage.value = SYNC_FAILED
-                    syncErrorMessage.value = SYNC_FAILED
-                    syncPercentage.value = 1f
+                    if (currentRetryCount > 0) {
+                        try {
+                            syncHelper.startSyncTimer(this)
+                            currentRetryCount--;
+
+                        } catch (exception: Exception) {
+                            syncHelper.startSyncTimer(this)
+                            currentRetryCount--
+                        }
+
+                        NudgeLogger.e(
+                            "SettingViewModel",
+                            "syncDataOnServer -> onFailed Retrying current count is ${currentRetryCount}"
+                        )
+                    } else {
+                        networkErrorMessage.value = SYNC_FAILED
+                        syncErrorMessage.value = SYNC_FAILED
+                        syncPercentage.value = 1f
+                        NudgeLogger.e("SettingViewModel", "syncDataOnServer -> onFailed")
+                    }
 //                        showSyncDialog.value = false
 //                        showLoader.value = false
-                    NudgeLogger.e("SettingViewModel", "syncDataOnServer -> onFailed")
+
                 }
             })
         } else {
@@ -824,6 +868,7 @@ class SettingViewModel @Inject constructor(
         }
     }
 
+
     private fun clearSharedPreference() {
         val languageId = prefRepo.getAppLanguageId()
         val language = prefRepo.getAppLanguage()
@@ -843,5 +888,81 @@ class SettingViewModel @Inject constructor(
 
     suspend fun exportLocalData(context: Context) {
         exportHelper.exportAllData(context)
+    }
+
+    fun syncAllPending(networkSpeed: NetworkSpeed) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
+            try {
+                DeviceBandwidthSampler.getInstance().startSampling()
+                // Open a stream to download the image from our URL.
+                val connection = URL("https://sarathi.lokos.in/write-api/file/view?fileName=25882_shibani%20Nama%20_CRP_2023-12-10.png").openConnection()
+                connection.setUseCaches(false)
+                connection.connect()
+                val input = connection.getInputStream()
+                try {
+                    val buffer = ByteArray(1024)
+
+                    // Do some busy waiting while the stream is open.
+                    while (input.read(buffer) != -1) {
+                    }
+                } finally {
+                    input.close()
+                    DeviceBandwidthSampler.getInstance().stopSampling()
+
+                }
+            } catch (e: IOException) {
+                Log.e("TAG", "Error while downloading image.")
+            }
+            Log.d("D", ConnectionMonitor.DoesNetworkHaveInternet.getNetworkStrength().toString())
+            NudgeCore.getEventObserver()?.syncPendingEvent(NudgeCore.getAppContext(), networkSpeed)
+        }
+    }
+
+    fun compressEventData(title: String) {
+
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                showExportLoader.value = true
+                val compression = ZipFileCompression()
+                val fileUri = compression.compressBackupFiles(
+                    NudgeCore.getAppContext(),
+                    prefRepo.getMobileNumber() ?: ""
+                )
+
+                val imageUri = compression.compressBackupImages(
+                    NudgeCore.getAppContext(),
+                    prefRepo.getMobileNumber() ?: ""
+                )
+
+                openShareSheet(imageUri, fileUri, title)
+                CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setFileExported(true)
+                showExportLoader.value = false
+
+
+            } catch (exception: Exception) {
+                NudgeLogger.e("Compression", exception.message ?: "")
+                exception.printStackTrace()
+                showExportLoader.value = false
+
+            }
+
+        }
+    }
+
+
+    private fun openShareSheet(imageUri: Uri1?, fileUri: Uri1?, title: String) {
+        val fileUris = listOf(fileUri, imageUri)
+        val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
+        shareIntent.setType(ZIP_MIME_TYPE)
+        shareIntent.putExtra(Intent.EXTRA_STREAM, ArrayList(fileUris))
+        shareIntent.putExtra(Intent.EXTRA_TITLE, title)
+        val chooserIntent = Intent.createChooser(shareIntent, title)
+        NudgeCore.startExternalApp(chooserIntent)
+    }
+
+    fun isSyncEnabled(): Boolean {
+        return prefRepo.getISSyncEnabled()
+
     }
 }

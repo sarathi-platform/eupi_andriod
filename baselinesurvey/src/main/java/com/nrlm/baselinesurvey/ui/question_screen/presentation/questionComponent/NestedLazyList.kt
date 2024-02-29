@@ -714,6 +714,19 @@ fun NestedLazyList(
                                             QuestionType.InputNumber.name -> {
                                                 val mOptionItem = optionItem.copy(selectedValue = selectedValue)
                                                 questionScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionQuestionStateForInputNumberOptions(question, mOptionItem))
+                                        if (!answeredQuestionIndices.value.contains(questionIndex)) {
+                                            answeredQuestionIndices.value.add(questionIndex)
+                                            answeredQuestionCount.value =
+                                                answeredQuestionCount.value.inc()
+                                                    .coerceIn(0, sectionDetails.questionList.size)
+                                            answeredQuestionCountIncreased(answeredQuestionCount.value)
+                                        }
+
+
+                                        when (optionItem.optionType) {
+                                            QuestionType.SingleSelectDropdown.name -> {
+                                                val mOptionItem = optionItem.copy(selectedValue = selectedValue)
+                                                questionScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption(question, mOptionItem))
                                             }
                                         }
 

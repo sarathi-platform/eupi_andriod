@@ -4,6 +4,9 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
+import com.patsurvey.nudge.activities.WealthRankingSurveyRepository
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -17,11 +20,19 @@ import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.StepType
+import com.patsurvey.nudge.utils.WealthRank
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,7 +43,8 @@ class WealthRankingViewModel @Inject constructor(
     val stepsListDao: StepsListDao,
     val villageListDao: VillageListDao,
     val lastSelectedTolaDao: LastSelectedTolaDao,
-    val apiService: ApiService
+    val apiService: ApiService,
+    val wealthRankingRepository: WealthRankingSurveyRepository
 ) : BaseViewModel() {
     private val _expandedCardIdsList = MutableStateFlow(listOf<Int>())
     private val _didiList = MutableStateFlow(listOf<DidiEntity>())
@@ -144,6 +156,8 @@ class WealthRankingViewModel @Inject constructor(
                 val updatedDidiList = didiList.value
                 if(didiEntity.serverId == 0) {
                     NudgeLogger.d("WealthRankingViewModel","updateDidiRankInDb -> didiEntity: $didiEntity, rank: $rank, didiEntity.serverId: ${didiEntity.serverId}")
+//                    didiDao.updateDidiRank(didiEntity.id, rank)
+                    wealthRankingRepository.updateWealthRankingInDb(didiEntity.id, rank)
                     didiDao.updateDidiRank(didiEntity.id, rank)
                     didiDao.updateDidiNeedToPostWealthRank(didiEntity.id,true)
                     didiDao.updateModifiedDate(System.currentTimeMillis(),didiEntity.id)
@@ -180,6 +194,14 @@ class WealthRankingViewModel @Inject constructor(
                         )
                     )
                 }
+
+
+                val updatedDidiEntity = didiDao.getDidi(didiEntity.id)
+                wealthRankingRepository.saveEvent(
+                    updatedDidiEntity,
+                    EventName.SAVE_WEALTH_RANKING,
+                    EventType.STATEFUL
+                )
 
 
                 /*updatedDidiList[updatedDidiList.map { it.serverId }.indexOf(didiId)].wealth_ranking = rank
