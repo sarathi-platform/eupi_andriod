@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,6 +48,7 @@ fun SurveyeeCardWithTolaFilterComponent(
     surveyeeStateList: List<SurveyeeCardState>,
     showCheckBox: Boolean,
     fromScreen: String,
+    primaryButtonText: String = "Start Baseline",
     checkBoxChecked: (surveyeeEntity: SurveyeeEntity, isChecked: Boolean) -> Unit,
     moveDidiToThisWeek: (surveyeeCardState: SurveyeeCardState, moveToThisWeek: Boolean) -> Unit,
     buttonClicked: (buttonName: ButtonName, surveyeeId: Int) -> Unit
@@ -67,7 +69,7 @@ fun SurveyeeCardWithTolaFilterComponent(
             Spacer(modifier = Modifier.width(10.dp))
 
             Text(
-                text = tolaName,
+                text = tolaName.capitalize(),
                 style = defaultTextStyle,
                 color = textColorDark,
                 textAlign = TextAlign.Start,
@@ -110,6 +112,7 @@ fun SurveyeeCardWithTolaFilterComponent(
                     surveyeeState = surveyeeCardState,
                     showCheckBox = showCheckBox,
                     fromScreen = fromScreen,
+                    primaryButtonText = primaryButtonText,
                     checkBoxChecked = { surveyeeEntity, isChecked ->
                         checkBoxChecked(surveyeeEntity, isChecked)
                     },
@@ -162,12 +165,14 @@ fun SurveyeeCardWithTolaFilterComponentPreview() {
         surveyeeDetails = didi1,
         subtitle = didi1.didiName,
         address = didi1.houseNo + ",  " + didi1.cohortName,
+        activityName = "Conduct BaseLine Survey",
         surveyState = SurveyState.NOT_STARTED
     )
     val surveyeeCardState2 = SurveyeeCardState(
         surveyeeDetails = didi2,
         subtitle = didi2.didiName,
         address = didi2.houseNo + ",  " + didi2.cohortName,
+        activityName = "Conduct Hamlet Survey",
         surveyState = SurveyState.NOT_STARTED
     )
     val surveyeeStateList1 = listOf<SurveyeeCardState>(surveyeeCardState1, surveyeeCardState1, surveyeeCardState1)

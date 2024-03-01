@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.database.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -14,4 +15,7 @@ interface DidiInfoDao {
 
     @Query("SELECT * FROM $DIDI_INFO_TABLE_NAME where didiId=:didiId ")
     suspend fun getDidiInfo(didiId: Int): DidiIntoEntity
+
+    @Query("SELECT * FROM $DIDI_INFO_TABLE_NAME where didiId=:didiId")
+    fun getDidiInfoLive(didiId: Int): LiveData<List<DidiIntoEntity>>
 }

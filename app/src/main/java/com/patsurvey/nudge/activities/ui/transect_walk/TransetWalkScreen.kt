@@ -20,8 +20,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -73,6 +71,7 @@ import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
 import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.utils.LocationUtil
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.Tola
 import com.patsurvey.nudge.utils.TolaStatus
 import com.patsurvey.nudge.utils.showCustomToast
@@ -487,6 +486,11 @@ fun TransectWalkScreen(
 //                            viewModel.updateTolaNeedTOPostList(villageId)
                         }
                         viewModel.markTransectWalkComplete(villageId, stepId)
+                        viewModel.updateWorkflowStatusInEvent(
+                            stepStatus = StepStatus.COMPLETED,
+                            villageId = villageId,
+                            stepId = stepId
+                        )
                         navController.navigate(
                             "step_completion_screen/${
                                 context.getString(R.string.transect_walk_completed_message).replace(

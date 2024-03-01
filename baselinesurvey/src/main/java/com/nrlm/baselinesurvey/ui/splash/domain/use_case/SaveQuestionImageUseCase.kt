@@ -1,6 +1,6 @@
-package com.nrlm.baselinesurvey.splash.domain.use_case
+package com.nrlm.baselinesurvey.ui.splash.domain.use_case
 
-import com.nrlm.baselinesurvey.splash.domain.repository.SplashScreenRepository
+import com.nrlm.baselinesurvey.ui.splash.domain.repository.SplashScreenRepository
 
 class SaveQuestionImageUseCase(splashScreenRepository: SplashScreenRepository) {
 

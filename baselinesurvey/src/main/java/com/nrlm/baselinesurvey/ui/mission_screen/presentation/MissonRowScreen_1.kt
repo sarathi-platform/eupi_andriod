@@ -127,7 +127,7 @@ fun MissonRowScreen_1(
                 )
             }
             Text(
-                text = "Task Pending - ${mission.activityComplete}/${mission.activityTaskSize}",
+                text = "Task Completed - ${mission.activityComplete}/${mission.activityTaskSize}",
                 fontFamily = NotoSans,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,

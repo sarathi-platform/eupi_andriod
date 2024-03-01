@@ -1061,12 +1061,12 @@ class BPCProgressScreenRepository @Inject constructor(
         }
     }
 
-    fun updateVillageDataLoadStatus(villageId: Int, isDataLoadTriedOnce: Boolean) {
+    fun updateVillageDataLoadStatus(villageId: Int, isDataLoadTriedOnce: Int) {
         villageListDao.updateVillageDataLoadStatus(villageId, isDataLoadTriedOnce)
     }
 
     fun isDataLoadTried(villageId: Int): Boolean {
-        return villageListDao.getVillage(villageId).isDataLoadTriedOnce
+        return (villageListDao.getVillage(villageId).isDataLoadTriedOnce == 1)
     }
 
     fun getStepListForVillageLive(): LiveData<List<StepListEntity>> {

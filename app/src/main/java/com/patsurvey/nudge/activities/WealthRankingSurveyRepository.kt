@@ -1,6 +1,20 @@
 package com.patsurvey.nudge.activities
 
 import com.google.gson.Gson
+import com.nudge.core.EventSyncStatus
+import com.nudge.core.SELECTION_MISSION
+import com.nudge.core.database.entities.EventDependencyEntity
+import com.nudge.core.database.entities.Events
+import com.nudge.core.database.entities.getDependentEventsId
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
+import com.nudge.core.enums.getDependsOnEventNameForEvent
+import com.nudge.core.getEventDependencyEntityListFromEvents
+import com.nudge.core.getSizeInLong
+import com.nudge.core.json
+import com.nudge.core.model.MetadataDto
+import com.nudge.core.model.getMetaDataDtoFromString
+import com.nudge.core.toDate
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponse
 import com.patsurvey.nudge.base.BaseRepository
@@ -9,7 +23,6 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
@@ -20,8 +33,9 @@ import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.WorkFlowResponse
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.getParentEntityMapForEvent
 import javax.inject.Inject
 
 class WealthRankingSurveyRepository @Inject constructor(
@@ -93,7 +107,7 @@ class WealthRankingSurveyRepository @Inject constructor(
         return stepsListDao.isStepComplete(stepId, prefRepo.getSelectedVillage().id)
     }
     fun getAllNeedToPostDidiRanking(needsToPostRanking: Boolean): List<DidiEntity>{
-        return didiDao.getAllNeedToPostDidiRanking(needsToPostRanking, 0)
+        return didiDao.getAllNeedToPostDidiRanking(needsToPostRanking)
     }
     suspend fun updateDidiRanking(didiWealthRankingRequest: List<EditDidiWealthRankingRequest>): ApiResponseModel<List<DidiEntity>>{
         NudgeLogger.d("WealthRankingSurveyRepository","updateDidiRanking Request=> ${Gson().toJson(didiWealthRankingRequest)}")
@@ -126,4 +140,131 @@ class WealthRankingSurveyRepository @Inject constructor(
     fun updateDidiNeedToPostWealthRank(didiId: Int, needsToPostRanking: Boolean){
         didiDao.updateDidiNeedToPostWealthRank(didiId, needsToPostRanking)
     }
+
+    suspend fun updateWealthRankingInDb(didiId: Int, wealthRank: String) {
+        didiDao.updateDidiRank(didiId, wealthRank)
+    }
+
+    override suspend fun <T> createEvent(
+        eventItem: T,
+        eventName: EventName,
+        eventType: EventType
+    ): Events? {
+        if (eventType != EventType.STATEFUL)
+            return super.createEvent(eventItem, eventName, eventType)
+
+        if (eventItem !is DidiEntity)
+            return super.createEvent(eventItem, eventName, eventType)
+
+        when (eventName) {
+            EventName.SAVE_WEALTH_RANKING -> {
+                val didiEntity = (eventItem as DidiEntity)
+                val selectedTolaEntity = tolaDao.fetchSingleTolaFromServerId(didiEntity.cohortId)
+
+                val requestPayload = EditDidiWealthRankingRequest
+                    .getRequestPayloadForWealthRanking(
+                        didiEntity = didiEntity,
+                        tolaDeviceId = selectedTolaEntity?.localUniqueId ?: "",
+                        tolaServerId = selectedTolaEntity?.serverId ?: 0
+                    )
+                    .json()
+
+                var saveWealthRankingEvent = Events(
+                    name = eventName.name,
+                    type = eventName.topicName,
+                    createdBy = prefRepo.getUserId(),
+                    mobile_number = prefRepo.getMobileNumber(),
+                    request_payload = requestPayload,
+                    status = EventSyncStatus.OPEN.name,
+                    modified_date = System.currentTimeMillis().toDate(),
+                    result = null,
+                    payloadLocalId = (eventItem as DidiEntity).localUniqueId,
+                    consumer_status = BLANK_STRING,
+                    metadata = MetadataDto(
+                        mission = SELECTION_MISSION,
+                        depends_on = listOf(),
+                        request_payload_size = requestPayload.getSizeInLong(),
+                        parentEntity = getParentEntityMapForEvent(eventItem, eventName)
+                    ).json()
+                )
+
+                val dependsOn = createEventDependency(eventItem, eventName, saveWealthRankingEvent)
+                val metadata = saveWealthRankingEvent.metadata?.getMetaDataDtoFromString()
+                val updatedMetaData = metadata?.copy(depends_on = dependsOn.getDependentEventsId())
+                saveWealthRankingEvent = saveWealthRankingEvent.copy(
+                    metadata = updatedMetaData?.json()
+                )
+
+                return saveWealthRankingEvent
+            }
+
+            else -> {
+                return super.createEvent(eventItem, eventName, eventType)
+            }
+        }
+    }
+
+    override suspend fun <T> createEventDependency(
+        eventItem: T,
+        eventName: EventName,
+        dependentEvent: Events
+    ): List<EventDependencyEntity> {
+        val eventDependencyList = mutableListOf<EventDependencyEntity>()
+        var filteredList = listOf<Events>()
+
+        var dependentEventsName = eventName.getDependsOnEventNameForEvent()
+        for (dependsOnEvent in dependentEventsName) {
+            val eventList = eventsDao.getAllEventsForEventName(dependsOnEvent.name)
+            when (eventName) {
+                EventName.SAVE_WEALTH_RANKING -> {
+                    filteredList = eventList.filter {
+                        it.payloadLocalId == dependentEvent.payloadLocalId
+                    }
+                }
+
+                else -> {
+                    filteredList = emptyList()
+                }
+            }
+            if (filteredList.isNotEmpty()) {
+                break
+            }
+        }
+
+        if (filteredList.isNotEmpty()) {
+
+            val immediateDependentOn = ArrayList<Events>()
+            immediateDependentOn.add(filteredList.first())
+
+            eventDependencyList.addAll(
+                immediateDependentOn.getEventDependencyEntityListFromEvents(
+                    dependentEvent
+                )
+            )
+        }
+        return eventDependencyList
+    }
+
+    override suspend fun <T> saveEvent(
+        eventItem: T,
+        eventName: EventName,
+        eventType: EventType
+    ) {
+
+        val event = this.createEvent(
+            eventItem,
+            eventName,
+            eventType
+        )
+
+        if (event?.id?.equals(BLANK_STRING) != true) {
+            event?.let {
+                val eventDependencies = this.createEventDependency(eventItem, eventName, it)
+                saveEventToMultipleSources(it, eventDependencies)
+
+            }
+        }
+    }
+
+
 }

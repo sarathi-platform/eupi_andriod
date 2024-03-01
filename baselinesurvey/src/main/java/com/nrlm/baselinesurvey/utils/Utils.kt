@@ -22,6 +22,7 @@ import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_NAME
+import com.nrlm.baselinesurvey.ZERO_RESULT
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
@@ -36,11 +37,13 @@ import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
+import com.nrlm.baselinesurvey.ui.Constants.ItemType
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
+import com.nrlm.baselinesurvey.ui.search.viewmodel.ComplexSearchState
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -616,7 +619,7 @@ fun saveFormQuestionResponseEntity(
 }
 
 fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObjectDto(
-    optionsItemEntityList: List<OptionItemEntity>
+    optionsItemEntityList: List<OptionItemEntity>, questionTag: String
 ): List<FormResponseObjectDto> {
     val householdMembersList = mutableListOf<FormResponseObjectDto>()
     val referenceIdMap = this.groupBy { it.referenceId }
@@ -625,9 +628,23 @@ fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObject
         val householdMemberDetailsMap = mutableMapOf<Int, String>()
         householdMember.referenceId = formQuestionResponseEntityList.key
         householdMember.questionId = formQuestionResponseEntityList.value.first().questionId
+        householdMember.questionTag = questionTag
         formQuestionResponseEntityList.value.forEachIndexed { index, formQuestionResponseEntity ->
-            val option = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }
-            householdMemberDetailsMap.put(option?.optionId ?: -1, formQuestionResponseEntity.selectedValue)
+            householdMemberDetailsMap.put(formQuestionResponseEntity.optionId, formQuestionResponseEntity.selectedValue)
+            /*var option = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }
+            if (option==null) {
+                optionsItemEntityList.forEach { optionItemEntity ->
+                    optionItemEntity.conditions?.forEach { conditionsDto ->
+                        conditionsDto?.resultList?.forEach { questionItem ->
+                            option = questionItem.options?.find { it?.optionId == formQuestionResponseEntity.optionId }?.convertToOptionItemEntity(formQuestionResponseEntity.questionId, formQuestionResponseEntity.sectionId, formQuestionResponseEntity.surveyId, optionItemEntity.languageId!!)
+                            if (option != null) {
+                                householdMemberDetailsMap.put(option?.optionId ?: formQuestionResponseEntity.optionId, formQuestionResponseEntity.selectedValue)
+                            }
+                        }
+                    }
+                }
+            }*/
+
             householdMember.memberDetailsMap = householdMemberDetailsMap
         }
         householdMembersList.add(householdMember)
@@ -643,7 +660,7 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
         questionId = this.questionId,
         optionId = this.questionId,
         display = this.questionDisplay,
-        weight = this.options?.first()?.weight,
+        weight = if (options?.isEmpty() == true) 0 else this.options?.first()?.weight,
         optionType = this.type,
         summary = this.questionSummary,
         values = emptyList(),
@@ -656,7 +673,8 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
             condition?.let { it1 -> conditions.add(it1) }
         }
         when (it?.optionType) {
-            QuestionType.SingleSelectDropdown.name -> {
+            QuestionType.SingleSelectDropdown.name,
+            QuestionType.SingleSelectDropDown.name -> {
                 it.values.let { it1 -> valuesList.addAll(it1) }
             }
             else -> {
@@ -734,6 +752,20 @@ fun SnapshotStateList<QuestionEntityState>.findIndexOfListById(questionId: Int?)
     return this.map { it.questionId }.indexOf(questionId)
 }
 
+fun SnapshotStateList<OptionItemEntityState>.findIndexOfListByOptionId(optionId: Int?): Int {
+    if (optionId == null)
+        return  -1
+
+    return this.map { it.optionId }.indexOf(optionId)
+}
+
+fun List<OptionItemEntityState>.findIndexOfListByOptionId(optionId: Int?): Int {
+    if (optionId == null)
+        return  -1
+
+    return this.map { it.optionId }.indexOf(optionId)
+}
+
 fun SnapshotStateList<QuestionEntityState>.findQuestionEntityStateById(questionId: Int?): QuestionEntityState? {
     if (questionId == null)
         return null
@@ -776,7 +808,6 @@ fun List<OptionItemEntityState>.updateOptionItemEntityListStateForQuestionByCond
 fun QuestionList.convertToOptionItemEntity(sectionId: Int, surveyId: Int, questionId: Int, languageId: Int): OptionItemEntity {
     return OptionItemEntity(
         id = 0,
-        optionId = this.optionId,
         questionId = questionId,
         sectionId = sectionId,
         surveyId = surveyId,
@@ -789,9 +820,7 @@ fun QuestionList.convertToOptionItemEntity(sectionId: Int, surveyId: Int, questi
         optionType = this.type,
         conditional = this.conditional,
         order = this.order ?: -1,
-        values = this.values,
-        languageId = languageId,
-        conditions = this.conditions
+        languageId = languageId
     )
 }
 
@@ -828,24 +857,16 @@ fun ConditionsDto.checkCondition(userInputValue: String): Boolean {
             Operator.NOT_EQUAL_TO -> {
                 !userInputValue.equals(condition.first(), ignoreCase = true)
             }
-            /*Operator.LESS_THAN_EQUAL_TO ->{
-                if(totalAmount <= (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){
-                    score = it.score.toDouble()
-                    return@breaking
-                }
+            Operator.LESS_THAN_EQUAL_TO ->{
+                userInputValue.toInt() <= condition.first().toInt()
             }
             Operator.MORE_THAN -> {
-                if(totalAmount > (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){
-                    score = it.score.toDouble()
-                    return@breaking
-                }
+                userInputValue.toInt() > condition.first().toInt()
             }
             Operator.MORE_THAN_EQUAL_TO -> {
-                if(totalAmount >= (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){
-                    score = it.score.toDouble()
-                    return@breaking
-                }
-            }*/
+                userInputValue.toInt() >= condition.first().toInt()
+            }
+
             else -> {
                 false
             }
@@ -856,22 +877,41 @@ fun ConditionsDto.checkCondition(userInputValue: String): Boolean {
     }
 }
 
+fun isNumeric(toCheck: String): Boolean {
+    val regex = "-?[0-9]+(\\.[0-9]+)?".toRegex()
+    return toCheck.matches(regex)
+}
+
 fun ConditionsDto.calculateResultForFormula(formQuestionResponseEntity: List<FormQuestionResponseEntity>): String {
-    val optionIdList = this.value.extractIdsFromValue()
-    val filteredResponseList = formQuestionResponseEntity.filter { optionIdList?.contains(it.optionId.toString()) == true }.sortedBy { it.optionId }
-    var input = this.value
+    try {
+        val optionIdList = this.value.extractIdsFromValue()
+        val filteredResponseList =
+            formQuestionResponseEntity.filter { optionIdList?.contains(it.optionId.toString()) == true }
+                .sortedBy { it.optionId }
+        var input = this.value
 
-    if (filteredResponseList.isEmpty())
-        return BLANK_STRING
-
-    optionIdList?.forEach {
-        input = input.replace(it, filteredResponseList.findResponseEntityByOptionId(it.toInt()).selectedValue)
+        if (filteredResponseList.isEmpty())
+            return BLANK_STRING
+        val tempList = ArrayList<String>()
+        input.split(" ").filter { it != "" }.forEach { va ->
+            if (va.isNotEmpty() && isNumeric(va)) {
+                tempList.add(filteredResponseList.findResponseEntityByOptionId(va.toInt()).selectedValue)
+            } else {
+                tempList.add(va)
+            }
+        }
+        var actualvalue = BLANK_STRING
+        for (v in tempList) {
+            actualvalue += v
+        }
+        val result = CalculatorUtils.calculate(actualvalue)
+        Log.d("TAG", "calculateResultForFormula: $result")
+        return result.toString()
+    } catch (ex: Exception) {
+        BaselineLogger.e("Utils", "calculateResultForFormula -> exception: ${ex.message}", ex)
+        return ZERO_RESULT
     }
-    val result = CalculatorUtils.calculate(input)
 
-    Log.d("TAG", "calculateResultForFormula: $result")
-
-    return result.toString()
 }
 
 fun String.extractIdsFromValue(): List<String>? {
@@ -904,4 +944,57 @@ fun  SnapshotStateList<QuestionEntityState>.getSizeOfVisibleQuestions(): Int {
 
 fun List<OptionItemEntity>.getIndexById(optionId: Int): Int {
     return this.map { it.optionId }.indexOf(optionId)
+}
+
+fun OptionsItem?.convertToOptionItemEntity(questionId: Int, sectionId: Int, surveyId: Int, languageId: Int): OptionItemEntity {
+    return OptionItemEntity(
+        id = 0,
+        optionId = this?.optionId,
+        questionId = questionId,
+        sectionId = sectionId,
+        surveyId = surveyId,
+        display = this?.display,
+        weight = this?.weight,
+        optionValue = this?.optionValue,
+        summary = this?.summary,
+        count = this?.count,
+        optionImage = this?.optionImage,
+        optionType = this?.optionType,
+        conditional = this?.conditional!!,
+        order = this.order,
+        values = this.values,
+        languageId = languageId,
+        conditions = this.conditions
+    )
+}
+
+fun List<OptionsItem?>?.convertToListOfOptionItemEntity(questionId: Int, sectionId: Int, surveyId: Int, languageId: Int): List<OptionItemEntity> {
+    val optionsItemEntityList = mutableListOf<OptionItemEntity>()
+    this?.forEach {
+        val optionItemEntity = it?.convertToOptionItemEntity(
+            questionId = questionId,
+            sectionId = sectionId,
+            surveyId = surveyId,
+            languageId = languageId
+        )
+        optionsItemEntityList.add(optionItemEntity!!)
+    }
+    return optionsItemEntityList
+}
+
+fun List<SectionListItem>.convertToComplexSearchState(): List<ComplexSearchState> {
+    val complexSearchStateList = mutableListOf<ComplexSearchState>()
+
+    this.forEach { section ->
+        val complexSearchState = ComplexSearchState(section.sectionId, itemType = ItemType.Section, sectionName = section.sectionName, questionTitle = BLANK_STRING, isSectionSearchOnly = true)
+        complexSearchStateList.add(complexSearchState)
+    }
+    this.forEach { section ->
+        section.questionList.forEach { question ->
+            val complexSearchStateForQuestion = ComplexSearchState(itemId = question.questionId ?: -1, itemParentId = question.sectionId, itemType = ItemType.Question, sectionName = section.sectionName, questionTitle = question.questionDisplay ?: BLANK_STRING, isSectionSearchOnly = false)
+            complexSearchStateList.add(complexSearchStateForQuestion)
+        }
+    }
+
+    return complexSearchStateList
 }

@@ -19,7 +19,7 @@ class FetchSurveyFromNetworkUseCase(
                     Log.d("invoke", "surveyApiResponse.sections.find -> ${surveyApiResponse.sections.find { it.sectionId == 8 }} \n" +
                             "\n" +
                             "\n")
-                    repository.saveSurveyToDb(surveyApiResponse, languageId = 2)
+                    repository.saveSurveyToDb(surveyApiResponse, languageId = surveyRequestBodyModel.languageId)
 //                    }
                     return true
                 }

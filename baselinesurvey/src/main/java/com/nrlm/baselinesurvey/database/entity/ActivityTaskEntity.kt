@@ -36,7 +36,7 @@ data class ActivityTaskEntity(
                 missionId = missionId,
                 activityId = activityId,
                 taskId = task.taskId,
-                didiId = task.didiId,
+                didiId = task.didiId!!,
                 taskDate = task.taskDate,
                 taskName = task.taskName,
                 status = "",

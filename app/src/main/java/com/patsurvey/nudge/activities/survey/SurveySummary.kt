@@ -67,6 +67,7 @@ import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.SYNC_FAILED
+import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.SummaryBox
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.showCustomToast
@@ -194,9 +195,21 @@ fun SurveySummary(
                 if(surveySummaryViewModel.repository.prefRepo.isUserBPC()){
 
                     surveySummaryViewModel.updateDidiPatStatus()
-                    surveySummaryViewModel.markBpcVerificationComplete(surveySummaryViewModel.repository.prefRepo.getSelectedVillage().id, stepId)
+                    surveySummaryViewModel.markBpcVerificationComplete(
+                        surveySummaryViewModel.getSelectedVillage().id,
+                        stepId
+                    )
+                    surveySummaryViewModel.saveWorkflowEventIntoDb(
+                        stepStatus = StepStatus.COMPLETED,
+                        villageId = surveySummaryViewModel.getSelectedVillage().id,
+                        stepId = stepId
+                    )
                     surveySummaryViewModel.saveBpcPatCompletionDate()
                     surveySummaryViewModel.updatePatEditFlag()
+                    surveySummaryViewModel.addRankingFlagEditEvent(
+                        true,
+                        stepId = stepId
+                    )
 
                     if ((context as MainActivity).isOnline.value ?: false) {
                         surveySummaryViewModel.savePATSummeryToServer(object :
@@ -244,6 +257,7 @@ fun SurveySummary(
                             }
                         })
                     } else {
+                        surveySummaryViewModel.writeBpcMatchScoreEvent()
                         surveySummaryViewModel.repository.prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + surveySummaryViewModel.repository.prefRepo.getSelectedVillage().id, false)
                     }
 
@@ -261,8 +275,14 @@ fun SurveySummary(
                                     surveySummaryViewModel.repository.prefRepo.getSelectedVillage().id,
                                     stepId
                                 )
+                                surveySummaryViewModel.saveWorkflowEventIntoDb(
+                                    stepStatus = StepStatus.COMPLETED,
+                                    villageId = surveySummaryViewModel.getSelectedVillage().id,
+                                    stepId = stepId
+                                )
                                 surveySummaryViewModel.savePatCompletionDate()
                                 surveySummaryViewModel.updatePatEditFlag()
+                                surveySummaryViewModel.addRankingFlagEditEvent(stepId = stepId)
                             }
                             if ((context as MainActivity).isOnline.value ?: false) {
                                 if (surveySummaryViewModel.isTolaSynced.value == 2

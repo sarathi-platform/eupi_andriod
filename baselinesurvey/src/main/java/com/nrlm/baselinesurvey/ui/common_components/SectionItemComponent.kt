@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,6 +28,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
+import com.nrlm.baselinesurvey.ui.theme.dimen_20_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_40_dp
 import com.nrlm.baselinesurvey.ui.theme.greenLight
 import com.nrlm.baselinesurvey.ui.theme.greenOnline
 import com.nrlm.baselinesurvey.ui.theme.greyBorder
@@ -88,10 +91,11 @@ fun SectionItemComponent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) greenLight else if (sectionStateItem.sectionStatus.name.equals(
+                        color = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) greenLight else white //TODO Temporary change do not remove the commented part
+                        /*if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) greenLight else if (sectionStateItem.sectionStatus.name.equals(
                                 SectionStatus.INPROGRESS.name
                             )
-                        ) stepBoxActiveColor else white
+                        ) stepBoxActiveColor else white*/
                     )
                     .padding(vertical = /*if (isCompleted) 10.dp else */14.dp)
                     .padding(end = 16.dp, start = 8.dp),
@@ -108,13 +112,15 @@ fun SectionItemComponent(
                         .size(48.dp)
                         .clip(CircleShape)
                         .background(
-                            color = if (sectionStateItem.sectionStatus.name.equals(
+                            color = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name))
+                                sectionIconCompletedBg else sectionIconNotStartedBg //TODO Temporary change do not remove the commented part
+                            /*if (sectionStateItem.sectionStatus.name.equals(
                                     SectionStatus.COMPLETED.name
                                 )
                             ) sectionIconCompletedBg else if (sectionStateItem.sectionStatus.name.equals(
                                     SectionStatus.INPROGRESS.name
                                 )
-                            ) sectionIconInProgressBg else sectionIconNotStartedBg,
+                            ) sectionIconInProgressBg else sectionIconNotStartedBg*/,
                             shape = CircleShape
                         ),
                         contentAlignment = Alignment.Center
@@ -147,8 +153,9 @@ fun SectionItemComponent(
                 ) {
                     Text(
                         text = sectionStateItem.section.sectionName,
-                        color = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) greenOnline else if(sectionStateItem.sectionStatus.name.equals(
-                                SectionStatus.INPROGRESS.name)) textColorDark else textColorDark50,
+                        color = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) greenOnline else textColorDark //TODO Temporary change do not remove the commented part
+                        /*if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) greenOnline else if(sectionStateItem.sectionStatus.name.equals(
+                                SectionStatus.INPROGRESS.name)) textColorDark else textColorDark50*/,
                         modifier = Modifier
                             .fillMaxWidth(),
                         softWrap = true,
@@ -159,10 +166,11 @@ fun SectionItemComponent(
                     )
                     Text(
                         text = "${sectionStateItem.section.questionSize} Questions",
-                        color = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) greenOnline else if (sectionStateItem.sectionStatus.name.equals(
+                        color = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) greenOnline else textColorDark //TODO Temporary change do not remove the commented part
+                        /*if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) greenOnline else if (sectionStateItem.sectionStatus.name.equals(
                                 SectionStatus.INPROGRESS.name
                             )
-                        ) textColorDark else textColorDark50,
+                        ) textColorDark else textColorDark50*/,
                         modifier = Modifier
                             .fillMaxWidth(),
                         softWrap = true,
@@ -174,6 +182,8 @@ fun SectionItemComponent(
 
 
                 }
+
+                Spacer(modifier = Modifier.size(dimen_40_dp))
 
 //                IconButton(
 //                    onClick = { onDetailIconClicked(sectionStateItem.section.sectionId) },

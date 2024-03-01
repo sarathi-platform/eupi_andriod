@@ -14,5 +14,9 @@ data class SettingOptionModel(
 
     @SerializedName("subTitle")
     @Expose
-    val subTitle:String
-)
+    val subTitle:String,
+
+    @SerializedName("tag")
+    @Expose
+    val tag:String
+    )

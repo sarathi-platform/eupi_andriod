@@ -8,6 +8,8 @@ interface SectionListScreenRepository {
 
     fun getSectionsListForDidi(didiId: Int, surveyId: Int, languageId: Int): List<SectionListItem>
 
+    fun getSectionListForSurvey(surveyId: Int, languageId: Int): List<SectionListItem>
+
     fun getSelectedLanguage(): Int
     fun getSectionProgressForDidi(
         didiId: Int,

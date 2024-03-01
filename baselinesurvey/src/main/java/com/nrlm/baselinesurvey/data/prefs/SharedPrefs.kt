@@ -88,6 +88,10 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         return prefs.getInt(PREF_KEY_SETTING_OPEN_FROM,0)
     }
 
+    override fun saveSettingOpenFrom(pageFrom: Int) {
+      prefs.edit().putInt(PREF_KEY_SETTING_OPEN_FROM,pageFrom).apply()
+    }
+
     override fun savePref(key: String, value: String) {
         prefs.edit().putString(key, value).apply()
     }

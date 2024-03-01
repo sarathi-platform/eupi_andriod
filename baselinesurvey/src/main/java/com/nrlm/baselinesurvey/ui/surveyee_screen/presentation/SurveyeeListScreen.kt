@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ALL_TAB
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.THIS_WEEK_TAB
 import com.nrlm.baselinesurvey.navigation.home.Step_Complition_Screen_ROUTE_NAME
@@ -84,96 +85,32 @@ fun SurveyeeListScreen(
         })
 
     Scaffold(
-//        topBar = {
-//            TabRow(
-//                selectedTabIndex = selectedTabIndex.intValue,
-//                containerColor = Color.White,
-//                contentColor = textColorDark,
-//                modifier = Modifier
-//                    .shadow(defaultCardElevation)
-//                    .zIndex(1f),
-//            ) {
-//                tabs.forEachIndexed { tabIndex, tab ->
-//                    Tab(
-//                        selected = tabIndex == selectedTabIndex.intValue,
-//                        onClick = { selectedTabIndex.intValue = tabIndex },
-//                        text = {
-//                            Text(
-//                                text = if (tab == THIS_WEEK_TAB) stringResource(R.string.this_week_tab_title) else stringResource(
-//                                    R.string.all_tab_title
-//                                ),
-//                                style = if (tabIndex == selectedTabIndex.intValue) smallTextStyle else smallTextStyleWithNormalWeight
-//                            )
-//                        },
-//                        selectedContentColor = textColorDark,
-//                        unselectedContentColor = unselectedTabColor
-//                    )
-//                }
-//
-//            }
-//        },
-//        floatingActionButton = {
-//            if (!isSelectionEnabled.value && !loaderState.isLoaderVisible && selectedTabIndex.intValue != 0) {
-//                androidx.compose.material.FloatingActionButton(
-//                    onClick = {
-//                        isSelectionEnabled.value = true
-//                    },
-//                    backgroundColor = white
-//                ) {
-//                    Image(
-//                        painter = painterResource(id = R.drawable.ic_fab_convert_check_box),
-//                        contentDescription = ""
-//                    )
-//                }
-//            }
-//        },
         bottomBar = {
-//            if (isSelectionEnabled.value && !loaderState.isLoaderVisible && selectedTabIndex.intValue != 0) {
-//                PrimarySecandaryButtonBoxPreFilled(
-//                    modifier = Modifier,
-//                    primaryButtonText = stringResource(id = R.string.more_item_text),
-//                    secandaryButtonText = stringResource(id = R.string.cancel_tola_text),
-//                    secandaryButtonRequired = true,
-//                    primaryButtonOnClick = {
-//                        viewModel.onEvent(
-//                            SurveyeeListEvents.MoveDidisThisWeek(
-//                                viewModel.checkedItemsState.value,
-//                                true
-//                            )
-//                        )
-//                        isSelectionEnabled.value = false
-//                        viewModel.onEvent(SurveyeeListEvents.CancelAllSelection(isFilterAppliedState.value.isFilterApplied))
-//                    },
-//                    secandaryButtonOnClick = {
-////                        isCancelBtnClick.value = true
-//                        isSelectionEnabled.value = false
-//                        viewModel.onEvent(SurveyeeListEvents.CancelAllSelection(isFilterAppliedState.value.isFilterApplied))
-//                    }
-//                )
-//            }
 
+            if (viewModel.isEnableNextBTn.value) {
 
-            DoubleButtonBox(
-                modifier = Modifier
-                    .shadow(10.dp),
-                positiveButtonText = stringResource(id = R.string.next),
-                negativeButtonText = stringResource(id = R.string.go_back_text),
-                isPositiveButtonActive = viewModel.isEnableNextBTn.value,
-                positiveButtonOnClick = {
-                    viewModel.onEvent(
-                        SurveyeeListEvents.UpdateActivityAllTask(
-                            activityId,
-                            viewModel.isEnableNextBTn.value
+                DoubleButtonBox(
+                    modifier = Modifier
+                        .shadow(10.dp),
+                    positiveButtonText = stringResource(id = R.string.next),
+                    negativeButtonText = stringResource(id = R.string.go_back_text),
+                    negativeButtonRequired = false,
+                    isPositiveButtonActive = viewModel.isEnableNextBTn.value,
+                    positiveButtonOnClick = {
+                        viewModel.onEvent(
+                            SurveyeeListEvents.UpdateActivityAllTask(
+                                activityId,
+                                viewModel.isEnableNextBTn.value
+                            )
                         )
-                    )
-                    navController.navigate("${Step_Complition_Screen_ROUTE_NAME}/${"You have successfully completed the ${activityName} activity"}")
-                    // navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
-                },
-                negativeButtonOnClick = {
+                        navController.navigate("${Step_Complition_Screen_ROUTE_NAME}/${"You have successfully completed the ${activityName} activity"}")
+                        // navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
+                    },
+                    negativeButtonOnClick = {
 
-                    navigateBackToMissionSummaryScreen(navController)
-                }
-            )
+                    }
+                )
+            }
         },
         containerColor = white
     ) {
@@ -265,7 +202,8 @@ fun handleButtonClick(
     buttonName: ButtonName,
     surveyeeId: Int,
     surveyId: Int,
-    navController: NavController
+    navController: NavController,
+    activityName: String = BLANK_STRING
 ) {
     when (buttonName) {
         is ButtonName.START_BUTTON -> {

@@ -172,7 +172,8 @@ fun QuestionType(
 
                                 QuestionType.SingleSelect.name, QuestionType.List.name,
                                 QuestionType.Form.name, QuestionType.Input.name,
-                                QuestionType.SingleSelectDropdown.name -> {
+                                QuestionType.SingleSelectDropdown.name,
+                                QuestionType.SingleSelectDropDown.name -> {
                                     CreateLazyHorizontalGrid(
                                         innerState = innerListState,
                                         maxCustomHeight = maxCustomHeight,
@@ -343,7 +344,8 @@ fun CreateLazyHorizontalGrid(
                     InputType(optionsItem = optionsItem)
                 }
 
-                QuestionType.SingleSelectDropdown.name -> {
+                QuestionType.SingleSelectDropdown.name,
+                QuestionType.SingleSelectDropDown.name -> {
                     DropDownType(optionsItem = optionsItem)
                 }
 

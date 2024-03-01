@@ -6,6 +6,7 @@ import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepository
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import kotlinx.coroutines.delay
 
 class FetchMissionDataFromNetworkUseCase(
     private val repository: DataLoadingScreenRepository
@@ -18,8 +19,8 @@ class FetchMissionDataFromNetworkUseCase(
                     repository.deleteMissionsFromDB()
                     repository.deleteMissionActivitiesFromDB()
                     repository.deleteActivityTasksFromDB()
-                    var activityTaskSize = 0
                     missionApiResponse.forEach { mission ->
+                        var activityTaskSize = 0
                         mission.activities.forEach { activity ->
                             repository.saveMissionsActivityToDB(
                                 MissionActivityEntity.getMissionActivityEntity(
@@ -29,17 +30,20 @@ class FetchMissionDataFromNetworkUseCase(
                                 )
                             )
                             activity.tasks.forEach { task ->
-                                repository.saveActivityTaskToDB(
-                                    ActivityTaskEntity.getActivityTaskEntity(
-                                        missionId = mission.missionId,
-                                        activityId = activity.activityId,
-                                        activityName = activity.activityName,
-                                        task = task
+                                if (task.didiId != null) {
+                                    repository.saveActivityTaskToDB(
+                                        ActivityTaskEntity.getActivityTaskEntity(
+                                            missionId = mission.missionId,
+                                            activityId = activity.activityId,
+                                            activityName = activity.activityName,
+                                            task = task
+                                        )
                                     )
-                                )
+                                }
                             }
                             activityTaskSize += activity.tasks.size
                         }
+                        delay(100)
                         repository.saveMissionToDB(
                             MissionEntity.getMissionEntity(
                                 activityTaskSize = activityTaskSize,

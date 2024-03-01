@@ -41,9 +41,10 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.nrlm.baselinesurvey.ARG_FROM_HOME
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
-import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.ONE_SECOND
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.activity.MainActivity
+import com.nrlm.baselinesurvey.navigation.AuthScreen
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.SarathiLogoTextViewComponent
 import com.nrlm.baselinesurvey.ui.language.viewModel.LanguageScreenViewModel
@@ -53,7 +54,6 @@ import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.textColorBlueLight
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.showCustomToast
-import com.patsurvey.nudge.navigation.AuthScreen
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -188,40 +188,11 @@ fun LanguageScreenComponent(
                             ))
                         }
                     }
-                    navController.navigate(AuthScreen.LOGIN.route)
-/*
-                    viewModel.languageList.value?.get(viewModel.languagePosition.value)?.let {
-                        it.id?.let { languageId->
-                            viewModel.languageRepository.prefRepo.saveAppLanguageId(languageId)
-                            if(!pageFrom.equals(ARG_FROM_HOME,true)){
-                                viewModel.updateSelectedVillage(languageId){
-                                    isLanguageVillageAvailable.value=false
-//                                    viewModel.prefRepo.saveAppLanguageId(2)
-                                }
-                            }
-                        }
-                        it.langCode?.let { code ->
-                            if(isLanguageVillageAvailable.value){
-                                viewModel.languageRepository.prefRepo.saveAppLanguage(code)
-                                (context as MainActivity).setLanguage(code)
-                            }else{
-                                viewModel.languageRepository.prefRepo.saveAppLanguage("en")
-                                (context as MainActivity).setLanguage("en")
-                            }
-                        }
-                    }
-
-*/
-                   /* if(viewModel.languageRepository.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal){
-                        navController.popBackStack(AuthScreen.AUTH_SETTING_SCREEN.route, false)
+                    if(viewModel.getLanguageScreenOpenFrom()){
+                        navController.popBackStack()
                     }else {
-                        if (pageFrom.equals(ARG_FROM_HOME, true))
-                            navController.navigate(AuthScreen.LOGIN.route)
-                        else {
-                            viewModel.languageRepository.prefRepo.savePref(PREF_OPEN_FROM_HOME, false)
-                            navController.popBackStack(Se.SETTING_SCREEN.route, false)
-                        }
-                    }*/
+                        navController.navigate(AuthScreen.LOGIN.route)
+                    }
                 } catch (ex: Exception) {
                     BaselineLogger.e("LanguageScreen", "Continue Button click", ex)
                 }

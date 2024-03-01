@@ -132,7 +132,7 @@ fun ListTypeQuestion(
                             item {
                                 Row(modifier = Modifier.padding(horizontal = dimen_16_dp)) {
                                     HtmlText(
-                                        text = "${question.questionId}. ",
+                                        text = "${questionIndex + 1}. ",
                                         style = TextStyle(
                                             fontFamily = NotoSans,
                                             fontWeight = FontWeight.SemiBold,

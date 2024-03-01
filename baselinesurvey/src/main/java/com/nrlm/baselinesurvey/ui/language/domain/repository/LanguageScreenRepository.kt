@@ -18,4 +18,6 @@ interface LanguageScreenRepository {
 
     fun saveSelectedLanguageCode(mainActivity: MainActivity, languageCode: String)
 
+    fun getLanguageScreenOpenFrom():Boolean
+
 }
