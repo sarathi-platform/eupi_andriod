@@ -38,6 +38,7 @@ import com.nrlm.baselinesurvey.ui.common_components.RadioOptionTypeComponent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.dimen_100_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_14_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_30_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_64_dp
@@ -54,7 +55,7 @@ fun NestedLazyListForFormQuestions(
     viewModel: BaseViewModel,
     onSaveFormTypeOption: (questionTypeEvent: QuestionTypeEvent) -> Unit,
     saveCacheFormData: (formQuestionResponseEntity: FormQuestionResponseEntity) -> Unit,
-    answeredQuestionCountIncreased: (count: Int) -> Unit,
+    answeredQuestionCountIncreased: () -> Unit,
     ) {
     val scope = rememberCoroutineScope()
     val questionTypeScreenViewModel = (viewModel as QuestionTypeScreenViewModel)
@@ -123,7 +124,7 @@ fun NestedLazyListForFormQuestions(
                     state = innerState,
                     userScrollEnabled = false,
                     modifier = Modifier
-                        .height(maxHeight), verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
+                        .height(maxHeight), verticalArrangement = Arrangement.spacedBy(dimen_14_dp),
 
                 ) {
                     item {
@@ -131,10 +132,11 @@ fun NestedLazyListForFormQuestions(
                     }
                     itemsIndexed(
                         items = /*formTypeOption?.options*/questionTypeScreenViewModel.updatedOptionList.distinctBy { it.optionId }.filter { it
-                            .optionItemEntity?.optionType != QuestionType.Form.name} ?: emptyList()
+                            .optionItemEntity?.optionType != QuestionType.Form.name}.filter { it.showQuestion } ?: emptyList()
                     ) { index, option ->
                         when (option.optionItemEntity?.optionType) {
-                            QuestionType.SingleSelectDropdown.name -> {
+                            QuestionType.SingleSelectDropdown.name,
+                            QuestionType.SingleSelectDropDown.name-> {
                                 TypeDropDownComponent(
                                     option.optionItemEntity?.display,
                                     option.optionItemEntity.selectedValue ?: "Select",
@@ -153,16 +155,19 @@ fun NestedLazyListForFormQuestions(
                                             )
                                         )
                                     }
+                                    answeredQuestionCountIncreased()
                                 }
                             }
                             QuestionType.Input.name,
                             QuestionType.InputText.name,
-                            QuestionType.InputNumber.name-> {
+                            QuestionType.InputNumberEditText.name-> {
+                                Log.d("TAG", "EditTextWithTitleComponent: ${option?.optionItemEntity?.display}, type: ${option.optionItemEntity.optionType}")
+
                                 EditTextWithTitleComponent(
                                     option.optionItemEntity.display,
                                     showQuestion = option,
                                     defaultValue = formQuestionResponseEntity.value.getResponseForOptionId(option.optionId ?: -1)?.selectedValue ?: BLANK_STRING,
-                                    isOnlyNumber = option.optionItemEntity.optionType == QuestionType.InputNumber.name
+                                    isOnlyNumber = option.optionItemEntity.optionType == QuestionType.InputNumber.name || option.optionItemEntity.optionType == QuestionType.InputNumberEditText.name
                                 ) { value ->
                                     questionTypeScreenViewModel.formTypeOption.let { it1 ->
                                         if (!option.optionItemEntity.conditions.isNullOrEmpty()) {
@@ -182,7 +187,7 @@ fun NestedLazyListForFormQuestions(
                                             )
                                         )
                                     }
-
+                                    answeredQuestionCountIncreased()
                                 }
                             }
 
@@ -203,6 +208,7 @@ fun NestedLazyListForFormQuestions(
                                                 )
                                             )
                                         }
+                                        answeredQuestionCountIncreased()
                                     }
                                 )
                             }
@@ -226,24 +232,10 @@ fun NestedLazyListForFormQuestions(
                                                 )
                                             )
                                         }
+                                        answeredQuestionCountIncreased()
                                     }
                                 )
                             }
-
-                            /*QuestionType.Toggle.name-> {
-                                SwitchComponent(option.optionItemEntity.display, formQuestionResponseEntity.value.getResponseForOptionId(option.optionId ?: -1)?.selectedValue ?: VALUE_NO) { value ->
-                                    questionTypeScreenViewModel.formTypeOption?.let { it1 ->
-                                        onSaveFormTypeOption(
-                                            storeGivenAnswered(
-                                                it1, option.optionId ?: 0, value,
-                                                referenceId = questionTypeScreenViewModel.referenceId
-                                            )
-                                        )
-                                    }
-                                }
-//
-                            }
-                            }*/
                         }
                     }
                     item {

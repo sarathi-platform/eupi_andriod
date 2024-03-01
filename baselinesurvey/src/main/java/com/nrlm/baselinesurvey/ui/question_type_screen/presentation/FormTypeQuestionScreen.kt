@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.presentation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,15 +36,17 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DELAY_2_MS
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.NestedLazyListForFormQuestions
 import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScreenViewModel
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
+import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
-import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import kotlinx.coroutines.delay
 
 @Composable
@@ -69,8 +73,13 @@ fun FormTypeQuestionScreen(
 
     val saveButtonActiveState = remember {
         derivedStateOf {
-            referenceId.isNotBlank() || (viewModel.answeredOptionCount.intValue >= viewModel.totalOptionSize.value)
+            referenceId.isNotBlank() || (viewModel.answeredOptionCount.intValue >= viewModel.totalOptionSize.intValue)
         }
+    }
+
+    BackHandler {
+        BaselineCore.setReferenceId(BLANK_STRING)
+        navController.popBackStack()
     }
 
     Scaffold(
@@ -83,11 +92,12 @@ fun FormTypeQuestionScreen(
                         color = textColorDark,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Start,
-                        style = largeTextStyle
+                        style = defaultTextStyle
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = {
+                        BaselineCore.setReferenceId(BLANK_STRING)
                         navController.popBackStack()
                     }) {
                         Icon(Icons.Filled.ArrowBack, null, tint = textColorDark)
@@ -103,13 +113,14 @@ fun FormTypeQuestionScreen(
                 contentPadding = PaddingValues(dimen_16_dp)
             ) {
                 ButtonPositive(
-                    buttonTitle = questionName,
+                    buttonTitle = stringResource(id = R.string.submit),
                     isActive = saveButtonActiveState.value,
                     isArrowRequired = false
                 ) {
+                    BaselineCore.setReferenceId(BLANK_STRING)
                     viewModel.onEvent(
                         QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent(
-                            viewModel.formQuestionResponseEntity.value
+                            viewModel.storeCacheForResponse
                         )
                     )
                     navController.popBackStack()
@@ -144,8 +155,9 @@ fun FormTypeQuestionScreen(
                 if (!viewModel.loaderState.value.isLoaderVisible) {
                     NestedLazyListForFormQuestions(
                         viewModel = viewModel,
-                        answeredQuestionCountIncreased = { count ->
-                            viewModel.answeredOptionCount.value = count
+                        answeredQuestionCountIncreased = {
+                            viewModel.updateCachedData()
+//                            viewModel.answeredOptionCount.value = count
                         },
                         onSaveFormTypeOption = { questionTypeEvent ->
                             viewModel.onEvent(

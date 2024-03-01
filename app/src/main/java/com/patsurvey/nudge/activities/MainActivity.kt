@@ -28,6 +28,7 @@ import androidx.navigation.compose.rememberNavController
 import com.akexorcist.localizationactivity.core.LocalizationActivityDelegate
 import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
 import com.google.android.gms.auth.api.phone.SmsRetriever
+import com.nudge.syncmanager.SyncManager
 import com.google.firebase.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.get

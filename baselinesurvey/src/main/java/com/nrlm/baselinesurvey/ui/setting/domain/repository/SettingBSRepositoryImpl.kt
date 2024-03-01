@@ -1,16 +1,25 @@
 package com.nrlm.baselinesurvey.ui.setting.domain.repository
 
+import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.LANGUAGE_OPEN_FROM_SETTING
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nudge.core.model.SettingOptionModel
 
 class SettingBSRepositoryImpl(private val prefRepo: PrefRepo,
                               private val apiService: ApiService,
     ):SettingBSRepository {
-    override fun getSettingOptionList():List<SettingOptionModel> {
-       return listOf(
-            SettingOptionModel(1,"Sync Now","new Datta"),
-            SettingOptionModel(2,"Sync Now","new Datta"),
-            SettingOptionModel(3,"Sync Now","new Datta"))
+
+    override suspend fun performLogout(): ApiResponseModel<String> {
+        return apiService.performLogout()
+    }
+
+    override fun clearSharedPref() {
+        prefRepo.saveAccessToken(BLANK_STRING)
+    }
+
+    override fun saveLanguageScreenOpenFrom() {
+        prefRepo.savePref(LANGUAGE_OPEN_FROM_SETTING,true)
     }
 }

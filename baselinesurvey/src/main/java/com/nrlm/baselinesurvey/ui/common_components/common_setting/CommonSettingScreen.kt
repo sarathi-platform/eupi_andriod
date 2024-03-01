@@ -31,13 +31,14 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
+import com.nrlm.baselinesurvey.ui.common_components.ToolbarComponent
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
-import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
 import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark50
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nudge.core.model.SettingOptionModel
 
 @Composable
@@ -46,12 +47,21 @@ fun CommonSettingScreen(
     versionText:String,
     optionList:List<SettingOptionModel>,
     onBackClick:()->Unit,
-    onItemClick:(Int,SettingOptionModel)->Unit
+    onItemClick:(Int,SettingOptionModel)->Unit,
+    onLogoutClick:()->Unit
 ){
     Scaffold(
         backgroundColor = white,
         modifier = Modifier.fillMaxSize(),
+        topBar = {
+            ToolbarComponent(
+                title = title,
+                modifier = Modifier
+            ) {
+                onBackClick()
 
+            }
+        },
         bottomBar = {
             Box(
                 modifier = Modifier
@@ -74,7 +84,7 @@ fun CommonSettingScreen(
                         isArrowRequired = false,
                         isActive = true
                     ) {
-
+                        onLogoutClick()
                     }
                 }
 
@@ -117,10 +127,10 @@ fun CommonSettingScreen(
 @Composable
 fun CommonSettingScreenPreview(){
  val list=   listOf(
-        SettingOptionModel(1,"Sync Now","new Datta"),
-        SettingOptionModel(2,"Sync Now",""),
-        SettingOptionModel(3,"Sync Now",""))
-CommonSettingScreen(title = "Setting", versionText = "Version 978", list ,onBackClick = {}, onItemClick = {index,item->})
+        SettingOptionModel(1,"Sync Now","new Datta",""),
+        SettingOptionModel(2,"Sync Now","",""),
+        SettingOptionModel(3,"Sync Now","",""))
+CommonSettingScreen(title = "Setting", versionText = "Version 978", list ,onBackClick = {}, onItemClick = {index,item->}, onLogoutClick = {})
 }
 
 @Preview(showBackground = true)

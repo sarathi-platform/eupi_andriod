@@ -4,8 +4,10 @@ import android.annotation.SuppressLint
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.nrlm.baselinesurvey.ALL_TAB
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_TOLA_TITLE
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
@@ -13,6 +15,7 @@ import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListEvents
+import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
@@ -60,6 +63,10 @@ class SurveyeeScreenViewModel @Inject constructor(
     var isEnableNextBTn =
         mutableStateOf(false)
 
+    val isFilterAppliedState = mutableStateOf(FilterListState())
+    val pageFrom = mutableStateOf(ALL_TAB)
+
+
 
     @SuppressLint("SuspiciousIndentation")
     fun init(missionId: Int, activityName: String, activityId: Int) {
@@ -71,13 +78,20 @@ class SurveyeeScreenViewModel @Inject constructor(
                 _surveyeeListState.value.clear()
             }
             surveyeeListFromDb.forEach { surveyeeEntity ->
-                val surveyeeState = SurveyeeCardState(
+                var surveyeeState = SurveyeeCardState(
                     surveyeeDetails = surveyeeEntity,
-                    imagePath = surveyeeEntity.crpImageName,
+                    imagePath = BLANK_STRING,
                     subtitle = surveyeeEntity.dadaName,
                     address = getSurveyeeAddress(surveyeeEntity),
+                    activityName = activityName,
                     surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
                 )
+                if (surveyeeEntity.crpImageLocalPath.isNotEmpty()) {
+                    val imagePath = surveyeeEntity.crpImageLocalPath.split("|").first()
+                    surveyeeState = surveyeeState.copy(
+                        imagePath = imagePath
+                    )
+                }
 
                 _surveyeeListState.value.add(surveyeeState)
             }
@@ -91,7 +105,10 @@ class SurveyeeScreenViewModel @Inject constructor(
                     activityId
                 ).isAllTask
 
-            if (_thisWeekSurveyeeListState.value.isNotEmpty()) {
+            filterList(pageFrom.value)
+
+
+            /*if (_thisWeekSurveyeeListState.value.isNotEmpty()) {
                 _thisWeekSurveyeeListState.value.clear()
             }
             surveyeeListFromDb.filter { it.movedToThisWeek }.forEach { surveyeeEntity ->
@@ -105,7 +122,7 @@ class SurveyeeScreenViewModel @Inject constructor(
                 _thisWeekSurveyeeListState.value.add(surveyeeState)
             }
 //            }
-            _thisWeekFilteredSurveyeeListState.value = _thisWeekSurveyeeListState.value
+            _thisWeekFilteredSurveyeeListState.value = _thisWeekSurveyeeListState.value*/
 
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -113,7 +130,7 @@ class SurveyeeScreenViewModel @Inject constructor(
         }
     }
 
-    fun getThisWeekSurveyeeList() {
+    /*fun getThisWeekSurveyeeList() {
         CoroutineScope(Dispatchers.IO).launch {
             val surveyeeListFromDb = surveyeeScreenUseCase.getSurveyeeListUseCase.invoke(0, "")
             surveyeeListFromDb.filter { it.movedToThisWeek }.forEach { surveyeeEntity ->
@@ -130,7 +147,7 @@ class SurveyeeScreenViewModel @Inject constructor(
             _thisWeekFilteredSurveyeeListState.value = _thisWeekSurveyeeListState.value
         }
 
-    }
+    }*/
 
 
     override fun <T> onEvent(event: T) {
@@ -167,7 +184,7 @@ class SurveyeeScreenViewModel @Inject constructor(
                             event.moveDidisToNextWeek
                         )
                         showMoveDidisBanner.value = true
-                        getThisWeekSurveyeeList()
+//                        getThisWeekSurveyeeList()
                     }
                 }
             }
@@ -178,7 +195,7 @@ class SurveyeeScreenViewModel @Inject constructor(
                             event.didiId,
                             event.moveDidisToNextWeek
                         )
-                        getThisWeekSurveyeeList()
+//                        getThisWeekSurveyeeList()
                     }
                 }
             }
@@ -252,11 +269,20 @@ class SurveyeeScreenViewModel @Inject constructor(
         if (fromScreen == ALL_TAB) {
             val map = mutableMapOf<String, MutableList<SurveyeeCardState>>()
             surveyeeListState.value.forEachIndexed { index, surveyeeCardState ->
-                if (map.contains(surveyeeCardState.surveyeeDetails.cohortName)) {
-                    map[surveyeeCardState.surveyeeDetails.cohortName]?.add(surveyeeCardState)
+                if (!surveyeeCardState.surveyeeDetails.cohortName.equals(NO_TOLA_TITLE, true)) {
+                    if (map.contains(surveyeeCardState.surveyeeDetails.cohortName)) {
+                        map[surveyeeCardState.surveyeeDetails.cohortName]?.add(surveyeeCardState)
+                    } else {
+                        map[surveyeeCardState.surveyeeDetails.cohortName] =
+                            mutableListOf(surveyeeCardState)
+                    }
                 } else {
-                    map[surveyeeCardState.surveyeeDetails.cohortName] =
-                        mutableListOf(surveyeeCardState)
+                    if (map.contains(surveyeeCardState.surveyeeDetails.villageName)) {
+                        map[surveyeeCardState.surveyeeDetails.villageName]?.add(surveyeeCardState)
+                    } else {
+                        map[surveyeeCardState.surveyeeDetails.villageName] =
+                            mutableListOf(surveyeeCardState)
+                    }
                 }
             }
             tolaMapList = map
@@ -277,7 +303,7 @@ class SurveyeeScreenViewModel @Inject constructor(
 
 
     private fun getSurveyeeAddress(surveyeeEntity: SurveyeeEntity): String {
-        return if (surveyeeEntity.cohortName.equals(NO_TOLA_TITLE, true))
+        return if (!surveyeeEntity.cohortName.equals(NO_TOLA_TITLE, true))
             surveyeeEntity.houseNo + ", " + surveyeeEntity.cohortName
         else
             surveyeeEntity.houseNo + ", " + surveyeeEntity.villageName

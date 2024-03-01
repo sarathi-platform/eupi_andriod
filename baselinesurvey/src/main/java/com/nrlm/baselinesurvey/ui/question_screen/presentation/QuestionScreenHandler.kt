@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -31,6 +32,10 @@ fun QuestionScreenHandler(
 
     LaunchedEffect(key1 = Unit) {
         viewModel.initQuestionScreenHandler(surveyId)
+    }
+
+    BackHandler {
+        navController.popBackStack()
     }
 
     Scaffold(modifier = Modifier.fillMaxSize(), backgroundColor = Color.White) {

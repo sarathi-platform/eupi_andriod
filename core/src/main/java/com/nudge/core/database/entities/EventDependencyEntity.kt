@@ -4,7 +4,9 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
 import com.nudge.core.EventDependencyTable
+import com.nudge.core.database.converters.ListConvertor
 
 @Entity(tableName = EventDependencyTable, indices = [Index(value = ["id", "dependent_event_id"], unique = true)])
 data class EventDependencyEntity(

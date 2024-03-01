@@ -23,6 +23,7 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -84,6 +85,9 @@ fun ThisWeekSurvyeeListTab(
 
     val showMoveSurveyeeBannerVisibilityPair = remember {
         mutableStateOf(Pair<Boolean, SurveyeeEntity?>(false, null))
+    }
+    LaunchedEffect(key1 = true){
+        viewModel.pageFrom.value= THIS_WEEK_TAB
     }
 
     Box {

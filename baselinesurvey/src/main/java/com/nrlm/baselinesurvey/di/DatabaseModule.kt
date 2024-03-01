@@ -68,7 +68,7 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideOptionEntityDao(db: NudgeBaselineDatabase) = db.optionItemDao()
+    fun provideOptionItemDao(db: NudgeBaselineDatabase) = db.optionItemDao()
 
     @Provides
     @Singleton

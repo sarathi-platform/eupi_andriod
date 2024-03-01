@@ -1,9 +1,7 @@
-package com.nrlm.baselinesurvey.splash.domain.use_case
+package com.nrlm.baselinesurvey.ui.splash.domain.use_case
 
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
-import com.nrlm.baselinesurvey.model.response.ConfigResponseModel
-import com.nrlm.baselinesurvey.splash.domain.repository.SplashScreenRepository
-import com.nrlm.baselinesurvey.utils.getDefaultLanguage
+import com.nrlm.baselinesurvey.ui.splash.domain.repository.SplashScreenRepository
 
 class SaveLanguageConfigUseCase(private val splashScreenRepository: SplashScreenRepository) {
 

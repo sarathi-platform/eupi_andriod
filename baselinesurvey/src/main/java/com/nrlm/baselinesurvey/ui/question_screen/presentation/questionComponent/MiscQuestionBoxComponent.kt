@@ -77,13 +77,16 @@ fun MiscQuestionBoxComponent(
         println("outer ${outerState.layoutInfo.visibleItemsInfo.map { it.index }}")
         println("inner ${innerState.layoutInfo.visibleItemsInfo.map { it.index }}")
     }
+
+    val manualMaxHeight = (showQuestionState.optionItemEntityState.size * 100).dp
+
     BoxWithConstraints(
         modifier = modifier
             .scrollable(
                 state = outerState,
                 Orientation.Vertical,
             )
-            .heightIn(min = 100.dp, maxCustomHeight)
+            .heightIn(min = 100.dp, maxCustomHeight + manualMaxHeight)
     ) {
 
         VerticalAnimatedVisibilityComponent(visible = showQuestionState.showQuestion) {
@@ -109,7 +112,7 @@ fun MiscQuestionBoxComponent(
                         LazyColumn(
                             state = outerState,
                             modifier = Modifier
-                                .heightIn(min = 110.dp, max = maxCustomHeight)
+                                .heightIn(min = 110.dp, max = maxCustomHeight + manualMaxHeight)
                         ) {
                             item {
 
@@ -145,7 +148,7 @@ fun MiscQuestionBoxComponent(
                                     modifier = Modifier
                                         .wrapContentWidth()
                                         .padding(horizontal = dimen_16_dp)
-                                        .heightIn(min = 110.dp, max = maxCustomHeight)
+                                        .heightIn(min = 80.dp, max = maxCustomHeight + manualMaxHeight)
                                 ) {
                                     itemsIndexed(
                                         showQuestionState.optionItemEntityState ?: listOf()
@@ -157,7 +160,8 @@ fun MiscQuestionBoxComponent(
                                                     optionsItem.optionItemEntity.display,
                                                     showQuestion = optionsItem,
                                                     defaultValue = selectedOption?.selectedValue
-                                                        ?: ""
+                                                        ?: "",
+                                                    isOnlyNumber = optionsItem?.optionItemEntity?.optionType == QuestionType.InputNumber.name
                                                 ) { inputValue ->
                                                     onAnswerSelection(
                                                         questionIndex,
@@ -184,7 +188,8 @@ fun MiscQuestionBoxComponent(
                                                 Spacer(modifier = Modifier.height(dimen_8_dp))
                                             }
 
-                                            QuestionType.SingleSelectDropdown.name -> {
+                                            QuestionType.SingleSelectDropdown.name,
+                                            QuestionType.SingleSelectDropDown.name -> {
                                                 TypeDropDownComponent(
                                                     title = optionsItem.optionItemEntity.display ?: BLANK_STRING,
                                                     hintText = optionsItem.optionItemEntity.selectedValue ?: "Select",

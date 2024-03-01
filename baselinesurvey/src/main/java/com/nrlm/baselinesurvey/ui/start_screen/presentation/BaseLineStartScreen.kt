@@ -50,10 +50,10 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
-import com.nrlm.baselinesurvey.navigation.home.SECTION_SCREEN_ROUTE_NAME
-import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
+import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.ui.common_components.BlueButtonWithIcon
 import com.nrlm.baselinesurvey.ui.common_components.ButtonOutline
 import com.nrlm.baselinesurvey.ui.common_components.DialogComponent
@@ -73,6 +73,7 @@ import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.openSettings
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.uriFromFile
+import kotlinx.coroutines.flow.StateFlow
 
 @SuppressLint("StateFlowValueCalledInComposition", "UnrememberedMutableState")
 @Composable
@@ -93,19 +94,17 @@ fun BaseLineStartScreen(
         baseLineStartViewModel.getDidiDetails(didiId)
     }
 
-
-    //val didiInfoDetail = baseLineStartViewModel.didiInfo
-
     val isContinueButtonActive =
         derivedStateOf {
             (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (baseLineStartViewModel.isVoterCard.value != -1) && (baseLineStartViewModel.phoneNumber.value.length == 10) &&
-                    ((baseLineStartViewModel.isAdharCard.value != -1) && ((baseLineStartViewModel.isAdharCard.value == 2) || (baseLineStartViewModel.isAdharCard.value == 1 && baseLineStartViewModel.aadharNumber.value.length == 12)))
+                    ((baseLineStartViewModel.isAdharCard.value != -1))
         }
 
 
 
     BackHandler {
-        navigateBackToSurveyeeListScreen(navController)
+        navController.popBackStack()
+//        navigateBackToSurveyeeListScreen(navController)
     }
 
     Scaffold(modifier = Modifier
@@ -114,26 +113,14 @@ fun BaseLineStartScreen(
             DoubleButtonBox(
                 modifier = Modifier
                     .shadow(10.dp),
-                positiveButtonText = stringResource(id = R.string.continue_text),
+                positiveButtonText = stringResource(R.string.save),
                 negativeButtonText = stringResource(id = R.string.go_back_text),
                 isPositiveButtonActive = isContinueButtonActive.value,
+                negativeButtonRequired = false,
                 positiveButtonOnClick = {
-                    didi.value.didiId?.let {
-                        baseLineStartViewModel.onEvent(
-                            SurveyStateEvents.UpdateDidiSurveyStatus(
-                                it,
-                                didiInfo = DidiIntoEntity(
-                                    didiId = it,
-                                    isAdharCard = baseLineStartViewModel.isAdharCard.value,
-                                    isVoterCard = baseLineStartViewModel.isVoterCard.value,
-                                    adharNumber = baseLineStartViewModel.aadharNumber.value,
-                                    phoneNumber = baseLineStartViewModel.phoneNumber.value
-                                ),
-                                SurveyState.INPROGRESS
-                            )
-                        )
-                    }
-                    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
+                    updateDidiDetails(didi, baseLineStartViewModel)
+                    navController.popBackStack()
+//                    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
                 },
                 negativeButtonOnClick = {
                     navController.popBackStack()
@@ -163,16 +150,17 @@ fun BaseLineStartScreen(
                     openSettings(localContext)
                 }
             }
-            TextDetails(title = "Didi : ", data = didi.value.didiName)
-            TextDetails(title = "Dada : ", data = didi.value.dadaName)
-            TextDetails(title = "Caste : ", data = getCasteName(didi.value.casteId))
+            TextDetails(title = stringResource(R.string.didi_title), data = didi.value.didiName)
+            TextDetails(title = stringResource(R.string.dada_title), data = didi.value.dadaName)
+            TextDetails(title = stringResource(R.string.caste_titile), data = getCasteName(didi.value.casteId, baseLineStartViewModel))
             YesNoButtonComponent(
                 defaultValue = baseLineStartViewModel.isAdharCard.value,
-                title = "Does Didi have aadhar card?"
+                title = stringResource(R.string.aadhar_card_titile)
             ) {
                 baseLineStartViewModel.isAdharCard.value = it
                 baseLineStartViewModel.adharCardState.value =
                     baseLineStartViewModel.adharCardState.value.copy(showQuestion = baseLineStartViewModel.isAdharTxtVisible.value)
+                updateDidiDetails(didi, baseLineStartViewModel)
                 //  (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (baseLineStartViewModel.isVoterCard.value != -1) && (baseLineStartViewModel.phoneNumber.value.length == 10) && (baseLineStartViewModel.isAdharCard.value != -1)
             }
 
@@ -190,14 +178,15 @@ fun BaseLineStartScreen(
             Spacer(modifier = Modifier.height(8.dp))
             YesNoButtonComponent(
                 defaultValue = baseLineStartViewModel.isVoterCard.value,
-                title = "Does didi have voter card?"
+                title = stringResource(R.string.voter_card_title)
             ) {
                 baseLineStartViewModel.isVoterCard.value = it
+                updateDidiDetails(didi, baseLineStartViewModel)
             }
             Spacer(modifier = Modifier.height(10.dp))
             EditTextWithTitleComponent(
                 defaultValue = baseLineStartViewModel.phoneNumber.value,
-                title = "Enter didi's family phone number",
+                title = stringResource(R.string.phone_number_title),
                 showQuestion = OptionItemEntityState.getEmptyStateObject()
                     .copy(showQuestion = true),
                 isOnlyNumber = true,
@@ -649,6 +638,27 @@ fun BaseLineStartScreen(
     }
 }
 
+private fun updateDidiDetails(
+    didi: StateFlow<SurveyeeEntity>,
+    baseLineStartViewModel: BaseLineStartViewModel
+) {
+    didi.value.didiId?.let {
+        baseLineStartViewModel.onEvent(
+            SurveyStateEvents.UpdateDidiSurveyStatus(
+                it,
+                didiInfo = DidiIntoEntity(
+                    didiId = it,
+                    isAdharCard = baseLineStartViewModel.isAdharCard.value,
+                    isVoterCard = baseLineStartViewModel.isVoterCard.value,
+                    adharNumber = baseLineStartViewModel.aadharNumber.value,
+                    phoneNumber = baseLineStartViewModel.phoneNumber.value
+                ),
+                SurveyState.INPROGRESS
+            )
+        )
+    }
+}
+
 @Composable
 fun TextDetails(title: String, data: String) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -682,30 +692,8 @@ fun BaseLineStartScreenPreview(
     }
 }
 
-private fun getCasteName(casteId: Int): String {
-    var casteName = ""
-    when (casteId) {
-        1 -> {
-            casteName = "GEN"
-        }
+private fun getCasteName(casteId: Int, baseLineStartViewModel: BaseLineStartViewModel): String {
+    var casteList = baseLineStartViewModel.getCasteListForSelectedLanguage()
 
-        2 -> {
-            casteName = "OBC"
-
-        }
-
-        3 -> {
-            casteName = "SC"
-
-        }
-
-        4 -> {
-            casteName = "ST"
-        }
-
-        else -> {
-            casteName = "ST"
-        }
-    }
-    return casteName
+    return casteList.find { it.casteId == casteId }?.casteName ?: BLANK_STRING
 }

@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.presentation
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,7 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.THIS_WEEK_TAB
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.MoveSurveyeesUpdateBannerComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
@@ -51,6 +54,7 @@ import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SurveyState
@@ -75,13 +79,14 @@ fun AllSurveyeeListTab(
 
     val surveyeeListWithTolaFilter = viewModel.tolaMapSurveyeeListState.value
 
-    val isFilterAppliedState = remember {
-        mutableStateOf(FilterListState())
-    }
 
     val linearProgress = remember {
         mutableStateOf(0.0f)
     }
+    LaunchedEffect(key1 = true){
+        viewModel.pageFrom.value= ALL_TAB
+    }
+
 
     Box {
         Column(
@@ -128,15 +133,15 @@ fun AllSurveyeeListTab(
                     item {
                         SearchWithFilterViewComponent(
                             placeholderString = stringResource(id = R.string.search_didis),
-                            filterSelected = isFilterAppliedState.value.isFilterApplied,
+                            filterSelected = viewModel.isFilterAppliedState.value.isFilterApplied,
                             onFilterSelected = {
                                 if (surveyeeList.isNotEmpty()) {
-                                    isFilterAppliedState.value = isFilterAppliedState.value.copy(
+                                    viewModel.isFilterAppliedState.value = viewModel.isFilterAppliedState.value.copy(
                                         isFilterApplied = !it
                                     )
                                     onActionEvent(
                                         SurveyeeListScreenActions.IsFilterApplied(
-                                            isFilterAppliedState.value
+                                            viewModel.isFilterAppliedState.value
                                         )
                                     )
                                     viewModel.onEvent(SearchEvent.FilterList(ALL_TAB))
@@ -146,7 +151,7 @@ fun AllSurveyeeListTab(
                                 viewModel.onEvent(
                                     SearchEvent.PerformSearch(
                                         queryTerm,
-                                        isFilterAppliedState.value.isFilterApplied,
+                                        viewModel.isFilterAppliedState.value.isFilterApplied,
                                         ALL_TAB
                                     )
                                 )
@@ -183,7 +188,7 @@ fun AllSurveyeeListTab(
                         MoveSurveyeesUpdateBannerComponent(showBanner = viewModel.showMoveDidisBanner, surveyeeIdList = viewModel.checkedItemsState.value)
                     }
 
-                    if (!isFilterAppliedState.value.isFilterApplied) {
+                    if (!viewModel.isFilterAppliedState.value.isFilterApplied) {
                         itemsIndexed(items = surveyeeList) { index, item ->
                             SurveyeeCardComponent(
                                 surveyeeState = item,
@@ -208,11 +213,13 @@ fun AllSurveyeeListTab(
                                 //Todo add proper tex
                                 primaryButtonText = "Start " + activityName.split(" ")[1],
                                 buttonClicked = { buttonName, surveyeeId ->
+                                    BaselineCore.setCurrentActivityName(activityName)
                                     handleButtonClick(
                                         buttonName,
                                         surveyeeId,
                                         activityId,
-                                        navController
+                                        navController,
+                                        activityName
                                     )
                                 }
                             )
@@ -224,6 +231,7 @@ fun AllSurveyeeListTab(
                                 surveyeeStateList = surveyeeListWithTolaFilter[key] ?: emptyList(),
                                 showCheckBox = !isSelectionEnabled.value,
                                 fromScreen = ALL_TAB,
+                                primaryButtonText = "Start " + activityName.split(" ")[1],
                                 buttonClicked = { buttonName, surveyeeId ->
                                     handleButtonClick(
                                         buttonName,
