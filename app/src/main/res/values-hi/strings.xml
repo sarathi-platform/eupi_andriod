@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">Sarathi</string>
+    <string name="app_name_uat" translatable="false">Sarathi UAT</string>
     <string name="english" translatable="false">English</string>
     <string name="hindi" translatable="false">हिंदी</string>
     <string name="bangla">হিন্দি</string>
@@ -27,7 +28,7 @@
     <string name="rich_didi_item_text">अमीर दीदी</string>
     <string name="poor_didi_item_text_plural">गरीब दीदियाँ</string>
     <string name="medium_didi_item_text_plural">मध्यम वर्ग दीदियाँ</string>
-    <string name="rich_didi_item_text_plural">अमीर दीदियाँ</string>
+    <string name="rich_didi_item_text_plural">अमीर दीदीयां</string>
     <string name="more_item_text">अधिक विकल्प</string>
     <string name="online_text">ऑनलाइन</string>
     <string name="offline_text">ऑफलाइन</string>
@@ -384,6 +385,7 @@
     <string name="network_not_available_message">नेटवर्क उपलब्ध नहीं है, कृपया बाद में पुनः प्रयास करें!</string>
     <string name="export_file">एक्सपोर्ट फ़ाइल</string>
 
+    <string name="total_members_can_not_be_less_than_earning_members">परिवार के कुल सदस्य कमाऊ सदस्यों से कम नहीं हो सकते।</string>
 
 
 </resources>

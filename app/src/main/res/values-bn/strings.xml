@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name" translatable="false">Sarathi</string>
+    <string name="app_name_uat" translatable="false">Sarathi UAT</string>
     <string name="english" translatable="false">English</string>
     <string name="hindi" translatable="false">हिंदी</string>
     <string name="bangla">হিন্দি</string>
@@ -382,6 +383,7 @@
     <string name="vo_endorsement_not_started">VO অনুমোদন শুরু হয় না</string>
     <string name="export_data_test">ডেটা এক্সপোর্ট করুন</string>
     <string name="network_not_available_message">নেটওয়ার্ক উপলব্ধ নেই, অনুগ্রহ করে পরে আবার চেষ্টা করুন!</string>
+    <string name="total_members_can_not_be_less_than_earning_members">পরিবারের মোট সদস্য উপার্জনকারী সদস্যের চেয়ে কম হতে পারে না।</string>
 
 
 </resources>

@@ -73,18 +73,29 @@ android {
     productFlavors{
         uat{
             applicationIdSuffix = ".uat"
-            manifestPlaceholders.app_name= "Nudge UAT"
+            manifestPlaceholders = [
+                    appName: "@string/app_name_uat",
+                    appIcon: "@mipmap/ic_launcher_uat",
+                    appIconRound: "@mipmap/ic_launcher_uat_round"
+            ]
             buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
         }
         staging{
             applicationIdSuffix = ".stage"
-            manifestPlaceholders.app_name= "Nudge STAGE"
-//            versionName '0.0.0'
+            manifestPlaceholders = [
+                    appName: "@string/app_name_uat",
+                    appIcon: "@mipmap/ic_launcher_uat",
+                    appIconRound: "@mipmap/ic_launcher_uat_round"
+            ]
             buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
         }
         production{
-            manifestPlaceholders.app_name= "The Nudge"
             versionName prodVersion
+            manifestPlaceholders = [
+                    appName: "@string/app_name",
+                    appIcon: "@mipmap/ic_launcher",
+                    appIconRound: "@mipmap/ic_launcher_round"
+            ]
             buildConfigField 'String', 'BASE_URL', '"https://sarathi.lokos.in/"'
         }
     }

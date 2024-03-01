@@ -137,9 +137,7 @@ fun SplashScreen(
             end.linkTo(parent.end)
         }) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                /*Text(text = "Sarathi", style = veryLargeTextStyle, color = blueDark)*/
                 Image(painter = painterResource(id = R.drawable.sarathi_logo_full), contentDescription = "Sarathi Logo")
-                Text(text = "To End Ultra Poverty", style = smallTextStyleNormalWeight, color = blueDark)
             }
         }
         if(viewModel.showLoader.value){
