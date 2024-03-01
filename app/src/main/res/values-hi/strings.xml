@@ -382,6 +382,7 @@
     <string name="vo_endorsement_not_started">वीओ अनुमोदन प्रारंभ नहीं हुआ है</string>
     <string name="export_data_test">डेटा निर्यात करें</string>
     <string name="network_not_available_message">नेटवर्क उपलब्ध नहीं है, कृपया बाद में पुनः प्रयास करें!</string>
+    <string name="total_members_can_not_be_less_than_earning_members">परिवार के कुल सदस्य कमाऊ सदस्यों से कम नहीं हो सकते।</string>
 
 
 </resources>

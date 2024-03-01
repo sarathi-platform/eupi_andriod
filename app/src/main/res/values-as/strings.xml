@@ -383,6 +383,7 @@
     <string name="vo_endorsement_not_started">VO Endorsement আৰম্ভ কৰা হোৱা নাই</string>
     <string name="export_data_test">তথ্য ৰপ্তানি কৰক</string>
     <string name="network_not_available_message">নেটৱৰ্ক উপলব্ধ নহয়, অনুগ্ৰহ কৰি পিছত পুনৰ চেষ্টা কৰক!</string>
+    <string name="total_members_can_not_be_less_than_earning_members">পৰিয়ালৰ মুঠ সদস্য আৰ্নিং সদস্যতকৈ কম হ’ব নোৱাৰে।</string>
 
 
 </resources>

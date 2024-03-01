@@ -79,16 +79,16 @@ fun NumericFieldTypeQuestion(
     question: String,
     questionId: Int,
     didiId: Int,
-    questionFlag:String,
+    questionFlag: String,
     optionList: List<OptionsItem>,
-    pagerState: PagerState?=null,
-    isEditPAT:Boolean=false,
-    totalValueTitle:String,
+    pagerState: PagerState? = null,
+    isEditPAT: Boolean = false,
+    totalValueTitle: String,
     viewModel: QuestionScreenViewModel? = null,
     showNextButton: Boolean = false,
     onSubmitClick: (Int) -> Unit
 ) {
-val context = LocalContext.current
+    val context = LocalContext.current
     val lazyColumnListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -103,9 +103,11 @@ val context = LocalContext.current
     }
 
     Box {
-        ConstraintLayout(modifier = modifier
-            .fillMaxSize()
-            .align(Alignment.TopCenter)) {
+        ConstraintLayout(
+            modifier = modifier
+                .fillMaxSize()
+                .align(Alignment.TopCenter)
+        ) {
             val (questionBox, optionBox, submitBox) = createRefs()
             HtmlText(
                 modifier = Modifier
@@ -153,20 +155,23 @@ val context = LocalContext.current
                     }
             ) {
                 LazyColumn(modifier = Modifier.fillMaxWidth(), state = lazyColumnListState) {
-                    itemsIndexed(optionList.sortedBy { it.optionValue }.filter { it.optionType == BLANK_STRING }) { index, option ->
-                        if (questionFlag.equals(QUESTION_FLAG_RATIO, true) && option.optionValue==1){
-                            option.count=1
-                        }
+                    itemsIndexed(optionList.sortedBy { it.optionValue }
+                        .filter { it.optionType == BLANK_STRING }) { index, option ->
+
                         IncrementDecrementView(modifier = Modifier,
                             option.display ?: BLANK_STRING,
                             currentValue = option.count ?: 0,
                             questionFlag = questionFlag,
-                            optionImageUrl = option.optionImage?: BLANK_STRING,
+                            optionImageUrl = option.optionImage ?: BLANK_STRING,
                             optionValue = option.optionValue,
-                            optionList = optionList.sortedBy { it.optionValue }.filter { it.optionType == BLANK_STRING },
+                            optionList = optionList.sortedBy { it.optionValue }
+                                .filter { it.optionType == BLANK_STRING },
                             onDecrementClick = {
-                                if(viewModel?.repository?.prefRepo?.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
-                                    viewModel?.updateDidiQuesSection(didiId, PatSurveyStatus.INPROGRESS.ordinal)
+                                if (viewModel?.repository?.prefRepo?.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
+                                    viewModel?.updateDidiQuesSection(
+                                        didiId,
+                                        PatSurveyStatus.INPROGRESS.ordinal
+                                    )
                                 val numericAnswerEntity = NumericAnswerEntity(
                                     optionId = option.optionId ?: 0,
                                     weight = option.weight ?: 1,
@@ -175,16 +180,23 @@ val context = LocalContext.current
                                     didiId = didiId,
                                     id = 0,
                                     questionFlag = questionFlag,
-                                    optionValue = option.optionValue ?:0
+                                    optionValue = option.optionValue ?: 0
                                 )
                                 option.count = it
-                                viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList){
+                                viewModel?.updateNumericAnswer(
+                                    numericAnswerEntity,
+                                    index,
+                                    optionList
+                                ) {
                                     onSubmitClick(2)
                                 }
                             },
                             onIncrementClick = {
-                                if(viewModel?.repository?.prefRepo?.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
-                                    viewModel?.updateDidiQuesSection(didiId, PatSurveyStatus.INPROGRESS.ordinal)
+                                if (viewModel?.repository?.prefRepo?.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
+                                    viewModel?.updateDidiQuesSection(
+                                        didiId,
+                                        PatSurveyStatus.INPROGRESS.ordinal
+                                    )
                                 val numericAnswerEntity = NumericAnswerEntity(
                                     optionId = option.optionId ?: 0,
                                     weight = option.weight ?: 1,
@@ -193,33 +205,52 @@ val context = LocalContext.current
                                     didiId = didiId,
                                     id = 0,
                                     questionFlag = questionFlag,
-                                    optionValue = option.optionValue ?:0
+                                    optionValue = option.optionValue ?: 0
                                 )
                                 option.count = it
-                                viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList){
+                                viewModel?.updateNumericAnswer(
+                                    numericAnswerEntity,
+                                    index,
+                                    optionList
+                                ) {
                                     onSubmitClick(2)
                                 }
                             },
                             onValueChange = {
-                                if(viewModel?.repository?.prefRepo?.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
-                                    viewModel?.updateDidiQuesSection(didiId, PatSurveyStatus.INPROGRESS.ordinal)
+                                if (viewModel?.repository?.prefRepo?.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
+                                    viewModel?.updateDidiQuesSection(
+                                        didiId,
+                                        PatSurveyStatus.INPROGRESS.ordinal
+                                    )
                                 val numericAnswerEntity = NumericAnswerEntity(
                                     optionId = option.optionId ?: 0,
                                     weight = option.weight ?: 1,
                                     questionId = questionId,
-                                    count = if(it.isEmpty()) 0 else it.toInt(),
+                                    count = if (it.isEmpty()) 0 else it.toInt(),
                                     didiId = didiId,
                                     id = 0,
                                     questionFlag = questionFlag,
-                                    optionValue = option.optionValue ?:0
+                                    optionValue = option.optionValue ?: 0
                                 )
-                                option.count = if(it.isEmpty()) 0 else it.toInt()
-                                viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList){
+                                option.count = if (it.isEmpty()) 0 else it.toInt()
+                                viewModel?.updateNumericAnswer(
+                                    numericAnswerEntity,
+                                    index,
+                                    optionList
+                                ) {
                                     onSubmitClick(2)
                                 }
                             }, onLimitFailed = {
-                                Log.d("TAG", "NumericFieldTypeQuestion: onLimitFailed: $it")
-//                                showToast(context, context.getString(R.string.earning_member_can_not_be_more_than_family_members))
+                                var errorMessage = BLANK_STRING
+                                when (it) {
+                                    NumericQuestionsErrorEnum.TOTAL_FAMILY_MEMBER_NOT_LESS_THAN_EARNING_MEMBER_ERROR.name -> errorMessage =
+                                        context.getString(R.string.total_members_can_not_be_less_than_earning_members)
+
+                                    NumericQuestionsErrorEnum.EARNING_MEMBERS_NOT_MORE_THAN_FAMILY_MEMBER_ERROR.name -> errorMessage =
+                                        context.getString(R.string.earning_member_can_not_be_more_than_family_members)
+                                }
+                                if (errorMessage.isNotEmpty())
+                                    showToast(context, errorMessage)
                             })
                     }
 
@@ -248,17 +279,22 @@ val context = LocalContext.current
                                 )
                         ) {
                             OutlinedTextField(
-                                value = roundOffDecimalPoints(viewModel?.totalAmount?.value?:0.00).toString(),
+                                value = roundOffDecimalPoints(
+                                    viewModel?.totalAmount?.value ?: 0.00
+                                ).toString(),
                                 readOnly = true,
                                 onValueChange = {
-                                        viewModel?.totalAmount?.value = it.toDouble()                                },
+                                    viewModel?.totalAmount?.value = it.toDouble()
+                                },
                                 placeholder = {
                                     Text(
-                                        text = stringResource(id = R.string.enter_amount), style = TextStyle(
+                                        text = stringResource(id = R.string.enter_amount),
+                                        style = TextStyle(
                                             fontFamily = NotoSans,
                                             fontWeight = FontWeight.Normal,
                                             fontSize = 14.sp
-                                        ), color = placeholderGrey
+                                        ),
+                                        color = placeholderGrey
                                     )
                                 },
                                 textStyle = TextStyle(
@@ -302,7 +338,7 @@ val context = LocalContext.current
             ) {
                 if (showNextButton) {
                     ButtonPositive(
-                        buttonTitle = stringResource(id = if(isEditPAT) R.string.submit else R.string.next),
+                        buttonTitle = stringResource(id = if (isEditPAT) R.string.submit else R.string.next),
                         isArrowRequired = false,
                         isActive = true,
                         modifier = Modifier.height(45.dp)
@@ -322,17 +358,6 @@ fun NumericFieldTypeQuestionPreview() {
     for (i in 1..5) {
         optionList.add(OptionsItem("Option Value $i", i + 1, i, 1, "Summery"))
     }
-   /* NumericFieldTypeQuestion(
-        modifier = Modifier,
-        questionNumber = 1,
-        question = "How many Goats?",
-        questionId = 1,
-        didiId = 1,
-        optionList = optionList,
-        totalValueTitle="Total Value",
-        questionFlag = "ratio",
-        onAssetValueChange = {}
-    ) {}*/
 }
 
 
