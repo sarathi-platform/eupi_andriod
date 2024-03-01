@@ -82,7 +82,6 @@ android {
         }
         staging{
             applicationIdSuffix = ".stage"
-//            versionName '0.0.
             manifestPlaceholders = [
                     appName: "@string/app_name_uat",
                     appIcon: "@mipmap/ic_launcher_uat",
