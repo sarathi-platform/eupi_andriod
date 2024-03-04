@@ -107,6 +107,7 @@ class SettingViewModel @Inject constructor(
     var stepFifthSyncStatus = mutableStateOf(0)
     var bpcSyncStatus = mutableStateOf(0)
     var hitApiStatus = mutableStateOf(0)
+    var showLogoutDialog = mutableStateOf(false)
     var syncErrorMessage = mutableStateOf("")
     private val _optionList = MutableStateFlow(listOf<SettingOptionModel>())
     val optionList: StateFlow<List<SettingOptionModel>> get() = _optionList
