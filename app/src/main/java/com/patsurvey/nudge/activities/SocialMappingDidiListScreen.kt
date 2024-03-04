@@ -193,6 +193,7 @@ fun SocialMappingDidiListScreen(
     LaunchedEffect(key1 = true) {
         didiViewModel.isSocialMappingComplete(stepId)
         if(filterSelected){
+            didiViewModel.getValidDidisFromDB()
             didiViewModel.filterList()
         }
     }
@@ -474,9 +475,10 @@ fun SocialMappingDidiListScreen(
                                     onDeleteClicked = { didi ->
                                         didiViewModel.deleteDidiOffline(
                                             didi,
+                                            isFilterSelected = true,
                                             isOnline = (context as MainActivity).isOnline.value
                                                 ?: false,
-                                            object : NetworkCallbackListener {
+                                            networkCallbackListener = object : NetworkCallbackListener {
                                                 override fun onSuccess() {
                                                     showCustomToast(
                                                         context,
@@ -579,7 +581,7 @@ fun SocialMappingDidiListScreen(
                                                 didi,
                                                 isOnline = (context as MainActivity).isOnline.value
                                                     ?: false,
-                                                object : NetworkCallbackListener {
+                                                networkCallbackListener = object : NetworkCallbackListener {
                                                     override fun onSuccess() {
                                                         showCustomToast(
                                                             context,

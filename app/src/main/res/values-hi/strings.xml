@@ -386,6 +386,7 @@
     <string name="export_file">एक्सपोर्ट फ़ाइल</string>
 
     <string name="total_members_can_not_be_less_than_earning_members">परिवार के कुल सदस्य कमाऊ सदस्यों से कम नहीं हो सकते।</string>
+    <string name="logout_confirmation">क्या आप निश्चित रूप से लॉगआउट करेंगे?</string>
 
 
 </resources>

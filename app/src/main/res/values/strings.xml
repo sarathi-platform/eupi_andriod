@@ -418,5 +418,5 @@
     <string name="export_data_test">Export Data</string>
     <string name="network_not_available_message">Network not available, Please try again later!</string>
     <string name="total_members_can_not_be_less_than_earning_members">Total family members can not be less than Earning members.</string>
-
+    <string name="logout_confirmation">Are you sure to logout?</string>
 </resources>
