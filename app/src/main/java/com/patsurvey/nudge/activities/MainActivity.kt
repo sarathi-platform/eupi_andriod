@@ -28,13 +28,11 @@ import androidx.navigation.compose.rememberNavController
 import com.akexorcist.localizationactivity.core.LocalizationActivityDelegate
 import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
 import com.google.android.gms.auth.api.phone.SmsRetriever
-import com.nudge.syncmanager.SyncManager
 import com.google.firebase.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.get
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
-import com.nudge.core.enums.NetworkSpeed
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
@@ -45,7 +43,6 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.navigation.navgraph.RootNavigationGraph
 import com.patsurvey.nudge.smsread.SmsBroadcastReceiver
-import com.patsurvey.nudge.utils.ConnectionMonitor
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.SENDER_NUMBER
@@ -63,7 +60,6 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     lateinit var sharedPrefs: PrefRepo
 
 
-    private lateinit var connectionLiveData: ConnectionMonitor
 
     private val mViewModel: MainActivityViewModel by viewModels()
 
@@ -193,15 +189,9 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
 
         AnalyticsHelper.init(context = applicationContext, mViewModel.prefRepo, mViewModel.apiService)
 
-        connectionLiveData = ConnectionMonitor(this)
-        connectionLiveData.observe(this) { isNetworkAvailable ->
-            isOnline.value =
-                isNetworkAvailable.isOnline && (isNetworkAvailable.speedType != NetworkSpeed.POOR || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN)
-            connectionSpeed.value = isNetworkAvailable.connectionSpeed
-            connectionSpeedType.value = isNetworkAvailable.speedType.toString()
-            NudgeCore.updateIsOnline(isNetworkAvailable.isOnline
-                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN)
-            )
+        mViewModel.isOnline.observe(this) { isNetworkAvailable ->
+            isOnline.value = isNetworkAvailable
+            NudgeCore.updateIsOnline(isNetworkAvailable)
         }
 
         startSmartUserConsent()
@@ -282,7 +272,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     override fun onDestroy() {
         Log.d("MainActivity", "onDestroy: called")
         AnalyticsHelper.cleanup()
-        connectionLiveData.removeObservers(this)
+        mViewModel.isOnline.removeObservers(this)
         applicationContext.cacheDir.deleteRecursively()
         RetryHelper.cleanUp()
         super.onDestroy()

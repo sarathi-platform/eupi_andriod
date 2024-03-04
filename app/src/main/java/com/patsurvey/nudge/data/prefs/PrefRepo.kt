@@ -86,4 +86,6 @@ interface PrefRepo {
 
     fun saveIsSyncEnabled(isEnabled: Boolean)
     fun getISSyncEnabled(): Boolean
+   fun getPreviousUserMobile(): String
+   fun setPreviousUserMobile(mobileNumber: String)
 }

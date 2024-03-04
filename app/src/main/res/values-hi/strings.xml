@@ -386,6 +386,8 @@
     <string name="export_file">एक्सपोर्ट फ़ाइल</string>
 
     <string name="total_members_can_not_be_less_than_earning_members">परिवार के कुल सदस्य कमाऊ सदस्यों से कम नहीं हो सकते।</string>
+    <string name="warning">"चेतावनी! "</string>
+    <string name="data_lost_message">किसी अन्य उपयोगकर्ता का पता चला यदि आप आगे बढ़ते हैं तो आप पिछले उपयोगकर्ता का डेटा खो देंगे।</string>
 
 
 </resources>

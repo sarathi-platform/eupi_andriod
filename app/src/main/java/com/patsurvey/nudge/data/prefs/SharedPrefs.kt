@@ -38,6 +38,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_QUESTIONS_SUMMARY_OPEN_FROM = "questions_summary_open_from"
         const val PREF_KEY_NEED_TO_SCROLL = "questions_need_to_scroll"
         const val PREF_KEY_SYNC_ENABLED = "sync_enabled"
+        const val PREF_KEY_PREVIOUS_USER_MOBILE = "previous_user_mobile"
     }
 
     val prefs: SharedPreferences by lazy {
@@ -240,5 +241,13 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     override fun getISSyncEnabled(): Boolean {
         return prefs.getBoolean(PREF_KEY_SYNC_ENABLED, false)
 
+    }
+
+    override fun getPreviousUserMobile(): String {
+        return prefs.getString(PREF_KEY_PREVIOUS_USER_MOBILE, "") ?: ""
+    }
+
+    override fun setPreviousUserMobile(mobileNumber: String) {
+        prefs.edit().putString(PREF_KEY_PREVIOUS_USER_MOBILE, mobileNumber).apply()
     }
 }

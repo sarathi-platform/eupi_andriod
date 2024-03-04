@@ -99,7 +99,7 @@ fun VillageSelectionScreen(
     val context = LocalContext.current
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.init(context)
+        viewModel.compareWithPreviousUser(context = context)
     }
 
     val villages by viewModel.filterVillageList.collectAsState()
@@ -124,6 +124,19 @@ fun VillageSelectionScreen(
             onNegativeButtonClick = {viewModel.showAppExitDialog.value =false},
             onPositiveButtonClick = {
                 (context as? MainActivity)?.finish()
+            })
+    }
+    if (viewModel.showUserChangedDialog.value) {
+        showCustomDialog(
+            title = stringResource(id = R.string.warning),
+            message = stringResource(id = R.string.data_lost_message),
+            positiveButtonTitle = stringResource(id = R.string.yes_text),
+            negativeButtonTitle = stringResource(id = R.string.cancel),
+            onNegativeButtonClick = { viewModel.showUserChangedDialog.value = false },
+            onPositiveButtonClick = {
+
+                viewModel.clearLocalDB(context = context)
+                viewModel.showUserChangedDialog.value = false
             })
     }
 
@@ -431,8 +444,7 @@ fun VillageAndVoBoxForBottomSheet(
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(
-                    bounded = true,
-                    color = Black
+                    bounded = true, color = Black
                 )
             ) {
                 if (isUserBPC) {
@@ -587,8 +599,7 @@ fun VillageAndVoBoxForBottomSheet(
                                     1, 3 -> stepBoxActiveColor
                                     4 -> greenLight
                                     else -> white
-                                },
-                                shape = RoundedCornerShape(bottomStart = 6.dp, bottomEnd = 6.dp)
+                                }, shape = RoundedCornerShape(bottomStart = 6.dp, bottomEnd = 6.dp)
                             )
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)

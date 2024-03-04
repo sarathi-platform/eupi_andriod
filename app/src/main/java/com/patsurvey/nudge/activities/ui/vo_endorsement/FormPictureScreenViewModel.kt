@@ -183,6 +183,7 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     fun saveFormPath(formPath: String, formName: String){
+
         Log.d("FormPictureScreen_saveFormPath", "prefKey: ${PREF_FORM_PATH}_${formName}, formPath: $formPath ")
         repository.prefRepo.savePref(getFormPathKey(formName)
             /*"${PREF_FORM_PATH}_${prefRepo.getSelectedVillage().name}_$formName"*/, formPath)
@@ -558,7 +559,7 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     fun getFormSubPath(formName: String, pageNumber: Int): String {
-        return "${formName}_page_$pageNumber"
+        return "${repository.prefRepo.getSelectedVillage().id}_${formName}_page_$pageNumber"
     }
 
     fun uploadFormsCAndD(context: Context, isOnline:Boolean) {
