@@ -415,11 +415,14 @@ fun NestedLazyList(
                                 val selectedOption =
                                     sectionDetails.questionAnswerMapping[question.questionId]?.first()
                                 val optionList = sectionDetails.optionsItemMap[question.questionId]
+                                val contentData =
+                                    sectionDetails.questionContentMapping[question.questionId]
                                 RadioQuestionBoxComponent(
                                     questionIndex = index,
                                     question = question.questionEntity,
                                     showQuestionState = question,
                                     maxCustomHeight = maxHeight,
+                                    contests = contentData,
                                     optionItemEntityList = optionList!!,
                                     selectedOptionIndex = optionList.indexOf(optionList.find { it.optionId == selectedOption?.optionId })
                                         ?: -1,
