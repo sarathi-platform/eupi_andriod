@@ -248,40 +248,40 @@ fun SettingScreen(
         mutableStateOf(false)
     }
 
-    LaunchedEffect(key1 = Unit) {
-        if (!viewModel.prefRepo.isUserBPC()) {
-            viewModel.isFirstStepNeedToBeSync(stepOneStatus)
-            viewModel.isSecondStepNeedToBeSync(stepTwoStatus)
-            viewModel.isThirdStepNeedToBeSync(stepThreeStatus)
-            viewModel.isFourthStepNeedToBeSync(stepFourStatus)
-            viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
-            if (stepOneStatus.value == 0
-                || stepTwoStatus.value == 0
-                || stepThreeStatus.value == 0
-                || stepFourStatus.value == 0
-                || stepFiveStatus.value == 0
-            )
-                isDataNeedToBeSynced.value = 1
-            else if ((stepOneStatus.value == 3 || stepOneStatus.value == 2)
-                && (stepTwoStatus.value == 3 || stepTwoStatus.value == 2)
-                && (stepThreeStatus.value == 3 || stepThreeStatus.value == 2)
-                && (stepFourStatus.value == 3 || stepFourStatus.value == 2)
-                && (stepFiveStatus.value == 3 || stepFiveStatus.value == 2)
-            )
-                isDataNeedToBeSynced.value = 2
-            else
-                isDataNeedToBeSynced.value = 0
-            viewModel.isDataNeedToBeSynced(
-                stepOneStatus,
-                stepTwoStatus,
-                stepThreeStatus,
-                stepFourStatus,
-                stepFiveStatus
-            )
-        } else {
-            viewModel.isBPCDataNeedToBeSynced(isBPCDataNeedToBeSynced)
-        }
-    }
+//    LaunchedEffect(key1 = Unit) {
+//        if (!viewModel.prefRepo.isUserBPC()) {
+//            viewModel.isFirstStepNeedToBeSync(stepOneStatus)
+//            viewModel.isSecondStepNeedToBeSync(stepTwoStatus)
+//            viewModel.isThirdStepNeedToBeSync(stepThreeStatus)
+//            viewModel.isFourthStepNeedToBeSync(stepFourStatus)
+//            viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
+//            if (stepOneStatus.value == 0
+//                || stepTwoStatus.value == 0
+//                || stepThreeStatus.value == 0
+//                || stepFourStatus.value == 0
+//                || stepFiveStatus.value == 0
+//            )
+//                isDataNeedToBeSynced.value = 1
+//            else if ((stepOneStatus.value == 3 || stepOneStatus.value == 2)
+//                && (stepTwoStatus.value == 3 || stepTwoStatus.value == 2)
+//                && (stepThreeStatus.value == 3 || stepThreeStatus.value == 2)
+//                && (stepFourStatus.value == 3 || stepFourStatus.value == 2)
+//                && (stepFiveStatus.value == 3 || stepFiveStatus.value == 2)
+//            )
+//                isDataNeedToBeSynced.value = 2
+//            else
+//                isDataNeedToBeSynced.value = 0
+//            viewModel.isDataNeedToBeSynced(
+//                stepOneStatus,
+//                stepTwoStatus,
+//                stepThreeStatus,
+//                stepFourStatus,
+//                stepFiveStatus
+//            )
+//        } else {
+//            viewModel.isBPCDataNeedToBeSynced(isBPCDataNeedToBeSynced)
+//        }
+//    }
 
     BackHandler() {
         if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
@@ -656,9 +656,16 @@ fun SettingScreen(
     if (changeGraph.value) {
         if (isChangeGraphCalled.value) {
             if (viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal) {
+                viewModel.clearSettingOpenFrom()
                 navController.navigate(AuthScreen.LOGIN.route)
                 isChangeGraphCalled.value = false
-            } else navController.navigate(Graph.LOGOUT_GRAPH)
+            } else {
+                if (navController.graph.route == Graph.ROOT) {
+                    navController.navigate(AuthScreen.LOGIN.route)
+                } else {
+                    navController.navigate(Graph.LOGOUT_GRAPH)
+                }
+            }
         }
 
         changeGraph.value = false

@@ -1766,4 +1766,11 @@ class VillageSelectionViewModel @Inject constructor(
         }
     }
 
+    fun logout() {
+        prefRepo.saveAccessToken("")
+        prefRepo.saveMobileNumber("")
+        prefRepo.saveSettingOpenFrom(0)
+
+    }
+
 }

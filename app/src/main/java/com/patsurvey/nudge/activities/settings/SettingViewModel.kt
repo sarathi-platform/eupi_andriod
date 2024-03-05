@@ -887,6 +887,8 @@ class SettingViewModel @Inject constructor(
         )
         CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setFileExported(false)
         prefRepo.setPreviousUserMobile(mobileNumber = prefRepo.getMobileNumber())
+        prefRepo.saveSettingOpenFrom(0)
+
     }
 
     fun buildAndShareLogs() {
@@ -977,5 +979,9 @@ class SettingViewModel @Inject constructor(
     fun isSyncEnabled(): Boolean {
         return prefRepo.getISSyncEnabled()
 
+    }
+
+    fun clearSettingOpenFrom() {
+        //    prefRepo.saveSettingOpenFrom(0)
     }
 }

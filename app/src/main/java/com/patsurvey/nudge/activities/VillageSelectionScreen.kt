@@ -77,6 +77,7 @@ import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
+import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidthWithoutIcon
@@ -131,8 +132,13 @@ fun VillageSelectionScreen(
             title = stringResource(id = R.string.warning),
             message = stringResource(id = R.string.data_lost_message),
             positiveButtonTitle = stringResource(id = R.string.yes_text),
-            negativeButtonTitle = stringResource(id = R.string.cancel),
-            onNegativeButtonClick = { viewModel.showUserChangedDialog.value = false },
+            negativeButtonTitle = stringResource(id = R.string.logout),
+            dismissOnBackPress = false,
+            onNegativeButtonClick = {
+                viewModel.showUserChangedDialog.value = false
+                viewModel.logout()
+                navController.navigate(AuthScreen.LOGIN.route)
+            },
             onPositiveButtonClick = {
 
                 viewModel.clearLocalDB(context = context)
