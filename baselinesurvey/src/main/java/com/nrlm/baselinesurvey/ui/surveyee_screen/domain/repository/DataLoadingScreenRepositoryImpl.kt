@@ -45,10 +45,9 @@ import com.nrlm.baselinesurvey.model.response.MissionResponseModel
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
-import com.nrlm.baselinesurvey.utils.BaselineLogger
-import com.nrlm.baselinesurvey.utils.json
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
+import com.nrlm.baselinesurvey.utils.BaselineLogger
 import javax.inject.Inject
 
 class DataLoadingScreenRepositoryImpl @Inject constructor(
@@ -88,7 +87,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
             surveyName = surveyResponseModel.surveyName,
             surveyPassingMark = surveyResponseModel.surveyPassingMark,
             thresholdScore = surveyResponseModel.thresholdScore,
-            languageId = languageId
+            languageId = languageId,
+            referenceId = surveyResponseModel.referenceId
         )
         surveyEntityDao.insertSurvey(surveyEntity)
         surveyResponseModel.sections.forEach { section ->

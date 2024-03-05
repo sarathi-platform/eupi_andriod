@@ -26,7 +26,16 @@ enum class EventName(val id: Int, val depends_on: List<Int> = emptyList(), val t
         topicName = "BPC_TOPIC"
     ), //TODO GET TOPIC NAME FOR THIS EVENT
     WORKFLOW_STATUS_UPDATE(14, emptyList(), "WORKFLOW_TOPIC"),
-    RANKING_FLAG_EDIT(15, emptyList(), "RANKING_FLAG_EDIT_TOPIC");
+    RANKING_FLAG_EDIT(15, emptyList(), "RANKING_FLAG_EDIT_TOPIC"),
+
+    ADD_SECTION_PROGRESS_FOR_DIDI_EVENT(16, topicName = "ADD_SECTION_PROGRESS_FOR_DIDI_EVENT"),
+    UPDATE_SECTION_PROGRESS_FOR_DIDI_EVENT(
+        17,
+        topicName = "UPDATE_SECTION_PROGRESS_FOR_DIDI_EVENT"
+    ),
+    SAVE_RESPONSE_EVENT(18, topicName = "SAVE_RESPONSE_EVENT"),
+    UPDATE_TASK_STATUS_EVENT(19, topicName = "UPDATE_TASK_STATUS_EVENT")
+    ;
 }
 
 fun String.getTopicFromName(): String {

@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.section_screen.domain.repository
 
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
@@ -13,6 +14,7 @@ import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nrlm.baselinesurvey.utils.states.SurveyState
 
 class SectionListScreenRepositoryImpl(
     private val prefRepo: PrefRepo,
@@ -23,6 +25,7 @@ class SectionListScreenRepositoryImpl(
     private val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
     private val optionItemDao: OptionItemDao,
     private val surveyeeEntityDao: SurveyeeEntityDao,
+    private val taskDao: ActivityTaskDao
 ): SectionListScreenRepository {
     override fun getSectionsListForDidi(
         didiId: Int,
@@ -70,7 +73,7 @@ class SectionListScreenRepositoryImpl(
                     questionSize = sectionEntity.questionSize
                 )
             )
-            val sectionProgressForDidiLocal =
+            /*val sectionProgressForDidiLocal =
                 didiSectionProgressEntityDao.getSectionProgressForDidi(
                     survey?.surveyId ?: 0,
                     sectionEntity.sectionId,
@@ -86,7 +89,7 @@ class SectionListScreenRepositoryImpl(
                         sectionStatus = SectionStatus.INPROGRESS.ordinal
                     )
                 )
-            } /*else {
+            } else {
                 didiSectionProgressEntityDao.updateSectionStatusForDidi(
                     sectionEntity.surveyId,
                     sectionEntity.sectionId,
@@ -179,5 +182,16 @@ class SectionListScreenRepositoryImpl(
 
     override fun getSurveyeDetails(didiId: Int): SurveyeeEntity {
         return surveyeeEntityDao.getDidi(didiId)
+    }
+
+    override suspend fun updateSubjectStatus(didiId: Int, surveyState: SurveyState) {
+        surveyeeEntityDao.updateDidiSurveyStatus(
+            didiSurveyStatus = surveyState.ordinal,
+            didiId = didiId
+        )
+    }
+
+    override suspend fun updateTaskStatus(didiId: Int, surveyState: SurveyState) {
+        taskDao.updateTaskStatus(didiId, surveyState.ordinal)
     }
 }

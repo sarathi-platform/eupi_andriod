@@ -26,4 +26,10 @@ interface ActivityTaskDao {
 
     @Query("Select * FROM $TASK_TABLE_NAME where missionId in(:missionId) and activityName in(:activityName)")
     fun isTaskExist(missionId: Int, activityName: String): Boolean
+
+    @Query("Select * from $TASK_TABLE_NAME where didiId = :subjectId")
+    fun getTaskFromSubjectId(subjectId: Int): ActivityTaskEntity
+
+    @Query("UPDATE $TASK_TABLE_NAME set activityState = :surveyStatus where didiId = :subjectId")
+    fun updateTaskStatus(subjectId: Int, surveyStatus: Int)
 }
