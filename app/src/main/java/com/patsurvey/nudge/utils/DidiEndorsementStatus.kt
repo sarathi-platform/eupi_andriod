@@ -14,6 +14,15 @@ enum class DidiEndorsementStatus {
                 else -> NOT_STARTED.ordinal
             }
         }
+
+        fun fromIntToString(status: Int): String {
+            return when (status) {
+                0 -> NOT_STARTED.name
+                1 -> REJECTED.name
+                2, 3 -> ACCEPTED.name
+                else -> BLANK_STRING
+            }
+        }
     }
 
 }

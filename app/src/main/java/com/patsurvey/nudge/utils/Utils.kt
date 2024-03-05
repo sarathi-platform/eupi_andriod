@@ -44,7 +44,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -77,13 +82,16 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import com.nudge.core.EventSyncStatus
-import com.nudge.core.database.entities.Events
-import com.nudge.core.toDate
+import com.nudge.core.KEY_PARENT_ENTITY_ADDRESS
+import com.nudge.core.KEY_PARENT_ENTITY_DADA_NAME
+import com.nudge.core.KEY_PARENT_ENTITY_DIDI_ID
+import com.nudge.core.KEY_PARENT_ENTITY_DIDI_NAME
+import com.nudge.core.KEY_PARENT_ENTITY_TOLA_ID
+import com.nudge.core.KEY_PARENT_ENTITY_TOLA_NAME
+import com.nudge.core.KEY_PARENT_ENTITY_VILLAGE_ID
+import com.nudge.core.enums.EventName
 import com.patsurvey.nudge.BuildConfig
-import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.RetryHelper.exceptionHandler
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
@@ -93,26 +101,27 @@ import com.patsurvey.nudge.activities.video.VideoItem
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.LanguageEntity
+import com.patsurvey.nudge.database.NumericAnswerEntity
+import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
+import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.download.FileType
 import com.patsurvey.nudge.model.dataModel.WeightageRatioModal
-import com.patsurvey.nudge.model.request.AddCohortRequest
-import kotlinx.coroutines.CoroutineExceptionHandler
+import com.patsurvey.nudge.model.request.AnswerDetailDTOListItem
+import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
+import com.patsurvey.nudge.model.request.PATSummarySaveRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -125,7 +134,8 @@ import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
+import java.util.UUID
 import java.util.regex.Pattern
 import kotlin.math.roundToInt
 
@@ -155,8 +165,8 @@ fun getDeviceId(context: Context) : String{
         Settings.Secure.ANDROID_ID) ?: ""
 }
 
-fun getUniqueIdForEntity(context: Context) : String{
-    return getDeviceId(context) + "|" + System.currentTimeMillis()
+fun getUniqueIdForEntity(): String {
+    return UUID.randomUUID().toString().replace("-", "") + "|" + System.currentTimeMillis()
 }
 
 fun findCompleteValue(status:String): StepStatus {
@@ -513,6 +523,76 @@ var videoList = listOf(
         url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M11Assamese.mp4",
         thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M11.png"
     ),
+    VideoItem(
+        id = 34,
+        title = "सारथी ऐप में लॉग इन करें",
+        description = "सारथी ऐप में लॉग इन कैसे करें",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2Hindi.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2.png"
+    ),
+    VideoItem(
+        id = 35,
+        title = "ऐप सिंहावलोकन",
+        description = "सारथी ऐप का संक्षिप्त परिचय",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3Hindi.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3.png"
+    ),
+    VideoItem(
+        id = 36,
+        title = "ट्रांसेक्ट वॉक",
+        description = "ट्रांसेक्ट वॉक के दौरान सारथी ऐप का उपयोग कैसे करें",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4Hindi.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4.png"
+    ),
+    VideoItem(
+        id = 37,
+        title = "सामाजिक मानचित्रण",
+        description = "सोशल मैपिंग के दौरान दीदी विवरण कैसे दर्ज करें",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5Hindi.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5.png"
+    ),
+    VideoItem(
+        id = 38,
+        title = "सहभागी धन रैंकिंग",
+        description = "दीदी की संपत्ति रैंकिंग कैसे दर्ज करें",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6Hindi.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6.png"
+    ),
+    VideoItem(
+        id = 39,
+        title = "पीएटी सर्वेक्षण - अवलोकन",
+        description = "सारथी ऐप पर पीएटी सर्वेक्षण का परिचय",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7Hindi.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7.png"
+    ),
+    VideoItem(
+        id = 40,
+        title = "PAT सर्वेक्षण भरना - भाग 1",
+        description = "PAT सर्वेक्षण कैसे भरें - भाग 1",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8HindiPart1.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.1.png"
+    ),
+    VideoItem(
+        id = 41,
+        title = "PAT सर्वेक्षण भरना - भाग 2",
+        description = "PAT सर्वेक्षण कैसे भरें - भाग 2",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8HindiPart2.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.2.png"
+    ),
+    VideoItem(
+        id = 42,
+        title = "डिजिटल फॉर्म बी और वीओ समर्थन के लिए जमा करें",
+        description = "डिजिटल फॉर्म बी कैसे डाउनलोड करें और वीओ अनुमोदन के लिए जमा करें",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9Hindi.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9.png"
+    ),
+    VideoItem(
+        id = 43,
+        title = "वीओ अनुमोदन",
+        description = "वीओ समर्थन कैसे रिकॉर्ड करें",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10Hindi.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10.png"
+    )
 
     /*VideoItem(
         id = 24,
@@ -1155,8 +1235,6 @@ fun getFormPathKey(subPath: String,villageId: Int): String {
     return "${PREF_FORM_PATH}_${villageId}_${subPath}"
 }
 
-inline fun <reified T : Any> T.json(): String = Gson().toJson(this, T::class.java)
-
 fun getVideoPath(context: Context, videoItemId: Int, fileType: FileType): File {
     return File("${context.getExternalFilesDir(if (fileType == FileType.VIDEO) Environment.DIRECTORY_MOVIES else if (fileType == FileType.IMAGE) Environment.DIRECTORY_DCIM else Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${videoItemId}.mp4")
 }
@@ -1179,7 +1257,151 @@ fun getVillageItemById(villageList: List<VillageEntity>, id: Int): VillageEntity
     return villageList[villageList.map { it.id }.indexOf(id)]
 }
 
+fun calculateMatchPercentage(didiList: List<DidiEntity>, questionPassingScore: Int): Int {
+    val matchedCount = didiList.filter {
+        (it.score ?: 0.0) >= questionPassingScore.toDouble()
+                && (it.crpScore ?: 0.0) >= questionPassingScore.toDouble()
+    }.size
 
+    return if (didiList.isNotEmpty() && matchedCount != 0) ((matchedCount.toFloat() / didiList.size.toFloat()) * 100).toInt() else 0
+
+}
+
+fun List<DidiEntity>.getNotAvailableDidiCount(): Int {
+    return this.filter {
+        it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
+                || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal
+    }.size
+}
+
+fun <T> getParentEntityMapForEvent(eventItem: T, eventName: EventName): Map<String, String> {
+    return when (eventName) {
+
+        EventName.ADD_TOLA -> {
+            emptyMap()
+        }
+
+        EventName.UPDATE_TOLA -> {
+            val tolaEntity = (eventItem as TolaEntity)
+            mapOf(
+                KEY_PARENT_ENTITY_TOLA_ID to eventItem.serverId.toString(),
+                KEY_PARENT_ENTITY_VILLAGE_ID to eventItem.villageId.toString()
+            )
+        }
+
+        EventName.DELETE_TOLA -> {
+            val tolaEntity = (eventItem as TolaEntity)
+            mapOf(
+                KEY_PARENT_ENTITY_TOLA_NAME to tolaEntity.name,
+                KEY_PARENT_ENTITY_VILLAGE_ID to tolaEntity.villageId.toString()
+            )
+        }
+
+        EventName.ADD_DIDI -> {
+            val didiEntity = (eventItem as DidiEntity)
+            mapOf(
+                KEY_PARENT_ENTITY_TOLA_NAME to didiEntity.cohortName,
+                KEY_PARENT_ENTITY_VILLAGE_ID to didiEntity.villageId.toString()
+            )
+        }
+
+        EventName.UPDATE_DIDI -> {
+            val didiEntity = (eventItem as DidiEntity)
+            mapOf(
+                KEY_PARENT_ENTITY_DIDI_ID to didiEntity.id.toString(),
+                KEY_PARENT_ENTITY_VILLAGE_ID to didiEntity.villageId.toString()
+            )
+        }
+
+        EventName.DELETE_DIDI, EventName.SAVE_WEALTH_RANKING, EventName.SAVE_PAT_SCORE, EventName.SAVE_PAT_ANSWERS, EventName.SAVE_VO_ENDORSEMENT -> {
+            val didiEntity = (eventItem as DidiEntity)
+            mapOf(
+                KEY_PARENT_ENTITY_DIDI_NAME to didiEntity.name,
+                KEY_PARENT_ENTITY_DADA_NAME to didiEntity.guardianName,
+                KEY_PARENT_ENTITY_ADDRESS to didiEntity.address,
+                KEY_PARENT_ENTITY_TOLA_NAME to didiEntity.cohortName
+            )
+        }
+
+        else -> {
+            emptyMap()
+        }
+    }
+}
+
+private fun getAllAnswersForDidi(didiId: Int, answerDao: AnswerDao): List<SectionAnswerEntity> {
+    return answerDao.getAllNeedToPostQuesForDidi(didiId)
+}
+
+private fun getAllNumericAnswersForDidi(
+    didiId: Int,
+    numericAnswerDao: NumericAnswerDao
+): List<NumericAnswerEntity> {
+    return numericAnswerDao.getAllAnswersForDidi(didiId)
+}
+
+private fun getSurveyId(questionId: Int, questionListDao: QuestionListDao): Int {
+    val questionList = questionListDao.getQuestion(questionId)
+    if (questionList != null) {
+        return questionList.surveyId ?: 0
+    }
+    return 0
+}
+
+suspend fun getPatSummarySaveEventPayload(
+    didiEntity: DidiEntity,
+    answerDao: AnswerDao,
+    numericAnswerDao: NumericAnswerDao,
+    questionListDao: QuestionListDao,
+    prefRepo: PrefRepo
+): PATSummarySaveRequest {
+    val sectionAnswerEntityList = getAllAnswersForDidi(didiEntity.id, answerDao)
+    val numericAnswerEntityList = getAllNumericAnswersForDidi(didiEntity.id, numericAnswerDao)
+    val answerDetailDTOListItem = AnswerDetailDTOListItem.getAnswerDetailDtoListItem(
+        sectionAnswerEntityList,
+        numericAnswerEntityList
+    )
+    val patSummarySaveRequest = PATSummarySaveRequest.getPatSummarySaveRequest(
+        didiEntity = didiEntity,
+        answerDetailDTOList = answerDetailDTOListItem,
+        languageId = (prefRepo.getAppLanguageId() ?: 2),
+        surveyId = getSurveyId(
+            sectionAnswerEntityList?.firstOrNull()?.questionId ?: 0,
+            questionListDao
+        ),
+        villageEntity = prefRepo.getSelectedVillage(),
+        userType = if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(
+                BPC_USER_TYPE,
+                true
+            )
+        ) USER_BPC else USER_CRP
+    )
+
+    return patSummarySaveRequest
+}
+
+suspend fun getPatScoreSaveEvent(
+    didiEntity: DidiEntity,
+    questionListDao: QuestionListDao,
+    prefRepo: PrefRepo,
+    tolaDeviceId: String,
+    tolaServerId: Int
+): EditDidiWealthRankingRequest {
+    val passingMark = questionListDao.getPassingScore()
+    val patScoreSaveRequest = EditDidiWealthRankingRequest.getRequestPayloadForPatScoreSave(
+        didiEntity,
+        passingMark,
+        isBpcUserType = prefRepo.isUserBPC(),
+        tolaDeviceId = tolaDeviceId,
+        tolaServerId = tolaServerId
+
+
+    )
+    return patScoreSaveRequest
+}
+
+
+/*
 fun getSampleEvent(): Events {
     return Events(
         name = "TEST_EVENT",
@@ -1200,7 +1422,7 @@ fun getSampleEvent(): Events {
             localCreatedDate = System.currentTimeMillis(),
             localModifiedDate = System.currentTimeMillis(),
             transactionId = "",
-            localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
+            localUniqueId = getUniqueIdForEntity()
         )
         ).json(),
         consumer_status = EventSyncStatus.OPEN.name,
@@ -1216,11 +1438,11 @@ fun getSampleEvent(): Events {
                 localCreatedDate = System.currentTimeMillis(),
                 localModifiedDate = System.currentTimeMillis(),
                 transactionId = "",
-                localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
+                localUniqueId = getUniqueIdForEntity()
             )
         ).json(),
         retry_count = 0,
         error_message = null,
         metadata = Tola(EMPTY_TOLA_NAME, LocationCoordinates(0.0, 0.0)).json()
     )
-}
+}*/

@@ -14,16 +14,34 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,10 +71,33 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
-import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.activities.ui.theme.didiDetailItemStyle
+import com.patsurvey.nudge.activities.ui.theme.didiDetailLabelStyle
+import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
+import com.patsurvey.nudge.activities.ui.theme.lightGray2
+import com.patsurvey.nudge.activities.ui.theme.red
+import com.patsurvey.nudge.activities.ui.theme.smallTextStyle
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.activities.ui.theme.textColorDark50
+import com.patsurvey.nudge.activities.ui.theme.textColorDark80
+import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.AbleBodiedFlag
+import com.patsurvey.nudge.utils.BlueButtonWithIcon
+import com.patsurvey.nudge.utils.ButtonOutline
+import com.patsurvey.nudge.utils.DoubleButtonBox
+import com.patsurvey.nudge.utils.LocationCoordinates
+import com.patsurvey.nudge.utils.LocationUtil
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PageFrom
+import com.patsurvey.nudge.utils.SHGFlag
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.openSettings
+import com.patsurvey.nudge.utils.updateStepStatus
+import com.patsurvey.nudge.utils.uriFromFile
 import kotlinx.coroutines.delay
 import java.util.function.Consumer
 
@@ -72,7 +113,7 @@ fun PatDidiSummaryScreen(
     didiId: Int,
     onNavigation: () -> Unit
 ) {
-    val context= LocalContext.current
+    val context = LocalContext.current
     val shgFlag = remember {
         mutableStateOf(-1)
     }
@@ -87,9 +128,9 @@ fun PatDidiSummaryScreen(
         shgFlag.value = patDidiSummaryViewModel.didiEntity.value.shgFlag
     }
 
-    if(patDidiSummaryViewModel.patDidiSummaryRepository.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_CAMERA_PAGE.ordinal) {
+    if (patDidiSummaryViewModel.patDidiSummaryRepository.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_CAMERA_PAGE.ordinal) {
         BackHandler {
-            (context as MainActivity).isBackFromSummary.value=true
+            (context as MainActivity).isBackFromSummary.value = true
             navController.popBackStack()
         }
     }
@@ -413,7 +454,7 @@ fun PatDidiSummaryScreen(
                                 },
                                 overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier/*.width()*/
-                                )
+                            )
 
                             Spacer(modifier = Modifier.width(4.dp))
 
@@ -508,10 +549,20 @@ fun PatDidiSummaryScreen(
                             contract = ActivityResultContracts.TakePicture(),
                             onResult = { success ->
                                 hasImage = success
-                                NudgeLogger.d("PatDidiSummaryScreen", "rememberLauncherForActivityResult -> onResult = success: $success")
+                                NudgeLogger.d(
+                                    "PatDidiSummaryScreen",
+                                    "rememberLauncherForActivityResult -> onResult = success: $success"
+                                )
                                 if (success) {
-                                    patDidiSummaryViewModel.photoUri = patDidiSummaryViewModel.tempUri
-                                    handleImageCapture(uri = patDidiSummaryViewModel.photoUri, photoPath = patDidiSummaryViewModel.imagePath, context = (localContext as MainActivity), didi.value, viewModal = patDidiSummaryViewModel)
+                                    patDidiSummaryViewModel.photoUri =
+                                        patDidiSummaryViewModel.tempUri
+                                    handleImageCapture(
+                                        uri = patDidiSummaryViewModel.photoUri,
+                                        photoPath = patDidiSummaryViewModel.imagePath,
+                                        context = (localContext as MainActivity),
+                                        didi.value,
+                                        viewModal = patDidiSummaryViewModel
+                                    )
                                 } else {
                                     patDidiSummaryViewModel.shouldShowPhoto.value =
                                         !(patDidiSummaryViewModel.photoUri == null || patDidiSummaryViewModel.photoUri == Uri.EMPTY)
@@ -702,12 +753,22 @@ fun PatDidiSummaryScreen(
                                             localContext as Activity,
                                             Manifest.permission.READ_EXTERNAL_STORAGE
                                         ) == PackageManager.PERMISSION_GRANTED -> {
-                                            NudgeLogger.d("PatImagePreviewScreen", "Permission previously granted")
+                                            NudgeLogger.d(
+                                                "PatImagePreviewScreen",
+                                                "Permission previously granted"
+                                            )
 
-                                            val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
-                                            patDidiSummaryViewModel.imagePath = imageFile.absolutePath
+                                            val imageFile = patDidiSummaryViewModel.getFileName(
+                                                localContext,
+                                                didi.value
+                                            )
+                                            patDidiSummaryViewModel.imagePath =
+                                                imageFile.absolutePath
                                             val uri = uriFromFile(localContext, imageFile)
-                                            NudgeLogger.d("PatDidiSummaryScreen", "Retake Photo button Clicked: $uri")
+                                            NudgeLogger.d(
+                                                "PatDidiSummaryScreen",
+                                                "Retake Photo button Clicked: $uri"
+                                            )
                                             patDidiSummaryViewModel.tempUri = uri
 //                                patDidiSummaryViewModel.photoUri = uri
                                             cameraLauncher.launch(uri)
@@ -724,7 +785,10 @@ fun PatDidiSummaryScreen(
                                             localContext as Activity,
                                             Manifest.permission.READ_EXTERNAL_STORAGE
                                         ) -> {
-                                            NudgeLogger.d("PatImagePreviewScreen", "Show camera permissions dialog")
+                                            NudgeLogger.d(
+                                                "PatImagePreviewScreen",
+                                                "Show camera permissions dialog"
+                                            )
                                             ActivityCompat.requestPermissions(
                                                 localContext as Activity,
                                                 arrayOf(
@@ -737,7 +801,10 @@ fun PatDidiSummaryScreen(
                                         }
 
                                         else -> {
-                                            NudgeLogger.d("requestCameraPermission: ", "permission not granted")
+                                            NudgeLogger.d(
+                                                "requestCameraPermission: ",
+                                                "permission not granted"
+                                            )
                                             shouldRequestPermission.value = true
                                         }
                                     }
@@ -747,12 +814,22 @@ fun PatDidiSummaryScreen(
                                             localContext as Activity,
                                             Manifest.permission.CAMERA
                                         ) == PackageManager.PERMISSION_GRANTED -> {
-                                            NudgeLogger.d("PatImagePreviewScreen", "Permission previously granted")
+                                            NudgeLogger.d(
+                                                "PatImagePreviewScreen",
+                                                "Permission previously granted"
+                                            )
 
-                                            val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
-                                            patDidiSummaryViewModel.imagePath = imageFile.absolutePath
+                                            val imageFile = patDidiSummaryViewModel.getFileName(
+                                                localContext,
+                                                didi.value
+                                            )
+                                            patDidiSummaryViewModel.imagePath =
+                                                imageFile.absolutePath
                                             val uri = uriFromFile(localContext, imageFile)
-                                            NudgeLogger.d("PatDidiSummaryScreen", "Retake Photo button Clicked: $uri")
+                                            NudgeLogger.d(
+                                                "PatDidiSummaryScreen",
+                                                "Retake Photo button Clicked: $uri"
+                                            )
                                             patDidiSummaryViewModel.tempUri = uri
 //                                patDidiSummaryViewModel.photoUri = uri
                                             cameraLauncher.launch(uri)
@@ -763,7 +840,10 @@ fun PatDidiSummaryScreen(
                                             localContext as Activity,
                                             Manifest.permission.CAMERA
                                         ) -> {
-                                            NudgeLogger.d("PatImagePreviewScreen", "Show camera permissions dialog")
+                                            NudgeLogger.d(
+                                                "PatImagePreviewScreen",
+                                                "Show camera permissions dialog"
+                                            )
                                             ActivityCompat.requestPermissions(
                                                 localContext as Activity,
                                                 arrayOf(
@@ -776,7 +856,10 @@ fun PatDidiSummaryScreen(
                                         }
 
                                         else -> {
-                                            NudgeLogger.d("requestCameraPermission: ", "permission not granted")
+                                            NudgeLogger.d(
+                                                "requestCameraPermission: ",
+                                                "permission not granted"
+                                            )
                                             shouldRequestPermission.value = true
                                         }
                                     }
@@ -807,10 +890,17 @@ fun PatDidiSummaryScreen(
                                             localContext as Activity,
                                             Manifest.permission.READ_EXTERNAL_STORAGE
                                         ) == PackageManager.PERMISSION_GRANTED -> {
-                                            NudgeLogger.d("PatImagePreviewScreen", "Permission previously granted")
+                                            NudgeLogger.d(
+                                                "PatImagePreviewScreen",
+                                                "Permission previously granted"
+                                            )
 
-                                            val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
-                                            patDidiSummaryViewModel.imagePath = imageFile.absolutePath
+                                            val imageFile = patDidiSummaryViewModel.getFileName(
+                                                localContext,
+                                                didi.value
+                                            )
+                                            patDidiSummaryViewModel.imagePath =
+                                                imageFile.absolutePath
                                             val uri = uriFromFile(localContext, imageFile)
                                             patDidiSummaryViewModel.tempUri = uri
                                             cameraLauncher.launch(uri)
@@ -826,7 +916,10 @@ fun PatDidiSummaryScreen(
                                             localContext as Activity,
                                             Manifest.permission.READ_EXTERNAL_STORAGE
                                         ) -> {
-                                            NudgeLogger.d("PatImagePreviewScreen", "Show camera permissions dialog")
+                                            NudgeLogger.d(
+                                                "PatImagePreviewScreen",
+                                                "Show camera permissions dialog"
+                                            )
                                             ActivityCompat.requestPermissions(
                                                 localContext as Activity,
                                                 arrayOf(
@@ -839,7 +932,10 @@ fun PatDidiSummaryScreen(
                                         }
 
                                         else -> {
-                                            NudgeLogger.d("requestCameraPermission: ", "permission not granted")
+                                            NudgeLogger.d(
+                                                "requestCameraPermission: ",
+                                                "permission not granted"
+                                            )
                                             shouldRequestPermission.value = true
                                         }
                                     }
@@ -849,10 +945,17 @@ fun PatDidiSummaryScreen(
                                             localContext as Activity,
                                             Manifest.permission.CAMERA
                                         ) == PackageManager.PERMISSION_GRANTED -> {
-                                            NudgeLogger.d("PatImagePreviewScreen", "Permission previously granted")
+                                            NudgeLogger.d(
+                                                "PatImagePreviewScreen",
+                                                "Permission previously granted"
+                                            )
 
-                                            val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
-                                            patDidiSummaryViewModel.imagePath = imageFile.absolutePath
+                                            val imageFile = patDidiSummaryViewModel.getFileName(
+                                                localContext,
+                                                didi.value
+                                            )
+                                            patDidiSummaryViewModel.imagePath =
+                                                imageFile.absolutePath
                                             val uri = uriFromFile(localContext, imageFile)
                                             patDidiSummaryViewModel.tempUri = uri
                                             cameraLauncher.launch(uri)
@@ -862,7 +965,10 @@ fun PatDidiSummaryScreen(
                                             localContext as Activity,
                                             Manifest.permission.CAMERA
                                         ) -> {
-                                            NudgeLogger.d("PatImagePreviewScreen", "Show camera permissions dialog")
+                                            NudgeLogger.d(
+                                                "PatImagePreviewScreen",
+                                                "Show camera permissions dialog"
+                                            )
                                             ActivityCompat.requestPermissions(
                                                 localContext as Activity,
                                                 arrayOf(
@@ -875,7 +981,10 @@ fun PatDidiSummaryScreen(
                                         }
 
                                         else -> {
-                                            NudgeLogger.d("requestCameraPermission: ", "permission not granted")
+                                            NudgeLogger.d(
+                                                "requestCameraPermission: ",
+                                                "permission not granted"
+                                            )
                                             shouldRequestPermission.value = true
                                         }
                                     }
@@ -883,9 +992,11 @@ fun PatDidiSummaryScreen(
 //                                patDidiSummaryViewModel.shouldShowCamera.value = true
                             }
                         }
-                        Spacer(modifier = Modifier
-                            .height(30.dp)
-                            .fillMaxWidth())
+                        Spacer(
+                            modifier = Modifier
+                                .height(30.dp)
+                                .fillMaxWidth()
+                        )
                     }
                 }
             }
@@ -893,7 +1004,8 @@ fun PatDidiSummaryScreen(
         }
 
         if (patDidiSummaryViewModel.shouldShowPhoto.value && !patDidiSummaryViewModel.shouldShowCamera.value
-            && shgFlag.value != SHGFlag.NOT_MARKED.value && ableBodiedFlag.value != AbleBodiedFlag.NOT_MARKED.value) {
+            && shgFlag.value != SHGFlag.NOT_MARKED.value && ableBodiedFlag.value != AbleBodiedFlag.NOT_MARKED.value
+        ) {
             DoubleButtonBox(
                 modifier = Modifier
                     .shadow(10.dp)
@@ -909,14 +1021,16 @@ fun PatDidiSummaryScreen(
                 negativeButtonRequired = false,
                 positiveButtonText = stringResource(id = R.string.next),
                 positiveButtonOnClick = {
-                    if(patDidiSummaryViewModel.patDidiSummaryRepository.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_CAMERA_PAGE.ordinal) {
-                        updateStepStatus(stepsListDao = patDidiSummaryViewModel.patDidiSummaryRepository.stepsListDao,
+                    if (patDidiSummaryViewModel.patDidiSummaryRepository.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_CAMERA_PAGE.ordinal) {
+                        updateStepStatus(
+                            stepsListDao = patDidiSummaryViewModel.patDidiSummaryRepository.stepsListDao,
                             prefRepo = patDidiSummaryViewModel.patDidiSummaryRepository.prefRepo,
                             printTag = "PatDidiSummaryViewModel",
                             didiId = patDidiSummaryViewModel.didiEntity.value.id,
-                            didiDao = patDidiSummaryViewModel.patDidiSummaryRepository.didiDao)
+                            didiDao = patDidiSummaryViewModel.patDidiSummaryRepository.didiDao
+                        )
                     }
-                    if((localContext as MainActivity).isOnline.value) {
+                    if ((localContext as MainActivity).isOnline.value) {
                         if (patDidiSummaryViewModel.didiEntity.value.serverId != 0) {
                             val id = patDidiSummaryViewModel.didiEntity.value.serverId
                             patDidiSummaryViewModel.uploadDidiImage(
@@ -931,9 +1045,11 @@ fun PatDidiSummaryScreen(
                     } else {
                         patDidiSummaryViewModel.setNeedToPostImage(true)
                     }
-                    patDidiSummaryViewModel.patDidiSummaryRepository.prefRepo.saveQuestionScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
+                    patDidiSummaryViewModel.patDidiSummaryRepository.prefRepo.saveQuestionScreenOpenFrom(
+                        PageFrom.DIDI_LIST_PAGE.ordinal
+                    )
                     val questionIndex = 0
-                    if (patDidiSummaryViewModel.patDidiSummaryRepository.prefRepo.isUserBPC()){
+                    if (patDidiSummaryViewModel.patDidiSummaryRepository.prefRepo.isUserBPC()) {
                         navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION/$questionIndex")
                     } else {
                         navController.navigate("yes_no_question_screen/${didi.value.id}/${TYPE_EXCLUSION}/$questionIndex")
@@ -961,7 +1077,7 @@ fun handleImageCapture(
     viewModal.shouldShowPhoto.value = true
     viewModal.cameraExecutor.shutdown()
 
-    var location = LocationCoordinates(0.0,0.0)
+    var location = LocationCoordinates(0.0, 0.0)
 
 //    val decimalFormat = DecimalFormat("#.#######")
     if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
@@ -1048,7 +1164,8 @@ fun handleImageCapture(
     NudgeLogger.d("PatDidiSummaryScreen", "handleImageCapture -> viewModal.saveFilePathInDb called")
 
 
-    viewModal.saveFilePathInDb(photoPath, location, didiEntity = didiEntity)
+    viewModal.saveFilePathInDb(uri, photoPath, location, didiEntity = didiEntity)
+
 }
 
 private fun requestCameraPermission(

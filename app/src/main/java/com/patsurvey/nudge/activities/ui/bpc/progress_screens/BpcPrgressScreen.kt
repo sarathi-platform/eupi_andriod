@@ -5,20 +5,41 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -45,12 +66,45 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
+import com.nudge.core.enums.NetworkSpeed
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.*
-import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.MainActivity
+import com.patsurvey.nudge.activities.UserDataView
+import com.patsurvey.nudge.activities.VillageSelectorDropDown
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.activities.ui.theme.borderGrey
+import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
+import com.patsurvey.nudge.activities.ui.theme.greenLight
+import com.patsurvey.nudge.activities.ui.theme.greenOnline
+import com.patsurvey.nudge.activities.ui.theme.greyBorder
+import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
+import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
+import com.patsurvey.nudge.activities.ui.theme.smallerTextStyleNormalWeight
+import com.patsurvey.nudge.activities.ui.theme.stepBoxActiveColor
+import com.patsurvey.nudge.activities.ui.theme.stepIconCompleted
+import com.patsurvey.nudge.activities.ui.theme.stepIconDisableColor
+import com.patsurvey.nudge.activities.ui.theme.stepIconEnableColor
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.database.BpcSummaryEntity
 import com.patsurvey.nudge.database.StepListEntity
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.ConnectionMonitor
+import com.patsurvey.nudge.utils.DottedShape
+import com.patsurvey.nudge.utils.IconButtonForward
+import com.patsurvey.nudge.utils.NudgeCore
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
+import com.patsurvey.nudge.utils.PREF_KEY_NAME
+import com.patsurvey.nudge.utils.PREF_OPEN_FROM_HOME
+import com.patsurvey.nudge.utils.PageFrom
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.TableCell
+import com.patsurvey.nudge.utils.TextButtonWithIcon
+import com.patsurvey.nudge.utils.setKeyboardToPan
+import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -129,9 +183,10 @@ fun BpcProgressScreen(
             NudgeLogger.d("SettingScreen",
                 "DisposableEffect: connectionLiveData.observe isNetworkAvailable -> isNetworkAvailable.isOnline = ${isNetworkAvailable.isOnline}, isNetworkAvailable.connectionSpeed = ${isNetworkAvailable.connectionSpeed}, isNetworkAvailable.speedType = ${isNetworkAvailable.speedType}")
             isOnline.value = isNetworkAvailable.isOnline
-                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR.toString() || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN.toString())
+                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN)
             NudgeCore.updateIsOnline(isNetworkAvailable.isOnline
-                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR.toString() || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN.toString()))
+                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN)
+            )
         }
         onDispose {
             connectionLiveData.removeObservers(lifecycleOwner)
@@ -291,7 +346,8 @@ fun BpcProgressScreen(
                                         PREF_KEY_IDENTITY_NUMBER,
                                         BLANK_STRING
                                     ) ?: "",
-                                    isUserBPC = true
+                                    isBackButtonShow = true,
+                                    isBPCUser = true
                                 ){
                                     onBackClick()
                                 }

@@ -110,7 +110,6 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
-import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.navigation.home.VoEndorsmentScreeens
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
@@ -883,32 +882,14 @@ fun FormPictureScreen(
                                 formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id,
                                 stepId
                             )
+                            formPictureScreenViewModel.addRankingFlagEditEvent(stepId = stepId)
                             formPictureScreenViewModel.saveVoEndorsementDate()
-                            if ((context as MainActivity).isOnline.value ?: false) {
-                                /*formPictureScreenViewModel.updateVoStatusToNetwork(object :
-                                    NetworkCallbackListener {
-                                    override fun onSuccess() {
-                                        formPictureScreenViewModel.callWorkFlowAPI(
-                                            formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id,
-                                            stepId,
-                                            object :
-                                                NetworkCallbackListener {
-                                                override fun onSuccess() {
-                                                }
+                            formPictureScreenViewModel.uploadFormsCAndD(
+                                context,
+                                (context as MainActivity).isOnline.value
+                            )
 
-                                                override fun onFailed() {
-                                                    NudgeLogger.e("FormPictureScreen","")
-                                                }
-                                            })
-                                    }
 
-                                    override fun onFailed() {
-//                                        showCustomToast(context, SYNC_FAILED)
-                                    }
-                                })*/
-                                formPictureScreenViewModel.uploadFormsCAndD(context)
-
-                            }
                             navController.navigate(
                                 "vo_endorsement_step_completion_screen/${
                                     localContext.getString(R.string.vo_endorsement_completed_message)

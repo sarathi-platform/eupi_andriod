@@ -8,7 +8,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -61,12 +60,14 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                                 isOnline = BaselineCore.isOnline.value
                             )
                         }
-                        Box(modifier = Modifier.constrainAs(mainContent){
-                            top.linkTo(if (mViewModel.isLoggedIn()) networkBanner.bottom else parent.top)
-                            start.linkTo(parent.start)
-                            bottom.linkTo(parent.bottom)
-                            height = Dimension.fillToConstraints
-                        }.fillMaxSize()) {
+                        Box(modifier = Modifier
+                            .constrainAs(mainContent) {
+                                top.linkTo(if (mViewModel.isLoggedIn()) networkBanner.bottom else parent.top)
+                                start.linkTo(parent.start)
+                                bottom.linkTo(parent.bottom)
+                                height = Dimension.fillToConstraints
+                            }
+                            .fillMaxSize()) {
                             RootNavigationGraph(navController = rememberNavController(), sharedPrefs)
                         }
                     }

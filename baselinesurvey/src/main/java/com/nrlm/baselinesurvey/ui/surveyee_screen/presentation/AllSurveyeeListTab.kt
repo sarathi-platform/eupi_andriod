@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.THIS_WEEK_TAB
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.MoveSurveyeesUpdateBannerComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
@@ -54,7 +53,6 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
-import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 
@@ -230,6 +228,7 @@ fun AllSurveyeeListTab(
                                 surveyeeStateList = surveyeeListWithTolaFilter[key] ?: emptyList(),
                                 showCheckBox = !isSelectionEnabled.value,
                                 fromScreen = ALL_TAB,
+                                primaryButtonText = "Start " + activityName.split(" ")[1],
                                 buttonClicked = { buttonName, surveyeeId ->
                                     handleButtonClick(
                                         buttonName,

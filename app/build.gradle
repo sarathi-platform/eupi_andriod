@@ -9,8 +9,8 @@ plugins {
     id 'com.google.firebase.crashlytics'
 
 }
-def version = "0.1.44"
-def prodVersion = "1.0.5"
+def version = "0.1.60"
+def prodVersion = "1.1.2"
 android {
     compileSdk 34
 
@@ -18,7 +18,7 @@ android {
         applicationId "com.nrlm.sarathi"
         minSdk 23
         targetSdk 33
-        versionCode 4
+        versionCode 6
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -145,6 +145,8 @@ dependencies {
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
     implementation "androidx.compose.material:material:1.3.1"
+    implementation 'androidx.hilt:hilt-work:1.0.0'
+    implementation 'com.google.firebase:firebase-config-ktx:21.6.1'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
 
     annotationProcessor "com.github.bumptech.glide:compiler:$glide"
@@ -226,6 +228,8 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:32.1.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-config-ktx:21.6.1'
+
 
     //SMS Read
     implementation "com.google.android.gms:play-services-auth:19.0.0"
@@ -269,5 +273,11 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage:20.3.0'
     implementation (project(":syncManager"))
     implementation (project(":core"))
+    implementation(project(":internetSpeedChecker"))
+    implementation(project(":CommunicationModule"))
+    implementation 'androidx.work:work-runtime-ktx:2.7.1'
+    kapt("androidx.hilt:hilt-compiler:1.0.0")
 
+    //FCM
+    implementation 'com.google.firebase:firebase-messaging:23.4.0'
 }

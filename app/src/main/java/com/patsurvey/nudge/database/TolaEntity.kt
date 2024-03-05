@@ -7,7 +7,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.model.response.GetCohortResponseModel
 import com.patsurvey.nudge.utils.CohortType
 import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
@@ -111,7 +110,7 @@ data class TolaEntity(
                 localCreatedDate = System.currentTimeMillis(),
                 localModifiedDate = System.currentTimeMillis(),
                 transactionId = "",
-                localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
+                localUniqueId = getUniqueIdForEntity()
             )
         }
 
@@ -135,4 +134,8 @@ data class TolaEntity(
     fun getUpdatedTola(tolaEntity: TolaEntity): TolaEntity {
         return TolaEntity(id, localUniqueId, tolaEntity.id, tolaEntity.name, type, tolaEntity.latitude, tolaEntity.longitude, villageId, status, createdDate, modifiedDate, localCreatedDate, localModifiedDate, needsToPost, transactionId)
     }
+}
+
+fun TolaEntity.getTolaId(): Int {
+    return if (this.serverId != 0) this.serverId else this.id
 }

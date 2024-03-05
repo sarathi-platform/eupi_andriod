@@ -13,7 +13,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 class CheckDBStatus(val viewModel: BaseViewModel) {
 
@@ -47,9 +46,11 @@ class CheckDBStatus(val viewModel: BaseViewModel) {
             if(didiDao.fetchAllDidiNeedToPost(true,"", 0).isEmpty()
                 && didiDao.fetchPendingDidi(true,"").isEmpty()
                 && didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, true, "", 0).isEmpty()
-                && didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal,"",0).isEmpty()
-                && didiDao.fetchAllDidiNeedToUpdate(true,"",0).isEmpty()
-                && didiDao.fetchAllPendingDidiNeedToUpdate(true,"",0).isEmpty()) {
+                && didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, "")
+                    .isEmpty()
+                && didiDao.fetchAllDidiNeedToUpdate(true, "").isEmpty()
+                && didiDao.fetchAllPendingDidiNeedToUpdate(true, "").isEmpty()
+            ) {
                 NudgeLogger.d("CheckDBStatus", "isSecondStepNeedToBeSync -> isNeedToBeSync.value = 2")
                 withContext(Dispatchers.Main) {
                     onResult(2)
@@ -64,7 +65,7 @@ class CheckDBStatus(val viewModel: BaseViewModel) {
 
     fun isThirdStepNeedToBeSync(didiDao : DidiDao, onResult:(Int)->Unit){
         viewModel.job = CoroutineScope(Dispatchers.IO + viewModel.exceptionHandler).launch {
-            if (didiDao.getAllNeedToPostDidiRanking(true, 0).isEmpty()
+            if (didiDao.getAllNeedToPostDidiRanking(true).isEmpty()
                 && didiDao.fetchPendingWealthStatusDidi(true, "").isEmpty()
             ) {
                 NudgeLogger.d("CheckDBStatus", "isThirdStepNeedToBeSync -> isNeedToBeSync.value = 2")

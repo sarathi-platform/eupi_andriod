@@ -337,6 +337,12 @@ fun PatSurveyCompleteSummary(
             positiveButtonText = stringResource(id = R.string.done_text),
             negativeButtonRequired = false,
             positiveButtonOnClick = {
+
+                if (fromScreen != ARG_FROM_PAT_SUMMARY_SCREEN) {
+                    patSectionSummaryViewModel.savePATEvent()
+
+                }
+
                 if(patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()){
                     if (fromScreen == ARG_FROM_PAT_SUMMARY_SCREEN)
                         navController.popBackStack()

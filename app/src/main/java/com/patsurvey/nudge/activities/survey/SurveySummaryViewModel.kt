@@ -4,15 +4,18 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
 import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
-import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
@@ -23,7 +26,36 @@ import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.model.request.PATSummarySaveRequest
 import com.patsurvey.nudge.model.request.SaveMatchSummaryRequest
 import com.patsurvey.nudge.model.response.OptionsItem
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.AbleBodiedFlag
+import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
+import com.patsurvey.nudge.utils.COMPLETED_STRING
+import com.patsurvey.nudge.utils.DIDI_NOT_AVAILABLE
+import com.patsurvey.nudge.utils.DIDI_REJECTED
+import com.patsurvey.nudge.utils.ExclusionType
+import com.patsurvey.nudge.utils.FLAG_RATIO
+import com.patsurvey.nudge.utils.FLAG_WEIGHT
+import com.patsurvey.nudge.utils.LOW_SCORE
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PAT_SURVEY
+import com.patsurvey.nudge.utils.PREF_BPC_PAT_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
+import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.SHGFlag
+import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.USER_BPC
+import com.patsurvey.nudge.utils.USER_CRP
+import com.patsurvey.nudge.utils.VERIFIED_STRING
+import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.calculateScore
+import com.patsurvey.nudge.utils.longToString
+import com.patsurvey.nudge.utils.toWeightageRatio
+import com.patsurvey.nudge.utils.updateLastSyncTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +65,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
+import java.util.Timer
+import java.util.TimerTask
 import javax.inject.Inject
 
 @HiltViewModel
@@ -77,6 +111,8 @@ class SurveySummaryViewModel @Inject constructor(
 
         }
     }
+
+    fun getSelectedVillage() = repository.getSelectedVillage()
 
     private fun setVillage(villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch{
@@ -129,6 +165,9 @@ class SurveySummaryViewModel @Inject constructor(
 
     @SuppressLint("SuspiciousIndentation")
     fun savePATSummeryToServer(networkCallbackListener: NetworkCallbackListener){
+        if (!isSyncEnabled(prefRepo = repository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             try {
                 var didiIDList = emptyList<PATDidiStatusModel>()
@@ -157,6 +196,7 @@ class SurveySummaryViewModel @Inject constructor(
                         calculateDidiScore(didiId = didi.id)
                         delay(100)
                         didi.score = repository.getDidiScoreFromDb(didi.id)
+                        val didiEntity = repository.getDidiFromDB(didi.id)
                         var qList: ArrayList<AnswerDetailDTOListItem> = arrayListOf()
                         val needToPostQuestionsList = repository.getAllNeedToPostQuesForDidi(didi.id)
                         if (needToPostQuestionsList.isNotEmpty()) {
@@ -246,7 +286,7 @@ class SurveySummaryViewModel @Inject constructor(
                             }
                         scoreDidiList.add(
                             EditDidiWealthRankingRequest(
-                                id = if (didi.serverId == 0) didi.id else didi.serverId,
+                                id = didi.serverId,
                                 score = didi.score,
                                 comment = comment,
                                 type = if (repository.prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
@@ -264,14 +304,22 @@ class SurveySummaryViewModel @Inject constructor(
                                 },
                                 rankingEdit = false,
                                 shgFlag = SHGFlag.fromInt(didi.shgFlag).name,
-                                ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name
+                                ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name,
+                                name = didi.name,
+                                address = didiEntity.address,
+                                guardianName = didiEntity.guardianName,
+                                villageId = didi.villageId,
+                                deviceId = didiEntity.localUniqueId
                             )
                         )
                         answeredDidiList.add(
                             PATSummarySaveRequest(
                                 villageId = repository.prefRepo.getSelectedVillage().id,
                                 surveyId = surveyId,
-                                beneficiaryId = if (didi.serverId == 0) didi.id else didi.serverId,
+                                beneficiaryId = didi.serverId,
+                                cohortName = didiEntity.cohortName,
+                                beneficiaryAddress = didiEntity.address,
+                                guardianName = didiEntity.guardianName,
                                 languageId = repository.prefRepo.getAppLanguageId() ?: 2,
                                 stateId = repository.prefRepo.getSelectedVillage().stateId,
                                 totalScore = didi.score,
@@ -363,6 +411,9 @@ class SurveySummaryViewModel @Inject constructor(
     }
 
     fun callWorkFlowAPI(villageId: Int,stepId: Int, networkCallbackListener: NetworkCallbackListener){
+        if (!isSyncEnabled(prefRepo = repository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> called")
             try {
@@ -376,9 +427,19 @@ class SurveySummaryViewModel @Inject constructor(
                             if (!repository.prefRepo.isUserBPC()) stepList[stepList.map { it.orderNumber }
                                 .indexOf(4)].workFlowId else stepList[stepList.map { it.orderNumber }
                                 .indexOf(6)].workFlowId, StepStatus.COMPLETED.name,
-                            longToString(repository.prefRepo.getPref(PREF_PAT_COMPLETION_DATE_+repository.prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
+                            longToString(
+                                repository.prefRepo.getPref(
+                                    PREF_PAT_COMPLETION_DATE_ + repository.prefRepo.getSelectedVillage().id,
+                                    System.currentTimeMillis()
+                                )
+                            ),
+                            villageId = villageId,
+                            programsProcessId = if (!repository.prefRepo.isUserBPC()) stepList[stepList.map { it.orderNumber }
+                                .indexOf(4)].id else stepList[stepList.map { it.orderNumber }
+                                .indexOf(6)].id
 
-                        ))
+                        )
+                        )
                     NudgeLogger.d(
                         "SurveySummaryViewModel",
                         "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest"
@@ -438,7 +499,10 @@ class SurveySummaryViewModel @Inject constructor(
                                 val inProgressStepRequest = listOf(
                                     EditWorkFlowRequest(
                                         step.workFlowId,
-                                        StepStatus.INPROGRESS.name
+                                        StepStatus.INPROGRESS.name,
+                                        villageId = step.villageId,
+                                        programsProcessId = step.id
+
                                     )
                                 )
                                 NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> inProgressStepRequest = $inProgressStepRequest")
@@ -497,7 +561,12 @@ class SurveySummaryViewModel @Inject constructor(
                 }
             }
             updatedCompletedStepsList.add(stepId)
-            repository.markStepComplete(villageId = villageId, stepId = stepId,updatedCompletedStepsList)
+            repository.markStepComplete(
+                villageId = villageId,
+                stepId = stepId,
+                updatedCompletedStepsList
+            )
+            updateWorkflowStatus(StepStatus.COMPLETED, villageId = villageId, stepId)
 
         }
     }
@@ -510,6 +579,7 @@ class SurveySummaryViewModel @Inject constructor(
                 isComplete = StepStatus.COMPLETED.ordinal,
                 villageId = villageId
             )
+            updateWorkflowStatus(StepStatus.COMPLETED, villageId = villageId, bpcStepId)
         }
     }
 
@@ -586,7 +656,11 @@ class SurveySummaryViewModel @Inject constructor(
     }
 
     fun updateBpcPatStatusToNetwork(networkCallbackListener: NetworkCallbackListener) {
+        if (!isSyncEnabled(prefRepo = repository.prefRepo)) {
+            return
+        }
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
             val needToPostPatdidi =
                 repository.getAllNeedToPostPATDidi(true)
             val passingScore = repository.getPassingScore()
@@ -605,7 +679,12 @@ class SurveySummaryViewModel @Inject constructor(
                                             comment = if ((didi.score
                                                     ?: 0.0) < passingScore
                                             ) LOW_SCORE else "",
-                                            localModifiedDate = System.currentTimeMillis()
+                                            localModifiedDate = System.currentTimeMillis(),
+                                            name = didi.name,
+                                            address = didi.address,
+                                            guardianName = didi.guardianName,
+                                            villageId = didi.villageId,
+                                            deviceId = didi.localUniqueId
                                         )
                                     )
                                 )
@@ -635,7 +714,12 @@ class SurveySummaryViewModel @Inject constructor(
                                                 result = PatSurveyStatus.NOT_AVAILABLE.name,
                                                 score = 0.0,
                                                 comment = TYPE_EXCLUSION,
-                                                localModifiedDate = System.currentTimeMillis()
+                                                localModifiedDate = System.currentTimeMillis(),
+                                                name = didi.name,
+                                                address = didi.address,
+                                                guardianName = didi.guardianName,
+                                                villageId = didi.villageId,
+                                                deviceId = didi.localUniqueId
                                             )
                                         )
                                     )
@@ -660,6 +744,9 @@ class SurveySummaryViewModel @Inject constructor(
     }
 
     fun callWorkFlowAPIForBpc(villageId: Int, stepId: Int, networkCallbackListener: NetworkCallbackListener) {
+        if (!isSyncEnabled(prefRepo = repository.prefRepo)) {
+            return
+        }
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val stepList = repository.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
@@ -667,7 +754,11 @@ class SurveySummaryViewModel @Inject constructor(
                 if(bpcStep.workFlowId>0){
                     val response = repository.editWorkFlow(
                         listOf(
-                            EditWorkFlowRequest(bpcStep.workFlowId, StepStatus.COMPLETED.name)
+                            EditWorkFlowRequest(
+                                bpcStep.workFlowId, StepStatus.COMPLETED.name,
+                                villageId = villageId,
+                                programsProcessId = bpcStep.id
+                            )
                         ) )
                     withContext(Dispatchers.IO){
                         if (response.status.equals(SUCCESS, true)) {
@@ -691,12 +782,35 @@ class SurveySummaryViewModel @Inject constructor(
             }
         }
     }
+
+    fun writeBpcMatchScoreEvent() {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val villageId = repository.prefRepo.getSelectedVillage().id
+            val passingScore = repository.getPassingScore()
+            val bpcStep =
+                repository.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }.last()
+
+            repository.writeBpcMatchScoreEvent(villageId, passingScore, bpcStep, didiList.value)
+        }
+    }
     fun sendBpcMatchScore(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val villageId = repository.prefRepo.getSelectedVillage().id
                 val passingScore = repository.getPassingScore()
                 val bpcStep = repository.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }.last()
+
+                insertBpcMatchScoreEvent(villageId, passingScore, bpcStep, didiList.value)
+
+
+                if (isSyncEnabled(prefRepo = repository.prefRepo)) {
+                    repository.writeBpcMatchScoreEvent(
+                        villageId,
+                        passingScore,
+                        bpcStep,
+                        didiList.value
+                    )
+
                 val matchPercentage = calculateMatchPercentage(didiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }, passingScore)
                 val saveMatchSummaryRequest = SaveMatchSummaryRequest(
                     programId = bpcStep.programId,
@@ -716,6 +830,7 @@ class SurveySummaryViewModel @Inject constructor(
                 }
                 if(!saveMatchSummaryResponse.lastSyncTime.isNullOrEmpty()){
                     updateLastSyncTime(repository.prefRepo,saveMatchSummaryResponse.lastSyncTime)
+                }
                 }
             } catch (ex: Exception){
                 repository.prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + repository.prefRepo.getSelectedVillage().id, false)
@@ -892,5 +1007,75 @@ class SurveySummaryViewModel @Inject constructor(
             repository.updateNeedsToPostBPCProcessStatus(status, didiId)
         }
     }
+
+    private suspend fun insertBpcMatchScoreEvent(
+        villageId: Int,
+        passingScore: Int,
+        bpcStep: StepListEntity,
+        didiList: List<DidiEntity>
+    ) {
+        val eventItem = SaveMatchSummaryRequest.getSaveMatchSummaryRequestForBpc(
+            villageId = villageId,
+            stepListEntity = bpcStep,
+            didiList = didiList,
+            questionPassionScore = passingScore
+        )
+
+        repository.saveEvent(eventItem, EventName.SAVE_BPC_MATCH_SCORE, EventType.STATEFUL)
+
+    }
+
+    fun saveWorkflowEventIntoDb(stepStatus: StepStatus, villageId: Int, stepId: Int) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepEntity =
+                repository.getStepForVillage(villageId = villageId, stepId = stepId)
+            val updateWorkflowEvent = repository.createWorkflowEvent(
+                eventItem = stepEntity,
+                stepStatus = stepStatus,
+                eventName = EventName.WORKFLOW_STATUS_UPDATE,
+                eventType = EventType.STATEFUL,
+                prefRepo = repository.prefRepo
+            )
+            updateWorkflowEvent?.let { event ->
+                repository.insertEventIntoDb(event, emptyList())
+            }
+        }
+    }
+
+    override suspend fun updateWorkflowStatus(stepStatus: StepStatus, villageId: Int, stepId: Int) {
+        val stepEntity =
+            repository.getStepForVillage(villageId = villageId, stepId = stepId)
+        val updateWorkflowEvent = repository.createWorkflowEvent(
+            eventItem = stepEntity,
+            stepStatus = stepStatus,
+            eventName = EventName.WORKFLOW_STATUS_UPDATE,
+            eventType = EventType.STATEFUL,
+            prefRepo = repository.prefRepo
+        )
+        updateWorkflowEvent?.let { event ->
+            repository.saveEventToMultipleSources(event, listOf())
+        }
+    }
+
+    override fun addRankingFlagEditEvent(isUserBpc: Boolean, stepId: Int) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            val stepEntity =
+                repository.getStepForVillage(
+                    villageId = repository.prefRepo.getSelectedVillage().id,
+                    stepId = stepId
+                )
+
+            val addRankingFlagEditEvent = repository.createRankingFlagEditEvent(
+                stepEntity,
+                villageId = repository.prefRepo.getSelectedVillage().id,
+                stepType = if (isUserBpc) BPC_SURVEY_CONSTANT else PAT_SURVEY,
+                repository.prefRepo.getMobileNumber() ?: BLANK_STRING,
+                repository.prefRepo.getUserId()
+            )
+
+            repository.saveEventToMultipleSources(addRankingFlagEditEvent, listOf())
+        }
+    }
+
 
 }

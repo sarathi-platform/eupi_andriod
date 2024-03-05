@@ -21,7 +21,6 @@ import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import java.sql.RowId
 import java.util.Collections
 import javax.inject.Inject
 
@@ -39,6 +38,8 @@ class FormPictureScreenRepository @Inject constructor(
     fun getVillage(villageId: Int):VillageEntity{
        return villageListDao.getVillage(villageId)
     }
+
+    fun getSelectedVillage() = prefRepo.getSelectedVillage()
 
     fun markVOEndorsementStatusComplete(
         villageId: Int,

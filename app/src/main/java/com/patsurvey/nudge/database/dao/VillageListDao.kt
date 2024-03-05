@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.utils.VILLAGE_TABLE_NAME
 
@@ -44,6 +43,6 @@ interface VillageListDao {
     fun updateStepAndStatusId(villageId: Int, stepId: Int,statusId:Int)
 
     @Query("UPDATE $VILLAGE_TABLE_NAME SET isDataLoadTriedOnce=:isDataLoadTriedOnce where id = :villageId")
-    fun updateVillageDataLoadStatus(villageId: Int, isDataLoadTriedOnce: Boolean)
+    fun updateVillageDataLoadStatus(villageId: Int, isDataLoadTriedOnce: Int)
 
 }

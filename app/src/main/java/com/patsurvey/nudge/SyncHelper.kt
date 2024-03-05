@@ -8,7 +8,7 @@ import androidx.compose.runtime.MutableState
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.json
 import com.patsurvey.nudge.activities.settings.SettingViewModel
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -78,7 +78,6 @@ import com.patsurvey.nudge.utils.calculateScore
 import com.patsurvey.nudge.utils.compressImage
 import com.patsurvey.nudge.utils.findImageLocationFromPath
 import com.patsurvey.nudge.utils.getFileNameFromURL
-import com.patsurvey.nudge.utils.json
 import com.patsurvey.nudge.utils.longToString
 import com.patsurvey.nudge.utils.toWeightageRatio
 import com.patsurvey.nudge.utils.updateLastSyncTime
@@ -121,7 +120,7 @@ class SyncHelper (
         addTolasToNetwork(networkCallbackListener)
     }
 
-    private fun startSyncTimer(networkCallbackListener: NetworkCallbackListener){
+    fun startSyncTimer(networkCallbackListener: NetworkCallbackListener) {
         val timer = Timer()
         timer.schedule(object : TimerTask(){
             override fun run() {
@@ -198,7 +197,10 @@ class SyncHelper (
 
     fun checkDeleteDidiStatus(networkCallbackListener : NetworkCallbackListener){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal,"",0)
+            val didiList = didiDao.fetchAllPendingDidiNeedToDelete(
+                DidiStatus.DIID_DELETED.ordinal,
+                ""
+            )
             if(didiList.isNotEmpty()) {
                 val ids: ArrayList<String> = arrayListOf()
                 didiList.forEach { didi ->
@@ -379,7 +381,7 @@ class SyncHelper (
 
     private fun checkUpdateDidiStatus(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllPendingDidiNeedToUpdate(true,"",0)
+            val didiList = didiDao.fetchAllPendingDidiNeedToUpdate(true, "")
             if(didiList.isNotEmpty()) {
                 val ids: ArrayList<String> = arrayListOf()
                 didiList.forEach { tola ->
@@ -829,8 +831,11 @@ class SyncHelper (
                         jsonTola.add(
                             DeleteTolaRequest(
                                 tola.serverId,
-                                localModifiedDate = System.currentTimeMillis()
-                            ).toJson()
+                                localModifiedDate = System.currentTimeMillis(),
+                                tola.name,
+                                tola.villageId,
+                                tola.localUniqueId ?: ""
+                            ).json()
                         )
                     }
                 }
@@ -958,11 +963,22 @@ class SyncHelper (
                 delay(1000)
                 settingViewModel.syncPercentage.value = 0.34f
             }
-            val didiList = didiDao.fetchAllDidiNeedToUpdate(true,"",0)
+            val didiList = didiDao.fetchAllDidiNeedToUpdate(true, "")
             if (didiList.isNotEmpty()) {
                 val didiRequestList = arrayListOf<EditDidiRequest>()
                 didiList.forEach { didi->
-                    didiRequestList.add(EditDidiRequest(didi.serverId,didi.name,didi.address,didi.guardianName,didi.castId,didi.cohortId))
+                    didiRequestList.add(
+                        EditDidiRequest(
+                            didi.serverId,
+                            didi.name,
+                            didi.address,
+                            didi.guardianName,
+                            didi.castId,
+                            didi.cohortId,
+                            didi.villageId,
+                            didi.cohortName
+                        )
+                    )
                 }
                 NudgeLogger.d("SyncHelper","updateDidiToNetwork updateDidis Request=> ${didiRequestList.json()}")
                 val response = apiService.updateDidis(didiRequestList)
@@ -1070,8 +1086,7 @@ class SyncHelper (
             val didiList = didiDao.getDidisToBeDeleted(
                 activeStatus = DidiStatus.DIID_DELETED.ordinal,
                 needsToPostDeleteStatus = true,
-                transactionId = "",
-                serverId = 0
+                transactionId = ""
             )
             val jsonDidi = JsonArray()
             if (didiList.isNotEmpty()) {
@@ -1134,17 +1149,52 @@ class SyncHelper (
             }
             try {
                 withContext(Dispatchers.IO){
-                    val needToPostDidiList=didiDao.getAllNeedToPostDidiRanking(true, 0)
+                    val needToPostDidiList = didiDao.getAllNeedToPostDidiRanking(true)
                     if (needToPostDidiList.isNotEmpty()) {
                         val didiWealthRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         val didiStepRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi ->
-                            didiWealthRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, rankingEdit = didi.rankingEdit, localModifiedDate = System.currentTimeMillis()))
-                            didiStepRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, rankingEdit = didi.rankingEdit, localModifiedDate = System.currentTimeMillis()))
+                            didiWealthRequestList.add(
+                                EditDidiWealthRankingRequest(
+                                    didi.serverId,
+                                    StepType.WEALTH_RANKING.name,
+                                    didi.wealth_ranking,
+                                    rankingEdit = didi.rankingEdit,
+                                    localModifiedDate = System.currentTimeMillis(),
+                                    name = didi.name,
+                                    address = didi.address,
+                                    guardianName = didi.guardianName,
+                                    villageId = didi.villageId,
+                                    deviceId = didi.localUniqueId
+                                )
+                            )
+                            didiStepRequestList.add(
+                                EditDidiWealthRankingRequest(
+                                    didi.serverId,
+                                    StepType.SOCIAL_MAPPING.name,
+                                    StepStatus.COMPLETED.name,
+                                    rankingEdit = didi.rankingEdit,
+                                    localModifiedDate = System.currentTimeMillis(),
+                                    name = didi.name,
+                                    address = didi.address,
+                                    guardianName = didi.guardianName,
+                                    villageId = didi.villageId,
+                                    deviceId = didi.localUniqueId
+                                )
+                            )
                         }
                         didiWealthRequestList.addAll(didiStepRequestList)
+                        NudgeLogger.d(
+                            "SyncHelper",
+                            "updateWealthRankingToNetwork updateDidiRanking Request=> ${
+                                Gson().toJson(didiWealthRequestList)
+                            }"
+                        )
                         val updateWealthRankResponse = apiService.updateDidiRanking(didiWealthRequestList)
-                        NudgeLogger.d("SyncHelper","updateWealthRankingToNetwork updateDidiRanking Request=> ${Gson().toJson(didiWealthRequestList)}")
+                        NudgeLogger.d(
+                            "SyncHelper",
+                            "updateWealthRankingToNetwork updateDidiRanking updateWealthRankResponse=> ${updateWealthRankResponse.json()}"
+                        )
                         if(updateWealthRankResponse.status.equals(SUCCESS,true)){
                             val didiListResponse = updateWealthRankResponse.data
                             if(!didiListResponse?.get(0)?.transactionId.isNullOrEmpty()){
@@ -1218,6 +1268,7 @@ class SyncHelper (
                     didiIDList.forEachIndexed { index, didi ->
                         NudgeLogger.d("SyncHelper", "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
                         calculateDidiScore(didiId = didi.id)
+                        val didiEntity = didiDao.getDidi(didi.id)
                         delay(100)
                         didi.score = didiDao.getDidiScoreFromDb(didi.id)
                         val qList: java.util.ArrayList<AnswerDetailDTOListItem> = arrayListOf()
@@ -1308,7 +1359,7 @@ class SyncHelper (
                             }
                         scoreDidiList.add(
                             EditDidiWealthRankingRequest(
-                                id = if (didi.serverId == 0) didi.id else didi.serverId,
+                                id = didi.serverId,
                                 score = didi.score,
                                 comment = comment,
                                 type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
@@ -1326,13 +1377,21 @@ class SyncHelper (
                                 },
                                 rankingEdit = didi.patEdit,
                                 shgFlag = SHGFlag.fromInt(didi.shgFlag).name,
-                                ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name
+                                ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name,
+                                name = didi.name,
+                                address = didiEntity.address,
+                                guardianName = didiEntity.guardianName,
+                                villageId = didi.villageId,
+                                deviceId = didiEntity.localUniqueId
                             )
                         )
                         val stateId = villegeListDao.getVillage(didi.villageId).stateId
                         val patSummarySaveRequest = PATSummarySaveRequest(
                             villageId = didi.villageId,
                             surveyId = surveyId,
+                            cohortName = didiEntity.cohortName,
+                            beneficiaryAddress = didiEntity.address,
+                            guardianName = didiEntity.guardianName,
                             beneficiaryId = didi.serverId,
                             languageId = prefRepo.getAppLanguageId() ?: 2,
                             stateId = stateId,
@@ -1348,7 +1407,7 @@ class SyncHelper (
                         )
                         NudgeLogger.d(
                             "SyncHelper",
-                            "savePATSummeryToServer patSummarySaveRequest: $patSummarySaveRequest"
+                            "savePATSummeryToServer patSummarySaveRequest: ${patSummarySaveRequest.json()}"
                         )
 
                         answeredDidiList.add(
@@ -1423,7 +1482,11 @@ class SyncHelper (
         if(scoreDidiList.isNotEmpty()) {
             job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
                 NudgeLogger.d("SyncHelper","savePatScoreToServer updateDidiScore Request=> ${scoreDidiList.json()}")
-                apiService.updateDidiScore(scoreDidiList)
+                val updateDidiScoreResponse = apiService.updateDidiScore(scoreDidiList)
+                NudgeLogger.d(
+                    "SyncHelper",
+                    "savePatScoreToServer updateDidiScore updateDidiScoreResponse=> ${updateDidiScoreResponse.json()}"
+                )
             }
         }
     }
@@ -1439,22 +1502,48 @@ class SyncHelper (
                     settingViewModel.syncPercentage.value = 0.8f
                 }
                 withContext(Dispatchers.IO){
-                    val needToPostDidiList=didiDao.fetchAllVONeedToPostStatusDidi(needsToPostVo = true, transactionId = "", 0)
+                    val needToPostDidiList = didiDao.fetchAllVONeedToPostStatusDidi(
+                        needsToPostVo = true,
+                        transactionId = ""
+                    )
                     if(needToPostDidiList.isNotEmpty()){
                         val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi->
                             didi.voEndorsementStatus.let {
                                 if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
                                     didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, ACCEPTED,
-                                        localModifiedDate = System.currentTimeMillis(), rankingEdit = didi.voEndorsementEdit))
+                                        localModifiedDate = System.currentTimeMillis(),
+                                        rankingEdit = didi.voEndorsementEdit,
+                                        name = didi.name,
+                                        address = didi.address,
+                                        guardianName = didi.guardianName,
+                                        villageId = didi.villageId,
+                                        deviceId = didi.localUniqueId
+                                    )
+                                    )
                                 } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
                                     didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, DidiEndorsementStatus.REJECTED.name,
-                                        localModifiedDate = System.currentTimeMillis(), rankingEdit = didi.voEndorsementEdit))
+                                        localModifiedDate = System.currentTimeMillis(),
+                                        rankingEdit = didi.voEndorsementEdit,
+                                        name = didi.name,
+                                        address = didi.address,
+                                        guardianName = didi.guardianName,
+                                        villageId = didi.villageId,
+                                        deviceId = didi.localUniqueId
+                                    )
+                                    )
                                 }
                             }
                         }
+                        NudgeLogger.d(
+                            "SyncHelper",
+                            "updateVoStatusToNetwork Request=> ${Gson().toJson(didiRequestList)}"
+                        )
                         val updateWealthRankResponse=apiService.updateDidiRanking(didiRequestList)
-                        NudgeLogger.d("SyncHelper","updateVoStatusToNetwork updateDidiRanking Request=> ${Gson().toJson(didiRequestList)}")
+                        NudgeLogger.d(
+                            "SyncHelper",
+                            "updateVoStatusToNetwork updateWealthRankResponse=> ${updateWealthRankResponse.json()}"
+                        )
                         if(updateWealthRankResponse.status.equals(SUCCESS,true)){
                             val didiListResponse = updateWealthRankResponse.data
                             if (didiListResponse?.get(0)?.transactionId != null) {
@@ -1545,12 +1634,19 @@ class SyncHelper (
     fun getStepThreeDataSizeInSync(stepOneMutableString : MutableState<String>){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             var sizeToBeShown = ""
-            val didiWealthList = didiDao.getAllNeedToPostDidiRanking(true, 0)
+            val didiWealthList = didiDao.getAllNeedToPostDidiRanking(true)
             if (didiWealthList.isNotEmpty()) {
                 val jsonDidi = JsonArray()
                 for (didi in didiWealthList) {
                     jsonDidi.add(EditDidiWealthRankingRequest(didi.id, StepType.WEALTH_RANKING.name,didi.wealth_ranking,
-                        localModifiedDate = System.currentTimeMillis()).toJson())
+                        localModifiedDate = System.currentTimeMillis(),
+                        name = didi.name,
+                        address = didi.address,
+                        guardianName = didi.guardianName,
+                        villageId = didi.villageId,
+                        deviceId = didi.localUniqueId
+                    ).toJson()
+                    )
                 }
                 sizeToBeShown = getSizeToBeShown(jsonDidi.toString().toByteArray().size)
                 Log.e("num of step 3", "$didiWealthList.size")
@@ -1609,7 +1705,9 @@ class SyncHelper (
                     if (step.workFlowId > 0) {
                         editWorkFlowRequest.add((EditWorkFlowRequest(
                             step.workFlowId,
-                            StepStatus.getStepFromOrdinal(step.isComplete)
+                            StepStatus.getStepFromOrdinal(step.isComplete),
+                            villageId = step.villageId,
+                            programsProcessId = step.id
                         )))
                         needToEditStep.add(step)
                     } else {
@@ -1709,7 +1807,9 @@ class SyncHelper (
                         EditWorkFlowRequest(
                             step.workFlowId,
                             StepStatus.getStepFromOrdinal(step.isComplete),
-                            stepCompletionDate
+                            stepCompletionDate,
+                            villageId = step.villageId,
+                            programsProcessId = step.id
                         )
                     )
                 }

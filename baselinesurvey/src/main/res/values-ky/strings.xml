@@ -447,4 +447,6 @@
     <string name="to_the_nearest_bank_comparsion">Ganani Banko</string>
     <string name="to_the_replacement_string">"Ganani "</string>
     <string name="average_travel_cost_comparision">"Bebaktwi beraimung rang baima"</string>
+    <string name="questions_data_tab_title">Questions Data</string>
+    <string name="section_information_tab_title">Section Information</string>
 </resources>

@@ -2,6 +2,20 @@ package com.patsurvey.nudge.activities
 
 import com.google.gson.Gson
 import com.google.gson.JsonArray
+import com.nudge.core.EventSyncStatus
+import com.nudge.core.SELECTION_MISSION
+import com.nudge.core.database.entities.EventDependencyEntity
+import com.nudge.core.database.entities.Events
+import com.nudge.core.database.entities.getDependentEventsId
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
+import com.nudge.core.enums.getDependsOnEventNameForEvent
+import com.nudge.core.getEventDependencyEntityListFromEvents
+import com.nudge.core.getSizeInLong
+import com.nudge.core.json
+import com.nudge.core.model.MetadataDto
+import com.nudge.core.model.getMetaDataDtoFromString
+import com.nudge.core.toDate
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponse
 import com.patsurvey.nudge.base.BaseRepository
@@ -17,19 +31,25 @@ import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.CasteListDao
-import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
+import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
+import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
+import com.patsurvey.nudge.model.request.getAddDidiRequestPayloadFromString
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.DidiApiResponse
 import com.patsurvey.nudge.model.response.WorkFlowResponse
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.getParentEntityMapForEvent
+import com.patsurvey.nudge.utils.getPatScoreSaveEvent
+import com.patsurvey.nudge.utils.getPatSummarySaveEventPayload
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import javax.inject.Inject
 
@@ -42,7 +62,8 @@ class AddDidiRepository @Inject constructor(
     val villageListDao: VillageListDao,
     val lastSelectedTolaDao: LastSelectedTolaDao,
     val questionListDao: QuestionListDao,
-    val answerDao: AnswerDao
+    val answerDao: AnswerDao,
+    val numericAnswerDao: NumericAnswerDao,
 ) : BaseRepository() {
     fun getSelectedVillage(): VillageEntity {
         return this.prefRepo.getSelectedVillage()
@@ -131,6 +152,274 @@ class AddDidiRepository @Inject constructor(
         return this.didiDao.getDidiExist(name, address, guardianName, tolaId, villageId)
     }
 
+    override suspend fun <T> saveEvent(
+        eventItem: T,
+        eventName: EventName,
+        eventType: EventType
+    ) {
+        val event = this.createEvent(
+            eventItem,
+            eventName,
+            eventType
+        )
+
+        if (event?.id?.equals(BLANK_STRING) != true) {
+            event?.let {
+                val eventDependencies = this.createEventDependency(eventItem, eventName, it)
+                saveEventToMultipleSources(it, eventDependencies)
+
+            }
+        }
+    }
+
+    override suspend fun <T> createEvent(
+        eventItem: T,
+        eventName: EventName,
+        eventType: EventType
+    ): Events? {
+
+        if (eventType != EventType.STATEFUL)
+            return super.createEvent(eventItem, eventName, eventType)
+
+        if (eventItem !is DidiEntity)
+            return super.createEvent(eventItem, eventName, eventType)
+
+        when (eventName) {
+            EventName.ADD_DIDI -> {
+                val selectedTolaEntity =
+                    fetchSingleTolaFromServerId((eventItem as DidiEntity).cohortId)
+                val requestPayload = AddDidiRequest.getRequestObjectForDidi(
+                    eventItem as DidiEntity,
+                    selectedTolaEntity?.serverId,
+                    selectedTolaEntity?.localUniqueId
+                ).json()
+
+                var addDidiEvent = Events(
+                    name = eventName.name,
+                    type = eventName.topicName,
+                    createdBy = prefRepo.getUserId(),
+                    mobile_number = prefRepo.getMobileNumber(),
+                    request_payload = requestPayload,
+                    status = EventSyncStatus.OPEN.name,
+                    modified_date = System.currentTimeMillis().toDate(),
+                    result = null,
+                    consumer_status = BLANK_STRING,
+                    payloadLocalId = (eventItem as DidiEntity).localUniqueId,
+                    metadata = MetadataDto(
+                        mission = SELECTION_MISSION,
+                        depends_on = listOf(),
+                        request_payload_size = requestPayload.getSizeInLong(),
+                        parentEntity = getParentEntityMapForEvent(eventItem, eventName)
+                    ).json()
+                )
+                val dependsOn = createEventDependency(eventItem, eventName, addDidiEvent)
+                val metadata = addDidiEvent.metadata?.getMetaDataDtoFromString()
+                val updatedMetaData = metadata?.copy(depends_on = dependsOn.getDependentEventsId())
+                addDidiEvent = addDidiEvent.copy(
+                    metadata = updatedMetaData?.json()
+                )
+
+                return addDidiEvent
+            }
+
+            EventName.UPDATE_DIDI -> {
+                val selectedTolaEntity =
+                    fetchSingleTolaFromServerId((eventItem as DidiEntity).cohortId)
+                val requestPayload = AddDidiRequest.getRequestObjectForDidi(
+                    eventItem as DidiEntity,
+                    selectedTolaEntity?.serverId,
+                    selectedTolaEntity?.localUniqueId
+                ).json()
+
+                var updateDidiEvent = Events(
+                    name = eventName.name,
+                    type = eventName.topicName,
+                    createdBy = prefRepo.getUserId(),
+                    mobile_number = prefRepo.getMobileNumber(),
+                    request_payload = requestPayload,
+                    status = EventSyncStatus.OPEN.name,
+                    modified_date = System.currentTimeMillis().toDate(),
+                    result = null,
+                    consumer_status = BLANK_STRING,
+                    payloadLocalId = (eventItem as DidiEntity).localUniqueId,
+                    metadata = MetadataDto(
+                        mission = SELECTION_MISSION,
+                        depends_on = listOf(),
+                        request_payload_size = requestPayload.getSizeInLong(),
+                        parentEntity = getParentEntityMapForEvent(eventItem, eventName)
+                    ).json()
+                )
+                val dependsOn = createEventDependency(eventItem, eventName, updateDidiEvent)
+                val metadata = updateDidiEvent.metadata?.getMetaDataDtoFromString()
+                val updatedMetaData = metadata?.copy(depends_on = dependsOn.getDependentEventsId())
+                updateDidiEvent = updateDidiEvent.copy(
+                    metadata = updatedMetaData?.json()
+                )
+
+                return updateDidiEvent
+            }
+
+            EventName.DELETE_DIDI -> {
+                val selectedTolaEntity =
+                    fetchSingleTolaFromServerId((eventItem as DidiEntity).cohortId)
+
+                val requestPayload = AddDidiRequest.getRequestObjectForDidi(
+                    eventItem as DidiEntity,
+                    selectedTolaEntity?.serverId,
+                    selectedTolaEntity?.localUniqueId
+                ).json()
+
+                var deleteDidiRequest = Events(
+                    name = eventName.name,
+                    type = eventName.topicName,
+                    createdBy = prefRepo.getUserId(),
+                    mobile_number = prefRepo.getMobileNumber(),
+                    request_payload = requestPayload,
+                    status = EventSyncStatus.OPEN.name,
+                    modified_date = System.currentTimeMillis().toDate(),
+                    result = null,
+                    consumer_status = BLANK_STRING,
+                    payloadLocalId = (eventItem as DidiEntity).localUniqueId,
+                    metadata = MetadataDto(
+                        mission = SELECTION_MISSION,
+                        depends_on = listOf(),
+                        request_payload_size = requestPayload.getSizeInLong(),
+                        parentEntity = getParentEntityMapForEvent(eventItem, eventName)
+                    ).json()
+                )
+                val dependsOn = createEventDependency(eventItem, eventName, deleteDidiRequest)
+                val metadata = deleteDidiRequest.metadata?.getMetaDataDtoFromString()
+                val updatedMetaData = metadata?.copy(depends_on = dependsOn.getDependentEventsId())
+                deleteDidiRequest = deleteDidiRequest.copy(
+                    metadata = updatedMetaData?.json()
+                )
+
+                return deleteDidiRequest
+            }
+
+            EventName.SAVE_PAT_ANSWERS -> {
+                val requestPayload = getPatSummarySaveEventPayload(
+                    didiEntity = (eventItem as DidiEntity),
+                    answerDao = answerDao,
+                    numericAnswerDao = numericAnswerDao,
+                    questionListDao = questionListDao,
+                    prefRepo = prefRepo
+                )
+
+                var savePatSummeryEvent = getPatSaveAnswersEvent(
+                    eventItem = eventItem,
+                    eventName = eventName,
+                    eventType = eventType,
+                    patSummarySaveRequest = requestPayload,
+                    prefRepo = prefRepo
+                )
+
+                val dependsOn = createEventDependency(eventItem, eventName, savePatSummeryEvent)
+                val metadata = savePatSummeryEvent.metadata?.getMetaDataDtoFromString()
+                val updatedMetaData = metadata?.copy(depends_on = dependsOn.getDependentEventsId())
+                savePatSummeryEvent = savePatSummeryEvent.copy(
+                    metadata = updatedMetaData?.json()
+                )
+
+                return savePatSummeryEvent
+            }
+
+            EventName.SAVE_PAT_SCORE -> {
+                val selectedTolaEntity =
+                    fetchSingleTolaFromServerId((eventItem as DidiEntity).cohortId)
+
+                val requestPayload = getPatScoreSaveEvent(
+                    didiEntity = (eventItem as DidiEntity),
+                    questionListDao = questionListDao,
+                    prefRepo = prefRepo,
+                    selectedTolaEntity?.localUniqueId ?: "",
+                    selectedTolaEntity?.serverId ?: 0
+                )
+
+                var savePatScoreEvent = getPatSaveScoreEvent(
+                    eventItem = eventItem,
+                    eventName = eventName,
+                    eventType = eventType,
+                    patScoreSaveEvent = requestPayload,
+                    prefRepo = prefRepo
+                )
+
+                val dependsOn = createEventDependency(eventItem, eventName, savePatScoreEvent)
+                val metadata = savePatScoreEvent.metadata?.getMetaDataDtoFromString()
+                val updatedMetaData = metadata?.copy(depends_on = dependsOn.getDependentEventsId())
+                savePatScoreEvent = savePatScoreEvent.copy(
+                    metadata = updatedMetaData?.json()
+                )
+
+                return savePatScoreEvent
+            }
+
+            else -> {
+                return null
+            }
+        }
+
+    }
+
+    override suspend fun <T> createEventDependency(
+        eventItem: T,
+        eventName: EventName,
+        dependentEvent: Events
+    ): List<EventDependencyEntity> {
+        val eventDependencyList = mutableListOf<EventDependencyEntity>()
+        var filteredList = listOf<Events>()
+        var dependentEventsName = eventName.getDependsOnEventNameForEvent()
+        for (dependsOnEvent in dependentEventsName) {
+            val eventList = eventsDao.getAllEventsForEventName(dependsOnEvent.name)
+            when (eventName) {
+                EventName.ADD_DIDI -> {
+                    filteredList = eventList.filter {
+                        val eventPayload =
+                            dependentEvent.request_payload?.getAddDidiRequestPayloadFromString()
+                        it.payloadLocalId == eventPayload?.cohortDeviceId
+                    }
+                }
+
+                EventName.UPDATE_DIDI -> {
+                    filteredList = eventList.filter {
+                        it.payloadLocalId == dependentEvent.payloadLocalId
+                    }
+
+                }
+
+                EventName.DELETE_DIDI, EventName.SAVE_PAT_ANSWERS, EventName.SAVE_PAT_SCORE -> {
+                    filteredList = eventList.filter {
+                        it.payloadLocalId == dependentEvent.payloadLocalId
+
+                    }
+                }
+
+                else -> {
+                    filteredList = emptyList()
+                }
+            }
+
+            if (filteredList.isNotEmpty()) {
+                break
+            }
+
+        }
+
+
+        if (filteredList.isNotEmpty()) {
+
+            val immediateDependentOn = ArrayList<Events>()
+            immediateDependentOn.add(filteredList.first())
+
+            eventDependencyList.addAll(
+                immediateDependentOn.getEventDependencyEntityListFromEvents(
+                    dependentEvent
+                )
+            )
+        }
+        return eventDependencyList
+    }
+
     fun insertDidi(didi: DidiEntity) {
         this.didiDao.insertDidi(didi)
     }
@@ -209,7 +498,7 @@ class AddDidiRepository @Inject constructor(
         transactionId: String?,
         serverId: Int
     ): List<DidiEntity> {
-        return this.didiDao.fetchAllDidiNeedToUpdate(needsToPost, transactionId, serverId)
+        return this.didiDao.fetchAllDidiNeedToUpdate(needsToPost, transactionId)
     }
 
     fun fetchAllDidiNeedToDelete(status: Int): List<DidiEntity> {
@@ -221,7 +510,7 @@ class AddDidiRepository @Inject constructor(
         transactionId: String?,
         serverId: Int
     ): List<DidiEntity> {
-        return didiDao.fetchAllPendingDidiNeedToUpdate(needsToPost, transactionId, serverId)
+        return didiDao.fetchAllPendingDidiNeedToUpdate(needsToPost, transactionId)
     }
 
     fun fetchAllPendingDidiNeedToDelete(
@@ -229,7 +518,7 @@ class AddDidiRepository @Inject constructor(
         transactionId: String?,
         serverId: Int
     ): List<DidiEntity> {
-        return this.didiDao.fetchAllPendingDidiNeedToDelete(status, transactionId, serverId)
+        return this.didiDao.fetchAllPendingDidiNeedToDelete(status, transactionId)
     }
 
     fun deleteDidi(id: Int) {
@@ -438,7 +727,7 @@ class AddDidiRepository @Inject constructor(
     }
 
     fun getStepForVillage(villageId: Int, stepId: Int): StepListEntity {
-        return this.stepsListDao.getStepForVillage(villageId, stepId)
+        return this.stepsListDao.getStepForVillage(villageId = villageId, stepId = stepId)
     }
 
 

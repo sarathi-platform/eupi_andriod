@@ -79,6 +79,7 @@ fun FormTypeQuestionScreen(
 
     BackHandler {
         BaselineCore.setReferenceId(BLANK_STRING)
+        navController.popBackStack()
     }
 
     Scaffold(

@@ -3,7 +3,6 @@ package com.patsurvey.nudge.activities.ui.bpc.progress_screens
 import android.app.DownloadManager
 import androidx.lifecycle.LiveData
 import com.google.gson.Gson
-import com.google.gson.JsonArray
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.RetryHelper
@@ -20,7 +19,6 @@ import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
-import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.PoorDidiListDao
@@ -34,7 +32,6 @@ import com.patsurvey.nudge.download.FileType
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.model.response.ApiResponseModel
-import com.patsurvey.nudge.model.response.DidiApiResponse
 import com.patsurvey.nudge.model.response.WorkFlowResponse
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.AbleBodiedFlag
@@ -1061,12 +1058,12 @@ class BPCProgressScreenRepository @Inject constructor(
         }
     }
 
-    fun updateVillageDataLoadStatus(villageId: Int, isDataLoadTriedOnce: Boolean) {
+    fun updateVillageDataLoadStatus(villageId: Int, isDataLoadTriedOnce: Int) {
         villageListDao.updateVillageDataLoadStatus(villageId, isDataLoadTriedOnce)
     }
 
     fun isDataLoadTried(villageId: Int): Boolean {
-        return villageListDao.getVillage(villageId).isDataLoadTriedOnce
+        return (villageListDao.getVillage(villageId).isDataLoadTriedOnce == 1)
     }
 
     fun getStepListForVillageLive(): LiveData<List<StepListEntity>> {

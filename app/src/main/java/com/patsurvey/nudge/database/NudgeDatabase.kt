@@ -26,7 +26,6 @@ import com.patsurvey.nudge.database.dao.TrainingVideoDao
 import com.patsurvey.nudge.database.dao.UserDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.VILLAGE_TABLE_NAME
 import java.sql.SQLException
 
 
@@ -64,7 +63,8 @@ abstract class NudgeDatabase : RoomDatabase() {
 
 
         // ADD THIS TYPE OF SQL QUERY FOR TABLE CREATION OR ALTERATION
-        private const val ALTER_VILLAGE_TABLE = "ALTER TABLE $VILLAGE_TABLE_NAME ADD column isDataLoadTriedOnce BOOLEAN SET default FALSE;"
+        private const val ALTER_VILLAGE_TABLE =
+            "ALTER TABLE 'village_table' ADD COLUMN 'isDataLoadTriedOnce' INTEGER DEFAULT 0 NOT NULL"
 
         // CREATE MIGRATION OBJECT FOR MIGRATION 1 to 2.
         val MIGRATION_1_2 = object : Migration(1, 2) {

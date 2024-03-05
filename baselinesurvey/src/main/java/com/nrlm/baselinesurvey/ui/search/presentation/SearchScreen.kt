@@ -33,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -66,7 +65,6 @@ import com.nrlm.baselinesurvey.ui.theme.smallTextStyleWithNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.unselectedTabColor
 import com.nrlm.baselinesurvey.ui.theme.white
-import com.nrlm.baselinesurvey.utils.showCustomToast
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -192,7 +190,9 @@ fun SearchScreens(
                             },
                             text = {
                                 Text(
-                                    text = if (tab == ALL_TAB) stringResource(id = R.string.all_tab_title) else if (tab == QUESTION_DATA_TAB) "Questions Data" else "Section Information",
+                                    text = if (tab == ALL_TAB) stringResource(id = R.string.all_tab_title) else if (tab == QUESTION_DATA_TAB) stringResource(
+                                        R.string.questions_data_tab_title
+                                    ) else stringResource(R.string.section_information_tab_title),
                                     style = if (tabIndex == selectedTabIndex.intValue) smallTextStyle else smallTextStyleWithNormalWeight
                                 )
                             },
@@ -254,7 +254,11 @@ fun SearchScreens(
                            /*showCustomToast(context, "item-> sectionName${item.sectionName}," +
                                     " questionTitle: ${item.questionTitle}")*/
                         })
-                        Spacer(modifier = Modifier.fillMaxWidth().height(dimen_10_dp))
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(dimen_10_dp)
+                        )
                     }
                 }
             }

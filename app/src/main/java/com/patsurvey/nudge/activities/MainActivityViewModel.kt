@@ -47,4 +47,9 @@ class MainActivityViewModel @Inject constructor(
     override fun onServerError(errorModel: ErrorModelWithApi?) {
         TODO("Not yet implemented")
     }
+
+
+    fun saveSyncEnabledFromRemoteConfig(isEnabled: Boolean) {
+        prefRepo.saveIsSyncEnabled(isEnabled)
+    }
 }

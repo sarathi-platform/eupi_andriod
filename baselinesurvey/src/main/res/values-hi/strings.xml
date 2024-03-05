@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="english" translatable="false">English</string>
     <string name="hindi" translatable="false">हिंदी</string>
     <string name="bangla" translatable="false">হিন্দি</string>
@@ -408,4 +408,6 @@
     <string name="to_the_nearest_bank_comparsion">To the nearest bank</string>
     <string name="to_the_replacement_string">""</string>
     <string name="average_travel_cost_comparision">"Average travel cost "</string>
+    <string name="questions_data_tab_title">Questions Data</string>
+    <string name="section_information_tab_title">Section Information</string>
 </resources>
