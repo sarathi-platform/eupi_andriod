@@ -421,5 +421,6 @@
     <string name="logout_confirmation">Are you sure to logout?</string>
     <string name="warning">Warning!</string>
     <string name="data_lost_message">Another user detected if you proceed you will lost previous user\'s data</string>
+    <string name="proceed">Proceed</string>
 
 </resources>

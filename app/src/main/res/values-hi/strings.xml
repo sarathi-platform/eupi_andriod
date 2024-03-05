@@ -389,6 +389,7 @@
     <string name="warning">"चेतावनी! "</string>
     <string name="data_lost_message">किसी अन्य उपयोगकर्ता का पता चला यदि आप आगे बढ़ते हैं तो आप पिछले उपयोगकर्ता का डेटा खो देंगे।</string>
     <string name="logout_confirmation">क्या आप निश्चित रूप से लॉगआउट करेंगे?</string>
+    <string name="proceed">आगे बढ़ें</string>
 
 
 </resources>

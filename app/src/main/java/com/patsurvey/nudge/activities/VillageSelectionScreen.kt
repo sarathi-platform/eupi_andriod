@@ -131,8 +131,8 @@ fun VillageSelectionScreen(
         showCustomDialog(
             title = stringResource(id = R.string.warning),
             message = stringResource(id = R.string.data_lost_message),
-            positiveButtonTitle = stringResource(id = R.string.yes_text),
-            negativeButtonTitle = stringResource(id = R.string.logout),
+            positiveButtonTitle = stringResource(id = R.string.proceed),
+            negativeButtonTitle = stringResource(id = R.string.cancel),
             dismissOnBackPress = false,
             onNegativeButtonClick = {
                 viewModel.showUserChangedDialog.value = false
