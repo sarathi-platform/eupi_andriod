@@ -10,7 +10,7 @@ interface LanguageScreenRepository {
 
     fun getSelectedVillage(): VillageEntity
 
-    suspend fun fetchVillageDetailsForLanguage(villageId: Int, languageId: Int): VillageEntity
+    suspend fun fetchVillageDetailsForLanguage(villageId: Int, languageId: Int):VillageEntity
 
     fun saveSelectedVillage(village: VillageEntity)
 
@@ -18,6 +18,6 @@ interface LanguageScreenRepository {
 
     fun saveSelectedLanguageCode(mainActivity: MainActivity, languageCode: String)
 
-    fun getLanguageScreenOpenFrom(): Boolean
+    fun getLanguageScreenOpenFrom():Boolean
 
 }

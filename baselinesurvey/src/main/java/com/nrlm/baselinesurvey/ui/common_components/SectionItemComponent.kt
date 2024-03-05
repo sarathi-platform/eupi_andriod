@@ -36,8 +36,10 @@ import com.nrlm.baselinesurvey.ui.theme.greenLight
 import com.nrlm.baselinesurvey.ui.theme.greenOnline
 import com.nrlm.baselinesurvey.ui.theme.greyBorder
 import com.nrlm.baselinesurvey.ui.theme.sectionIconCompletedBg
+import com.nrlm.baselinesurvey.ui.theme.sectionIconInProgressBg
 import com.nrlm.baselinesurvey.ui.theme.sectionIconNotStartedBg
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
+import com.nrlm.baselinesurvey.ui.theme.stepBoxActiveColor
 import com.nrlm.baselinesurvey.ui.theme.stepIconCompleted
 import com.nrlm.baselinesurvey.ui.theme.stepIconDisableColor
 import com.nrlm.baselinesurvey.ui.theme.stepIconEnableColor

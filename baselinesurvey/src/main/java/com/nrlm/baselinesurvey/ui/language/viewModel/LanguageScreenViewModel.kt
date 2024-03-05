@@ -73,18 +73,14 @@ class LanguageScreenViewModel @Inject constructor(
                     }
                 }
             }
-
             is LanguageSelectionEvent.ChangeAppLanguage -> {
-                languageScreenUseCase.saveSelectedLanguageUseCase.saveSelectedLanguageCode(
-                    event.mainActivity,
-                    event.languageCode
-                )
+                languageScreenUseCase.saveSelectedLanguageUseCase.saveSelectedLanguageCode(event.mainActivity, event.languageCode)
             }
         }
 
     }
 
-    fun getLanguageScreenOpenFrom(): Boolean {
+    fun getLanguageScreenOpenFrom():Boolean{
         return languageScreenUseCase.getLanguageScreenOpenFromUserCase.invoke()
     }
 

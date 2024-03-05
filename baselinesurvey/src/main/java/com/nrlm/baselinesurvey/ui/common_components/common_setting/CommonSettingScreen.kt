@@ -43,13 +43,13 @@ import com.nudge.core.model.SettingOptionModel
 
 @Composable
 fun CommonSettingScreen(
-    title: String,
-    versionText: String,
-    optionList: List<SettingOptionModel>,
-    onBackClick: () -> Unit,
-    onItemClick: (Int, SettingOptionModel) -> Unit,
-    onLogoutClick: () -> Unit
-) {
+    title:String,
+    versionText:String,
+    optionList:List<SettingOptionModel>,
+    onBackClick:()->Unit,
+    onItemClick:(Int,SettingOptionModel)->Unit,
+    onLogoutClick:()->Unit
+){
     Scaffold(
         backgroundColor = white,
         modifier = Modifier.fillMaxSize(),
@@ -89,7 +89,7 @@ fun CommonSettingScreen(
                 }
 
             }
-        }) {
+        }){
         ConstraintLayout(
             modifier = Modifier
                 .background(Color.White)
@@ -114,7 +114,7 @@ fun CommonSettingScreen(
                             expanded = item.title == stringResource(id = R.string.forms),
                             showArrow = item.title == stringResource(id = R.string.forms),
                         ) {
-                            onItemClick(index, item)
+                            onItemClick(index,item)
                         }
                     }
                 }
@@ -125,29 +125,21 @@ fun CommonSettingScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun CommonSettingScreenPreview() {
-    val list = listOf(
-        SettingOptionModel(1, "Sync Now", "new Datta", ""),
-        SettingOptionModel(2, "Sync Now", "", ""),
-        SettingOptionModel(3, "Sync Now", "", "")
-    )
-    CommonSettingScreen(
-        title = "Setting",
-        versionText = "Version 978",
-        list,
-        onBackClick = {},
-        onItemClick = { index, item -> },
-        onLogoutClick = {})
+fun CommonSettingScreenPreview(){
+ val list=   listOf(
+        SettingOptionModel(1,"Sync Now","new Datta",""),
+        SettingOptionModel(2,"Sync Now","",""),
+        SettingOptionModel(3,"Sync Now","",""))
+CommonSettingScreen(title = "Setting", versionText = "Version 978", list ,onBackClick = {}, onItemClick = {index,item->}, onLogoutClick = {})
 }
 
 @Preview(showBackground = true)
 @Composable
-fun CommonSettingCardPreview() {
+fun CommonSettingCardPreview(){
     CommonSettingCard(title = "title", subTitle = "subtitle", expanded = false) {
 
     }
 }
-
 @Composable
 fun CommonSettingCard(
     title: String,

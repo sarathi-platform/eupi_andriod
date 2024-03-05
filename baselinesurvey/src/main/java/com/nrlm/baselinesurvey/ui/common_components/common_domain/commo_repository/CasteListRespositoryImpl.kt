@@ -10,11 +10,11 @@ import javax.inject.Inject
 
 class CasteListRepositoryImpl @Inject constructor(
     val prefRepo: PrefRepo
-) : CasteListRepository {
+): CasteListRepository  {
     override fun getCasteList(): List<CasteModel> {
         val casteList = prefRepo.getPref(PREF_CASTE_LIST, BLANK_STRING)
-        return if ((casteList?.isEmpty() == true) || casteList.equals("[]")) emptyList()
-        else {
+        return if((casteList?.isEmpty() == true) || casteList.equals("[]")) emptyList()
+        else{
             Gson().fromJson(casteList, object : TypeToken<List<CasteModel>>() {}.type)
         }
     }

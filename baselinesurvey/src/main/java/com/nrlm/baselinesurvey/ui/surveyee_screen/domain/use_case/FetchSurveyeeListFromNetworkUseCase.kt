@@ -41,18 +41,12 @@ class FetchSurveyeeListFromNetworkUseCase(
                 }
 
                 apiResponse.data?.didiList?.distinctBy { it.cohortName }?.forEach {
-                    if (!localSurveyeeEntityList.map { surveyeeEntity -> surveyeeEntity.didiId }
-                            .contains(it.cohortId)) {
+                    if (!localSurveyeeEntityList.map { surveyeeEntity -> surveyeeEntity.didiId }.contains(it.cohortId)) {
                         val hamletSurveyEntity = SurveyeeEntity(
                             id = 0,
                             userId = it.userId,
                             didiId = it.cohortId ?: -1,
-                            didiName = if (it.cohortName?.equals(
-                                    NO_TOLA_TITLE,
-                                    true
-                                ) == true
-                            ) it.villageName?.toCamelCase() ?: BLANK_STRING else it.cohortName
-                                ?: BLANK_STRING,
+                            didiName = if (it.cohortName?.equals(NO_TOLA_TITLE, true) == true) it.villageName?.toCamelCase() ?: BLANK_STRING else it.cohortName ?: BLANK_STRING,
                             dadaName = BLANK_STRING,
                             casteId = -1,
                             cohortId = it.cohortId ?: -1,

@@ -41,7 +41,7 @@ class LanguageScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getLanguageScreenOpenFrom(): Boolean {
-        return prefRepo.getPref(LANGUAGE_OPEN_FROM_SETTING, false)
+        return prefRepo.getPref(LANGUAGE_OPEN_FROM_SETTING,false)
     }
 
 }

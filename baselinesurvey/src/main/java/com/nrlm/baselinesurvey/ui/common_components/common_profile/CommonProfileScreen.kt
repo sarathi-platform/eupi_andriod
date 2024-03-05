@@ -26,13 +26,13 @@ import com.nrlm.baselinesurvey.ui.theme.white
 
 @Composable
 fun CommonProfileScreen(
-    title: String,
-    userName: String,
-    userEmail: String,
-    userMobile: String,
-    userIdentity: String,
-    onBackClick: () -> Unit
-) {
+    title:String,
+    userName:String,
+    userEmail:String,
+    userMobile:String,
+    userIdentity:String,
+    onBackClick:()->Unit
+){
     Scaffold(
         backgroundColor = white,
         modifier = Modifier.fillMaxSize(),
@@ -44,8 +44,7 @@ fun CommonProfileScreen(
                 onBackClick()
 
             }
-        },
-    ) {
+        },){
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -161,14 +160,8 @@ fun CommonProfileScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun CommonProfileScreenPreview() {
-    CommonProfileScreen(
-        title = "Profile",
-        userName = "Naren",
-        userEmail = "anas.mansoori@tothenew.com",
-        userMobile = "7619983037",
-        userIdentity = "78456",
-        onBackClick = {})
+fun CommonProfileScreenPreview(){
+    CommonProfileScreen(title = "Profile", userName = "Naren", userEmail = "anas.mansoori@tothenew.com", userMobile = "7619983037", userIdentity = "78456",onBackClick = {})
 }
 
 

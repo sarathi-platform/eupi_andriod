@@ -138,14 +138,12 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getOptionItem(formQuestionResponseEntity: FormQuestionResponseEntity): Int {
-        return formQuestionResponseDao.getOptionItem(
-            surveyId = formQuestionResponseEntity.surveyId,
+        return formQuestionResponseDao.getOptionItem(surveyId = formQuestionResponseEntity.surveyId,
             sectionId = formQuestionResponseEntity.sectionId,
             questionId = formQuestionResponseEntity.questionId,
             optionId = formQuestionResponseEntity.optionId,
             referenceId = formQuestionResponseEntity.referenceId,
-            didiId = formQuestionResponseEntity.didiId
-        )
+            didiId = formQuestionResponseEntity.didiId)
     }
 
 

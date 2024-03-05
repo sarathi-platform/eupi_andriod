@@ -179,25 +179,18 @@ fun LanguageScreenComponent(
                             )
                         }
                         if (viewModel.isLanguageVillageAvailable.value) {
-                            viewModel.onEvent(
-                                LanguageSelectionEvent.ChangeAppLanguage(
-                                    (context as MainActivity),
-                                    languagesState.languageList[languagesState.selectedLanguageId].langCode
-                                        ?: DEFAULT_LANGUAGE_CODE
-                                )
-                            )
+                            viewModel.onEvent(LanguageSelectionEvent.ChangeAppLanguage((context as MainActivity),
+                                languagesState.languageList[languagesState.selectedLanguageId].langCode ?: DEFAULT_LANGUAGE_CODE
+                            ))
                         } else {
-                            viewModel.onEvent(
-                                LanguageSelectionEvent.ChangeAppLanguage(
-                                    (context as MainActivity),
-                                    DEFAULT_LANGUAGE_CODE
-                                )
-                            )
+                            viewModel.onEvent(LanguageSelectionEvent.ChangeAppLanguage((context as MainActivity),
+                                DEFAULT_LANGUAGE_CODE
+                            ))
                         }
                     }
-                    if (viewModel.getLanguageScreenOpenFrom()) {
+                    if(viewModel.getLanguageScreenOpenFrom()){
                         navController.popBackStack()
-                    } else {
+                    }else {
                         navController.navigate(AuthScreen.LOGIN.route)
                     }
                 } catch (ex: Exception) {

@@ -239,16 +239,9 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
                 type = NavType.StringType
             }
         )) {
-            SearchScreens(
-                viewModel = hiltViewModel(),
-                navController = navController,
-                surveyId = it
-                    .arguments?.getInt(ARG_SURVEY_ID) ?: -1,
-                surveyeeId = it.arguments?.getInt(ARG_DIDI_ID) ?: -1,
-                fromScreen = it.arguments?.getString(
-                    ARG_FROM_SCREEN
-                ) ?: ARG_FROM_SECTION_SCREEN
-            )
+            SearchScreens(viewModel = hiltViewModel(), navController = navController, surveyId = it
+                .arguments?.getInt(ARG_SURVEY_ID) ?: -1, surveyeeId = it.arguments?.getInt(ARG_DIDI_ID) ?: -1, fromScreen = it.arguments?.getString(
+                ARG_FROM_SCREEN) ?: ARG_FROM_SECTION_SCREEN)
         }
 
         composable(route = HomeScreens.Home_SCREEN.route) {
@@ -311,7 +304,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
 
         addDidiNavGraph(navController = navController)
         settingNavGraph(navHostController = navController)
-        logoutNavGraph(navController = navController)
+        logoutNavGraph(navController=navController)
     }
 
 }
@@ -359,19 +352,18 @@ fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
 
 }
 
-fun NavGraphBuilder.settingNavGraph(navHostController: NavHostController) {
+fun NavGraphBuilder.settingNavGraph(navHostController: NavHostController){
     navigation(
         route = Graph.SETTING_GRAPH,
         startDestination = SettingBSScreens.SETTING_SCREEN.route
-    ) {
+    ){
         composable(
             route = SettingBSScreens.SETTING_SCREEN.route
-        ) {
+        )   {
             SettingBSScreen(viewModel = hiltViewModel(), navController = navHostController)
         }
 
-        composable(
-            route = SettingBSScreens.LANGUAGE_SCREEN.route
+        composable(route = SettingBSScreens.LANGUAGE_SCREEN.route
         ) {
             LanguageScreenComponent(
                 navController = navHostController,
@@ -382,18 +374,17 @@ fun NavGraphBuilder.settingNavGraph(navHostController: NavHostController) {
 
         }
 
-        composable(
-            route = SettingBSScreens.PROFILE_SCREEN.route
+        composable(route = SettingBSScreens.PROFILE_SCREEN.route
         ) {
             ProfileBSScreen(navController = navHostController, viewModel = hiltViewModel())
         }
     }
 }
 
-sealed class SettingBSScreens(val route: String) {
+sealed class SettingBSScreens(val route: String){
     object SETTING_SCREEN : SettingBSScreens(route = SETTING_ROUTE_NAME)
-    object LANGUAGE_SCREEN : SettingBSScreens(route = LANGUAGE_SCREEN_ROUTE_NAME)
-    object PROFILE_SCREEN : SettingBSScreens(route = PROFILE_BS_SCREEN_ROUTE_NAME)
+    object LANGUAGE_SCREEN : SettingBSScreens(route =LANGUAGE_SCREEN_ROUTE_NAME )
+    object PROFILE_SCREEN : SettingBSScreens(route =PROFILE_BS_SCREEN_ROUTE_NAME )
 }
 
 sealed class HomeScreens(val route: String) {
@@ -416,9 +407,7 @@ sealed class HomeScreens(val route: String) {
     object BaseLineStartScreen :
         HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}/{$ARG_SURVEY_ID}")
 
-    object SearchScreen :
-        HomeScreens(route = "$SEARCH_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_DIDI_ID}/{$ARG_FROM_SCREEN}")
-
+    object SearchScreen : HomeScreens(route = "$SEARCH_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_DIDI_ID}/{$ARG_FROM_SCREEN}")
     object Home_SCREEN : HomeScreens(route = HOME_SCREEN_ROUTE_NAME)
     object MISSION_SCREEN : HomeScreens(route = MISSION_SCREEN_ROUTE_NAME)
     object DIDI_SCREEN : HomeScreens(route = DIDI_SCREEN_ROUTE_NAME)
@@ -477,23 +466,12 @@ fun NavController.navigateBackToSectionListScreen(surveyeeId: Int, surveyeId: In
     navigateToSectionListScreen(surveyeeId = surveyeeId, surveyeId = surveyeId, this)
 }
 
-fun NavController.navigateToSelectedSectionFromSearch(
-    didiId: Int,
-    sectionId: Int,
-    surveyId: Int,
-    isFromQuestionSearch: Boolean = true
-) {
+fun NavController.navigateToSelectedSectionFromSearch(didiId: Int, sectionId: Int, surveyId: Int, isFromQuestionSearch: Boolean = true) {
     if (isFromQuestionSearch) {
         this.popBackStack(HomeScreens.SECTION_SCREEN.route, true)
     }
-    navigateToQuestionScreen(
-        didiId = didiId,
-        sectionId = sectionId,
-        surveyId = surveyId,
-        navController = this
-    )
+    navigateToQuestionScreen(didiId = didiId, sectionId = sectionId, surveyId = surveyId, navController = this)
 }
-
 fun navigateToQuestionScreen(
     didiId: Int,
     sectionId: Int,
@@ -507,21 +485,11 @@ fun navigateToSectionListScreen(surveyeeId: Int, surveyeId: Int, navController: 
     navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$surveyeeId/$surveyeId")
 }
 
-fun navigateToSearchScreen(
-    navController: NavController,
-    surveyeId: Int,
-    surveyeeId: Int,
-    fromScreen: String
-) {
+fun navigateToSearchScreen(navController: NavController, surveyeId: Int, surveyeeId: Int, fromScreen: String) {
     navController.navigate("$SEARCH_SCREEN_ROUTE_NAME/$surveyeId/$surveyeeId/$fromScreen")
 }
 
-fun navigateToFormTypeQuestionScreen(
-    navController: NavController,
-    question: QuestionEntity,
-    sectionDetails: SectionListItem,
-    surveyeeId: Int
-) {
+fun navigateToFormTypeQuestionScreen(navController: NavController, question: QuestionEntity, sectionDetails: SectionListItem, surveyeeId: Int) {
     navController.navigate("$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/${question.questionDisplay}/${sectionDetails.surveyId}/${sectionDetails.sectionId}/${question.questionId}/${surveyeeId}")
 
 }
@@ -529,21 +497,20 @@ fun navigateToFormTypeQuestionScreen(
 sealed class LogoutBSScreens(val route: String) {
     object LOG_LOGIN_SCREEN : LogoutBSScreens(route = "login_screen")
     object LOG_SURVEYEE_LIST_SCREEN : LogoutBSScreens(route = "surveyee_list_screen")
-    object LOG_OTP_VERIFICATION :
-        LogoutBSScreens(route = "otp_verification_screen/{$ARG_MOBILE_NUMBER}")
+    object LOG_OTP_VERIFICATION : LogoutBSScreens(route = "otp_verification_screen/{$ARG_MOBILE_NUMBER}")
 
     object LOG_START_SCREEN : LogoutBSScreens(route = "start_screen")
 
 }
 
-fun NavGraphBuilder.logoutNavGraph(navController: NavHostController) {
+fun NavGraphBuilder.logoutNavGraph(navController: NavHostController){
     navigation(
         route = Graph.LOGOUT_GRAPH,
         startDestination = LogoutBSScreens.LOG_LOGIN_SCREEN.route
-    ) {
+    ){
         composable(
             route = LogoutBSScreens.LOG_LOGIN_SCREEN.route
-        ) {
+        )   {
             LoginScreenComponent(
                 navController,
                 viewModel = hiltViewModel(),

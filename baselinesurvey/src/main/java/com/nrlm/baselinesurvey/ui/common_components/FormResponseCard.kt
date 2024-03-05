@@ -63,9 +63,7 @@ fun FormResponseCard(
 
     val questionScreenViewModel = viewModel as QuestionScreenViewModel
 
-    val fromTypeQuestionList =
-        questionScreenViewModel.questionEntityStateList.filter { it.questionEntity?.type == QuestionType.Form.name }
-            .toList()
+    val fromTypeQuestionList = questionScreenViewModel.questionEntityStateList.filter { it.questionEntity?.type == QuestionType.Form.name }.toList()
 
     Card(
         elevation = CardDefaults.cardElevation(
@@ -124,35 +122,32 @@ fun FormResponseCard(
                                         stringResource(id = R.string.income_source_comparision),
                                         ignoreCase = true
                                     )!!
-                                }?.optionId] ?: BLANK_STRING
+                                }?.optionId]  ?: BLANK_STRING
                             )
 
 
-                            var income =
-                                householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                            var income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                it.display?.contains(
+                                    stringResource(id = R.string.agriculture_produce_comparision),
+                                    ignoreCase = true
+                                )!!
+                            }?.optionId] ?: BLANK_STRING
+
+                            if (income == BLANK_STRING)
+                                income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
                                     it.display?.contains(
-                                        stringResource(id = R.string.agriculture_produce_comparision),
+                                        stringResource(id = R.string.livestock_comparision),
                                         ignoreCase = true
                                     )!!
                                 }?.optionId] ?: BLANK_STRING
 
                             if (income == BLANK_STRING)
-                                income =
-                                    householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                        it.display?.contains(
-                                            stringResource(id = R.string.livestock_comparision),
-                                            ignoreCase = true
-                                        )!!
-                                    }?.optionId] ?: BLANK_STRING
-
-                            if (income == BLANK_STRING)
-                                income =
-                                    householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                        it.display?.contains(
-                                            stringResource(id = R.string.income_frequency_comparision),
-                                            ignoreCase = true
-                                        )!!
-                                    }?.optionId] ?: BLANK_STRING
+                                income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                    it.display?.contains(
+                                        stringResource(id = R.string.income_frequency_comparision),
+                                        ignoreCase = true
+                                    )!!
+                                }?.optionId] ?: BLANK_STRING
 
                             if (income != BLANK_STRING) {
                                 append(" | ")
@@ -160,9 +155,7 @@ fun FormResponseCard(
 
                             append(income)
                         } else if (householdMemberDto.questionTag.equals("Public Infra")) {
-                            val questionState =
-                                fromTypeQuestionList.filter { it.questionEntity?.type == QuestionType.Form.name }
-                                    .find { it.questionId == householdMemberDto.questionId }
+                            val questionState = fromTypeQuestionList.filter { it.questionEntity?.type == QuestionType.Form.name }.find { it.questionId == householdMemberDto.questionId }
                             var source = when (questionState?.questionEntity?.questionDisplay) {
                                 stringResource(R.string.to_the_block_office_comparision),
                                 stringResource(R.string.to_the_nearest_primary_health_care_centre_comparision),
@@ -170,9 +163,7 @@ fun FormResponseCard(
                                 stringResource(R.string.to_the_nearest_permanent_market_comparision),
                                 stringResource(R.string.to_the_nearest_bank_comparsion) -> {
                                     questionState.questionEntity.questionDisplay?.replace(
-                                        stringResource(R.string.to_the_replacement_string),
-                                        BLANK_STRING
-                                    )?.capitalize(Locale.ROOT)
+                                        stringResource(R.string.to_the_replacement_string), BLANK_STRING)?.capitalize(Locale.ROOT)
                                 }
 
                                 else -> {
@@ -183,13 +174,12 @@ fun FormResponseCard(
                             append(source)
 
                             var mode = BLANK_STRING
-                            mode =
-                                householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                    it.display?.contains(
-                                        stringResource(R.string.acess_to_public_transportation_comparision),
-                                        ignoreCase = true
-                                    )!!
-                                }?.optionId] ?: BLANK_STRING
+                            mode = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                it.display?.contains(
+                                    stringResource(R.string.acess_to_public_transportation_comparision),
+                                    ignoreCase = true
+                                )!!
+                            }?.optionId] ?: BLANK_STRING
 
                             if (mode != BLANK_STRING)
                                 append(" | ")
@@ -198,17 +188,17 @@ fun FormResponseCard(
 
                         } else if (householdMemberDto.questionTag.contains("key programme", true)) {
                             var name = BLANK_STRING
-                            name =
-                                householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                    it.display?.contains(
-                                        stringResource(id = R.string.name_comparision),
-                                        ignoreCase = true
-                                    )!!
-                                }?.optionId] ?: BLANK_STRING
+                            name = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                it.display?.contains(
+                                    stringResource(id = R.string.name_comparision),
+                                    ignoreCase = true
+                                )!!
+                            }?.optionId] ?: BLANK_STRING
 
                             append("${stringResource(id = R.string.name_comparision)}: $name")
 
-                        } else append(BLANK_STRING)
+                        }
+                        else append(BLANK_STRING)
                     }, style = smallTextStyleWithNormalWeight)
 
                     Text(text = buildAnnotatedString {
@@ -233,9 +223,7 @@ fun FormResponseCard(
                                         stringResource(id = R.string.income_source_comparision),
                                         ignoreCase = true
                                     )!!
-                                }?.optionId]
-                                    ?: BLANK_STRING) != stringResource(id = R.string.no_income_comparision)
-                            ) {
+                                }?.optionId]  ?: BLANK_STRING) != stringResource(id = R.string.no_income_comparision)) {
                                 append(stringResource(R.string.total_income_lable))
                                 var income =
                                     householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
@@ -264,8 +252,7 @@ fun FormResponseCard(
                                     }.forEach {
                                         if (income == BLANK_STRING) {
                                             income =
-                                                householdMemberDto.memberDetailsMap[it.optionId]
-                                                    ?: BLANK_STRING
+                                                householdMemberDto.memberDetailsMap[it.optionId] ?: BLANK_STRING
                                         }
                                         return@forEach
                                     }
@@ -282,25 +269,23 @@ fun FormResponseCard(
                                 append(income)
                             }
                         } else if (householdMemberDto.questionTag.equals("Public Infra")) {
-                            val avgCost =
-                                householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                    it.display?.trim()?.contains(
-                                        stringResource(R.string.average_travel_cost_comparision).trim(),
-                                        ignoreCase = true
-                                    )!!
-                                }?.optionId] ?: BLANK_STRING
+                            val avgCost = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                it.display?.trim()?.contains(
+                                    stringResource(R.string.average_travel_cost_comparision).trim(),
+                                    ignoreCase = true
+                                )!!
+                            }?.optionId] ?: BLANK_STRING
 
                             append("Average Cost: ₹ $avgCost")
 
                         } else if (householdMemberDto.questionTag.contains("key programme", true)) {
                             var influenceType = BLANK_STRING
-                            influenceType =
-                                householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                    it.display?.contains(
-                                        stringResource(R.string.influence_type_comparision_and_label),
-                                        ignoreCase = true
-                                    )!!
-                                }?.optionId] ?: BLANK_STRING
+                            influenceType = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                it.display?.contains(
+                                    stringResource(R.string.influence_type_comparision_and_label),
+                                    ignoreCase = true
+                                )!!
+                            }?.optionId] ?: BLANK_STRING
 
                             append("${stringResource(R.string.influence_type_comparision_and_label)}: $influenceType")
 
@@ -311,14 +296,9 @@ fun FormResponseCard(
                 }
             }
             Spacer(modifier = Modifier.height(dimen_16_dp))
-            Divider(
-                thickness = dimen_1_dp,
-                modifier = Modifier.fillMaxWidth(),
-                color = borderGreyLight
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
+            Divider(thickness = dimen_1_dp, modifier = Modifier.fillMaxWidth(), color = borderGreyLight)
+            Row(modifier = Modifier
+                .fillMaxWidth()
             ) {
                 /*TextButton(onClick = { onUpdate(householdMemberDto.referenceId) }, modifier = Modifier
                     .fillMaxWidth()

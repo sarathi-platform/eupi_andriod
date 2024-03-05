@@ -26,18 +26,10 @@ fun SarathiLogoTextView() {
         .fillMaxWidth()) {
 
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-            /*Spacer(modifier = Modifier
-                .height(12.dp))
-            Text(text = "Sarathi", style =mediumTextStyle, color = blueDark)*/
             Image(painter = painterResource(id = R.drawable.sarathi_logo_full),
                 contentDescription = null,
-                modifier = Modifier.size(width = 90.dp, height = 65.dp)
+                modifier = Modifier.size(width = 90.dp, height = 65.dp).padding(bottom = 12.dp)
             )
-            Text(text = "To End Ultra Poverty", style = TextStyle(
-                fontFamily = NotoSans,
-                fontWeight = FontWeight.Normal,
-                fontSize = 8.sp
-            ), color = blueDark, modifier = Modifier.padding(bottom = 12.dp))
             Spacer(modifier = Modifier
                 .width(158.dp)
                 .height(1.dp)

@@ -125,6 +125,7 @@ import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
+import com.patsurvey.nudge.utils.showCustomDialog
 import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.showToast
 import kotlinx.coroutines.Dispatchers
@@ -204,14 +205,14 @@ fun SettingScreen(
         val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
 
         if (viewModel.isSyncEnabled()) {
-        list.add(
-            SettingOptionModel(
-                1,
-                context.getString(R.string.sync_up),
-                context.getString(R.string.last_syncup_text)
-                    .replace("{LAST_SYNC_TIME}", lastSyncTime.toString())
+            list.add(
+                SettingOptionModel(
+                    1,
+                    context.getString(R.string.sync_up),
+                    context.getString(R.string.last_syncup_text)
+                        .replace("{LAST_SYNC_TIME}", lastSyncTime.toString())
+                )
             )
-        )
         }
         list.add(SettingOptionModel(2, context.getString(R.string.profile), BLANK_STRING))
         list.add(SettingOptionModel(3, context.getString(R.string.forms), BLANK_STRING))
@@ -510,88 +511,78 @@ fun SettingScreen(
                 ) {
                     if ((context as MainActivity).isOnline.value) {
                         if (viewModel.isSyncEnabled()) {
-                        if (!viewModel.prefRepo.isUserBPC()) {
-                            viewModel.isFirstStepNeedToBeSync(stepOneStatus)
-                            viewModel.isSecondStepNeedToBeSync(stepTwoStatus)
-                            viewModel.isThirdStepNeedToBeSync(stepThreeStatus)
-                            viewModel.isFourthStepNeedToBeSync(stepFourStatus)
-                            viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
-                            if (stepOneStatus.value == 0
-                                || stepTwoStatus.value == 0
-                                || stepThreeStatus.value == 0
-                                || stepFourStatus.value == 0
-                                || stepFiveStatus.value == 0
-                            )
-                                isDataNeedToBeSynced.value = 1
-                            else if ((stepOneStatus.value == 3 || stepOneStatus.value == 2)
-                                && (stepTwoStatus.value == 3 || stepTwoStatus.value == 2)
-                                && (stepThreeStatus.value == 3 || stepThreeStatus.value == 2)
-                                && (stepFourStatus.value == 3 || stepFourStatus.value == 2)
-                                && (stepFiveStatus.value == 3 || stepFiveStatus.value == 2)
-                            )
-                                isDataNeedToBeSynced.value = 2
-                            else
-                                isDataNeedToBeSynced.value = 0
-                            viewModel.isDataNeedToBeSynced(
-                                stepOneStatus,
-                                stepTwoStatus,
-                                stepThreeStatus,
-                                stepFourStatus,
-                                stepFiveStatus
-                            )
-                            if (isDataNeedToBeSynced.value == 0 || isDataNeedToBeSynced.value == 2) {
-                                viewModel.performLogout(object : NetworkCallbackListener {
-                                    override fun onFailed() {
-                                        logout(context, viewModel, logout, rootNavController)
-                                        changeGraph.value = true
-                                    }
+                            if (!viewModel.prefRepo.isUserBPC()) {
+                                viewModel.isFirstStepNeedToBeSync(stepOneStatus)
+                                viewModel.isSecondStepNeedToBeSync(stepTwoStatus)
+                                viewModel.isThirdStepNeedToBeSync(stepThreeStatus)
+                                viewModel.isFourthStepNeedToBeSync(stepFourStatus)
+                                viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
+                                if (stepOneStatus.value == 0
+                                    || stepTwoStatus.value == 0
+                                    || stepThreeStatus.value == 0
+                                    || stepFourStatus.value == 0
+                                    || stepFiveStatus.value == 0
+                                )
+                                    isDataNeedToBeSynced.value = 1
+                                else if ((stepOneStatus.value == 3 || stepOneStatus.value == 2)
+                                    && (stepTwoStatus.value == 3 || stepTwoStatus.value == 2)
+                                    && (stepThreeStatus.value == 3 || stepThreeStatus.value == 2)
+                                    && (stepFourStatus.value == 3 || stepFourStatus.value == 2)
+                                    && (stepFiveStatus.value == 3 || stepFiveStatus.value == 2)
+                                )
+                                    isDataNeedToBeSynced.value = 2
+                                else
+                                    isDataNeedToBeSynced.value = 0
+                                viewModel.isDataNeedToBeSynced(
+                                    stepOneStatus,
+                                    stepTwoStatus,
+                                    stepThreeStatus,
+                                    stepFourStatus,
+                                    stepFiveStatus
+                                )
+                                if (isDataNeedToBeSynced.value == 0 || isDataNeedToBeSynced.value == 2) {
+                                    viewModel.performLogout(object : NetworkCallbackListener {
+                                        override fun onFailed() {
+                                            logout(context, viewModel, logout, rootNavController)
+                                            changeGraph.value = true
+                                        }
 
-                                    override fun onSuccess() {
-                                        logout(context, viewModel, logout, rootNavController)
-                                        changeGraph.value = true
-                                    }
-                                })
+                                        override fun onSuccess() {
+                                            logout(context, viewModel, logout, rootNavController)
+                                            changeGraph.value = true
+                                        }
+                                    })
 //                        RootNavigationGraph(navController = rememberNavController(), prefRepo =viewModel.prefRepo)
+                                } else {
+                                    viewModel.showAPILoader.value = false
+                                    showToast(
+                                        context,
+                                        context.getString(R.string.logout_sync_error_message)
+                                    )
+                                }
                             } else {
-                                viewModel.showAPILoader.value = false
-                                showToast(
-                                    context,
-                                    context.getString(R.string.logout_sync_error_message)
-                                )
+                                viewModel.isBPCDataNeedToBeSynced(isBPCDataNeedToBeSynced)
+                                if (isBPCDataNeedToBeSynced.value) {
+                                    showToast(
+                                        context,
+                                        context.getString(R.string.logout_sync_error_message)
+                                    )
+                                } else {
+                                    viewModel.performLogout(object : NetworkCallbackListener {
+                                        override fun onFailed() {
+                                            logout(context, viewModel, logout, rootNavController)
+                                            changeGraph.value = true
+                                        }
+
+                                        override fun onSuccess() {
+                                            logout(context, viewModel, logout, rootNavController)
+                                            changeGraph.value = true
+                                        }
+                                    })
+                                }
                             }
                         } else {
-                            viewModel.isBPCDataNeedToBeSynced(isBPCDataNeedToBeSynced)
-                            if (isBPCDataNeedToBeSynced.value) {
-                                showToast(
-                                    context,
-                                    context.getString(R.string.logout_sync_error_message)
-                                )
-                            } else {
-                                viewModel.performLogout(object : NetworkCallbackListener {
-                                    override fun onFailed() {
-                                        logout(context, viewModel, logout, rootNavController)
-                                        changeGraph.value = true
-                                    }
-
-                                    override fun onSuccess() {
-                                        logout(context, viewModel, logout, rootNavController)
-                                        changeGraph.value = true
-                                    }
-                                })
-                            }
-                        }
-                        } else {
-                            viewModel.performLogout(object : NetworkCallbackListener {
-                                override fun onFailed() {
-                                    logout(context, viewModel, logout, rootNavController)
-                                    changeGraph.value = true
-                                }
-
-                                override fun onSuccess() {
-                                    logout(context, viewModel, logout, rootNavController)
-                                    changeGraph.value = true
-                                }
-                            })
+                            viewModel.showLogoutDialog.value = true
                         }
                     } else {
                         showToast(
@@ -675,6 +666,34 @@ fun SettingScreen(
         }
         CustomSnackBarShow(state = snackState, position = CustomSnackBarViewPosition.Bottom)
 
+        if (viewModel.showLogoutDialog.value) {
+            showCustomDialog(
+                title = context.getString(R.string.logout),
+                message = context.getString(R.string.logout_confirmation),
+                positiveButtonTitle = stringResource(id = R.string.logout),
+                negativeButtonTitle = stringResource(id = R.string.cancel),
+                onNegativeButtonClick = {
+                    viewModel.showLogoutDialog.value = false
+                },
+                onPositiveButtonClick = {
+                    viewModel.showLogoutDialog.value = false
+                    viewModel.performLogout(object : NetworkCallbackListener {
+                        override fun onFailed() {
+                            logout(context, viewModel, logout, rootNavController)
+                            changeGraph.value = true
+
+                        }
+
+                        override fun onSuccess() {
+                            logout(context, viewModel, logout, rootNavController)
+                            changeGraph.value = true
+                        }
+                    })
+
+                })
+
+
+        }
     }
     if (networkError.isNotEmpty()) {
         var errorMessage = networkError

@@ -1238,7 +1238,17 @@ fun IncrementDecrementView(modifier: Modifier,
                            onValueChange: (String) -> Unit,
                            onLimitFailed: (String) -> Unit){
     var currentCount by remember {
-        mutableStateOf(if(currentValue<=0) BLANK_STRING else currentValue.toString())
+        mutableStateOf(
+            if (optionValue == TOTAL_FAMILY_MEMBERS_OPTION_VALUE && questionFlag.equals(
+                    QUESTION_FLAG_RATIO,
+                    true
+                )
+            ) {
+                if (currentValue <= 1) ONE else currentValue.toString()
+            } else {
+                if (currentValue <= 0) BLANK_STRING else currentValue.toString()
+            }
+        )
     }
     Column(modifier = Modifier
         .fillMaxWidth()
@@ -1279,16 +1289,7 @@ fun IncrementDecrementView(modifier: Modifier,
                             .height(50.dp),
                         colorFilter = ColorFilter.tint(textColorDark)
                     )
-                } /*else {
-                    Image(
-                        painter = painterResource(id = R.drawable.pat_sample_icon),
-                        contentDescription = "home image",
-                        modifier = Modifier
-                            .width(0.dp)
-                            .height(0.dp),
-                        colorFilter = ColorFilter.tint(textColorDark)
-                    )
-                }*/
+                }
             }
         }
             HtmlText(
@@ -1330,23 +1331,28 @@ fun IncrementDecrementView(modifier: Modifier,
                 Row(modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        var isValidCount = true
+                        var errorType = NumericQuestionsErrorEnum.NO_ERROR.name
                         if (questionFlag.equals(QUESTION_FLAG_RATIO, true)) {
                             val otherOptionValueCount =
                                 findOptionValueCount(optionList, optionValue ?: 1)
-                            val newCurrentCount = incDecValue(0, currentCount)
+                            val newCurrentCount = incDecValue(0, currentCount, optionValue == TOTAL_FAMILY_MEMBERS_OPTION_VALUE)
                             val intCnt =
                                 if (newCurrentCount.isEmpty()) 0 else newCurrentCount.toInt()
-                            if (optionValue == 1) {
+                            if (optionValue == TOTAL_FAMILY_MEMBERS_OPTION_VALUE) {
                                 if (intCnt < otherOptionValueCount)
-                                    isValidCount = false
+                                    errorType =
+                                        NumericQuestionsErrorEnum.TOTAL_FAMILY_MEMBER_NOT_LESS_THAN_EARNING_MEMBER_ERROR.name
+
+                                if (intCnt < 1)
+                                    errorType =
+                                        NumericQuestionsErrorEnum.TOTAL_FAMILY_MEMBER_LOW_LIMIT_ERROR.name
                             }
                         }
 
-                        if (isValidCount) {
+                        if (errorType == NumericQuestionsErrorEnum.NO_ERROR.name) {
                             currentCount = incDecValue(0, currentCount)
                             onDecrementClick(if (currentCount.isEmpty()) 0 else currentCount.toInt())
-                        } else onLimitFailed("Low Limit")
+                        } else onLimitFailed(errorType)
                     }, horizontalArrangement = Arrangement.Center){
                     Icon(
                         painter = painterResource(id = R.drawable.minus_icon),
@@ -1369,28 +1375,31 @@ fun IncrementDecrementView(modifier: Modifier,
                     readOnly = false,
                     onValueChange = {
                         if(onlyNumberField(it)) {
-                            var isValidCount = true
+                            var errorType=NumericQuestionsErrorEnum.NO_ERROR.name
                             if (questionFlag.equals(QUESTION_FLAG_RATIO, true)) {
                                 val otherOptionValueCount =  findOptionValueCount(optionList,optionValue?:1)
                                 val intCnt =
                                     if (it.isEmpty()) 0 else it.toInt()
-                                if (optionValue == 1) {
+                                if (optionValue == TOTAL_FAMILY_MEMBERS_OPTION_VALUE) {
                                     if (intCnt < otherOptionValueCount)
-                                        isValidCount = false
+                                        errorType=NumericQuestionsErrorEnum.TOTAL_FAMILY_MEMBER_NOT_LESS_THAN_EARNING_MEMBER_ERROR.name
+
+                                    if(intCnt<=1)
+                                        errorType=NumericQuestionsErrorEnum.TOTAL_FAMILY_MEMBER_LOW_LIMIT_ERROR.name
                                 }
 
-                                if (optionValue == 2) {
+                                if (optionValue == EARNING_FAMILY_MEMBERS_OPTION_VALUE) {
                                     if (intCnt > (otherOptionValueCount ?: 0))
-                                        isValidCount = false
+                                        errorType = NumericQuestionsErrorEnum.EARNING_MEMBERS_NOT_MORE_THAN_FAMILY_MEMBER_ERROR.name
                                 }
                             }
-                            if(isValidCount) {
+                            if(errorType == NumericQuestionsErrorEnum.NO_ERROR.name) {
                                 val currentIt = if (it.isEmpty()) 0 else it.toInt()
                                 if (currentIt <= MAXIMUM_RANGE) {
                                     currentCount = it.ifEmpty { "" }
                                     onValueChange(it)
                                 }
-                            }else onLimitFailed("Limit Entered Exceeded")
+                            }else onLimitFailed(errorType)
                             }
                     },
                     placeholder = {
@@ -1450,22 +1459,23 @@ fun IncrementDecrementView(modifier: Modifier,
                     )
                 )
                 .clickable {
-                    var isValidCount = true
+                    var errorType = NumericQuestionsErrorEnum.NO_ERROR.name
                     if (questionFlag.equals(QUESTION_FLAG_RATIO, true)) {
                         val otherOptionValueCount =
                             findOptionValueCount(optionList, optionValue ?: 1)
                         val newCurrentCount = incDecValue(1, currentCount)
                         val intCnt =
                             if (newCurrentCount.isEmpty()) 0 else newCurrentCount.toInt()
-                        if (optionValue == 2) {
+                        if (optionValue == EARNING_FAMILY_MEMBERS_OPTION_VALUE) {
                             if (intCnt > (otherOptionValueCount ?: 0))
-                                isValidCount = false
+                                errorType =
+                                    NumericQuestionsErrorEnum.EARNING_MEMBERS_NOT_MORE_THAN_FAMILY_MEMBER_ERROR.name
                         }
                     }
-                    if (isValidCount) {
+                    if (errorType == NumericQuestionsErrorEnum.NO_ERROR.name) {
                         currentCount = incDecValue(1, currentCount)
                         onIncrementClick(if (currentCount.isEmpty()) 0 else currentCount.toInt())
-                    } else onLimitFailed("Limit Exceeded")
+                    } else onLimitFailed(errorType)
 
                 },
                 contentAlignment = Alignment.Center){
@@ -1494,14 +1504,16 @@ fun findOptionValueCount(optionList: List<OptionsItem>, optionValue:Int):Int{
     return 0
 }
 
-fun incDecValue(operation:Int,value:String):String{
+fun incDecValue(operation:Int,value:String,isDefaultValueOne:Boolean=false):String{
     var intValue=0
     if(value.isNotEmpty()){
         intValue=value.toInt()
     }
 
     if(operation==0){
-        if(intValue>0)
+        if(isDefaultValueOne && intValue>1){
+            intValue--
+        }else if(intValue>0)
             intValue--
     }else{
         if(intValue<MAXIMUM_RANGE){

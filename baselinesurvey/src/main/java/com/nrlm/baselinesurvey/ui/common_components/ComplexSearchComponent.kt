@@ -41,22 +41,16 @@ fun ComplexSearchComponent(
             onSearchScreenActive()
         }
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
             Icon(
                 painter = painterResource(id = R.drawable.icon_search),
                 tint = placeholderGrey,
                 contentDescription = "seach icon",
                 modifier = Modifier.absolutePadding(top = 3.dp)
             )
-            Spacer(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(dimen_10_dp)
-            )
+            Spacer(modifier = Modifier
+                .fillMaxHeight()
+                .width(dimen_10_dp))
             Text(
                 text = "Search Question",
                 style = TextStyle(

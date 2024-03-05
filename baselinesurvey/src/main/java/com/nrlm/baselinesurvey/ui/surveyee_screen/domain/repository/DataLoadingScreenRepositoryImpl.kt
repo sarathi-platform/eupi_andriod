@@ -142,15 +142,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                                 it.resultList.forEach { ques ->
                                     if (ques.type?.equals(QuestionType.Form.name, true) == true) {
                                         ques.options?.forEach {
-                                            it?.let { it1 ->
-                                                saveConditionalOptions(
-                                                    it1,
-                                                    question,
-                                                    section,
-                                                    surveyResponseModel,
-                                                    languageId
-                                                )
-                                            }
+                                            it?.let { it1 -> saveConditionalOptions(it1, question, section, surveyResponseModel, languageId) }
                                         }
                                     }
                                 }
@@ -165,13 +157,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
             }
             subQuestionList.forEach { conditionalItem ->
                 Log.d("saveSurveyToDb", "subQuestionList.forEach -> ${conditionalItem}")
-                saveQuestionAndOptionsToDb(
-                    question = conditionalItem,
-                    section,
-                    surveyResponseModel,
-                    languageId,
-                    true
-                )
+                saveQuestionAndOptionsToDb(question = conditionalItem, section, surveyResponseModel, languageId, true)
                 conditionalItem.options?.forEach { subQuestionOption ->
                     if (subQuestionOption?.conditions != null) {
                         subQuestionOption.conditions.forEach {
@@ -182,13 +168,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                 }
             }
             subSubQuestionList.forEach { subConditionalItem ->
-                saveQuestionAndOptionsToDb(
-                    question = subConditionalItem,
-                    section,
-                    surveyResponseModel,
-                    languageId,
-                    true
-                )
+                saveQuestionAndOptionsToDb(question = subConditionalItem, section, surveyResponseModel, languageId, true)
             }
         }
     }
@@ -293,11 +273,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     private fun saveConditionalOptions(optionsItem: OptionsItem, question: QuestionList, section: Sections, surveyResponseModel: SurveyResponseModel, languageId: Int) {
-        val isOptionExisting = optionItemDao.isOptionAlreadyPresent(
-            questionId = question.questionId!!,
-            sectionId = section.sectionId,
-            surveyId = surveyResponseModel.surveyId
-        )
+        val isOptionExisting = optionItemDao.isOptionAlreadyPresent(questionId = question.questionId!!, sectionId = section.sectionId, surveyId = surveyResponseModel.surveyId)
         if (isOptionExisting == 0) {
             val optionItemEntity = OptionItemEntity(
                 id = 0,
@@ -323,11 +299,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override fun saveUserDetails(userDetailsResponse: UserDetailsResponse) {
-        BaselineLogger.d(
-            "User Details        ",
-            "Mobile Number: ${prefRepo.getPref(PREF_MOBILE_NUMBER, BLANK_STRING)}"
-        )
-        BaselineLogger.d("User Details        ", "User Email: ${userDetailsResponse.email}")
+        BaselineLogger.d("User Details        ","Mobile Number: ${prefRepo.getPref(PREF_MOBILE_NUMBER,BLANK_STRING)}")
+        BaselineLogger.d("User Details        ","User Email: ${userDetailsResponse.email}")
         prefRepo.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: "")
         prefRepo.savePref(PREF_KEY_NAME, userDetailsResponse.name ?: "")
         prefRepo.savePref(PREF_KEY_EMAIL, userDetailsResponse.email ?: "")
@@ -453,4 +426,3 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         return prefRepo.getAppLanguage() ?: "en"
     }
 }
-

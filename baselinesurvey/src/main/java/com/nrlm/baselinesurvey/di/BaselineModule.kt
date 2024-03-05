@@ -22,6 +22,13 @@ import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.dao.VillageListDao
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
+import com.nrlm.baselinesurvey.splash.domain.repository.SplashScreenRepository
+import com.nrlm.baselinesurvey.splash.domain.repository.SplashScreenRepositoryImpl
+import com.nrlm.baselinesurvey.splash.domain.use_case.FetchLanguageFromNetworkConfigUseCase
+import com.nrlm.baselinesurvey.splash.domain.use_case.LoggedInUseCase
+import com.nrlm.baselinesurvey.splash.domain.use_case.SaveLanguageConfigUseCase
+import com.nrlm.baselinesurvey.splash.domain.use_case.SaveQuestionImageUseCase
+import com.nrlm.baselinesurvey.splash.domain.use_case.SplashScreenUseCase
 import com.nrlm.baselinesurvey.ui.auth.repository.LoginScreenRepository
 import com.nrlm.baselinesurvey.ui.auth.repository.LoginScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.auth.repository.OtpVerificationRepository

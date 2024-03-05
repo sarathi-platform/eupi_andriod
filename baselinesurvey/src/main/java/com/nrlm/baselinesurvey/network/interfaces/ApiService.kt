@@ -23,6 +23,8 @@ import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
 import com.nrlm.baselinesurvey.network.CONTENT_MANAGER
 import com.nrlm.baselinesurvey.network.GET_CASTE_LIST
 import com.nrlm.baselinesurvey.network.LOGOUT
+import com.nrlm.baselinesurvey.network.GET_CASTE_LIST
+import com.nrlm.baselinesurvey.network.LOGOUT
 import com.nrlm.baselinesurvey.network.SUBPATH_AUTH_GENERATE_OTP
 import com.nrlm.baselinesurvey.network.SUBPATH_AUTH_VALIDATE_OTP
 import com.nrlm.baselinesurvey.network.SUBPATH_CONFIG_GET_LANGUAGE

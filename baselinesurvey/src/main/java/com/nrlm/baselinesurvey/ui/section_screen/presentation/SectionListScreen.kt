@@ -6,6 +6,7 @@ import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,6 +27,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -46,7 +48,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ARG_FROM_SECTION_SCREEN
@@ -66,6 +71,9 @@ import com.nrlm.baselinesurvey.ui.description_component.presentation.ImageExpand
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.section_screen.viewmode.SectionListScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
+import com.nrlm.baselinesurvey.ui.theme.NotoSans
+import com.nrlm.baselinesurvey.ui.theme.blueDark
+import com.nrlm.baselinesurvey.ui.theme.borderGrey
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_14_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
@@ -75,7 +83,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_30_dp
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.lightBlue
-import com.nrlm.baselinesurvey.ui.theme.lightGray2
+import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
@@ -96,7 +104,6 @@ fun SectionListScreen(
 ) {
 
     val loaderState = viewModel.loaderState.value
-    lateinit var didiDetail: SurveyeeEntity
 
     LaunchedEffect(key1 = true) {
         viewModel.init(didiId, surveyId)
@@ -378,7 +385,6 @@ fun SectionListScreen(
                             )
                         }
                     }
-
                 }
             }
         }

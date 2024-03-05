@@ -5,6 +5,7 @@ import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 
 const val BLANK_STRING=""
+const val ONE="1"
 const val DEFAULT_LANGUAGE_CODE="en"
 const val MOBILE_NUMBER_LENGTH=10
 const val ASSET_VALUE_LENGTH=8
@@ -237,4 +238,7 @@ const val EMPTY_STRING="";
 
 const val MIN_PROGRESS_COUNT_INT = 0
 const val MIN_PROGRESS_COUNT_FLOAT = 0F
+
+const val TOTAL_FAMILY_MEMBERS_OPTION_VALUE=1
+const val EARNING_FAMILY_MEMBERS_OPTION_VALUE=2
 

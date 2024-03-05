@@ -16,16 +16,10 @@ class FetchSurveyFromNetworkUseCase(
             if (surveyApiResponse.status.equals(SUCCESS_CODE, true)) {
                 surveyApiResponse.data?.let { surveyApiResponse ->
 //                    for (survey in surveyApiResponse) {
-                    Log.d(
-                        "invoke",
-                        "surveyApiResponse.sections.find -> ${surveyApiResponse.sections.find { it.sectionId == 8 }} \n" +
-                                "\n" +
-                                "\n"
-                    )
-                    repository.saveSurveyToDb(
-                        surveyApiResponse,
-                        languageId = surveyRequestBodyModel.languageId
-                    )
+                    Log.d("invoke", "surveyApiResponse.sections.find -> ${surveyApiResponse.sections.find { it.sectionId == 8 }} \n" +
+                            "\n" +
+                            "\n")
+                    repository.saveSurveyToDb(surveyApiResponse, languageId = surveyRequestBodyModel.languageId)
 //                    }
                     return true
                 }

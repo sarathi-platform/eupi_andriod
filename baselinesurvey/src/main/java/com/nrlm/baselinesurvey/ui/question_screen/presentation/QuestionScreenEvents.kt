@@ -58,27 +58,15 @@ sealed class QuestionScreenEvents {
         val questionId: Int,
         val optionItemId: Int,
         val inputValue: String,
-    ) : QuestionScreenEvents()
+    ): QuestionScreenEvents()
 
     data class SendAnswersToServer(val surveyId: Int, val sectionId: Int, val didiId: Int) :
         QuestionScreenEvents()
 
-    data class SaveMiscTypeQuestionAnswers(
-        val surveyeeId: Int,
-        val questionEntityState: QuestionEntityState,
-        val optionItemEntity: OptionItemEntity,
-        val selectedValue: String
-    ) : QuestionScreenEvents()
-
-    data class UpdateQuestionAnswerMappingForUi(
-        val question: QuestionEntityState,
-        val mOptionItem: List<OptionItemEntity>
-    ) : QuestionScreenEvents()
+    data class SaveMiscTypeQuestionAnswers(val surveyeeId: Int, val questionEntityState: QuestionEntityState, val optionItemEntity: OptionItemEntity, val selectedValue: String) : QuestionScreenEvents()
+    data class UpdateQuestionAnswerMappingForUi(val question: QuestionEntityState, val mOptionItem: List<OptionItemEntity>): QuestionScreenEvents()
 
     data class UpdateInputTypeQuestionAnswerEntityForUi(val inputTypeQuestionAnswerEntity: InputTypeQuestionAnswerEntity)
 
-    data class UpdateAnsweredQuestionCount(
-        val question: QuestionEntityState,
-        val isAllMultipleTypeQuestionUnanswered: Boolean = false
-    )
+    data class UpdateAnsweredQuestionCount(val question: QuestionEntityState, val isAllMultipleTypeQuestionUnanswered: Boolean = false)
 }

@@ -94,6 +94,9 @@ fun BaseLineStartScreen(
         baseLineStartViewModel.getDidiDetails(didiId)
     }
 
+
+    //val didiInfoDetail = baseLineStartViewModel.didiInfo
+
     val isContinueButtonActive =
         derivedStateOf {
             (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (baseLineStartViewModel.isVoterCard.value != -1) && (baseLineStartViewModel.phoneNumber.value.length == 10) &&
@@ -152,10 +155,7 @@ fun BaseLineStartScreen(
             }
             TextDetails(title = stringResource(R.string.didi_title), data = didi.value.didiName)
             TextDetails(title = stringResource(R.string.dada_title), data = didi.value.dadaName)
-            TextDetails(
-                title = stringResource(R.string.caste_titile),
-                data = getCasteName(didi.value.casteId, baseLineStartViewModel)
-            )
+            TextDetails(title = stringResource(R.string.caste_titile), data = getCasteName(didi.value.casteId, baseLineStartViewModel))
             YesNoButtonComponent(
                 defaultValue = baseLineStartViewModel.isAdharCard.value,
                 title = stringResource(R.string.aadhar_card_titile)
@@ -167,15 +167,15 @@ fun BaseLineStartScreen(
                 //  (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (baseLineStartViewModel.isVoterCard.value != -1) && (baseLineStartViewModel.phoneNumber.value.length == 10) && (baseLineStartViewModel.isAdharCard.value != -1)
             }
 
-            /*EditTextWithTitleComponent(
-                defaultValue = baseLineStartViewModel.aadharNumber.value,
-                title = "Enter Didi's aadhar number",
-                isOnlyNumber = true,
-                showQuestion = baseLineStartViewModel.adharCardState.value,
-                maxLength = 12
-            ) {
-                baseLineStartViewModel.aadharNumber.value = it
-            }*/
+                /*EditTextWithTitleComponent(
+                    defaultValue = baseLineStartViewModel.aadharNumber.value,
+                    title = "Enter Didi's aadhar number",
+                    isOnlyNumber = true,
+                    showQuestion = baseLineStartViewModel.adharCardState.value,
+                    maxLength = 12
+                ) {
+                    baseLineStartViewModel.aadharNumber.value = it
+                }*/
                 Spacer(modifier = Modifier.height(8.dp))
 
             Spacer(modifier = Modifier.height(8.dp))

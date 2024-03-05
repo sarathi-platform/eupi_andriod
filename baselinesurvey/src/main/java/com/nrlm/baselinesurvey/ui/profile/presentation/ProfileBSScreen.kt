@@ -12,22 +12,20 @@ import com.nrlm.baselinesurvey.ui.profile.viewmodel.ProfileBSViewModel
 
 @Composable
 fun ProfileBSScreen(
-    viewModel: ProfileBSViewModel? = null,
-    navController: NavController
-) {
-    CommonProfileScreen(
-        title = stringResource(id = R.string.profile),
-        userName = viewModel?.userName?.value ?: BLANK_STRING,
-        userEmail = viewModel?.userEmail?.value ?: BLANK_STRING,
-        userMobile = viewModel?.userMobileNumber?.value ?: BLANK_STRING,
-        userIdentity = viewModel?.userIdentityNumber?.value ?: BLANK_STRING
-    ) {
+     viewModel:ProfileBSViewModel?=null,
+     navController: NavController
+){
+    CommonProfileScreen(title = stringResource(id = R.string.profile),
+        userName = viewModel?.userName?.value?: BLANK_STRING,
+        userEmail = viewModel?.userEmail?.value?: BLANK_STRING,
+        userMobile =viewModel?.userMobileNumber?.value?: BLANK_STRING ,
+        userIdentity =viewModel?.userIdentityNumber?.value?: BLANK_STRING) {
         navController.popBackStack()
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun ProfileBSScreenPreview() {
+fun ProfileBSScreenPreview(){
     ProfileBSScreen(navController = rememberNavController())
 }

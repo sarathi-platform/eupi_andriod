@@ -13,11 +13,11 @@ class FetchCastesFromNetworkUseCase(private val repository: DataLoadingScreenRep
         try {
             val localLanguageList = repository.fetchLocalLanguageList()
             val casteList = arrayListOf<CasteModel>()
-            if (localLanguageList.isNotEmpty()) {
+            if(localLanguageList.isNotEmpty()){
                 localLanguageList.forEach { language ->
-                    val casteApiResponse = repository.getCasteListFromNetwork(language.id)
-                    if (casteApiResponse.status.equals(SUCCESS, true)) {
-                        if (casteApiResponse.data != null) {
+                    val casteApiResponse =  repository.getCasteListFromNetwork(language.id)
+                     if (casteApiResponse.status.equals(SUCCESS, true)) {
+                        if(casteApiResponse.data != null) {
                             casteApiResponse.data?.let { remoteCasteList ->
                                 remoteCasteList.forEach { casteEntity ->
                                     casteEntity.languageId = language.id

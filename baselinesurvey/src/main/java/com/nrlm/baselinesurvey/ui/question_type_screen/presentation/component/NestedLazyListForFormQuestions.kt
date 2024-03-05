@@ -124,38 +124,27 @@ fun NestedLazyListForFormQuestions(
                     state = innerState,
                     userScrollEnabled = false,
                     modifier = Modifier
-                        .height(maxHeight),
-                    verticalArrangement = Arrangement.spacedBy(dimen_14_dp),
+                        .height(maxHeight), verticalArrangement = Arrangement.spacedBy(dimen_14_dp),
 
-                    ) {
+                ) {
                     item {
                         Spacer(modifier = Modifier.width(dimen_24_dp))
                     }
                     itemsIndexed(
-                        items = /*formTypeOption?.options*/questionTypeScreenViewModel.updatedOptionList.distinctBy { it.optionId }
-                            .filter {
-                                it
-                                    .optionItemEntity?.optionType != QuestionType.Form.name
-                            }.filter { it.showQuestion } ?: emptyList()
+                        items = /*formTypeOption?.options*/questionTypeScreenViewModel.updatedOptionList.distinctBy { it.optionId }.filter { it
+                            .optionItemEntity?.optionType != QuestionType.Form.name}.filter { it.showQuestion } ?: emptyList()
                     ) { index, option ->
                         when (option.optionItemEntity?.optionType) {
                             QuestionType.SingleSelectDropdown.name,
-                            QuestionType.SingleSelectDropDown.name -> {
+                            QuestionType.SingleSelectDropDown.name-> {
                                 TypeDropDownComponent(
                                     option.optionItemEntity?.display,
                                     option.optionItemEntity.selectedValue ?: "Select",
                                     showQuestionState = option,
                                     sources = option.optionItemEntity.values,
-                                    selectOptionText = formQuestionResponseEntity.value.getResponseForOptionId(
-                                        option.optionId ?: -1
-                                    )?.selectedValue ?: BLANK_STRING
+                                    selectOptionText = formQuestionResponseEntity.value.getResponseForOptionId(option.optionId ?: -1)?.selectedValue ?: BLANK_STRING
                                 ) { value ->
-                                    questionTypeScreenViewModel.onEvent(
-                                        QuestionTypeEvent.UpdateConditionalOptionState(
-                                            option,
-                                            value
-                                        )
-                                    )
+                                    questionTypeScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionalOptionState(option, value))
                                     questionTypeScreenViewModel.formTypeOption?.let { formTypeOption ->
                                         saveCacheFormData(
                                             saveFormQuestionResponseEntity(

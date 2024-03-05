@@ -280,13 +280,13 @@ fun OtpVerificationScreenComponent(
     LaunchedEffect(key1 = viewModel.validateApiSuccess.value) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
         if (viewModel.validateApiSuccess.value) {
-            if(navController.graph.route?.equals(Graph.HOME,true) == true) {
+            if(navController.graph.route?.equals(Graph.HOME,true) == true){
                 //Commented for now
 
-                navController.navigate(route = Graph.HOME) {
-                    launchSingleTop = true
-                    popUpTo(AuthScreen.START_SCREEN.route) {
-                        inclusive = true
+                navController.navigate(route = Graph.HOME){
+                    launchSingleTop=true
+                    popUpTo(AuthScreen.START_SCREEN.route){
+                        inclusive=true
                     }
                 }
 

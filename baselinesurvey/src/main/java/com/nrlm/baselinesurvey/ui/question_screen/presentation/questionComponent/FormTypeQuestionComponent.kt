@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,7 +20,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -28,10 +28,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
-import com.nrlm.baselinesurvey.ui.common_components.ExpandableDescriptionContentComponent
+import com.nrlm.baselinesurvey.ui.common_components.CTAButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.OutlinedCTAButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.VerticalAnimatedVisibilityComponent
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
@@ -39,9 +37,7 @@ import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
-import com.nrlm.baselinesurvey.ui.theme.lightGray2
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
@@ -54,7 +50,6 @@ fun FormTypeQuestionComponent(
     modifier: Modifier = Modifier,
     questionIndex: Int,
     question: QuestionEntity?,
-    contests: List<ContentEntity?>? = listOf(),
     showQuestionState: QuestionEntityState = QuestionEntityState.getEmptyStateObject(),
     maxCustomHeight: Dp,
     onAnswerSelection: (questionIndex: Int) -> Unit,
@@ -136,9 +131,7 @@ fun FormTypeQuestionComponent(
                                         .padding(10.dp),
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    Spacer(modifier = Modifier
-                                        .fillMaxWidth()
-                                        .weight(0.2f))
+                                    Spacer(modifier = Modifier.fillMaxWidth().weight(0.2f))
                                     OutlinedCTAButtonComponent(
                                         tittle = question?.questionSummary,
                                         Modifier
@@ -147,43 +140,7 @@ fun FormTypeQuestionComponent(
                                     ) {
                                         onAnswerSelection(questionIndex)
                                     }
-                                    Spacer(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .weight(0.2f)
-                                    )
-                                }
-                            }
-                            item {
-                                Spacer(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 10.dp)
-                                )
-                                if (contests?.isNotEmpty() == true) {
-                                    Divider(
-                                        thickness = dimen_1_dp,
-                                        color = lightGray2,
-                                        modifier = Modifier.fillMaxWidth()
-                                    )
-                                    ExpandableDescriptionContentComponent(
-                                        questionDetailExpanded,
-                                        questionIndex,
-                                        contents = contests,
-                                        subTitle = BLANK_STRING,
-                                        imageClickListener = { imageTypeDescriptionContent ->
-                                            onMediaTypeDescriptionAction(
-                                                DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
-                                                imageTypeDescriptionContent
-                                            )
-                                        },
-                                        videoLinkClicked = { videoTypeDescriptionContent ->
-                                            onMediaTypeDescriptionAction(
-                                                DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
-                                                videoTypeDescriptionContent
-                                            )
-                                        }
-                                    )
+                                    Spacer(modifier = Modifier.fillMaxWidth().weight(0.2f))
                                 }
                             }
                             /*item {

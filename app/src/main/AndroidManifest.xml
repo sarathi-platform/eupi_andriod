@@ -21,9 +21,9 @@
     <application
         android:name="com.patsurvey.nudge.MyApplication"
         android:allowBackup="false"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:icon="${appIcon}"
+        android:label="${appName}"
+        android:roundIcon="${appIconRound}"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:requestLegacyExternalStorage="true"

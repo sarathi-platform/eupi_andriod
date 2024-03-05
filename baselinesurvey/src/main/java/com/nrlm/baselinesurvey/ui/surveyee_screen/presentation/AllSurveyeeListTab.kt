@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.presentation
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.THIS_WEEK_TAB
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.MoveSurveyeesUpdateBannerComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
@@ -53,6 +55,8 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 
@@ -76,6 +80,9 @@ fun AllSurveyeeListTab(
 
     val surveyeeListWithTolaFilter = viewModel.tolaMapSurveyeeListState.value
 
+    val isFilterAppliedState = remember {
+        mutableStateOf(FilterListState())
+    }
 
     val linearProgress = remember {
         mutableStateOf(0.0f)
