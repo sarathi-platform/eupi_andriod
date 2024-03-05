@@ -24,3 +24,4 @@ const val SUBPATH_GET_MISSION = "/baseline-service/mission/view"
 const val GET_CASTE_LIST = "/read-api/config/caste/get"
 
 const val LOGOUT = "/auth-api/user/logout"
+const val CONTENT_MANAGER = "/content-manager/content/getContent"

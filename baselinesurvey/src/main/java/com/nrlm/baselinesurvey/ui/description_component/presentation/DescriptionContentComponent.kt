@@ -18,12 +18,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
@@ -68,7 +71,10 @@ fun DescriptionContentComponent(
                     Text(
                         text = descriptionContentState.textTypeDescriptionContent/*selectedSectionDescription.value*/,
                         color = textColorDark,
-                        style = if (descriptionContentState.subTextTypeDescriptionContent.isNotBlank()) largeTextStyle else quesOptionTextStyle,
+                        style = if (descriptionContentState.subTextTypeDescriptionContent.isNotBlank()) largeTextStyle else TextStyle(
+                            fontFamily = NotoSans,
+                            fontSize = 12.sp
+                        ),
                         modifier = Modifier.padding(horizontal = dimen_10_dp)
                     )
                 }
@@ -154,6 +160,7 @@ fun DescriptionContentComponent(
                     )
                 ) {
                     Text(
+                        modifier = Modifier.padding(horizontal = 25.dp),
                         text = stringResource(R.string.ok_text),
                         color = white,
                         style = smallerTextStyle

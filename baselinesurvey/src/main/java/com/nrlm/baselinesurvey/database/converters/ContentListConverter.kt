@@ -18,7 +18,7 @@ class ContentListConverter {
 
     @TypeConverter
     fun toContents(listInString: String?): List<ContentList?>? {
-        if (listInString.isNullOrEmpty() || listInString.equals("null", false))
+        if (listInString.isNullOrEmpty() || listInString.equals("null", true))
             return listOf()
         val type =
             object : TypeToken<List<ContentList?>?>() {}.type

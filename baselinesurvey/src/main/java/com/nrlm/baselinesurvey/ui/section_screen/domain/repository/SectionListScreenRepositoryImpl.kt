@@ -49,7 +49,8 @@ class SectionListScreenRepositoryImpl(
             )
             val contents = mutableListOf<ContentEntity>()
             for (content in sectionEntity.contentEntities) {
-                val contentEntity = content.contentKey?.let { contentDao.getContentFromIds(it) }
+                val contentEntity =
+                    content.contentKey?.let { contentDao.getContentFromIds(it, languageId) }
                 if (contentEntity != null) {
                     contents.add(contentEntity)
                 }

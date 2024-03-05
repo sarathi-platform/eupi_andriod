@@ -42,8 +42,8 @@ import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_cas
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.UpdateSurveyStateUserCase
 import com.nrlm.baselinesurvey.ui.language.domain.repository.LanguageScreenRepository
 import com.nrlm.baselinesurvey.ui.language.domain.repository.LanguageScreenRepositoryImpl
-import com.nrlm.baselinesurvey.ui.language.domain.use_case.GetLanguageScreenOpenFromUserCase
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.GetLanguageListFromDbUseCase
+import com.nrlm.baselinesurvey.ui.language.domain.use_case.GetLanguageScreenOpenFromUserCase
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.GetSelectedVillageUseCase
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.GetVillageDetailUseCase
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.LanguageScreenUseCase
@@ -114,7 +114,7 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingS
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeListScreenRepository
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeListScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchCastesFromNetworkUseCase
-import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchContentnDataFromNetworkUseCase
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchContentDataFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyeeListFromNetworkUseCase
@@ -440,7 +440,7 @@ object BaselineModule {
             fetchSurveyFromNetworkUseCase = FetchSurveyFromNetworkUseCase(repository),
             fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository),
             fetchCastesFromNetworkUseCase = FetchCastesFromNetworkUseCase(repository),
-            fetchContentnDataFromNetworkUseCase = FetchContentnDataFromNetworkUseCase(repository)
+            fetchContentnDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(repository)
         )
     }
 

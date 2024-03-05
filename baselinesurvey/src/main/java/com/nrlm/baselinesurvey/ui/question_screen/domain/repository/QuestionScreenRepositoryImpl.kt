@@ -69,7 +69,8 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         )
         val contents = mutableListOf<ContentEntity>()
         for (content in sectionEntity.contentEntities) {
-            val contentEntity = content.contentKey?.let { contentDao.getContentFromIds(it) }
+            val contentEntity =
+                content.contentKey?.let { contentDao.getContentFromIds(it, languageId) }
             if (contentEntity != null) {
                 contents.add(contentEntity)
             }
@@ -86,7 +87,8 @@ class QuestionScreenRepositoryImpl @Inject constructor(
             for (question in questionList) {
                 for (content in question.contentEntities) {
                     val contents = mutableListOf<ContentEntity>()
-                    val contentEntity = content.contentKey?.let { contentDao.getContentFromIds(it) }
+                    val contentEntity =
+                        content.contentKey?.let { contentDao.getContentFromIds(it, languageId) }
                     if (contentEntity != null) {
                         contents.add(contentEntity)
                         question.questionId?.let { questionContentMap.put(it, contents) }

@@ -7,6 +7,7 @@ import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.CasteModel
+import com.nrlm.baselinesurvey.model.request.ContentMangerRequest
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.model.response.BeneficiaryApiResponse
@@ -60,8 +61,10 @@ interface DataLoadingScreenRepository {
         pendingActivity: Int
     )
 
-    suspend fun fetchContentsFromServer(): ApiResponseModel<List<ContentResponse>>
+    suspend fun fetchContentsFromServer(contentMangerRequest: ContentMangerRequest): ApiResponseModel<List<ContentResponse>>
     suspend fun deleteContentFromDB()
     suspend fun saveContentsToDB(contents: List<ContentEntity>)
+    suspend fun getContentKeyFromDB(): List<String?>
+    suspend fun getSelectedLanguageId(): String
 
 }

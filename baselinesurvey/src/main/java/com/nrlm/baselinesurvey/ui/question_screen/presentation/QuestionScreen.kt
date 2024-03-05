@@ -9,23 +9,28 @@ import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,9 +52,12 @@ import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_3_dp
 import com.nrlm.baselinesurvey.ui.theme.inactiveLightBlue
 import com.nrlm.baselinesurvey.ui.theme.inactiveTextBlue
+import com.nrlm.baselinesurvey.ui.theme.lightGray2
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
@@ -124,38 +132,58 @@ fun QuestionScreen(
 
         ModelBottomSheetDescriptionContentComponent(
             sheetContent = {
-                DescriptionContentComponent(
-                    buttonClickListener = {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    IconButton(onClick = {
                         scope.launch {
                             scaffoldState.hide()
                         }
-                    },
-                    imageClickListener = { imageTypeDescriptionContent ->
-                        handleOnMediaTypeDescriptionActions(
-                            viewModel,
-                            navController,
-                            DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
-                            imageTypeDescriptionContent
+                    }) {
+                        androidx.compose.material3.Icon(
+                            painter = painterResource(id = R.drawable.info_icon),
+                            contentDescription = "question info button",
+                            Modifier.size(dimen_18_dp),
+                            tint = blueDark
                         )
-                    },
-                    videoLinkClicked = { videoTypeDescriptionContent ->
-                        handleOnMediaTypeDescriptionActions(
-                            viewModel,
-                            navController,
-                            DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
-                            videoTypeDescriptionContent
-                        )
-
-                    },
-                    descriptionContentState = DescriptionContentState(
-                        textTypeDescriptionContent = viewModel.contentMapping.value["text"]?.contentValue
-                            ?: BLANK_STRING,
-                        imageTypeDescriptionContent = viewModel.contentMapping.value["image"]?.contentValue
-                            ?: BLANK_STRING,
-                        videoTypeDescriptionContent = viewModel.contentMapping.value["video"]?.contentValue
-                            ?: BLANK_STRING,
+                    }
+                    Divider(
+                        thickness = dimen_1_dp,
+                        color = lightGray2,
+                        modifier = Modifier.fillMaxWidth()
                     )
-                )
+                    DescriptionContentComponent(
+                        buttonClickListener = {
+                            scope.launch {
+                                scaffoldState.hide()
+                            }
+                        },
+                        imageClickListener = { imageTypeDescriptionContent ->
+                            handleOnMediaTypeDescriptionActions(
+                                viewModel,
+                                navController,
+                                DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
+                                imageTypeDescriptionContent
+                            )
+                        },
+                        videoLinkClicked = { videoTypeDescriptionContent ->
+                            handleOnMediaTypeDescriptionActions(
+                                viewModel,
+                                navController,
+                                DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
+                                videoTypeDescriptionContent
+                            )
+
+                        },
+                        descriptionContentState = DescriptionContentState(
+                            textTypeDescriptionContent = viewModel.contentMapping.value["text"]?.contentValue
+                                ?: BLANK_STRING,
+                            imageTypeDescriptionContent = viewModel.contentMapping.value["image"]?.contentValue
+                                ?: BLANK_STRING,
+                            videoTypeDescriptionContent = viewModel.contentMapping.value["video"]?.contentValue
+                                ?: BLANK_STRING,
+                        )
+                    )
+                }
+
             },
             sheetState = scaffoldState,
             sheetElevation = 20.dp,

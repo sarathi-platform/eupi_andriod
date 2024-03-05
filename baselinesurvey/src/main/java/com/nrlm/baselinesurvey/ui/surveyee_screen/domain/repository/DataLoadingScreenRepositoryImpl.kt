@@ -39,6 +39,7 @@ import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.Sections
+import com.nrlm.baselinesurvey.model.request.ContentMangerRequest
 import com.nrlm.baselinesurvey.model.request.MissionRequest
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
@@ -95,10 +96,10 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
             languageId = languageId
         )
         surveyEntityDao.insertSurvey(surveyEntity)
-        // contentDao.deleteContentFroLanguage(surveyResponseModel.surveyId, languageId)
         surveyResponseModel.sections.forEach { section ->
             val subQuestionList = mutableListOf<QuestionList>()
             val subSubQuestionList = mutableListOf<QuestionList>()
+            val contentLists = mutableListOf<ContentList>()
             sectionEntityDao.deleteSurveySectionFroLanguage(
                 section.sectionId,
                 surveyResponseModel.surveyId,
@@ -116,9 +117,9 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                 questionSize = section.questionList.size,
                 contentEntities = section.contentList
             )
+            contentLists.addAll(section.contentList)
             sectionEntityDao.insertSection(sectionEntity)
 
-            val questionContentList = mutableListOf<MutableMap<Int, List<ContentList>>>()
             section.questionList.forEach { question ->
                 if (section.sectionId == 8) {
                     Log.d("invoke", "section.questionList.forEach -> ${question} \n\n\n")
@@ -160,20 +161,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                         }
                     }
                 }
+                contentLists.addAll(question?.contentList ?: listOf())
             }
-            val sectionData = section.contentList.first()
-//            contentDao.insertContent(
-//                ContentEntity(
-//                    id = 0,
-//                    surveyId = surveyEntity.surveyId,
-//                    sectionId = section.sectionId,
-//                    contentKey = sectionData.contentKey,
-//                    contentType = sectionData.contentType,
-//                    contentValue = sectionData.contentValue,
-//                    questionContentMapping = questionContentList,
-//                    languageId = languageId
-//                )
-//            )
             subQuestionList.forEach { conditionalItem ->
                 Log.d("saveSurveyToDb", "subQuestionList.forEach -> ${conditionalItem}")
                 saveQuestionAndOptionsToDb(
@@ -427,8 +416,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun fetchContentsFromServer(): ApiResponseModel<List<ContentResponse>> {
-        return apiService.getAllContent()
+    override suspend fun fetchContentsFromServer(contentMangerRequest: ContentMangerRequest): ApiResponseModel<List<ContentResponse>> {
+        return apiService.getAllContent(contentMangerRequest)
     }
 
     override suspend fun deleteContentFromDB() {
@@ -439,5 +428,29 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         contentDao.insertContent(contents)
     }
 
+    override suspend fun getContentKeyFromDB(): List<String?> {
+        val contentKeys = mutableListOf<String?>()
+        val sections = sectionEntityDao.getSections()
+        val questions = questionEntityDao.getQuestions()
+        sections?.forEach { section ->
+            val sectionContentKey =
+                section?.let { section.contentEntities.map { it.contentKey }.toList() }
+            if (sectionContentKey != null) {
+                contentKeys.addAll(sectionContentKey)
+            }
+        }
+        questions?.forEach { question ->
+            val questionContentKey =
+                question?.let { question.contentEntities.map { it.contentKey }.toList() }
+            if (questionContentKey != null) {
+                contentKeys.addAll(questionContentKey)
+            }
+        }
+        return contentKeys
+    }
 
+    override suspend fun getSelectedLanguageId(): String {
+        return prefRepo.getAppLanguage() ?: "en"
+    }
 }
+

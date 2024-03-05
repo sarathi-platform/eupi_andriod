@@ -43,8 +43,8 @@ class DataLoadingScreenViewModel @Inject constructor(
                     fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke()
                     fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
                     fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
-                    fetchDataUseCase.fetchContentnDataFromNetworkUseCase.invoke()
                     fetchSurveyForAllLanguages()
+                    fetchDataUseCase.fetchContentnDataFromNetworkUseCase.invoke()
 
                 } else {
                     withContext(Dispatchers.Main) {

@@ -8,5 +8,5 @@ data class FetchDataUseCase(
     val fetchSurveyeeListFromNetworkUseCase: FetchSurveyeeListFromNetworkUseCase,
     val fetchSurveyFromNetworkUseCase: FetchSurveyFromNetworkUseCase,
     val fetchMissionDataFromNetworkUseCase: FetchMissionDataFromNetworkUseCase,
-    val fetchContentnDataFromNetworkUseCase: FetchContentnDataFromNetworkUseCase
+    val fetchContentnDataFromNetworkUseCase: FetchContentDataFromNetworkUseCase
 )

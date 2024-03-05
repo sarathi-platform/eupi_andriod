@@ -3,6 +3,7 @@ package com.nrlm.baselinesurvey.network.interfaces
 import com.nrlm.baselinesurvey.KEY_HEADER_MOBILE
 import com.nrlm.baselinesurvey.KEY_HEADER_TYPE
 import com.nrlm.baselinesurvey.model.datamodel.CasteModel
+import com.nrlm.baselinesurvey.model.request.ContentMangerRequest
 import com.nrlm.baselinesurvey.model.request.FetchSavedSurveyAnswersRequest
 import com.nrlm.baselinesurvey.model.request.LoginRequest
 import com.nrlm.baselinesurvey.model.request.MissionRequest
@@ -19,6 +20,7 @@ import com.nrlm.baselinesurvey.model.response.SavedSurveyAnswersResponse
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.TransactionResponse
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
+import com.nrlm.baselinesurvey.network.CONTENT_MANAGER
 import com.nrlm.baselinesurvey.network.GET_CASTE_LIST
 import com.nrlm.baselinesurvey.network.LOGOUT
 import com.nrlm.baselinesurvey.network.SUBPATH_AUTH_GENERATE_OTP
@@ -84,6 +86,6 @@ interface ApiService {
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun performLogout(): ApiResponseModel<String>
 
-    @GET("https://content.free.beeceptor.com/baseline/content")
-    suspend fun getAllContent(): ApiResponseModel<List<ContentResponse>>
+    @POST(CONTENT_MANAGER)
+    suspend fun getAllContent(@Body contentMangerRequest: ContentMangerRequest): ApiResponseModel<List<ContentResponse>>
 }

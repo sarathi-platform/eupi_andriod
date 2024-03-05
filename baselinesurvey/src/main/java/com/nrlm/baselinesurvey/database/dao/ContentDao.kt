@@ -12,16 +12,11 @@ interface ContentDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertContent(contents: List<ContentEntity>)
 
-    @Query("SELECT * FROM $CONTENT_TABLE_NAME where contentKey=:contentkey")
-    fun getContentFromIds(contentkey: String): ContentEntity
+    @Query("SELECT * FROM $CONTENT_TABLE_NAME where contentKey=:contentkey and languageCode=:languageId")
+    fun getContentFromIds(contentkey: String, languageId: Int): ContentEntity
 
-//    @Query("SELECT * FROM $CONTENT_TABLE_NAME where contentKey=:contentkey")
-//    fun isContentFromIds(contentkey: String): Boolean
 
     @Query("DELETE FROM $CONTENT_TABLE_NAME")
     fun deleteContent()
-
-//    @Query("Delete from $CONTENT_TABLE_NAME where surveyId = :surveyId and languageId = :languageId")
-//    fun deleteContentFroLanguage(surveyId: Int, languageId: Int)
 
 }
