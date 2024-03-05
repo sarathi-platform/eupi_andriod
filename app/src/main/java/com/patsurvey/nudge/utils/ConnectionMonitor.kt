@@ -8,6 +8,9 @@ import android.net.NetworkCapabilities
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkRequest
 import androidx.lifecycle.LiveData
+import com.facebook.network.connectionclass.ConnectionClassManager
+import com.facebook.network.connectionclass.ConnectionQuality
+import com.nudge.core.enums.NetworkSpeed
 import com.patsurvey.nudge.MyApplication
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -147,22 +150,36 @@ class ConnectionMonitor(context: Context) : LiveData<NetworkInfo>() {
         }
     }
 
-    fun getNetworkSpeed(downloadSpeed: Int): String {
+    fun getNetworkSpeed(downloadSpeed: Int): NetworkSpeed {
         return if (downloadSpeed < 128) {
-            NetworkSpeed.POOR.toString()
+            NetworkSpeed.POOR
         } else if (downloadSpeed < 3600) {
-            NetworkSpeed.MODERATE.toString()
+            NetworkSpeed.MODERATE
         } else if (downloadSpeed < 23000) {
-            NetworkSpeed.GOOD.toString()
+            NetworkSpeed.GOOD
         } else if (downloadSpeed > 23000) {
-            NetworkSpeed.EXCELLENT.toString()
+            NetworkSpeed.EXCELLENT
         } else {
-            NetworkSpeed.UNKNOWN.toString()
+            NetworkSpeed.UNKNOWN
         }
     }
 
     object DoesNetworkHaveInternet {
         const val TAG = "DoesNetworkHaveInternet"
+
+        fun getNetworkStrength():NetworkSpeed
+        {
+            val cq = ConnectionClassManager.getInstance().currentBandwidthQuality
+            return when(cq){
+                ConnectionQuality.EXCELLENT -> NetworkSpeed.EXCELLENT
+                ConnectionQuality.POOR -> NetworkSpeed.POOR
+                ConnectionQuality.MODERATE -> NetworkSpeed.MODERATE
+                ConnectionQuality.GOOD -> NetworkSpeed.GOOD
+                ConnectionQuality.UNKNOWN -> NetworkSpeed.UNKNOWN
+            }
+
+
+        }
         fun execute(socketFactory: SocketFactory): Boolean {
             // Make sure to execute this on a background thread.
             return try {
@@ -197,9 +214,13 @@ class ConnectionMonitor(context: Context) : LiveData<NetworkInfo>() {
         )
 
     }
+
+
+
+
+
+
 }
 
-enum class NetworkSpeed {
-    POOR, MODERATE, GOOD, EXCELLENT, UNKNOWN
-}
+
 

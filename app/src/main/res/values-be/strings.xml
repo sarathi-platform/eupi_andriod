@@ -372,4 +372,7 @@
     <string name="user_bug_report_text">বাগ রিপোর্ট</string>
     <string name="vo_endorsement_not_started">वीओ अनुमोदन प्रारंभ नहीं हुआ है</string>
     <string name="export_data_test">Export Data</string>
+    <string name="network_not_available_message">नेटवर्क गैया, अन्नानै उनाव आरोबाव नाजा!</string>
+    <string name="total_members_can_not_be_less_than_earning_members">Total family members can not be less than Earning members.</string>
+    <string name="logout_confirmation">Are you sure to logout?</string>
 </resources>

@@ -1,6 +1,11 @@
 package com.patsurvey.nudge.database.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
+import androidx.room.Update
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.utils.DIDI_TABLE
@@ -114,8 +119,8 @@ interface DidiDao {
     @Query("DELETE from $DIDI_TABLE where needsToPost = :needsToPost")
     fun deleteDidiNeedToPost( needsToPost: Boolean)
 
-    @Query("SELECT * FROM $DIDI_TABLE where needsToPostRanking = :needsToPostRanking and serverId != :serverId")
-    fun getAllNeedToPostDidiRanking(needsToPostRanking: Boolean, serverId: Int): List<DidiEntity>
+    @Query("SELECT * FROM $DIDI_TABLE where needsToPostRanking = :needsToPostRanking")
+    fun getAllNeedToPostDidiRanking(needsToPostRanking: Boolean): List<DidiEntity>
 
     @Query("SELECT * FROM $DIDI_TABLE where needsToPostRanking = :needsToPostRanking")
     fun getAllNeedToPostDidiRankingDidis(needsToPostRanking: Boolean): List<DidiEntity>
@@ -183,8 +188,12 @@ interface DidiDao {
     @Query("SELECT * from $DIDI_TABLE where activeStatus = :activeStatus and needsToPostDeleteStatus = :needsToPostDeleteStatus and villageId=:villageId and transactionId = :transactionId and serverId != :serverId")
     fun getDidisToBeDeletedForVillage(villageId: Int, activeStatus: Int, needsToPostDeleteStatus: Boolean, transactionId: String?, serverId: Int): List<DidiEntity>
 
-    @Query("SELECT * from $DIDI_TABLE where activeStatus = :activeStatus and needsToPostDeleteStatus = :needsToPostDeleteStatus and transactionId = :transactionId and serverId != :serverId")
-    fun getDidisToBeDeleted(activeStatus: Int, needsToPostDeleteStatus: Boolean, transactionId: String?, serverId: Int): List<DidiEntity>
+    @Query("SELECT * from $DIDI_TABLE where activeStatus = :activeStatus and needsToPostDeleteStatus = :needsToPostDeleteStatus and transactionId = :transactionId")
+    fun getDidisToBeDeleted(
+        activeStatus: Int,
+        needsToPostDeleteStatus: Boolean,
+        transactionId: String?
+    ): List<DidiEntity>
 
     @Query("UPDATE $DIDI_TABLE SET needsToPostDeleteStatus = :needsToPostDeleteStatus where id = :id")
     fun updateDeletedDidiNeedToPostStatus(id: Int, needsToPostDeleteStatus: Boolean)
@@ -204,8 +213,11 @@ interface DidiDao {
     @Query("SELECT * from $DIDI_TABLE ORDER BY id DESC LIMIT 1")
     fun fetchLastDidiDetails(): DidiEntity
 
-    @Query("SELECT * from $DIDI_TABLE where needsToPostVo = :needsToPostVo and transactionId = :transactionId and serverId != :serverId")
-    fun fetchAllVONeedToPostStatusDidi(needsToPostVo: Boolean,transactionId: String?, serverId: Int): List<DidiEntity>
+    @Query("SELECT * from $DIDI_TABLE where needsToPostVo = :needsToPostVo and transactionId = :transactionId ")
+    fun fetchAllVONeedToPostStatusDidi(
+        needsToPostVo: Boolean,
+        transactionId: String?
+    ): List<DidiEntity>
 
     @Query("SELECT * from $DIDI_TABLE where needsToPostVo = :needsToPostVo and transactionId != :transactionId")
     fun fetchPendingVOStatusStatusDidi(needsToPostVo: Boolean,transactionId: String?): List<DidiEntity>
@@ -216,17 +228,20 @@ interface DidiDao {
     @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId = :transactionId and serverId = :serverId and activeStatus = :activeStatus")
     fun fetchAllDidiNeedToAdd( needsToPost: Boolean,transactionId : String?,serverId : Int, activeStatus: Int) : List<DidiEntity>
 
-    @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId = :transactionId and serverId != :serverId")
-    fun fetchAllDidiNeedToUpdate( needsToPost: Boolean,transactionId : String?,serverId : Int) : List<DidiEntity>
+    @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId = :transactionId")
+    fun fetchAllDidiNeedToUpdate(needsToPost: Boolean, transactionId: String?): List<DidiEntity>
 
     @Query("SELECT * from $DIDI_TABLE where activeStatus = :status and needsToPostDeleteStatus =:needsToPostDeleteStatus and transactionId = :transactionId and serverId != :serverId")
     fun fetchAllDidiNeedToDelete(status: Int, needsToPostDeleteStatus: Boolean, transactionId: String, serverId: Int) : List<DidiEntity>
 
-    @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId != :transactionId and serverId != :serverId")
-    fun fetchAllPendingDidiNeedToUpdate(  needsToPost: Boolean,transactionId : String?,serverId : Int) : List<DidiEntity>
+    @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId != :transactionId")
+    fun fetchAllPendingDidiNeedToUpdate(
+        needsToPost: Boolean,
+        transactionId: String?
+    ): List<DidiEntity>
 
-    @Query("SELECT * from $DIDI_TABLE where activeStatus = :status and transactionId != :transactionId and serverId != :serverId")
-    fun fetchAllPendingDidiNeedToDelete(status: Int,transactionId: String?,serverId : Int) : List<DidiEntity>
+    @Query("SELECT * from $DIDI_TABLE where activeStatus = :status and transactionId != :transactionId ")
+    fun fetchAllPendingDidiNeedToDelete(status: Int, transactionId: String?): List<DidiEntity>
 
     @Query("DELETE from $DIDI_TABLE where id = :id")
     fun deleteDidi(id : Int)
@@ -289,5 +304,12 @@ interface DidiDao {
 
     @Query("SELECT * from $DIDI_TABLE")
     fun getDidiTableDump(): List<DidiEntity>
+
+    @Transaction
+    fun updateDidiAfterRefresh(forceRefresh: Boolean = false, didiId: Int, didi: DidiEntity) {
+        if (forceRefresh)
+            deleteDidi(didiId)
+        insertDidi(didi)
+    }
 
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="app_name" translatable="false">Sarathi</string>
+    <string name="app_name_uat" translatable="false">Sarathi UAT</string>
     <string name="english" translatable="false">English</string>
     <string name="hindi" translatable="false">हिंदी</string>
     <string name="bangla">হিন্দি</string>
@@ -25,7 +26,7 @@
     <string name="poor_didi_item_text">गरीब दीदी</string>
     <string name="medium_didi_item_text">मध्यम वर्ग दीदी</string>
     <string name="rich_didi_item_text">अमीर दीदी</string>
-    <string name="poor_didi_item_text_plural">गरीब दीदीया</string>
+    <string name="poor_didi_item_text_plural">गरीब दीदियाँ</string>
     <string name="medium_didi_item_text_plural">मध्यम वर्ग दीदियाँ</string>
     <string name="rich_didi_item_text_plural">अमीर दीदीयां</string>
     <string name="more_item_text">अधिक विकल्प</string>
@@ -52,7 +53,7 @@
     <string name="search_video">वीडियो खोजें</string>
     <string name="search_village">गांव खोजेंं</string>
     <string name="otp_text">ओ.टी.पी.</string>
-    <string name="count_didis_pending_plural">%1s दीदीयां बाक़ी है</string>
+    <string name="count_didis_pending_plural">%1s दीदियाँ बाक़ी है</string>
     <string name="count_didis_pending_singular">%1s दीदी बाक़ी है</string>
     <string name="expiry_login_verify_otp">%s s</string>
     <string name="social_mapping">सामाजिक मानचित्रण</string>
@@ -92,12 +93,12 @@
     <string name="cancel_tola_text">रद्द करें</string>
     <string name="get_location_text">लोकेशन प्राप्त करे</string>
     <string name="location_unavailable">लोकेशन उपलब्ध नहीं है</string>
-    <string name="seletc_village_screen_text">गाँव और ग्राम संगठन का चयन करें</string>
+    <string name="seletc_village_screen_text">गाँव व ग्राम संगठन का चयन करें</string>
     <string name="complete_didi_addition">दीदी को जोड़ने का काम पूरा करे</string>
     <string name="user_id_text">पहचान संख्या:</string>
     <string name="empty_tola_string">कोई मोहल्ला जोड़ा नहीं गया</string>
-    <string name="tola_conirmation_text_plural">कुल %1$s प्रतिशत नया मोहल्ला जोड़े गए</string>
-    <string name="tola_conirmation_text_singular">कुल %1$s प्रतिशत नया मोहल्ला जोड़ा गया</string>
+    <string name="tola_conirmation_text_plural">कुल %1$s नए मोहल्ले जोड़े गए हैं</string>
+    <string name="tola_conirmation_text_singular">कुल %1$s नया मोहल्ला जोड़ा गया</string>
     <string name="complete_transect_walk_text">गाँव भ्रमण पूर्ण करें</string>
     <string name="transect_walk_completed_message">ट्रांसेक्ट वाक {VILLAGE_NAME} \n के लिए पूरा हुआ</string>
     <string name="wealth_ranking_completed_message">{VILLAGE_NAME} ग्राम के लिए धन रैंकिंग \nपूर्ण</string>
@@ -110,7 +111,7 @@
     <string name="social_mapping_sub_text_plural">%1$s दीदीयों की पहचान की गई</string>
     <string name="wealth_ranking_sub_text_plural">%1$s गरीब दीदी पहचान की गई</string>
     <string name="pat_sub_text_singular">%1$s अति गरीब दीदी VO को भेजी गई</string>
-    <string name="pat_sub_text_plural">%1$s अति गरीब दीदीयां  VO को भेजी गई</string>
+    <string name="pat_sub_text_plural">%1$s अति गरीब दीदियाँ VO को भेजी गई</string>
     <string name="vo_endorsement_sub_text_singular">%1$s अति गरीब दीदी का अनुमोदन किया गया</string>
     <string name="vo_endorsement_sub_text_plural">%1$s अति गरीब दिदीयों का अनुमोदन किया गया</string>
     <string name="empty_didis_string">कोई दीदी नहीं जोड़ी गई</string>
@@ -165,13 +166,13 @@
     <string name="confirmation_dialog_titile">पक्का करे?</string>
     <string name="section_1_text">अनुभाग 1: </string>
     <string name="section_2_text">अनुभाग 2: </string>
-    <string name="vo_endorsement_screen_title">VO अनुमोदन के लिए दिदीयों की सूची</string>
+    <string name="vo_endorsement_screen_title">VO अनुमोदन के लिए दीदियों की सूची</string>
     <string name="start_endorsement">अनुमोदन शुरू करें</string>
     <string name="pat_completed">PAT पूर्ण  हुआ</string>
     <string name="didi_not_available">दीदी उपलब्ध नहीं है</string>
     <string name="are_you_sure">पक्का करे?</string>
     <string name="you_are_submitting_wealth_ranking_for_count_didis">आप %1$s दीदी का धन रैंकिंग जमा कर रहे है</string>
-    <string name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">आप PAT पूर्ण किए हुए %1$s दिदीयों की सूची VO अनुमोदन के लिए भेज रहे है</string>
+    <string name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">आप PAT पूर्ण किए हुए %1$s दीदियों की सूची VO अनुमोदन के लिए भेज रहे है</string>
     <string name="send_all_for_vo_endorsement">सबको VO अनुमोदन के लिए भेजें</string>
     <string name="pat_survey_completed_message">PAT सर्वे {VILLAGE_NAME} के लिए \nपूरा किया गया</string>
     <string name="vo_endorsement_completed_message">{VILLAGE_NAME} का VO अनुमोदन \nपूर्ण हुआ</string>
@@ -179,14 +180,14 @@
     <string name="form_d_photo_button_text">फ़ॉर्म D का फ़ोटो ले</string>
     <string name="pat_completed_box_title">PAT पूर्ण  हुआ</string>
     <string name="didi_not_available_text_singular">दीदी उपलब्ध नहीं है</string>
-    <string name="didi_not_available_text_plural">दीदीयां मौजूद नहीं है</string>
+    <string name="didi_not_available_text_plural">दीदियाँ मौजूद नहीं है</string>
     <string name="send_for_vo_text">सबको VO अनुमोदन के लिए भेजें</string>
     <string name="didi_pat_complete_text">दीदीयों का PAT पूरा हो गया</string>
     <string name="didi_endorsed_text_plural">दीदियाँ अनुमोदित</string>
     <string name="didi_endorsed_text_singula">दीदी अनुमदित</string>
     <string name="didi_rejected_text_plural">दीदियाँ रद्द किया</string>
     <string name="didi_rejected_text_singula">दीदी अनुमदित</string>
-    <string name="didi_not_available_sub_heading_text">दीदीयां मौजूद नहीं है</string>
+    <string name="didi_not_available_sub_heading_text">दीदियाँ मौजूद नहीं है</string>
     <string name="accept">स्वीकार करे</string>
     <string name="reject">रद्द</string>
     <string name="endorse">अनुमोदन करना</string>
@@ -215,7 +216,7 @@
     <string name="view">फ़ॉर्म को देखे</string>
     <string name="pat_inprogresee_status_text">प्रगति में</string>
     <string name="wealth_ranking_status_not_started_text">धन रैंकिंग शुरू नही किया गया है</string>
-    <string name="wealth_ranking_status_complete_text">धन रैंकिंग पूरी हुई - गरीब नहीं है |</string>
+    <string name="wealth_ranking_status_complete_text">धन रैंकिंग पूरी हुई - {RANK}|</string>
     <string name="pat_in_progress_status_text">PAT सर्वे प्रगति में है</string>
     <string name="pat_completed_status_text">PAT सर्वे पूर्ण हुआ</string>
     <string name="vo_endorsement_status_text">VO अनुमोदन पूर्ण हुआ</string>
@@ -232,7 +233,7 @@
     <string name="bpc_didi_screen_title">दीदीयों की सूची जिनका PAT सत्यापन के लिए स्वतः  चयन किया गया</string>
     <string name="bpc_final_pat_submition_message">क्या आप इस ग्राम संगठन को BPM अनुमोदन के लिए जमा करना चाहते है</string>
     <string name="didi_selected_text_singular">%1$s दीदी चुनी गई</string>
-    <string name="didi_selected_text_plural">%1$s दीदीया  चुनी गई</string>
+    <string name="didi_selected_text_plural">%1$s दीदियाँ  चुनी गई</string>
     <string name="didi_replace_button">बदलें</string>
     <string name="submit_pat_verification">PAT सत्यापन  जमा करे</string>
     <string name="comparison_screen_heading_plural">{COUNT} PAT  सत्यापित  दीदीयों  का सारांश</string>
@@ -261,8 +262,8 @@
     <string name="bpc_result_text">BPC परिणाम</string>
     <string name="permission_dialog_prompt_message">कैमरा अनुमति आवश्यक है, कृपया अनुमति दें</string>
     <string name="permission_required_prompt_title">अनुमति आवश्यक</string>
-    <string name="ultra_poor_didis_verified_text_plural">%1$s अति गरीब दीदीयां सत्यापित की गई</string>
-    <string name="ultra_poor_didis_verified_text_singular">%1$s अति गरीब दीदीयां सत्यापित की गई</string>
+    <string name="ultra_poor_didis_verified_text_plural">%1$s अति गरीब दीदियाँ सत्यापित की गई</string>
+    <string name="ultra_poor_didis_verified_text_singular">%1$s अति गरीब दीदियाँ सत्यापित की गई</string>
     <string name="no_data_form_a_not_generated_text">कोई जानकारी उपलब्ध नही है ! फॉर्म A उत्पन्न नही हुआ</string>
     <string name="no_data_form_b_not_generated_text">कोई जानकारी उपलब्ध नही है ! फॉर्म B उत्पन्न नही हुआ</string>
     <string name="no_data_form_c_not_generated_text">कोई जानकारी उपलब्ध नही है ! फॉर्म C उत्पन्न नही हुआ</string>
@@ -274,7 +275,7 @@
     <string name="logout_sync_error_message">लॉगआउट से पहले इंटरनेट पर डाटा सिंक करना आवश्यक है , कृपया डाटा इंटरनेट पर सिंक करें</string>
     <string name="logout_no_internet_error_message">कोई इंटरनेट उपलब्ध नही है , कृपया इंटरनेट से जोड़े</string>
     <string name="min_battery_text">(न्यूनतम 30% आवश्यक)</string>
-    <string name="do_not_close_app_message">कृपया ऐप  को बंद ना करे  और फ़ोन बंद ना करें कृपया एप्प या फ़ोन को बंद नही करें</string>
+    <string name="do_not_close_app_message">कृपया एप्प या फ़ोन को बंद नही करें</string>
     <string name="vo_endorsement_completed_village_banner_text">VO अनुमोदन पूर्ण हुआ</string>
     <string name="bpc_verification_completed_village_banner_text">BPC सत्यापन पूर्ण हुआ</string>
     <string name="empty_tola_success_message">इस गाँव  में कोई मोहल्ला नहीं है</string>
@@ -317,7 +318,7 @@
     <string name="profile_identity_num">पहचान संख्या</string>
     <string name="user_profile_text">उपयोगकर्ता की प्रोफाइल</string>
     <string name="edit_didi">एडिट करे</string>
-    <string name="delete_didi">हटाए</string>
+    <string name="delete_didi">हटाएँ</string>
     <string name="you_want_to_delete_video">आप %1$s को हटाना चाहते हैं</string>
     <string name="share_logs">लॉग साझा करें</string>
     <string name="earning_member_can_not_be_more_than_family_members">कमाने वाले सदस्य परिवार के सदस्यों से अधिक नहीं हो सकते</string>
@@ -381,6 +382,11 @@
     <string name="user_bug_report_text">बग रिपोर्ट</string>
     <string name="vo_endorsement_not_started">वीओ अनुमोदन प्रारंभ नहीं हुआ है</string>
     <string name="export_data_test">डेटा निर्यात करें</string>
+    <string name="network_not_available_message">नेटवर्क उपलब्ध नहीं है, कृपया बाद में पुनः प्रयास करें!</string>
+    <string name="export_file">एक्सपोर्ट फ़ाइल</string>
+
+    <string name="total_members_can_not_be_less_than_earning_members">परिवार के कुल सदस्य कमाऊ सदस्यों से कम नहीं हो सकते।</string>
+    <string name="logout_confirmation">क्या आप निश्चित रूप से लॉगआउट करेंगे?</string>
 
 
 </resources>

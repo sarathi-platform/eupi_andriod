@@ -2,6 +2,8 @@ package com.patsurvey.nudge.activities
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
 import com.patsurvey.nudge.activities.survey.PatSectionSummaryRepository
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.DidiEntity
@@ -211,7 +213,7 @@ class PatSectionSummaryViewModel @Inject constructor(
         }
     }
 
-    fun calculateDidiScore(didiId: Int) {
+    private suspend fun calculateDidiScore(didiId: Int) {
         var passingMark = 0
         var isDidiAccepted = false
         var comment = LOW_SCORE
@@ -301,4 +303,24 @@ class PatSectionSummaryViewModel @Inject constructor(
             )
         }
     }
+
+    fun savePATEvent() {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            delay(300)
+            calculateDidiScore(didiEntity.value.id)
+            val updatedDidiEntity = patSectionRepository.getDidiFromDB(didiEntity.value.id)
+            patSectionRepository.saveEvent(
+                updatedDidiEntity,
+                EventName.SAVE_PAT_ANSWERS,
+                EventType.STATEFUL
+            )
+            patSectionRepository.saveEvent(
+                updatedDidiEntity,
+                EventName.SAVE_PAT_SCORE,
+                EventType.STATEFUL
+            )
+        }
+    }
+
+
 }

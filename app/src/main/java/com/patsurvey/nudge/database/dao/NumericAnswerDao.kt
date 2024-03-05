@@ -4,7 +4,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.patsurvey.nudge.database.NumericAnswerEntity
+import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.utils.NUMERIC_TABLE_NAME
 
 @Dao
@@ -48,4 +50,11 @@ interface NumericAnswerDao {
 
     @Query("SELECT COUNT(*) FROM $NUMERIC_TABLE_NAME where optionId = :optionId AND questionId =:questionId AND didiId =:didiId")
     fun isNumericQuestionAnswered(questionId: Int, optionId: Int, didiId: Int): Int
+
+    @Transaction
+    fun updateNumericAnswersAfterRefresh(forceRefresh: Boolean = false, didiIdList: List<Int>, numericList: List<NumericAnswerEntity>) {
+        if (forceRefresh)
+            deleteAllNumericAnswersForDidis(didiIdList)
+        insertAll(numericList)
+    }
 }

@@ -1,16 +1,13 @@
 package com.patsurvey.nudge.activities.ui.vo_endorsement
 
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.base.BaseViewModel
-import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
-import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.QuestionListDao
-import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.AbleBodiedFlag
@@ -159,8 +156,18 @@ class VoEndorsementSummaryViewModel @Inject constructor(
                 villageId = villageId
             )
 
+            val updatedDidi = repository.getDidiFromDB(didiId)
+
+
             NudgeLogger.e("VoEndorsementSummaryViewModel",
                 "updateVoEndorsementStatus -> didiDao.updateNeedToPostVO after")
+            val updatedDidiEntity = repository.getDidiFromDB(didiId)
+            repository.saveEvent(
+                updatedDidiEntity,
+                EventName.SAVE_VO_ENDORSEMENT,
+                EventType.STATEFUL
+            )
+
         }
     }
 

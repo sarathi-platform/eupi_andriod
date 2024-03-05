@@ -2,8 +2,10 @@ package com.patsurvey.nudge.di
 
 import android.content.Context
 import androidx.room.Room
+import com.nudge.core.NUDGE_DATABASE
+import com.nudge.core.SYNC_MANAGER_DATABASE
+import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.database.NudgeDatabase
-import com.patsurvey.nudge.utils.NUDGE_DATABASE
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,10 +22,16 @@ object DatabaseModule {
     fun provideDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, NudgeDatabase::class.java, NUDGE_DATABASE)
             // Add Migrations for each migration object created.
-            /*.addMigrations(NudgeDatabase.MIGRATION_1_2).addCallback(NudgeDatabase.NudgeDatabaseCallback())*/
+            .addMigrations(NudgeDatabase.MIGRATION_1_2).addCallback(NudgeDatabase.NudgeDatabaseCallback())
             .fallbackToDestructiveMigration()
             .build()
 
+    @Provides
+    @Singleton
+    fun provideSyncDatabase(@ApplicationContext context: Context) =
+        Room.databaseBuilder(context, SyncManagerDatabase::class.java, SYNC_MANAGER_DATABASE)
+            .fallbackToDestructiveMigration()
+            .build()
 
     @Provides
     @Singleton
@@ -84,5 +92,13 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun providePoorDidiListDao(db: NudgeDatabase) = db.poorDidiListDao()
+
+    @Provides
+    @Singleton
+    fun providesEventsDao(syncDb: SyncManagerDatabase) = syncDb.eventsDao()
+
+    @Provides
+    @Singleton
+    fun providesEventDependencyDao(syncDb: SyncManagerDatabase) = syncDb.eventsDependencyDao()
 
 }
