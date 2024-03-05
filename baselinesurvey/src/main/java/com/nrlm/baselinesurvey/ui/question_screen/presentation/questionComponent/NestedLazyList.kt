@@ -304,7 +304,7 @@ fun NestedLazyList(
                             style = h6,
                             textAlign = TextAlign.Center
                         )
-                    if (sectionDetails.contentData != null) {
+                    if (!sectionDetails.contentData.isNullOrEmpty()) {
                         Icon(
                             painterResource(id = R.drawable.info_icon),
                             null,
