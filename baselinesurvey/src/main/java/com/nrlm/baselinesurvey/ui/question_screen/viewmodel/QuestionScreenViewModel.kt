@@ -20,7 +20,6 @@ import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
-import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
@@ -113,10 +112,6 @@ class QuestionScreenViewModel @Inject constructor(
             questionId,
             didiId
         )
-    }
-
-    suspend fun getDidiInfoObjectLive(didiId: Int): LiveData<List<DidiIntoEntity>> {
-        return questionScreenUseCase.getSurveyeeDetailsUserCase.getDidiInfoObjectLive(didiId)
     }
 
     suspend fun getDidiInfoObjectLive(didiId: Int): LiveData<List<DidiIntoEntity>> {
@@ -904,4 +899,12 @@ class QuestionScreenViewModel @Inject constructor(
         return optionItemList
     }
 
+    private fun getContentData(
+    ): Map<String, ContentEntity> {
+        val map = mutableMapOf<String, ContentEntity>()
+        _filterSectionList.value.contentData?.forEach { contentEntity ->
+            contentEntity?.let { map.put(it.contentType, contentEntity) }
+        }
+        return map
+    }
 }

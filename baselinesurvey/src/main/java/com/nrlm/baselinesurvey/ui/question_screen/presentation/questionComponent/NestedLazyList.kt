@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -303,8 +304,20 @@ fun NestedLazyList(
                             style = h6,
                             textAlign = TextAlign.Center
                         )
-                    Spacer(modifier = Modifier.size(dimen_8_dp))
-                    Spacer(modifier = Modifier.size(24.dp))
+                    if (sectionDetails.contentData != null) {
+                        Icon(
+                            painterResource(id = R.drawable.info_icon),
+                            null,
+                            tint = textColorDark,
+                            modifier = Modifier.clickable {
+                                sectionInfoButtonClicked()
+                            }
+                        )
+                    } else {
+                        Spacer(modifier = Modifier.size(dimen_8_dp))
+                        Spacer(modifier = Modifier.size(24.dp))
+                    }
+
                 }
                 /*TopAppBar(
                     title = {
@@ -469,10 +482,13 @@ fun NestedLazyList(
                                 val selectedOption =
                                     sectionDetails.questionAnswerMapping[question.questionId]?.first()
                                 val optionList = sectionDetails.optionsItemMap[question.questionId]
+                                val contentData =
+                                    sectionDetails.questionContentMapping[question.questionId]
 
                                 ListTypeQuestion(
                                     question = question.questionEntity,
                                     showQuestionState = question,
+                                    contests = contentData,
                                     optionItemEntityList = optionList ?: listOf(),
                                     selectedOptionIndex = optionList?.find { it.optionId == selectedOption?.optionId }?.optionId
                                         ?: -1
@@ -548,10 +564,13 @@ fun NestedLazyList(
                                             ?: -1
                                     )
                                 }
+                                val contentData =
+                                    sectionDetails.questionContentMapping[question.questionId]
                                 GridTypeComponent(
                                     question = question.questionEntity,
                                     showQuestionState = question,
                                     questionIndex = index,
+                                    contests = contentData,
                                     optionItemEntityList = optionList,
                                     selectedOptionIndices = selectedIndices,
                                     maxCustomHeight = maxHeight,
@@ -610,10 +629,13 @@ fun NestedLazyList(
                             }
 
                             QuestionType.Form.name -> {
+                                val contentData =
+                                    sectionDetails.questionContentMapping[question.questionId]
                                 FormTypeQuestionComponent(
                                     question = question.questionEntity,
                                     showQuestionState = question,
                                     questionIndex = index,
+                                    contests = contentData,
                                     maxCustomHeight = maxHeight,
                                     onAnswerSelection = { questionIndex ->
                                         //TODO need to be dynamic..
@@ -652,7 +674,9 @@ fun NestedLazyList(
 //                                        navController.navigate("$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/${question.questionDisplay}/${sectionDetails.surveyId}/${sectionDetails.sectionId}/${question.questionId}/${surveyeeId}")
                                     },
                                     questionDetailExpanded = {
-
+                                        scope.launch {
+                                            queLazyState.animateScrollToItem(it + 3, -10)
+                                        }
                                     },
                                     onMediaTypeDescriptionAction = { descriptionContentType, contentLink -> }
                                 )
@@ -684,13 +708,14 @@ fun NestedLazyList(
                                         }
                                     }
                                 }
-
-
+                                val contentData =
+                                    sectionDetails.questionContentMapping[question.questionId]
 
                                 MiscQuestionBoxComponent(
                                     question = question.questionEntity,
                                     showQuestionState = question,
                                     questionIndex = index,
+                                    contests = contentData,
                                     selectedOptionMapForNumericInputTypeQuestions = selectedOptionMapForNumericInputTypeQuestions,
                                     selectedOption = selectedOption,
                                     maxCustomHeight = maxHeight,
@@ -802,7 +827,11 @@ fun NestedLazyList(
                                     onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
 
                                     },
-                                    questionDetailExpanded = {}
+                                    questionDetailExpanded = {
+                                        scope.launch {
+                                            queLazyState.animateScrollToItem(it + 3, -10)
+                                        }
+                                    }
                                 )
                             }
                         }

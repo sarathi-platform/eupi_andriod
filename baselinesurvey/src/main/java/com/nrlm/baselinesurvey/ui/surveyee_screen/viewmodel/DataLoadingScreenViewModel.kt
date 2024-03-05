@@ -60,17 +60,6 @@ class DataLoadingScreenViewModel @Inject constructor(
                     fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
                     fetchSurveyForAllLanguages()
 
-                } else {
-                    withContext(Dispatchers.Main) {
-                        onEvent(LoaderEvent.UpdateLoaderState(false))
-                        callBack()
-                    }
-                }
-                withContext(Dispatchers.Main) {
-                    onEvent(LoaderEvent.UpdateLoaderState(false))
-                    callBack()
-                }
-
             }
         } catch (ex: Exception) {
             BaselineLogger.e("DataLoadingScreenViewModel", "fetchAllData", ex)
