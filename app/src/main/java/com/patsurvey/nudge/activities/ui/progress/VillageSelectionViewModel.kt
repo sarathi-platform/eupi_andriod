@@ -1545,7 +1545,9 @@ class VillageSelectionViewModel @Inject constructor(
                 val localLanguageList = languageListDao.getAllLanguages()
                val villageReq= createMultiLanguageVillageRequest(localLanguageList)
                 if (!localVillageList.isNullOrEmpty()) {
-                    _villagList.value = localVillageList
+                    _villagList.value = localVillageList.distinctBy {
+                        it.id
+                    }
                    _filterVillageList.value = villageList.value
                     setVoEndorsementCompleteForVillages()
                     apiSuccess(true)
@@ -1738,7 +1740,17 @@ class VillageSelectionViewModel @Inject constructor(
     fun refreshBpcData(context: Context) {
         showLoader.value = true
         villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) {
-            showLoader.value = false
+            _filterVillageList.value = it.villageList.distinctBy {
+                it.id
+            }
+            _villagList.value = it.villageList.distinctBy {
+                it.id
+
+            }
+            villageSelectionRepository.refreshStepListData(it.villageList) {
+                showLoader.value = false
+
+            }
 
         }
     }
@@ -1746,8 +1758,18 @@ class VillageSelectionViewModel @Inject constructor(
     fun refreshCrpData(context: Context) {
         showLoader.value = true
         villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) {
-                showLoader.value = false
+            _filterVillageList.value = it.villageList.distinctBy {
+                it.id
             }
+            _villagList.value = it.villageList.distinctBy {
+                it.id
+
+            }
+            villageSelectionRepository.refreshStepListData(it.villageList) {
+                showLoader.value = false
+
+            }
+        }
 
     }
 
