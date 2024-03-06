@@ -22,7 +22,12 @@ class SaveMatchSummaryRequest(
     val didiNotAvailableCountBPC: Int
 ) {
     companion object {
-        fun getSaveMatchSummaryRequestForBpc(villageId: Int, stepListEntity: StepListEntity, didiList: List<DidiEntity>, questionPassionScore: Int) : SaveMatchSummaryRequest {
+        fun getSaveMatchSummaryRequestForBpc(
+            villageId: Int,
+            stepListEntity: StepListEntity,
+            didiList: List<DidiEntity>,
+            questionPassionScore: Int
+        ): SaveMatchSummaryRequest {
             return SaveMatchSummaryRequest(
                 programId = stepListEntity.programId,
                 score = calculateMatchPercentage(didiList, questionPassionScore),

@@ -184,9 +184,10 @@ class AddDidiRepository @Inject constructor(
         if (eventItem !is DidiEntity)
             return super.createEvent(eventItem, eventName, eventType)
 
-        when(eventName) {
+        when (eventName) {
             EventName.ADD_DIDI -> {
-                val selectedTolaEntity= fetchSingleTolaFromServerId( (eventItem as  DidiEntity).cohortId)
+                val selectedTolaEntity =
+                    fetchSingleTolaFromServerId((eventItem as DidiEntity).cohortId)
                 val requestPayload = AddDidiRequest.getRequestObjectForDidi(
                     eventItem as DidiEntity,
                     selectedTolaEntity?.serverId,
@@ -220,6 +221,7 @@ class AddDidiRepository @Inject constructor(
 
                 return addDidiEvent
             }
+
             EventName.UPDATE_DIDI -> {
                 val selectedTolaEntity =
                     fetchSingleTolaFromServerId((eventItem as DidiEntity).cohortId)
@@ -256,6 +258,7 @@ class AddDidiRepository @Inject constructor(
 
                 return updateDidiEvent
             }
+
             EventName.DELETE_DIDI -> {
                 val selectedTolaEntity =
                     fetchSingleTolaFromServerId((eventItem as DidiEntity).cohortId)
@@ -293,16 +296,23 @@ class AddDidiRepository @Inject constructor(
 
                 return deleteDidiRequest
             }
+
             EventName.SAVE_PAT_ANSWERS -> {
                 val requestPayload = getPatSummarySaveEventPayload(
                     didiEntity = (eventItem as DidiEntity),
                     answerDao = answerDao,
                     numericAnswerDao = numericAnswerDao,
                     questionListDao = questionListDao,
-                    prefRepo= prefRepo
+                    prefRepo = prefRepo
                 )
 
-                var savePatSummeryEvent = getPatSaveAnswersEvent(eventItem = eventItem, eventName = eventName, eventType = eventType, patSummarySaveRequest = requestPayload, prefRepo = prefRepo)
+                var savePatSummeryEvent = getPatSaveAnswersEvent(
+                    eventItem = eventItem,
+                    eventName = eventName,
+                    eventType = eventType,
+                    patSummarySaveRequest = requestPayload,
+                    prefRepo = prefRepo
+                )
 
                 val dependsOn = createEventDependency(eventItem, eventName, savePatSummeryEvent)
                 val metadata = savePatSummeryEvent.metadata?.getMetaDataDtoFromString()
@@ -313,6 +323,7 @@ class AddDidiRepository @Inject constructor(
 
                 return savePatSummeryEvent
             }
+
             EventName.SAVE_PAT_SCORE -> {
                 val selectedTolaEntity =
                     fetchSingleTolaFromServerId((eventItem as DidiEntity).cohortId)
@@ -325,7 +336,13 @@ class AddDidiRepository @Inject constructor(
                     selectedTolaEntity?.serverId ?: 0
                 )
 
-                var savePatScoreEvent = getPatSaveScoreEvent(eventItem = eventItem, eventName = eventName, eventType = eventType, patScoreSaveEvent = requestPayload, prefRepo = prefRepo)
+                var savePatScoreEvent = getPatSaveScoreEvent(
+                    eventItem = eventItem,
+                    eventName = eventName,
+                    eventType = eventType,
+                    patScoreSaveEvent = requestPayload,
+                    prefRepo = prefRepo
+                )
 
                 val dependsOn = createEventDependency(eventItem, eventName, savePatScoreEvent)
                 val metadata = savePatScoreEvent.metadata?.getMetaDataDtoFromString()
@@ -336,6 +353,7 @@ class AddDidiRepository @Inject constructor(
 
                 return savePatScoreEvent
             }
+
             else -> {
                 return null
             }
@@ -343,15 +361,15 @@ class AddDidiRepository @Inject constructor(
 
     }
 
-     override suspend fun <T> createEventDependency(
-         eventItem: T,
-         eventName: EventName,
-         dependentEvent: Events
+    override suspend fun <T> createEventDependency(
+        eventItem: T,
+        eventName: EventName,
+        dependentEvent: Events
     ): List<EventDependencyEntity> {
         val eventDependencyList = mutableListOf<EventDependencyEntity>()
         var filteredList = listOf<Events>()
-         var dependentEventsName = eventName.getDependsOnEventNameForEvent()
-         for (dependsOnEvent in dependentEventsName) {
+        var dependentEventsName = eventName.getDependsOnEventNameForEvent()
+        for (dependsOnEvent in dependentEventsName) {
             val eventList = eventsDao.getAllEventsForEventName(dependsOnEvent.name)
             when (eventName) {
                 EventName.ADD_DIDI -> {
@@ -361,41 +379,44 @@ class AddDidiRepository @Inject constructor(
                         it.payloadLocalId == eventPayload?.cohortDeviceId
                     }
                 }
+
                 EventName.UPDATE_DIDI -> {
                     filteredList = eventList.filter {
                         it.payloadLocalId == dependentEvent.payloadLocalId
                     }
 
                 }
+
                 EventName.DELETE_DIDI, EventName.SAVE_PAT_ANSWERS, EventName.SAVE_PAT_SCORE -> {
                     filteredList = eventList.filter {
                         it.payloadLocalId == dependentEvent.payloadLocalId
 
                     }
                 }
+
                 else -> {
                     filteredList = emptyList()
                 }
             }
 
-             if (filteredList.isNotEmpty()) {
-                 break
-             }
+            if (filteredList.isNotEmpty()) {
+                break
+            }
 
         }
 
 
-         if (filteredList.isNotEmpty()) {
+        if (filteredList.isNotEmpty()) {
 
-             val immediateDependentOn = ArrayList<Events>()
-             immediateDependentOn.add(filteredList.first())
+            val immediateDependentOn = ArrayList<Events>()
+            immediateDependentOn.add(filteredList.first())
 
-             eventDependencyList.addAll(
-                 immediateDependentOn.getEventDependencyEntityListFromEvents(
-                     dependentEvent
-                 )
-             )
-         }
+            eventDependencyList.addAll(
+                immediateDependentOn.getEventDependencyEntityListFromEvents(
+                    dependentEvent
+                )
+            )
+        }
         return eventDependencyList
     }
 

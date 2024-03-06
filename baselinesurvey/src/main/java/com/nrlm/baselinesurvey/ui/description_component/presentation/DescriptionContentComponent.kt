@@ -18,12 +18,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
@@ -31,6 +34,8 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_400_px
 import com.nrlm.baselinesurvey.ui.theme.dimen_450_px
+import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
+import com.nrlm.baselinesurvey.ui.theme.quesOptionTextStyle
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
@@ -61,14 +66,34 @@ fun DescriptionContentComponent(
                     .padding(vertical = dimen_16_dp, horizontal = dimen_18_dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = descriptionContentState.textTypeDescriptionContent/*selectedSectionDescription.value*/,
-                    color = textColorDark,
-                    style = smallerTextStyleNormalWeight,
-                    modifier = Modifier.padding(horizontal = dimen_10_dp)
-                )
+                //TODO need to remove below check after getting correct paraphrase
+                if (descriptionContentState.subTextTypeDescriptionContent.isBlank()) {
+                    Text(
+                        text = descriptionContentState.textTypeDescriptionContent/*selectedSectionDescription.value*/,
+                        color = textColorDark,
+                        style = if (descriptionContentState.subTextTypeDescriptionContent.isNotBlank()) largeTextStyle else TextStyle(
+                            fontFamily = NotoSans,
+                            fontSize = 12.sp
+                        ),
+                        modifier = Modifier.padding(horizontal = dimen_10_dp)
+                    )
+                }
             }
-
+            if (descriptionContentState.subTextTypeDescriptionContent.isNotBlank()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = dimen_18_dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = descriptionContentState.subTextTypeDescriptionContent,
+                        color = textColorDark,
+                        style = quesOptionTextStyle,
+                        modifier = Modifier.padding(horizontal = dimen_10_dp)
+                    )
+                }
+            }
             if (descriptionContentState.imageTypeDescriptionContent != BLANK_STRING) {
                 Box(
                     modifier = Modifier
@@ -135,6 +160,7 @@ fun DescriptionContentComponent(
                     )
                 ) {
                     Text(
+                        modifier = Modifier.padding(horizontal = 25.dp),
                         text = stringResource(R.string.ok_text),
                         color = white,
                         style = smallerTextStyle

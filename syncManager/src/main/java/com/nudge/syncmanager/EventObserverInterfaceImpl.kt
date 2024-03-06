@@ -9,7 +9,6 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import com.nudge.communicationModule.EventObserverInterface
-import com.nudge.core.Core
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
@@ -50,7 +49,7 @@ class EventObserverInterfaceImpl @Inject constructor(
             .setRequiresBatteryNotLow(true)
             .build()
         val data = Data.Builder()
-        data.putInt("batchCount",getBatchSize(networkSpeed) )
+        data.putInt("batchCount", getBatchSize(networkSpeed))
         val uploadWorkRequest: WorkRequest =
             OneTimeWorkRequestBuilder<SyncUploadWorker>().setConstraints(constraints)
                 .setBackoffCriteria(
@@ -63,7 +62,7 @@ class EventObserverInterfaceImpl @Inject constructor(
         WorkManager
             .getInstance(context)
             .enqueue(uploadWorkRequest)
-        
+
     }
 
     fun getBatchSize(networkSpeed: NetworkSpeed): Int {

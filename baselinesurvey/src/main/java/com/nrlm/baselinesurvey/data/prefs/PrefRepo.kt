@@ -54,4 +54,6 @@ interface PrefRepo {
 
     fun getMobileNumber(): String?
 
+    fun getUserId(): String
+
 }

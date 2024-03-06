@@ -11,6 +11,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.database.entity.ContentEntity
+import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
@@ -19,9 +21,9 @@ import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
-import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
+import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.QuestionScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
@@ -39,6 +41,7 @@ import com.nrlm.baselinesurvey.utils.getOptionItemEntityFromInputTypeQuestionAns
 import com.nrlm.baselinesurvey.utils.sortedBySectionOrder
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.updateOptionItemEntityListStateForQuestionByCondition
+import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,7 +52,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuestionScreenViewModel @Inject constructor(
-    private val questionScreenUseCase: QuestionScreenUseCase
+    private val questionScreenUseCase: QuestionScreenUseCase,
+    private val eventsWriterHelperImpl: EventWriterHelperImpl
 ): BaseViewModel() {
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
@@ -57,12 +61,7 @@ class QuestionScreenViewModel @Inject constructor(
 
     private val _sectionDetail = mutableStateOf<SectionListItem>(
         SectionListItem(
-            contentList = listOf(
-                ContentList(
-                    BLANK_STRING,
-                    BLANK_STRING
-                )
-            ), languageId = 2
+            languageId = 2
         )
     )
     private val sectionDetail: State<SectionListItem> get() = _sectionDetail
@@ -86,12 +85,7 @@ class QuestionScreenViewModel @Inject constructor(
 
     private val _filterSectionList = mutableStateOf<SectionListItem>(
         SectionListItem(
-            contentList = listOf(
-                ContentList(
-                    BLANK_STRING,
-                    BLANK_STRING
-                )
-            ), languageId = 2
+            languageId = 2
         )
     )
 
@@ -101,6 +95,7 @@ class QuestionScreenViewModel @Inject constructor(
     val totalQuestionCount = mutableIntStateOf(questionEntityStateList.filter { it.showQuestion }.size)
 
     val isSectionCompleted = mutableStateOf(false)
+    val contentMapping = mutableStateOf<Map<String, ContentEntity>>(mutableMapOf())
 
     fun initQuestionScreenHandler(surveyeeId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -109,8 +104,18 @@ class QuestionScreenViewModel @Inject constructor(
         }
     }
 
-    suspend fun getFormQuestionResponseEntityLive(surveyId: Int, sectionId: Int, questionId: Int, didiId: Int): LiveData<List<FormQuestionResponseEntity>> {
-        return questionScreenUseCase.getFormQuestionResponseUseCase.getFormResponsesForQuestionLive(surveyId, sectionId, questionId, didiId)
+    suspend fun getFormQuestionResponseEntityLive(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        didiId: Int
+    ): LiveData<List<FormQuestionResponseEntity>> {
+        return questionScreenUseCase.getFormQuestionResponseUseCase.getFormResponsesForQuestionLive(
+            surveyId,
+            sectionId,
+            questionId,
+            didiId
+        )
     }
 
     suspend fun getDidiInfoObjectLive(didiId: Int): LiveData<List<DidiIntoEntity>> {
@@ -122,7 +127,11 @@ class QuestionScreenViewModel @Inject constructor(
     var didiInfoObjectLive: LiveData<List<DidiIntoEntity>> = MutableLiveData()
 
     var optionItemEntityList = emptyList<OptionItemEntity>()
-    suspend fun getFormQuestionsOptionsItemEntityList(surveyId: Int, sectionId: Int, questionId: Int): List<OptionItemEntity> {
+    suspend fun getFormQuestionsOptionsItemEntityList(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int
+    ): List<OptionItemEntity> {
         return questionScreenUseCase.getFormQuestionResponseUseCase.invoke(
             surveyId,
             sectionId,
@@ -168,7 +177,7 @@ class QuestionScreenViewModel @Inject constructor(
             updateQuestionAnswerMapForNumericInputQuestions()
 
             _filterSectionList.value = _sectionDetail.value
-
+            contentMapping.value = getContentData()
             initQuestionEntityStateList()
 
             withContext(Dispatchers.Main) {
@@ -213,7 +222,8 @@ class QuestionScreenViewModel @Inject constructor(
 
             }
             filterSectionList.value?.questionAnswerMapping?.forEach { optionItemMap ->
-                val mOptionItemEntity=  getAnswerOptionItemEntityListFromMap(optionItemMap, questionEntity.questionId)
+                val mOptionItemEntity =
+                    getAnswerOptionItemEntityListFromMap(optionItemMap, questionEntity.questionId)
                 questionEntityState = questionEntityState.copy(
                     answerdOptionList = mOptionItemEntity
                 )
@@ -221,7 +231,7 @@ class QuestionScreenViewModel @Inject constructor(
             _questionEntityStateList.add(questionEntityState)
         }
         _questionEntityStateList.sortedBy { it.questionId }
-        
+
         updateQuestionEntityStateForAnsweredQuestions(questionEntityStateList)
 
         updateQuestionEntityStateForConditionalQuestions(questionEntityStateList)
@@ -231,8 +241,18 @@ class QuestionScreenViewModel @Inject constructor(
     private fun updateQuestionEntityStateForConditionalQuestions(questionEntityStateList: SnapshotStateList<QuestionEntityState>) {
         questionEntityStateList.forEach { questionEntityState ->
             sectionDetail.value.questionAnswerMapping[questionEntityState.questionId]?.forEach { optionItemEntity ->
-                onEvent(QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption(questionEntityState, optionItemEntity))
-                onEvent(QuestionTypeEvent.UpdateConditionQuestionStateForMultipleOption(questionEntityState, listOf(optionItemEntity)))
+                onEvent(
+                    QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption(
+                        questionEntityState,
+                        optionItemEntity
+                    )
+                )
+                onEvent(
+                    QuestionTypeEvent.UpdateConditionQuestionStateForMultipleOption(
+                        questionEntityState,
+                        listOf(optionItemEntity)
+                    )
+                )
             }
         }
     }
@@ -297,14 +317,62 @@ class QuestionScreenViewModel @Inject constructor(
                     isLoaderVisible = event.showLoader
                 )
             }
+
             is QuestionScreenEvents.SectionProgressUpdated -> {
                 CoroutineScope(Dispatchers.IO).launch {
-                    questionScreenUseCase.updateSectionProgressUseCase.invoke(event.surveyId, event.sectionId, event.didiId, event.sectionStatus)
+                    onEvent(
+                        EventWriterEvents.UpdateSectionStatusEvent(
+                            event.surveyId,
+                            event.sectionId,
+                            event.didiId,
+                            event.sectionStatus
+                        )
+                    )
+                    questionScreenUseCase.updateSectionProgressUseCase.invoke(
+                        event.surveyId,
+                        event.sectionId,
+                        event.didiId,
+                        event.sectionStatus
+                    )
+                }
+            }
+
+            is EventWriterEvents.UpdateSectionStatusEvent -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val updateSectionStatusEvent =
+                        eventsWriterHelperImpl.createUpdateSectionStatusEvent(
+                            event.surveyId,
+                            event.sectionId,
+                            event.didiId,
+                            event.sectionStatus
+                        )
+                    questionScreenUseCase.eventsWriterUseCase.invoke(
+                        events = updateSectionStatusEvent,
+                        eventType = EventType.STATEFUL
+                    )
+                }
+            }
+
+            is EventWriterEvents.SaveAnswerEvent -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val saveAnswerEvent = eventsWriterHelperImpl.createSaveAnswerEvent(
+                        surveyId = event.surveyId,
+                        sectionId = event.sectionId,
+                        didiId = event.didiId,
+                        questionId = event.questionId,
+                        questionType = event.questionType,
+                        saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
+                    )
+                    questionScreenUseCase.eventsWriterUseCase.invoke(
+                        events = saveAnswerEvent,
+                        eventType = EventType.STATEFUL
+                    )
                 }
             }
 
             is QuestionScreenEvents.UpdateQuestionAnswerMappingForUi -> {
-                val questionAnswerMapping = _sectionDetail.value.questionAnswerMapping.toMutableMap()
+                val questionAnswerMapping =
+                    _sectionDetail.value.questionAnswerMapping.toMutableMap()
                 questionAnswerMapping[event.question.questionId ?: -1] = event.mOptionItem
                 _sectionDetail.value = _sectionDetail.value.copy(
                     questionAnswerMapping = questionAnswerMapping
@@ -882,4 +950,12 @@ class QuestionScreenViewModel @Inject constructor(
         return optionItemList
     }
 
+    private fun getContentData(
+    ): Map<String, ContentEntity> {
+        val map = mutableMapOf<String, ContentEntity>()
+        _filterSectionList.value.contentData?.forEach { contentEntity ->
+            contentEntity?.let { map.put(it.contentType, contentEntity) }
+        }
+        return map
+    }
 }

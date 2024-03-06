@@ -154,7 +154,7 @@ fun SettingScreen(
         mutableStateOf(true)
     }
 
-    var networkSpeed :NetworkSpeed =NetworkSpeed.UNKNOWN
+    var networkSpeed: NetworkSpeed = NetworkSpeed.UNKNOWN
     val lifecycleOwner = LocalLifecycleOwner.current
 
     DisposableEffect(key1 = context) {
@@ -164,9 +164,10 @@ fun SettingScreen(
             NudgeLogger.d("SettingScreen",
                 "DisposableEffect: connectionLiveData.observe isNetworkAvailable -> isNetworkAvailable.isOnline = ${isNetworkAvailable.isOnline}, isNetworkAvailable.connectionSpeed = ${isNetworkAvailable.connectionSpeed}, isNetworkAvailable.speedType = ${isNetworkAvailable.speedType}")
             extraNetworkCheck.value = isNetworkAvailable.isOnline
-                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR|| isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN)
+                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN)
             NudgeCore.updateIsOnline(isNetworkAvailable.isOnline
-                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN))
+                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN)
+            )
 
             networkSpeed = isNetworkAvailable.speedType
         }

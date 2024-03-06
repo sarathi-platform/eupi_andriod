@@ -6,7 +6,7 @@ import com.patsurvey.nudge.database.TolaEntity
 
 data class DeleteTolaRequest(
     @SerializedName("id") var id: Int,
-    @SerializedName("localModifiedDate") var localModifiedDate : Long,
+    @SerializedName("localModifiedDate") var localModifiedDate: Long,
     @SerializedName("name") var cohortName: String,
     @SerializedName("villageId") var villageId: Int,
     @SerializedName("deviceId") var deviceId: String,

@@ -1297,7 +1297,7 @@ class TransectWalkViewModel @Inject constructor(
         )
         updateWorkflowEvent?.let { event ->
 
-        transectWalkRepository.insertEventIntoDb(event, emptyList())
+            transectWalkRepository.insertEventIntoDb(event, emptyList())
         }
 
         updateWorkflowEvent?.let {

@@ -332,8 +332,19 @@ class AddDidiViewModel @Inject constructor(
                 if (didiList.isNotEmpty()) {
                     val didiRequestList = arrayListOf<EditDidiRequest>()
                     didiList.forEach { didi->
-                        didiRequestList.add(EditDidiRequest(didi.serverId,didi.name,didi.address,didi.guardianName,didi.castId,didi.cohortId,didi.villageId,didi.cohortName))
-                       }
+                        didiRequestList.add(
+                            EditDidiRequest(
+                                didi.serverId,
+                                didi.name,
+                                didi.address,
+                                didi.guardianName,
+                                didi.castId,
+                                didi.cohortId,
+                                didi.villageId,
+                                didi.cohortName
+                            )
+                        )
+                    }
                     NudgeLogger.d("AddDidiViewModel", "updateDidiToNetwork -> didiList: $didiList")
                     val response = addDidiRepository.updateDidis(didiRequestList)
                     NudgeLogger.d("AddDidiViewModel", "updateDidiToNetwork ->  response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
@@ -623,7 +634,8 @@ class AddDidiViewModel @Inject constructor(
                     ableBodiedFlag = didiList.value.get(_didiList.value.map { it.id }
                         .indexOf(didiId)).ableBodiedFlag
                 )
-                 val selectedTolaEntity=  addDidiRepository.fetchSingleTolaFromServerId( selectedTola.value.first)
+                val selectedTolaEntity =
+                    addDidiRepository.fetchSingleTolaFromServerId(selectedTola.value.first)
                 addDidiRepository.insertDidi(updatedDidi)
                 addDidiRepository.saveEvent(
                     updatedDidi,
@@ -1234,14 +1246,22 @@ class AddDidiViewModel @Inject constructor(
                                     StepStatus.NOT_STARTED.ordinal,
                                     villageId = villageId
                                 )
-                                saveWorkflowEventIntoDb(stepStatus = StepStatus.NOT_STARTED, villageId = villageId, stepId = newStep.id)
+                                saveWorkflowEventIntoDb(
+                                    stepStatus = StepStatus.NOT_STARTED,
+                                    villageId = villageId,
+                                    stepId = newStep.id
+                                )
                             } else {
                                 addDidiRepository.markStepAsCompleteOrInProgress(
                                     newStep.id,
                                     StepStatus.INPROGRESS.ordinal,
                                     villageId
                                 )
-                                saveWorkflowEventIntoDb(stepStatus = StepStatus.INPROGRESS, villageId = villageId, stepId = newStep.id)
+                                saveWorkflowEventIntoDb(
+                                    stepStatus = StepStatus.INPROGRESS,
+                                    villageId = villageId,
+                                    stepId = newStep.id
+                                )
                             }
                             addDidiRepository.updateNeedToPost(newStep.id, villageId, true)
                         } else {

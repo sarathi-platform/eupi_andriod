@@ -13,8 +13,7 @@ object NudgeCore {
     private var eventObserver: EventObserverInterface? = null
 
 
-
-    fun initEventObserver(syncManager:SyncManager) {
+    fun initEventObserver(syncManager: SyncManager) {
         eventObserver = syncManager.initEventObserver()
     }
 
@@ -22,7 +21,7 @@ object NudgeCore {
         return eventObserver
     }
 
-    fun removeEventObserver(syncManager:SyncManager) {
+    fun removeEventObserver(syncManager: SyncManager) {
         eventObserver = null
         syncManager.removeObserver()
     }

@@ -3,11 +3,14 @@ package com.nrlm.baselinesurvey.database.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.SECTION_TABLE
+import com.nrlm.baselinesurvey.database.converters.ContentListConverter
+import com.nrlm.baselinesurvey.model.response.ContentList
 
 @Entity(tableName = SECTION_TABLE)
 data class SectionEntity(
@@ -50,5 +53,7 @@ data class SectionEntity(
     @Expose
     @ColumnInfo(name = "languageId")
     val languageId: Int,
-    val questionSize: Int = 0
+    val questionSize: Int = 0,
+    @TypeConverters(ContentListConverter::class)
+    val contentEntities: List<ContentList>
 )

@@ -10,11 +10,11 @@ class ApiResponseModel<T>(
 
     @SerializedName("message")
     @Expose
-     val message: String,
+    val message: String,
 
     @SerializedName("data")
     @Expose
-     val data: T? = null,
+    val data: T? = null,
 
     @SerializedName("lastSyncTime")
     @Expose

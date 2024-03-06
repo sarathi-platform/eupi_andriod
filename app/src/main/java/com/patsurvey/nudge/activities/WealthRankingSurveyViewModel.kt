@@ -347,19 +347,33 @@ class WealthRankingSurveyViewModel @Inject constructor(
                     val didiWealthRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                     val didiStepRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                     needToPostDidiList.forEach { didi ->
-                        didiWealthRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, rankingEdit = false, localModifiedDate = System.currentTimeMillis(),  name = didi.name,
-                            address = didi.address,
-                            guardianName = didi.guardianName,
-                            villageId = didi.villageId,
-                            deviceId = didi.localUniqueId
+                        didiWealthRequestList.add(
+                            EditDidiWealthRankingRequest(
+                                didi.serverId,
+                                StepType.WEALTH_RANKING.name,
+                                didi.wealth_ranking,
+                                rankingEdit = false,
+                                localModifiedDate = System.currentTimeMillis(),
+                                name = didi.name,
+                                address = didi.address,
+                                guardianName = didi.guardianName,
+                                villageId = didi.villageId,
+                                deviceId = didi.localUniqueId
+                            )
                         )
-                        )
-                        didiStepRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, rankingEdit = false, localModifiedDate = System.currentTimeMillis(),   name = didi.name,
-                            address = didi.address,
-                            guardianName = didi.guardianName,
-                            villageId = didi.villageId,
-                            deviceId = didi.localUniqueId
-                        )
+                        didiStepRequestList.add(
+                            EditDidiWealthRankingRequest(
+                                didi.serverId,
+                                StepType.SOCIAL_MAPPING.name,
+                                StepStatus.COMPLETED.name,
+                                rankingEdit = false,
+                                localModifiedDate = System.currentTimeMillis(),
+                                name = didi.name,
+                                address = didi.address,
+                                guardianName = didi.guardianName,
+                                villageId = didi.villageId,
+                                deviceId = didi.localUniqueId
+                            )
                         )
                     }
                     didiWealthRequestList.addAll(didiStepRequestList)
@@ -521,6 +535,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
             updateWorkflowStatus(stepStatus = stepStatus, stepId = stepId, villageId = villageId)
         }
     }
+
     fun saveWorkflowEventIntoDb(stepStatus: StepStatus, villageId: Int, stepId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepEntity =

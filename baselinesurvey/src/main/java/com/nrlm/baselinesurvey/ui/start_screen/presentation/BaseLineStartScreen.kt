@@ -94,6 +94,9 @@ fun BaseLineStartScreen(
         baseLineStartViewModel.getDidiDetails(didiId)
     }
 
+
+    //val didiInfoDetail = baseLineStartViewModel.didiInfo
+
     val isContinueButtonActive =
         derivedStateOf {
             (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (baseLineStartViewModel.isVoterCard.value != -1) && (baseLineStartViewModel.phoneNumber.value.length == 10) &&

@@ -198,7 +198,11 @@ fun ParticipatoryWealthRankingSurvey(
                     if (isPreviousStepComplete) {
                         viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
 
-                        viewModel.saveWorkflowEventIntoDb(stepStatus = StepStatus.COMPLETED, villageId = viewModel.villageId, stepId = stepId)
+                        viewModel.saveWorkflowEventIntoDb(
+                            stepStatus = StepStatus.COMPLETED,
+                            villageId = viewModel.villageId,
+                            stepId = stepId
+                        )
 
                         viewModel.updateWorkflowStatusInEvent(
                             StepStatus.COMPLETED,
@@ -833,10 +837,12 @@ fun DidiItemCardForWealthRanking(
                         modifier = Modifier.layoutId("houseNumber_1")
                     )
 
-                    Spacer(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(4.dp)
-                        .layoutId("latestStatusCollapsed"))
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(4.dp)
+                            .layoutId("latestStatusCollapsed")
+                    )
 
                     CardArrow(
                         modifier = Modifier.layoutId("expendArrowImage"),

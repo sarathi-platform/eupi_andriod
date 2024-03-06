@@ -149,10 +149,16 @@ class PatSectionSummaryRepository @Inject constructor(
                     answerDao = answerDao,
                     numericAnswerDao = numericAnswerDao,
                     questionListDao = questionListDao,
-                    prefRepo= prefRepo
+                    prefRepo = prefRepo
                 )
 
-                var savePatSummeryEvent = getPatSaveAnswersEvent(eventItem = eventItem, eventName = eventName, eventType = eventType, patSummarySaveRequest = requestPayload, prefRepo = prefRepo)
+                var savePatSummeryEvent = getPatSaveAnswersEvent(
+                    eventItem = eventItem,
+                    eventName = eventName,
+                    eventType = eventType,
+                    patSummarySaveRequest = requestPayload,
+                    prefRepo = prefRepo
+                )
 
                 val dependsOn = createEventDependency(eventItem, eventName, savePatSummeryEvent)
                 val metadata = savePatSummeryEvent.metadata?.getMetaDataDtoFromString()
@@ -163,6 +169,7 @@ class PatSectionSummaryRepository @Inject constructor(
 
                 return savePatSummeryEvent
             }
+
             EventName.SAVE_PAT_SCORE -> {
                 val didiEntity = (eventItem as DidiEntity)
                 val selectedTolaEntity = tolaDao.fetchSingleTolaFromServerId(didiEntity.cohortId)
@@ -176,7 +183,13 @@ class PatSectionSummaryRepository @Inject constructor(
                     tolaServerId = selectedTolaEntity?.serverId ?: 0
                 )
 
-                var savePatScoreEvent = getPatSaveScoreEvent(eventItem = eventItem, eventName = eventName, eventType = eventType, patScoreSaveEvent = requestPayload, prefRepo = prefRepo)
+                var savePatScoreEvent = getPatSaveScoreEvent(
+                    eventItem = eventItem,
+                    eventName = eventName,
+                    eventType = eventType,
+                    patScoreSaveEvent = requestPayload,
+                    prefRepo = prefRepo
+                )
 
                 val dependsOn = createEventDependency(eventItem, eventName, savePatScoreEvent)
                 val metadata = savePatScoreEvent.metadata?.getMetaDataDtoFromString()
@@ -187,6 +200,7 @@ class PatSectionSummaryRepository @Inject constructor(
 
                 return savePatScoreEvent
             }
+
             else -> {
                 return super.createEvent(eventItem, eventName, eventType)
             }

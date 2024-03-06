@@ -3,8 +3,6 @@ package com.nrlm.baselinesurvey.utils
 import java.util.Stack
 
 
-
-
 object CalculatorUtils {
 
     private fun applyOperator(operatorX: Char, a: Float, b: Float): Float {

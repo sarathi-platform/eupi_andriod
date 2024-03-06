@@ -23,9 +23,9 @@ class JsonEventWriter(
         uri: Uri?,
 
         ) {
-        selectedEventWriters.forEach(){eventName->
+        selectedEventWriters.forEach() { eventName ->
 
-            val eventWriter=    eventWriters.filter {
+            val eventWriter = eventWriters.filter {
                 it.getEventWriteType() == eventName
             }
 
@@ -39,5 +39,6 @@ class JsonEventWriter(
                     eventDependencyDao = eventDependencyDao,
                     dependencyEntity = dependencyEntity
                 )
-        }    }
+        }
+    }
 }

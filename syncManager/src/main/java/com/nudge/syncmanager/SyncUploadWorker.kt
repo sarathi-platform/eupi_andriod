@@ -29,18 +29,18 @@ class SyncUploadWorker @AssistedInject constructor(
 
                 var connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
 
-                if(runAttemptCount>0) {
+                if (runAttemptCount > 0) {
                     batchLimit = getBatchSize(connectionQuality)
                 }
                 var totalPendingEventCount = syncApiRepository.getPendingEventCount()
 
-                    val pendingEvents = syncApiRepository.getPendingEventFromDb()
- // Call Before BatchStart
-                    DeviceBandwidthSampler.getInstance().startSampling()
+                val pendingEvents = syncApiRepository.getPendingEventFromDb()
+                // Call Before BatchStart
+                DeviceBandwidthSampler.getInstance().startSampling()
                 val apiResponse = syncApiRepository.syncEventToServer(pendingEvents)
                 Log.d("UploadWorker", apiResponse.data?.first()?.result ?: "")
 
-                    totalPendingEventCount =  syncApiRepository.getPendingEventCount()
+                totalPendingEventCount = syncApiRepository.getPendingEventCount()
 //                    while (totalPendingEventCount>0) {
 //                        val pendingEvent = syncApiRepository.getPendingEventFromDb()
 //                        totalPendingEventCount =  syncApiRepository.getPendingEventCount()
@@ -51,8 +51,8 @@ class SyncUploadWorker @AssistedInject constructor(
 //
 //                    totalPendingEventCount--;
 //                    }
-                    DeviceBandwidthSampler.getInstance().stopSampling()
-                    Result.success()
+                DeviceBandwidthSampler.getInstance().stopSampling()
+                Result.success()
 
                 throw SocketTimeoutException()
 
