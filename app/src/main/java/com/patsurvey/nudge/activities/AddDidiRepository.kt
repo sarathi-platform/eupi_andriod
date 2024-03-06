@@ -313,7 +313,8 @@ class AddDidiRepository @Inject constructor(
 
                 return savePatSummeryEvent
             }
-            EventName.SAVE_PAT_SCORE -> {
+
+            EventName.REJECTED_PAT_SCORE, EventName.INPROGRESS_PAT_SCORE, EventName.COMPLETED_PAT_SCORE, EventName.NOT_AVAILBLE_PAT_SCORE -> {
                 val selectedTolaEntity =
                     fetchSingleTolaFromServerId((eventItem as DidiEntity).cohortId)
 
@@ -367,12 +368,22 @@ class AddDidiRepository @Inject constructor(
                     }
 
                 }
-                EventName.DELETE_DIDI, EventName.SAVE_PAT_ANSWERS, EventName.SAVE_PAT_SCORE -> {
+
+                EventName.DELETE_DIDI, EventName.SAVE_PAT_ANSWERS -> {
                     filteredList = eventList.filter {
                         it.payloadLocalId == dependentEvent.payloadLocalId
 
                     }
                 }
+
+                EventName.REJECTED_PAT_SCORE, EventName.INPROGRESS_PAT_SCORE, EventName.COMPLETED_PAT_SCORE, EventName.NOT_AVAILBLE_PAT_SCORE -> {
+                    filteredList = eventList.filter {
+                        it.payloadLocalId == dependentEvent.payloadLocalId
+
+                    }
+
+                }
+
                 else -> {
                     filteredList = emptyList()
                 }

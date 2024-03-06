@@ -12,21 +12,25 @@ enum class EventName(val id: Int, val depends_on: List<Int> = emptyList(), val t
     DELETE_DIDI(6, listOf(4), topicName = "BENEFICIARY_DELETE_TOPIC"),
     SAVE_WEALTH_RANKING(7, listOf(5, 4, 1), "BENEFICIARY_EDIT_TOPIC"),
     SAVE_PAT_ANSWERS(8, listOf(7, 4, 1), topicName = "PAT_SAVE_TOPIC"),
-    SAVE_PAT_SCORE(9, listOf(7, 4, 1), topicName = "BENEFICIARY_EDIT_TOPIC"),
-    SAVE_VO_ENDORSEMENT(10, listOf(9, 4, 7, 1), topicName = "BENEFICIARY_EDIT_TOPIC"),
-    CRP_IMAGE(11, listOf(5, 4), topicName = "IMAGE_TOPIC"),
-    BPC_IMAGE(11, listOf(5, 4), topicName = "IMAGE_TOPIC"),
-    FORM_A_TOPIC(12, listOf(10), topicName = "FORM_A_TOPIC"),
-    FORM_B_TOPIC(12, listOf(10), topicName = "FORM_B_TOPIC"),
-    FORM_C_TOPIC(12, listOf(10), topicName = "FORM_C_TOPIC"),
-    FORM_D_TOPIC(12, listOf(10), topicName = "FORM_D_TOPIC"),
+    INPROGRESS_PAT_SCORE(9, listOf(7, 4, 1), topicName = "BENEFICIARY_EDIT_TOPIC"),
+    COMPLETED_PAT_SCORE(10, listOf(9, 7, 4, 1), topicName = "BENEFICIARY_EDIT_TOPIC"),
+    REJECTED_PAT_SCORE(11, listOf(9, 7, 4, 1), topicName = "BENEFICIARY_EDIT_TOPIC"),
+    NOT_AVAILBLE_PAT_SCORE(18, listOf(7, 4, 1), topicName = "BENEFICIARY_EDIT_TOPIC"),
+    SAVE_VO_ENDORSEMENT(12, listOf(9, 4, 7, 1), topicName = "BENEFICIARY_EDIT_TOPIC"),
+    CRP_IMAGE(13, listOf(5, 4), topicName = "IMAGE_TOPIC"),
+    BPC_IMAGE(13, listOf(5, 4), topicName = "IMAGE_TOPIC"),
+    FORM_A_TOPIC(14, listOf(12), topicName = "FORM_A_TOPIC"),
+    FORM_B_TOPIC(14, listOf(12), topicName = "FORM_B_TOPIC"),
+    FORM_C_TOPIC(14, listOf(12), topicName = "FORM_C_TOPIC"),
+    FORM_D_TOPIC(14, listOf(12), topicName = "FORM_D_TOPIC"),
     SAVE_BPC_MATCH_SCORE(
-        13,
+        15,
         emptyList(),
         topicName = "BPC_TOPIC"
     ), //TODO GET TOPIC NAME FOR THIS EVENT
-    WORKFLOW_STATUS_UPDATE(14, emptyList(), "WORKFLOW_TOPIC"),
-    RANKING_FLAG_EDIT(15, emptyList(), "RANKING_FLAG_EDIT_TOPIC");
+    WORKFLOW_STATUS_UPDATE(16, emptyList(), "WORKFLOW_TOPIC"),
+    RANKING_FLAG_EDIT(17, emptyList(), "RANKING_FLAG_EDIT_TOPIC"),
+
 }
 
 fun String.getTopicFromName(): String {

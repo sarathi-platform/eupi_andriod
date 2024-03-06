@@ -50,6 +50,7 @@ import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.getPatScoreEventName
 import com.patsurvey.nudge.utils.getUniqueIdForEntity
 import com.patsurvey.nudge.utils.longToString
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -1375,7 +1376,10 @@ class AddDidiViewModel @Inject constructor(
             )
             addDidiRepository.saveEvent(
                 eventItem = updatedDidiEntity,
-                eventName = EventName.SAVE_PAT_SCORE,
+                eventName = getPatScoreEventName(
+                    updatedDidiEntity,
+                    addDidiRepository.prefRepo.isUserBPC()
+                ),
                 EventType.STATEFUL
             )
             pendingDidiCount.value =
@@ -1750,7 +1754,10 @@ class AddDidiViewModel @Inject constructor(
             val didiEntity = addDidiRepository.getDidi(didiId)
             addDidiRepository.saveEvent(
                 eventItem = didiEntity,
-                eventName = EventName.SAVE_PAT_SCORE,
+                eventName = getPatScoreEventName(
+                    didiEntity,
+                    addDidiRepository.prefRepo.isUserBPC()
+                ),
                 EventType.STATEFUL
             )
         }

@@ -1296,7 +1296,8 @@ fun <T> getParentEntityMapForEvent(eventItem: T, eventName: EventName): Map<Stri
             val didiEntity = (eventItem as DidiEntity)
             mapOf(KEY_PARENT_ENTITY_DIDI_ID to didiEntity.id.toString(), KEY_PARENT_ENTITY_VILLAGE_ID to didiEntity.villageId.toString())
         }
-        EventName.DELETE_DIDI, EventName.SAVE_WEALTH_RANKING, EventName.SAVE_PAT_SCORE, EventName.SAVE_PAT_ANSWERS, EventName.SAVE_VO_ENDORSEMENT -> {
+
+        EventName.DELETE_DIDI, EventName.SAVE_WEALTH_RANKING, EventName.NOT_AVAILBLE_PAT_SCORE, EventName.REJECTED_PAT_SCORE, EventName.INPROGRESS_PAT_SCORE, EventName.COMPLETED_PAT_SCORE, EventName.SAVE_PAT_ANSWERS, EventName.SAVE_VO_ENDORSEMENT -> {
             val didiEntity = (eventItem as DidiEntity)
             mapOf(
                 KEY_PARENT_ENTITY_DIDI_NAME to didiEntity.name,
@@ -1365,6 +1366,23 @@ suspend fun getPatScoreSaveEvent(
 
     )
     return patScoreSaveRequest
+}
+
+fun getPatScoreEventName(didi: DidiEntity, isBpcUserType: Boolean): EventName {
+    val result: EventName =
+        if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
+            EventName.NOT_AVAILBLE_PAT_SCORE
+        } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
+            EventName.INPROGRESS_PAT_SCORE
+        } else {
+            if (didi.forVoEndorsement == 0 || didi.patExclusionStatus != ExclusionType.NO_EXCLUSION.ordinal) EventName.REJECTED_PAT_SCORE else {
+                if (isBpcUserType)
+                    EventName.COMPLETED_PAT_SCORE
+                else
+                    EventName.COMPLETED_PAT_SCORE
+            }
+        }
+    return result
 }
 
 
