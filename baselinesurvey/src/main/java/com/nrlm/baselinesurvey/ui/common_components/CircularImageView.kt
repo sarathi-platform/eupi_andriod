@@ -20,7 +20,6 @@ import coil.compose.rememberImagePainter
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.theme.brownDark
-import com.nrlm.baselinesurvey.ui.theme.brownLightBorderColor
 import com.nrlm.baselinesurvey.ui.theme.yellowBg
 import java.io.File
 

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_20_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_40_dp
@@ -182,26 +184,26 @@ fun SectionItemComponent(
 
 
                 }
+//                Spacer(modifier = Modifier.size(dimen_40_dp))
 
-                Spacer(modifier = Modifier.size(dimen_40_dp))
+                if (sectionStateItem.section.contentData?.isNotEmpty() == true) {
+                    IconButton(
+                        onClick = { onDetailIconClicked(sectionStateItem.section.sectionId) },
+                        modifier = Modifier
+                            .constrainAs(buttonContainer) {
+                                bottom.linkTo(textContainer.bottom)
+                                top.linkTo(textContainer.top)
+                                end.linkTo(parent.end)
+                            }
+                            .size(40.dp)) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.info_icon),
+                            contentDescription = "section info screen",
+                            tint = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.NOT_STARTED.name)) textColorDark50 else blueDark
+                        )
 
-//                IconButton(
-//                    onClick = { onDetailIconClicked(sectionStateItem.section.sectionId) },
-//                    modifier = Modifier
-//                        .constrainAs(buttonContainer) {
-//                            bottom.linkTo(textContainer.bottom)
-//                            top.linkTo(textContainer.top)
-//                            end.linkTo(parent.end)
-//                        }
-//                        .size(40.dp)) {
-//                    Icon(
-//                        painter = painterResource(id = R.drawable.info_icon),
-//                        contentDescription = "section info screen",
-//                        tint = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.NOT_STARTED.name)) textColorDark50 else blueDark
-//                    )
-//
-//                }
-
+                    }
+                }
             }
         }
 

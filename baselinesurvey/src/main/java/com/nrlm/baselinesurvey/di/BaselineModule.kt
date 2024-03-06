@@ -8,6 +8,7 @@ import com.nrlm.baselinesurvey.data.domain.EventWriterHelper
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
+import com.nrlm.baselinesurvey.database.dao.ContentDao
 import com.nrlm.baselinesurvey.database.dao.DidiInfoDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.FormQuestionResponseDao
@@ -120,6 +121,7 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingS
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeListScreenRepository
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeListScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchCastesFromNetworkUseCase
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchContentDataFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyeeListFromNetworkUseCase
@@ -170,7 +172,9 @@ object BaselineModule {
             saveSelectedVillageUseCase = SaveSelectedVillageUseCase(languageScreenRepository),
             getVillageDetailUseCase = GetVillageDetailUseCase(languageScreenRepository),
             saveSelectedLanguageUseCase = SaveSelectedLanguageUseCase(languageScreenRepository),
-            getLanguageScreenOpenFromUserCase = GetLanguageScreenOpenFromUserCase(languageScreenRepository)
+            getLanguageScreenOpenFromUserCase = GetLanguageScreenOpenFromUserCase(
+                languageScreenRepository
+            )
         )
     }
 
@@ -293,6 +297,7 @@ object BaselineModule {
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
         optionItemDao: OptionItemDao,
         surveyeeEntityDao: SurveyeeEntityDao,
+        contentDao: ContentDao,
         taskDao: ActivityTaskDao
     ): SectionListScreenRepository {
         return SectionListScreenRepositoryImpl(
@@ -303,6 +308,8 @@ object BaselineModule {
             questionEntityDao,
             didiSectionProgressEntityDao,
             optionItemDao,
+            surveyeeEntityDao,
+            contentDao,
             surveyeeEntityDao,
             taskDao
         )
@@ -339,7 +346,8 @@ object BaselineModule {
         sectionAnswerEntityDao: SectionAnswerEntityDao,
         optionItemDao: OptionItemDao,
         formQuestionResponseDao: FormQuestionResponseDao,
-        inputTypeQuestionAnswerDao: InputTypeQuestionAnswerDao
+        inputTypeQuestionAnswerDao: InputTypeQuestionAnswerDao,
+        contentDao: ContentDao
     ): QuestionScreenRepository {
         return QuestionScreenRepositoryImpl(
             prefRepo = prefRepo,
@@ -352,7 +360,8 @@ object BaselineModule {
             sectionAnswerEntityDao = sectionAnswerEntityDao,
             optionItemDao = optionItemDao,
             formQuestionResponseDao = formQuestionResponseDao,
-            inputTypeQuestionAnswerDao = inputTypeQuestionAnswerDao
+            inputTypeQuestionAnswerDao = inputTypeQuestionAnswerDao,
+            contentDao
         )
     }
 
@@ -420,6 +429,7 @@ object BaselineModule {
         missionEntityDao: MissionEntityDao,
         missionActivityDao: MissionActivityDao,
         activityTaskDao: ActivityTaskDao,
+        contentDao: ContentDao
     ): DataLoadingScreenRepository {
         return DataLoadingScreenRepositoryImpl(
             prefRepo,
@@ -432,7 +442,8 @@ object BaselineModule {
             optionItemDao,
             missionEntityDao,
             missionActivityDao,
-            activityTaskDao
+            activityTaskDao,
+            contentDao
         )
     }
 
@@ -446,7 +457,8 @@ object BaselineModule {
             fetchUserDetailFromNetworkUseCase = FetchUserDetailFromNetworkUseCase(repository),
             fetchSurveyFromNetworkUseCase = FetchSurveyFromNetworkUseCase(repository),
             fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository),
-            fetchCastesFromNetworkUseCase = FetchCastesFromNetworkUseCase(repository)
+            fetchCastesFromNetworkUseCase = FetchCastesFromNetworkUseCase(repository),
+            fetchContentnDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(repository)
         )
     }
 
@@ -515,9 +527,15 @@ object BaselineModule {
                 formQuestionResponse
             ),
             saveFormQuestionResponseUseCase = SaveFormQuestionResponseUseCase(formQuestionResponse),
-            updateFormQuestionResponseUseCase = UpdateFormQuestionResponseUseCase(formQuestionResponse),
-            deleteFormQuestionOptionResponseUseCase = DeleteFormQuestionOptionResponseUseCase(formQuestionResponse),
-            deleteFormQuestionResponseUseCase = DeleteFormQuestionResponseUseCase(formQuestionResponse)
+            updateFormQuestionResponseUseCase = UpdateFormQuestionResponseUseCase(
+                formQuestionResponse
+            ),
+            deleteFormQuestionOptionResponseUseCase = DeleteFormQuestionOptionResponseUseCase(
+                formQuestionResponse
+            ),
+            deleteFormQuestionResponseUseCase = DeleteFormQuestionResponseUseCase(
+                formQuestionResponse
+            )
         )
     }
 
@@ -561,7 +579,7 @@ object BaselineModule {
         repository: SettingBSRepository
     ): SettingBSUserCase {
         return SettingBSUserCase(
-           getSettingOptionListUseCase = GetSettingOptionListUseCase(repository),
+            getSettingOptionListUseCase = GetSettingOptionListUseCase(repository),
             logoutUseCase = LogoutUseCase(repository),
             saveLanguageScreenOpenFromUseCase = SaveLanguageScreenOpenFromUseCase(repository)
         )
@@ -571,15 +589,15 @@ object BaselineModule {
     @Singleton
     fun provideProfileBSRepository(
         prefRepo: PrefRepo
-    ):ProfileBSRepository{
+    ): ProfileBSRepository {
         return ProfileBSRepositoryImpl(prefRepo)
     }
 
     @Provides
     @Singleton
     fun provideProfileBSUseCase(
-        repository:ProfileBSRepository
-    ):ProfileBSUseCase{
+        repository: ProfileBSRepository
+    ): ProfileBSUseCase {
         return ProfileBSUseCase(
             getIdentityNumberUseCase = GetIdentityNumberUseCase(repository),
             getUserEmailUseCase = GetUserEmailUseCase(repository),
@@ -594,7 +612,9 @@ object BaselineModule {
         sectionListScreenRepository: SectionListScreenRepository
     ): SearchScreenUseCase {
         return SearchScreenUseCase(
-            getSectionListForSurveyUseCase = GetSectionListForSurveyUseCase(sectionListScreenRepository)
+            getSectionListForSurveyUseCase = GetSectionListForSurveyUseCase(
+                sectionListScreenRepository
+            )
         )
     }
 

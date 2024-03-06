@@ -286,7 +286,7 @@ class SurveySummaryViewModel @Inject constructor(
                             }
                         scoreDidiList.add(
                             EditDidiWealthRankingRequest(
-                                id =  didi.serverId,
+                                id = didi.serverId,
                                 score = didi.score,
                                 comment = comment,
                                 type = if (repository.prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
@@ -561,7 +561,11 @@ class SurveySummaryViewModel @Inject constructor(
                 }
             }
             updatedCompletedStepsList.add(stepId)
-            repository.markStepComplete(villageId = villageId, stepId = stepId, updatedCompletedStepsList)
+            repository.markStepComplete(
+                villageId = villageId,
+                stepId = stepId,
+                updatedCompletedStepsList
+            )
             updateWorkflowStatus(StepStatus.COMPLETED, villageId = villageId, stepId)
 
         }
@@ -800,7 +804,12 @@ class SurveySummaryViewModel @Inject constructor(
 
 
                 if (isSyncEnabled(prefRepo = repository.prefRepo)) {
-                repository.writeBpcMatchScoreEvent(villageId, passingScore, bpcStep, didiList.value)
+                    repository.writeBpcMatchScoreEvent(
+                        villageId,
+                        passingScore,
+                        bpcStep,
+                        didiList.value
+                    )
 
                 val matchPercentage = calculateMatchPercentage(didiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }, passingScore)
                 val saveMatchSummaryRequest = SaveMatchSummaryRequest(
@@ -1046,7 +1055,7 @@ class SurveySummaryViewModel @Inject constructor(
         updateWorkflowEvent?.let { event ->
             repository.saveEventToMultipleSources(event, listOf())
         }
-        }
+    }
 
     override fun addRankingFlagEditEvent(isUserBpc: Boolean, stepId: Int) {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {

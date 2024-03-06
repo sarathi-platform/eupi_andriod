@@ -56,5 +56,4 @@ data class OptionsItem(
     val conditions: List<ConditionsDto?>? = emptyList()
 
 
-
 )

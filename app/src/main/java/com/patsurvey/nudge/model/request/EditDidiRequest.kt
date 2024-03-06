@@ -18,8 +18,8 @@ data class EditDidiRequest(
     var castId: Int,
     @SerializedName("cohortId")
     var cohortId: Int,
-    @SerializedName("villageId") var villageId : Int,
-    @SerializedName("cohortName") var cohortName : String,
+    @SerializedName("villageId") var villageId: Int,
+    @SerializedName("cohortName") var cohortName: String,
 ) {
 
     companion object {

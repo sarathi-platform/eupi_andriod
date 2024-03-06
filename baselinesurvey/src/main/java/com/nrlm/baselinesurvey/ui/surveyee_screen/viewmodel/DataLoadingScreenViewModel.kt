@@ -37,13 +37,14 @@ class DataLoadingScreenViewModel @Inject constructor(
         try {
 //            BaselineApplication.appScopeLaunch(Dispatchers.IO) {
             CoroutineScope(Dispatchers.IO).launch {
-                val fetchUserDetailFromNetworkUseCaseSuccess = fetchDataUseCase.fetchUserDetailFromNetworkUseCase.invoke()
+                val fetchUserDetailFromNetworkUseCaseSuccess =
+                    fetchDataUseCase.fetchUserDetailFromNetworkUseCase.invoke()
                 if (fetchUserDetailFromNetworkUseCaseSuccess) {
                     fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke()
                     fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
-
                     fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
                     fetchSurveyForAllLanguages()
+                    fetchDataUseCase.fetchContentnDataFromNetworkUseCase.invoke()
 
                 } else {
                     withContext(Dispatchers.Main) {
@@ -55,6 +56,9 @@ class DataLoadingScreenViewModel @Inject constructor(
                     onEvent(LoaderEvent.UpdateLoaderState(false))
                     callBack()
                 }
+
+                    fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
+                    fetchSurveyForAllLanguages()
 
             }
         } catch (ex: Exception) {

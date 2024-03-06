@@ -745,7 +745,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                 }
                             scoreDidiList.add(
                                 EditDidiWealthRankingRequest(
-                                    id =  didi.serverId,
+                                    id = didi.serverId,
                                     score = didi.score,
                                     comment = comment,
                                     cohortName = didiEntity.cohortName,

@@ -2,8 +2,6 @@ package com.nudge.syncmanager
 
 import com.nudge.core.Core
 import com.nudge.core.EVENTS_BACKUP_COLLECTION
-import com.nudge.core.database.dao.EventDependencyDao
-import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.Events
 import javax.inject.Inject
 

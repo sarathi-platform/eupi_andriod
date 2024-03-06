@@ -50,7 +50,7 @@ class ImageEventWriter : IEventWriter {
             values.put(MediaStore.Images.Media.MIME_TYPE, mimeType)
             values.put(
                 MediaStore.Images.Media.RELATIVE_PATH,
-                Environment.DIRECTORY_PICTURES + SARATHI_DIRECTORY_NAME+"/"+mobileNo
+                Environment.DIRECTORY_PICTURES + SARATHI_DIRECTORY_NAME + "/" + mobileNo
             )
             values.put(
                 MediaStore.Images.Media.DISPLAY_NAME,
@@ -82,7 +82,7 @@ class ImageEventWriter : IEventWriter {
         } else {
             val fileDirectory = File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                SARATHI_DIRECTORY_NAME+"/"+mobileNo
+                SARATHI_DIRECTORY_NAME + "/" + mobileNo
             )
             if (!fileDirectory.exists()) {
                 fileDirectory.mkdirs()

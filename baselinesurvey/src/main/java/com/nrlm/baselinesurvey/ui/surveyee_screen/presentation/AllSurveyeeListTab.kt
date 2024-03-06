@@ -76,6 +76,9 @@ fun AllSurveyeeListTab(
 
     val surveyeeListWithTolaFilter = viewModel.tolaMapSurveyeeListState.value
 
+    val isFilterAppliedState = remember {
+        mutableStateOf(FilterListState())
+    }
 
     val linearProgress = remember {
         mutableStateOf(0.0f)

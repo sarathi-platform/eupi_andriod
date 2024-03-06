@@ -2,12 +2,14 @@ package com.nrlm.baselinesurvey.ui.section_screen.domain.repository
 
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
+import com.nrlm.baselinesurvey.database.dao.ContentDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
+import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
@@ -25,6 +27,7 @@ class SectionListScreenRepositoryImpl(
     private val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
     private val optionItemDao: OptionItemDao,
     private val surveyeeEntityDao: SurveyeeEntityDao,
+    private val contentDao: ContentDao
     private val taskDao: ActivityTaskDao
 ): SectionListScreenRepository {
     override fun getSectionsListForDidi(
@@ -47,7 +50,14 @@ class SectionListScreenRepositoryImpl(
                 survey?.surveyId ?: 0,
                 languageId
             )
-
+            val contents = mutableListOf<ContentEntity>()
+            for (content in sectionEntity.contentEntities) {
+                val contentEntity =
+                    content.contentKey?.let { contentDao.getContentFromIds(it, languageId) }
+                if (contentEntity != null) {
+                    contents.add(contentEntity)
+                }
+            }
             val questionOptionMap = mutableMapOf<Int, List<OptionItemEntity>>()
             if (questionList.isNotEmpty()) {
                 for (question in questionList) {
@@ -66,11 +76,12 @@ class SectionListScreenRepositoryImpl(
                     sectionIcon = sectionEntity.sectionIcon,
                     sectionDetails = sectionEntity.sectionDetails,
                     sectionOrder = sectionEntity.sectionOrder,
-                    contentList = emptyList(),
+                    contentData = contents,
                     languageId = languageId,
                     questionList = questionList,
                     optionsItemMap = questionOptionMap,
-                    questionSize = sectionEntity.questionSize
+                    questionSize = sectionEntity.questionSize,
+                    questionContentMapping = mutableMapOf()
                 )
             )
             /*val sectionProgressForDidiLocal =
@@ -136,7 +147,6 @@ class SectionListScreenRepositoryImpl(
                     sectionIcon = sectionEntity.sectionIcon,
                     sectionDetails = sectionEntity.sectionDetails,
                     sectionOrder = sectionEntity.sectionOrder,
-                    contentList = emptyList(),
                     languageId = languageId,
                     questionList = questionList,
                     optionsItemMap = questionOptionMap,

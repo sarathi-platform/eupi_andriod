@@ -136,6 +136,6 @@ val mediumBoldTextStyle = TextStyle(
 val h6 = TextStyle(
     fontFamily = NotoSans,
     fontWeight = FontWeight.Medium,
-    fontSize = 20.sp,
+    fontSize = 15.sp,
     letterSpacing = 0.15.sp
 )
