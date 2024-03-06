@@ -307,6 +307,7 @@ fun NestedLazyList(
                             textAlign = TextAlign.Center
                         )
                     if (!sectionDetails.contentData.isNullOrEmpty()) {
+                        Spacer(modifier = Modifier.size(dimen_8_dp))
                         Icon(
                             painterResource(id = R.drawable.info_icon),
                             null,

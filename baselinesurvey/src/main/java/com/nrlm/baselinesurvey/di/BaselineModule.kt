@@ -310,7 +310,6 @@ object BaselineModule {
             optionItemDao,
             surveyeeEntityDao,
             contentDao,
-            surveyeeEntityDao,
             taskDao
         )
     }
@@ -450,7 +449,8 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideFetchDataUseCaseUseCase(
-        repository: DataLoadingScreenRepository
+        repository: DataLoadingScreenRepository,
+        splashScreenRepository: SplashScreenRepository
     ): FetchDataUseCase {
         return FetchDataUseCase(
             fetchSurveyeeListFromNetworkUseCase = FetchSurveyeeListFromNetworkUseCase(repository),
@@ -458,7 +458,8 @@ object BaselineModule {
             fetchSurveyFromNetworkUseCase = FetchSurveyFromNetworkUseCase(repository),
             fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository),
             fetchCastesFromNetworkUseCase = FetchCastesFromNetworkUseCase(repository),
-            fetchContentnDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(repository)
+            fetchContentnDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(repository),
+            loggedInUseCase = LoggedInUseCase(splashScreenRepository)
         )
     }
 

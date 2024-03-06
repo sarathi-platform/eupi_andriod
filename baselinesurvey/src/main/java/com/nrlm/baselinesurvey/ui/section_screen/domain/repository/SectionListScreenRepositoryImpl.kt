@@ -27,7 +27,7 @@ class SectionListScreenRepositoryImpl(
     private val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
     private val optionItemDao: OptionItemDao,
     private val surveyeeEntityDao: SurveyeeEntityDao,
-    private val contentDao: ContentDao
+    private val contentDao: ContentDao,
     private val taskDao: ActivityTaskDao
 ): SectionListScreenRepository {
     override fun getSectionsListForDidi(

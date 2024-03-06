@@ -22,8 +22,12 @@ fun DataLoadingScreenComponent(
     val loaderState = viewModel.loaderState.value
 
     LaunchedEffect(key1 = true) {
-        viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-        viewModel.fetchAllData() {
+        if (!viewModel.isUserLoggedIn()) {
+            viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
+            viewModel.fetchAllData() {
+                navController.navigate(HomeScreens.Home_SCREEN.route)
+            }
+        } else {
             navController.navigate(HomeScreens.Home_SCREEN.route)
         }
     }
