@@ -529,8 +529,6 @@ fun SocialMappingDidiListScreen(
                                         onExpendClick = { _, _ -> },
                                         onNotAvailableClick = { didiEntity ->
                                             didiViewModel.setDidiAsUnavailable(didiEntity.id)
-                                            didiViewModel.addDidiNotAvailableEvent(didiEntity.id)
-                                            didiViewModel.addNotAvailableDidiPatScoreEventForDidi(didiEntity.id)
                                         },
                                         onItemClick = {}
                                         ,onCircularImageClick = { didi->
@@ -1207,8 +1205,6 @@ fun DidiItemCard(
                         ){
                             didiMarkedNotAvailable.value = true
                             didiViewModel.setDidiAsUnavailable(didi.id)
-                            didiViewModel.addDidiNotAvailableEvent(didi.id)
-                            didiViewModel.addNotAvailableDidiPatScoreEventForDidi(didi.id)
                         }
                         Spacer(modifier = Modifier.width(6.dp))
                         ButtonPositiveForPAT(
