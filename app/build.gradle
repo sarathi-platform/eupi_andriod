@@ -9,8 +9,8 @@ plugins {
     id 'com.google.firebase.crashlytics'
 
 }
-def version = "0.1.67"
-def prodVersion = "1.1.6"
+def version = "0.1.68"
+def prodVersion = "1.1.7"
 android {
     compileSdk 34
 
