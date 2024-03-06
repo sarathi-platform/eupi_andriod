@@ -27,6 +27,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
+import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
 import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -680,11 +681,22 @@ class AddDidiViewModel @Inject constructor(
     fun filterList() {
         val map = mutableMapOf<String, MutableList<DidiEntity>>()
         didiList.value.forEachIndexed { _, didiDetailsModel ->
-            if (map.containsKey(didiDetailsModel.cohortName)) {
-                map[didiDetailsModel.cohortName]?.add(didiDetailsModel)
-            } else {
-                map[didiDetailsModel.cohortName] = mutableListOf(didiDetailsModel)
+            if(getFromPage().equals(ARG_FROM_PAT_SURVEY, true)){
+                if (didiDetailsModel.wealth_ranking != BLANK_STRING){
+                    if (map.containsKey(didiDetailsModel.cohortName)) {
+                        map[didiDetailsModel.cohortName]?.add(didiDetailsModel)
+                    } else {
+                        map[didiDetailsModel.cohortName] = mutableListOf(didiDetailsModel)
+                    }
+                }
+            }else{
+                if (map.containsKey(didiDetailsModel.cohortName)) {
+                    map[didiDetailsModel.cohortName]?.add(didiDetailsModel)
+                } else {
+                    map[didiDetailsModel.cohortName] = mutableListOf(didiDetailsModel)
+                }
             }
+
         }
         tolaMapList = map
         filterTolaMapList = map

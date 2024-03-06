@@ -176,11 +176,7 @@ fun SocialMappingDidiListScreen(
     }
     var filterSelected by remember {
         mutableStateOf(
-            if (!didiViewModel.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
                 (context as MainActivity).isFilterApplied.value
-            } else {
-                false
-            }
         )
     }
 
@@ -363,11 +359,7 @@ fun SocialMappingDidiListScreen(
                                 onFilterSelected = {
                                     if (didiList.value.isNotEmpty()) {
                                         filterSelected = !it
-                                        if (!didiViewModel.getFromPage()
-                                                .equals(ARG_FROM_PAT_SURVEY, true)
-                                        ) {
                                             (context as MainActivity).isFilterApplied.value = !it
-                                        }
                                         didiViewModel.filterList()
                                     }
                                 }, onSearchValueChange = {
