@@ -130,4 +130,8 @@ class DataLoadingScreenViewModel @Inject constructor(
         )
 
     }
+
+    fun isUserLoggedIn(): Boolean {
+        return fetchDataUseCase.loggedInUseCase.invoke()
+    }
 }

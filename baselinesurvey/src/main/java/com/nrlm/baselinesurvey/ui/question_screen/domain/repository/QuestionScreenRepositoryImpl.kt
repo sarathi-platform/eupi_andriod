@@ -289,7 +289,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         if (notStartedOrInProgressList.isNotEmpty())
             surveyeeEntityDao.updateDidiSurveyStatus(SectionStatus.INPROGRESS.ordinal, didiId)
         else {
-            surveyeeEntityDao.updateDidiSurveyStatus(SectionStatus.COMPLETED.ordinal, didiId)
+//            surveyeeEntityDao.updateDidiSurveyStatus(SectionStatus.COMPLETED.ordinal, didiId)
             surveyeeEntityDao.moveSurveyeeToThisWeek(didiId = didiId, moveDidisToNextWeek = false)
         }
     }

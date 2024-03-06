@@ -93,7 +93,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
             surveyName = surveyResponseModel.surveyName,
             surveyPassingMark = surveyResponseModel.surveyPassingMark,
             thresholdScore = surveyResponseModel.thresholdScore,
-            languageId = languageId
+            languageId = languageId,
+            referenceId = surveyResponseModel.referenceId
         )
         surveyEntityDao.insertSurvey(surveyEntity)
         surveyResponseModel.sections.forEach { section ->

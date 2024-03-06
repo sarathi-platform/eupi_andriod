@@ -63,6 +63,7 @@ import com.nrlm.baselinesurvey.ui.common_components.FormResponseCard
 import com.nrlm.baselinesurvey.ui.common_components.GridTypeComponent
 import com.nrlm.baselinesurvey.ui.common_components.ListTypeQuestion
 import com.nrlm.baselinesurvey.ui.common_components.RadioQuestionBoxComponent
+import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenEvents
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.handleOnMediaTypeDescriptionActions
@@ -76,6 +77,7 @@ import com.nrlm.baselinesurvey.ui.theme.h6
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.convertToSaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.findOptionFromId
 import com.nrlm.baselinesurvey.utils.mapFormQuestionResponseToFromResponseObjectDto
 import com.nrlm.baselinesurvey.utils.mapToOptionItem
@@ -305,6 +307,7 @@ fun NestedLazyList(
                             textAlign = TextAlign.Center
                         )
                     if (!sectionDetails.contentData.isNullOrEmpty()) {
+                        Spacer(modifier = Modifier.size(dimen_8_dp))
                         Icon(
                             painterResource(id = R.drawable.info_icon),
                             null,
@@ -463,6 +466,21 @@ fun NestedLazyList(
                                                 optionItemEntity = optionItem
                                             )
                                         )
+                                        questionScreenViewModel.onEvent(
+                                            EventWriterEvents.SaveAnswerEvent(
+                                                surveyId = sectionDetails.surveyId,
+                                                sectionId = sectionDetails.sectionId,
+                                                didiId = surveyeeId,
+                                                questionId = question.questionId ?: 0,
+                                                questionType = question.questionEntity?.type
+                                                    ?: BLANK_STRING,
+                                                saveAnswerEventOptionItemDtoList = optionItem.convertToSaveAnswerEventOptionItemDto(
+                                                    QuestionType.getQuestionTypeFromName(
+                                                        question.questionEntity.type ?: BLANK_STRING
+                                                    )!!
+                                                )
+                                            )
+                                        )
                                     },
                                     questionDetailExpanded = {
                                         scope.launch {
@@ -534,6 +552,22 @@ fun NestedLazyList(
                                                 optionItemId = optionItem.optionId ?: 0,
                                                 optionItemEntity = optionItem,
                                                 questionEntity = question.questionEntity
+                                            )
+                                        )
+
+                                        questionScreenViewModel.onEvent(
+                                            EventWriterEvents.SaveAnswerEvent(
+                                                surveyId = sectionDetails.surveyId,
+                                                sectionId = sectionDetails.sectionId,
+                                                didiId = surveyeeId,
+                                                questionId = question.questionId ?: 0,
+                                                questionType = question.questionEntity.type
+                                                    ?: BLANK_STRING,
+                                                saveAnswerEventOptionItemDtoList = optionItem.convertToSaveAnswerEventOptionItemDto(
+                                                    QuestionType.getQuestionTypeFromName(
+                                                        question.questionEntity.type ?: BLANK_STRING
+                                                    )!!
+                                                )
                                             )
                                         )
 
@@ -612,6 +646,22 @@ fun NestedLazyList(
                                                 questionId = question.questionId ?: 0,
                                                 optionItemList = optionItems,
                                                 questionEntity = question.questionEntity
+                                            )
+                                        )
+
+                                        questionScreenViewModel.onEvent(
+                                            EventWriterEvents.SaveAnswerEvent(
+                                                surveyId = sectionDetails.surveyId,
+                                                sectionId = sectionDetails.sectionId,
+                                                didiId = surveyeeId,
+                                                questionId = question.questionId ?: 0,
+                                                questionType = question.questionEntity?.type
+                                                    ?: BLANK_STRING,
+                                                saveAnswerEventOptionItemDtoList = optionItems.convertToSaveAnswerEventOptionItemDto(
+                                                    QuestionType.getQuestionTypeFromName(
+                                                        question.questionEntity.type ?: BLANK_STRING
+                                                    )!!
+                                                )
                                             )
                                         )
                                     },
@@ -826,6 +876,22 @@ fun NestedLazyList(
                                                 )
                                             }
                                         }
+
+                                        questionScreenViewModel.onEvent(
+                                            EventWriterEvents.SaveAnswerEvent(
+                                                surveyId = sectionDetails.surveyId,
+                                                sectionId = sectionDetails.sectionId,
+                                                didiId = surveyeeId,
+                                                questionId = question.questionId ?: 0,
+                                                questionType = question.questionEntity.type
+                                                    ?: BLANK_STRING,
+                                                saveAnswerEventOptionItemDtoList = mOptionItem.convertToSaveAnswerEventOptionItemDto(
+                                                    QuestionType.getQuestionTypeFromName(
+                                                        question.questionEntity.type ?: BLANK_STRING
+                                                    )!!
+                                                )
+                                            )
+                                        )
                                     },
                                     onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
 

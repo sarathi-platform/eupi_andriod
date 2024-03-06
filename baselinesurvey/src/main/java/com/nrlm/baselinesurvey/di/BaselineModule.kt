@@ -4,6 +4,8 @@ import com.nrlm.baselinesurvey.activity.domain.repository.MainActivityRepository
 import com.nrlm.baselinesurvey.activity.domain.repository.MainActivityRepositoryImpl
 import com.nrlm.baselinesurvey.activity.domain.use_case.IsLoggedInUseCase
 import com.nrlm.baselinesurvey.activity.domain.use_case.MainActivityUseCase
+import com.nrlm.baselinesurvey.data.domain.EventWriterHelper
+import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.ContentDao
@@ -36,8 +38,11 @@ import com.nrlm.baselinesurvey.ui.auth.use_case.SaveMobileNumberUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.ValidateOtpUseCase
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.CasteListRepository
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.CasteListRepositoryImpl
+import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.EventsWriterRepository
+import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.EventsWriterRepositoryImpl
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.SurveyStateRepository
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.SurveyStateRepositoryImpl
+import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.EventsWriterUserCase
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.GetCasteListUseCase
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.UpdateSurveyStateUserCase
 import com.nrlm.baselinesurvey.ui.language.domain.repository.LanguageScreenRepository
@@ -90,6 +95,8 @@ import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSectionListU
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSectionProgressForDidiUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSurvyeDetails
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.SectionListScreenUseCase
+import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.UpdateSubjectStatusUseCase
+import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.UpdateTaskStatusUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepository
 import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepositoryImpl
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.GetSettingOptionListUseCase
@@ -123,6 +130,8 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.GetActivitySta
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.GetSurveyeeListUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.MoveSurveyeeToThisWeekUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
+import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventsDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -288,7 +297,8 @@ object BaselineModule {
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
         optionItemDao: OptionItemDao,
         surveyeeEntityDao: SurveyeeEntityDao,
-        contentDao: ContentDao
+        contentDao: ContentDao,
+        taskDao: ActivityTaskDao
     ): SectionListScreenRepository {
         return SectionListScreenRepositoryImpl(
             prefRepo,
@@ -299,21 +309,26 @@ object BaselineModule {
             didiSectionProgressEntityDao,
             optionItemDao,
             surveyeeEntityDao,
-            contentDao
+            contentDao,
+            taskDao
         )
     }
 
     @Provides
     @Singleton
     fun providesSectionListScreenUseCase(
-        sectionListScreenRepository: SectionListScreenRepository
+        sectionListScreenRepository: SectionListScreenRepository,
+        eventsWriterRepository: EventsWriterRepository
     ): SectionListScreenUseCase {
         return SectionListScreenUseCase(
             getSectionListUseCase = GetSectionListUseCase(sectionListScreenRepository),
             getSectionProgressForDidiUseCase = GetSectionProgressForDidiUseCase(
                 sectionListScreenRepository
             ),
-            getSurvyeDetails = GetSurvyeDetails(sectionListScreenRepository)
+            getSurvyeDetails = GetSurvyeDetails(sectionListScreenRepository),
+            updateSubjectStatusUseCase = UpdateSubjectStatusUseCase(sectionListScreenRepository),
+            updateTaskStatusUseCase = UpdateTaskStatusUseCase(sectionListScreenRepository),
+            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }
 
@@ -354,7 +369,8 @@ object BaselineModule {
     fun providesQuestionScreenUseCase(
         questionScreenRepository: QuestionScreenRepository,
         formQuestionResponseRepository: FormQuestionResponseRepository,
-        startScreenRepository: StartScreenRepository
+        startScreenRepository: StartScreenRepository,
+        eventsWriterRepository: EventsWriterRepository
     ): QuestionScreenUseCase {
         return QuestionScreenUseCase(
             getSectionUseCase = GetSectionUseCase(questionScreenRepository),
@@ -374,7 +390,8 @@ object BaselineModule {
             deleteFormQuestionResponseUseCase = DeleteFormQuestionResponseUseCase(
                 formQuestionResponseRepository
             ),
-            getSurveyeeDetailsUserCase = GetSurveyeeDetailsUserCase(startScreenRepository)
+            getSurveyeeDetailsUserCase = GetSurveyeeDetailsUserCase(startScreenRepository),
+            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }
 
@@ -432,7 +449,8 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideFetchDataUseCaseUseCase(
-        repository: DataLoadingScreenRepository
+        repository: DataLoadingScreenRepository,
+        splashScreenRepository: SplashScreenRepository
     ): FetchDataUseCase {
         return FetchDataUseCase(
             fetchSurveyeeListFromNetworkUseCase = FetchSurveyeeListFromNetworkUseCase(repository),
@@ -440,7 +458,8 @@ object BaselineModule {
             fetchSurveyFromNetworkUseCase = FetchSurveyFromNetworkUseCase(repository),
             fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository),
             fetchCastesFromNetworkUseCase = FetchCastesFromNetworkUseCase(repository),
-            fetchContentnDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(repository)
+            fetchContentnDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(repository),
+            loggedInUseCase = LoggedInUseCase(splashScreenRepository)
         )
     }
 
@@ -606,6 +625,60 @@ object BaselineModule {
         prefRepo: PrefRepo
     ): CasteListRepository {
         return CasteListRepositoryImpl(prefRepo)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEventsWriterUseCase(
+        eventsWriterRepository: EventsWriterRepository
+    ): EventsWriterUserCase {
+        return EventsWriterUserCase(eventsWriterRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEventsWriterRepository(
+        prefRepo: PrefRepo,
+        surveyEntityDao: SurveyEntityDao,
+        missionEntityDao: MissionEntityDao,
+        didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
+        eventsDao: EventsDao,
+        eventDependencyDao: EventDependencyDao
+    ): EventsWriterRepository {
+        return EventsWriterRepositoryImpl(
+            prefRepo = prefRepo,
+            surveyEntityDao = surveyEntityDao,
+            didiSectionProgressEntityDao = didiSectionProgressEntityDao,
+            eventsDao = eventsDao,
+            eventDependencyDao = eventDependencyDao,
+            missionEntityDao = missionEntityDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesEventWriterHelper(
+        prefRepo: PrefRepo,
+        repositoryImpl: EventsWriterRepositoryImpl,
+        eventsDao: EventsDao,
+        eventDependencyDao: EventDependencyDao,
+        surveyEntityDao: SurveyEntityDao,
+        surveyeeEntityDao: SurveyeeEntityDao,
+        taskDao: ActivityTaskDao,
+        activityDao: MissionActivityDao,
+        didiSectionProgressEntityDao: DidiSectionProgressEntityDao
+    ): EventWriterHelper {
+        return EventWriterHelperImpl(
+            prefRepo = prefRepo,
+            repositoryImpl = repositoryImpl,
+            eventsDao = eventsDao,
+            eventDependencyDao = eventDependencyDao,
+            surveyEntityDao = surveyEntityDao,
+            surveyeeEntityDao = surveyeeEntityDao,
+            taskDao = taskDao,
+            activityDao = activityDao,
+            didiSectionProgressEntityDao = didiSectionProgressEntityDao
+        )
     }
 
     /*@Provides

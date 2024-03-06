@@ -36,6 +36,7 @@ import com.nrlm.baselinesurvey.model.FormResponseObjectDto
 import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.QuestionList
+import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.ui.Constants.ItemType
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
@@ -44,6 +45,7 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOpt
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.search.viewmodel.ComplexSearchState
+import com.nudge.core.enums.EventName
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -991,10 +993,90 @@ fun List<SectionListItem>.convertToComplexSearchState(): List<ComplexSearchState
     }
     this.forEach { section ->
         section.questionList.forEach { question ->
-            val complexSearchStateForQuestion = ComplexSearchState(itemId = question.questionId ?: -1, itemParentId = question.sectionId, itemType = ItemType.Question, sectionName = section.sectionName, questionTitle = question.questionDisplay ?: BLANK_STRING, isSectionSearchOnly = false)
+            val complexSearchStateForQuestion = ComplexSearchState(
+                itemId = question.questionId ?: -1,
+                itemParentId = question.sectionId,
+                itemType = ItemType.Question,
+                sectionName = section.sectionName,
+                questionTitle = question.questionDisplay ?: BLANK_STRING,
+                isSectionSearchOnly = false
+            )
             complexSearchStateList.add(complexSearchStateForQuestion)
         }
     }
 
     return complexSearchStateList
+}
+
+fun <T> getParentEntityMapForEvent(eventItem: T, eventName: EventName): Map<String, String> {
+    return when (eventName) {
+
+        EventName.ADD_SECTION_PROGRESS_FOR_DIDI_EVENT -> {
+            emptyMap()
+        }
+
+        else -> {
+            emptyMap()
+        }
+    }
+}
+
+fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType): List<SaveAnswerEventOptionItemDto> {
+    val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
+    when (type) {
+        QuestionType.RadioButton -> {
+            val mSaveAnswerEventOptionItemDto =
+                SaveAnswerEventOptionItemDto(this.optionId ?: 0, this.display)
+            saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+        }
+
+        QuestionType.List,
+        QuestionType.SingleSelect -> {
+            val mSaveAnswerEventOptionItemDto =
+                SaveAnswerEventOptionItemDto(this.optionId ?: 0, this.display)
+            saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+        }
+
+        QuestionType.SingleSelectDropDown,
+        QuestionType.SingleSelectDropdown -> {
+            val mSaveAnswerEventOptionItemDto =
+                SaveAnswerEventOptionItemDto(this.optionId ?: 0, this.selectedValue)
+            saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+        }
+
+        QuestionType.Input,
+        QuestionType.InputText,
+        QuestionType.InputNumber,
+        QuestionType.InputNumberEditText -> {
+            val mSaveAnswerEventOptionItemDto =
+                SaveAnswerEventOptionItemDto(this.optionId ?: 0, this.selectedValue)
+            saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+        }
+
+        else -> {
+
+        }
+    }
+
+    return saveAnswerEventOptionItemDtoList
+}
+
+fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemDto(type: QuestionType): List<SaveAnswerEventOptionItemDto> {
+    val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
+    when (type) {
+        QuestionType.MultiSelect,
+        QuestionType.Grid -> {
+            this.forEach {
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+            }
+        }
+
+        else -> {
+
+        }
+    }
+
+    return saveAnswerEventOptionItemDtoList
 }

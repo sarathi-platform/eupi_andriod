@@ -27,20 +27,12 @@ object DatabaseModule {
             .build()
 
 
-//    @Provides
-//    @Singleton
-//    fun provideSyncDatabase(@ApplicationContext context: Context) =
-//        Room.databaseBuilder(context, com.nudge.core.database.SyncManagerDatabase::class.java,
-//            com.nudge.core.SYNC_MANAGER_DATABASE
-//        )
-//            .fallbackToDestructiveMigration()
-//            .build()
-@Provides
-@Singleton
-fun provideSyncDatabase(@ApplicationContext context: Context) =
-    Room.databaseBuilder(context, SyncManagerDatabase::class.java, SYNC_MANAGER_DATABASE)
-        .fallbackToDestructiveMigration()
-        .build()
+    @Provides
+    @Singleton
+    fun provideSyncDatabase(@ApplicationContext context: Context) =
+        Room.databaseBuilder(context, SyncManagerDatabase::class.java, SYNC_MANAGER_DATABASE)
+            .fallbackToDestructiveMigration()
+            .build()
 
     @Provides
     @Singleton
@@ -105,7 +97,16 @@ fun provideSyncDatabase(@ApplicationContext context: Context) =
 
     @Provides
     @Singleton
-    fun provideInputTypeQuestionAnswerDao(db: NudgeBaselineDatabase) = db.inputTypeQuestionAnswerDao()
+    fun provideInputTypeQuestionAnswerDao(db: NudgeBaselineDatabase) =
+        db.inputTypeQuestionAnswerDao()
+
+    @Provides
+    @Singleton
+    fun providesEventsDao(syncDb: SyncManagerDatabase) = syncDb.eventsDao()
+
+    @Provides
+    @Singleton
+    fun providesEventDependencyDao(syncDb: SyncManagerDatabase) = syncDb.eventsDependencyDao()
 
     /*@Provides
     @Singleton

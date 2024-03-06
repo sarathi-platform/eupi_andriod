@@ -133,13 +133,18 @@ fun AllSurveyeeListTab(
                     }
                     item {
                         SearchWithFilterViewComponent(
-                            placeholderString = stringResource(id = R.string.search_didis),
+                            placeholderString = if (!activityName.equals("Conduct Hamlet Survey")) stringResource(
+                                id = R.string.search_didis
+                            ) else stringResource(
+                                R.string.search_hamlet
+                            ),
                             filterSelected = viewModel.isFilterAppliedState.value.isFilterApplied,
                             onFilterSelected = {
                                 if (surveyeeList.isNotEmpty()) {
-                                    viewModel.isFilterAppliedState.value = viewModel.isFilterAppliedState.value.copy(
-                                        isFilterApplied = !it
-                                    )
+                                    viewModel.isFilterAppliedState.value =
+                                        viewModel.isFilterAppliedState.value.copy(
+                                            isFilterApplied = !it
+                                        )
                                     onActionEvent(
                                         SurveyeeListScreenActions.IsFilterApplied(
                                             viewModel.isFilterAppliedState.value

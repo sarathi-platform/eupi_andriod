@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
+import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
@@ -22,6 +23,7 @@ import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
+import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.QuestionScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
@@ -39,6 +41,7 @@ import com.nrlm.baselinesurvey.utils.getOptionItemEntityFromInputTypeQuestionAns
 import com.nrlm.baselinesurvey.utils.sortedBySectionOrder
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.updateOptionItemEntityListStateForQuestionByCondition
+import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,7 +52,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuestionScreenViewModel @Inject constructor(
-    private val questionScreenUseCase: QuestionScreenUseCase
+    private val questionScreenUseCase: QuestionScreenUseCase,
+    private val eventsWriterHelperImpl: EventWriterHelperImpl
 ): BaseViewModel() {
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
@@ -313,9 +317,56 @@ class QuestionScreenViewModel @Inject constructor(
                     isLoaderVisible = event.showLoader
                 )
             }
+
             is QuestionScreenEvents.SectionProgressUpdated -> {
                 CoroutineScope(Dispatchers.IO).launch {
-                    questionScreenUseCase.updateSectionProgressUseCase.invoke(event.surveyId, event.sectionId, event.didiId, event.sectionStatus)
+                    onEvent(
+                        EventWriterEvents.UpdateSectionStatusEvent(
+                            event.surveyId,
+                            event.sectionId,
+                            event.didiId,
+                            event.sectionStatus
+                        )
+                    )
+                    questionScreenUseCase.updateSectionProgressUseCase.invoke(
+                        event.surveyId,
+                        event.sectionId,
+                        event.didiId,
+                        event.sectionStatus
+                    )
+                }
+            }
+
+            is EventWriterEvents.UpdateSectionStatusEvent -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val updateSectionStatusEvent =
+                        eventsWriterHelperImpl.createUpdateSectionStatusEvent(
+                            event.surveyId,
+                            event.sectionId,
+                            event.didiId,
+                            event.sectionStatus
+                        )
+                    questionScreenUseCase.eventsWriterUseCase.invoke(
+                        events = updateSectionStatusEvent,
+                        eventType = EventType.STATEFUL
+                    )
+                }
+            }
+
+            is EventWriterEvents.SaveAnswerEvent -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val saveAnswerEvent = eventsWriterHelperImpl.createSaveAnswerEvent(
+                        surveyId = event.surveyId,
+                        sectionId = event.sectionId,
+                        didiId = event.didiId,
+                        questionId = event.questionId,
+                        questionType = event.questionType,
+                        saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
+                    )
+                    questionScreenUseCase.eventsWriterUseCase.invoke(
+                        events = saveAnswerEvent,
+                        eventType = EventType.STATEFUL
+                    )
                 }
             }
 

@@ -452,4 +452,8 @@
     <string name="questions_data_tab_title">Questions Data</string>
     <string name="section_information_tab_title">Section Information</string>
 
+    <string name="share_export_file" translatable="false">Share exported file</string>
+    <string name="share_export_image" translatable="false">Share exported image</string>
+    <string name="search_hamlet">Search Hamlet</string>
+
 </resources>

@@ -80,6 +80,7 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
+import com.nrlm.baselinesurvey.utils.states.SurveyState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -239,6 +240,18 @@ fun SectionListScreen(
                         isArrowRequired = false,
                         isActive = true
                     ) {
+                        viewModel.onEvent(
+                            SectionScreenEvent.UpdateSubjectStatus(
+                                didiId,
+                                SurveyState.COMPLETED
+                            )
+                        )
+                        viewModel.onEvent(
+                            SectionScreenEvent.UpdateTaskStatus(
+                                didiId,
+                                SurveyState.COMPLETED
+                            )
+                        )
                         BaselineCore.setCurrentActivityName(BLANK_STRING)
                         navigateBackToSurveyeeListScreen(navController)
 

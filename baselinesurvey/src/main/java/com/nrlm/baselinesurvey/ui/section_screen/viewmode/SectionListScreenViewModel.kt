@@ -4,27 +4,30 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
+import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
+import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.SectionListScreenUseCase
+import com.nrlm.baselinesurvey.ui.section_screen.presentation.SectionScreenEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.findItemBySectionId
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SectionState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
-import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class SectionListScreenViewModel @Inject constructor(
-    val sectionScreenUseCase: SectionListScreenUseCase
+    val sectionScreenUseCase: SectionListScreenUseCase,
+    private val eventWriterHelperImpl: EventWriterHelperImpl
 ): BaseViewModel() {
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
@@ -115,6 +118,45 @@ class SectionListScreenViewModel @Inject constructor(
                 _loaderState.value = _loaderState.value.copy(
                     isLoaderVisible = event.showLoader
                 )
+            }
+
+            is SectionScreenEvent.UpdateSubjectStatus -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    sectionScreenUseCase.updateSubjectStatusUseCase.invoke(
+                        didiId = event.didiId,
+                        surveyState = event.surveyState
+                    )
+                    // TODO Add Update Subject Status Code
+//                    onEvent(EventWriterEvents.UpdateSubjectSurveyStatus())
+                }
+            }
+
+            is SectionScreenEvent.UpdateTaskStatus -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    sectionScreenUseCase.updateTaskStatusUseCase.invoke(
+                        didiId = event.didiId,
+                        surveyState = event.surveyState
+                    )
+                    onEvent(
+                        EventWriterEvents.UpdateTaskStatusEvent(
+                            event.didiId,
+                            event.surveyState
+                        )
+                    )
+                }
+            }
+
+            is EventWriterEvents.UpdateTaskStatusEvent -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val updateTaskStatusEvent = eventWriterHelperImpl.createTaskStatusUpdateEvent(
+                        subjectId = event.subjectId,
+                        sectionStatus = event.status
+                    )
+                    sectionScreenUseCase.eventsWriterUseCase.invoke(
+                        updateTaskStatusEvent,
+                        eventType = EventType.STATEFUL
+                    )
+                }
             }
         }
     }

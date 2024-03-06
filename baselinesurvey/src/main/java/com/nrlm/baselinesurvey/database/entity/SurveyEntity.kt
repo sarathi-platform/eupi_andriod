@@ -41,4 +41,8 @@ data class SurveyEntity(
     @ColumnInfo(name = "languageId")
     val languageId: Int,
 
+    @SerializedName("referenceId")
+    @Expose
+    @ColumnInfo(name = "referenceId")
+    val referenceId: Int
 )
