@@ -15,7 +15,7 @@ data class AddCohortRequest(
     @SerializedName("localCreatedDate") var localCreatedDate : Long,
     @SerializedName("localModifiedDate") var localModifiedDate : Long,
     @SerializedName("deviceId") var deviceId : String = "",
-    @SerializedName("id") var id : Int = 0,
+    @SerializedName("id") var id: Int = 0,
 ) {
 
     companion object {

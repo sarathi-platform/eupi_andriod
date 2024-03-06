@@ -19,8 +19,7 @@ interface IEventWriter {
         eventDependencyDao: EventDependencyDao
     )
 
-suspend fun getEventWriteType(): EventWriterName
-
+    suspend fun getEventWriteType(): EventWriterName
 
 
 }

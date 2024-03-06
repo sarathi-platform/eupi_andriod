@@ -26,7 +26,7 @@ class SyncManager @Inject constructor(
     private var eventObserverInterface: EventObserverInterface? = null
 
     fun initEventObserver(): EventObserverInterface? {
-         eventObserverInterface = EventObserverInterfaceImpl(eventsDao, eventDependencyDao)
+        eventObserverInterface = EventObserverInterfaceImpl(eventsDao, eventDependencyDao)
         return eventObserverInterface
     }
 

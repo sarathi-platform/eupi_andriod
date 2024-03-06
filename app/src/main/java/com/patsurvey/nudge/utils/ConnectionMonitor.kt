@@ -167,10 +167,9 @@ class ConnectionMonitor(context: Context) : LiveData<NetworkInfo>() {
     object DoesNetworkHaveInternet {
         const val TAG = "DoesNetworkHaveInternet"
 
-        fun getNetworkStrength():NetworkSpeed
-        {
+        fun getNetworkStrength(): NetworkSpeed {
             val cq = ConnectionClassManager.getInstance().currentBandwidthQuality
-            return when(cq){
+            return when (cq) {
                 ConnectionQuality.EXCELLENT -> NetworkSpeed.EXCELLENT
                 ConnectionQuality.POOR -> NetworkSpeed.POOR
                 ConnectionQuality.MODERATE -> NetworkSpeed.MODERATE
@@ -214,10 +213,6 @@ class ConnectionMonitor(context: Context) : LiveData<NetworkInfo>() {
         )
 
     }
-
-
-
-
 
 
 }

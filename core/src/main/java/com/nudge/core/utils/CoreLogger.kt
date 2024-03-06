@@ -1,14 +1,12 @@
 package com.nudge.core.utils
 
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.Environment
 import android.text.TextUtils
 import android.text.format.Formatter.formatShortFileSize
 import android.util.Log
 import android.util.Log.e
-import android.widget.Toast
 import com.nudge.core.BuildConfig.DEBUG
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,7 +49,14 @@ object CoreLogger {
         }
     }
 
-    fun e(context: Context, tag: String, msg: String, ex: Throwable?, stackTrace: Boolean = DEBUG, lineCount: Int = 60) {
+    fun e(
+        context: Context,
+        tag: String,
+        msg: String,
+        ex: Throwable?,
+        stackTrace: Boolean = DEBUG,
+        lineCount: Int = 60
+    ) {
         CoroutineScope(Dispatchers.IO).launch {
             var trace = ""
             if (stackTrace) {
@@ -94,7 +99,8 @@ object LogWriter {
     private const val FILE_NAME_SUFFIX = ".log"
 
     // Reduced logging file size from 10 MB to 1 MB as per SC-194 (Point no. 2 in description)
-    private val SUPPORT_LOG_SIZE_MAX = (if (DEBUG) 20L else 10L) *1024*1024 // collect up to 10 MB of log files // 20MB for debug builds
+    private val SUPPORT_LOG_SIZE_MAX =
+        (if (DEBUG) 20L else 10L) * 1024 * 1024 // collect up to 10 MB of log files // 20MB for debug builds
     private const val SUPPORT_LOG_FILE_NAME_PREFIX = "nudge_log_"
     private const val SUPPORT_LOG_FILE_NAME_SUFFIX = ".txt"
 
@@ -111,7 +117,8 @@ object LogWriter {
     private var syslogQueue: ArrayBlockingQueue<EchoPacket>? = null
 
     private val syslogFileNameTimeStampFormat = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_", Locale.US)
-    private val syslogMessageTimeStampFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US)
+    private val syslogMessageTimeStampFormat =
+        SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US)
 
     private var tagDevice: String? = null
 
@@ -124,7 +131,6 @@ object LogWriter {
     }
 
 
-
     init {
         tagDevice = "${Build.SERIAL} ${Build.MODEL}"
         syslogQueue = ArrayBlockingQueue(8192)
@@ -132,12 +138,18 @@ object LogWriter {
 
     fun log(context: Context, level: Int, tag: String, message: String) {
         try {
-            if (isInitializing.compareAndSet(false, true) && !isQuitting && (syslogThread == null || !syslogThread!!.isAlive)) {
+            if (isInitializing.compareAndSet(
+                    false,
+                    true
+                ) && !isQuitting && (syslogThread == null || !syslogThread!!.isAlive)
+            ) {
                 Log.i(TAG, "initializing logs...")
                 syslogFile = File.createTempFile(
                     FILE_NAME_PREFIX + syslogFileNameTimeStampFormat.format(
                         Date()
-                    ), FILE_NAME_SUFFIX, context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+                    ),
+                    FILE_NAME_SUFFIX,
+                    context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
                 )
                 syslogStream = FileOutputStream(syslogFile!!, true)
 
@@ -233,7 +245,8 @@ object LogWriter {
     private fun log(packet: EchoPacket) {
         synchronized(TAG) {
             try {
-                val bytes = "${syslogMessageTimeStampFormat.format(packet.timestamp)} ${packet.tag} ${packet.message}\n".toByteArray()
+                val bytes =
+                    "${syslogMessageTimeStampFormat.format(packet.timestamp)} ${packet.tag} ${packet.message}\n".toByteArray()
                 syslogStream?.write(bytes, 0, bytes.size)
             } catch (fault: Throwable) {
                 Log.println(packet.level, packet.tag, "${packet.message} exception: $fault")
@@ -246,11 +259,11 @@ object LogWriter {
         output: File,
         after: String = "",
         logFileNames: ArrayList<String>? = null
-    ): Boolean= withContext(Dispatchers.IO) {
+    ): Boolean = withContext(Dispatchers.IO) {
         try {
             val logDir = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-            if (logDir!=null){
-                val catalog: Array<File> = logDir.listFiles(syslogFileFilter)  as Array<File>
+            if (logDir != null) {
+                val catalog: Array<File> = logDir.listFiles(syslogFileFilter) as Array<File>
                 if (catalog.isEmpty())
                     return@withContext false
                 catalog.sortWith { f1, f2 -> f2.name.compareTo(f1.name) }
@@ -297,7 +310,8 @@ object LogWriter {
                         val inputStreamReader = InputStreamReader(inputStream)
                         val buffReader = BufferedReader(inputStreamReader)
                         try {
-                            var bytesToSkipAtStartOfLogFile = file.length() - (SUPPORT_LOG_SIZE_MAX - totalBytes)
+                            var bytesToSkipAtStartOfLogFile =
+                                file.length() - (SUPPORT_LOG_SIZE_MAX - totalBytes)
                             /*if (bytesToSkipAtStartOfLogFile > 0) { //For a long log file just log the preamble and then the end of the log file.
                                 val preamble = getPreamble()
                                 for(log in preamble) {
@@ -317,8 +331,7 @@ object LogWriter {
                                     line += "\n"
                                     output.appendBytes(line.toByteArray())
                                     totalBytes += line.length
-                                }
-                                else {
+                                } else {
                                     bytesToSkipAtStartOfLogFile -= line.length //skip the start of a long log file
                                 }
 
@@ -425,7 +438,10 @@ object LogWriter {
     }*/
 
     fun getSupportLogFileName(): String {
-        return SUPPORT_LOG_FILE_NAME_PREFIX + SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US).format(
+        return SUPPORT_LOG_FILE_NAME_PREFIX + SimpleDateFormat(
+            "yyyy_MM_dd_HH_mm_ss",
+            Locale.US
+        ).format(
             Date()
         ) + SUPPORT_LOG_FILE_NAME_SUFFIX
     }
@@ -476,17 +492,39 @@ object LogWriter {
                         if (fileIndex++ < 2) continue
                         //delete oldest files where the newer files total > SUPPORT_LOG_SIZE_MAX, except for the current file
                         if (logFile.name.contains(SUPPORT_LOG_FILE_NAME_PREFIX) ||
-                            (bytesOfLogFiles > SUPPORT_LOG_SIZE_MAX && !TextUtils.equals(syslogFile?.name, logFile.name))) {
+                            (bytesOfLogFiles > SUPPORT_LOG_SIZE_MAX && !TextUtils.equals(
+                                syslogFile?.name,
+                                logFile.name
+                            ))
+                        ) {
 
                             logFile.delete()
                             // Added logging for deleting log files
-                            if (DEBUG) CoreLogger.d(context, TAG, "Deleted logfile ${logFile.name} of size ${formatShortFileSize(context, length)}")
+                            if (DEBUG) CoreLogger.d(
+                                context,
+                                TAG,
+                                "Deleted logfile ${logFile.name} of size ${
+                                    formatShortFileSize(
+                                        context,
+                                        length
+                                    )
+                                }"
+                            )
                             removedBytes += length
                         }
                     }
                 }
 
-                CoreLogger.d(context, TAG, "Logs on Disk: ${formatShortFileSize(context, bytesOfLogFiles - removedBytes)} Cleanup Removed: ${formatShortFileSize(context, removedBytes)}")
+                CoreLogger.d(
+                    context,
+                    TAG,
+                    "Logs on Disk: ${
+                        formatShortFileSize(
+                            context,
+                            bytesOfLogFiles - removedBytes
+                        )
+                    } Cleanup Removed: ${formatShortFileSize(context, removedBytes)}"
+                )
             }
         } catch (ex: Exception) {
             e(TAG, "cleanup $checkForSize", ex)

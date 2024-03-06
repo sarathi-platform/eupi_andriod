@@ -891,7 +891,8 @@ class SettingViewModel @Inject constructor(
             try {
                 DeviceBandwidthSampler.getInstance().startSampling()
                 // Open a stream to download the image from our URL.
-                val connection = URL("https://sarathi.lokos.in/write-api/file/view?fileName=25882_shibani%20Nama%20_CRP_2023-12-10.png").openConnection()
+                val connection =
+                    URL("https://sarathi.lokos.in/write-api/file/view?fileName=25882_shibani%20Nama%20_CRP_2023-12-10.png").openConnection()
                 connection.setUseCaches(false)
                 connection.connect()
                 val input = connection.getInputStream()

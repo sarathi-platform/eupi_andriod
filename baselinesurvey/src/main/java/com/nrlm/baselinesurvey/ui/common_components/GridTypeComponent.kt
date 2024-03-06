@@ -26,12 +26,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -46,29 +45,29 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
-import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_20_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_5_dp
 import com.nrlm.baselinesurvey.ui.theme.languageItemActiveBg
+import com.nrlm.baselinesurvey.ui.theme.lightGray2
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
 import com.nrlm.baselinesurvey.utils.getIndexById
-import com.nrlm.baselinesurvey.utils.getResponseForOptionId
-import com.nrlm.baselinesurvey.utils.saveFormQuestionResponseEntity
 import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
@@ -79,6 +78,7 @@ fun GridTypeComponent(
     showQuestionState: QuestionEntityState = QuestionEntityState.getEmptyStateObject(),
     optionItemEntityList: List<OptionItemEntity>,
     questionIndex: Int,
+    contests: List<ContentEntity?>? = listOf(),
     selectedOptionIndices: List<Int>,
     maxCustomHeight: Dp,
     onAnswerSelection: (questionIndex: Int, optionItems: List<OptionItemEntity>, selectedIndeciesCount: List<Int>) -> Unit,
@@ -332,18 +332,31 @@ fun GridTypeComponent(
                                         .fillMaxWidth()
                                         .padding(bottom = 10.dp)
                                 )
-//                            Divider(thickness = dimen_1_dp, color = lightGray2, modifier = Modifier.fillMaxWidth())
-//                            ExpandableDescriptionContentComponent(
-//                                questionDetailExpanded,
-//                                questionIndex,
-//                                question,
-//                                imageClickListener = { imageTypeDescriptionContent ->
-//                                    onMediaTypeDescriptionAction(DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT, imageTypeDescriptionContent)
-//                                },
-//                                videoLinkClicked = { videoTypeDescriptionContent ->
-//                                    onMediaTypeDescriptionAction(DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT, videoTypeDescriptionContent)
-//                                }
-//                            )
+                                if (contests?.isNotEmpty() == true) {
+                                    Divider(
+                                        thickness = dimen_1_dp,
+                                        color = lightGray2,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    ExpandableDescriptionContentComponent(
+                                        questionDetailExpanded,
+                                        questionIndex,
+                                        contents = contests,
+                                        subTitle = BLANK_STRING,
+                                        imageClickListener = { imageTypeDescriptionContent ->
+                                            onMediaTypeDescriptionAction(
+                                                DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
+                                                imageTypeDescriptionContent
+                                            )
+                                        },
+                                        videoLinkClicked = { videoTypeDescriptionContent ->
+                                            onMediaTypeDescriptionAction(
+                                                DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
+                                                videoTypeDescriptionContent
+                                            )
+                                        }
+                                    )
+                                }
                             }
                         }
 

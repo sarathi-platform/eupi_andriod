@@ -24,10 +24,10 @@ interface EventsDao {
     fun getAllEventsForEventName(eventName: String): List<Events>
 
     @Query("SELECT * from $EventsTable where status in (:status)  ORDER BY id DESC LIMIT 10")
-    fun getAllPendingEvent(status:List<EventSyncStatus> ): List<Events>
+    fun getAllPendingEvent(status: List<EventSyncStatus>): List<Events>
 
     @Query("SELECT  COUNT(*) from $EventsTable where status in (:status)")
-    fun getTotalPendingEventCount(status:List<EventSyncStatus> ): Int
+    fun getTotalPendingEventCount(status: List<EventSyncStatus>): Int
 
     @Query("UPDATE $EventsTable SET status = :newStatus WHERE id = :eventId")
     fun updateEventStatus(eventId: String, newStatus: EventSyncStatus?)

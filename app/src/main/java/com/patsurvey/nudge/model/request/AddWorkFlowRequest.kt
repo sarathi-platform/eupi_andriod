@@ -15,10 +15,13 @@ data class UpdateWorkflowRequest(
     @SerializedName("status") var status: String,
     @SerializedName("villageId") var villageId: Int,
     @SerializedName("programId") var programId: Int,
-    @SerializedName("programsProcessId") var programsProcessId : Int
+    @SerializedName("programsProcessId") var programsProcessId: Int
 ) {
     companion object {
-        fun getUpdateWorkflowRequest(stepListEntity: StepListEntity, status: String): UpdateWorkflowRequest {
+        fun getUpdateWorkflowRequest(
+            stepListEntity: StepListEntity,
+            status: String
+        ): UpdateWorkflowRequest {
             return UpdateWorkflowRequest(
                 workflowId = stepListEntity.workFlowId,
                 villageId = stepListEntity.villageId,

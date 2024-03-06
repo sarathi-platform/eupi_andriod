@@ -4,9 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.nrlm.baselinesurvey.QUESTION_TABLE
-import com.nrlm.baselinesurvey.SECTION_TABLE
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
-import com.nrlm.baselinesurvey.database.entity.SurveyEntity
 
 @Dao
 interface QuestionEntityDao {
@@ -25,5 +23,8 @@ interface QuestionEntityDao {
 
     @Query("SELECT * from $QUESTION_TABLE where questionId = :questionId and sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
     fun getQuestionForSurveySectionForLanguage(questionId: Int, sectionId: Int, surveyId: Int, languageId: Int): QuestionEntity?
+
+    @Query("Select * from $QUESTION_TABLE")
+    fun getQuestions(): List<QuestionEntity?>?
 
 }

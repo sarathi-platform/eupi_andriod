@@ -35,12 +35,12 @@ object DatabaseModule {
 //        )
 //            .fallbackToDestructiveMigration()
 //            .build()
-    @Provides
-    @Singleton
-    fun provideSyncDatabase(@ApplicationContext context: Context) =
-        Room.databaseBuilder(context, SyncManagerDatabase::class.java, SYNC_MANAGER_DATABASE)
-            .fallbackToDestructiveMigration()
-            .build()
+@Provides
+@Singleton
+fun provideSyncDatabase(@ApplicationContext context: Context) =
+    Room.databaseBuilder(context, SyncManagerDatabase::class.java, SYNC_MANAGER_DATABASE)
+        .fallbackToDestructiveMigration()
+        .build()
 
     @Provides
     @Singleton
@@ -85,6 +85,10 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideActivityTaskEntityDao(db: NudgeBaselineDatabase) = db.activityTaskEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideContentEntityDao(db: NudgeBaselineDatabase) = db.contentEntityDao()
 
     @Provides
     @Singleton

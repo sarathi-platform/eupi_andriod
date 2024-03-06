@@ -8,7 +8,7 @@ import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventWriterName
 
-class DbEventWrite():IEventWriter {
+class DbEventWrite() : IEventWriter {
     override suspend fun addEvent(
         context: Context,
         event: Events,

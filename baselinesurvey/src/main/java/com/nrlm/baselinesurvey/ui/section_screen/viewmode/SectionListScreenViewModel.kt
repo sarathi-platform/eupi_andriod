@@ -3,6 +3,7 @@ package com.nrlm.baselinesurvey.ui.section_screen.viewmode
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.SectionListScreenUseCase
@@ -83,6 +84,7 @@ class SectionListScreenViewModel @Inject constructor(
                             allSessionCompleted.value = isAllSessionCompleted()
 
                         }
+
                 }
                 withContext(Dispatchers.Main) {
                     onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -130,5 +132,17 @@ class SectionListScreenViewModel @Inject constructor(
         }
         return true
     }
-
+    fun getContentData(
+        contents: List<ContentEntity?>?,
+        contentType: String
+    ): ContentEntity? {
+        contents?.let { contentsData ->
+            for (content in contentsData) {
+                if (content?.contentType.equals(contentType, true)) {
+                    return content!!
+                }
+            }
+        }
+        return null
+    }
 }
