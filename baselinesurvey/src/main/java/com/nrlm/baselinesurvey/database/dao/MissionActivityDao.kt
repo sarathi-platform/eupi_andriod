@@ -5,8 +5,13 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.nrlm.baselinesurvey.ACTIVITY_TABLE_NAME
+import com.nrlm.baselinesurvey.TASK_TABLE_NAME
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
+import com.nrlm.baselinesurvey.model.datamodel.ActivityForSubjectDto
 
+const val activityForSubject =
+    "$ACTIVITY_TABLE_NAME.missionId missionId, $ACTIVITY_TABLE_NAME.activityId, $ACTIVITY_TABLE_NAME.activityName, $ACTIVITY_TABLE_NAME.activityType, " +
+            "$ACTIVITY_TABLE_NAME.activityTypeId, $ACTIVITY_TABLE_NAME.doer, $ACTIVITY_TABLE_NAME.subject, $ACTIVITY_TABLE_NAME.reviewer, $TASK_TABLE_NAME.taskId, $TASK_TABLE_NAME.didiId"
 @Dao
 interface MissionActivityDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -37,5 +42,8 @@ interface MissionActivityDao {
 
     @Query("Select * FROM $ACTIVITY_TABLE_NAME where missionId in(:missionId)")
     fun isActivityExist(missionId: Int): Boolean
+
+    @Query("SELECT $activityForSubject FROM $ACTIVITY_TABLE_NAME LEFT JOIN $TASK_TABLE_NAME on $ACTIVITY_TABLE_NAME.activityId = $TASK_TABLE_NAME.activityId where $TASK_TABLE_NAME.didiId = :subjectId")
+    fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto
 
 }

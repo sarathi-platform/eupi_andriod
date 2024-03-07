@@ -44,6 +44,7 @@ const val ACTIVITY_TABLE_NAME = "activity_table"
 const val TASK_TABLE_NAME = "task_table"
 const val CASTE_TABLE_NAME = "caste_table"
 const val DIDI_INFO_TABLE_NAME = "didi_info_table"
+const val CONTENT_TABLE_NAME = "content_table"
 const val NUMERIC_TABLE_NAME = "numeric_table"
 const val OPTION_TABLE_NAME = "option_table"
 const val USER_TABLE_NAME = "user_table"
@@ -299,7 +300,7 @@ const val ARG_MISSION_DATE = "mission_date"
 const val ARG_ACTIVITY_NAME = "activity_name"
 
 const val DELAY_1_MS: Long = 100
-const val DELAY_2_MS:Long = 200
+const val DELAY_2_MS: Long = 200
 const val DELAY_1_SEC: Long = 1000
 const val DELAY_2_SEC: Long = 2000
 

@@ -56,7 +56,7 @@ class ZipFileCompression : IFileCompressor {
                 put(MediaStore.MediaColumns.MIME_TYPE, ZIP_MIME_TYPE)
                 put(
                     MediaStore.MediaColumns.RELATIVE_PATH,
-                    Environment.DIRECTORY_DOCUMENTS+ SARATHI_DIRECTORY_NAME
+                    Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME
                 )
             }
 
@@ -108,7 +108,7 @@ class ZipFileCompression : IFileCompressor {
                 val commonFilePath: File = Environment.getExternalStoragePublicDirectory("")
 
                 val zippedFileDirectoryPath =
-                    File(commonFilePath.path + "/" + Environment.DIRECTORY_DOCUMENTS+ SARATHI_DIRECTORY_NAME)
+                    File(commonFilePath.path + "/" + Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME)
 
                 if (!zippedFileDirectoryPath.exists()) {
                     zippedFileDirectoryPath.mkdirs()

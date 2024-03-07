@@ -220,6 +220,7 @@ class AddDidiRepository @Inject constructor(
 
                 return addDidiEvent
             }
+
             EventName.UPDATE_DIDI -> {
                 val selectedTolaEntity =
                     fetchSingleTolaFromServerId((eventItem as DidiEntity).cohortId)
@@ -256,6 +257,7 @@ class AddDidiRepository @Inject constructor(
 
                 return updateDidiEvent
             }
+
             EventName.DELETE_DIDI -> {
                 val selectedTolaEntity =
                     fetchSingleTolaFromServerId((eventItem as DidiEntity).cohortId)
@@ -299,10 +301,16 @@ class AddDidiRepository @Inject constructor(
                     answerDao = answerDao,
                     numericAnswerDao = numericAnswerDao,
                     questionListDao = questionListDao,
-                    prefRepo= prefRepo
+                    prefRepo = prefRepo
                 )
 
-                var savePatSummeryEvent = getPatSaveAnswersEvent(eventItem = eventItem, eventName = eventName, eventType = eventType, patSummarySaveRequest = requestPayload, prefRepo = prefRepo)
+                var savePatSummeryEvent = getPatSaveAnswersEvent(
+                    eventItem = eventItem,
+                    eventName = eventName,
+                    eventType = eventType,
+                    patSummarySaveRequest = requestPayload,
+                    prefRepo = prefRepo
+                )
 
                 val dependsOn = createEventDependency(eventItem, eventName, savePatSummeryEvent)
                 val metadata = savePatSummeryEvent.metadata?.getMetaDataDtoFromString()
@@ -326,7 +334,13 @@ class AddDidiRepository @Inject constructor(
                     selectedTolaEntity?.serverId ?: 0
                 )
 
-                var savePatScoreEvent = getPatSaveScoreEvent(eventItem = eventItem, eventName = eventName, eventType = eventType, patScoreSaveEvent = requestPayload, prefRepo = prefRepo)
+                var savePatScoreEvent = getPatSaveScoreEvent(
+                    eventItem = eventItem,
+                    eventName = eventName,
+                    eventType = eventType,
+                    patScoreSaveEvent = requestPayload,
+                    prefRepo = prefRepo
+                )
 
                 val dependsOn = createEventDependency(eventItem, eventName, savePatScoreEvent)
                 val metadata = savePatScoreEvent.metadata?.getMetaDataDtoFromString()
@@ -389,24 +403,24 @@ class AddDidiRepository @Inject constructor(
                 }
             }
 
-             if (filteredList.isNotEmpty()) {
-                 break
-             }
+            if (filteredList.isNotEmpty()) {
+                break
+            }
 
         }
 
 
-         if (filteredList.isNotEmpty()) {
+        if (filteredList.isNotEmpty()) {
 
-             val immediateDependentOn = ArrayList<Events>()
-             immediateDependentOn.add(filteredList.first())
+            val immediateDependentOn = ArrayList<Events>()
+            immediateDependentOn.add(filteredList.first())
 
-             eventDependencyList.addAll(
-                 immediateDependentOn.getEventDependencyEntityListFromEvents(
-                     dependentEvent
-                 )
-             )
-         }
+            eventDependencyList.addAll(
+                immediateDependentOn.getEventDependencyEntityListFromEvents(
+                    dependentEvent
+                )
+            )
+        }
         return eventDependencyList
     }
 

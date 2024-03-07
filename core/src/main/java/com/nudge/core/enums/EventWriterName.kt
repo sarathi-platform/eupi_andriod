@@ -6,7 +6,7 @@ enum class EventFormatterName {
 
 }
 
-enum class EventWriterName{
+enum class EventWriterName {
     LOG_EVENT_WRITER,
     FILE_EVENT_WRITER,
     IMAGE_EVENT_WRITER,

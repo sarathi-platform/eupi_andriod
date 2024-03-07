@@ -5,15 +5,15 @@ import com.google.gson.annotations.SerializedName
 
 data class CasteModel(
     @SerializedName("casteId")
-    val casteId: Int?=1,
+    val casteId: Int? = 1,
 
     @SerializedName("id")
     @Expose
     var id: Int,
 
     @SerializedName("casteName")
-    var casteName : String,
+    var casteName: String,
 
     @SerializedName("languageId")
-    var languageId : Int
+    var languageId: Int
 )

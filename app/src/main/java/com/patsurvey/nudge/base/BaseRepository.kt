@@ -97,11 +97,19 @@ abstract class BaseRepository{
       return didiDao.getDidi(didiId)
     }
 
-    open suspend fun <T> createEvent(eventItem: T, eventName: EventName, eventType: EventType): Events? {
+    open suspend fun <T> createEvent(
+        eventItem: T,
+        eventName: EventName,
+        eventType: EventType
+    ): Events? {
         return Events.getEmptyEvent()
     }
 
-    open suspend fun <T> createEventDependency(eventItem: T, eventName: EventName, dependentEvent: Events): List<EventDependencyEntity> {
+    open suspend fun <T> createEventDependency(
+        eventItem: T,
+        eventName: EventName,
+        dependentEvent: Events
+    ): List<EventDependencyEntity> {
         val eventDependencyList = mutableListOf<EventDependencyEntity>()
         var filteredList = listOf<Events>()
         var dependentEventsName = eventName.getDependsOnEventNameForEvent()
@@ -157,7 +165,13 @@ abstract class BaseRepository{
 
     }
 
-    suspend fun <T> getPatSaveAnswersEvent(eventItem: T, eventName: EventName, eventType: EventType, patSummarySaveRequest: PATSummarySaveRequest, prefRepo: PrefRepo): Events {
+    suspend fun <T> getPatSaveAnswersEvent(
+        eventItem: T,
+        eventName: EventName,
+        eventType: EventType,
+        patSummarySaveRequest: PATSummarySaveRequest,
+        prefRepo: PrefRepo
+    ): Events {
         val requestPayload = patSummarySaveRequest.json()
 
         var savePatSummeryEvent = Events(
@@ -182,7 +196,13 @@ abstract class BaseRepository{
         return savePatSummeryEvent
     }
 
-    suspend fun <T> getPatSaveScoreEvent(eventItem: T, eventName: EventName, eventType: EventType, patScoreSaveEvent: EditDidiWealthRankingRequest, prefRepo: PrefRepo): Events {
+    suspend fun <T> getPatSaveScoreEvent(
+        eventItem: T,
+        eventName: EventName,
+        eventType: EventType,
+        patScoreSaveEvent: EditDidiWealthRankingRequest,
+        prefRepo: PrefRepo
+    ): Events {
         val requestPayload = patScoreSaveEvent.json()
         var savePatScoreEvent = Events(
             name = eventName.name,
@@ -206,7 +226,10 @@ abstract class BaseRepository{
         return savePatScoreEvent
     }
 
-    open suspend fun insertEventIntoDb(event: Events?, eventDependencies: List<EventDependencyEntity>) {
+    open suspend fun insertEventIntoDb(
+        event: Events?,
+        eventDependencies: List<EventDependencyEntity>
+    ) {
         val eventObserver = NudgeCore.getEventObserver()
 
         if (event == null)
@@ -221,7 +244,13 @@ abstract class BaseRepository{
 
     }
 
-    fun <T> createWorkflowEvent(eventItem: T, stepStatus: StepStatus, eventName: EventName, eventType: EventType, prefRepo: PrefRepo): Events? {
+    fun <T> createWorkflowEvent(
+        eventItem: T,
+        stepStatus: StepStatus,
+        eventName: EventName,
+        eventType: EventType,
+        prefRepo: PrefRepo
+    ): Events? {
 
         if (eventType != EventType.STATEFUL)
             return null
@@ -395,57 +424,60 @@ abstract class BaseRepository{
         event: Events,
         eventDependencies: List<EventDependencyEntity>
     ) {
-     try {
+        try {
 
 
-         val eventFormatter: IEventFormatter = getEventFormatter()
-         eventFormatter.saveAndFormatEvent(
-             event = event,
-             dependencyEntity = eventDependencies,
-             listOf(
-                 EventWriterName.FILE_EVENT_WRITER,
-                 EventWriterName.DB_EVENT_WRITER,
-                 EventWriterName.LOG_EVENT_WRITER
-             ),
+            val eventFormatter: IEventFormatter = getEventFormatter()
+            eventFormatter.saveAndFormatEvent(
+                event = event,
+                dependencyEntity = eventDependencies,
+                listOf(
+                    EventWriterName.FILE_EVENT_WRITER,
+                    EventWriterName.DB_EVENT_WRITER,
+                    EventWriterName.LOG_EVENT_WRITER
+                ),
 
-         )
-     }   catch (exception:Exception)
-     {
-         NudgeLogger.e("ImageEventWriter",exception.message?:"")
-     }
+                )
+        } catch (exception: Exception) {
+            NudgeLogger.e("ImageEventWriter", exception.message ?: "")
+        }
     }
 
     open suspend fun writeImageEventIntoLogFile(
         event: Events,
         eventDependencies: List<EventDependencyEntity>
     ) {
-        val  eventFormatter: IEventFormatter = getEventFormatter()
+        val eventFormatter: IEventFormatter = getEventFormatter()
         try {
 
 
-        eventFormatter.saveAndFormatEvent(
-            event = event,
-            dependencyEntity = eventDependencies,
-            listOf(
-                EventWriterName.FILE_EVENT_WRITER,
-                EventWriterName.IMAGE_EVENT_WRITER,
-                EventWriterName.DB_EVENT_WRITER,
-                EventWriterName.LOG_EVENT_WRITER
-            ),
+            eventFormatter.saveAndFormatEvent(
+                event = event,
+                dependencyEntity = eventDependencies,
+                listOf(
+                    EventWriterName.FILE_EVENT_WRITER,
+                    EventWriterName.IMAGE_EVENT_WRITER,
+                    EventWriterName.DB_EVENT_WRITER,
+                    EventWriterName.LOG_EVENT_WRITER
+                ),
 
-            uri
-        )
-        uri = null
-        }
-        catch (exception:Exception){
-            NudgeLogger.e("ImageEventWriter",exception.message?:"")
+                uri
+            )
+            uri = null
+        } catch (exception: Exception) {
+            NudgeLogger.e("ImageEventWriter", exception.message ?: "")
         }
 
     }
 
     var uri: Uri? = null
-    fun createStepUpdateEvent(stepStatus: String, stepListEntity: StepListEntity, mobileNumber: String): EventV1 {
-        val payload = UpdateWorkflowRequest.getUpdateWorkflowRequest(stepListEntity, stepStatus).json()
+    fun createStepUpdateEvent(
+        stepStatus: String,
+        stepListEntity: StepListEntity,
+        mobileNumber: String
+    ): EventV1 {
+        val payload =
+            UpdateWorkflowRequest.getUpdateWorkflowRequest(stepListEntity, stepStatus).json()
         return EventV1(
             eventTopic = EventName.WORKFLOW_STATUS_UPDATE.topicName,
             payload = payload,
@@ -460,7 +492,8 @@ abstract class BaseRepository{
         mobileNumber: String,
         userID: String
     ): Events {
-        val payload = RankingEditEvent(villageId = villageId, type = stepType, status = false).json()
+        val payload =
+            RankingEditEvent(villageId = villageId, type = stepType, status = false).json()
 
 
         return Events(

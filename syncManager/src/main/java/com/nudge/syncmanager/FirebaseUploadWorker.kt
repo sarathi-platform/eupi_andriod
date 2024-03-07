@@ -14,7 +14,7 @@ class FirebaseUploadWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val syncApiRepository: SyncApiRepository,
     private val firebaseRepository: FirebaseRepository
-): CoroutineWorker(appContext, workerParams) {
+) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
         return if (runAttemptCount < 5) { // runAttemptCount starts from 0

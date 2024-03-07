@@ -370,7 +370,7 @@ class ProgressScreenViewModel @Inject constructor(
                     listOf()
                 )
             }
-            }
+        }
 
     }
 

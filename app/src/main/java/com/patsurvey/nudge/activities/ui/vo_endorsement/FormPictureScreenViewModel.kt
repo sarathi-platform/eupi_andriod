@@ -291,7 +291,7 @@ class FormPictureScreenViewModel @Inject constructor(
 
                                 val updateVoStatusRequest = listOf(
                                     EditDidiWealthRankingRequest(
-                                         didi.serverId,
+                                        didi.serverId,
                                         StepType.VO_ENDROSEMENT.name,
                                         ACCEPTED,
                                         rankingEdit = false,
@@ -438,7 +438,10 @@ class FormPictureScreenViewModel @Inject constructor(
                     val primaryWorkFlowRequest = listOf(
                         EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(5)].workFlowId,
                             StepStatus.COMPLETED.name, longToString(repository.prefRepo.getPref(
-                                PREF_VO_ENDORSEMENT_COMPLETION_DATE_ +repository.prefRepo.getSelectedVillage().id,System.currentTimeMillis())),
+                                PREF_VO_ENDORSEMENT_COMPLETION_DATE_ + repository.prefRepo.getSelectedVillage().id,
+                                System.currentTimeMillis()
+                            )
+                            ),
                             villageId,
                             programsProcessId = stepList[stepList.map { it.orderNumber }
                                 .indexOf(5)].id)
@@ -562,7 +565,7 @@ class FormPictureScreenViewModel @Inject constructor(
         return "${repository.prefRepo.getSelectedVillage().id}_${formName}_page_$pageNumber"
     }
 
-    fun uploadFormsCAndD(context: Context, isOnline:Boolean) {
+    fun uploadFormsCAndD(context: Context, isOnline: Boolean) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             val formList = arrayListOf<MultipartBody.Part>()
             try {

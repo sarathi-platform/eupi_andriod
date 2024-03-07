@@ -25,7 +25,7 @@ interface PrefRepo {
 
    fun saveMobileNumber(mobileNumber: String)
 
-   fun getMobileNumber(): String
+    fun getMobileNumber(): String
 
    fun savePref(key: String, value: String)
 
@@ -82,7 +82,7 @@ interface PrefRepo {
 
    fun isNeedQuestionToScroll(): Boolean
 
-   fun getUserId(): String
+    fun getUserId(): String
 
     fun saveIsSyncEnabled(isEnabled: Boolean)
     fun getISSyncEnabled(): Boolean

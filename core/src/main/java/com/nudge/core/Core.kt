@@ -1,8 +1,6 @@
 package com.nudge.core
 
 import android.content.Context
-import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -15,7 +13,7 @@ class Core {
         initializeFirebaseDb()
     }
 
-    private fun initializeFirebaseDb(){
+    private fun initializeFirebaseDb() {
         db = Firebase.firestore
     }
 

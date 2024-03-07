@@ -1,10 +1,12 @@
 package com.patsurvey.nudge.database.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
 import com.patsurvey.nudge.database.TolaEntity
-import com.patsurvey.nudge.utils.DIDI_TABLE
 import com.patsurvey.nudge.utils.TOLA_TABLE
-import com.patsurvey.nudge.utils.Tola
 
 @Dao
 interface TolaDao {
@@ -36,7 +38,7 @@ interface TolaDao {
     fun updateNeedToPost(id:Int, needsToPost: Boolean)
 
     @Query("UPDATE $TOLA_TABLE SET name = :name WHERE id =:id")
-    fun updateTolaName(id:Int, name: String)
+    fun updateTolaName(id: Int, name: String)
     @Query("DELETE from $TOLA_TABLE where villageId = :villageId")
     fun deleteTolaTable(villageId: Int)
 

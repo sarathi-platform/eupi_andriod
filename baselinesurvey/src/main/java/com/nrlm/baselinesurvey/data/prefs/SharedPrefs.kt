@@ -13,6 +13,8 @@ import com.nrlm.baselinesurvey.PREF_KEY_LANGUAGE_ID
 import com.nrlm.baselinesurvey.PREF_KEY_PAGE_FROM
 import com.nrlm.baselinesurvey.PREF_KEY_SELECTED_VILLAGE
 import com.nrlm.baselinesurvey.PREF_KEY_SETTING_OPEN_FROM
+import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
+import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
 import com.nrlm.baselinesurvey.data.prefs.StrictModePermitter.permitDiskReads
 import com.nrlm.baselinesurvey.database.entity.VillageEntity
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -133,11 +135,15 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     }
 
     override fun saveMobileNumber(mobileNumber: String) {
-
+        prefs.edit().putString(PREF_MOBILE_NUMBER, mobileNumber).apply()
     }
 
-    override fun getMobileNumber(): String? {
-        return ""
+    override fun getMobileNumber(): String {
+        return prefs.getString(PREF_MOBILE_NUMBER, BLANK_STRING) ?: BLANK_STRING
+    }
+
+    override fun getUserId(): String {
+        return prefs.getString(PREF_KEY_USER_NAME, "") ?: ""
     }
 
 }

@@ -9,7 +9,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.navigation.BottomNavigationBar
-import com.nrlm.baselinesurvey.navigation.home.NavHomeGraph
 
 @Composable
 fun HomeNavScreen(navController: NavHostController = rememberNavController(), prefRepo: PrefRepo) {

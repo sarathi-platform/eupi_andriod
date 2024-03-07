@@ -282,7 +282,7 @@ fun SocialMappingDidiListScreen(
 
                     if (didiViewModel.getFromPage()
                             .equals(ARG_FROM_PAT_SURVEY, true)
-                    ){
+                    ) {
                         listState = rememberForeverLazyListState(key = PAT_SURVEY)
                     }
                     LazyColumn(
@@ -658,7 +658,11 @@ fun SocialMappingDidiListScreen(
                                         }
                                     }
                                     didiViewModel.markSocialMappingComplete(villageId, stepId)
-                                    didiViewModel.saveWorkflowEventIntoDb(stepStatus = StepStatus.COMPLETED, villageId = villageId, stepId = stepId)
+                                    didiViewModel.saveWorkflowEventIntoDb(
+                                        stepStatus = StepStatus.COMPLETED,
+                                        villageId = villageId,
+                                        stepId = stepId
+                                    )
                                     (context as MainActivity).isFilterApplied.value = false
                                     navController.navigate(
                                         "sm_step_completion_screen/${

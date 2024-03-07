@@ -899,7 +899,10 @@ fun FormPictureScreen(
                             )
                             formPictureScreenViewModel.addRankingFlagEditEvent(stepId = stepId)
                             formPictureScreenViewModel.saveVoEndorsementDate()
-                                formPictureScreenViewModel.uploadFormsCAndD(context,(context as MainActivity).isOnline.value)
+                            formPictureScreenViewModel.uploadFormsCAndD(
+                                context,
+                                (context as MainActivity).isOnline.value
+                            )
 
 
                             navController.navigate(

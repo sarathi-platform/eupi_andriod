@@ -308,6 +308,7 @@ class SurveySummaryRepository @Inject constructor(
                 return saveBpcMatchScoreEvent
 
             }
+
             else -> {
                 return super.createEvent(eventItem, eventName, eventType)
             }
@@ -323,8 +324,10 @@ class SurveySummaryRepository @Inject constructor(
         when (eventName) {
             EventName.SAVE_BPC_MATCH_SCORE -> {
                 return emptyList()
-            } else -> {
-            return emptyList()
+            }
+
+            else -> {
+                return emptyList()
             }
         }
     }
@@ -356,12 +359,14 @@ class SurveySummaryRepository @Inject constructor(
         bpcStep: StepListEntity,
         didiList: List<DidiEntity>
     ) {
-        val event = EventV1(eventTopic = EventName.SAVE_BPC_MATCH_SCORE.topicName, payload = SaveMatchSummaryRequest.getSaveMatchSummaryRequestForBpc(
-            villageId = villageId,
-            stepListEntity = bpcStep,
-            didiList = didiList,
-            questionPassionScore = passingScore
-        ).json(),
+        val event = EventV1(
+            eventTopic = EventName.SAVE_BPC_MATCH_SCORE.topicName,
+            payload = SaveMatchSummaryRequest.getSaveMatchSummaryRequestForBpc(
+                villageId = villageId,
+                stepListEntity = bpcStep,
+                didiList = didiList,
+                questionPassionScore = passingScore
+            ).json(),
             mobileNumber = prefRepo.getMobileNumber() ?: BLANK_STRING
         )
 

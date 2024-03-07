@@ -559,7 +559,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Log.d("TAG", "VillageAndVoBoxForBottomSheet IconCaes:  ${bpcVillageStatus}")
-                    if(bpcVillageStatus>BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal) {
+                    if (bpcVillageStatus > BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal) {
                         Icon(
                             painter = painterResource(id = R.drawable.icon_feather_check_circle_white),
                             contentDescription = null,
@@ -567,7 +567,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                             ) greenOnline else blueDark
                         )
                     }
-                    if(bpcVillageStatus < BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal){
+                    if (bpcVillageStatus < BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal) {
                         Text(
                             text = stringResource(id = R.string.vo_endorsement_not_started),
                             color = textColorDark,
@@ -643,18 +643,18 @@ fun BpcVillageAndVoBoxForBottomSheetPreview(
     }
 }
 
-private fun fetchBPCVillageStatus(stepId: Int,statusId: Int):Int{
-    return if(stepId == 44 && statusId == StepStatus.NOT_STARTED.ordinal){
+private fun fetchBPCVillageStatus(stepId: Int, statusId: Int): Int {
+    return if (stepId == 44 && statusId == StepStatus.NOT_STARTED.ordinal) {
         BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal
-    }else if(stepId == 44 && statusId == StepStatus.INPROGRESS.ordinal){
+    } else if (stepId == 44 && statusId == StepStatus.INPROGRESS.ordinal) {
         BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal
-    }else if(stepId == 44 && statusId == StepStatus.COMPLETED.ordinal){
+    } else if (stepId == 44 && statusId == StepStatus.COMPLETED.ordinal) {
         BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal
-    }else if(stepId == 45 && statusId == StepStatus.NOT_STARTED.ordinal){
+    } else if (stepId == 45 && statusId == StepStatus.NOT_STARTED.ordinal) {
         BPCVillageStatus.BPC_VERIFICATION_NOT_STARTED.ordinal
-    }else if(stepId == 45 && statusId == StepStatus.INPROGRESS.ordinal){
+    } else if (stepId == 45 && statusId == StepStatus.INPROGRESS.ordinal) {
         BPCVillageStatus.BPC_VERIFICATION_IN_PROGRESS.ordinal
-    }else if(stepId == 45 && statusId == StepStatus.COMPLETED.ordinal){
+    } else if (stepId == 45 && statusId == StepStatus.COMPLETED.ordinal) {
         BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal
-    }else 0
+    } else 0
 }

@@ -12,10 +12,18 @@ import java.util.zip.ZipOutputStream
 
 object ZipManager {
     private const val BUFFER_SIZE = 6 * 1024
+
     @Throws(IOException::class)
-    fun zip(files: List<Pair<String,Uri?>>, zipFile: Uri?,context:Context) {
+    fun zip(files: List<Pair<String, Uri?>>, zipFile: Uri?, context: Context) {
         var origin: BufferedInputStream? = null
-        val out = ZipOutputStream(BufferedOutputStream(context.contentResolver.openOutputStream(zipFile!!, "wa")))
+        val out = ZipOutputStream(
+            BufferedOutputStream(
+                context.contentResolver.openOutputStream(
+                    zipFile!!,
+                    "wa"
+                )
+            )
+        )
         try {
             val data = ByteArray(BUFFER_SIZE)
             for (i in files.indices) {

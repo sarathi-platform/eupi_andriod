@@ -9,11 +9,11 @@ import com.google.gson.annotations.SerializedName
 data class ConfigResponseModel(
     @SerializedName("languageList")
     @Expose
-    val languageList:List<LanguageEntity>,
+    val languageList: List<LanguageEntity>,
 
     @SerializedName("questionImageUrlList")
     @Expose
-    val image_profile_link:List<String>,
+    val image_profile_link: List<String>,
 
     )
 
@@ -33,16 +33,16 @@ data class LanguageEntity(
     @SerializedName("language")
     @Expose
     @ColumnInfo(name = "language")
-    var language : String,
+    var language: String,
 
     @SerializedName("langCode")
     @Expose
     @ColumnInfo(name = "langCode")
-    val langCode : String?,
+    val langCode: String?,
 
     @SerializedName("localName")
     @Expose
     @ColumnInfo(name = "localName")
-    val localName : String?,
+    val localName: String?,
 )
 

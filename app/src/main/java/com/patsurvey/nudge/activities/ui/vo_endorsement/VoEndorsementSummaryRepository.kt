@@ -93,7 +93,7 @@ class VoEndorsementSummaryRepository @Inject constructor(
         if (eventItem !is DidiEntity)
             return super.createEvent(eventItem, eventName, eventType)
 
-        when(eventName) {
+        when (eventName) {
             EventName.SAVE_VO_ENDORSEMENT -> {
                 val didiEntity = (eventItem as DidiEntity)
                 val selectedTolaEntity = tolaDao.fetchSingleTolaFromServerId(didiEntity.cohortId)
@@ -124,7 +124,8 @@ class VoEndorsementSummaryRepository @Inject constructor(
                     ).json()
                 )
 
-                val dependsOn = createEventDependency(eventItem, eventName, updateDidiEndorsementStatusEvent)
+                val dependsOn =
+                    createEventDependency(eventItem, eventName, updateDidiEndorsementStatusEvent)
                 val metadata = updateDidiEndorsementStatusEvent.metadata?.getMetaDataDtoFromString()
                 val updatedMetaData = metadata?.copy(depends_on = dependsOn.getDependentEventsId())
                 updateDidiEndorsementStatusEvent = updateDidiEndorsementStatusEvent.copy(
@@ -134,6 +135,7 @@ class VoEndorsementSummaryRepository @Inject constructor(
                 return updateDidiEndorsementStatusEvent
 
             }
+
             else -> {
                 return super.createEvent(eventItem, eventName, eventType)
             }
@@ -159,6 +161,7 @@ class VoEndorsementSummaryRepository @Inject constructor(
                         it.payloadLocalId == dependentEvent.payloadLocalId
                     }
                 }
+
                 else -> {
                     filteredList = emptyList()
                 }

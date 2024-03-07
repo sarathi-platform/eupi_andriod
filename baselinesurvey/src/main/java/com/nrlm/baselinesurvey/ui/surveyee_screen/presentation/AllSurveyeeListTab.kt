@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.presentation
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.THIS_WEEK_TAB
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.MoveSurveyeesUpdateBannerComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
@@ -79,6 +77,9 @@ fun AllSurveyeeListTab(
 
     val surveyeeListWithTolaFilter = viewModel.tolaMapSurveyeeListState.value
 
+    val isFilterAppliedState = remember {
+        mutableStateOf(FilterListState())
+    }
 
     val linearProgress = remember {
         mutableStateOf(0.0f)
@@ -132,13 +133,18 @@ fun AllSurveyeeListTab(
                     }
                     item {
                         SearchWithFilterViewComponent(
-                            placeholderString = stringResource(id = R.string.search_didis),
+                            placeholderString = if (!activityName.equals("Conduct Hamlet Survey")) stringResource(
+                                id = R.string.search_didis
+                            ) else stringResource(
+                                R.string.search_hamlet
+                            ),
                             filterSelected = viewModel.isFilterAppliedState.value.isFilterApplied,
                             onFilterSelected = {
                                 if (surveyeeList.isNotEmpty()) {
-                                    viewModel.isFilterAppliedState.value = viewModel.isFilterAppliedState.value.copy(
-                                        isFilterApplied = !it
-                                    )
+                                    viewModel.isFilterAppliedState.value =
+                                        viewModel.isFilterAppliedState.value.copy(
+                                            isFilterApplied = !it
+                                        )
                                     onActionEvent(
                                         SurveyeeListScreenActions.IsFilterApplied(
                                             viewModel.isFilterAppliedState.value
