@@ -34,7 +34,9 @@ enum class EventName(val id: Int, val depends_on: List<Int> = emptyList(), val t
         topicName = "UPDATE_SECTION_PROGRESS_FOR_DIDI_EVENT"
     ),
     SAVE_RESPONSE_EVENT(18, topicName = "SAVE_RESPONSE_EVENT"),
-    UPDATE_TASK_STATUS_EVENT(19, topicName = "UPDATE_TASK_STATUS_EVENT")
+    UPDATE_TASK_STATUS_EVENT(19, topicName = "UPDATE_TASK_STATUS_EVENT"),
+    UPDATE_ACTIVITY_STATUS_EVENT(20, topicName = "UPDATE_ACTIVITY_STATUS_EVENT"),
+    UPDATE_MISSION_STATUS_EVENT(21, topicName = "UPDATE_ACTIVITY_STATUS_EVENT")
     ;
 }
 

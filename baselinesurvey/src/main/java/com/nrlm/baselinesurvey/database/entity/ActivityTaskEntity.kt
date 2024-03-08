@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.TASK_TABLE_NAME
 import com.nrlm.baselinesurvey.model.datamodel.MissionTaskModel
 
@@ -22,6 +23,8 @@ data class ActivityTaskEntity(
     var taskDate: String,
     var taskName: String,
     var status: String,
+    var actualStartDate: String = BLANK_STRING,
+    var actualCompletedDate: String = BLANK_STRING,
     var activityName: String,
     var activityState: Int,
 ) {

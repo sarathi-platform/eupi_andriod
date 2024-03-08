@@ -64,6 +64,7 @@ import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.repository.Missi
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.GetMissionActivitiesFromDBUseCase
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.MissionSummaryScreenUseCase
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.UpdateMisisonState
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.UpdateMissionStatusUseCase
 import com.nrlm.baselinesurvey.ui.profile.domain.repository.ProfileBSRepository
 import com.nrlm.baselinesurvey.ui.profile.domain.repository.ProfileBSRepositoryImpl
 import com.nrlm.baselinesurvey.ui.profile.domain.use_case.GetIdentityNumberUseCase
@@ -130,6 +131,7 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.GetActivitySta
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.GetSurveyeeListUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.MoveSurveyeeToThisWeekUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivityStatusUseCase
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
 import dagger.Module
@@ -195,13 +197,16 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideMissionSummaryScreenUseCase(
-        missionSummaryScreenRepository: MissionSummaryScreenRepository
+        missionSummaryScreenRepository: MissionSummaryScreenRepository,
+        eventsWriterRepository: EventsWriterRepository
     ): MissionSummaryScreenUseCase {
         return MissionSummaryScreenUseCase(
             getMissionActivitiesFromDBUseCase = GetMissionActivitiesFromDBUseCase(
                 missionSummaryScreenRepository,
             ),
-            updateMisisonState = UpdateMisisonState(missionSummaryScreenRepository)
+            updateMisisonState = UpdateMisisonState(missionSummaryScreenRepository),
+            updateMissionStatusUseCase = UpdateMissionStatusUseCase(missionSummaryScreenRepository),
+            eventsWriterUserCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }
 
@@ -276,13 +281,18 @@ object BaselineModule {
 
     @Provides
     @Singleton
-    fun provideSurveyeeScreenUseCase(surveyeeListScreenRepository: SurveyeeListScreenRepository): SurveyeeScreenUseCase {
+    fun provideSurveyeeScreenUseCase(
+        surveyeeListScreenRepository: SurveyeeListScreenRepository,
+        eventsWriterRepository: EventsWriterRepository
+    ): SurveyeeScreenUseCase {
         return SurveyeeScreenUseCase(
             getSurveyeeListUseCase = GetSurveyeeListUseCase(surveyeeListScreenRepository),
             moveSurveyeeToThisWeek = MoveSurveyeeToThisWeekUseCase(surveyeeListScreenRepository),
             getActivityStateFromDBUseCase = GetActivityStateFromDBUseCase(
                 surveyeeListScreenRepository
-            )
+            ),
+            updateActivityStatusUseCase = UpdateActivityStatusUseCase(surveyeeListScreenRepository),
+            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }
 
@@ -666,6 +676,7 @@ object BaselineModule {
         surveyeeEntityDao: SurveyeeEntityDao,
         taskDao: ActivityTaskDao,
         activityDao: MissionActivityDao,
+        missionEntityDao: MissionEntityDao,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao
     ): EventWriterHelper {
         return EventWriterHelperImpl(
@@ -677,6 +688,7 @@ object BaselineModule {
             surveyeeEntityDao = surveyeeEntityDao,
             taskDao = taskDao,
             activityDao = activityDao,
+            missionEntityDao = missionEntityDao,
             didiSectionProgressEntityDao = didiSectionProgressEntityDao
         )
     }

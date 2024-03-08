@@ -11,8 +11,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
+import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
@@ -40,6 +40,7 @@ import com.nrlm.baselinesurvey.utils.findQuestionForQuestionId
 import com.nrlm.baselinesurvey.utils.getOptionItemEntityFromInputTypeQuestionAnswer
 import com.nrlm.baselinesurvey.utils.sortedBySectionOrder
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.updateOptionItemEntityListStateForQuestionByCondition
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -334,6 +335,7 @@ class QuestionScreenViewModel @Inject constructor(
                         event.didiId,
                         event.sectionStatus
                     )
+                    updateMissionActivityTaskStatus(event.didiId, event.sectionStatus)
                 }
             }
 
@@ -639,11 +641,23 @@ class QuestionScreenViewModel @Inject constructor(
                         totalQuestionCount.intValue = tempList.filter { it.showQuestion }.distinctBy { it.questionId }.size
                         delay(100)
                         withContext(Dispatchers.Main) {
-                            isSectionCompleted.value = answeredQuestionCount.size == totalQuestionCount.intValue || answeredQuestionCount.size > totalQuestionCount.intValue
+                            isSectionCompleted.value =
+                                answeredQuestionCount.size == totalQuestionCount.intValue || answeredQuestionCount.size > totalQuestionCount.intValue
                         }
                     }
                 } catch (ex: Exception) {
                     Log.e("TAG", "onEvent: exception; ${ex.message}", ex)
+                }
+            }
+
+            is EventWriterEvents.UpdateMissionActivityTaskStatus -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    eventsWriterHelperImpl.markMissionActivityTaskInProgress(
+                        event.missionId,
+                        event.activityId,
+                        event.taskId,
+                        event.status
+                    )
                 }
             }
 
@@ -661,7 +675,24 @@ class QuestionScreenViewModel @Inject constructor(
         }
     }
 
-    private fun saveOrUpdateMiscTypeQuestionAnswers(didiId: Int, questionEntityState: QuestionEntityState, optionItemEntity: OptionItemEntity, selectedValue: String) {
+    private suspend fun updateMissionActivityTaskStatus(didiId: Int, sectionStatus: SectionStatus) {
+        val activityForSubjectDto = eventsWriterHelperImpl.getActivityFromSubjectId(didiId)
+        onEvent(
+            EventWriterEvents.UpdateMissionActivityTaskStatus(
+                missionId = activityForSubjectDto.missionId,
+                activityId = activityForSubjectDto.activityId,
+                taskId = activityForSubjectDto.taskId,
+                status = sectionStatus
+            )
+        )
+    }
+
+    private fun saveOrUpdateMiscTypeQuestionAnswers(
+        didiId: Int,
+        questionEntityState: QuestionEntityState,
+        optionItemEntity: OptionItemEntity,
+        selectedValue: String
+    ) {
         viewModelScope.launch(Dispatchers.IO) {
             val isQuestionAlreadyAnswer =
                 questionScreenUseCase.saveSectionAnswerUseCase.isQuestionAlreadyAnswered(

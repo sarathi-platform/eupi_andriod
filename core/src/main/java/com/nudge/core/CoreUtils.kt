@@ -23,7 +23,7 @@ import java.util.TimeZone
 
 fun Long.toDate(dateFormat: Long = System.currentTimeMillis(), timeZone: TimeZone = TimeZone.getTimeZone("UTC")): Date {
     val dateTime = Date(this)
-    val parser = SimpleDateFormat("HH:mm:ss dd/MM/yyyy", Locale.getDefault())
+    val parser = SimpleDateFormat("HH:mm:ss dd/MM/yyyy", Locale.ENGLISH)
     parser.timeZone = timeZone
     return parser.parse(parser.format(dateTime))!!
 }

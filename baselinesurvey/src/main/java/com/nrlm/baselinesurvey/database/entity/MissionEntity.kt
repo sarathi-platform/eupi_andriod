@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.MISSION_TABLE_NAME
 import com.nrlm.baselinesurvey.model.response.MissionResponseModel
 import com.nrlm.baselinesurvey.utils.states.SurveyState
@@ -24,7 +25,9 @@ data class MissionEntity(
     var activityTaskSize: Int,
     var missionStatus: Int,
     var pendingActivity: Int,
-    var activityComplete: Int
+    var activityComplete: Int,
+    var actualStartDate: String = BLANK_STRING,
+    var actualCompletedDate: String = BLANK_STRING
 ) {
     companion object {
         fun getMissionEntity(activityTaskSize: Int, mission: MissionResponseModel): MissionEntity {

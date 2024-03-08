@@ -2,7 +2,6 @@ package com.nrlm.baselinesurvey.ui.common_components.common_events
 
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
-import com.nrlm.baselinesurvey.utils.states.SurveyState
 
 sealed class EventWriterEvents {
 
@@ -32,7 +31,7 @@ sealed class EventWriterEvents {
 
     data class UpdateTaskStatusEvent(
         val subjectId: Int,
-        val status: SurveyState
+        val status: SectionStatus
     )
 
     data class UpdateActivityStatusEvent(
@@ -43,6 +42,13 @@ sealed class EventWriterEvents {
 
     data class UpdateMissionStatusEvent(
         val missionId: Int,
+        val status: SectionStatus
+    )
+
+    data class UpdateMissionActivityTaskStatus(
+        val missionId: Int,
+        val activityId: Int,
+        val taskId: Int,
         val status: SectionStatus
     )
 
