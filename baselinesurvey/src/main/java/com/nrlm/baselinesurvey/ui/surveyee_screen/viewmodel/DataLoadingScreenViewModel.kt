@@ -128,6 +128,15 @@ class DataLoadingScreenViewModel @Inject constructor(
         fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
             hamletSurveyRequestBodyModelForKokborok
         )
+//        val baseLineSurveyRequestBodyModelForAssameEnglish = SurveyRequestBodyModel(
+//            languageId = 2,
+//            surveyName = "BASELINE",
+//            referenceId = 6,
+//            referenceType = "STATE"
+//        )
+//        fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+//            baseLineSurveyRequestBodyModelForAssameEnglish
+//        )
 
     }
 
