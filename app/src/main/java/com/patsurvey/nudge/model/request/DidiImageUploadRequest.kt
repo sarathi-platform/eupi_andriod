@@ -5,8 +5,14 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.BLANK_STRING
 
 data class DidiImageUploadRequest(
-    val didiId: String, val location: String,
-    val userType: String, val filePath: String,
+    @SerializedName("didiId")
+    val didiId: String,
+    @SerializedName("location")
+    val location: String,
+    @SerializedName("userType")
+    val userType: String,
+    @SerializedName("filePath")
+    val filePath: String,
     @SerializedName("address") var address: String,
     @SerializedName("guardianName") var guardianName: String,
     @SerializedName("name") var name: String,
