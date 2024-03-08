@@ -6,10 +6,10 @@ enum class EventName(val id: Int, val depends_on: List<Int> = emptyList(), val t
 
     ADD_TOLA(1, topicName = "COHORT_SAVE_TOPIC"),
     UPDATE_TOLA(2, listOf(1), topicName = "COHORT_SAVE_TOPIC"),
-    DELETE_TOLA(3, listOf(1), topicName = "COHORT_DELETE_TOPIC"),
+    DELETE_TOLA(3, listOf(2, 1), topicName = "COHORT_DELETE_TOPIC"),
     ADD_DIDI(4, listOf(2, 1), topicName = "BENEFICIARY_SAVE_TOPIC"),
     UPDATE_DIDI(5, listOf(4), topicName = "BENEFICIARY_SAVE_TOPIC"),
-    DELETE_DIDI(6, listOf(4), topicName = "BENEFICIARY_DELETE_TOPIC"),
+    DELETE_DIDI(6, listOf(5, 4), topicName = "BENEFICIARY_DELETE_TOPIC"),
     SAVE_WEALTH_RANKING(7, listOf(5, 4, 1), "BENEFICIARY_EDIT_TOPIC"),
     SAVE_PAT_ANSWERS(8, listOf(7, 4, 1), topicName = "PAT_SAVE_TOPIC"),
     INPROGRESS_PAT_SCORE(9, listOf(7, 4, 1), topicName = "BENEFICIARY_EDIT_TOPIC"),
