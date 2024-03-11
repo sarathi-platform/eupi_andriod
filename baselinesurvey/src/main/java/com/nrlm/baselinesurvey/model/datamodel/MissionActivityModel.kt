@@ -1,7 +1,11 @@
 package com.nrlm.baselinesurvey.model.datamodel
 
+import com.google.gson.annotations.SerializedName
+
 data class MissionActivityModel(
+    @SerializedName("id")
     val activityId: Int,
+    @SerializedName("name")
     val activityName: String,
     val activityType: String,
     val activityTypeId: Int,
@@ -10,5 +14,7 @@ data class MissionActivityModel(
     val reviewer: String,
     val startDate: String,
     val subject: String,
-    val tasks: List<MissionTaskModel>
+    val tasks: List<MissionTaskModel>,
+    val language: String,
+    val status: String
 )
