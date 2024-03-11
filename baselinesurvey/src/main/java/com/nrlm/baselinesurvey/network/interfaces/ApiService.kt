@@ -9,6 +9,7 @@ import com.nrlm.baselinesurvey.model.request.LoginRequest
 import com.nrlm.baselinesurvey.model.request.MissionRequest
 import com.nrlm.baselinesurvey.model.request.OtpRequest
 import com.nrlm.baselinesurvey.model.request.SaveSurveyRequestModel
+import com.nrlm.baselinesurvey.model.request.SectionStatusRequest
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.model.response.BeneficiaryApiResponse
@@ -17,13 +18,13 @@ import com.nrlm.baselinesurvey.model.response.ContentResponse
 import com.nrlm.baselinesurvey.model.response.MissionResponseModel
 import com.nrlm.baselinesurvey.model.response.OtpVerificationModel
 import com.nrlm.baselinesurvey.model.response.SavedSurveyAnswersResponse
+import com.nrlm.baselinesurvey.model.response.SectionStatusResponseModel
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.TransactionResponse
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
 import com.nrlm.baselinesurvey.network.CONTENT_MANAGER
 import com.nrlm.baselinesurvey.network.GET_CASTE_LIST
-import com.nrlm.baselinesurvey.network.LOGOUT
-import com.nrlm.baselinesurvey.network.GET_CASTE_LIST
+import com.nrlm.baselinesurvey.network.GET_SECTION_STATUS
 import com.nrlm.baselinesurvey.network.LOGOUT
 import com.nrlm.baselinesurvey.network.SUBPATH_AUTH_GENERATE_OTP
 import com.nrlm.baselinesurvey.network.SUBPATH_AUTH_VALIDATE_OTP
@@ -83,6 +84,8 @@ interface ApiService {
     @GET(GET_CASTE_LIST)
     suspend fun getCasteList(@Query("languageId") languageId: Int): ApiResponseModel<List<CasteModel>>
 
+    @POST(GET_SECTION_STATUS)
+    suspend fun getSectionStatus(@Body sectionStatusRequest: SectionStatusRequest): ApiResponseModel<List<SectionStatusResponseModel>>
 
     @POST(LOGOUT)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
