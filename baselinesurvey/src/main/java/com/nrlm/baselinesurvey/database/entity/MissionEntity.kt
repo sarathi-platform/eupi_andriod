@@ -26,7 +26,7 @@ data class MissionEntity(
     var missionStatus: Int,
     var pendingActivity: Int,
     var activityComplete: Int,
-    var language: String,
+    var language: String?,
     var actualStartDate: String = BLANK_STRING,
     var actualCompletedDate: String = BLANK_STRING
 ) {

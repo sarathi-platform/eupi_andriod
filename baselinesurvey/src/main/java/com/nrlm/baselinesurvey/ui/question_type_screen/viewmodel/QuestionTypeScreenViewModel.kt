@@ -26,6 +26,7 @@ import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.calculateResultForFormula
 import com.nrlm.baselinesurvey.utils.checkCondition
+import com.nrlm.baselinesurvey.utils.convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.convertFormTypeQuestionListToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.convertQuestionListToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.convertToOptionItemEntity
@@ -328,9 +329,9 @@ class QuestionTypeScreenViewModel @Inject constructor(
                                         FormQuestionResponseEntity(
                                             id = 0,
                                             didiId = didiId,
-                                            questionId = finalFormQuestionResponseList.first().questionId,
-                                            surveyId = finalFormQuestionResponseList.first().surveyId,
-                                            sectionId = finalFormQuestionResponseList.first().sectionId,
+                                            questionId = event.questionId,
+                                            surveyId = event.surveyId,
+                                            sectionId = event.sectionId,
                                             referenceId = referenceId,
                                             optionId = it.optionId ?: -1,
                                             selectedValue = resultedValue
@@ -341,13 +342,42 @@ class QuestionTypeScreenViewModel @Inject constructor(
                         }
                     }
                     finalFormQuestionResponseList.forEach {
-                        val existingFormQuestionResponseEntity = formQuestionScreenUseCase.saveFormQuestionResponseUseCase.getOptionItem(it)
+                        val existingFormQuestionResponseEntity =
+                            formQuestionScreenUseCase.saveFormQuestionResponseUseCase.getOptionItem(
+                                it
+                            )
                         if (existingFormQuestionResponseEntity > 0) {
-                            formQuestionScreenUseCase.saveFormQuestionResponseUseCase.updateFromListItemIntoDb(it)
+                            formQuestionScreenUseCase.saveFormQuestionResponseUseCase.updateFromListItemIntoDb(
+                                it
+                            )
                         } else {
-                            formQuestionScreenUseCase.saveFormQuestionResponseUseCase.saveFormsListIntoDB(finalFormQuestionResponseList)
+                            formQuestionScreenUseCase.saveFormQuestionResponseUseCase.saveFormsListIntoDB(
+                                finalFormQuestionResponseList
+                            )
                         }
                     }
+                    val completeOptionListForQuestion =
+                        formQuestionScreenUseCase.getFormQuestionResponseUseCase
+                            .getFormResponsesForQuestion(
+                                event.surveyId,
+                                event.sectionId,
+                                event.questionId,
+                                event.subjectId
+                            )
+                    onEvent(
+                        EventWriterEvents.SaveAnswerEvent(
+                            surveyId = finalFormQuestionResponseList.first().surveyId,
+                            sectionId = finalFormQuestionResponseList.first().sectionId,
+                            didiId = didiId,
+                            questionId = finalFormQuestionResponseList.first().questionId,
+                            questionType = QuestionType.Form.name,
+                            questionTag = question?.tag ?: BLANK_STRING,
+                            saveAnswerEventOptionItemDtoList = completeOptionListForQuestion
+                                .convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto(
+                                    QuestionType.Form
+                                )
+                        )
+                    )
                 }
             }
 

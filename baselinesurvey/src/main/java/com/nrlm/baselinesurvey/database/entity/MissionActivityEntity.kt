@@ -29,15 +29,15 @@ data class MissionActivityEntity(
     var actualStartDate: String = BLANK_STRING,
     val actualCompleteDate: String = BLANK_STRING,
     var subject: String,
-    var status: String,
+    var status: String?,
     var activityTaskSize: Int,
     var activityStatus: Int,
     var pendingDidi: Int,
     val isAllTask: Boolean,
-    var language: String,
+    var language: String?,
 
 
-) {
+    ) {
     companion object {
         fun getMissionActivityEntity(
             missionId: Int,

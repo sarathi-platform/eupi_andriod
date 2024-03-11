@@ -15,6 +15,10 @@ sealed class QuestionTypeEvent {
     ) : QuestionTypeEvent()
 
     data class SaveCacheFormQuestionResponseToDbEvent(
+        val surveyId: Int,
+        val sectionId: Int,
+        val questionId: Int,
+        val subjectId: Int,
         val formQuestionResponseList: List<FormQuestionResponseEntity>
     ) : QuestionTypeEvent()
 

@@ -77,6 +77,7 @@ import com.nrlm.baselinesurvey.ui.theme.h6
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.convertInputTypeQuestionToEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.convertToSaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.findOptionFromId
 import com.nrlm.baselinesurvey.utils.mapFormQuestionResponseToFromResponseObjectDto
@@ -883,23 +884,45 @@ fun NestedLazyList(
                                             }
                                         }
 
-                                        questionScreenViewModel.onEvent(
-                                            EventWriterEvents.SaveAnswerEvent(
-                                                surveyId = sectionDetails.surveyId,
-                                                sectionId = sectionDetails.sectionId,
-                                                didiId = surveyeeId,
-                                                questionId = question.questionId ?: 0,
-                                                questionType = question.questionEntity.type
-                                                    ?: BLANK_STRING,
-                                                questionTag = question.questionEntity.tag,
-                                                showConditionalQuestion = !optionItem.conditions.isNullOrEmpty(),
-                                                saveAnswerEventOptionItemDtoList = mOptionItem.convertToSaveAnswerEventOptionItemDto(
-                                                    QuestionType.getQuestionTypeFromName(
-                                                        question.questionEntity.type ?: BLANK_STRING
-                                                    )!!
+                                        if (question.questionEntity.type == QuestionType.InputNumber.name) {
+                                            questionScreenViewModel.onEvent(
+                                                EventWriterEvents.SaveAnswerEvent(
+                                                    surveyId = sectionDetails.surveyId,
+                                                    sectionId = sectionDetails.sectionId,
+                                                    didiId = surveyeeId,
+                                                    questionId = question.questionId ?: 0,
+                                                    questionType = question.questionEntity.type
+                                                        ?: BLANK_STRING,
+                                                    questionTag = question.questionEntity.tag,
+                                                    showConditionalQuestion = !optionItem.conditions.isNullOrEmpty(),
+                                                    saveAnswerEventOptionItemDtoList = inputTypeQuestionAnswerEntityList.value
+                                                        .convertInputTypeQuestionToEventOptionItemDto(
+                                                            question.questionId ?: 0,
+                                                            QuestionType.InputNumber
+                                                        )
                                                 )
                                             )
-                                        )
+                                        } else {
+                                            questionScreenViewModel.onEvent(
+                                                EventWriterEvents.SaveAnswerEvent(
+                                                    surveyId = sectionDetails.surveyId,
+                                                    sectionId = sectionDetails.sectionId,
+                                                    didiId = surveyeeId,
+                                                    questionId = question.questionId ?: 0,
+                                                    questionType = question.questionEntity.type
+                                                        ?: BLANK_STRING,
+                                                    questionTag = question.questionEntity.tag,
+                                                    showConditionalQuestion = !optionItem.conditions.isNullOrEmpty(),
+                                                    saveAnswerEventOptionItemDtoList = mOptionItem.convertToSaveAnswerEventOptionItemDto(
+                                                        QuestionType.getQuestionTypeFromName(
+                                                            question.questionEntity.type
+                                                                ?: BLANK_STRING
+                                                        )!!
+                                                    )
+                                                )
+                                            )
+                                        }
+
                                     },
                                     onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
 

@@ -12,7 +12,6 @@ import com.nrlm.baselinesurvey.model.datamodel.ActivityForSubjectDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventQuestionItemDto
-import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventSectionItemDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionStatusUpdateEventDto
 import com.nrlm.baselinesurvey.model.datamodel.UpdateActivityStatusEventDto
 import com.nrlm.baselinesurvey.model.datamodel.UpdateMissionStatusEventDto
@@ -107,19 +106,13 @@ class EventWriterHelperImpl @Inject constructor(
             languageId = languageId,
             subjectId = didiId,
             subjectType = activityForSubjectDto.subject,
-            sections = listOf(
-                SaveAnswerEventSectionItemDto(
-                    sectionId = sectionId,
-                    questions = listOf(
-                        SaveAnswerEventQuestionItemDto(
-                            questionId = questionId,
-                            questionType = questionType,
-                            tag = questionTag,
-                            showQuestion = showQuestion,
-                            options = saveAnswerEventOptionItemDtoList
-                        )
-                    )
-                )
+            sectionId = sectionId,
+            question = SaveAnswerEventQuestionItemDto(
+                questionId = questionId,
+                questionType = questionType,
+                tag = questionTag,
+                showQuestion = showQuestion,
+                options = saveAnswerEventOptionItemDtoList
             ),
             referenceId = surveyEntity?.referenceId ?: 0
         )
