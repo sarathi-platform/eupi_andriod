@@ -72,7 +72,7 @@ class DataLoadingScreenViewModel @Inject constructor(
         val baselineSurveyRequestBodyModel = SurveyRequestBodyModel(
             languageId = 2,
             surveyName = "BASELINE",
-            referenceId = 2,
+            referenceId = 31,
             referenceType = "STATE"
         )
         fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
@@ -82,7 +82,7 @@ class DataLoadingScreenViewModel @Inject constructor(
         val hamletSurveyRequestBodyModel = SurveyRequestBodyModel(
             languageId = 2,
             surveyName = "HAMLET",
-            referenceId = 3,
+            referenceId = 31,
             referenceType = "STATE"
         )
         fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
@@ -92,7 +92,7 @@ class DataLoadingScreenViewModel @Inject constructor(
         val baselineSurveyRequestBodyModelForKokBorok = SurveyRequestBodyModel(
             languageId = 6,
             surveyName = "BASELINE",
-            referenceId = 2,
+            referenceId = 31,
             referenceType = "STATE"
         )
         fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
@@ -102,7 +102,7 @@ class DataLoadingScreenViewModel @Inject constructor(
         val baselineSurveyRequestBodyModelForBangla = SurveyRequestBodyModel(
             languageId = 3,
             surveyName = "BASELINE",
-            referenceId = 5,
+            referenceId = 31,
             referenceType = "STATE"
         )
         fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
@@ -112,7 +112,7 @@ class DataLoadingScreenViewModel @Inject constructor(
         val hamletSurveyRequestBodyModelForBangla = SurveyRequestBodyModel(
             languageId = 3,
             surveyName = "HAMLET",
-            referenceId = 5,
+            referenceId = 31,
             referenceType = "STATE"
         )
         fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
@@ -122,7 +122,7 @@ class DataLoadingScreenViewModel @Inject constructor(
         val hamletSurveyRequestBodyModelForKokborok = SurveyRequestBodyModel(
             languageId = 6,
             surveyName = "HAMLET",
-            referenceId = 3,
+            referenceId = 31,
             referenceType = "STATE"
         )
         fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
