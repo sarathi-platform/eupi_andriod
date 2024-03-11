@@ -32,4 +32,8 @@ class FetchSurveyFromNetworkUseCase(
             return false
         }
     }
+
+    fun getStateId(): Int {
+        return repository.getStateId()
+    }
 }

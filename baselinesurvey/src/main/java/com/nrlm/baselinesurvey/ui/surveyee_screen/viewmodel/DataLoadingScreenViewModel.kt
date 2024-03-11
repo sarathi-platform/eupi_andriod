@@ -69,66 +69,75 @@ class DataLoadingScreenViewModel @Inject constructor(
     }
 
     private suspend fun fetchSurveyForAllLanguages() {
-        val baselineSurveyRequestBodyModel = SurveyRequestBodyModel(
-            languageId = 2,
-            surveyName = "BASELINE",
-            referenceId = 31,
-            referenceType = "STATE"
-        )
-        fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-            baselineSurveyRequestBodyModel
-        )
 
-        val hamletSurveyRequestBodyModel = SurveyRequestBodyModel(
-            languageId = 2,
-            surveyName = "HAMLET",
-            referenceId = 31,
-            referenceType = "STATE"
-        )
-        fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-            hamletSurveyRequestBodyModel
-        )
+        val stateId = getStateId()
 
-        val baselineSurveyRequestBodyModelForKokBorok = SurveyRequestBodyModel(
-            languageId = 6,
-            surveyName = "BASELINE",
-            referenceId = 31,
-            referenceType = "STATE"
-        )
-        fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-            baselineSurveyRequestBodyModelForKokBorok
-        )
+        if (stateId != -1) {
+            val baselineSurveyRequestBodyModel = SurveyRequestBodyModel(
+                languageId = 2,
+                surveyName = "BASELINE",
+                referenceId = stateId,
+                referenceType = "STATE"
+            )
+            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+                baselineSurveyRequestBodyModel
+            )
 
-        val baselineSurveyRequestBodyModelForBangla = SurveyRequestBodyModel(
-            languageId = 3,
-            surveyName = "BASELINE",
-            referenceId = 31,
-            referenceType = "STATE"
-        )
-        fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-            baselineSurveyRequestBodyModelForBangla
-        )
+            val hamletSurveyRequestBodyModel = SurveyRequestBodyModel(
+                languageId = 2,
+                surveyName = "HAMLET",
+                referenceId = stateId,
+                referenceType = "STATE"
+            )
+            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+                hamletSurveyRequestBodyModel
+            )
 
-        val hamletSurveyRequestBodyModelForBangla = SurveyRequestBodyModel(
-            languageId = 3,
-            surveyName = "HAMLET",
-            referenceId = 31,
-            referenceType = "STATE"
-        )
-        fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-            hamletSurveyRequestBodyModelForBangla
-        )
+            val baselineSurveyRequestBodyModelForKokBorok = SurveyRequestBodyModel(
+                languageId = 6,
+                surveyName = "BASELINE",
+                referenceId = stateId,
+                referenceType = "STATE"
+            )
+            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+                baselineSurveyRequestBodyModelForKokBorok
+            )
 
-        val hamletSurveyRequestBodyModelForKokborok = SurveyRequestBodyModel(
-            languageId = 6,
-            surveyName = "HAMLET",
-            referenceId = 31,
-            referenceType = "STATE"
-        )
-        fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-            hamletSurveyRequestBodyModelForKokborok
-        )
+            val baselineSurveyRequestBodyModelForBangla = SurveyRequestBodyModel(
+                languageId = 3,
+                surveyName = "BASELINE",
+                referenceId = stateId,
+                referenceType = "STATE"
+            )
+            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+                baselineSurveyRequestBodyModelForBangla
+            )
 
+            val hamletSurveyRequestBodyModelForBangla = SurveyRequestBodyModel(
+                languageId = 3,
+                surveyName = "HAMLET",
+                referenceId = stateId,
+                referenceType = "STATE"
+            )
+            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+                hamletSurveyRequestBodyModelForBangla
+            )
+
+            val hamletSurveyRequestBodyModelForKokborok = SurveyRequestBodyModel(
+                languageId = 6,
+                surveyName = "HAMLET",
+                referenceId = stateId,
+                referenceType = "STATE"
+            )
+            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+                hamletSurveyRequestBodyModelForKokborok
+            )
+        }
+
+    }
+
+    private fun getStateId(): Int {
+        return fetchDataUseCase.fetchSurveyFromNetworkUseCase.getStateId()
     }
 
     fun isUserLoggedIn(): Boolean {
