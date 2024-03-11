@@ -24,7 +24,8 @@ data class MissionEntity(
     var activityTaskSize: Int,
     var missionStatus: Int,
     var pendingActivity: Int,
-    var activityComplete: Int
+    var activityComplete: Int,
+    var language: String
 ) {
     companion object {
         fun getMissionEntity(activityTaskSize: Int, mission: MissionResponseModel): MissionEntity {
@@ -37,7 +38,8 @@ data class MissionEntity(
                 activityTaskSize = activityTaskSize,
                 missionStatus = 0,
                 pendingActivity = activityTaskSize,
-                activityComplete = SurveyState.NOT_STARTED.ordinal
+                activityComplete = SurveyState.NOT_STARTED.ordinal,
+                language = mission.language
             )
         }
     }
