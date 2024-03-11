@@ -19,4 +19,8 @@ class GetSurveyeeDetailsUserCase (private val repository: StartScreenRepository)
         return repository.getDidiInfoObjectLive(didiId)
     }
 
+    fun getStateId(): Int {
+        return repository.getStateId()
+    }
+
 }

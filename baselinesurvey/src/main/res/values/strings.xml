@@ -456,5 +456,8 @@
     <string name="share_export_image" translatable="false">Share exported image</string>
     <string name="search_hamlet">Search Hamlet</string>
     <string name="mission_completed_text">Mission Completed</string>
+    <string name="aadhar_card_titile_assam">Do you have aadhar card?</string>
+    <string name="voter_card_title_assam">Do you have voter card?</string>
+    <string name="not_able_to_load">Not able to load data please try again..</string>
 
 </resources>

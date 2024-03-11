@@ -33,8 +33,9 @@ import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
-import com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponent.IncrementDecrementView
 import com.nrlm.baselinesurvey.ui.common_components.RadioOptionTypeComponent
+import com.nrlm.baselinesurvey.ui.common_components.TypeMultiSelectedDropDownComponent
+import com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponent.IncrementDecrementView
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.dimen_100_dp
@@ -42,7 +43,6 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_14_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_30_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_64_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.utils.getResponseForOptionId
 import com.nrlm.baselinesurvey.utils.saveFormQuestionResponseEntity
 import kotlinx.coroutines.launch
@@ -136,15 +136,22 @@ fun NestedLazyListForFormQuestions(
                     ) { index, option ->
                         when (option.optionItemEntity?.optionType) {
                             QuestionType.SingleSelectDropdown.name,
-                            QuestionType.SingleSelectDropDown.name-> {
+                            QuestionType.SingleSelectDropDown.name -> {
                                 TypeDropDownComponent(
                                     option.optionItemEntity?.display,
                                     option.optionItemEntity.selectedValue ?: "Select",
                                     showQuestionState = option,
                                     sources = option.optionItemEntity.values,
-                                    selectOptionText = formQuestionResponseEntity.value.getResponseForOptionId(option.optionId ?: -1)?.selectedValue ?: BLANK_STRING
+                                    selectOptionText = formQuestionResponseEntity.value.getResponseForOptionId(
+                                        option.optionId ?: -1
+                                    )?.selectedValue ?: BLANK_STRING
                                 ) { value ->
-                                    questionTypeScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionalOptionState(option, value))
+                                    questionTypeScreenViewModel.onEvent(
+                                        QuestionTypeEvent.UpdateConditionalOptionState(
+                                            option,
+                                            value
+                                        )
+                                    )
                                     questionTypeScreenViewModel.formTypeOption?.let { formTypeOption ->
                                         saveCacheFormData(
                                             saveFormQuestionResponseEntity(
@@ -158,15 +165,48 @@ fun NestedLazyListForFormQuestions(
                                     answeredQuestionCountIncreased()
                                 }
                             }
+
+                            QuestionType.MultiSelectDropDown.name,
+                            QuestionType.MultiSelectDropdown.name -> {
+                                TypeMultiSelectedDropDownComponent(
+                                    title = option.optionItemEntity.display,
+                                    sources = option.optionItemEntity.values,
+                                    showQuestionState = option,
+                                ) { value ->
+                                    questionTypeScreenViewModel.onEvent(
+                                        QuestionTypeEvent.UpdateConditionalOptionState(
+                                            option,
+                                            value
+                                        )
+                                    )
+                                    questionTypeScreenViewModel.formTypeOption?.let { formTypeOption ->
+                                        saveCacheFormData(
+                                            saveFormQuestionResponseEntity(
+                                                formTypeOption,
+                                                option.optionId ?: 0,
+                                                value,
+                                                viewModel.referenceId
+                                            )
+                                        )
+                                    }
+                                    answeredQuestionCountIncreased()
+                                }
+                            }
+
                             QuestionType.Input.name,
                             QuestionType.InputText.name,
-                            QuestionType.InputNumberEditText.name-> {
-                                Log.d("TAG", "EditTextWithTitleComponent: ${option?.optionItemEntity?.display}, type: ${option.optionItemEntity.optionType}")
+                            QuestionType.InputNumberEditText.name -> {
+                                Log.d(
+                                    "TAG",
+                                    "EditTextWithTitleComponent: ${option?.optionItemEntity?.display}, type: ${option.optionItemEntity.optionType}"
+                                )
 
                                 EditTextWithTitleComponent(
                                     option.optionItemEntity.display,
                                     showQuestion = option,
-                                    defaultValue = formQuestionResponseEntity.value.getResponseForOptionId(option.optionId ?: -1)?.selectedValue ?: BLANK_STRING,
+                                    defaultValue = formQuestionResponseEntity.value.getResponseForOptionId(
+                                        option.optionId ?: -1
+                                    )?.selectedValue ?: BLANK_STRING,
                                     isOnlyNumber = option.optionItemEntity.optionType == QuestionType.InputNumber.name || option.optionItemEntity.optionType == QuestionType.InputNumberEditText.name
                                 ) { value ->
                                     questionTypeScreenViewModel.formTypeOption.let { it1 ->
@@ -214,14 +254,19 @@ fun NestedLazyListForFormQuestions(
                             }
 
                             QuestionType.RadioButton.name,
-                            QuestionType.Toggle.name-> {
+                            QuestionType.Toggle.name -> {
                                 RadioOptionTypeComponent(
                                     optionItemEntityState = option,
                                     selectedValue = formQuestionResponseEntity.value.getResponseForOptionId(
                                         option.optionId ?: -1
                                     )?.selectedValue ?: BLANK_STRING,
                                     onOptionSelected = { selectedValue ->
-                                        questionTypeScreenViewModel.onEvent(QuestionTypeEvent.UpdateConditionalOptionState(option, selectedValue))
+                                        questionTypeScreenViewModel.onEvent(
+                                            QuestionTypeEvent.UpdateConditionalOptionState(
+                                                option,
+                                                selectedValue
+                                            )
+                                        )
                                         questionTypeScreenViewModel.formTypeOption?.let { formTypeOption ->
                                             saveCacheFormData(
                                                 saveFormQuestionResponseEntity(
@@ -235,6 +280,10 @@ fun NestedLazyListForFormQuestions(
                                         answeredQuestionCountIncreased()
                                     }
                                 )
+                            }
+
+                            QuestionType.MultiSelect.name,
+                            QuestionType.Grid.name -> {
                             }
                         }
                     }

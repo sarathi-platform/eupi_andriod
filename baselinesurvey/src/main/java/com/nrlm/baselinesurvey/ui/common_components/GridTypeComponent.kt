@@ -106,6 +106,7 @@ fun GridTypeComponent(
         println("outer ${outerState.layoutInfo.visibleItemsInfo.map { it.index }}")
         println("inner ${innerState.layoutInfo.visibleItemsInfo.map { it.index }}")
     }
+    val manualMaxHeight = (showQuestionState.optionItemEntityState.size * 100).dp
 
     BoxWithConstraints(
         modifier = modifier
@@ -113,7 +114,7 @@ fun GridTypeComponent(
                 state = outerState,
                 Orientation.Vertical,
             )
-            .heightIn(min = 100.dp, maxCustomHeight)
+            .heightIn(min = 100.dp, maxCustomHeight + manualMaxHeight)
     ) {
 
         VerticalAnimatedVisibilityComponent(visible = showQuestionState.showQuestion) {
@@ -139,7 +140,7 @@ fun GridTypeComponent(
                         LazyColumn(
                             state = outerState,
                             modifier = Modifier
-                                .heightIn(min = 110.dp, max = maxCustomHeight)
+                                .heightIn(min = 110.dp, max = maxCustomHeight + manualMaxHeight)
                         ) {
                             item {
                                 Row(
@@ -179,7 +180,10 @@ fun GridTypeComponent(
                                         modifier = Modifier
                                             .wrapContentWidth()
                                             .padding(horizontal = dimen_16_dp)
-                                            .heightIn(min = 110.dp, max = maxCustomHeight),
+                                            .heightIn(
+                                                min = 110.dp,
+                                                max = maxCustomHeight + manualMaxHeight
+                                            ),
                                         horizontalArrangement = Arrangement.Center
                                     ) {
                                         itemsIndexed(optionItemEntityList.sortedBy { it.optionId }
