@@ -42,6 +42,7 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.SurveyeeScreenViewMo
 import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
+import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
@@ -102,182 +103,207 @@ fun AllSurveyeeListTab(
             LoaderComponent(visible = loaderState.isLoaderVisible)
 
             if (!loaderState.isLoaderVisible) {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(dimen_8_dp),
-                    modifier = Modifier
-                        .padding(horizontal = dimen_16_dp, vertical = dimen_16_dp)
-                        .background(
-                            white
+                if (surveyeeList.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            stringResource(R.string.not_able_to_load),
+                            style = defaultTextStyle,
+                            color = textColorDark
                         )
-                ) {
-
-                    item {
-                        Column(modifier = Modifier.fillMaxSize()) {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 10.dp),
-                                text = activityName,
-                                style = largeTextStyle,
-                                color = blueDark
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 10.dp, bottom = 10.dp),
-                                text = stringResource(id = R.string.due_by_x, activityDate),
-                                style = newMediumTextStyle,
-                                color = black100Percent
-                            )
-                        }
                     }
-                    item {
-                        SearchWithFilterViewComponent(
-                            placeholderString = if (!activityName.equals("Conduct Hamlet Survey")) stringResource(
-                                id = R.string.search_didis
-                            ) else stringResource(
-                                R.string.search_hamlet
-                            ),
-                            filterSelected = viewModel.isFilterAppliedState.value.isFilterApplied,
-                            onFilterSelected = {
-                                if (surveyeeList.isNotEmpty()) {
-                                    viewModel.isFilterAppliedState.value =
-                                        viewModel.isFilterAppliedState.value.copy(
-                                            isFilterApplied = !it
-                                        )
-                                    onActionEvent(
-                                        SurveyeeListScreenActions.IsFilterApplied(
-                                            viewModel.isFilterAppliedState.value
-                                        )
-                                    )
-                                    viewModel.onEvent(SearchEvent.FilterList(ALL_TAB))
-                                }
-                            },
-                            onSearchValueChange = { queryTerm ->
-                                viewModel.onEvent(
-                                    SearchEvent.PerformSearch(
-                                        queryTerm,
-                                        viewModel.isFilterAppliedState.value.isFilterApplied,
-                                        ALL_TAB
-                                    )
+                } else {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(dimen_8_dp),
+                        modifier = Modifier
+                            .padding(horizontal = dimen_16_dp, vertical = dimen_16_dp)
+                            .background(
+                                white
+                            )
+                    ) {
+
+                        item {
+                            Column(modifier = Modifier.fillMaxSize()) {
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 10.dp),
+                                    text = activityName,
+                                    style = largeTextStyle,
+                                    color = blueDark
                                 )
-                            }
-                        )
-                    }
-
-                    item {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            linearProgress.value =
-                                (surveyeeList.filter { it.surveyeeDetails.surveyStatus == SurveyState.COMPLETED.ordinal }.size.toFloat()
-                                        /*.coerceIn(0.0F, 1.0F)*/ / if (surveyeeList.isNotEmpty()) surveyeeList.size.toFloat() else 0.0F
-                                        /*.coerceIn(0.0F, 1.0F)*/)
-                            LinearProgressIndicator(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(dimen_8_dp)
-                                    .padding(top = 1.dp)
-                                    .clip(RoundedCornerShape(14.dp)),
-                                color = progressIndicatorColor,
-                                trackColor = trackColor,
-                                progress = linearProgress.value
-                            )
-                            Spacer(modifier = Modifier.width(dimen_8_dp))
-                            Text(
-                                text = "${surveyeeList.filter { it.surveyeeDetails.surveyStatus == SurveyState.COMPLETED.ordinal }.size}/${surveyeeList.size}",
-                                color = textColorDark,
-                                style = smallTextStyle
-                            )
-                        }
-                    }
-
-                    item {
-                        MoveSurveyeesUpdateBannerComponent(showBanner = viewModel.showMoveDidisBanner, surveyeeIdList = viewModel.checkedItemsState.value)
-                    }
-
-                    if (!viewModel.isFilterAppliedState.value.isFilterApplied) {
-                        itemsIndexed(items = surveyeeList) { index, item ->
-                            SurveyeeCardComponent(
-                                surveyeeState = item,
-                                showCheckBox = !isSelectionEnabled.value,
-                                fromScreen = ALL_TAB,
-                                checkBoxChecked = { surveyeeEntity, isChecked ->
-                                    onActionEvent(
-                                        SurveyeeListScreenActions.CheckBoxClicked(
-                                            isChecked,
-                                            surveyeeEntity
-                                        )
-                                    )
-                                },
-                                moveDidiToThisWeek = { surveyeeCardState, moveToThisWeek ->
-                                    viewModel.onEvent(
-                                        SurveyeeListEvents.MoveDidiToThisWeek(
-                                            surveyeeCardState.surveyeeDetails.didiId ?: -1,
-                                            moveToThisWeek
-                                        )
-                                    )
-                                },
-                                //Todo add proper tex
-                                primaryButtonText = "Start " + activityName.split(" ")[1],
-                                buttonClicked = { buttonName, surveyeeId ->
-                                    BaselineCore.setCurrentActivityName(activityName)
-                                    handleButtonClick(
-                                        buttonName,
-                                        surveyeeId,
-                                        activityId,
-                                        navController,
-                                        activityName
-                                    )
-                                }
-                            )
-                        }
-                    } else {
-                        itemsIndexed(items = surveyeeListWithTolaFilter.keys.toList()) { index, key ->
-                            SurveyeeCardWithTolaFilterComponent(
-                                tolaName = key,
-                                surveyeeStateList = surveyeeListWithTolaFilter[key] ?: emptyList(),
-                                showCheckBox = !isSelectionEnabled.value,
-                                fromScreen = ALL_TAB,
-                                primaryButtonText = "Start " + activityName.split(" ")[1],
-                                buttonClicked = { buttonName, surveyeeId ->
-                                    handleButtonClick(
-                                        buttonName,
-                                        surveyeeId,
-                                        activityId,
-                                        navController
-                                    )
-                                },
-                                checkBoxChecked = { surveyeeEntity, isChecked ->
-                                    onActionEvent(SurveyeeListScreenActions.CheckBoxClicked(isChecked, surveyeeEntity))
-                                },
-                                moveDidiToThisWeek = { surveyeeCardState, moveToThisWeek ->
-                                    viewModel.onEvent(
-                                        SurveyeeListEvents.MoveDidiToThisWeek(
-                                            surveyeeCardState.surveyeeDetails.didiId ?: -1,
-                                            moveToThisWeek
-                                        )
-                                    )
-                                }
-                            )
-                            if (index < surveyeeListWithTolaFilter.keys.size - 1) {
-                                Divider(
-                                    color = borderGreyLight,
-                                    thickness = 1.dp,
-                                    modifier = Modifier.padding(
-                                        top = 22.dp,
-                                        bottom = 1.dp
-                                    )
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 10.dp, bottom = 10.dp),
+                                    text = stringResource(id = R.string.due_by_x, activityDate),
+                                    style = newMediumTextStyle,
+                                    color = black100Percent
                                 )
                             }
                         }
-                    }
-                    item {
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(dimen_10_dp)
-                        )
+                        item {
+                            SearchWithFilterViewComponent(
+                                placeholderString = if (!activityName.equals("Conduct Hamlet Survey")) stringResource(
+                                    id = R.string.search_didis
+                                ) else stringResource(
+                                    R.string.search_hamlet
+                                ),
+                                filterSelected = viewModel.isFilterAppliedState.value.isFilterApplied,
+                                onFilterSelected = {
+                                    if (surveyeeList.isNotEmpty()) {
+                                        viewModel.isFilterAppliedState.value =
+                                            viewModel.isFilterAppliedState.value.copy(
+                                                isFilterApplied = !it
+                                            )
+                                        onActionEvent(
+                                            SurveyeeListScreenActions.IsFilterApplied(
+                                                viewModel.isFilterAppliedState.value
+                                            )
+                                        )
+                                        viewModel.onEvent(SearchEvent.FilterList(ALL_TAB))
+                                    }
+                                },
+                                onSearchValueChange = { queryTerm ->
+                                    viewModel.onEvent(
+                                        SearchEvent.PerformSearch(
+                                            queryTerm,
+                                            viewModel.isFilterAppliedState.value.isFilterApplied,
+                                            ALL_TAB
+                                        )
+                                    )
+                                }
+                            )
+                        }
+
+                        item {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                linearProgress.value =
+                                    (surveyeeList.filter { it.surveyeeDetails.surveyStatus == SurveyState.COMPLETED.ordinal }.size.toFloat()
+                                            /*.coerceIn(0.0F, 1.0F)*/ / if (surveyeeList.isNotEmpty()) surveyeeList.size.toFloat() else 0.0F
+                                            /*.coerceIn(0.0F, 1.0F)*/)
+                                LinearProgressIndicator(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(dimen_8_dp)
+                                        .padding(top = 1.dp)
+                                        .clip(RoundedCornerShape(14.dp)),
+                                    color = progressIndicatorColor,
+                                    trackColor = trackColor,
+                                    progress = linearProgress.value
+                                )
+                                Spacer(modifier = Modifier.width(dimen_8_dp))
+                                Text(
+                                    text = "${surveyeeList.filter { it.surveyeeDetails.surveyStatus == SurveyState.COMPLETED.ordinal }.size}/${surveyeeList.size}",
+                                    color = textColorDark,
+                                    style = smallTextStyle
+                                )
+                            }
+                        }
+
+                        item {
+                            MoveSurveyeesUpdateBannerComponent(
+                                showBanner = viewModel.showMoveDidisBanner,
+                                surveyeeIdList = viewModel.checkedItemsState.value
+                            )
+                        }
+
+                        if (!viewModel.isFilterAppliedState.value.isFilterApplied) {
+                            itemsIndexed(items = surveyeeList) { index, item ->
+                                SurveyeeCardComponent(
+                                    surveyeeState = item,
+                                    showCheckBox = !isSelectionEnabled.value,
+                                    fromScreen = ALL_TAB,
+                                    checkBoxChecked = { surveyeeEntity, isChecked ->
+                                        onActionEvent(
+                                            SurveyeeListScreenActions.CheckBoxClicked(
+                                                isChecked,
+                                                surveyeeEntity
+                                            )
+                                        )
+                                    },
+                                    moveDidiToThisWeek = { surveyeeCardState, moveToThisWeek ->
+                                        viewModel.onEvent(
+                                            SurveyeeListEvents.MoveDidiToThisWeek(
+                                                surveyeeCardState.surveyeeDetails.didiId ?: -1,
+                                                moveToThisWeek
+                                            )
+                                        )
+                                    },
+                                    //Todo add proper tex
+                                    primaryButtonText = "Start " + activityName.split(" ")[1],
+                                    buttonClicked = { buttonName, surveyeeId ->
+                                        BaselineCore.setCurrentActivityName(activityName)
+                                        handleButtonClick(
+                                            buttonName,
+                                            surveyeeId,
+                                            activityId,
+                                            navController,
+                                            activityName
+                                        )
+                                    }
+                                )
+                            }
+                        } else {
+                            itemsIndexed(items = surveyeeListWithTolaFilter.keys.toList()) { index, key ->
+                                SurveyeeCardWithTolaFilterComponent(
+                                    tolaName = key,
+                                    surveyeeStateList = surveyeeListWithTolaFilter[key]
+                                        ?: emptyList(),
+                                    showCheckBox = !isSelectionEnabled.value,
+                                    fromScreen = ALL_TAB,
+                                    primaryButtonText = "Start " + activityName.split(" ")[1],
+                                    buttonClicked = { buttonName, surveyeeId ->
+                                        handleButtonClick(
+                                            buttonName,
+                                            surveyeeId,
+                                            activityId,
+                                            navController
+                                        )
+                                    },
+                                    checkBoxChecked = { surveyeeEntity, isChecked ->
+                                        onActionEvent(
+                                            SurveyeeListScreenActions.CheckBoxClicked(
+                                                isChecked,
+                                                surveyeeEntity
+                                            )
+                                        )
+                                    },
+                                    moveDidiToThisWeek = { surveyeeCardState, moveToThisWeek ->
+                                        viewModel.onEvent(
+                                            SurveyeeListEvents.MoveDidiToThisWeek(
+                                                surveyeeCardState.surveyeeDetails.didiId ?: -1,
+                                                moveToThisWeek
+                                            )
+                                        )
+                                    }
+                                )
+                                if (index < surveyeeListWithTolaFilter.keys.size - 1) {
+                                    Divider(
+                                        color = borderGreyLight,
+                                        thickness = 1.dp,
+                                        modifier = Modifier.padding(
+                                            top = 22.dp,
+                                            bottom = 1.dp
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                        item {
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(dimen_10_dp)
+                            )
+                        }
                     }
                 }
+
             }
         }
 

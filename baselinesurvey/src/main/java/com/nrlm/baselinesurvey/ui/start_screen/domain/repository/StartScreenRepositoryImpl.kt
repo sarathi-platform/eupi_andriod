@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.start_screen.domain.repository
 
 import androidx.lifecycle.LiveData
+import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.DidiInfoDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
@@ -35,6 +36,10 @@ class StartScreenRepositoryImpl @Inject constructor(
 
     override suspend fun getDidiInfoObjectLive(didiId: Int): LiveData<List<DidiIntoEntity>> {
         return didiInfoDao.getDidiInfoLive(didiId)
+    }
+
+    override fun getStateId(): Int {
+        return prefRepo.getPref(PREF_STATE_ID, -1)
     }
 
 

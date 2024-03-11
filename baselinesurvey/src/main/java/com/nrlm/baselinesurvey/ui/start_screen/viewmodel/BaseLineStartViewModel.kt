@@ -265,4 +265,8 @@ class BaseLineStartViewModel @Inject constructor(
         return startSurveyScreenUserCase.getCasteListUseCase.invoke()
     }
 
+    fun getStateId(): Int {
+        return startSurveyScreenUserCase.getSurveyeeDetailsUserCase.getStateId()
+    }
+
 }
