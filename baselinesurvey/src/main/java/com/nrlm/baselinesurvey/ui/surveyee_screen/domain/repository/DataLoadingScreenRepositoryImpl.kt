@@ -426,4 +426,9 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     override suspend fun getSelectedLanguageId(): String {
         return prefRepo.getAppLanguage() ?: "en"
     }
+
+    override fun getStateId(): Int {
+        return prefRepo.getPref(PREF_STATE_ID, -1)
+    }
+
 }
