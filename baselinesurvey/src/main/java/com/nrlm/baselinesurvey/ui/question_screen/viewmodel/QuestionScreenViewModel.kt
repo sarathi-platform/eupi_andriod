@@ -20,6 +20,7 @@ import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
+import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
@@ -363,12 +364,62 @@ class QuestionScreenViewModel @Inject constructor(
                         didiId = event.didiId,
                         questionId = event.questionId,
                         questionType = event.questionType,
+                        questionTag = event.questionTag,
                         saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
                     )
                     questionScreenUseCase.eventsWriterUseCase.invoke(
                         events = saveAnswerEvent,
                         eventType = EventType.STATEFUL
                     )
+
+                    if (!event.showConditionalQuestion) {
+                        onEvent(
+                            EventWriterEvents.UpdateConditionalAnswerEvent(
+                                event.surveyId,
+                                event.sectionId,
+                                event.didiId,
+                                event.questionId,
+                                event.saveAnswerEventOptionItemDtoList
+                            )
+                        )
+                    }
+                }
+            }
+
+            is EventWriterEvents.UpdateConditionalAnswerEvent -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val undoConditionalOptionEventsList = mutableListOf<OptionItemEntityState>()
+                    val tempQuestionEntityStateList = questionEntityStateList.toList()
+                    val question =
+                        tempQuestionEntityStateList.find { it.questionId == event.questionId }
+                    event.saveAnswerEventOptionItemDtoList.forEach { saveAnswerEventOptionItemDto ->
+                        question?.optionItemEntityState?.forEach { optionItemEntityState ->
+                            if (optionItemEntityState.optionId != saveAnswerEventOptionItemDto.optionId) {
+                                undoConditionalOptionEventsList.add(optionItemEntityState)
+                            }
+                        }
+                    }
+                    val conditionalQuestions = mutableListOf<QuestionList>()
+                    undoConditionalOptionEventsList.forEach { optionItemEntityState ->
+                        optionItemEntityState.optionItemEntity?.conditions?.forEach { conditionsDto ->
+                            conditionalQuestions.addAll(conditionsDto?.resultList ?: emptyList())
+                        }
+                    }
+                    conditionalQuestions.forEach { questionList ->
+                        questionScreenUseCase.eventsWriterUseCase.invoke(
+                            events = eventsWriterHelperImpl.createSaveAnswerEvent(
+                                surveyId = event.surveyId,
+                                sectionId = event.sectionId,
+                                didiId = event.didiId,
+                                questionId = questionList.questionId ?: 0,
+                                questionType = questionList.type ?: BLANK_STRING,
+                                questionTag = questionList.attributeTag ?: BLANK_STRING,
+                                showQuestion = false,
+                                saveAnswerEventOptionItemDtoList = emptyList()
+                            ),
+                            eventType = EventType.STATEFUL
+                        )
+                    }
                 }
             }
 

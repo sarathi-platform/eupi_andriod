@@ -517,11 +517,13 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideFormQuestionResponseRepository(
+        questionEntityDao: QuestionEntityDao,
         optionItemDao: OptionItemDao,
         formQuestionResponseDao: FormQuestionResponseDao,
         prefRepo: PrefRepo
     ): FormQuestionResponseRepository {
         return FormQuestionResponseRepositoryImpl(
+            questionEntityDao = questionEntityDao,
             optionItemDao = optionItemDao,
             formQuestionResponseDao = formQuestionResponseDao,
             prefRepo = prefRepo
@@ -531,7 +533,8 @@ object BaselineModule {
     @Provides
     @Singleton
     fun providesQuestionTypeScreenUseCase(
-        formQuestionResponse: FormQuestionResponseRepository
+        formQuestionResponse: FormQuestionResponseRepository,
+        eventsWriterRepository: EventsWriterRepository
     ): FormQuestionScreenUseCase {
         return FormQuestionScreenUseCase(
             getFormQuestionResponseUseCase = GetFormQuestionResponseUseCase(
@@ -546,7 +549,8 @@ object BaselineModule {
             ),
             deleteFormQuestionResponseUseCase = DeleteFormQuestionResponseUseCase(
                 formQuestionResponse
-            )
+            ),
+            eventsWriterUserCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }
 

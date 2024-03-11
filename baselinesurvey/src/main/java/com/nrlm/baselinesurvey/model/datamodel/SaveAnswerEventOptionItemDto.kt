@@ -9,5 +9,8 @@ data class SaveAnswerEventOptionItemDto(
     val optionId: Int,
     @SerializedName("selectedValue")
     @Expose
-    val selectedValue: String?
+    val selectedValue: String?,
+    @SerializedName("referenceId")
+    @Expose
+    val referenceId: String = ""
 )

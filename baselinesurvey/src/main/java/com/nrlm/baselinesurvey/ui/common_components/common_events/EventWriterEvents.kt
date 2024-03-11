@@ -18,6 +18,16 @@ sealed class EventWriterEvents {
         val didiId: Int,
         val questionId: Int,
         val questionType: String,
+        val questionTag: String,
+        val showConditionalQuestion: Boolean = true,
+        val saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
+    )
+
+    data class UpdateConditionalAnswerEvent(
+        val surveyId: Int,
+        val sectionId: Int,
+        val didiId: Int,
+        val questionId: Int,
         val saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     )
 

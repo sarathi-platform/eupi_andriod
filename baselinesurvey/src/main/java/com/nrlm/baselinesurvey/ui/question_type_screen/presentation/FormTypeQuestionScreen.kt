@@ -37,8 +37,10 @@ import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DELAY_2_MS
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
+import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.NestedLazyListForFormQuestions
 import com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel.QuestionTypeScreenViewModel
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
@@ -47,6 +49,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto
 import kotlinx.coroutines.delay
 
 @Composable
@@ -121,6 +124,20 @@ fun FormTypeQuestionScreen(
                     viewModel.onEvent(
                         QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent(
                             viewModel.storeCacheForResponse
+                        )
+                    )
+                    viewModel.onEvent(
+                        EventWriterEvents.SaveAnswerEvent(
+                            surveyID,
+                            sectionId,
+                            didiId = surveyeeId,
+                            questionId = questionId,
+                            questionType = QuestionType.Form.name,
+                            questionTag = viewModel.question?.tag ?: BLANK_STRING,
+                            saveAnswerEventOptionItemDtoList = viewModel.storeCacheForResponse
+                                .convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto(
+                                    QuestionType.Form
+                                )
                         )
                     )
                     navController.popBackStack()

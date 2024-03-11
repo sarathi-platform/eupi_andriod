@@ -93,6 +93,8 @@ class EventWriterHelperImpl @Inject constructor(
         didiId: Int,
         questionId: Int,
         questionType: String,
+        questionTag: String,
+        showQuestion: Boolean,
         saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     ): Events {
         val languageId = prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
@@ -112,6 +114,8 @@ class EventWriterHelperImpl @Inject constructor(
                         SaveAnswerEventQuestionItemDto(
                             questionId = questionId,
                             questionType = questionType,
+                            tag = questionTag,
+                            showQuestion = showQuestion,
                             options = saveAnswerEventOptionItemDtoList
                         )
                     )

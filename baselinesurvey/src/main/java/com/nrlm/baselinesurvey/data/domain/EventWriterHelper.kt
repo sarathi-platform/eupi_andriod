@@ -20,6 +20,8 @@ interface EventWriterHelper {
         didiId: Int,
         questionId: Int,
         questionType: String,
+        questionTag: String,
+        showQuestion: Boolean = true,
         saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     ): Events
 
