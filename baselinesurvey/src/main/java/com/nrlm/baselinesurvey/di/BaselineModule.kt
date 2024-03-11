@@ -7,6 +7,7 @@ import com.nrlm.baselinesurvey.activity.domain.use_case.MainActivityUseCase
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelper
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.ContentDao
 import com.nrlm.baselinesurvey.database.dao.DidiInfoDao
@@ -438,7 +439,8 @@ object BaselineModule {
         missionEntityDao: MissionEntityDao,
         missionActivityDao: MissionActivityDao,
         activityTaskDao: ActivityTaskDao,
-        contentDao: ContentDao
+        contentDao: ContentDao,
+        baselineDatabase: NudgeBaselineDatabase
     ): DataLoadingScreenRepository {
         return DataLoadingScreenRepositoryImpl(
             prefRepo,
@@ -452,7 +454,8 @@ object BaselineModule {
             missionEntityDao,
             missionActivityDao,
             activityTaskDao,
-            contentDao
+            contentDao,
+            baselineDatabase
         )
     }
 

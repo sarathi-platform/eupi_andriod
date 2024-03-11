@@ -33,7 +33,10 @@ data class MissionActivityEntity(
     var activityTaskSize: Int,
     var activityStatus: Int,
     var pendingDidi: Int,
-    val isAllTask: Boolean
+    val isAllTask: Boolean,
+    var language: String,
+
+
 ) {
     companion object {
         fun getMissionActivityEntity(
@@ -52,11 +55,12 @@ data class MissionActivityEntity(
                 endDate = activity.endDate,
                 reviewer = activity.reviewer,
                 subject = activity.subject,
-                status = "",
+                status = activity.status,
                 activityTaskSize = activityTaskSize,
                 activityStatus = SurveyState.INPROGRESS.ordinal,
                 pendingDidi = activityTaskSize,
-                isAllTask = false
+                isAllTask = false,
+                language = activity.language
             )
         }
     }
