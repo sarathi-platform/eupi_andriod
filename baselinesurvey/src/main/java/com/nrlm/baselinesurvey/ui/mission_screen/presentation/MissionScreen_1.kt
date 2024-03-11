@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.mission_screen.presentation
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -36,6 +38,7 @@ import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponen
 import com.nrlm.baselinesurvey.ui.mission_screen.viewmodel.MissionViewModel
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
+import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 
@@ -109,19 +112,33 @@ fun MissionScreen_1(
                 onFilterSelected = {},
                 onSearchValueChange = { queryTerm ->
                 })
-
-            LazyColumn(
-            ) {
-                items(viewModel.filterMissionList.value) { mission ->
-                    MissonRowScreen_1(
-                        mission = mission,
-                        missionDueDate = mission.startDate,
-                        onViewStatusClick = {},
-                        onStartClick = {
-                            navController.navigate("${MISSION_SUMMARY_SCREEN_ROUTE_NAME}/${mission.missionId}/${mission.missionName}/${mission.endDate}")
-                        })
+            if (viewModel.filterMissionList.value.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        stringResource(R.string.not_able_to_load),
+                        style = defaultTextStyle,
+                        color = textColorDark
+                    )
+                }
+            } else {
+                LazyColumn {
+                    items(viewModel.filterMissionList.value) { mission ->
+                        MissonRowScreen_1(
+                            mission = mission,
+                            missionDueDate = mission.startDate,
+                            onViewStatusClick = {},
+                            onStartClick = {
+                                navController.navigate("${MISSION_SUMMARY_SCREEN_ROUTE_NAME}/${mission.missionId}/${mission.missionName}/${mission.endDate}")
+                            })
+                    }
                 }
             }
+
         }
     }
 
