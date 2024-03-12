@@ -81,6 +81,7 @@ import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.database.VillageEntity
+import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPCVillageStatus
@@ -104,7 +105,7 @@ fun BpcVillageSelectionScreen(
     val context = LocalContext.current
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.init()
+        viewModel.compareWithPreviousUser(context = context)
     }
 
     val villages by viewModel.filterVillageList.collectAsState()
@@ -129,6 +130,23 @@ fun BpcVillageSelectionScreen(
             onNegativeButtonClick = {viewModel.showAppExitDialog.value =false},
             onPositiveButtonClick = {
                 (context as? MainActivity)?.finish()
+            })
+    }
+    if (viewModel.showUserChangedDialog.value) {
+        showCustomDialog(
+            title = stringResource(id = R.string.warning),
+            message = stringResource(id = R.string.data_lost_message),
+            positiveButtonTitle = stringResource(id = R.string.proceed),
+            negativeButtonTitle = stringResource(id = R.string.cancel),
+            dismissOnBackPress = false,
+            onNegativeButtonClick = {
+                viewModel.showUserChangedDialog.value = false
+                viewModel.logout()
+                navController.navigate(AuthScreen.LOGIN.route)
+            },
+            onPositiveButtonClick = {
+                viewModel.clearLocalDB(context = context)
+                viewModel.showUserChangedDialog.value = false
             })
     }
 

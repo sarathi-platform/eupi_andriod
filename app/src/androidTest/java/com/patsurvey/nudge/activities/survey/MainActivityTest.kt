@@ -9,8 +9,20 @@ import androidx.test.rule.ActivityTestRule
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.MainActivityViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.dao.*
+import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.BpcSummaryDao
+import com.patsurvey.nudge.database.dao.CasteListDao
+import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.LanguageListDao
+import com.patsurvey.nudge.database.dao.NumericAnswerDao
+import com.patsurvey.nudge.database.dao.PoorDidiListDao
+import com.patsurvey.nudge.database.dao.QuestionListDao
+import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.database.dao.TolaDao
+import com.patsurvey.nudge.database.dao.TrainingVideoDao
+import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.ConnectionMonitorV2
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Before
@@ -80,6 +92,9 @@ class MainActivityTest {
     private lateinit var languageListDao: LanguageListDao
 
     @Mock
+    private lateinit var connectionMonitor: ConnectionMonitorV2
+
+    @Mock
     private lateinit var context: Context
 
     private lateinit var viewModel: MainActivityViewModel
@@ -101,7 +116,8 @@ class MainActivityTest {
             bpcSummaryDao = bpcSummaryDao,
             poorDidiListDao = poorDidiListDao,
             stepsListDao = stepsListDao,
-            languageListDao = languageListDao
+            languageListDao = languageListDao,
+            connectionMonitor = connectionMonitor
         )
         launchActivity<MainActivity>().use { scenario ->
             scenario.moveToState(Lifecycle.State.CREATED)
