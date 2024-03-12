@@ -11,6 +11,8 @@ enum class QuestionType {
     InputText,
     SingleSelectDropdown,
     SingleSelectDropDown,
+    MultiSelectDropdown,
+    MultiSelectDropDown,
     Toggle,
     InputNumber,
     InputNumberEditText,
@@ -31,6 +33,8 @@ enum class QuestionType {
                 InputNumberEditText.name -> InputNumberEditText
                 SingleSelectDropDown.name -> SingleSelectDropDown
                 SingleSelectDropdown.name -> SingleSelectDropdown
+                MultiSelectDropdown.name -> MultiSelectDropdown
+                MultiSelectDropDown.name -> MultiSelectDropDown
                 Toggle.name -> Toggle
                 Calculation.name -> Calculation
                 else -> {

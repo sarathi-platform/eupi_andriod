@@ -66,5 +66,6 @@ interface DataLoadingScreenRepository {
     suspend fun saveContentsToDB(contents: List<ContentEntity>)
     suspend fun getContentKeyFromDB(): List<String?>
     suspend fun getSelectedLanguageId(): String
+    fun getStateId(): Int
 
 }

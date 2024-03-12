@@ -15,6 +15,7 @@ import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
 import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.ContentDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
@@ -67,7 +68,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     val missionEntityDao: MissionEntityDao,
     val missionActivityDao: MissionActivityDao,
     val activityTaskDao: ActivityTaskDao,
-    val contentDao: ContentDao
+    val contentDao: ContentDao,
+    val baselineDatabase: NudgeBaselineDatabase
 ) : DataLoadingScreenRepository {
     override suspend fun fetchLocalLanguageList(): List<LanguageEntity> {
         return languageListDao.getAllLanguages()
@@ -86,92 +88,118 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override fun saveSurveyToDb(surveyResponseModel: SurveyResponseModel, languageId: Int) {
-        surveyEntityDao.deleteSurveyFroLanguage(surveyResponseModel.surveyId, languageId)
-        val surveyEntity = SurveyEntity(
-            id = 0,
-            surveyId = surveyResponseModel.surveyId,
-            surveyName = surveyResponseModel.surveyName,
-            surveyPassingMark = surveyResponseModel.surveyPassingMark,
-            thresholdScore = surveyResponseModel.thresholdScore,
-            languageId = languageId,
-            referenceId = surveyResponseModel.referenceId
-        )
-        surveyEntityDao.insertSurvey(surveyEntity)
-        surveyResponseModel.sections.forEach { section ->
-            val subQuestionList = mutableListOf<QuestionList>()
-            val subSubQuestionList = mutableListOf<QuestionList>()
-            val contentLists = mutableListOf<ContentList>()
-            sectionEntityDao.deleteSurveySectionFroLanguage(
-                section.sectionId,
-                surveyResponseModel.surveyId,
-                languageId
-            )
-            val sectionEntity = SectionEntity(
+        baselineDatabase.runInTransaction {
+            surveyEntityDao.deleteSurveyFroLanguage(surveyResponseModel.surveyId, languageId)
+            val surveyEntity = SurveyEntity(
                 id = 0,
-                sectionId = section.sectionId,
                 surveyId = surveyResponseModel.surveyId,
-                sectionName = section.sectionName,
-                sectionOrder = section.sectionOrder,
-                sectionDetails = section.sectionDetails,
-                sectionIcon = section.sectionIcon,
+                surveyName = surveyResponseModel.surveyName,
+                surveyPassingMark = surveyResponseModel.surveyPassingMark,
+                thresholdScore = surveyResponseModel.thresholdScore,
                 languageId = languageId,
-                questionSize = section.questionList.size,
-                contentEntities = section.contentList
+                referenceId = surveyResponseModel.referenceId
             )
-            contentLists.addAll(section.contentList)
-            sectionEntityDao.insertSection(sectionEntity)
-
-            section.questionList.forEach { question ->
-                if (section.sectionId == 8) {
-                    Log.d("invoke", "section.questionList.forEach -> ${question} \n\n\n")
-                }
-                saveQuestionAndOptionsToDb(
-                    question = question,
-                    section,
-                    surveyResponseModel,
+            surveyEntityDao.insertSurvey(surveyEntity)
+            surveyResponseModel.sections.forEach { section ->
+                val subQuestionList = mutableListOf<QuestionList>()
+                val subSubQuestionList = mutableListOf<QuestionList>()
+                val contentLists = mutableListOf<ContentList>()
+                sectionEntityDao.deleteSurveySectionFroLanguage(
+                    section.sectionId,
+                    surveyResponseModel.surveyId,
                     languageId
                 )
-                question?.options?.forEach { optionItem ->
-                    if (optionItem?.conditions?.isNotEmpty()!!) {
-                        Log.d(
-                            "saveSurveyToDb",
-                            "optionItem?.conditions?.isNotEmpty() -> ${optionItem.conditions}"
-                        )
-                        optionItem.conditions.forEach {
-                            Log.d("saveSurveyToDb", "optionItem.conditions.forEach -> ${it}")
-                            if (it?.resultType?.equals(ResultType.Options.name, true) == true) {
-                                it.resultList.forEach { ques ->
-                                    if (ques.type?.equals(QuestionType.Form.name, true) == true) {
-                                        ques.options?.forEach {
-                                            it?.let { it1 -> saveConditionalOptions(it1, question, section, surveyResponseModel, languageId) }
+                val sectionEntity = SectionEntity(
+                    id = 0,
+                    sectionId = section.sectionId,
+                    surveyId = surveyResponseModel.surveyId,
+                    sectionName = section.sectionName,
+                    sectionOrder = section.sectionOrder,
+                    sectionDetails = section.sectionDetails,
+                    sectionIcon = section.sectionIcon,
+                    languageId = languageId,
+                    questionSize = section.questionList.size,
+                    contentEntities = section.contentList
+                )
+                contentLists.addAll(section.contentList)
+                sectionEntityDao.insertSection(sectionEntity)
+                section.questionList.forEach { question ->
+                    if (section.sectionId == 8) {
+                        Log.d("invoke", "section.questionList.forEach -> ${question} \n\n\n")
+                    }
+                    saveQuestionAndOptionsToDb(
+                        question = question,
+                        section,
+                        surveyResponseModel,
+                        languageId
+                    )
+                    question?.options?.forEach { optionItem ->
+                        if (optionItem?.conditions?.isNotEmpty()!!) {
+                            Log.d(
+                                "saveSurveyToDb",
+                                "optionItem?.conditions?.isNotEmpty() -> ${optionItem.conditions}"
+                            )
+                            optionItem.conditions.forEach {
+                                Log.d("saveSurveyToDb", "optionItem.conditions.forEach -> ${it}")
+                                if (it?.resultType?.equals(ResultType.Options.name, true) == true) {
+                                    it.resultList.forEach { ques ->
+                                        if (ques.type?.equals(
+                                                QuestionType.Form.name,
+                                                true
+                                            ) == true
+                                        ) {
+                                            ques.options?.forEach {
+                                                it?.let { it1 ->
+                                                    saveConditionalOptions(
+                                                        it1,
+                                                        question,
+                                                        section,
+                                                        surveyResponseModel,
+                                                        languageId
+                                                    )
+                                                }
+                                            }
                                         }
                                     }
-                                }
-                            } else {
-                                subQuestionList.addAll(it?.resultList ?: emptyList())
+                                } else {
+                                    subQuestionList.addAll(it?.resultList ?: emptyList())
 
+                                }
+                            }
+                        }
+                    }
+                    contentLists.addAll(question?.contentList ?: listOf())
+                }
+                subQuestionList.forEach { conditionalItem ->
+                    Log.d("saveSurveyToDb", "subQuestionList.forEach -> ${conditionalItem}")
+                    saveQuestionAndOptionsToDb(
+                        question = conditionalItem,
+                        section,
+                        surveyResponseModel,
+                        languageId,
+                        true
+                    )
+                    conditionalItem.options?.forEach { subQuestionOption ->
+                        if (subQuestionOption?.conditions != null) {
+                            subQuestionOption.conditions.forEach {
+                                if (it?.resultType?.equals(ResultType.Questions.name, true) == true)
+                                    subSubQuestionList.addAll(it.resultList)
                             }
                         }
                     }
                 }
-                contentLists.addAll(question?.contentList ?: listOf())
-            }
-            subQuestionList.forEach { conditionalItem ->
-                Log.d("saveSurveyToDb", "subQuestionList.forEach -> ${conditionalItem}")
-                saveQuestionAndOptionsToDb(question = conditionalItem, section, surveyResponseModel, languageId, true)
-                conditionalItem.options?.forEach { subQuestionOption ->
-                    if (subQuestionOption?.conditions != null) {
-                        subQuestionOption.conditions.forEach {
-                            if (it?.resultType?.equals(ResultType.Questions.name, true) == true)
-                                subSubQuestionList.addAll(it.resultList)
-                        }
-                    }
+                subSubQuestionList.forEach { subConditionalItem ->
+                    saveQuestionAndOptionsToDb(
+                        question = subConditionalItem,
+                        section,
+                        surveyResponseModel,
+                        languageId,
+                        true
+                    )
                 }
             }
-            subSubQuestionList.forEach { subConditionalItem ->
-                saveQuestionAndOptionsToDb(question = subConditionalItem, section, surveyResponseModel, languageId, true)
-            }
         }
+
     }
 
     private fun saveQuestionAndOptionsToDb(question: QuestionList?, section: Sections, surveyResponseModel: SurveyResponseModel, languageId: Int, isSubQuestionList: Boolean = false) {
@@ -426,4 +454,9 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     override suspend fun getSelectedLanguageId(): String {
         return prefRepo.getAppLanguage() ?: "en"
     }
+
+    override fun getStateId(): Int {
+        return prefRepo.getPref(PREF_STATE_ID, -1)
+    }
+
 }
