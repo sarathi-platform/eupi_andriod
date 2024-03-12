@@ -8,6 +8,7 @@ import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.model.request.ContentMangerRequest
+import com.nrlm.baselinesurvey.model.request.SectionStatusRequest
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.model.response.BeneficiaryApiResponse
@@ -67,5 +68,6 @@ interface DataLoadingScreenRepository {
     suspend fun getContentKeyFromDB(): List<String?>
     suspend fun getSelectedLanguageId(): String
     fun getStateId(): Int
+    suspend fun getSectionStatus(sectionStatusRequest: SectionStatusRequest)
 
 }

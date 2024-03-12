@@ -17,6 +17,7 @@ import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.ContentDao
+import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
@@ -41,6 +42,7 @@ import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.Sections
 import com.nrlm.baselinesurvey.model.request.ContentMangerRequest
 import com.nrlm.baselinesurvey.model.request.MissionRequest
+import com.nrlm.baselinesurvey.model.request.SectionStatusRequest
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.model.response.BeneficiaryApiResponse
@@ -67,7 +69,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     val missionEntityDao: MissionEntityDao,
     val missionActivityDao: MissionActivityDao,
     val activityTaskDao: ActivityTaskDao,
-    val contentDao: ContentDao
+    val contentDao: ContentDao,
+    val didiSectionProgressEntityDao: DidiSectionProgressEntityDao
 ) : DataLoadingScreenRepository {
     override suspend fun fetchLocalLanguageList(): List<LanguageEntity> {
         return languageListDao.getAllLanguages()
@@ -429,6 +432,12 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
 
     override fun getStateId(): Int {
         return prefRepo.getPref(PREF_STATE_ID, -1)
+    }
+
+    override suspend fun getSectionStatus(sectionStatusRequest: SectionStatusRequest) {
+        val sectionStatusResponse = apiService.getSectionStatus(sectionStatusRequest)
+
+        didiSectionProgressEntityDao.addDidiSectionProgress(sectionStatusResponse.data)
     }
 
 }
