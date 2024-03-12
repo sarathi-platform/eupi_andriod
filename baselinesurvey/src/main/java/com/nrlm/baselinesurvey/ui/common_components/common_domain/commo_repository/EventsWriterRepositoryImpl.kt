@@ -7,6 +7,7 @@ import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventDto
+import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventForFormQuestionDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionStatusUpdateEventDto
 import com.nrlm.baselinesurvey.model.datamodel.UpdateActivityStatusEventDto
 import com.nrlm.baselinesurvey.model.datamodel.UpdateMissionStatusEventDto
@@ -92,42 +93,91 @@ class EventsWriterRepositoryImpl @Inject constructor(
             }
 
             EventName.SAVE_RESPONSE_EVENT -> {
-                val requestPayload = (eventItem as SaveAnswerEventDto)
-                val survey = surveyEntityDao.getSurveyDetailForLanguage(
-                    requestPayload.surveyId,
-                    prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
-                )
+                when (eventItem) {
+                    is SaveAnswerEventDto -> {
+                        val requestPayload = (eventItem as SaveAnswerEventDto)
+                        val survey = surveyEntityDao.getSurveyDetailForLanguage(
+                            requestPayload.surveyId,
+                            prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
+                        )
 
-                var event = Events(
-                    name = eventName.name,
-                    type = eventName.topicName,
-                    createdBy = prefRepo.getUserId(),
-                    mobile_number = prefRepo.getMobileNumber() ?: BLANK_STRING,
-                    request_payload = requestPayload.json(),
-                    status = EventSyncStatus.OPEN.name,
-                    modified_date = System.currentTimeMillis().toDate(),
-                    result = null,
-                    consumer_status = BLANK_STRING,
-                    payloadLocalId = BLANK_STRING,
-                    metadata = MetadataDto(
-                        mission = survey?.surveyName ?: BLANK_STRING,
-                        depends_on = listOf(),
-                        request_payload_size = requestPayload.json().getSizeInLong(),
-                        parentEntity = getParentEntityMapForEvent(eventItem, eventName)
-                    ).json()
-                )
+                        var event = Events(
+                            name = eventName.name,
+                            type = eventName.topicName,
+                            createdBy = prefRepo.getUserId(),
+                            mobile_number = prefRepo.getMobileNumber() ?: BLANK_STRING,
+                            request_payload = requestPayload.json(),
+                            status = EventSyncStatus.OPEN.name,
+                            modified_date = System.currentTimeMillis().toDate(),
+                            result = null,
+                            consumer_status = BLANK_STRING,
+                            payloadLocalId = BLANK_STRING,
+                            metadata = MetadataDto(
+                                mission = survey?.surveyName ?: BLANK_STRING,
+                                depends_on = listOf(),
+                                request_payload_size = requestPayload.json().getSizeInLong(),
+                                parentEntity = getParentEntityMapForEvent(eventItem, eventName)
+                            ).json()
+                        )
 
-                if (eventName.depends_on.isNotEmpty()) {
-                    val dependsOn = createEventDependency(eventItem, eventName, event)
-                    val metadata = event.metadata?.getMetaDataDtoFromString()
-                    val updatedMetaData =
-                        metadata?.copy(depends_on = dependsOn.getDependentEventsId())
-                    event = event.copy(
-                        metadata = updatedMetaData?.json()
-                    )
+                        if (eventName.depends_on.isNotEmpty()) {
+                            val dependsOn = createEventDependency(eventItem, eventName, event)
+                            val metadata = event.metadata?.getMetaDataDtoFromString()
+                            val updatedMetaData =
+                                metadata?.copy(depends_on = dependsOn.getDependentEventsId())
+                            event = event.copy(
+                                metadata = updatedMetaData?.json()
+                            )
+                        }
+
+                        return event
+                    }
+
+                    is SaveAnswerEventForFormQuestionDto -> {
+                        val requestPayload = (eventItem as SaveAnswerEventForFormQuestionDto)
+                        val survey = surveyEntityDao.getSurveyDetailForLanguage(
+                            requestPayload.surveyId,
+                            prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
+                        )
+
+                        var event = Events(
+                            name = eventName.name,
+                            type = eventName.topicName,
+                            createdBy = prefRepo.getUserId(),
+                            mobile_number = prefRepo.getMobileNumber() ?: BLANK_STRING,
+                            request_payload = requestPayload.json(),
+                            status = EventSyncStatus.OPEN.name,
+                            modified_date = System.currentTimeMillis().toDate(),
+                            result = null,
+                            consumer_status = BLANK_STRING,
+                            payloadLocalId = BLANK_STRING,
+                            metadata = MetadataDto(
+                                mission = survey?.surveyName ?: BLANK_STRING,
+                                depends_on = listOf(),
+                                request_payload_size = requestPayload.json().getSizeInLong(),
+                                parentEntity = getParentEntityMapForEvent(eventItem, eventName)
+                            ).json()
+                        )
+
+                        if (eventName.depends_on.isNotEmpty()) {
+                            val dependsOn = createEventDependency(eventItem, eventName, event)
+                            val metadata = event.metadata?.getMetaDataDtoFromString()
+                            val updatedMetaData =
+                                metadata?.copy(depends_on = dependsOn.getDependentEventsId())
+                            event = event.copy(
+                                metadata = updatedMetaData?.json()
+                            )
+                        }
+
+//                        event = getDependsOnForEvent(eventItem, event, eventName)
+
+                        return event
+                    }
+
+                    else -> {
+                        return Events.getEmptyEvent()
+                    }
                 }
-
-                return event
             }
 
             EventName.UPDATE_TASK_STATUS_EVENT -> {

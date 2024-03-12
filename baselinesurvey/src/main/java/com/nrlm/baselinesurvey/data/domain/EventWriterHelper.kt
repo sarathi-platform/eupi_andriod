@@ -25,6 +25,17 @@ interface EventWriterHelper {
         saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     ): Events
 
+    suspend fun createSaveAnswerEventForFormTypeQuestion(
+        surveyId: Int,
+        sectionId: Int,
+        didiId: Int,
+        questionId: Int,
+        questionType: String,
+        questionTag: String,
+        showQuestion: Boolean = true,
+        saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
+    ): Events
+
     /*suspend fun creteSubjectStatusUpdateEvent(
         surveyId: Int,
         subjectId: Int,

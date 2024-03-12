@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.data.domain
 
+import android.util.Log
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
@@ -10,8 +11,10 @@ import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.model.datamodel.ActivityForSubjectDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventDto
+import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventForFormQuestionDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventQuestionItemDto
+import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventQuestionItemForFormQuestionDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionStatusUpdateEventDto
 import com.nrlm.baselinesurvey.model.datamodel.UpdateActivityStatusEventDto
 import com.nrlm.baselinesurvey.model.datamodel.UpdateMissionStatusEventDto
@@ -113,6 +116,53 @@ class EventWriterHelperImpl @Inject constructor(
                 tag = questionTag,
                 showQuestion = showQuestion,
                 options = saveAnswerEventOptionItemDtoList
+            ),
+            referenceId = surveyEntity?.referenceId ?: 0
+        )
+        val mSaveAnswerEventDtoEvent = repositoryImpl.createEvent(
+            mSaveAnswerEventDto,
+            EventName.SAVE_RESPONSE_EVENT,
+            EventType.STATEFUL
+        )
+        return mSaveAnswerEventDtoEvent ?: Events.getEmptyEvent()
+    }
+
+    override suspend fun createSaveAnswerEventForFormTypeQuestion(
+        surveyId: Int,
+        sectionId: Int,
+        didiId: Int,
+        questionId: Int,
+        questionType: String,
+        questionTag: String,
+        showQuestion: Boolean,
+        saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
+    ): Events {
+        val languageId = prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
+        val surveyEntity = surveyEntityDao.getSurveyDetailForLanguage(surveyId, languageId)
+        val activityForSubjectDto = getActivityFromSubjectId(didiId)
+
+        val saveAnswerEventOptionItemDtoListMap =
+            saveAnswerEventOptionItemDtoList.groupBy { it.referenceId }
+        val optionList = mutableListOf<List<SaveAnswerEventOptionItemDto>>()
+        saveAnswerEventOptionItemDtoListMap.values.forEach {
+            optionList.add(it)
+        }
+
+        Log.d("TAG", "createSaveAnswerEventForFormTypeQuestion: ")
+
+        val mSaveAnswerEventDto = SaveAnswerEventForFormQuestionDto(
+            surveyId = surveyId,
+            dateCreated = System.currentTimeMillis(),
+            languageId = languageId,
+            subjectId = didiId,
+            subjectType = activityForSubjectDto.subject,
+            sectionId = sectionId,
+            question = SaveAnswerEventQuestionItemForFormQuestionDto(
+                questionId = questionId,
+                questionType = questionType,
+                tag = questionTag,
+                showQuestion = showQuestion,
+                options = optionList
             ),
             referenceId = surveyEntity?.referenceId ?: 0
         )

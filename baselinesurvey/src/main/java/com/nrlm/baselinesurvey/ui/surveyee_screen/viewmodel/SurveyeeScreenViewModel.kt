@@ -55,6 +55,10 @@ class SurveyeeScreenViewModel @Inject constructor(
     private var _tolaMapSurveyeeListState = mutableStateOf(mapOf<String, List<SurveyeeCardState>>())
     val tolaMapSurveyeeListState: State<Map<String, List<SurveyeeCardState>>> get() = _tolaMapSurveyeeListState
 
+    private var _filteredTolaMapSurveyeeListState =
+        mutableStateOf(mapOf<String, List<SurveyeeCardState>>())
+    val filteredTolaMapSurveyeeListState: State<Map<String, List<SurveyeeCardState>>> get() = _filteredTolaMapSurveyeeListState
+
     private var _thisWeekTolaMapSurveyeeListState =
         mutableStateOf(mapOf<String, List<SurveyeeCardState>>())
 
@@ -272,9 +276,9 @@ class SurveyeeScreenViewModel @Inject constructor(
                         if (mSurveyeeCardState.isNotEmpty())
                             mFilterMap[key] = mSurveyeeCardState
                     }
-                    _tolaMapSurveyeeListState.value = mFilterMap
+                    _filteredTolaMapSurveyeeListState.value = mFilterMap
                 } else {
-                    _surveyeeListState.value
+                    _filteredTolaMapSurveyeeListState.value = tolaMapSurveyeeListState.value
                 }
             }
         } else {
@@ -305,6 +309,7 @@ class SurveyeeScreenViewModel @Inject constructor(
             }
             tolaMapList = map
             _tolaMapSurveyeeListState.value = map
+            _filteredTolaMapSurveyeeListState.value = map
         } else {
             val map = mutableMapOf<String, MutableList<SurveyeeCardState>>()
             thisWeekSurveyeeListState.value.forEachIndexed { index, thisWeekSurveyeeCardState ->
