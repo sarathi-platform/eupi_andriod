@@ -1100,6 +1100,23 @@ fun List<FormQuestionResponseEntity>.convertFormQuestionResponseEntityToSaveAnsw
     return saveAnswerEventOptionItemDtoList
 }
 
+fun List<FormResponseObjectDto>.convertFormResponseObjectToSaveAnswerEventOptionDto(): List<SaveAnswerEventOptionItemDto> {
+    val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
+
+    this.forEach { formResponseObjectDto ->
+        formResponseObjectDto.memberDetailsMap.forEach { memberDetails ->
+            val saveAnswerEventOptionItemDto = SaveAnswerEventOptionItemDto(
+                optionId = memberDetails.key,
+                selectedValue = memberDetails.value,
+                referenceId = formResponseObjectDto.referenceId
+            )
+            saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
+        }
+    }
+
+    return saveAnswerEventOptionItemDtoList
+}
+
 fun List<InputTypeQuestionAnswerEntity>.convertInputTypeQuestionToEventOptionItemDto(
     questionId: Int,
     questionType: QuestionType

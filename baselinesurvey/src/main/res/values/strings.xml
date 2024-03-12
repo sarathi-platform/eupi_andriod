@@ -459,5 +459,6 @@
     <string name="aadhar_card_titile_assam">Do you have aadhar card?</string>
     <string name="voter_card_title_assam">Do you have voter card?</string>
     <string name="not_able_to_load">Not able to load data please try again..</string>
+    <string name="designation_comparision_and_label">Designation</string>
 
 </resources>

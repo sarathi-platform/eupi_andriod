@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.data.domain
 
-import android.util.Log
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
@@ -147,8 +146,6 @@ class EventWriterHelperImpl @Inject constructor(
         saveAnswerEventOptionItemDtoListMap.values.forEach {
             optionList.add(it)
         }
-
-        Log.d("TAG", "createSaveAnswerEventForFormTypeQuestion: ")
 
         val mSaveAnswerEventDto = SaveAnswerEventForFormQuestionDto(
             surveyId = surveyId,
@@ -300,11 +297,20 @@ class EventWriterHelperImpl @Inject constructor(
         if (taskEntity.status != SectionStatus.COMPLETED.name && taskEntity.status != SectionStatus.INPROGRESS.name)
             markTaskInProgress(missionId, activityId, taskId, status)
 
-        if (activityEntity.status != SectionStatus.COMPLETED.name && activityEntity.status != SectionStatus.INPROGRESS.name)
-            markActivityInProgress(missionId, activityId, status)
-
-        if (missionEntity.status != SectionStatus.COMPLETED.name && missionEntity.status != SectionStatus.INPROGRESS.name)
-            markMissionInProgress(missionId, status)
+        if (activityEntity.status != SectionStatus.COMPLETED.name && activityEntity.status != SectionStatus.INPROGRESS.name) {
+            if (activityEntity.status == null) {
+                markActivityInProgress(missionId, activityId, SectionStatus.INPROGRESS)
+            } else {
+                markActivityInProgress(missionId, activityId, status)
+            }
+        }
+        if (missionEntity.status != SectionStatus.COMPLETED.name && missionEntity.status != SectionStatus.INPROGRESS.name) {
+            if (missionEntity.status == null) {
+                markMissionInProgress(missionId, SectionStatus.INPROGRESS)
+            } else {
+                markMissionInProgress(missionId, status)
+            }
+        }
     }
 
     override suspend fun markMissionCompleted(missionId: Int, status: SectionStatus) {

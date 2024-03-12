@@ -399,15 +399,16 @@ class QuestionTypeScreenViewModel @Inject constructor(
 
             is EventWriterEvents.SaveAnswerEvent -> {
                 CoroutineScope(Dispatchers.IO).launch {
-                    val saveAnswerEvent = eventWriterHelperImpl.createSaveAnswerEvent(
-                        surveyId = event.surveyId,
-                        sectionId = event.sectionId,
-                        didiId = event.didiId,
-                        questionId = event.questionId,
-                        questionType = event.questionType,
-                        questionTag = event.questionTag,
-                        saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
-                    )
+                    val saveAnswerEvent =
+                        eventWriterHelperImpl.createSaveAnswerEventForFormTypeQuestion(
+                            surveyId = event.surveyId,
+                            sectionId = event.sectionId,
+                            didiId = event.didiId,
+                            questionId = event.questionId,
+                            questionType = event.questionType,
+                            questionTag = event.questionTag,
+                            saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
+                        )
                     formQuestionScreenUseCase.eventsWriterUserCase.invoke(
                         events = saveAnswerEvent,
                         eventType = EventType.STATEFUL

@@ -234,13 +234,13 @@ class QuestionScreenViewModel @Inject constructor(
         }
         _questionEntityStateList.sortedBy { it.questionId }
 
-        updateQuestionEntityStateForAnsweredQuestions(questionEntityStateList)
+        updateQuestionEntityStateForAnsweredQuestions(questionEntityStateList.toList())
 
-        updateQuestionEntityStateForConditionalQuestions(questionEntityStateList)
+        updateQuestionEntityStateForConditionalQuestions(questionEntityStateList.toList())
 
     }
 
-    private fun updateQuestionEntityStateForConditionalQuestions(questionEntityStateList: SnapshotStateList<QuestionEntityState>) {
+    private fun updateQuestionEntityStateForConditionalQuestions(questionEntityStateList: List<QuestionEntityState>) {
         questionEntityStateList.forEach { questionEntityState ->
             sectionDetail.value.questionAnswerMapping[questionEntityState.questionId]?.forEach { optionItemEntity ->
                 onEvent(
@@ -259,18 +259,25 @@ class QuestionScreenViewModel @Inject constructor(
         }
     }
 
-    private fun updateQuestionEntityStateForAnsweredQuestions(questionEntityStateList: SnapshotStateList<QuestionEntityState>) {
-        questionEntityStateList.filter { !it.showQuestion }.forEach {  questionEntityState ->
-            Log.d("TAG", "updateQuestionEntityStateForAnsweredQuestions: questionEntityState: ${questionEntityState.questionId}")
+    private fun updateQuestionEntityStateForAnsweredQuestions(questionEntityStateList: List<QuestionEntityState>) {
+        questionEntityStateList.filter { !it.showQuestion }.forEach { questionEntityState ->
             when (questionEntityState.questionEntity?.type) {
                 QuestionType.InputNumber.name -> {
-                    if (inputTypeQuestionAnswerEntityList.value.map { it.questionId }.contains(questionEntityState.questionId) && !questionEntityState.showQuestion) {
-                        updateQuestionStateVisibilityForAnsweredQuestions(questionEntityState.questionId, true)
+                    if (inputTypeQuestionAnswerEntityList.value.map { it.questionId }
+                            .contains(questionEntityState.questionId) && !questionEntityState.showQuestion) {
+                        updateQuestionStateVisibilityForAnsweredQuestions(
+                            questionEntityState.questionId,
+                            true
+                        )
                     }
                 }
+
                 else -> {
                     if (sectionDetail.value.questionAnswerMapping.containsKey(questionEntityState.questionId) && !questionEntityState.showQuestion) {
-                        updateQuestionStateVisibilityForAnsweredQuestions(questionEntityState.questionId, true)
+                        updateQuestionStateVisibilityForAnsweredQuestions(
+                            questionEntityState.questionId,
+                            true
+                        )
                     }
                 }
             }
@@ -358,19 +365,36 @@ class QuestionScreenViewModel @Inject constructor(
 
             is EventWriterEvents.SaveAnswerEvent -> {
                 CoroutineScope(Dispatchers.IO).launch {
-                    val saveAnswerEvent = eventsWriterHelperImpl.createSaveAnswerEvent(
-                        surveyId = event.surveyId,
-                        sectionId = event.sectionId,
-                        didiId = event.didiId,
-                        questionId = event.questionId,
-                        questionType = event.questionType,
-                        questionTag = event.questionTag,
-                        saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
-                    )
-                    questionScreenUseCase.eventsWriterUseCase.invoke(
-                        events = saveAnswerEvent,
-                        eventType = EventType.STATEFUL
-                    )
+                    if (event.questionType == QuestionType.Form.name) {
+                        val saveAnswerEvent =
+                            eventsWriterHelperImpl.createSaveAnswerEventForFormTypeQuestion(
+                                surveyId = event.surveyId,
+                                sectionId = event.sectionId,
+                                didiId = event.didiId,
+                                questionId = event.questionId,
+                                questionType = event.questionType,
+                                questionTag = event.questionTag,
+                                saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
+                            )
+                        questionScreenUseCase.eventsWriterUseCase.invoke(
+                            events = saveAnswerEvent,
+                            eventType = EventType.STATEFUL
+                        )
+                    } else {
+                        val saveAnswerEvent = eventsWriterHelperImpl.createSaveAnswerEvent(
+                            surveyId = event.surveyId,
+                            sectionId = event.sectionId,
+                            didiId = event.didiId,
+                            questionId = event.questionId,
+                            questionType = event.questionType,
+                            questionTag = event.questionTag,
+                            saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
+                        )
+                        questionScreenUseCase.eventsWriterUseCase.invoke(
+                            events = saveAnswerEvent,
+                            eventType = EventType.STATEFUL
+                        )
+                    }
 
                     if (!event.showConditionalQuestion) {
                         onEvent(

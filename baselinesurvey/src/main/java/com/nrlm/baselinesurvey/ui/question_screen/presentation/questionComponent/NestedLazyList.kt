@@ -77,6 +77,7 @@ import com.nrlm.baselinesurvey.ui.theme.h6
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.convertFormResponseObjectToSaveAnswerEventOptionDto
 import com.nrlm.baselinesurvey.utils.convertInputTypeQuestionToEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.convertToSaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.findOptionFromId
@@ -957,14 +958,6 @@ fun NestedLazyList(
                                             )
                                             needToUpdateList.value =
                                                 Pair(true, householdMemberDto.referenceId)
-                                            Log.d(
-                                                "TAG", "onEvent: onDelete -> " +
-                                                        "otalQuestionCount.intValue = ${questionScreenViewModel.totalQuestionCount.intValue}, answeredQuestionCount: ${questionScreenViewModel.answeredQuestionCount.size}" +
-                                                        " isSectionCompleted.value = ${
-                                                            questionScreenViewModel.answeredQuestionCount.size == questionScreenViewModel.totalQuestionCount.intValue
-                                                                    || questionScreenViewModel.answeredQuestionCount.size > questionScreenViewModel.totalQuestionCount.intValue
-                                                        }"
-                                            )
                                         },
                                         onUpdate = {
                                             sectionDetails.questionList.find { it.questionId == householdMemberDto.questionId }
@@ -1001,17 +994,21 @@ fun NestedLazyList(
 
     LaunchedEffect(key1 = needToUpdateList.value) {
         if (needToUpdateList.value.first) {
+            val houseHoldMemberDto = householdMemberDtoList.value.first()
             householdMemberDtoList.value = householdMemberDtoList.value.apply {
                 this.remove(this.find { it.referenceId == needToUpdateList.value.second })
             }
             needToUpdateList.value = NEED_TO_UPDATE_LIST_DEFAULT_VALUE
-            Log.d(
-                "TAG", "onEvent: LaunchedEffect -> " +
-                        "otalQuestionCount.intValue = ${questionScreenViewModel.totalQuestionCount.intValue}, answeredQuestionCount: ${questionScreenViewModel.answeredQuestionCount.size}" +
-                        " isSectionCompleted.value = ${
-                            questionScreenViewModel.answeredQuestionCount.size == questionScreenViewModel.totalQuestionCount.intValue
-                                    || questionScreenViewModel.answeredQuestionCount.size > questionScreenViewModel.totalQuestionCount.intValue
-                        }"
+            questionScreenViewModel.onEvent(
+                EventWriterEvents.SaveAnswerEvent(
+                    surveyId = sectionDetails.surveyId,
+                    sectionId = sectionDetails.sectionId,
+                    didiId = surveyeeId,
+                    questionId = houseHoldMemberDto.questionId,
+                    questionTag = houseHoldMemberDto.questionTag,
+                    questionType = QuestionType.Form.name,
+                    saveAnswerEventOptionItemDtoList = householdMemberDtoList.value.convertFormResponseObjectToSaveAnswerEventOptionDto()
+                )
             )
         }
     }
