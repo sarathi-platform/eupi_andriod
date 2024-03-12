@@ -62,7 +62,7 @@ data class EditDidiWealthRankingRequest(
                 deviceId = didiEntity.localUniqueId,
                 cohortDeviceId = tolaDeviceId,
 
-            )
+                )
         }
 
         fun getRequestPayloadForVoEndorsement(
@@ -96,37 +96,40 @@ data class EditDidiWealthRankingRequest(
             tolaDeviceId: String,
             tolaServerId: Int
         ): EditDidiWealthRankingRequest {
-            val comment = if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
-                PatSurveyStatus.NOT_AVAILABLE.name
-            } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
-                BLANK_STRING
-            } else {
-                if ((didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.NOT_STARTED.ordinal)
-                    || (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.patExclusionStatus != ExclusionType.NO_EXCLUSION.ordinal)) {
-                    TYPE_EXCLUSION
+            val comment =
+                if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
+                    PatSurveyStatus.NOT_AVAILABLE.name
+                } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
+                    BLANK_STRING
                 } else {
-                    if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.COMPLETED.ordinal && didi.score!! < passingMark) {
-                        LOW_SCORE
+                    if ((didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.NOT_STARTED.ordinal)
+                        || (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.patExclusionStatus != ExclusionType.NO_EXCLUSION.ordinal)
+                    ) {
+                        TYPE_EXCLUSION
                     } else {
-                        BLANK_STRING
+                        if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.COMPLETED.ordinal && didi.score!! < passingMark) {
+                            LOW_SCORE
+                        } else {
+                            BLANK_STRING
+                        }
                     }
                 }
-            }
 
-            val result = if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
-                DIDI_NOT_AVAILABLE
-            } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
-                PatSurveyStatus.INPROGRESS.name
-            } else {
-                if (didi.forVoEndorsement == 0 || didi.patExclusionStatus != ExclusionType.NO_EXCLUSION.ordinal) DIDI_REJECTED else {
-                    if (isBpcUserType)
-                        VERIFIED_STRING
-                    else
-                        COMPLETED_STRING
+            val result =
+                if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
+                    DIDI_NOT_AVAILABLE
+                } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
+                    PatSurveyStatus.INPROGRESS.name
+                } else {
+                    if (didi.forVoEndorsement == 0 || didi.patExclusionStatus != ExclusionType.NO_EXCLUSION.ordinal) DIDI_REJECTED else {
+                        if (isBpcUserType)
+                            VERIFIED_STRING
+                        else
+                            COMPLETED_STRING
+                    }
                 }
-            }
             return EditDidiWealthRankingRequest(
-                id =  didi.serverId,
+                id = didi.serverId,
                 name = didi.name,
                 guardianName = didi.guardianName,
                 address = didi.address,

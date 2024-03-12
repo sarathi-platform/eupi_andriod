@@ -94,6 +94,9 @@ fun BaseLineStartScreen(
         baseLineStartViewModel.getDidiDetails(didiId)
     }
 
+
+    //val didiInfoDetail = baseLineStartViewModel.didiInfo
+
     val isContinueButtonActive =
         derivedStateOf {
             (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (baseLineStartViewModel.isVoterCard.value != -1) && (baseLineStartViewModel.phoneNumber.value.length == 10) &&
@@ -155,7 +158,9 @@ fun BaseLineStartScreen(
             TextDetails(title = stringResource(R.string.caste_titile), data = getCasteName(didi.value.casteId, baseLineStartViewModel))
             YesNoButtonComponent(
                 defaultValue = baseLineStartViewModel.isAdharCard.value,
-                title = stringResource(R.string.aadhar_card_titile)
+                title = if (baseLineStartViewModel.getStateId() == 4) stringResource(R.string.aadhar_card_titile_assam) else stringResource(
+                    R.string.aadhar_card_titile
+                )
             ) {
                 baseLineStartViewModel.isAdharCard.value = it
                 baseLineStartViewModel.adharCardState.value =
@@ -178,7 +183,9 @@ fun BaseLineStartScreen(
             Spacer(modifier = Modifier.height(8.dp))
             YesNoButtonComponent(
                 defaultValue = baseLineStartViewModel.isVoterCard.value,
-                title = stringResource(R.string.voter_card_title)
+                title = if (baseLineStartViewModel.getStateId() == 4) stringResource(R.string.voter_card_title_assam) else stringResource(
+                    R.string.voter_card_title
+                )
             ) {
                 baseLineStartViewModel.isVoterCard.value = it
                 updateDidiDetails(didi, baseLineStartViewModel)

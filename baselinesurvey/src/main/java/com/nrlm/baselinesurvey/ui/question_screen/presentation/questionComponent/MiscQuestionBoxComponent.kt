@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -31,11 +32,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
+import com.nrlm.baselinesurvey.ui.common_components.ExpandableDescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.common_components.ListTypeQuestion
 import com.nrlm.baselinesurvey.ui.common_components.VerticalAnimatedVisibilityComponent
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
@@ -46,7 +49,9 @@ import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
+import com.nrlm.baselinesurvey.ui.theme.lightGray2
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
@@ -59,6 +64,7 @@ fun MiscQuestionBoxComponent(
     modifier: Modifier = Modifier,
     questionIndex: Int,
     question: QuestionEntity,
+    contests: List<ContentEntity?>? = listOf(),
     showQuestionState: QuestionEntityState = QuestionEntityState.getEmptyStateObject(),
     selectedOptionMapForNumericInputTypeQuestions: Map<Int, InputTypeQuestionAnswerEntity>,
     selectedOption: OptionItemEntity?,
@@ -191,8 +197,10 @@ fun MiscQuestionBoxComponent(
                                             QuestionType.SingleSelectDropdown.name,
                                             QuestionType.SingleSelectDropDown.name -> {
                                                 TypeDropDownComponent(
-                                                    title = optionsItem.optionItemEntity.display ?: BLANK_STRING,
-                                                    hintText = optionsItem.optionItemEntity.selectedValue ?: "Select",
+                                                    title = optionsItem.optionItemEntity.display
+                                                        ?: BLANK_STRING,
+                                                    hintText = optionsItem.optionItemEntity.selectedValue
+                                                        ?: "Select",
                                                     showQuestionState = optionsItem,
                                                     sources = optionsItem.optionItemEntity.values,
                                                     selectOptionText = selectedOption?.selectedValue
@@ -216,28 +224,31 @@ fun MiscQuestionBoxComponent(
                                         .fillMaxWidth()
                                         .height(dimen_10_dp)
                                 )
-/*                            Divider(
-                                thickness = dimen_1_dp,
-                                color = lightGray2,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            ExpandableDescriptionContentComponent(
-                                questionDetailExpanded,
-                                questionIndex,
-                                question,
-                                imageClickListener = { imageTypeDescriptionContent ->
-                                    onMediaTypeDescriptionAction(
-                                        DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
-                                        imageTypeDescriptionContent
+                                if (contests?.isNotEmpty() == true) {
+                                    Divider(
+                                        thickness = dimen_1_dp,
+                                        color = lightGray2,
+                                        modifier = Modifier.fillMaxWidth()
                                     )
-                                },
-                                videoLinkClicked = { videoTypeDescriptionContent ->
-                                    onMediaTypeDescriptionAction(
-                                        DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
-                                        videoTypeDescriptionContent
+                                    ExpandableDescriptionContentComponent(
+                                        questionDetailExpanded,
+                                        questionIndex,
+                                        contents = contests,
+                                        subTitle = BLANK_STRING,
+                                        imageClickListener = { imageTypeDescriptionContent ->
+                                            onMediaTypeDescriptionAction(
+                                                DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
+                                                imageTypeDescriptionContent
+                                            )
+                                        },
+                                        videoLinkClicked = { videoTypeDescriptionContent ->
+                                            onMediaTypeDescriptionAction(
+                                                DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
+                                                videoTypeDescriptionContent
+                                            )
+                                        }
                                     )
                                 }
-                            )*/
                             }
                         }
                     }

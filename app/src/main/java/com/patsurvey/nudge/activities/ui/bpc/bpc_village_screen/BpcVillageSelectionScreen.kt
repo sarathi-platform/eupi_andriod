@@ -81,6 +81,7 @@ import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.database.VillageEntity
+import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPCVillageStatus
@@ -104,7 +105,7 @@ fun BpcVillageSelectionScreen(
     val context = LocalContext.current
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.init()
+        viewModel.compareWithPreviousUser(context = context)
     }
 
     val villages by viewModel.filterVillageList.collectAsState()
@@ -129,6 +130,23 @@ fun BpcVillageSelectionScreen(
             onNegativeButtonClick = {viewModel.showAppExitDialog.value =false},
             onPositiveButtonClick = {
                 (context as? MainActivity)?.finish()
+            })
+    }
+    if (viewModel.showUserChangedDialog.value) {
+        showCustomDialog(
+            title = stringResource(id = R.string.warning),
+            message = stringResource(id = R.string.data_lost_message),
+            positiveButtonTitle = stringResource(id = R.string.proceed),
+            negativeButtonTitle = stringResource(id = R.string.cancel),
+            dismissOnBackPress = false,
+            onNegativeButtonClick = {
+                viewModel.showUserChangedDialog.value = false
+                viewModel.logout()
+                navController.navigate(AuthScreen.LOGIN.route)
+            },
+            onPositiveButtonClick = {
+                viewModel.clearLocalDB(context = context)
+                viewModel.showUserChangedDialog.value = false
             })
     }
 
@@ -559,7 +577,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Log.d("TAG", "VillageAndVoBoxForBottomSheet IconCaes:  ${bpcVillageStatus}")
-                    if(bpcVillageStatus>BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal) {
+                    if (bpcVillageStatus > BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal) {
                         Icon(
                             painter = painterResource(id = R.drawable.icon_feather_check_circle_white),
                             contentDescription = null,
@@ -567,7 +585,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                             ) greenOnline else blueDark
                         )
                     }
-                    if(bpcVillageStatus < BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal){
+                    if (bpcVillageStatus < BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal) {
                         Text(
                             text = stringResource(id = R.string.vo_endorsement_not_started),
                             color = textColorDark,
@@ -643,18 +661,18 @@ fun BpcVillageAndVoBoxForBottomSheetPreview(
     }
 }
 
-private fun fetchBPCVillageStatus(stepId: Int,statusId: Int):Int{
-    return if(stepId == 44 && statusId == StepStatus.NOT_STARTED.ordinal){
+private fun fetchBPCVillageStatus(stepId: Int, statusId: Int): Int {
+    return if (stepId == 44 && statusId == StepStatus.NOT_STARTED.ordinal) {
         BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal
-    }else if(stepId == 44 && statusId == StepStatus.INPROGRESS.ordinal){
+    } else if (stepId == 44 && statusId == StepStatus.INPROGRESS.ordinal) {
         BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal
-    }else if(stepId == 44 && statusId == StepStatus.COMPLETED.ordinal){
+    } else if (stepId == 44 && statusId == StepStatus.COMPLETED.ordinal) {
         BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal
-    }else if(stepId == 45 && statusId == StepStatus.NOT_STARTED.ordinal){
+    } else if (stepId == 45 && statusId == StepStatus.NOT_STARTED.ordinal) {
         BPCVillageStatus.BPC_VERIFICATION_NOT_STARTED.ordinal
-    }else if(stepId == 45 && statusId == StepStatus.INPROGRESS.ordinal){
+    } else if (stepId == 45 && statusId == StepStatus.INPROGRESS.ordinal) {
         BPCVillageStatus.BPC_VERIFICATION_IN_PROGRESS.ordinal
-    }else if(stepId == 45 && statusId == StepStatus.COMPLETED.ordinal){
+    } else if (stepId == 45 && statusId == StepStatus.COMPLETED.ordinal) {
         BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal
-    }else 0
+    } else 0
 }

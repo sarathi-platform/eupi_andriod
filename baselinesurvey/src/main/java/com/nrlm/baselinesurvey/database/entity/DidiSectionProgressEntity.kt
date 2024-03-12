@@ -23,6 +23,4 @@ data class DidiSectionProgressEntity(
     @ColumnInfo(name = "sectionStatus")
     val sectionStatus: Int = -1,
 
-) {
-
-}
+    )

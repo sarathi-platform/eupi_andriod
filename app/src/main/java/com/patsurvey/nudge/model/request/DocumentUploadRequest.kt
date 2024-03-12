@@ -1,5 +1,16 @@
 package com.patsurvey.nudge.model.request
 
-data class DocumentUploadRequest(val villageId:String, val userType:String,val  filePath:String,val formName:String)
+import com.google.gson.annotations.SerializedName
+
+data class DocumentUploadRequest(
+    @SerializedName("villageId")
+    val villageId: String,
+    @SerializedName("userType")
+    val userType: String,
+    @SerializedName("filePath")
+    val filePath: String,
+    @SerializedName("formName")
+    val formName: String
+)
 
 

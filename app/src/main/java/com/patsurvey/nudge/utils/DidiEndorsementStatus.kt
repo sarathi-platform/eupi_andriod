@@ -16,7 +16,7 @@ enum class DidiEndorsementStatus {
         }
 
         fun fromIntToString(status: Int): String {
-            return when(status) {
+            return when (status) {
                 0 -> NOT_STARTED.name
                 1 -> REJECTED.name
                 2, 3 -> ACCEPTED.name

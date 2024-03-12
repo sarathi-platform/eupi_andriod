@@ -6,7 +6,6 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.nudge.core.enums.EventName
@@ -51,6 +50,7 @@ import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.getPatScoreEventName
 import com.patsurvey.nudge.utils.getUniqueIdForEntity
 import com.patsurvey.nudge.utils.longToString
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -340,8 +340,19 @@ class AddDidiViewModel @Inject constructor(
                 if (didiList.isNotEmpty()) {
                     val didiRequestList = arrayListOf<EditDidiRequest>()
                     didiList.forEach { didi->
-                        didiRequestList.add(EditDidiRequest(didi.serverId,didi.name,didi.address,didi.guardianName,didi.castId,didi.cohortId,didi.villageId,didi.cohortName))
-                       }
+                        didiRequestList.add(
+                            EditDidiRequest(
+                                didi.serverId,
+                                didi.name,
+                                didi.address,
+                                didi.guardianName,
+                                didi.castId,
+                                didi.cohortId,
+                                didi.villageId,
+                                didi.cohortName
+                            )
+                        )
+                    }
                     NudgeLogger.d("AddDidiViewModel", "updateDidiToNetwork -> didiList: $didiList")
                     val response = addDidiRepository.updateDidis(didiRequestList)
                     NudgeLogger.d("AddDidiViewModel", "updateDidiToNetwork ->  response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
@@ -631,7 +642,8 @@ class AddDidiViewModel @Inject constructor(
                     ableBodiedFlag = didiList.value.get(_didiList.value.map { it.id }
                         .indexOf(didiId)).ableBodiedFlag
                 )
-                 val selectedTolaEntity=  addDidiRepository.fetchSingleTolaFromServerId( selectedTola.value.first)
+                val selectedTolaEntity =
+                    addDidiRepository.fetchSingleTolaFromServerId(selectedTola.value.first)
                 addDidiRepository.insertDidi(updatedDidi)
                 addDidiRepository.saveEvent(
                     updatedDidi,
@@ -1253,14 +1265,22 @@ class AddDidiViewModel @Inject constructor(
                                     StepStatus.NOT_STARTED.ordinal,
                                     villageId = villageId
                                 )
-                                saveWorkflowEventIntoDb(stepStatus = StepStatus.NOT_STARTED, villageId = villageId, stepId = newStep.id)
+                                saveWorkflowEventIntoDb(
+                                    stepStatus = StepStatus.NOT_STARTED,
+                                    villageId = villageId,
+                                    stepId = newStep.id
+                                )
                             } else {
                                 addDidiRepository.markStepAsCompleteOrInProgress(
                                     newStep.id,
                                     StepStatus.INPROGRESS.ordinal,
                                     villageId
                                 )
-                                saveWorkflowEventIntoDb(stepStatus = StepStatus.INPROGRESS, villageId = villageId, stepId = newStep.id)
+                                saveWorkflowEventIntoDb(
+                                    stepStatus = StepStatus.INPROGRESS,
+                                    villageId = villageId,
+                                    stepId = newStep.id
+                                )
                             }
                             addDidiRepository.updateNeedToPost(newStep.id, villageId, true)
                         } else {
@@ -1394,7 +1414,10 @@ class AddDidiViewModel @Inject constructor(
             )
             addDidiRepository.saveEvent(
                 eventItem = updatedDidiEntity,
-                eventName = EventName.SAVE_PAT_SCORE,
+                eventName = getPatScoreEventName(
+                    updatedDidiEntity,
+                    addDidiRepository.prefRepo.isUserBPC()
+                ),
                 EventType.STATEFUL
             )
             pendingDidiCount.value =
@@ -1755,27 +1778,5 @@ class AddDidiViewModel @Inject constructor(
         }
     }
 
-    override fun addDidiNotAvailableEvent(didiId: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val didiEntity = addDidiRepository.getDidi(didiId)
-            addDidiRepository.saveEvent(
-                eventItem = didiEntity,
-                eventName = EventName.SAVE_PAT_ANSWERS,
-                eventType = EventType.STATEFUL
-            )
-
-        }
-    }
-
-    override fun addNotAvailableDidiPatScoreEventForDidi(didiId: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val didiEntity = addDidiRepository.getDidi(didiId)
-            addDidiRepository.saveEvent(
-                eventItem = didiEntity,
-                eventName = EventName.SAVE_PAT_SCORE,
-                EventType.STATEFUL
-            )
-        }
-    }
 
 }

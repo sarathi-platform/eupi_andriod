@@ -94,6 +94,7 @@ import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.nudge.core.toDateInMMDDYYFormat
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
@@ -390,8 +391,10 @@ fun FormPictureScreen(
                                                             formPictureScreenViewModel.shouldShowCamera.value =
                                                                 Pair(FORM_C, true)
                                                             val formName = formPictureScreenViewModel.getFormSubPath(
-                                                                formPictureScreenViewModel.shouldShowCamera.value.first
-                                                                , formPictureScreenViewModel.formCPageList.value.size + 1)
+                                                                formPictureScreenViewModel.shouldShowCamera.value.first,
+                                                                formPictureScreenViewModel.formCPageList.value.size + 1
+                                                            ) + "_" + System.currentTimeMillis()
+                                                                .toDateInMMDDYYFormat()
                                                             val imageFile = formPictureScreenViewModel.getImageFileName(context, formName)
                                                             formPictureScreenViewModel.imagePathForCapture = imageFile.absolutePath
                                                             val uri = uriFromFile(context = context, imageFile)
@@ -444,7 +447,10 @@ fun FormPictureScreen(
                                                         if (formPictureScreenViewModel.formCPageList.value.size < 5) {
                                                             formPictureScreenViewModel.shouldShowCamera.value = Pair(FORM_C, true)
                                                             val formName = formPictureScreenViewModel.getFormSubPath(
-                                                                FORM_C, formPictureScreenViewModel.formCPageList.value.size + 1)
+                                                                FORM_C,
+                                                                formPictureScreenViewModel.formCPageList.value.size + 1
+                                                            ) + "_" + System.currentTimeMillis()
+                                                                .toDateInMMDDYYFormat()
                                                             val imageFile = formPictureScreenViewModel.getImageFileName(context, formName)
                                                             formPictureScreenViewModel.imagePathForCapture = imageFile.absolutePath
                                                             val uri = uriFromFile(context = context, imageFile)
@@ -508,7 +514,8 @@ fun FormPictureScreen(
                                                             formPictureScreenViewModel.getFormSubPath(
                                                                 formPictureScreenViewModel.shouldShowCamera.value.first,
                                                                 index + 1
-                                                            )
+                                                            ) + "_" + System.currentTimeMillis()
+                                                                .toDateInMMDDYYFormat()
                                                         val imageFile =
                                                             formPictureScreenViewModel.getImageFileName(
                                                                 context,
@@ -571,7 +578,8 @@ fun FormPictureScreen(
                                                             formPictureScreenViewModel.getFormSubPath(
                                                                 formPictureScreenViewModel.shouldShowCamera.value.first,
                                                                 index + 1
-                                                            )
+                                                            ) + "_" + System.currentTimeMillis()
+                                                                .toDateInMMDDYYFormat()
                                                         val imageFile =
                                                             formPictureScreenViewModel.getImageFileName(
                                                                 context,
@@ -692,8 +700,10 @@ fun FormPictureScreen(
                                                             formPictureScreenViewModel.shouldShowCamera.value =
                                                                 Pair(FORM_D, true)
                                                             val formName = formPictureScreenViewModel.getFormSubPath(
-                                                                formPictureScreenViewModel.shouldShowCamera.value.first
-                                                                , formPictureScreenViewModel.formDPageList.value.size + 1)
+                                                                formPictureScreenViewModel.shouldShowCamera.value.first,
+                                                                formPictureScreenViewModel.formDPageList.value.size + 1
+                                                            ) + "_" + System.currentTimeMillis()
+                                                                .toDateInMMDDYYFormat()
                                                             val imageFile = formPictureScreenViewModel.getImageFileName(context, formName)
                                                             formPictureScreenViewModel.imagePathForCapture = imageFile.absolutePath
                                                             val uri = uriFromFile(context = context, imageFile)
@@ -745,7 +755,10 @@ fun FormPictureScreen(
                                                         if (formPictureScreenViewModel.formDPageList.value.size < 5) {
                                                             formPictureScreenViewModel.shouldShowCamera.value = Pair(FORM_D, true)
                                                             val formName = formPictureScreenViewModel.getFormSubPath(
-                                                                FORM_D, formPictureScreenViewModel.formDPageList.value.size + 1)
+                                                                FORM_D,
+                                                                formPictureScreenViewModel.formDPageList.value.size + 1
+                                                            ) + "_" + System.currentTimeMillis()
+                                                                .toDateInMMDDYYFormat()
                                                             val imageFile = formPictureScreenViewModel.getImageFileName(context, formName)
                                                             formPictureScreenViewModel.imagePathForCapture = imageFile.absolutePath
                                                             val uri = uriFromFile(context = context, imageFile)
@@ -789,8 +802,10 @@ fun FormPictureScreen(
                                             formPictureScreenViewModel.shouldShowCamera.value =
                                                 Pair(FORM_D, true)
                                             val formName = formPictureScreenViewModel.getFormSubPath(
-                                                formPictureScreenViewModel.shouldShowCamera.value.first
-                                                , formPictureScreenViewModel.formDPageList.value.size + 1)
+                                                formPictureScreenViewModel.shouldShowCamera.value.first,
+                                                formPictureScreenViewModel.formDPageList.value.size + 1
+                                            ) + "_" + System.currentTimeMillis()
+                                                .toDateInMMDDYYFormat()
                                             val imageFile = formPictureScreenViewModel.getImageFileName(context, formName)
                                             formPictureScreenViewModel.imagePathForCapture = imageFile.absolutePath
                                             val uri = uriFromFile(context = context, imageFile)
@@ -884,7 +899,10 @@ fun FormPictureScreen(
                             )
                             formPictureScreenViewModel.addRankingFlagEditEvent(stepId = stepId)
                             formPictureScreenViewModel.saveVoEndorsementDate()
-                                formPictureScreenViewModel.uploadFormsCAndD(context,(context as MainActivity).isOnline.value)
+                            formPictureScreenViewModel.uploadFormsCAndD(
+                                context,
+                                (context as MainActivity).isOnline.value
+                            )
 
 
                             navController.navigate(

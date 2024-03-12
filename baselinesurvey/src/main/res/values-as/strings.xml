@@ -376,7 +376,7 @@
     <string name="search_question_placeholder">Search Question</string>
     <string name="save_next_section_button_text"><string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>--><![CDATA[Save]]></string></string>
     <string name="ok_text">Ok</string>
-    <string name="save">Save</string>
+    <string name="save">চেভ</string>
 
     <string name="name_comparision">Name</string>
     <string name="age_comparision">Age</string>
@@ -390,12 +390,12 @@
     <string name="total_unit_comparision">(D) Total units</string>
     <string name="income_comparision">Income</string>
     <string name="small_business_comparision">What is the household income from small business in the last 12 months?</string>
-    <string name="didi_title">"Didi: "</string>
-    <string name="dada_title">"Dada: "</string>
-    <string name="caste_titile">"Caste: "</string>
-    <string name="aadhar_card_titile">Does Didi have aadhar card?</string>
-    <string name="voter_card_title">Does didi have voter card?</string>
-    <string name="phone_number_title">Enter didi\'s family phone number</string>
+    <string name="didi_title">"দিদি:"</string>
+    <string name="dada_title">"দাদা: "</string>
+    <string name="caste_titile">"জাতি: "</string>
+    <string name="aadhar_card_titile">দিদিৰ আধাৰ কাৰ্ড আছে নেকি?</string>
+    <string name="voter_card_title">দিদিৰ ভোটাৰ কাৰ্ড আছে নেকি?</string>
+    <string name="phone_number_title">didi\'s পৰিয়ালৰ ফোন নম্বৰ দিয়ক</string>
     <string name="add_didi_details_label">Add didi details</string>
     <string name="household_information_comparision">Household information</string>
     <string name="total_income_lable">Total Income: ₹</string>
@@ -410,4 +410,8 @@
     <string name="average_travel_cost_comparision">"Average travel cost "</string>
     <string name="questions_data_tab_title">Questions Data</string>
     <string name="section_information_tab_title">Section Information</string>
+    <string name="search_hamlet">Search Hamlet</string>
+    <string name="aadhar_card_titile_assam">বাইদেউ’ৰ আধাৰ কাৰ্ড আছে নেকি?</string>
+    <string name="voter_card_title_assam">বাইদেউ’ৰ ভোটাৰ কাৰ্ড আছে নেকি?</string>
+    <string name="not_able_to_load">ডাটা লোড কৰিব পৰা নাই অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক..</string>
 </resources>

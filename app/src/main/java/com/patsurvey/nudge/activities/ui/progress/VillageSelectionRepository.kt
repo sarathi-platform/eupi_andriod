@@ -535,19 +535,19 @@ class VillageSelectionRepository @Inject constructor(
                             onCatchError(ex, ApiType.STEP_LIST_API)
                         }
                     }
-                    //Fetch Cohort/Tola Data
-                    syncCrpData(prefRepo = prefRepo, object : NetworkCallbackListener {
-                        override fun onSuccess() {
-                            //fetch all data
-                            villageList.forEach { village ->
-                                fetchDidiForCrp(prefRepo, village.id)
-                            }
-                        }
-
-                        override fun onFailed() {
-                            networkCallbackListener.onFailed()
-                        }
-                    })
+//                    //Fetch Cohort/Tola Data
+//                    syncCrpData(prefRepo = prefRepo, object : NetworkCallbackListener {
+//                        override fun onSuccess() {
+//                            //fetch all data
+//                            villageList.forEach { village ->
+//                                fetchDidiForCrp(prefRepo, village.id)
+//                            }
+//                        }
+//
+//                        override fun onFailed() {
+//                            networkCallbackListener.onFailed()
+//                        }
+//                    })
                 } catch (ex: Exception) {
                     NudgeLogger.e(
                         "VillageSelectionRepository",
@@ -642,7 +642,9 @@ class VillageSelectionRepository @Inject constructor(
                                         createdDate = didi.createdDate,
                                         modifiedDate = didi.modifiedDate,
                                         beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
-                                        shgFlag = SHGFlag.fromSting(didi.shgFlag ?: SHGFlag.NOT_MARKED.name).value,
+                                        shgFlag = SHGFlag.fromSting(
+                                            didi.shgFlag ?: SHGFlag.NOT_MARKED.name
+                                        ).value,
                                         transactionId = "",
                                         localCreatedDate = didi.localCreatedDate,
                                         localModifiedDate = didi.localModifiedDate,
@@ -655,7 +657,9 @@ class VillageSelectionRepository @Inject constructor(
                                         rankingEdit = didi.rankingEdit,
                                         patEdit = didi.patEdit,
                                         voEndorsementEdit = didi.voEndorsementEdit,
-                                        ableBodiedFlag = AbleBodiedFlag.fromSting(didi.ableBodiedFlag ?: AbleBodiedFlag.NOT_MARKED.name).value
+                                        ableBodiedFlag = AbleBodiedFlag.fromSting(
+                                            didi.ableBodiedFlag ?: AbleBodiedFlag.NOT_MARKED.name
+                                        ).value
                                     )
                                     val oldDidiEntity = oldDidiList.filter {
                                         it.name == remoteDidiEntity.name
@@ -1409,7 +1413,18 @@ class VillageSelectionRepository @Inject constructor(
             if (didiList.isNotEmpty()) {
                 val didiRequestList = arrayListOf<EditDidiRequest>()
                 didiList.forEach { didi->
-                    didiRequestList.add(EditDidiRequest(didi.serverId,didi.name,didi.address,didi.guardianName,didi.castId,didi.cohortId,didi.villageId,didi.cohortName))
+                    didiRequestList.add(
+                        EditDidiRequest(
+                            didi.serverId,
+                            didi.name,
+                            didi.address,
+                            didi.guardianName,
+                            didi.castId,
+                            didi.cohortId,
+                            didi.villageId,
+                            didi.cohortName
+                        )
+                    )
                 }
                 NudgeLogger.d("VillageSelectionRepository","updateDidiToNetworkForCrp updateDidis Request=> ${didiRequestList.json()}")
                 val response = apiService.updateDidis(didiRequestList)
@@ -1508,19 +1523,33 @@ class VillageSelectionRepository @Inject constructor(
                         val didiWealthRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         val didiStepRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi ->
-                            didiWealthRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, rankingEdit = didi.rankingEdit, localModifiedDate = System.currentTimeMillis(),  name = didi.name,
-                                address = didi.address,
-                                guardianName = didi.guardianName,
-                                villageId = didi.villageId,
-                                deviceId = didi.localUniqueId
+                            didiWealthRequestList.add(
+                                EditDidiWealthRankingRequest(
+                                    didi.serverId,
+                                    StepType.WEALTH_RANKING.name,
+                                    didi.wealth_ranking,
+                                    rankingEdit = didi.rankingEdit,
+                                    localModifiedDate = System.currentTimeMillis(),
+                                    name = didi.name,
+                                    address = didi.address,
+                                    guardianName = didi.guardianName,
+                                    villageId = didi.villageId,
+                                    deviceId = didi.localUniqueId
+                                )
                             )
-                            )
-                            didiStepRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, rankingEdit = didi.rankingEdit, localModifiedDate = System.currentTimeMillis(),  name = didi.name,
-                                address = didi.address,
-                                guardianName = didi.guardianName,
-                                villageId = didi.villageId,
-                                deviceId = didi.localUniqueId
-                            )
+                            didiStepRequestList.add(
+                                EditDidiWealthRankingRequest(
+                                    didi.serverId,
+                                    StepType.SOCIAL_MAPPING.name,
+                                    StepStatus.COMPLETED.name,
+                                    rankingEdit = didi.rankingEdit,
+                                    localModifiedDate = System.currentTimeMillis(),
+                                    name = didi.name,
+                                    address = didi.address,
+                                    guardianName = didi.guardianName,
+                                    villageId = didi.villageId,
+                                    deviceId = didi.localUniqueId
+                                )
                             )
                         }
                         didiWealthRequestList.addAll(didiStepRequestList)
@@ -1619,7 +1648,7 @@ class VillageSelectionRepository @Inject constructor(
                         calculateDidiScore(didiId = didi.id, prefRepo = prefRepo)
                         delay(100)
                         didi.score = didiDao.getDidiScoreFromDb(didi.id)
-                        val didiEntity= didiDao.getDidi(didi.id)
+                        val didiEntity = didiDao.getDidi(didi.id)
                         val qList: java.util.ArrayList<AnswerDetailDTOListItem> = arrayListOf()
                         val needToPostQuestionsList = answerDao.getAllNeedToPostQuesForDidi(didi.id)
                         if (needToPostQuestionsList.isNotEmpty()) {
@@ -1934,7 +1963,8 @@ class VillageSelectionRepository @Inject constructor(
                             didi.voEndorsementStatus.let {
                                 if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
                                     didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, ACCEPTED,
-                                        localModifiedDate = System.currentTimeMillis(), rankingEdit = didi.voEndorsementEdit,
+                                        localModifiedDate = System.currentTimeMillis(),
+                                        rankingEdit = didi.voEndorsementEdit,
                                         address = didi.address,
                                         guardianName = didi.guardianName,
                                         villageId = didi.villageId,
@@ -1943,7 +1973,9 @@ class VillageSelectionRepository @Inject constructor(
                                     )
                                 } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
                                     didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, DidiEndorsementStatus.REJECTED.name,
-                                        localModifiedDate = System.currentTimeMillis(), rankingEdit = didi.voEndorsementEdit,  address = didi.address,
+                                        localModifiedDate = System.currentTimeMillis(),
+                                        rankingEdit = didi.voEndorsementEdit,
+                                        address = didi.address,
                                         guardianName = didi.guardianName,
                                         villageId = didi.villageId,
                                         deviceId = didi.localUniqueId
@@ -3751,6 +3783,151 @@ class VillageSelectionRepository @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    fun refreshStepListData(
+        villageList: List<VillageEntity>,
+        taskCompleted: (success: Boolean) -> Unit
+    ) {
+
+        repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            villageList.forEach { village ->
+                try {
+
+
+                    //Fetch Step List Data try {
+                    NudgeLogger.d(
+                        "VillageSelectionRepository",
+                        "refreshBpcData getStepsList request -> village.id = ${village.id}"
+                    )
+                    val response = apiService.getStepsList(village.id)
+                    NudgeLogger.d(
+                        "VillageSelectionRepository", "refreshBpcData getStepsList " +
+                                "response status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}"
+                    )
+                    if (response.status.equals(SUCCESS, true)) {
+                        response.data?.let { it ->
+                            if (it.stepList.isNotEmpty()) {
+                                it.stepList.forEach { steps ->
+                                    steps.villageId = village.id
+                                    /*steps.isComplete =
+                                    findCompleteValue(steps.status).ordinal*/
+                                    if (steps.id == 40) {
+                                        prefRepo.savePref(
+                                            PREF_TRANSECT_WALK_COMPLETION_DATE_ + village.id,
+                                            steps.localModifiedDate ?: System.currentTimeMillis()
+                                        )
+                                    }
+
+                                    if (steps.id == 41) {
+                                        prefRepo.savePref(
+                                            PREF_SOCIAL_MAPPING_COMPLETION_DATE_ + village.id,
+                                            steps.localModifiedDate ?: System.currentTimeMillis()
+                                        )
+                                    }
+
+                                    if (steps.id == 46) {
+                                        prefRepo.savePref(
+                                            PREF_WEALTH_RANKING_COMPLETION_DATE_ + village.id,
+                                            steps.localModifiedDate ?: System.currentTimeMillis()
+                                        )
+                                    }
+
+                                    if (steps.id == 43) {
+                                        prefRepo.savePref(
+                                            PREF_PAT_COMPLETION_DATE_ + village.id,
+                                            steps.localModifiedDate ?: System.currentTimeMillis()
+                                        )
+                                    }
+                                    if (steps.id == 44) {
+                                        prefRepo.savePref(
+                                            PREF_VO_ENDORSEMENT_COMPLETION_DATE_ + village.id,
+                                            steps.localModifiedDate ?: System.currentTimeMillis()
+                                        )
+                                    }
+
+                                    if (steps.id == 45) {
+                                        prefRepo.savePref(
+                                            PREF_BPC_PAT_COMPLETION_DATE_ + village.id,
+                                            steps.localModifiedDate
+                                                ?: System.currentTimeMillis()
+                                        )
+                                    }
+                                }
+                                val localStepListForVillage =
+                                    stepsListDao.getAllStepsForVillage(village.id)
+                                NudgeLogger.d(
+                                    "VillageSelectionRepository", "refreshBpcData getStepsList " +
+                                            "stepsListDao.insertAll(it.stepList) before"
+                                )
+
+                                val updatedStepList = mutableListOf<StepListEntity>()
+                                localStepListForVillage.forEach { step ->
+                                    updatedStepList.add(step.getUpdatedStep(it.stepList[it.stepList.map { it.id }
+                                        .indexOf(step.id)]))
+                                }
+                                if (localStepListForVillage.size != it.stepList.size) {
+                                    if (localStepListForVillage.size < it.stepList.size) {
+                                        val tempStepList = mutableListOf<StepListEntity>()
+                                        tempStepList.addAll(it.stepList)
+                                        tempStepList.sortedBy { it.orderNumber }
+                                        localStepListForVillage.forEach { localStep ->
+                                            if (it.stepList.map { remoteStep -> remoteStep.id }
+                                                    .contains(localStep.id)) {
+                                                tempStepList.remove(it.stepList.sortedBy { it.orderNumber }[it.stepList.map { it.id }
+                                                    .indexOf(localStep.id)])
+                                            }
+                                        }
+                                        updatedStepList.addAll(tempStepList)
+                                    } else {
+                                        val tempStepList = mutableListOf<StepListEntity>()
+                                        tempStepList.addAll(localStepListForVillage)
+                                        tempStepList.sortedBy { it.orderNumber }
+                                        it.stepList.forEach { remoteStep ->
+                                            if (localStepListForVillage.map { localStep -> remoteStep.id }
+                                                    .contains(remoteStep.id)) {
+                                                tempStepList.remove(localStepListForVillage.sortedBy { it.orderNumber }[localStepListForVillage.map { it.id }
+                                                    .indexOf(remoteStep.id)])
+                                            }
+                                        }
+                                        updatedStepList.addAll(tempStepList)
+                                    }
+                                }
+                                if (updatedStepList.isNotEmpty()) {
+                                    stepsListDao.deleteAllStepsForVillage(village.id)
+                                    delay(100)
+                                    stepsListDao.insertAll(updatedStepList)
+                                }
+
+                                NudgeLogger.d(
+                                    "VillageSelectionRepository", "refreshBpcData getStepsList " +
+                                            "stepsListDao.insertAll(it.stepList) after"
+                                )
+                            }
+                            prefRepo.savePref(
+                                PREF_PROGRAM_NAME, it.programName
+                            )
+                        }
+                    } else {
+                        val ex = ApiResponseFailException(response.message)
+                        if (!RetryHelper.retryApiList.contains(ApiType.STEP_LIST_API)) RetryHelper.retryApiList.add(
+                            ApiType.STEP_LIST_API
+                        )
+                        RetryHelper.stepListApiVillageId.add(village.id)
+                        onCatchError(ex, ApiType.STEP_LIST_API)
+                    }
+                } catch (ex: Exception) {
+                    if (ex !is JsonSyntaxException) {
+                        if (!RetryHelper.retryApiList.contains(ApiType.STEP_LIST_API)) RetryHelper.retryApiList.add(
+                            ApiType.STEP_LIST_API
+                        )
+                        RetryHelper.stepListApiVillageId.add(village.id)
+                    }
+                    onCatchError(ex, ApiType.STEP_LIST_API)
+                }
+            }
+            taskCompleted(true)
         }
     }
 

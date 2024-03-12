@@ -279,7 +279,7 @@ fun SocialMappingDidiListScreen(
 
                     if (didiViewModel.getFromPage()
                             .equals(ARG_FROM_PAT_SURVEY, true)
-                    ){
+                    ) {
                         listState = rememberForeverLazyListState(key = PAT_SURVEY)
                     }
                     LazyColumn(
@@ -523,8 +523,6 @@ fun SocialMappingDidiListScreen(
                                         onExpendClick = { _, _ -> },
                                         onNotAvailableClick = { didiEntity ->
                                             didiViewModel.setDidiAsUnavailable(didiEntity.id)
-                                            didiViewModel.addDidiNotAvailableEvent(didiEntity.id)
-                                            didiViewModel.addNotAvailableDidiPatScoreEventForDidi(didiEntity.id)
                                         },
                                         onItemClick = {}
                                         ,onCircularImageClick = { didi->
@@ -654,7 +652,11 @@ fun SocialMappingDidiListScreen(
                                         }
                                     }
                                     didiViewModel.markSocialMappingComplete(villageId, stepId)
-                                    didiViewModel.saveWorkflowEventIntoDb(stepStatus = StepStatus.COMPLETED, villageId = villageId, stepId = stepId)
+                                    didiViewModel.saveWorkflowEventIntoDb(
+                                        stepStatus = StepStatus.COMPLETED,
+                                        villageId = villageId,
+                                        stepId = stepId
+                                    )
                                     (context as MainActivity).isFilterApplied.value = false
                                     navController.navigate(
                                         "sm_step_completion_screen/${
@@ -1201,8 +1203,6 @@ fun DidiItemCard(
                         ){
                             didiMarkedNotAvailable.value = true
                             didiViewModel.setDidiAsUnavailable(didi.id)
-                            didiViewModel.addDidiNotAvailableEvent(didi.id)
-                            didiViewModel.addNotAvailableDidiPatScoreEventForDidi(didi.id)
                         }
                         Spacer(modifier = Modifier.width(6.dp))
                         ButtonPositiveForPAT(

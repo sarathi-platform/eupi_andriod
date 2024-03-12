@@ -28,14 +28,16 @@ import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 @HiltAndroidApp
-class MyApplication: Application(), androidx.work.Configuration.Provider {
+class MyApplication : Application(), androidx.work.Configuration.Provider {
     @Inject
-    lateinit var workerFactory : HiltWorkerFactory
+    lateinit var workerFactory: HiltWorkerFactory
+
     @Inject
     lateinit var eventsDao: EventsDao
 
     @Inject
     lateinit var eventDependencyDao: EventDependencyDao
+
     @Inject
     lateinit var syncManager: SyncManager
 
@@ -147,7 +149,7 @@ class MyApplication: Application(), androidx.work.Configuration.Provider {
     }
 
     override fun getWorkManagerConfiguration(): androidx.work.Configuration {
-       return androidx.work.Configuration.Builder()
+        return androidx.work.Configuration.Builder()
             .setWorkerFactory(workerFactory).build()
     }
 }

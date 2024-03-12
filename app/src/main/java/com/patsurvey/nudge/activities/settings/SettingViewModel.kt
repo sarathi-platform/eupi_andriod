@@ -12,6 +12,7 @@ import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.enums.NetworkSpeed
+import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.json
 import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.MyApplication
@@ -872,6 +873,24 @@ class SettingViewModel @Inject constructor(
         prefRepo.saveAppLanguageId(languageId)
     }
 
+    fun clearAccessToken() {
+        prefRepo.saveAccessToken("")
+        CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setBackupFileName(
+            getDefaultBackUpFileName(
+                prefRepo.getMobileNumber() ?: ""
+            )
+        )
+        CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setImageBackupFileName(
+            getDefaultBackUpFileName(
+                prefRepo.getMobileNumber() ?: ""
+            )
+        )
+        CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setFileExported(false)
+        prefRepo.setPreviousUserMobile(mobileNumber = prefRepo.getMobileNumber())
+        prefRepo.saveSettingOpenFrom(0)
+
+    }
+
     fun buildAndShareLogs() {
         NudgeLogger.d("SettingViewModel", "buildAndShareLogs---------------")
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -891,7 +910,8 @@ class SettingViewModel @Inject constructor(
             try {
                 DeviceBandwidthSampler.getInstance().startSampling()
                 // Open a stream to download the image from our URL.
-                val connection = URL("https://sarathi.lokos.in/write-api/file/view?fileName=25882_shibani%20Nama%20_CRP_2023-12-10.png").openConnection()
+                val connection =
+                    URL("https://sarathi.lokos.in/write-api/file/view?fileName=25882_shibani%20Nama%20_CRP_2023-12-10.png").openConnection()
                 connection.setUseCaches(false)
                 connection.connect()
                 val input = connection.getInputStream()
@@ -959,5 +979,9 @@ class SettingViewModel @Inject constructor(
     fun isSyncEnabled(): Boolean {
         return prefRepo.getISSyncEnabled()
 
+    }
+
+    fun clearSettingOpenFrom() {
+        //    prefRepo.saveSettingOpenFrom(0)
     }
 }

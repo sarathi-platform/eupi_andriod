@@ -165,8 +165,8 @@ fun getDeviceId(context: Context) : String{
         Settings.Secure.ANDROID_ID) ?: ""
 }
 
-fun getUniqueIdForEntity() : String{
-    return UUID.randomUUID().toString() .replace("-","")+ "|" + System.currentTimeMillis()
+fun getUniqueIdForEntity(): String {
+    return UUID.randomUUID().toString().replace("-", "") + "|" + System.currentTimeMillis()
 }
 
 fun findCompleteValue(status:String): StepStatus {
@@ -1260,9 +1260,10 @@ fun getVillageItemById(villageList: List<VillageEntity>, id: Int): VillageEntity
 fun calculateMatchPercentage(didiList: List<DidiEntity>, questionPassingScore: Int): Int {
     val matchedCount = didiList.filter {
         (it.score ?: 0.0) >= questionPassingScore.toDouble()
-                && (it.crpScore ?: 0.0) >= questionPassingScore.toDouble() }.size
+                && (it.crpScore ?: 0.0) >= questionPassingScore.toDouble()
+    }.size
 
-    return if (didiList.isNotEmpty() && matchedCount != 0) ((matchedCount.toFloat()/didiList.size.toFloat()) * 100).toInt() else 0
+    return if (didiList.isNotEmpty() && matchedCount != 0) ((matchedCount.toFloat() / didiList.size.toFloat()) * 100).toInt() else 0
 
 }
 
@@ -1274,29 +1275,45 @@ fun List<DidiEntity>.getNotAvailableDidiCount(): Int {
 }
 
 fun <T> getParentEntityMapForEvent(eventItem: T, eventName: EventName): Map<String, String> {
-    return when(eventName) {
+    return when (eventName) {
 
         EventName.ADD_TOLA -> {
             emptyMap()
         }
+
         EventName.UPDATE_TOLA -> {
             val tolaEntity = (eventItem as TolaEntity)
-            mapOf(KEY_PARENT_ENTITY_TOLA_ID to  eventItem.serverId.toString(), KEY_PARENT_ENTITY_VILLAGE_ID to eventItem.villageId.toString())
+            mapOf(
+                KEY_PARENT_ENTITY_TOLA_ID to eventItem.serverId.toString(),
+                KEY_PARENT_ENTITY_VILLAGE_ID to eventItem.villageId.toString()
+            )
         }
+
         EventName.DELETE_TOLA -> {
             val tolaEntity = (eventItem as TolaEntity)
-            mapOf(KEY_PARENT_ENTITY_TOLA_NAME to  tolaEntity.name, KEY_PARENT_ENTITY_VILLAGE_ID to tolaEntity.villageId.toString())
+            mapOf(
+                KEY_PARENT_ENTITY_TOLA_NAME to tolaEntity.name,
+                KEY_PARENT_ENTITY_VILLAGE_ID to tolaEntity.villageId.toString()
+            )
         }
 
         EventName.ADD_DIDI -> {
             val didiEntity = (eventItem as DidiEntity)
-            mapOf(KEY_PARENT_ENTITY_TOLA_NAME to didiEntity.cohortName, KEY_PARENT_ENTITY_VILLAGE_ID to didiEntity.villageId.toString())
+            mapOf(
+                KEY_PARENT_ENTITY_TOLA_NAME to didiEntity.cohortName,
+                KEY_PARENT_ENTITY_VILLAGE_ID to didiEntity.villageId.toString()
+            )
         }
+
         EventName.UPDATE_DIDI -> {
             val didiEntity = (eventItem as DidiEntity)
-            mapOf(KEY_PARENT_ENTITY_DIDI_ID to didiEntity.id.toString(), KEY_PARENT_ENTITY_VILLAGE_ID to didiEntity.villageId.toString())
+            mapOf(
+                KEY_PARENT_ENTITY_DIDI_ID to didiEntity.id.toString(),
+                KEY_PARENT_ENTITY_VILLAGE_ID to didiEntity.villageId.toString()
+            )
         }
-        EventName.DELETE_DIDI, EventName.SAVE_WEALTH_RANKING, EventName.SAVE_PAT_SCORE, EventName.SAVE_PAT_ANSWERS, EventName.SAVE_VO_ENDORSEMENT -> {
+
+        EventName.DELETE_DIDI, EventName.SAVE_WEALTH_RANKING, EventName.NOT_AVAILBLE_PAT_SCORE, EventName.REJECTED_PAT_SCORE, EventName.INPROGRESS_PAT_SCORE, EventName.COMPLETED_PAT_SCORE, EventName.SAVE_PAT_ANSWERS, EventName.SAVE_VO_ENDORSEMENT -> {
             val didiEntity = (eventItem as DidiEntity)
             mapOf(
                 KEY_PARENT_ENTITY_DIDI_NAME to didiEntity.name,
@@ -1305,6 +1322,7 @@ fun <T> getParentEntityMapForEvent(eventItem: T, eventName: EventName): Map<Stri
                 KEY_PARENT_ENTITY_TOLA_NAME to didiEntity.cohortName
             )
         }
+
         else -> {
             emptyMap()
         }
@@ -1315,7 +1333,10 @@ private fun getAllAnswersForDidi(didiId: Int, answerDao: AnswerDao): List<Sectio
     return answerDao.getAllNeedToPostQuesForDidi(didiId)
 }
 
-private fun getAllNumericAnswersForDidi(didiId: Int, numericAnswerDao: NumericAnswerDao): List<NumericAnswerEntity> {
+private fun getAllNumericAnswersForDidi(
+    didiId: Int,
+    numericAnswerDao: NumericAnswerDao
+): List<NumericAnswerEntity> {
     return numericAnswerDao.getAllAnswersForDidi(didiId)
 }
 
@@ -1327,10 +1348,19 @@ private fun getSurveyId(questionId: Int, questionListDao: QuestionListDao): Int 
     return 0
 }
 
-suspend fun getPatSummarySaveEventPayload(didiEntity: DidiEntity, answerDao: AnswerDao, numericAnswerDao: NumericAnswerDao, questionListDao: QuestionListDao, prefRepo: PrefRepo): PATSummarySaveRequest {
+suspend fun getPatSummarySaveEventPayload(
+    didiEntity: DidiEntity,
+    answerDao: AnswerDao,
+    numericAnswerDao: NumericAnswerDao,
+    questionListDao: QuestionListDao,
+    prefRepo: PrefRepo
+): PATSummarySaveRequest {
     val sectionAnswerEntityList = getAllAnswersForDidi(didiEntity.id, answerDao)
     val numericAnswerEntityList = getAllNumericAnswersForDidi(didiEntity.id, numericAnswerDao)
-    val answerDetailDTOListItem = AnswerDetailDTOListItem.getAnswerDetailDtoListItem(sectionAnswerEntityList, numericAnswerEntityList)
+    val answerDetailDTOListItem = AnswerDetailDTOListItem.getAnswerDetailDtoListItem(
+        sectionAnswerEntityList,
+        numericAnswerEntityList
+    )
     val patSummarySaveRequest = PATSummarySaveRequest.getPatSummarySaveRequest(
         didiEntity = didiEntity,
         answerDetailDTOList = answerDetailDTOListItem,
@@ -1340,7 +1370,11 @@ suspend fun getPatSummarySaveEventPayload(didiEntity: DidiEntity, answerDao: Ans
             questionListDao
         ),
         villageEntity = prefRepo.getSelectedVillage(),
-        userType = if((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true)) USER_BPC else USER_CRP
+        userType = if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(
+                BPC_USER_TYPE,
+                true
+            )
+        ) USER_BPC else USER_CRP
     )
 
     return patSummarySaveRequest
@@ -1362,9 +1396,25 @@ suspend fun getPatScoreSaveEvent(
         tolaServerId = tolaServerId
 
 
-
     )
     return patScoreSaveRequest
+}
+
+fun getPatScoreEventName(didi: DidiEntity, isBpcUserType: Boolean): EventName {
+    val result: EventName =
+        if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
+            EventName.NOT_AVAILBLE_PAT_SCORE
+        } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
+            EventName.INPROGRESS_PAT_SCORE
+        } else {
+            if (didi.forVoEndorsement == 0 || didi.patExclusionStatus != ExclusionType.NO_EXCLUSION.ordinal) EventName.REJECTED_PAT_SCORE else {
+                if (isBpcUserType)
+                    EventName.COMPLETED_PAT_SCORE
+                else
+                    EventName.COMPLETED_PAT_SCORE
+            }
+        }
+    return result
 }
 
 

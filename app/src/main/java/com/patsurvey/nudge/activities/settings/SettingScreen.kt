@@ -2,8 +2,6 @@ package com.patsurvey.nudge.activities.settings
 
 import android.content.Context
 import android.content.Context.BATTERY_SERVICE
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.BatteryManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -49,7 +47,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
@@ -62,7 +59,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -80,9 +76,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.nudge.core.enums.NetworkSpeed
 import com.patsurvey.nudge.BuildConfig
-import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.MainTitle
@@ -117,10 +111,8 @@ import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive
-import com.patsurvey.nudge.utils.ConnectionMonitor
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
-import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.SYNC_FAILED
@@ -128,8 +120,6 @@ import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
 import com.patsurvey.nudge.utils.showCustomDialog
 import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.showToast
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -152,27 +142,6 @@ fun SettingScreen(
 
     val extraNetworkCheck = remember {
         mutableStateOf(true)
-    }
-
-    var networkSpeed :NetworkSpeed =NetworkSpeed.UNKNOWN
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    DisposableEffect(key1 = context) {
-        val connectionLiveData = ConnectionMonitor(context)
-        connectionLiveData.observe(lifecycleOwner) { isNetworkAvailable ->
-
-            NudgeLogger.d("SettingScreen",
-                "DisposableEffect: connectionLiveData.observe isNetworkAvailable -> isNetworkAvailable.isOnline = ${isNetworkAvailable.isOnline}, isNetworkAvailable.connectionSpeed = ${isNetworkAvailable.connectionSpeed}, isNetworkAvailable.speedType = ${isNetworkAvailable.speedType}")
-            extraNetworkCheck.value = isNetworkAvailable.isOnline
-                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR|| isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN)
-            NudgeCore.updateIsOnline(isNetworkAvailable.isOnline
-                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN))
-
-            networkSpeed = isNetworkAvailable.speedType
-        }
-        onDispose {
-            connectionLiveData.removeObservers(lifecycleOwner)
-        }
     }
 
     val snackState = rememberSnackBarState()
@@ -234,34 +203,6 @@ fun SettingScreen(
         viewModel.isFormAAvailableForVillage(context = context, villageId = villageId)
         viewModel.isFormBAvailableForVillage(context = context, villageId = villageId)
         viewModel.isFormCAvailableForVillage(context = context, villageId = villageId)
-        launch(Dispatchers.IO) {
-            if (MyApplication.getValidNetworksList().isNotEmpty()) {
-                val localConnectionMonitor =
-                    context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                MyApplication.getValidNetworksList().forEach {
-                    val hasInternet =
-                        localConnectionMonitor.getNetworkCapabilities(it)?.hasCapability(
-                            NetworkCapabilities.NET_CAPABILITY_INTERNET
-                        )
-                    if (hasInternet == true) {
-                        if (!ConnectionMonitor.DoesNetworkHaveInternet.execute(it.socketFactory)) {
-                            extraNetworkCheck.value = false
-                            (context as MainActivity).isOnline.value = false
-                        } else {
-                            extraNetworkCheck.value = true
-                            (context as MainActivity).isOnline.value = true
-                            return@forEach
-                        }
-                    } else {
-                        extraNetworkCheck.value = false
-                        (context as MainActivity).isOnline.value = false
-                    }
-                }
-            } else {
-                extraNetworkCheck.value = false
-                (context as MainActivity).isOnline.value = false
-            }
-        }
     }
 
     val formList = mutableListOf<String>()
@@ -307,40 +248,40 @@ fun SettingScreen(
         mutableStateOf(false)
     }
 
-    LaunchedEffect(key1 = Unit) {
-        if (!viewModel.prefRepo.isUserBPC()) {
-            viewModel.isFirstStepNeedToBeSync(stepOneStatus)
-            viewModel.isSecondStepNeedToBeSync(stepTwoStatus)
-            viewModel.isThirdStepNeedToBeSync(stepThreeStatus)
-            viewModel.isFourthStepNeedToBeSync(stepFourStatus)
-            viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
-            if (stepOneStatus.value == 0
-                || stepTwoStatus.value == 0
-                || stepThreeStatus.value == 0
-                || stepFourStatus.value == 0
-                || stepFiveStatus.value == 0
-            )
-                isDataNeedToBeSynced.value = 1
-            else if ((stepOneStatus.value == 3 || stepOneStatus.value == 2)
-                && (stepTwoStatus.value == 3 || stepTwoStatus.value == 2)
-                && (stepThreeStatus.value == 3 || stepThreeStatus.value == 2)
-                && (stepFourStatus.value == 3 || stepFourStatus.value == 2)
-                && (stepFiveStatus.value == 3 || stepFiveStatus.value == 2)
-            )
-                isDataNeedToBeSynced.value = 2
-            else
-                isDataNeedToBeSynced.value = 0
-            viewModel.isDataNeedToBeSynced(
-                stepOneStatus,
-                stepTwoStatus,
-                stepThreeStatus,
-                stepFourStatus,
-                stepFiveStatus
-            )
-        } else {
-            viewModel.isBPCDataNeedToBeSynced(isBPCDataNeedToBeSynced)
-        }
-    }
+//    LaunchedEffect(key1 = Unit) {
+//        if (!viewModel.prefRepo.isUserBPC()) {
+//            viewModel.isFirstStepNeedToBeSync(stepOneStatus)
+//            viewModel.isSecondStepNeedToBeSync(stepTwoStatus)
+//            viewModel.isThirdStepNeedToBeSync(stepThreeStatus)
+//            viewModel.isFourthStepNeedToBeSync(stepFourStatus)
+//            viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
+//            if (stepOneStatus.value == 0
+//                || stepTwoStatus.value == 0
+//                || stepThreeStatus.value == 0
+//                || stepFourStatus.value == 0
+//                || stepFiveStatus.value == 0
+//            )
+//                isDataNeedToBeSynced.value = 1
+//            else if ((stepOneStatus.value == 3 || stepOneStatus.value == 2)
+//                && (stepTwoStatus.value == 3 || stepTwoStatus.value == 2)
+//                && (stepThreeStatus.value == 3 || stepThreeStatus.value == 2)
+//                && (stepFourStatus.value == 3 || stepFourStatus.value == 2)
+//                && (stepFiveStatus.value == 3 || stepFiveStatus.value == 2)
+//            )
+//                isDataNeedToBeSynced.value = 2
+//            else
+//                isDataNeedToBeSynced.value = 0
+//            viewModel.isDataNeedToBeSynced(
+//                stepOneStatus,
+//                stepTwoStatus,
+//                stepThreeStatus,
+//                stepFourStatus,
+//                stepFiveStatus
+//            )
+//        } else {
+//            viewModel.isBPCDataNeedToBeSynced(isBPCDataNeedToBeSynced)
+//        }
+//    }
 
     BackHandler() {
         if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
@@ -459,7 +400,6 @@ fun SettingScreen(
                                 }
 
                                 7 -> {
-                                    //viewModel.showExportLoader.value=true
                                     viewModel.compressEventData(context.getString(R.string.share_export_file))
                                 }
 
@@ -716,9 +656,16 @@ fun SettingScreen(
     if (changeGraph.value) {
         if (isChangeGraphCalled.value) {
             if (viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal) {
+                viewModel.clearSettingOpenFrom()
                 navController.navigate(AuthScreen.LOGIN.route)
                 isChangeGraphCalled.value = false
-            } else navController.navigate(Graph.LOGOUT_GRAPH)
+            } else {
+                if (navController.graph.route == Graph.ROOT) {
+                    navController.navigate(AuthScreen.LOGIN.route)
+                } else {
+                    navController.navigate(Graph.LOGOUT_GRAPH)
+                }
+            }
         }
 
         changeGraph.value = false
@@ -733,7 +680,7 @@ private fun logout(
 ) {
     NudgeLogger.e("SettingScreen", "logout called")
     if (!logout.value) {
-        viewModel.clearLocalDB(context, logout)
+        viewModel.clearAccessToken()
         viewModel.onLogoutError.value = false
     }
 }

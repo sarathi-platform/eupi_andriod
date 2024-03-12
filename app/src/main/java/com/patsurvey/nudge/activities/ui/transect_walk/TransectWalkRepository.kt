@@ -3,11 +3,6 @@ package com.patsurvey.nudge.activities.ui.transect_walk
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.nudge.core.EventSyncStatus
-import com.nudge.core.KEY_PARENT_ENTITY_ADDRESS
-import com.nudge.core.KEY_PARENT_ENTITY_DADA_NAME
-import com.nudge.core.KEY_PARENT_ENTITY_DIDI_NAME
-import com.nudge.core.KEY_PARENT_ENTITY_TOLA_NAME
-import com.nudge.core.KEY_PARENT_ENTITY_VILLAGE_ID
 import com.nudge.core.SELECTION_MISSION
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
@@ -94,7 +89,11 @@ class TransectWalkRepository @Inject constructor(
         this.tolaDao.insert(tola)
     }
 
-    override suspend fun <T> createEvent(eventItem: T, eventName: EventName, eventType: EventType): Events? {
+    override suspend fun <T> createEvent(
+        eventItem: T,
+        eventName: EventName,
+        eventType: EventType
+    ): Events? {
         if (eventType != EventType.STATEFUL)
             return super.createEvent(eventItem, eventName, eventType)
 
@@ -104,7 +103,8 @@ class TransectWalkRepository @Inject constructor(
         when (eventName) {
             EventName.ADD_TOLA -> {
 
-                val requestPayload = AddCohortRequest.getRequestObjectForTola(eventItem as TolaEntity).json()
+                val requestPayload =
+                    AddCohortRequest.getRequestObjectForTola(eventItem as TolaEntity).json()
                 val addTolaEvent = Events(
                     name = eventName.name,
                     type = eventName.topicName,
@@ -125,7 +125,7 @@ class TransectWalkRepository @Inject constructor(
                 return addTolaEvent
             }
 
-            EventName.UPDATE_TOLA ->  {
+            EventName.UPDATE_TOLA -> {
                 val requestPayload =
                     AddCohortRequest.getRequestObjectForTola(eventItem as TolaEntity).json()
                 var updateTolaEvent = Events(
@@ -154,10 +154,12 @@ class TransectWalkRepository @Inject constructor(
                 )
                 return updateTolaEvent
             }
+
             EventName.DELETE_TOLA -> {
 
-                val requestPayload = DeleteTolaRequest.getRequestObjectForDeleteTola(eventItem as TolaEntity).json()
-                val deleteTolaEvent = Events(
+                val requestPayload =
+                    DeleteTolaRequest.getRequestObjectForDeleteTola(eventItem as TolaEntity).json()
+                var deleteTolaEvent = Events(
                     name = eventName.name,
                     type = eventName.topicName,
                     createdBy = prefRepo.getUserId(),
@@ -175,6 +177,12 @@ class TransectWalkRepository @Inject constructor(
                     ).json(),
                     consumer_status = BLANK_STRING,
                     result = null
+                )
+                val dependsOn = createEventDependency(eventItem, eventName, deleteTolaEvent)
+                val metadata = deleteTolaEvent.metadata?.getMetaDataDtoFromString()
+                val updatedMetaData = metadata?.copy(depends_on = dependsOn.getDependentEventsId())
+                deleteTolaEvent = deleteTolaEvent.copy(
+                    metadata = updatedMetaData?.json()
                 )
 
                 return deleteTolaEvent
@@ -217,6 +225,7 @@ class TransectWalkRepository @Inject constructor(
 
                 return deleteDidiRequest
             }
+
             else -> {
                 return null
             }
@@ -244,6 +253,7 @@ class TransectWalkRepository @Inject constructor(
                         it.payloadLocalId == dependentEvent.payloadLocalId
                     }
                 }
+
                 EventName.UPDATE_DIDI -> {
                     filteredList = eventList.filter {
                         it.payloadLocalId == dependentEvent.payloadLocalId
@@ -252,38 +262,18 @@ class TransectWalkRepository @Inject constructor(
 
                 EventName.DELETE_TOLA -> {
                     filteredList = eventList.filter {
-
-                        val eventPayload = Gson().fromJson(
-                            it.request_payload,
-                            AddCohortRequest::class.java
-                        )
-                        dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_TOLA_NAME)
-                            ?.equals(eventPayload.id.toString(), true)!!
-                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_VILLAGE_ID)
-                            ?.equals(eventPayload.villageId.toString(), true)!!
+                        it.payloadLocalId == dependentEvent.payloadLocalId
                     }
                 }
+
                 EventName.DELETE_DIDI -> {
                     filteredList = eventList.filter {
 
-                        val eventPayload = Gson().fromJson(
-                            it.request_payload,
-                            AddDidiRequest::class.java
-                        )
-                        dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_DIDI_NAME)?.equals(eventPayload?.name, true)!!
-                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_DADA_NAME)
-                            ?.equals(eventPayload?.guardianName, true)!!
-                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_ADDRESS).equals(eventPayload?.address, true)
-                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_TOLA_NAME)
-                            ?.equals(eventPayload?.cohortName, true)!!
+                        it.payloadLocalId == dependentEvent.payloadLocalId
+
                     }
                 }
+
                 else -> {
                     filteredList = emptyList()
                 }
@@ -471,8 +461,9 @@ class TransectWalkRepository @Inject constructor(
     }
 
     fun updateTolaName(id: Int, newName: String) {
-        this.didiDao.updateTolaName(id,newName)
-        this.tolaDao.updateTolaName(id, newName)    }
+        this.didiDao.updateTolaName(id, newName)
+        this.tolaDao.updateTolaName(id, newName)
+    }
 
     fun fetchVillageDetailsForLanguage(villageId: Int, languageId: Int): VillageEntity {
         return this.villageListDao.fetchVillageDetailsForLanguage(villageId, languageId)

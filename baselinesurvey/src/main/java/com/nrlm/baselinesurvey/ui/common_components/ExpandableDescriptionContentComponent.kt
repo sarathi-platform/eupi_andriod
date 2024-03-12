@@ -2,52 +2,37 @@ package com.nrlm.baselinesurvey.ui.common_components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.database.entity.QuestionEntity
+import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.ui.description_component.presentation.DescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.descriptionBoxBackgroundLightBlue
-import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
 import com.nrlm.baselinesurvey.ui.theme.lightGray2
-import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
-import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
-import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
-import com.patsurvey.nudge.customviews.htmltext.HtmlText
 
 @Composable
 fun ExpandableDescriptionContentComponent(
     questionDetailExpanded: (index: Int) -> Unit,
     index: Int,
-    question: QuestionEntity?,
+    contents: List<ContentEntity?>?,
+    subTitle: String? = BLANK_STRING,
     imageClickListener: (imageTypeDescriptionContent: String) -> Unit,
     videoLinkClicked: (videoTypeDescriptionContent: String) -> Unit,
 ) {
@@ -57,7 +42,17 @@ fun ExpandableDescriptionContentComponent(
 
     //TODO Modify code to handle contentList.
     val descriptionContentState = remember {
-        mutableStateOf(DescriptionContentState(textTypeDescriptionContent = question?.questionSummary ?: BLANK_STRING))
+        mutableStateOf(
+            DescriptionContentState(
+                textTypeDescriptionContent = getContentData(contents, "text")?.contentValue
+                    ?: BLANK_STRING,
+                imageTypeDescriptionContent = getContentData(contents, "image")?.contentValue
+                    ?: BLANK_STRING,
+                videoTypeDescriptionContent = getContentData(contents, "video")?.contentValue
+                    ?: BLANK_STRING,
+                subTextTypeDescriptionContent = subTitle ?: BLANK_STRING
+            )
+        )
     }
 
     Box(
@@ -106,4 +101,18 @@ fun ExpandableDescriptionContentComponent(
             }
         }
     }
+}
+
+fun getContentData(
+    contents: List<ContentEntity?>?,
+    contentType: String
+): ContentEntity? {
+    contents?.let { contentsData ->
+        for (content in contentsData) {
+            if (content?.contentType.equals(contentType, true)) {
+                return content!!
+            }
+        }
+    }
+    return null
 }

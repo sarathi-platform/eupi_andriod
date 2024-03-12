@@ -55,4 +55,4 @@ data class QuestionList (
     @Expose
     val conditional: Boolean = false,
 
-)
+    )

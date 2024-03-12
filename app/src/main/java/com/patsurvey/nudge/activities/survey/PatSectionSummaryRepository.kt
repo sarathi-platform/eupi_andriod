@@ -149,10 +149,16 @@ class PatSectionSummaryRepository @Inject constructor(
                     answerDao = answerDao,
                     numericAnswerDao = numericAnswerDao,
                     questionListDao = questionListDao,
-                    prefRepo= prefRepo
+                    prefRepo = prefRepo
                 )
 
-                var savePatSummeryEvent = getPatSaveAnswersEvent(eventItem = eventItem, eventName = eventName, eventType = eventType, patSummarySaveRequest = requestPayload, prefRepo = prefRepo)
+                var savePatSummeryEvent = getPatSaveAnswersEvent(
+                    eventItem = eventItem,
+                    eventName = eventName,
+                    eventType = eventType,
+                    patSummarySaveRequest = requestPayload,
+                    prefRepo = prefRepo
+                )
 
                 val dependsOn = createEventDependency(eventItem, eventName, savePatSummeryEvent)
                 val metadata = savePatSummeryEvent.metadata?.getMetaDataDtoFromString()
@@ -163,7 +169,8 @@ class PatSectionSummaryRepository @Inject constructor(
 
                 return savePatSummeryEvent
             }
-            EventName.SAVE_PAT_SCORE -> {
+
+            EventName.REJECTED_PAT_SCORE, EventName.INPROGRESS_PAT_SCORE, EventName.COMPLETED_PAT_SCORE, EventName.NOT_AVAILBLE_PAT_SCORE -> {
                 val didiEntity = (eventItem as DidiEntity)
                 val selectedTolaEntity = tolaDao.fetchSingleTolaFromServerId(didiEntity.cohortId)
 
@@ -176,7 +183,13 @@ class PatSectionSummaryRepository @Inject constructor(
                     tolaServerId = selectedTolaEntity?.serverId ?: 0
                 )
 
-                var savePatScoreEvent = getPatSaveScoreEvent(eventItem = eventItem, eventName = eventName, eventType = eventType, patScoreSaveEvent = requestPayload, prefRepo = prefRepo)
+                var savePatScoreEvent = getPatSaveScoreEvent(
+                    eventItem = eventItem,
+                    eventName = eventName,
+                    eventType = eventType,
+                    patScoreSaveEvent = requestPayload,
+                    prefRepo = prefRepo
+                )
 
                 val dependsOn = createEventDependency(eventItem, eventName, savePatScoreEvent)
                 val metadata = savePatScoreEvent.metadata?.getMetaDataDtoFromString()
@@ -187,6 +200,7 @@ class PatSectionSummaryRepository @Inject constructor(
 
                 return savePatScoreEvent
             }
+
             else -> {
                 return super.createEvent(eventItem, eventName, eventType)
             }
@@ -205,13 +219,12 @@ class PatSectionSummaryRepository @Inject constructor(
         for (dependsOnEvent in dependentEventsName) {
             val eventList = eventsDao.getAllEventsForEventName(dependsOnEvent.name)
             when (eventName) {
-                EventName.SAVE_PAT_ANSWERS, EventName.SAVE_PAT_SCORE -> {
+                EventName.SAVE_PAT_ANSWERS -> {
                     filteredList = eventList.filter {
                         var editRequest = Gson().fromJson(
                             it.request_payload,
                             EditDidiWealthRankingRequest::class.java
                         )
-
                         dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
                             ?.get(KEY_PARENT_ENTITY_DIDI_NAME)?.equals(editRequest.name, true)!!
                                 && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
@@ -223,7 +236,16 @@ class PatSectionSummaryRepository @Inject constructor(
                             ?.get(KEY_PARENT_ENTITY_TOLA_NAME)
                             ?.equals(editRequest.cohortName, true)!!
                     }
+
                 }
+
+                EventName.REJECTED_PAT_SCORE, EventName.INPROGRESS_PAT_SCORE, EventName.COMPLETED_PAT_SCORE, EventName.NOT_AVAILBLE_PAT_SCORE -> {
+                    filteredList = eventList.filter {
+                        it.payloadLocalId == dependentEvent.payloadLocalId
+
+                    }
+                }
+
 
                 else -> {
                     filteredList = emptyList()

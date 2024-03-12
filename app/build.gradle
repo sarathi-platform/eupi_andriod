@@ -9,8 +9,8 @@ plugins {
     id 'com.google.firebase.crashlytics'
 
 }
-def version = "0.1.61"
-def prodVersion = "1.1.2"
+def version = "0.1.69"
+def prodVersion = "1.1.7"
 android {
     compileSdk 34
 
@@ -18,7 +18,7 @@ android {
         applicationId "com.nrlm.sarathi"
         minSdk 23
         targetSdk 33
-        versionCode 6
+        versionCode 7
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -284,10 +284,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage:20.3.0'
     implementation (project(":syncManager"))
     implementation (project(":core"))
-    implementation (project(":internetSpeedChecker"))
-    implementation (project(":CommunicationModule"))
+    implementation(project(":internetSpeedChecker"))
+    implementation(project(":CommunicationModule"))
     implementation 'androidx.work:work-runtime-ktx:2.7.1'
-    kapt ("androidx.hilt:hilt-compiler:1.0.0")
+    kapt("androidx.hilt:hilt-compiler:1.0.0")
 
     //FCM
     implementation 'com.google.firebase:firebase-messaging:23.4.0'

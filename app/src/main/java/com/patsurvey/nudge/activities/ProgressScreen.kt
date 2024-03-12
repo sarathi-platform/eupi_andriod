@@ -101,7 +101,6 @@ import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TextButtonWithIcon
 import com.patsurvey.nudge.utils.findStepNameForSelectedLanguage
 import com.patsurvey.nudge.utils.setKeyboardToPan
-import com.patsurvey.nudge.utils.showCustomDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -185,7 +184,7 @@ fun ProgressScreen(
                     )
                     LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         NudgeLogger.d("ProgressScreen","BottomSheet : $villages :: size ${villages.size}")
-                        itemsIndexed(villages) { index, village ->
+                        itemsIndexed(villages.distinctBy { it.id }) { index, village ->
                             VillageAndVoBoxForBottomSheet(
                                 tolaName = village.name,
                                 voName = village.federationName,
@@ -202,7 +201,7 @@ fun ProgressScreen(
                                 viewModel.getStepsList(village.id)
                                 viewModel.updateSelectedVillage(village)
                                 viewModel.findInProgressStep(villageId = village.id)
-                                viewModel.selectedText.value = viewModel.villageList.value[it].name
+                                viewModel.selectedText.value = village.name
                                 scope.launch {
                                     scaffoldState.hide()
                                     delay(1000)

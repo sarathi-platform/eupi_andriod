@@ -11,7 +11,7 @@ interface IFileCompressor {
     suspend fun compressBackupImages(
         context: Context,
         mobileNo: String,
-        filePath: String = Environment.DIRECTORY_PICTURES + SARATHI_DIRECTORY_NAME
+        filePath: String = Environment.DIRECTORY_PICTURES + SARATHI_DIRECTORY_NAME + "/" + mobileNo
     ): Uri?
 
     fun getCompressionType(): String
