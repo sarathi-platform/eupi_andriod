@@ -30,7 +30,7 @@ data class Sections(
 
     @SerializedName("contents")
     @Expose
-    val contentList: List<ContentList>,
+    val contentList: List<ContentList> = listOf(),
 
     @SerializedName("questions")
     @Expose

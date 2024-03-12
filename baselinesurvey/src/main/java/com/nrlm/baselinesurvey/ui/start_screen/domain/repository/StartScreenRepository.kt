@@ -12,5 +12,6 @@ interface StartScreenRepository {
     suspend fun saveImageLocalPathForSurveyee(surveyeeEntity: SurveyeeEntity, finalPathWithCoordinates: String)
 
     suspend fun getDidiInfoObjectLive(didiId: Int): LiveData<List<DidiIntoEntity>>
+    fun getStateId(): Int
 
 }

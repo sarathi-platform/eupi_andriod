@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case
 
 import com.nrlm.baselinesurvey.SUCCESS_CODE
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
+import com.nrlm.baselinesurvey.model.mappers.ContentEntityMapper
 import com.nrlm.baselinesurvey.model.request.ContentMangerRequest
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepository
 import com.nrlm.baselinesurvey.utils.BaselineLogger
@@ -25,7 +26,7 @@ class FetchContentDataFromNetworkUseCase(private val repository: DataLoadingScre
                     repository.deleteContentFromDB()
                     for (content in contentResponse.data) {
                         if (content != null) {
-                            contentEntities.add(ContentEntity.getContentEntity(content))
+                            contentEntities.add(ContentEntityMapper.getContentEntity(content))
                         }
                     }
                     repository.saveContentsToDB(contentEntities)
