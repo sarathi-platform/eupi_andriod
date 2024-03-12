@@ -4,6 +4,7 @@ package com.patsurvey.nudge.activities.ui.progress
 import android.app.DownloadManager
 import android.content.Context
 import android.os.Environment
+import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
@@ -31,12 +32,14 @@ import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
+import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.PoorDidiListDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.TrainingVideoDao
+import com.patsurvey.nudge.database.dao.UserDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.download.FileType
@@ -132,7 +135,10 @@ class VillageSelectionViewModel @Inject constructor(
     val answerDao: AnswerDao,
     val bpcSummaryDao: BpcSummaryDao,
     val poorDidiListDao: PoorDidiListDao,
+    val userDao: UserDao,
     val downloader: AndroidDownloader,
+    val lastSelectedTolaDao: LastSelectedTolaDao,
+
     val villageSelectionRepository: VillageSelectionRepository
 
 ) : BaseViewModel() {
@@ -142,6 +148,7 @@ class VillageSelectionViewModel @Inject constructor(
     val villageSelected = mutableStateOf(0)
     val stateId = mutableStateOf(1)
     val showLoader = mutableStateOf(false)
+    val showUserChangedDialog = mutableStateOf(false)
 
     val multiVillageRequest = mutableStateOf("2")
     private var checkStatusCount = 0
@@ -150,8 +157,47 @@ class VillageSelectionViewModel @Inject constructor(
     val filterVillageList: StateFlow<List<VillageEntity>> get() = _filterVillageList
 
 
-    fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
+    fun compareWithPreviousUser(context: Context) {
+        if (TextUtils.isEmpty(prefRepo.getPreviousUserMobile()) || prefRepo.getPreviousUserMobile()
+                .equals(prefRepo.getMobileNumber())
+        ) {
+            init(context)
+        } else {
+            showUserChangedDialog.value = true
+        }
+    }
 
+    fun clearLocalDB(context: Context) {
+        showLoader.value = true
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            casteListDao.deleteCasteTable()
+            tolaDao.deleteAllTola()
+            didiDao.deleteAllDidi()
+            lastSelectedTolaDao.deleteAllLastSelectedTola()
+            numericAnswerDao.deleteAllNumericAnswers()
+            answerDao.deleteAllAnswers()
+            questionListDao.deleteQuestionTable()
+            stepsListDao.deleteAllStepsFromDB()
+            userDao.deleteAllUserDetail()
+            villageListDao.deleteAllVilleges()
+            bpcSummaryDao.deleteAllSummary()
+            poorDidiListDao.deleteAllDidis()
+            clearSharedPreference()
+            init(context)
+        }
+    }
+
+    private fun clearSharedPreference() {
+        val languageId = prefRepo.getAppLanguageId()
+        val language = prefRepo.getAppLanguage()
+        val accessToken = prefRepo.getAccessToken()
+        val mobileNo = prefRepo.getMobileNumber()
+        prefRepo.clearSharedPreference()
+        prefRepo.saveAppLanguage(language)
+        prefRepo.saveAppLanguageId(languageId)
+        prefRepo.saveAccessToken(accessToken ?: "")
+        prefRepo.saveMobileNumber(mobileNo)
+    }
     fun init(context: Context) {
         showLoader.value = true
         fetchUserDetails { success ->
@@ -1499,7 +1545,9 @@ class VillageSelectionViewModel @Inject constructor(
                 val localLanguageList = languageListDao.getAllLanguages()
                val villageReq= createMultiLanguageVillageRequest(localLanguageList)
                 if (!localVillageList.isNullOrEmpty()) {
-                    _villagList.value = localVillageList
+                    _villagList.value = localVillageList.distinctBy {
+                        it.id
+                    }
                    _filterVillageList.value = villageList.value
                     setVoEndorsementCompleteForVillages()
                     apiSuccess(true)
@@ -1692,7 +1740,17 @@ class VillageSelectionViewModel @Inject constructor(
     fun refreshBpcData(context: Context) {
         showLoader.value = true
         villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) {
-            showLoader.value = false
+            _filterVillageList.value = it.villageList.distinctBy {
+                it.id
+            }
+            _villagList.value = it.villageList.distinctBy {
+                it.id
+
+            }
+            villageSelectionRepository.refreshStepListData(it.villageList) {
+                showLoader.value = false
+
+            }
 
         }
     }
@@ -1700,8 +1758,18 @@ class VillageSelectionViewModel @Inject constructor(
     fun refreshCrpData(context: Context) {
         showLoader.value = true
         villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) {
-                showLoader.value = false
+            _filterVillageList.value = it.villageList.distinctBy {
+                it.id
             }
+            _villagList.value = it.villageList.distinctBy {
+                it.id
+
+            }
+            villageSelectionRepository.refreshStepListData(it.villageList) {
+                showLoader.value = false
+
+            }
+        }
 
     }
 
@@ -1718,6 +1786,13 @@ class VillageSelectionViewModel @Inject constructor(
         } else {
             villageList.value
         }
+    }
+
+    fun logout() {
+        prefRepo.saveAccessToken("")
+        prefRepo.saveMobileNumber("")
+        prefRepo.saveSettingOpenFrom(0)
+
     }
 
 }

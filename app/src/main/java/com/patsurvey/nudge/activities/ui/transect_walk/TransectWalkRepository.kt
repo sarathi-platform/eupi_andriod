@@ -3,11 +3,6 @@ package com.patsurvey.nudge.activities.ui.transect_walk
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.nudge.core.EventSyncStatus
-import com.nudge.core.KEY_PARENT_ENTITY_ADDRESS
-import com.nudge.core.KEY_PARENT_ENTITY_DADA_NAME
-import com.nudge.core.KEY_PARENT_ENTITY_DIDI_NAME
-import com.nudge.core.KEY_PARENT_ENTITY_TOLA_NAME
-import com.nudge.core.KEY_PARENT_ENTITY_VILLAGE_ID
 import com.nudge.core.SELECTION_MISSION
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
@@ -164,7 +159,7 @@ class TransectWalkRepository @Inject constructor(
 
                 val requestPayload =
                     DeleteTolaRequest.getRequestObjectForDeleteTola(eventItem as TolaEntity).json()
-                val deleteTolaEvent = Events(
+                var deleteTolaEvent = Events(
                     name = eventName.name,
                     type = eventName.topicName,
                     createdBy = prefRepo.getUserId(),
@@ -182,6 +177,12 @@ class TransectWalkRepository @Inject constructor(
                     ).json(),
                     consumer_status = BLANK_STRING,
                     result = null
+                )
+                val dependsOn = createEventDependency(eventItem, eventName, deleteTolaEvent)
+                val metadata = deleteTolaEvent.metadata?.getMetaDataDtoFromString()
+                val updatedMetaData = metadata?.copy(depends_on = dependsOn.getDependentEventsId())
+                deleteTolaEvent = deleteTolaEvent.copy(
+                    metadata = updatedMetaData?.json()
                 )
 
                 return deleteTolaEvent
@@ -261,37 +262,15 @@ class TransectWalkRepository @Inject constructor(
 
                 EventName.DELETE_TOLA -> {
                     filteredList = eventList.filter {
-
-                        val eventPayload = Gson().fromJson(
-                            it.request_payload,
-                            AddCohortRequest::class.java
-                        )
-                        dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_TOLA_NAME)
-                            ?.equals(eventPayload.id.toString(), true)!!
-                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_VILLAGE_ID)
-                            ?.equals(eventPayload.villageId.toString(), true)!!
+                        it.payloadLocalId == dependentEvent.payloadLocalId
                     }
                 }
 
                 EventName.DELETE_DIDI -> {
                     filteredList = eventList.filter {
 
-                        val eventPayload = Gson().fromJson(
-                            it.request_payload,
-                            AddDidiRequest::class.java
-                        )
-                        dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_DIDI_NAME)?.equals(eventPayload?.name, true)!!
-                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_DADA_NAME)
-                            ?.equals(eventPayload?.guardianName, true)!!
-                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_ADDRESS).equals(eventPayload?.address, true)
-                                && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
-                            ?.get(KEY_PARENT_ENTITY_TOLA_NAME)
-                            ?.equals(eventPayload?.cohortName, true)!!
+                        it.payloadLocalId == dependentEvent.payloadLocalId
+
                     }
                 }
 
