@@ -14,6 +14,7 @@ import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
 import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
 import com.nrlm.baselinesurvey.PREF_STATE_ID
+import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
@@ -41,6 +42,7 @@ import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.Sections
+import com.nrlm.baselinesurvey.model.mappers.DidiSectionStatusEntityMapper.getDidiSectionStatusEntity
 import com.nrlm.baselinesurvey.model.request.ContentMangerRequest
 import com.nrlm.baselinesurvey.model.request.MissionRequest
 import com.nrlm.baselinesurvey.model.request.SectionStatusRequest
@@ -464,8 +466,17 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
 
     override suspend fun getSectionStatus(sectionStatusRequest: SectionStatusRequest) {
         val sectionStatusResponse = apiService.getSectionStatus(sectionStatusRequest)
-
-        didiSectionProgressEntityDao.addDidiSectionProgress(sectionStatusResponse.data)
+        if (sectionStatusResponse.status.equals(
+                SUCCESS,
+                true
+            ) && sectionStatusResponse.data != null
+        ) {
+            didiSectionProgressEntityDao.addDidiSectionProgress(
+                getDidiSectionStatusEntity(
+                    sectionStatusResponse.data
+                )
+            )
+        }
     }
 
 }

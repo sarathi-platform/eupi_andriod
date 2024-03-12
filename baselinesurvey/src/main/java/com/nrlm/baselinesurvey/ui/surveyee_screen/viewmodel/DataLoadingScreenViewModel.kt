@@ -59,6 +59,7 @@ class DataLoadingScreenViewModel @Inject constructor(
 
                     fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
                     fetchSurveyForAllLanguages()
+                fetchDataUseCase.fetchSectionStatusFromNetworkUseCase.invoke()
 
             }
         } catch (ex: Exception) {

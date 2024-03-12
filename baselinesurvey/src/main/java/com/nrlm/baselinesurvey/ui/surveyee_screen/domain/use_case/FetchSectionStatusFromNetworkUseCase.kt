@@ -10,8 +10,7 @@ class FetchSectionStatusFromNetworkUseCase(private val repository: DataLoadingSc
 
         try {
             val sectionStatusRequest = SectionStatusRequest(sectionId = 0, surveyId = 0)
-            val sectionResponse = repository.getSectionStatus(sectionStatusRequest)
-            val sectionStatus = sectionResponse.data
+            repository.getSectionStatus(sectionStatusRequest)
 
         } catch (ex: Exception) {
             BaselineLogger.e("FetchCastesFromNetworkUseCase", "invoke", ex)
