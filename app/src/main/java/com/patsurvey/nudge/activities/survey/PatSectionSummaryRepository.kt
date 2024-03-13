@@ -170,7 +170,7 @@ class PatSectionSummaryRepository @Inject constructor(
                 return savePatSummeryEvent
             }
 
-            EventName.SAVE_PAT_SCORE -> {
+            EventName.REJECTED_PAT_SCORE, EventName.INPROGRESS_PAT_SCORE, EventName.COMPLETED_PAT_SCORE, EventName.NOT_AVAILBLE_PAT_SCORE -> {
                 val didiEntity = (eventItem as DidiEntity)
                 val selectedTolaEntity = tolaDao.fetchSingleTolaFromServerId(didiEntity.cohortId)
 
@@ -219,13 +219,12 @@ class PatSectionSummaryRepository @Inject constructor(
         for (dependsOnEvent in dependentEventsName) {
             val eventList = eventsDao.getAllEventsForEventName(dependsOnEvent.name)
             when (eventName) {
-                EventName.SAVE_PAT_ANSWERS, EventName.SAVE_PAT_SCORE -> {
+                EventName.SAVE_PAT_ANSWERS -> {
                     filteredList = eventList.filter {
                         var editRequest = Gson().fromJson(
                             it.request_payload,
                             EditDidiWealthRankingRequest::class.java
                         )
-
                         dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
                             ?.get(KEY_PARENT_ENTITY_DIDI_NAME)?.equals(editRequest.name, true)!!
                                 && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
@@ -237,7 +236,16 @@ class PatSectionSummaryRepository @Inject constructor(
                             ?.get(KEY_PARENT_ENTITY_TOLA_NAME)
                             ?.equals(editRequest.cohortName, true)!!
                     }
+
                 }
+
+                EventName.REJECTED_PAT_SCORE, EventName.INPROGRESS_PAT_SCORE, EventName.COMPLETED_PAT_SCORE, EventName.NOT_AVAILBLE_PAT_SCORE -> {
+                    filteredList = eventList.filter {
+                        it.payloadLocalId == dependentEvent.payloadLocalId
+
+                    }
+                }
+
 
                 else -> {
                     filteredList = emptyList()

@@ -6,7 +6,6 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.nudge.core.enums.EventName
@@ -50,6 +49,7 @@ import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.getPatScoreEventName
 import com.patsurvey.nudge.utils.getUniqueIdForEntity
 import com.patsurvey.nudge.utils.longToString
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -1395,7 +1395,10 @@ class AddDidiViewModel @Inject constructor(
             )
             addDidiRepository.saveEvent(
                 eventItem = updatedDidiEntity,
-                eventName = EventName.SAVE_PAT_SCORE,
+                eventName = getPatScoreEventName(
+                    updatedDidiEntity,
+                    addDidiRepository.prefRepo.isUserBPC()
+                ),
                 EventType.STATEFUL
             )
             pendingDidiCount.value =
@@ -1753,27 +1756,5 @@ class AddDidiViewModel @Inject constructor(
         }
     }
 
-    override fun addDidiNotAvailableEvent(didiId: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val didiEntity = addDidiRepository.getDidi(didiId)
-            addDidiRepository.saveEvent(
-                eventItem = didiEntity,
-                eventName = EventName.SAVE_PAT_ANSWERS,
-                eventType = EventType.STATEFUL
-            )
-
-        }
-    }
-
-    override fun addNotAvailableDidiPatScoreEventForDidi(didiId: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val didiEntity = addDidiRepository.getDidi(didiId)
-            addDidiRepository.saveEvent(
-                eventItem = didiEntity,
-                eventName = EventName.SAVE_PAT_SCORE,
-                EventType.STATEFUL
-            )
-        }
-    }
 
 }

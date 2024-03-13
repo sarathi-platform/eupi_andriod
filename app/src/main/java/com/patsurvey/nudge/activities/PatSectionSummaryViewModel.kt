@@ -26,6 +26,7 @@ import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import com.patsurvey.nudge.utils.calculateScore
+import com.patsurvey.nudge.utils.getPatScoreEventName
 import com.patsurvey.nudge.utils.toWeightageRatio
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -316,7 +317,7 @@ class PatSectionSummaryViewModel @Inject constructor(
             )
             patSectionRepository.saveEvent(
                 updatedDidiEntity,
-                EventName.SAVE_PAT_SCORE,
+                getPatScoreEventName(updatedDidiEntity, patSectionRepository.prefRepo.isUserBPC()),
                 EventType.STATEFUL
             )
         }

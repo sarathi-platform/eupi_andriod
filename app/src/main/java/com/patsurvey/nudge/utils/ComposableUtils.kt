@@ -693,10 +693,12 @@ fun showCustomDialog(
     message:String,
     positiveButtonTitle : String ?=EMPTY_STRING,
     negativeButtonTitle : String ?=EMPTY_STRING,
+    dismissOnBackPress: Boolean? = true,
     onPositiveButtonClick:()->Unit,
     onNegativeButtonClick:()->Unit){
     Dialog(onDismissRequest = {  }, properties = DialogProperties(
-        dismissOnClickOutside = false
+        dismissOnClickOutside = false,
+        dismissOnBackPress = dismissOnBackPress ?: true
     )) {
         Surface(
             color = Color.Transparent,
@@ -743,7 +745,8 @@ fun showCustomDialog(
 
                                     if(!negativeButtonTitle.isNullOrEmpty()) {
                                         ButtonNegative(
-                                            buttonTitle = stringResource(id = R.string.cancel_tola_text),
+                                            buttonTitle = negativeButtonTitle
+                                                ?: stringResource(id = R.string.cancel_tola_text),
                                             isArrowRequired = false,
                                             modifier = Modifier.weight(1f)
                                         ) {
