@@ -5,6 +5,7 @@ import com.nrlm.baselinesurvey.KEY_HEADER_TYPE
 import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.model.request.ContentMangerRequest
 import com.nrlm.baselinesurvey.model.request.FetchSavedSurveyAnswersRequest
+import com.nrlm.baselinesurvey.model.request.GetSurveyAnswerRequest
 import com.nrlm.baselinesurvey.model.request.LoginRequest
 import com.nrlm.baselinesurvey.model.request.MissionRequest
 import com.nrlm.baselinesurvey.model.request.OtpRequest
@@ -16,13 +17,12 @@ import com.nrlm.baselinesurvey.model.response.ConfigResponseModel
 import com.nrlm.baselinesurvey.model.response.ContentResponse
 import com.nrlm.baselinesurvey.model.response.MissionResponseModel
 import com.nrlm.baselinesurvey.model.response.OtpVerificationModel
+import com.nrlm.baselinesurvey.model.response.QuestionAnswerResponseModel
 import com.nrlm.baselinesurvey.model.response.SavedSurveyAnswersResponse
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.TransactionResponse
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
 import com.nrlm.baselinesurvey.network.CONTENT_MANAGER
-import com.nrlm.baselinesurvey.network.GET_CASTE_LIST
-import com.nrlm.baselinesurvey.network.LOGOUT
 import com.nrlm.baselinesurvey.network.GET_CASTE_LIST
 import com.nrlm.baselinesurvey.network.LOGOUT
 import com.nrlm.baselinesurvey.network.SUBPATH_AUTH_GENERATE_OTP
@@ -33,6 +33,7 @@ import com.nrlm.baselinesurvey.network.SUBPATH_GET_DIDI_LIST
 import com.nrlm.baselinesurvey.network.SUBPATH_GET_MISSION
 import com.nrlm.baselinesurvey.network.SUBPATH_GET_SAVED_SURVEY
 import com.nrlm.baselinesurvey.network.SUBPATH_SAVE_SURVEY_ANSWES
+import com.nrlm.baselinesurvey.network.SUBPATH_SURVEY_ANSWERS
 import com.nrlm.baselinesurvey.network.SUBPATH_USER_VIEW
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -90,4 +91,7 @@ interface ApiService {
 
     @POST(CONTENT_MANAGER)
     suspend fun getAllContent(@Body contentMangerRequest: ContentMangerRequest): ApiResponseModel<List<ContentResponse>>
+
+    @POST(SUBPATH_SURVEY_ANSWERS)
+    suspend fun getSurveyAnswers(@Body surveyAnswerRequest: GetSurveyAnswerRequest): ApiResponseModel<List<QuestionAnswerResponseModel>>
 }
