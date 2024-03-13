@@ -240,11 +240,11 @@ fun WealthRankingScreen(
                     }
                     if (filterSelected) {
                         itemsIndexed(
-                            newFilteredTolaDidiList.keys.toList().reversed()
+                            newFilteredTolaDidiList.keys.toList()
                         ) { index, item ->
                              ShowDidisFromTola(
                                 didiTola = item,
-                                didiList = newFilteredTolaDidiList[item]?.reversed() ?: emptyList(),
+                                 didiList = newFilteredTolaDidiList[item] ?: emptyList(),
                                 viewModel = viewModel,
                                 expandedIds = expandedCardIds,
                                 modifier = Modifier,
