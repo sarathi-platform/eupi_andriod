@@ -24,7 +24,7 @@ enum class SectionStatus {
             }
         }
 
-        fun getSectionStatusFromOrdinal (ordinal: Int): SectionStatus {
+        fun getSectionStatusFromOrdinal(ordinal: Int): SectionStatus {
             return when (ordinal) {
                 0 -> NOT_STARTED
                 1 -> INPROGRESS
@@ -32,5 +32,14 @@ enum class SectionStatus {
                 else -> NOT_STARTED
             }
         }
+    }
+}
+
+fun SectionStatus.toSurveyStatus(): SurveyState {
+    return when (this) {
+        SectionStatus.NOT_STARTED -> SurveyState.NOT_STARTED
+        SectionStatus.INPROGRESS -> SurveyState.INPROGRESS
+        SectionStatus.COMPLETED -> SurveyState.COMPLETED
+        else -> SurveyState.NOT_STARTED
     }
 }

@@ -96,6 +96,7 @@ fun GridTypeComponent(
     }
 
     val selectedIndices = remember { mutableStateOf(mutableSetOf<Int>()) }
+    selectedIndices.value.clear()
     selectedIndices.value.addAll(selectedOptionIndices)
 
     val selectedOptionsItem = remember { mutableSetOf<OptionItemEntity>() }
