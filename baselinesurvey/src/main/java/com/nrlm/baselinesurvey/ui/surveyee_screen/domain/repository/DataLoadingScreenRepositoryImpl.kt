@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.DEFAULT_ID
 import com.nrlm.baselinesurvey.PREF_CASTE_LIST
 import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nrlm.baselinesurvey.PREF_KEY_IDENTITY_NUMBER
@@ -40,7 +41,11 @@ import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.Sections
+import com.nrlm.baselinesurvey.model.mappers.FormQuestionEntityMapper.getFormQuestionEntity
+import com.nrlm.baselinesurvey.model.mappers.InputTypeQuestionAnswerEntityMapper
+import com.nrlm.baselinesurvey.model.mappers.SectionAnswerEntityMapper.getSectionAnswerEntity
 import com.nrlm.baselinesurvey.model.request.ContentMangerRequest
+import com.nrlm.baselinesurvey.model.request.GetSurveyAnswerRequest
 import com.nrlm.baselinesurvey.model.request.MissionRequest
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
@@ -48,6 +53,7 @@ import com.nrlm.baselinesurvey.model.response.BeneficiaryApiResponse
 import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.model.response.ContentResponse
 import com.nrlm.baselinesurvey.model.response.MissionResponseModel
+import com.nrlm.baselinesurvey.model.response.QuestionAnswerResponseModel
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
@@ -87,7 +93,11 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         return apiService.getSurveyFromNetwork(surveyRequestBodyModel)
     }
 
-    override fun saveSurveyToDb(surveyResponseModel: SurveyResponseModel, languageId: Int) {
+    override suspend fun saveSurveyToDb(
+        surveyResponseModel: SurveyResponseModel,
+        languageId: Int,
+        surveyAnswerResponse: List<QuestionAnswerResponseModel>?
+    ) {
         baselineDatabase.runInTransaction {
             surveyEntityDao.deleteSurveyFroLanguage(surveyResponseModel.surveyId, languageId)
             val surveyEntity = SurveyEntity(
@@ -198,6 +208,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     )
                 }
             }
+
+            saveSurveyAnswerToDb(surveyAnswerResponse)
         }
 
     }
@@ -453,6 +465,39 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
 
     override suspend fun getSelectedLanguageId(): String {
         return prefRepo.getAppLanguage() ?: "en"
+    }
+
+    override suspend fun getSurveyAnswers(getSurveyAnswerRequest: GetSurveyAnswerRequest): ApiResponseModel<List<QuestionAnswerResponseModel>> {
+        return apiService.getSurveyAnswers(getSurveyAnswerRequest)
+    }
+
+    private fun saveSurveyAnswerToDb(questionAnswerResponseModels: List<QuestionAnswerResponseModel>?) {
+        questionAnswerResponseModels?.forEach { questionAnswerResponseModel ->
+            val question = questionEntityDao.getQuestionForSurveySectionForLanguage(
+                questionId = questionAnswerResponseModel.question?.questionId ?: DEFAULT_ID,
+                sectionId = questionAnswerResponseModel.sectionId.toInt(),
+                surveyId = questionAnswerResponseModel.surveyId,
+                languageId = questionAnswerResponseModel.languageId
+            )
+            if (questionAnswerResponseModel.question?.questionType == QuestionType.Form.name) {
+                baselineDatabase.formQuestionResponseDao()
+                    .addFormResponse(getFormQuestionEntity(questionAnswerResponseModel, question))
+
+            } else if (questionAnswerResponseModel.question?.questionType == QuestionType.InputNumber.name) {
+                baselineDatabase.inputTypeQuestionAnswerDao().saveInputTypeAnswersForQuestion(
+                    InputTypeQuestionAnswerEntityMapper.getInputTypeQuestionAnswerEntity(
+                        questionAnswerResponseModel,
+                        question
+                    )
+                )
+            } else {
+                val sectionAnswerEntity =
+                    getSectionAnswerEntity(questionAnswerResponseModel, question)
+                baselineDatabase.sectionAnswerEntityDao().insertAnswer(sectionAnswerEntity)
+            }
+
+        }
+
     }
 
     override fun getStateId(): Int {
