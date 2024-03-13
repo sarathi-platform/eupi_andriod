@@ -1,10 +1,9 @@
 package com.nrlm.baselinesurvey.model.datamodel
 
-
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-data class SaveAnswerEventDto(
+data class SaveAnswerEventForFormQuestionDto(
     @SerializedName("dateCreated")
     @Expose
     val dateCreated: Long,
@@ -19,7 +18,7 @@ data class SaveAnswerEventDto(
     val sectionId: Int,
     @SerializedName("question")
     @Expose
-    val question: SaveAnswerEventQuestionItemDto,
+    val question: SaveAnswerEventQuestionItemForFormQuestionDto,
     @SerializedName("subjectId")
     @Expose
     val subjectId: Int,

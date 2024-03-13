@@ -80,6 +80,7 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -249,7 +250,7 @@ fun SectionListScreen(
                         viewModel.onEvent(
                             SectionScreenEvent.UpdateTaskStatus(
                                 didiId,
-                                SurveyState.COMPLETED
+                                SectionStatus.COMPLETED
                             )
                         )
                         BaselineCore.setCurrentActivityName(BLANK_STRING)

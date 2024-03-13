@@ -3,8 +3,8 @@ package com.nrlm.baselinesurvey.ui.section_screen.viewmode
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
+import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
@@ -148,6 +148,16 @@ class SectionListScreenViewModel @Inject constructor(
 
             is EventWriterEvents.UpdateTaskStatusEvent -> {
                 CoroutineScope(Dispatchers.IO).launch {
+                    val activityForSubjectDto =
+                        eventWriterHelperImpl.getActivityFromSubjectId(event.subjectId)
+
+                    eventWriterHelperImpl.markTaskCompleted(
+                        activityForSubjectDto.missionId,
+                        activityForSubjectDto.activityId,
+                        activityForSubjectDto.taskId,
+                        event.status
+                    )
+
                     val updateTaskStatusEvent = eventWriterHelperImpl.createTaskStatusUpdateEvent(
                         subjectId = event.subjectId,
                         sectionStatus = event.status

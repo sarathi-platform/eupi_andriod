@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -87,10 +86,6 @@ fun QuestionScreen(
         delay(300)
         viewModel.updateSaveUpdateState()
         delay(300)
-        Log.d("TAG", "onEvent: QuestionScreen LaunchedEffect -> " +
-                "otalQuestionCount.intValue = ${viewModel.totalQuestionCount.intValue}, answeredQuestionCount: ${viewModel.answeredQuestionCount.size}" +
-                " isSectionCompleted.value = ${viewModel.answeredQuestionCount.size == viewModel.totalQuestionCount.intValue
-                        || viewModel.answeredQuestionCount.size > viewModel.totalQuestionCount.intValue}")
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
     }
 

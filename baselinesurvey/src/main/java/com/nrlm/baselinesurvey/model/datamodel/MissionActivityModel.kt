@@ -15,6 +15,6 @@ data class MissionActivityModel(
     val startDate: String,
     val subject: String,
     val tasks: List<MissionTaskModel>,
-    val language: String,
-    val status: String
+    val language: String?,
+    val status: String?
 )

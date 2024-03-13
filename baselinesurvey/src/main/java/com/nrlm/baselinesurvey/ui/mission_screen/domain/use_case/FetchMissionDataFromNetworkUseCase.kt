@@ -36,7 +36,7 @@ class FetchMissionDataFromNetworkUseCase(
                                             missionId = mission.missionId,
                                             activityId = activity.activityId,
                                             activityName = activity.activityName,
-                                            task = task
+                                            task = task,
                                         )
                                     )
                                 }

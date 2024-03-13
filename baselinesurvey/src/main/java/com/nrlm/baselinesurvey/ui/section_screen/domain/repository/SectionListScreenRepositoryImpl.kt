@@ -201,7 +201,7 @@ class SectionListScreenRepositoryImpl(
         )
     }
 
-    override suspend fun updateTaskStatus(didiId: Int, surveyState: SurveyState) {
+    override suspend fun updateTaskStatus(didiId: Int, surveyState: SectionStatus) {
         taskDao.updateTaskStatus(didiId, surveyState.ordinal)
     }
 }

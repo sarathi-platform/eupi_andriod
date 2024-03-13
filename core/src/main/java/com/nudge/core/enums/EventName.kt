@@ -36,9 +36,10 @@ enum class EventName(val id: Int, val depends_on: List<Int> = emptyList(), val t
         topicName = "UPDATE_SECTION_PROGRESS_FOR_DIDI_EVENT"
     ),
     SAVE_RESPONSE_EVENT(21, topicName = "SAVE_RESPONSE_EVENT"),
-    UPDATE_TASK_STATUS_EVENT(22, topicName = "UPDATE_TASK_STATUS_EVENT")
-
-
+    UPDATE_TASK_STATUS_EVENT(22, topicName = "UPDATE_TASK_STATUS_EVENT"),
+    UPDATE_ACTIVITY_STATUS_EVENT(23, topicName = "UPDATE_ACTIVITY_STATUS_EVENT"),
+    UPDATE_MISSION_STATUS_EVENT(24, topicName = "UPDATE_MISSION_STATUS_EVENT")
+    ;
 }
 
 fun String.getTopicFromName(): String {

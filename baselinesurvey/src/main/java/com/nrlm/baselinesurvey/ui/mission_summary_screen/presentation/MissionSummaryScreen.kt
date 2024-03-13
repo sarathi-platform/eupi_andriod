@@ -22,6 +22,7 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToMissionScreen
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.StepsBox
+import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.viewModel.MissionSummaryViewModel
 import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
@@ -29,6 +30,7 @@ import com.nrlm.baselinesurvey.ui.theme.inprogressYellow
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -50,20 +52,28 @@ fun MissionSummaryScreen(
         modifier = Modifier.fillMaxSize(),
         containerColor = white,
         bottomBar = {
-        /*Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp)
-        ) {
-            ButtonPositive(
-                buttonTitle = "Go Back",
-                isActive = true,
-                isLeftArrow = true
+            if (activities.filter { it.status != SectionStatus.COMPLETED.name }.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                ) {
+                    ButtonPositive(
+                        buttonTitle = stringResource(R.string.mission_completed_text),
+                        isActive = true,
+                        isLeftArrow = true
 
-            ) {
-                navigateBackToMissionScreen(navController)
+                    ) {
+                        viewModel.onEvent(
+                            EventWriterEvents.UpdateMissionStatusEvent(
+                                missionId = missionId,
+                                status = SectionStatus.COMPLETED
+                            )
+                        )
+                        navigateBackToMissionScreen(navController)
+                    }
+                }
             }
-        }*/
 
     }
     ) {
@@ -102,7 +112,7 @@ fun MissionSummaryScreen(
                             ),
                             stepNo = activity.activityTypeId,
                             index = 1,
-                            isCompleted = activity.activityStatus == 2,
+                            isCompleted = activity.status == SectionStatus.COMPLETED.name,
                             iconResourceId = R.drawable.ic_mission_inprogress,
                             backgroundColor = inprogressYellow,
                             onclick = {

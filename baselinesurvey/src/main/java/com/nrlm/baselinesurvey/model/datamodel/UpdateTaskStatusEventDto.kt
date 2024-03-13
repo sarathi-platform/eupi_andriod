@@ -7,5 +7,7 @@ data class UpdateTaskStatusEventDto(
     val subjectId: Int,
     val subjectType: String,
     val referenceType: String,
+    val actualStartDate: String,
+    val actualCompletedDate: String,
     val status: String
 )

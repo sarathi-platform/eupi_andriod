@@ -11,5 +11,5 @@ data class MissionResponseModel(
     @SerializedName("name")
     val missionName: String,
     val startDate: String,
-    val language: String
+    val language: String?
 )

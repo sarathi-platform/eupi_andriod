@@ -9,7 +9,7 @@ data class MissionTaskModel(
     val taskId: Int,
     @SerializedName("name")
     val taskName: String,
-    val language: String,
-    val status: String,
+    val language: String?,
+    val status: String?,
     val subjectId: Int?
 )
