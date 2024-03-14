@@ -11,5 +11,6 @@ data class FetchDataUseCase(
     val fetchMissionDataFromNetworkUseCase: FetchMissionDataFromNetworkUseCase,
     val fetchContentnDataFromNetworkUseCase: FetchContentDataFromNetworkUseCase,
     val fetchSectionStatusFromNetworkUseCase: FetchSectionStatusFromNetworkUseCase,
+    val fetchSurveyAnswerFromNetworkUseCase: FetchSurveyAnswerFromNetworkUseCase,
     val loggedInUseCase: LoggedInUseCase
 )

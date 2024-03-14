@@ -54,6 +54,7 @@ class DataLoadingScreenViewModel @Inject constructor(
                 fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
                 fetchSurveyForAllLanguages()
                 fetchDataUseCase.fetchSectionStatusFromNetworkUseCase.invoke()
+                fetchDataUseCase.fetchSurveyAnswerFromNetworkUseCase.invoke()
                 withContext(Dispatchers.Main) {
                     onEvent(LoaderEvent.UpdateLoaderState(false))
                     callBack()

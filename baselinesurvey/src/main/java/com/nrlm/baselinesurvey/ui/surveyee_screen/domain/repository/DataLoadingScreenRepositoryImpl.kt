@@ -101,7 +101,6 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     override suspend fun saveSurveyToDb(
         surveyResponseModel: SurveyResponseModel,
         languageId: Int,
-        surveyAnswerResponse: List<QuestionAnswerResponseModel>?
     ) {
         baselineDatabase.runInTransaction {
             surveyEntityDao.deleteSurveyFroLanguage(surveyResponseModel.surveyId, languageId)
@@ -213,7 +212,6 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     )
                 }
             }
-            saveSurveyAnswerToDb(questionAnswerResponseModels = surveyAnswerResponse)
 
         }
 
@@ -472,8 +470,26 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         return prefRepo.getAppLanguage() ?: "en"
     }
 
-    override suspend fun getSurveyAnswers(getSurveyAnswerRequest: GetSurveyAnswerRequest): ApiResponseModel<List<QuestionAnswerResponseModel>> {
-        return apiService.getSurveyAnswers(getSurveyAnswerRequest)
+    override suspend fun getSurveyAnswers() {
+        getSurveyId()?.forEach {
+            val surveyAnswersResponse = apiService.getSurveyAnswers(
+                GetSurveyAnswerRequest(
+                    surveyId = it,
+                    mobileNumber = prefRepo.getMobileNumber() ?: ""
+                )
+            )
+            if (surveyAnswersResponse.status.equals(
+                    SUCCESS_CODE,
+                    true
+                ) && surveyAnswersResponse.data != null
+            ) {
+                saveSurveyAnswerToDb(surveyAnswersResponse.data)
+            }
+        }
+    }
+
+    private fun getSurveyId(): List<Int>? {
+        return surveyEntityDao.getSurveyIds()
     }
 
     private fun saveSurveyAnswerToDb(questionAnswerResponseModels: List<QuestionAnswerResponseModel>?) {
@@ -515,11 +531,17 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         return prefRepo.getPref(PREF_STATE_ID, -1)
     }
 
-    override suspend fun getSectionStatus(sectionStatusRequest: SectionStatusRequest) {
+    override suspend fun getSectionStatus() {
         try {
 
-
-            val sectionStatusResponse = apiService.getSectionStatus(sectionStatusRequest)
+            getSurveyId()?.forEach {
+                val sectionStatusResponse = apiService.getSectionStatus(
+                    SectionStatusRequest(
+                        sectionId = 2,
+                        surveyId = it,
+                        mobileNumber = prefRepo.getMobileNumber() ?: ""
+                    )
+                )
             if (sectionStatusResponse.status.equals(
                     SUCCESS_CODE,
                     true
@@ -531,9 +553,11 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     )
                 )
             }
+            }
         } catch (ecxpetion: Exception) {
             Log.e("SectionStatus", ecxpetion.message.toString())
         }
+
     }
 
 }

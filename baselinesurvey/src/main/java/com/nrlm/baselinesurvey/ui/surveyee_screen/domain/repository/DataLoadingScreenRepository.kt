@@ -8,14 +8,11 @@ import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.model.request.ContentMangerRequest
-import com.nrlm.baselinesurvey.model.request.SectionStatusRequest
-import com.nrlm.baselinesurvey.model.request.GetSurveyAnswerRequest
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.model.response.BeneficiaryApiResponse
 import com.nrlm.baselinesurvey.model.response.ContentResponse
 import com.nrlm.baselinesurvey.model.response.MissionResponseModel
-import com.nrlm.baselinesurvey.model.response.QuestionAnswerResponseModel
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
 
@@ -32,7 +29,6 @@ interface DataLoadingScreenRepository {
     suspend fun saveSurveyToDb(
         surveyResponseModel: SurveyResponseModel,
         languageId: Int,
-        surveyAnswerResponse: List<QuestionAnswerResponseModel>?
     )
 
     fun saveUserDetails(userDetailsResponse: UserDetailsResponse)
@@ -73,8 +69,8 @@ interface DataLoadingScreenRepository {
     suspend fun saveContentsToDB(contents: List<ContentEntity>)
     suspend fun getContentKeyFromDB(): List<String?>
     suspend fun getSelectedLanguageId(): String
-    suspend fun getSurveyAnswers(getSurveyAnswerRequest: GetSurveyAnswerRequest): ApiResponseModel<List<QuestionAnswerResponseModel>>
+    suspend fun getSurveyAnswers()
     fun getStateId(): Int
-    suspend fun getSectionStatus(sectionStatusRequest: SectionStatusRequest)
+    suspend fun getSectionStatus()
 
 }

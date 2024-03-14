@@ -126,6 +126,7 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchCastesFro
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchContentDataFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSectionStatusFromNetworkUseCase
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyAnswerFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyeeListFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchUserDetailFromNetworkUseCase
@@ -477,6 +478,7 @@ object BaselineModule {
             fetchCastesFromNetworkUseCase = FetchCastesFromNetworkUseCase(repository),
             fetchContentnDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(repository),
             fetchSectionStatusFromNetworkUseCase = FetchSectionStatusFromNetworkUseCase(repository),
+            fetchSurveyAnswerFromNetworkUseCase = FetchSurveyAnswerFromNetworkUseCase(repository),
             loggedInUseCase = LoggedInUseCase(splashScreenRepository)
         )
     }
