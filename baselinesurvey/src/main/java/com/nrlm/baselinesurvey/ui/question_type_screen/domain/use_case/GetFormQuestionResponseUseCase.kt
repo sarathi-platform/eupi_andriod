@@ -68,4 +68,20 @@ class GetFormQuestionResponseUseCase(private val repository: FormQuestionRespons
         return repository.getFormQuestionForId(surveyId, sectionId, questionId)
     }
 
+    suspend fun getFormQuestionCountForSection(
+        surveyId: Int,
+        sectionId: Int,
+        didiId: Int
+    ): List<FormQuestionResponseEntity> {
+        return repository.getFormQuestionCountForSection(
+            surveyId = surveyId,
+            sectionId = sectionId,
+            didiId = didiId
+        )
+    }
+
+    suspend fun getQuestionTag(surveyId: Int, sectionId: Int, questionId: Int): String {
+        return repository.getQuestionTag(surveyId, sectionId, questionId)
+    }
+
 }

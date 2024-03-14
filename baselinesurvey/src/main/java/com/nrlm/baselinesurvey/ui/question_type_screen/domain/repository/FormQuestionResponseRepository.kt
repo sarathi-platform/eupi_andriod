@@ -65,4 +65,12 @@ interface FormQuestionResponseRepository {
         sectionId: Int,
         questionId: Int
     ): QuestionEntity?
+
+    suspend fun getFormQuestionCountForSection(
+        surveyId: Int,
+        sectionId: Int,
+        didiId: Int
+    ): List<FormQuestionResponseEntity>
+
+    suspend fun getQuestionTag(surveyId: Int, sectionId: Int, questionId: Int): String
 }

@@ -31,6 +31,8 @@ import com.nrlm.baselinesurvey.utils.convertFormTypeQuestionListToOptionItemEnti
 import com.nrlm.baselinesurvey.utils.convertQuestionListToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.convertToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.findIndexOfListByOptionId
+import com.nrlm.baselinesurvey.utils.getResponseForOptionId
+import com.nrlm.baselinesurvey.utils.isNumeric
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -78,6 +80,10 @@ class QuestionTypeScreenViewModel @Inject constructor(
 
     private var didiId = -1
 
+    val calculatedResult = mutableStateOf("")
+
+//    val calculationResult = mutableStateOf()
+
     fun init(
         sectionId: Int,
         surveyId: Int,
@@ -104,15 +110,29 @@ class QuestionTypeScreenViewModel @Inject constructor(
             BaselineLogger.d(TAG, "init: referenceId: ${this@QuestionTypeScreenViewModel.referenceId}")
             if (referenceId.isNotBlank()) {
                 this@QuestionTypeScreenViewModel.referenceId = referenceId
-                BaselineLogger.d(TAG, "init: referenceId after update: ${this@QuestionTypeScreenViewModel.referenceId}")
-                _formQuestionResponseEntity.value = getFormResponseForReferenceId(referenceId = referenceId)
+                BaselineLogger.d(
+                    TAG,
+                    "init: referenceId after update: ${this@QuestionTypeScreenViewModel.referenceId}"
+                )
+                _formQuestionResponseEntity.value =
+                    getFormResponseForReferenceId(referenceId = referenceId)
             }
 
-            getOptionItemEntityState(surveyId = surveyId, didiId = surveyeeId, sectionId = sectionId, questionId = questionId)
+            getOptionItemEntityState(
+                surveyId = surveyId,
+                didiId = surveyeeId,
+                sectionId = sectionId,
+                questionId = questionId
+            )
 
             delay(100)
 
-            totalOptionSize.intValue = updatedOptionList.filter { it.showQuestion}.size
+            totalOptionSize.intValue = updatedOptionList.filter { it.showQuestion }.size
+            if (referenceId.isNotBlank()) {
+                calculatedResult.value =
+                    formQuestionResponseEntity.value.find { it.optionId == updatedOptionList.find { it.optionItemEntity?.optionType == QuestionType.Calculation.name }?.optionId }?.selectedValue
+                        ?: BLANK_STRING
+            }
 
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -186,7 +206,6 @@ class QuestionTypeScreenViewModel @Inject constructor(
                                     questionId,
                                     languageId = optionItemEntity.languageId ?: DEFAULT_LANGUAGE_ID
                                 )
-
                             _updatedOptionList.add(
                                 OptionItemEntityState(
                                     mOptionItemEntity.optionId,
@@ -308,9 +327,39 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 }*/
             }
 
+            is QuestionTypeEvent.UpdateCalculationTypeQuestionValue -> {
+                val optionList = updatedOptionList.toList()
+                if (optionList.any { it.optionItemEntity?.optionType == QuestionType.Calculation.name }) {
+                    val calculationOption =
+                        optionList.find { it.optionItemEntity?.optionType == QuestionType.Calculation.name }
+                    calculationOption?.optionItemEntity?.conditions?.forEach { conditionDto ->
+                        val optionIds = mutableListOf<Int>()
+                        conditionDto?.value?.split(" ")?.filter { it != "" }?.forEach { va ->
+                            if (va.isNotEmpty() && isNumeric(va)) {
+                                optionIds.add(va.toInt())
+                            }
+                        }
+                        var areAllValuesPresent = true
+                        if (optionIds.isNotEmpty()) {
+                            optionIds.forEach { option ->
+                                if (storeCacheForResponse.getResponseForOptionId(option) == null)
+                                    areAllValuesPresent = false
+                            }
+                            if (areAllValuesPresent) {
+                                val result =
+                                    conditionDto?.calculateResultForFormula(storeCacheForResponse)
+                                calculatedResult.value = result ?: BLANK_STRING
+                            }
+                        }
+                    }
+                }
+
+            }
+
             is QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    val finalFormQuestionResponseList = event.formQuestionResponseList.toMutableList()
+                    val finalFormQuestionResponseList =
+                        event.formQuestionResponseList.toMutableList()
                     val unchangedValues = mutableListOf<FormQuestionResponseEntity>()
                     formQuestionResponseEntity.value.forEach { formQuestionResponseEntity ->
                         finalFormQuestionResponseList.forEach { finalFormQuestionResponseItem ->

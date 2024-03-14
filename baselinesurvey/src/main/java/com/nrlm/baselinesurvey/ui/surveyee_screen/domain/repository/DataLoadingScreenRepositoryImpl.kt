@@ -260,7 +260,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                             order = optionsItem.order,
                             values = optionsItem.values,
                             languageId = languageId,
-                            conditions = optionsItem.conditions
+                            conditions = optionsItem.conditions,
+                            optionTag = optionsItem.tag ?: BLANK_STRING
                         )
                         optionItemDao.insertOption(optionItemEntity)
 
@@ -321,7 +322,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                 order = optionsItem.order,
                 values = optionsItem.values,
                 languageId = languageId,
-                conditions = optionsItem.conditions
+                conditions = optionsItem.conditions,
+                optionTag = optionsItem.tag ?: BLANK_STRING
             )
             optionItemDao.insertOption(optionItemEntity)
         }

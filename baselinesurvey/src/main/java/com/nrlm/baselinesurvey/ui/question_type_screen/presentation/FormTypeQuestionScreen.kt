@@ -118,15 +118,17 @@ fun FormTypeQuestionScreen(
                     isArrowRequired = false
                 ) {
                     BaselineCore.setReferenceId(BLANK_STRING)
-                    viewModel.onEvent(
-                        QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent(
-                            surveyId = surveyID,
-                            sectionId = sectionId,
-                            questionId = questionId,
-                            subjectId = surveyeeId,
-                            formQuestionResponseList = viewModel.storeCacheForResponse
+                    if (viewModel.storeCacheForResponse.isNotEmpty()) {
+                        viewModel.onEvent(
+                            QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent(
+                                surveyId = surveyID,
+                                sectionId = sectionId,
+                                questionId = questionId,
+                                subjectId = surveyeeId,
+                                formQuestionResponseList = viewModel.storeCacheForResponse
+                            )
                         )
-                    )
+                    }
                     navController.popBackStack()
                 }
             }

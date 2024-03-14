@@ -164,5 +164,21 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun getFormQuestionCountForSection(
+        surveyId: Int,
+        sectionId: Int,
+        didiId: Int
+    ): List<FormQuestionResponseEntity> {
+        return formQuestionResponseDao.getFormQuestionCountForSection(
+            surveyId = surveyId,
+            sectionId = sectionId,
+            didiId = didiId
+        )
+    }
+
+    override suspend fun getQuestionTag(surveyId: Int, sectionId: Int, questionId: Int): String {
+        return questionEntityDao.getQuestionTag(surveyId, sectionId, questionId)
+    }
+
 }
 
