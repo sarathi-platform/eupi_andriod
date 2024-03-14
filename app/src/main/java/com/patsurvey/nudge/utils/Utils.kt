@@ -662,6 +662,7 @@ fun toWeightageRatio(listInString: String): List<WeightageRatioModal> {
     return gson.fromJson(listInString, type)
 }
 
+
 fun checkStringOperator(operator:String) = when(operator){
       "==" ->Operator.EQUAL_TO
       "=" ->Operator.EQUAL_TO

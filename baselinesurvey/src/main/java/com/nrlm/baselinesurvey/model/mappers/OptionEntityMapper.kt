@@ -1,5 +1,7 @@
 package com.nrlm.baselinesurvey.model.mappers
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_ID
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
@@ -13,7 +15,7 @@ object OptionEntityMapper {
         questionEntity: QuestionEntity?
     ): OptionItemEntity {
         val questionOptionsResponseModels =
-            questionAnswerResponseModel.question?.options as List<QuestionOptionsResponseModel>
+            toQuestionOptionModel(questionAnswerResponseModel.question?.options as List<Any>)
 
         return OptionItemEntity(
             id = 0,
@@ -42,11 +44,12 @@ object OptionEntityMapper {
         questionEntity: QuestionEntity?
     ): List<OptionItemEntity> {
         val questionOptionsResponseModels =
-            questionAnswerResponseModel.question?.options as List<QuestionOptionsResponseModel>
+            toQuestionOptionModel(questionAnswerResponseModel.question?.options as List<Any>)
         val optionsList: ArrayList<OptionItemEntity> = ArrayList()
 
         questionOptionsResponseModels.forEach { questionOptionsResponseModels ->
-            OptionItemEntity(
+            optionsList.add(
+                OptionItemEntity(
                 id = 0,
                 sectionId = questionAnswerResponseModel.sectionId.toInt(),
                 surveyId = questionAnswerResponseModel.surveyId ?: -1,
@@ -65,8 +68,39 @@ object OptionEntityMapper {
                 isSelected = false
 
 
+                )
             )
         }
         return optionsList
+    }
+
+    fun getOptionEntitiesMapperForForm(
+        questionAnswerResponseModel: QuestionAnswerResponseModel,
+    ): List<QuestionOptionsResponseModel> {
+        val questionOptionsResponseModels =
+            formQuestionOptionModel(questionAnswerResponseModel.question?.options as List<List<Any>>)
+        val optionsList: ArrayList<QuestionOptionsResponseModel> = ArrayList()
+
+        questionOptionsResponseModels.forEach { item ->
+            item.forEach { questionOptionsResponseModel ->
+                optionsList.add(questionOptionsResponseModel)
+            }
+        }
+        return optionsList
+    }
+
+    fun toQuestionOptionModel(list: List<Any>): List<QuestionOptionsResponseModel> {
+        val type =
+            object : TypeToken<List<QuestionOptionsResponseModel?>?>() {}.type
+        val gson = Gson()
+
+        return gson.fromJson(gson.toJson(list), type)
+    }
+
+    fun formQuestionOptionModel(list: List<List<Any>>): List<List<QuestionOptionsResponseModel>> {
+        val type =
+            object : TypeToken<List<List<QuestionOptionsResponseModel?>?>>() {}.type
+        val gson = Gson()
+        return gson.fromJson(gson.toJson(list), type)
     }
 }

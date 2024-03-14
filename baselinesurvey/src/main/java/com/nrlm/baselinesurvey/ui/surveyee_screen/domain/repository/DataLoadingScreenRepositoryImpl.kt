@@ -208,8 +208,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     )
                 }
             }
+            saveSurveyAnswerToDb(questionAnswerResponseModels = surveyAnswerResponse)
 
-            saveSurveyAnswerToDb(surveyAnswerResponse)
         }
 
     }
@@ -472,6 +472,9 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     private fun saveSurveyAnswerToDb(questionAnswerResponseModels: List<QuestionAnswerResponseModel>?) {
+        try {
+
+
         questionAnswerResponseModels?.forEach { questionAnswerResponseModel ->
             val question = questionEntityDao.getQuestionForSurveySectionForLanguage(
                 questionId = questionAnswerResponseModel.question?.questionId ?: DEFAULT_ID,
@@ -479,9 +482,9 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                 surveyId = questionAnswerResponseModel.surveyId,
                 languageId = questionAnswerResponseModel.languageId
             )
-            if (questionAnswerResponseModel.question?.questionType == QuestionType.Form.name) {
+            if (questionAnswerResponseModel.question?.questionType.equals(QuestionType.Form.name)) {
                 baselineDatabase.formQuestionResponseDao()
-                    .addFormResponse(getFormQuestionEntity(questionAnswerResponseModel, question))
+                    .addFormResponseList(getFormQuestionEntity(questionAnswerResponseModel))
 
             } else if (questionAnswerResponseModel.question?.questionType == QuestionType.InputNumber.name) {
                 baselineDatabase.inputTypeQuestionAnswerDao().saveInputTypeAnswersForQuestion(
@@ -496,6 +499,9 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                 baselineDatabase.sectionAnswerEntityDao().insertAnswer(sectionAnswerEntity)
             }
 
+        }
+        } catch (exception: Exception) {
+            Log.e("QuestionType", exception.message.toString())
         }
 
     }
