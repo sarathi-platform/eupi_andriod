@@ -9,7 +9,7 @@ class FetchSectionStatusFromNetworkUseCase(private val repository: DataLoadingSc
     suspend operator fun invoke() {
 
         try {
-            val sectionStatusRequest = SectionStatusRequest(sectionId = 0, surveyId = 0)
+            val sectionStatusRequest = SectionStatusRequest(sectionId = 2, surveyId = 1)
             repository.getSectionStatus(sectionStatusRequest)
 
         } catch (ex: Exception) {

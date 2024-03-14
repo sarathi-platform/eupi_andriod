@@ -43,7 +43,6 @@ class DataLoadingScreenViewModel @Inject constructor(
                     fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke()
                     fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
                     fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
-                    fetchSurveyForAllLanguages()
                     fetchDataUseCase.fetchContentnDataFromNetworkUseCase.invoke()
 
                 } else {
@@ -52,14 +51,14 @@ class DataLoadingScreenViewModel @Inject constructor(
                         callBack()
                     }
                 }
+                fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
+                fetchSurveyForAllLanguages()
+                fetchDataUseCase.fetchSectionStatusFromNetworkUseCase.invoke()
                 withContext(Dispatchers.Main) {
                     onEvent(LoaderEvent.UpdateLoaderState(false))
                     callBack()
                 }
 
-                    fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
-                    fetchSurveyForAllLanguages()
-                fetchDataUseCase.fetchSectionStatusFromNetworkUseCase.invoke()
 
             }
         } catch (ex: Exception) {

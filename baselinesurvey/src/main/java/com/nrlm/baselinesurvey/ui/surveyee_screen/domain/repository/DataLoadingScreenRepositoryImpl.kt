@@ -14,7 +14,7 @@ import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
 import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
 import com.nrlm.baselinesurvey.PREF_STATE_ID
-import com.nrlm.baselinesurvey.SUCCESS
+import com.nrlm.baselinesurvey.SUCCESS_CODE
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
@@ -465,17 +465,23 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getSectionStatus(sectionStatusRequest: SectionStatusRequest) {
-        val sectionStatusResponse = apiService.getSectionStatus(sectionStatusRequest)
-        if (sectionStatusResponse.status.equals(
-                SUCCESS,
-                true
-            ) && sectionStatusResponse.data != null
-        ) {
-            didiSectionProgressEntityDao.addDidiSectionProgress(
-                getDidiSectionStatusEntity(
-                    sectionStatusResponse.data
+        try {
+
+
+            val sectionStatusResponse = apiService.getSectionStatus(sectionStatusRequest)
+            if (sectionStatusResponse.status.equals(
+                    SUCCESS_CODE,
+                    true
                 )
-            )
+            ) {
+                didiSectionProgressEntityDao.addDidiSectionProgress(
+                    getDidiSectionStatusEntity(
+                        sectionStatusResponse.data!!
+                    )
+                )
+            }
+        } catch (ecxpetion: Exception) {
+            Log.e("SectionStatus", ecxpetion.message.toString())
         }
     }
 
