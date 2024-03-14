@@ -22,19 +22,19 @@ import com.nrlm.baselinesurvey.model.response.SectionStatusResponseModel
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.TransactionResponse
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
-import com.nrlm.baselinesurvey.network.CONTENT_MANAGER
-import com.nrlm.baselinesurvey.network.GET_CASTE_LIST
-import com.nrlm.baselinesurvey.network.GET_SECTION_STATUS
-import com.nrlm.baselinesurvey.network.LOGOUT
 import com.nrlm.baselinesurvey.network.SUBPATH_AUTH_GENERATE_OTP
 import com.nrlm.baselinesurvey.network.SUBPATH_AUTH_VALIDATE_OTP
 import com.nrlm.baselinesurvey.network.SUBPATH_CONFIG_GET_LANGUAGE
+import com.nrlm.baselinesurvey.network.SUBPATH_CONTENT_MANAGER
 import com.nrlm.baselinesurvey.network.SUBPATH_FETCH_SURVEY_FROM_NETWORK
+import com.nrlm.baselinesurvey.network.SUBPATH_GET_CASTE_LIST
 import com.nrlm.baselinesurvey.network.SUBPATH_GET_DIDI_LIST
 import com.nrlm.baselinesurvey.network.SUBPATH_GET_MISSION
 import com.nrlm.baselinesurvey.network.SUBPATH_GET_SAVED_SURVEY
+import com.nrlm.baselinesurvey.network.SUBPATH_LOGOUT
 import com.nrlm.baselinesurvey.network.SUBPATH_SAVE_SURVEY_ANSWES
 import com.nrlm.baselinesurvey.network.SUBPATH_USER_VIEW
+import com.nrlm.baselinesurvey.network.GET_SECTION_STATUS
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -81,16 +81,16 @@ interface ApiService {
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getBaseLineMission(@Body missionRequest: MissionRequest): ApiResponseModel<List<MissionResponseModel>>
 
-    @GET(GET_CASTE_LIST)
+    @GET(SUBPATH_GET_CASTE_LIST)
     suspend fun getCasteList(@Query("languageId") languageId: Int): ApiResponseModel<List<CasteModel>>
 
     @POST(GET_SECTION_STATUS)
     suspend fun getSectionStatus(@Body sectionStatusRequest: SectionStatusRequest): ApiResponseModel<List<SectionStatusResponseModel>>
 
-    @POST(LOGOUT)
+    @POST(SUBPATH_LOGOUT)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun performLogout(): ApiResponseModel<String>
 
-    @POST(CONTENT_MANAGER)
+    @POST(SUBPATH_CONTENT_MANAGER)
     suspend fun getAllContent(@Body contentMangerRequest: ContentMangerRequest): ApiResponseModel<List<ContentResponse>>
 }

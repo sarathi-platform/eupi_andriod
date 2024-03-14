@@ -77,6 +77,8 @@ import com.nrlm.baselinesurvey.ui.theme.h6
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.convertFormResponseObjectToSaveAnswerEventOptionDto
+import com.nrlm.baselinesurvey.utils.convertInputTypeQuestionToEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.convertToSaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.findOptionFromId
 import com.nrlm.baselinesurvey.utils.mapFormQuestionResponseToFromResponseObjectDto
@@ -474,6 +476,8 @@ fun NestedLazyList(
                                                 questionId = question.questionId ?: 0,
                                                 questionType = question.questionEntity?.type
                                                     ?: BLANK_STRING,
+                                                questionTag = question.questionEntity.tag,
+                                                showConditionalQuestion = !optionItem.conditions.isNullOrEmpty(),
                                                 saveAnswerEventOptionItemDtoList = optionItem.convertToSaveAnswerEventOptionItemDto(
                                                     QuestionType.getQuestionTypeFromName(
                                                         question.questionEntity.type ?: BLANK_STRING
@@ -563,6 +567,8 @@ fun NestedLazyList(
                                                 questionId = question.questionId ?: 0,
                                                 questionType = question.questionEntity.type
                                                     ?: BLANK_STRING,
+                                                questionTag = question.questionEntity.tag,
+                                                showConditionalQuestion = !optionItem.conditions.isNullOrEmpty(),
                                                 saveAnswerEventOptionItemDtoList = optionItem.convertToSaveAnswerEventOptionItemDto(
                                                     QuestionType.getQuestionTypeFromName(
                                                         question.questionEntity.type ?: BLANK_STRING
@@ -657,6 +663,8 @@ fun NestedLazyList(
                                                 questionId = question.questionId ?: 0,
                                                 questionType = question.questionEntity?.type
                                                     ?: BLANK_STRING,
+                                                questionTag = question.questionEntity.tag,
+                                                showConditionalQuestion = optionItems.any { it.conditions.isNullOrEmpty() },
                                                 saveAnswerEventOptionItemDtoList = optionItems.convertToSaveAnswerEventOptionItemDto(
                                                     QuestionType.getQuestionTypeFromName(
                                                         question.questionEntity.type ?: BLANK_STRING
@@ -877,21 +885,45 @@ fun NestedLazyList(
                                             }
                                         }
 
-                                        questionScreenViewModel.onEvent(
-                                            EventWriterEvents.SaveAnswerEvent(
-                                                surveyId = sectionDetails.surveyId,
-                                                sectionId = sectionDetails.sectionId,
-                                                didiId = surveyeeId,
-                                                questionId = question.questionId ?: 0,
-                                                questionType = question.questionEntity.type
-                                                    ?: BLANK_STRING,
-                                                saveAnswerEventOptionItemDtoList = mOptionItem.convertToSaveAnswerEventOptionItemDto(
-                                                    QuestionType.getQuestionTypeFromName(
-                                                        question.questionEntity.type ?: BLANK_STRING
-                                                    )!!
+                                        if (question.questionEntity.type == QuestionType.InputNumber.name) {
+                                            questionScreenViewModel.onEvent(
+                                                EventWriterEvents.SaveAnswerEvent(
+                                                    surveyId = sectionDetails.surveyId,
+                                                    sectionId = sectionDetails.sectionId,
+                                                    didiId = surveyeeId,
+                                                    questionId = question.questionId ?: 0,
+                                                    questionType = question.questionEntity.type
+                                                        ?: BLANK_STRING,
+                                                    questionTag = question.questionEntity.tag,
+                                                    showConditionalQuestion = !optionItem.conditions.isNullOrEmpty(),
+                                                    saveAnswerEventOptionItemDtoList = inputTypeQuestionAnswerEntityList.value
+                                                        .convertInputTypeQuestionToEventOptionItemDto(
+                                                            question.questionId ?: 0,
+                                                            QuestionType.InputNumber
+                                                        )
                                                 )
                                             )
-                                        )
+                                        } else {
+                                            questionScreenViewModel.onEvent(
+                                                EventWriterEvents.SaveAnswerEvent(
+                                                    surveyId = sectionDetails.surveyId,
+                                                    sectionId = sectionDetails.sectionId,
+                                                    didiId = surveyeeId,
+                                                    questionId = question.questionId ?: 0,
+                                                    questionType = question.questionEntity.type
+                                                        ?: BLANK_STRING,
+                                                    questionTag = question.questionEntity.tag,
+                                                    showConditionalQuestion = !optionItem.conditions.isNullOrEmpty(),
+                                                    saveAnswerEventOptionItemDtoList = mOptionItem.convertToSaveAnswerEventOptionItemDto(
+                                                        QuestionType.getQuestionTypeFromName(
+                                                            question.questionEntity.type
+                                                                ?: BLANK_STRING
+                                                        )!!
+                                                    )
+                                                )
+                                            )
+                                        }
+
                                     },
                                     onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
 
@@ -926,14 +958,6 @@ fun NestedLazyList(
                                             )
                                             needToUpdateList.value =
                                                 Pair(true, householdMemberDto.referenceId)
-                                            Log.d(
-                                                "TAG", "onEvent: onDelete -> " +
-                                                        "otalQuestionCount.intValue = ${questionScreenViewModel.totalQuestionCount.intValue}, answeredQuestionCount: ${questionScreenViewModel.answeredQuestionCount.size}" +
-                                                        " isSectionCompleted.value = ${
-                                                            questionScreenViewModel.answeredQuestionCount.size == questionScreenViewModel.totalQuestionCount.intValue
-                                                                    || questionScreenViewModel.answeredQuestionCount.size > questionScreenViewModel.totalQuestionCount.intValue
-                                                        }"
-                                            )
                                         },
                                         onUpdate = {
                                             sectionDetails.questionList.find { it.questionId == householdMemberDto.questionId }
@@ -970,17 +994,21 @@ fun NestedLazyList(
 
     LaunchedEffect(key1 = needToUpdateList.value) {
         if (needToUpdateList.value.first) {
+            val houseHoldMemberDto = householdMemberDtoList.value.first()
             householdMemberDtoList.value = householdMemberDtoList.value.apply {
                 this.remove(this.find { it.referenceId == needToUpdateList.value.second })
             }
             needToUpdateList.value = NEED_TO_UPDATE_LIST_DEFAULT_VALUE
-            Log.d(
-                "TAG", "onEvent: LaunchedEffect -> " +
-                        "otalQuestionCount.intValue = ${questionScreenViewModel.totalQuestionCount.intValue}, answeredQuestionCount: ${questionScreenViewModel.answeredQuestionCount.size}" +
-                        " isSectionCompleted.value = ${
-                            questionScreenViewModel.answeredQuestionCount.size == questionScreenViewModel.totalQuestionCount.intValue
-                                    || questionScreenViewModel.answeredQuestionCount.size > questionScreenViewModel.totalQuestionCount.intValue
-                        }"
+            questionScreenViewModel.onEvent(
+                EventWriterEvents.SaveAnswerEvent(
+                    surveyId = sectionDetails.surveyId,
+                    sectionId = sectionDetails.sectionId,
+                    didiId = surveyeeId,
+                    questionId = houseHoldMemberDto.questionId,
+                    questionTag = houseHoldMemberDto.questionTag,
+                    questionType = QuestionType.Form.name,
+                    saveAnswerEventOptionItemDtoList = householdMemberDtoList.value.convertFormResponseObjectToSaveAnswerEventOptionDto()
+                )
             )
         }
     }

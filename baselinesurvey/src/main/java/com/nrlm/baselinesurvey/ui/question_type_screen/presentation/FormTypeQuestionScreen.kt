@@ -120,7 +120,11 @@ fun FormTypeQuestionScreen(
                     BaselineCore.setReferenceId(BLANK_STRING)
                     viewModel.onEvent(
                         QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent(
-                            viewModel.storeCacheForResponse
+                            surveyId = surveyID,
+                            sectionId = sectionId,
+                            questionId = questionId,
+                            subjectId = surveyeeId,
+                            formQuestionResponseList = viewModel.storeCacheForResponse
                         )
                     )
                     navController.popBackStack()

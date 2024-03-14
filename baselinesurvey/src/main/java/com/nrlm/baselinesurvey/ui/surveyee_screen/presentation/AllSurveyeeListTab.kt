@@ -76,7 +76,7 @@ fun AllSurveyeeListTab(
 
     val surveyeeList = viewModel.filteredSurveyeeListState.value
 
-    val surveyeeListWithTolaFilter = viewModel.tolaMapSurveyeeListState.value
+    val surveyeeListWithTolaFilter = viewModel.filteredTolaMapSurveyeeListState.value
 
     val isFilterAppliedState = remember {
         mutableStateOf(FilterListState())

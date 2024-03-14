@@ -5,6 +5,8 @@ import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.core.toDate
 import javax.inject.Inject
 
 class MissionSummaryScreenRepositoryImpl @Inject constructor(
@@ -37,5 +39,21 @@ class MissionSummaryScreenRepositoryImpl @Inject constructor(
             taskSize - activityPending,
             activityPending
         )
+    }
+
+    override suspend fun updateMissionStatus(missionId: Int, status: SectionStatus) {
+        if (status == SectionStatus.COMPLETED) {
+            missionEntityDao.markMissionCompleted(
+                missionId = missionId,
+                status = status.name,
+                actualCompletedDate = System.currentTimeMillis().toDate().toString()
+            )
+        } else {
+            missionEntityDao.markMissionInProgress(
+                missionId = missionId,
+                status = status.name,
+                actualStartDate = System.currentTimeMillis().toDate().toString()
+            )
+        }
     }
 }

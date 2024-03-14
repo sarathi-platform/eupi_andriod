@@ -32,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
@@ -48,7 +49,6 @@ import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleWithNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.white
 import java.util.Locale
-import com.nrlm.baselinesurvey.R
 
 @Composable
 fun FormResponseCard(
@@ -284,6 +284,8 @@ fun FormResponseCard(
                                 it.display?.contains(
                                     stringResource(R.string.influence_type_comparision_and_label),
                                     ignoreCase = true
+                                )!! || it.display.contains(
+                                    stringResource(R.string.designation_comparision_and_label), true
                                 )!!
                             }?.optionId] ?: BLANK_STRING
 
