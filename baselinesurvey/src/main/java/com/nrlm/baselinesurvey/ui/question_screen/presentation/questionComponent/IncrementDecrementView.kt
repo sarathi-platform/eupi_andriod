@@ -48,7 +48,6 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.Op
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.greenOnline
 import com.nrlm.baselinesurvey.ui.theme.lightGray2
-import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.red
 import com.nrlm.baselinesurvey.ui.theme.redOffline
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
@@ -64,7 +63,7 @@ fun IncrementDecrementView(
     isRequiredField: Boolean = false
 ) {
     val currentCount: MutableState<String> = remember {
-        mutableStateOf(currentValue ?: "0")
+        mutableStateOf(currentValue ?: "")
     }
     VerticalAnimatedVisibilityComponent(visible = showQuestion.showQuestion) {
         Column(
@@ -189,12 +188,12 @@ fun IncrementDecrementView(
                             },
                             placeholder = {
                                 Text(
-                                    text = "0", style = TextStyle(
+                                    text = "", style = TextStyle(
                                         fontFamily = NotoSans,
                                         fontWeight = FontWeight.SemiBold,
                                         fontSize = 14.sp,
                                         textAlign = TextAlign.Center,
-                                    ), color = placeholderGrey, modifier = Modifier.fillMaxWidth()
+                                    ), color = textColorDark, modifier = Modifier.fillMaxWidth()
                                 )
                             },
                             textStyle = TextStyle(
@@ -271,10 +270,14 @@ fun incDecValue(operation: Int, value: String): String {
         if (intValue > 0) intValue--
     } else {
         if (intValue < MAXIMUM_RANGE) {
-            intValue++
+            if (value == BLANK_STRING) {
+                intValue
+            } else {
+                intValue++
+            }
         }
     }
-    return if (intValue <= 0) BLANK_STRING else intValue.toString()
+    return if (intValue < 0) BLANK_STRING else intValue.toString()
 }
 
 @Preview(showBackground = true)

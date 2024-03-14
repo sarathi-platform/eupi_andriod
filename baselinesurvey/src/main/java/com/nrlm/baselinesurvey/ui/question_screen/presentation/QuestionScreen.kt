@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -87,10 +86,6 @@ fun QuestionScreen(
         delay(300)
         viewModel.updateSaveUpdateState()
         delay(300)
-        Log.d("TAG", "onEvent: QuestionScreen LaunchedEffect -> " +
-                "otalQuestionCount.intValue = ${viewModel.totalQuestionCount.intValue}, answeredQuestionCount: ${viewModel.answeredQuestionCount.size}" +
-                " isSectionCompleted.value = ${viewModel.answeredQuestionCount.size == viewModel.totalQuestionCount.intValue
-                        || viewModel.answeredQuestionCount.size > viewModel.totalQuestionCount.intValue}")
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
     }
 
@@ -118,131 +113,128 @@ fun QuestionScreen(
         navController.popBackStack()
     }
 
-
-
-
-            ModelBottomSheetDescriptionContentComponent(
-                sheetContent = {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        IconButton(onClick = {
-                            scope.launch {
-                                scaffoldState.hide()
-                            }
-                        }) {
-                            androidx.compose.material3.Icon(
-                                painter = painterResource(id = R.drawable.info_icon),
-                                contentDescription = "question info button",
-                                Modifier.size(dimen_18_dp),
-                                tint = blueDark
-                            )
-                        }
-                        Divider(
-                            thickness = dimen_1_dp,
-                            color = lightGray2,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        DescriptionContentComponent(
-                            buttonClickListener = {
-                                scope.launch {
-                                    scaffoldState.hide()
-                                }
-                            },
-                            imageClickListener = { imageTypeDescriptionContent ->
-                                handleOnMediaTypeDescriptionActions(
-                                    viewModel,
-                                    navController,
-                                    DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
-                                    imageTypeDescriptionContent
-                                )
-                            },
-                            videoLinkClicked = { videoTypeDescriptionContent ->
-                                handleOnMediaTypeDescriptionActions(
-                                    viewModel,
-                                    navController,
-                                    DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
-                                    videoTypeDescriptionContent
-                                )
-
-                            },
-                            descriptionContentState = DescriptionContentState(
-                                textTypeDescriptionContent = viewModel.contentMapping.value["text"]?.contentValue
-                                    ?: BLANK_STRING,
-                                imageTypeDescriptionContent = viewModel.contentMapping.value["image"]?.contentValue
-                                    ?: BLANK_STRING,
-                                videoTypeDescriptionContent = viewModel.contentMapping.value["video"]?.contentValue
-                                    ?: BLANK_STRING,
-                            )
-                        )
+    ModelBottomSheetDescriptionContentComponent(
+        sheetContent = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                IconButton(onClick = {
+                    scope.launch {
+                        scaffoldState.hide()
                     }
-                },
-                sheetState = scaffoldState,
-                sheetElevation = 20.dp,
-                sheetBackgroundColor = Color.White,
-                sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
-            ) {
-                if (!loaderState.isLoaderVisible) {
-                    Scaffold(
+                }) {
+                    androidx.compose.material3.Icon(
+                        painter = painterResource(id = R.drawable.info_icon),
+                        contentDescription = "question info button",
+                        Modifier.size(dimen_18_dp),
+                        tint = blueDark
+                    )
+                }
+                Divider(
+                    thickness = dimen_1_dp,
+                    color = lightGray2,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                DescriptionContentComponent(
+                    buttonClickListener = {
+                        scope.launch {
+                            scaffoldState.hide()
+                        }
+                    },
+                    imageClickListener = { imageTypeDescriptionContent ->
+                        handleOnMediaTypeDescriptionActions(
+                            viewModel,
+                            navController,
+                            DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
+                            imageTypeDescriptionContent
+                        )
+                    },
+                    videoLinkClicked = { videoTypeDescriptionContent ->
+                        handleOnMediaTypeDescriptionActions(
+                            viewModel,
+                            navController,
+                            DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
+                            videoTypeDescriptionContent
+                        )
+
+                    },
+                    descriptionContentState = DescriptionContentState(
+                        textTypeDescriptionContent = viewModel.contentMapping.value["text"]?.contentValue
+                            ?: BLANK_STRING,
+                        imageTypeDescriptionContent = viewModel.contentMapping.value["image"]?.contentValue
+                            ?: BLANK_STRING,
+                        videoTypeDescriptionContent = viewModel.contentMapping.value["video"]?.contentValue
+                            ?: BLANK_STRING,
+                    )
+                )
+            }
+        },
+        sheetState = scaffoldState,
+        sheetElevation = 20.dp,
+        sheetBackgroundColor = Color.White,
+        sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
+    ) {
+        if (!loaderState.isLoaderVisible) {
+            Scaffold(
+                containerColor = white,
+                modifier = Modifier
+                    .padding(top = dimen_10_dp)
+                    .fillMaxSize(),
+                bottomBar = {
+                    BottomAppBar(
                         containerColor = white,
-                        modifier = Modifier
-                            .padding(top = dimen_10_dp)
-                            .fillMaxSize(),
-                        bottomBar = {
-                            BottomAppBar(
-                                containerColor = white,
-                                tonalElevation = defaultCardElevation
-                            ) {
-                                Column {
-                                    ExtendedFloatingActionButton(
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
+                        tonalElevation = defaultCardElevation
+                    ) {
+                        Column {
+                            ExtendedFloatingActionButton(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
 //                        shape = RoundedCornerShape(bottomStart = roundedCornerRadiusDefault, bottomEnd = roundedCornerRadiusDefault),
-                                        shape = RoundedCornerShape(roundedCornerRadiusDefault),
-                                        containerColor = if (viewModel.isSectionCompleted.value) blueDark else inactiveLightBlue,
-                                        contentColor = if (viewModel.isSectionCompleted.value) white else inactiveTextBlue,
-                                        onClick = {
-                                            if (viewModel.isSectionCompleted.value) {
-                                                viewModel.onEvent(
-                                                    QuestionScreenEvents.SectionProgressUpdated(
-                                                        surveyId = sectionDetails.surveyId,
-                                                        sectionId = sectionDetails.sectionId,
-                                                        didiId = surveyeeId,
-                                                        SectionStatus.COMPLETED
-                                                    )
-                                                )
+                                shape = RoundedCornerShape(roundedCornerRadiusDefault),
+                                containerColor = if (viewModel.isSectionCompleted.value) blueDark else inactiveLightBlue,
+                                contentColor = if (viewModel.isSectionCompleted.value) white else inactiveTextBlue,
+                                onClick = {
+                                    if (viewModel.isSectionCompleted.value) {
+                                        viewModel.onEvent(
+                                            QuestionScreenEvents.SectionProgressUpdated(
+                                                surveyId = sectionDetails.surveyId,
+                                                sectionId = sectionDetails.sectionId,
+                                                didiId = surveyeeId,
+                                                SectionStatus.COMPLETED
+                                            )
+                                        )
 //                                viewModel.onEvent(QuestionScreenEvents.SendAnswersToServer(surveyId = sectionDetails.surveyId, sectionId = sectionDetails.sectionId, surveyeeId))
 
-                                                if (sectionDetails.sectionName.equals(
-                                                        NO_SECTION,
-                                                        true
-                                                    )
-                                                )
-                                                    navigateBackToSurveyeeListScreen(navController)
-                                                else
-                                                    nextSectionHandler(sectionId)
-                                            }
-                                        }
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.save_next_section_button_text),
-                                            style = defaultTextStyle,
-                                            color = if (viewModel.isSectionCompleted.value) white else inactiveTextBlue
+                                        if (sectionDetails.sectionName.equals(
+                                                NO_SECTION,
+                                                true
+                                            )
                                         )
-                                        Icon(
-                                            imageVector = Icons.Default.ArrowForward,
-                                            contentDescription = "save section button",
-                                            tint = if (viewModel.isSectionCompleted.value) white else inactiveTextBlue,
-                                            modifier = Modifier.absolutePadding(top = dimen_3_dp)
-                                        )
+                                            navigateBackToSurveyeeListScreen(navController)
+                                        else
+                                            nextSectionHandler(sectionId)
                                     }
                                 }
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.save_next_section_button_text),
+                                    style = defaultTextStyle,
+                                    color = if (viewModel.isSectionCompleted.value) white else inactiveTextBlue
+                                )
+                                Icon(
+                                    imageVector = Icons.Default.ArrowForward,
+                                    contentDescription = "save section button",
+                                    tint = if (viewModel.isSectionCompleted.value) white else inactiveTextBlue,
+                                    modifier = Modifier.absolutePadding(top = dimen_3_dp)
+                                )
                             }
                         }
-                    ) {
+                    }
+                }
+            ) {
 
-                        LoaderComponent(
-                            visible = loaderState.isLoaderVisible,
-                            modifier = Modifier.padding(it)
-                        )
+                LoaderComponent(
+                    visible = loaderState.isLoaderVisible,
+                    modifier = Modifier.padding(it)
+                )
                 if (viewModel.showExpandedImage.value) {
                     ImageExpanderDialogComponent(
                         viewModel.expandedImagePath.value
@@ -266,7 +258,12 @@ fun QuestionScreen(
                         }
                     },
                     answeredQuestionCountIncreased = { question, isAllMultipleTypeQuestionUnanswered ->
-                        viewModel.onEvent(QuestionScreenEvents.UpdateAnsweredQuestionCount(question, isAllMultipleTypeQuestionUnanswered))
+                        viewModel.onEvent(
+                            QuestionScreenEvents.UpdateAnsweredQuestionCount(
+                                question,
+                                isAllMultipleTypeQuestionUnanswered
+                            )
+                        )
                     }
                 )
             }

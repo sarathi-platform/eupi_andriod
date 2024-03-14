@@ -3,6 +3,7 @@ package com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case
 import androidx.lifecycle.LiveData
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
+import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.repository.FormQuestionResponseRepository
 
 class GetFormQuestionResponseUseCase(private val repository: FormQuestionResponseRepository) {
@@ -57,6 +58,30 @@ class GetFormQuestionResponseUseCase(private val repository: FormQuestionRespons
 
     suspend fun getFormResponseForReferenceId(referenceId: String): List<FormQuestionResponseEntity> {
         return repository.getFormResponseForReferenceId(referenceId)
+    }
+
+    suspend fun getFormQuestionForId(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int
+    ): QuestionEntity? {
+        return repository.getFormQuestionForId(surveyId, sectionId, questionId)
+    }
+
+    suspend fun getFormQuestionCountForSection(
+        surveyId: Int,
+        sectionId: Int,
+        didiId: Int
+    ): List<FormQuestionResponseEntity> {
+        return repository.getFormQuestionCountForSection(
+            surveyId = surveyId,
+            sectionId = sectionId,
+            didiId = didiId
+        )
+    }
+
+    suspend fun getQuestionTag(surveyId: Int, sectionId: Int, questionId: Int): String {
+        return repository.getQuestionTag(surveyId, sectionId, questionId)
     }
 
 }

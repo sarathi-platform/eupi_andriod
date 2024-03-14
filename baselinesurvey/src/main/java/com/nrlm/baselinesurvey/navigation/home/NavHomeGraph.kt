@@ -32,13 +32,12 @@ import com.nrlm.baselinesurvey.ARG_VIDEO_PATH
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
-import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
-import com.nrlm.baselinesurvey.navigation.AuthScreen
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.auth.presentation.LoginScreenComponent
 import com.nrlm.baselinesurvey.ui.auth.presentation.OtpVerificationScreenComponent
 import com.nrlm.baselinesurvey.ui.common_components.FinalStepCompletionScreen
 import com.nrlm.baselinesurvey.ui.common_components.StepCompletionScreen
+import com.nrlm.baselinesurvey.ui.form_response_summary_screen.presentation.FormQuestionSummaryScreen
 import com.nrlm.baselinesurvey.ui.language.presentation.LanguageScreenComponent
 import com.nrlm.baselinesurvey.ui.mission_screen.presentation.MissionScreen_1
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.presentation.MissionSummaryScreen
@@ -301,10 +300,38 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
             }
         }
 
+        composable(
+            route = HomeScreens.FORM_QUESTION_SUMMARY_SCREEN.route,
+            arguments = listOf(
+                navArgument(ARG_SURVEY_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(ARG_SECTION_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(ARG_QUESTION_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(ARG_DIDI_ID) {
+                    type = NavType.IntType
+                }
+            )
+        ) {
+            FormQuestionSummaryScreen(
+                formResponseSummaryScreenViewModel = hiltViewModel(),
+                navController = navController,
+                surveyId = it.arguments?.getInt(ARG_SURVEY_ID) ?: 0,
+                sectionId = it.arguments?.getInt(ARG_SECTION_ID) ?: 0,
+                questionId = it.arguments?.getInt(ARG_QUESTION_ID) ?: 0,
+                surveyeeId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0
+            )
+
+        }
+
 
         addDidiNavGraph(navController = navController)
         settingNavGraph(navHostController = navController)
-        logoutNavGraph(navController=navController)
+        logoutNavGraph(navController = navController)
     }
 
 }
@@ -420,6 +447,10 @@ sealed class HomeScreens(val route: String) {
     object STEP_COMPLETION_SCREEN :
         HomeScreens(route = "$Step_Complition_Screen_ROUTE_NAME/{$ARG_COMPLETION_MESSAGE}")
 
+    object FORM_QUESTION_SUMMARY_SCREEN : HomeScreens(
+        route = "$FORM_QUESTION_SUMMARY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_SECTION_ID}/{$ARG_QUESTION_ID}/{$ARG_DIDI_ID}"
+    )
+
 }
 
 const val DATA_LOADING_SCREEN_ROUTE_NAME = "data_loading_screen"
@@ -439,6 +470,7 @@ const val Step_Complition_Screen_ROUTE_NAME = "step_complition_screen"
 const val SETTING_ROUTE_NAME = "setting_screen"
 const val LANGUAGE_SCREEN_ROUTE_NAME = "language_screen"
 const val PROFILE_BS_SCREEN_ROUTE_NAME = "profile_bs_screen"
+const val FORM_QUESTION_SUMMARY_SCREEN_ROUTE_NAME = "form_question_summary_screen"
 
 
 fun navigateToBaseLineStartScreen(surveyeeId: Int, survyId: Int, navController: NavController) {
@@ -485,19 +517,41 @@ fun navigateToSectionListScreen(surveyeeId: Int, surveyeId: Int, navController: 
     navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$surveyeeId/$surveyeId")
 }
 
-fun navigateToSearchScreen(navController: NavController, surveyeId: Int, surveyeeId: Int, fromScreen: String) {
+fun navigateToSearchScreen(
+    navController: NavController,
+    surveyeId: Int,
+    surveyeeId: Int,
+    fromScreen: String
+) {
     navController.navigate("$SEARCH_SCREEN_ROUTE_NAME/$surveyeId/$surveyeeId/$fromScreen")
 }
 
-fun navigateToFormTypeQuestionScreen(navController: NavController, question: QuestionEntity, sectionDetails: SectionListItem, surveyeeId: Int) {
-    navController.navigate("$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/${question.questionDisplay}/${sectionDetails.surveyId}/${sectionDetails.sectionId}/${question.questionId}/${surveyeeId}")
+fun navigateToFormTypeQuestionScreen(
+    navController: NavController,
+    question: QuestionEntity,
+    surveyId: Int,
+    sectionId: Int,
+    surveyeeId: Int
+) {
+    navController.navigate("$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/${question.questionDisplay}/${surveyId}/${sectionId}/${question.questionId}/${surveyeeId}")
 
+}
+
+fun navigateToFormQuestionSummaryScreen(
+    navController: NavController,
+    surveyId: Int,
+    sectionId: Int,
+    questionId: Int,
+    didiId: Int
+) {
+    navController.navigate("$FORM_QUESTION_SUMMARY_SCREEN_ROUTE_NAME/$surveyId/$sectionId/$questionId/$didiId")
 }
 
 sealed class LogoutBSScreens(val route: String) {
     object LOG_LOGIN_SCREEN : LogoutBSScreens(route = "login_screen")
     object LOG_SURVEYEE_LIST_SCREEN : LogoutBSScreens(route = "surveyee_list_screen")
-    object LOG_OTP_VERIFICATION : LogoutBSScreens(route = "otp_verification_screen/{$ARG_MOBILE_NUMBER}")
+    object LOG_OTP_VERIFICATION :
+        LogoutBSScreens(route = "otp_verification_screen/{$ARG_MOBILE_NUMBER}")
 
     object LOG_START_SCREEN : LogoutBSScreens(route = "start_screen")
 

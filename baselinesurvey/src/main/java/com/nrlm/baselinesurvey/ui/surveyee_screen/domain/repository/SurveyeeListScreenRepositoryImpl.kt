@@ -20,8 +20,10 @@ import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.utils.createMultiLanguageVillageRequest
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
+import com.nudge.core.toDate
 import javax.inject.Inject
 
 class SurveyeeListScreenRepositoryImpl @Inject constructor(
@@ -164,11 +166,33 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
 
     }
 
-    override suspend fun getMissionActivitiesAllTaskStatusFromDB(
+    override suspend fun updateActivityAllTaskStatus(
         activityId: Int,
         isAllTask: Boolean
     ) {
-        activityDao.updateActivityStatus(activityId, isAllTask)
+        activityDao.updateActivityAllTaskStatus(activityId, isAllTask)
+    }
+
+    override suspend fun updateActivityStatus(
+        missionId: Int,
+        activityId: Int,
+        status: SectionStatus
+    ) {
+        if (status == SectionStatus.COMPLETED) {
+            activityDao.markActivityComplete(
+                missionId = missionId,
+                activityId = activityId,
+                status = status.name,
+                completedDate = System.currentTimeMillis().toDate().toString()
+            )
+        } else {
+            activityDao.markActivityStart(
+                missionId = missionId,
+                activityId = activityId,
+                status = status.name,
+                actualStartDate = System.currentTimeMillis().toDate().toString()
+            )
+        }
     }
 
     override suspend fun getActivitiyStatusFromDB(activityId: Int): MissionActivityEntity {

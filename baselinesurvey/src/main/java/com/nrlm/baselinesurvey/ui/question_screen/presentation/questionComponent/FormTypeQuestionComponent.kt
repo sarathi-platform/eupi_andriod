@@ -33,10 +33,12 @@ import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.ui.common_components.ExpandableDescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.common_components.OutlinedCTAButtonComponent
+import com.nrlm.baselinesurvey.ui.common_components.SummaryCardComponent
 import com.nrlm.baselinesurvey.ui.common_components.VerticalAnimatedVisibilityComponent
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
+import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
@@ -44,6 +46,8 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.lightGray2
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
+import com.nrlm.baselinesurvey.ui.theme.weight_20_percent
+import com.nrlm.baselinesurvey.ui.theme.weight_60_percent
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
 import com.patsurvey.nudge.customviews.htmltext.HtmlText
@@ -57,9 +61,11 @@ fun FormTypeQuestionComponent(
     showQuestionState: QuestionEntityState = QuestionEntityState.getEmptyStateObject(),
     maxCustomHeight: Dp,
     contests: List<ContentEntity?>? = listOf(),
+    itemCount: Int = 0,
     onAnswerSelection: (questionIndex: Int) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
-    questionDetailExpanded: (index: Int) -> Unit
+    questionDetailExpanded: (index: Int) -> Unit,
+    onViewSummaryClicked: (questionId: Int) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val outerState: LazyListState = rememberLazyListState()
@@ -133,23 +139,37 @@ fun FormTypeQuestionComponent(
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(10.dp),
+                                        .padding(dimen_10_dp),
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    Spacer(modifier = Modifier
-                                        .fillMaxWidth()
-                                        .weight(0.2f))
+                                    Spacer(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .weight(weight_20_percent)
+                                    )
                                     OutlinedCTAButtonComponent(
                                         tittle = question?.questionSummary,
                                         Modifier
                                             .fillMaxWidth()
-                                            .weight(0.6f)
+                                            .weight(weight_60_percent)
                                     ) {
                                         onAnswerSelection(questionIndex)
                                     }
-                                    Spacer(modifier = Modifier
-                                        .fillMaxWidth()
-                                        .weight(0.2f))
+                                    Spacer(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .weight(weight_20_percent)
+                                    )
+                                }
+                            }
+                            if (itemCount > 0) {
+                                item {
+                                    SummaryCardComponent(
+                                        itemCount,
+                                        question
+                                    ) {
+                                        onViewSummaryClicked(it)
+                                    }
                                 }
                             }
                             item {
@@ -184,190 +204,10 @@ fun FormTypeQuestionComponent(
                                     )
                                 }
                             }
-                            /*item {
-                                Card(modifier = Modifier
-                                    .padding(horizontal = dimen_16_dp)
-                                    .background(
-                                        white
-                                    ),
-                                    colors = CardDefaults.cardColors(containerColor = white),
-                                    elevation = CardDefaults.elevatedCardElevation(defaultElevation = defaultCardElevation)) {
-                                    Column(
-                                        verticalArrangement = Arrangement.spacedBy(dimen_8_dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        modifier = Modifier
-                                            .padding(
-                                                vertical = dimen_8_dp,
-                                                horizontal = dimen_16_dp
-                                            )
-                                            .background(
-                                                white
-                                            )
-                                    ) {
-                                        Text(text = "Summary Card", color = textColorDark, style = newMediumTextStyle)
-                                        Text(text = "", color = textColorDark, style = newMediumTextStyle)
-                                        CTAButtonComponent(tittle = "View Details") {
-                                            // TODO Handle navigation to summary list screen
-                                        }
-                                        Spacer(modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(dimen_8_dp))
-                                    }
-                                }
-                            }
-                            item {
-                                Spacer(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(dimen_10_dp)
-                                )
-                            }*/
-                            /*item {
-                                Spacer(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(dimen_10_dp)
-                                )
-                                Divider(
-                                    thickness = dimen_1_dp,
-                                    color = lightGray2,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                ExpandableDescriptionContentComponent(
-                                    questionDetailExpanded,
-                                    questionIndex,
-                                    question,
-                                    imageClickListener = { imageTypeDescriptionContent ->
-                                        onMediaTypeDescriptionAction(
-                                            DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
-                                            imageTypeDescriptionContent
-                                        )
-                                    },
-                                    videoLinkClicked = { videoTypeDescriptionContent ->
-                                        onMediaTypeDescriptionAction(
-                                            DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
-                                            videoTypeDescriptionContent
-                                        )
-                                    }
-                                )
-                            }*/
-
                         }
                     }
                 }
             }
         }
-
-        /*VerticalAnimatedVisibilityComponent(visible = showQuestionState.showQuestion) {
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp)) {
-                CTAButtonComponent(
-                    tittle = question?.questionDisplay,
-                    Modifier
-                        .fillMaxWidth()
-                ) {
-                    onAnswerSelection(questionIndex)
-                }
-            }
-            *//*Card(
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = defaultCardElevation
-                ),
-                shape = RoundedCornerShape(roundedCornerRadiusDefault),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = minHeight, max = maxHeight)
-                    .background(white)
-                    .clickable {
-
-                    }
-                    .then(modifier)
-            ) {
-                Column(modifier = Modifier.background(white)) {
-                    Column(
-                        Modifier.padding(top = dimen_16_dp),
-                        verticalArrangement = Arrangement.spacedBy(dimen_18_dp)
-                    ) {
-                        LazyColumn(
-                            state = outerState,
-                            modifier = Modifier
-                                .heightIn(min = 110.dp, max = maxCustomHeight)
-                        ) {
-                            item {
-                                Row(
-                                    modifier = Modifier
-                                        .padding(bottom = 10.dp)
-                                        .padding(horizontal = dimen_16_dp)
-                                ) {
-                                    Text(
-                                        text = "${questionIndex + 1}. ", style = defaultTextStyle,
-                                        color = textColorDark
-                                    )
-                                    HtmlText(
-                                        text = "${question?.questionDisplay}",
-                                        style = defaultTextStyle,
-                                        color = textColorDark,
-                                        overflow = TextOverflow.Ellipsis,
-                                        softWrap = true
-                                    )
-                                }
-                            }
-                            item {
-                                Spacer(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(dimen_16_dp)
-                                )
-                            }
-                            item {
-                                Box(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(10.dp)) {
-                                    CTAButtonComponent(
-                                        tittle = question?.questionDisplay,
-                                        Modifier
-                                            .fillMaxWidth()
-                                    ) {
-                                        onAnswerSelection(questionIndex)
-                                    }
-                                }
-                            }
-                            item {
-                                Spacer(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(dimen_10_dp)
-                                )
-    //                            Divider(
-    //                                thickness = dimen_1_dp,
-    //                                color = lightGray2,
-    //                                modifier = Modifier.fillMaxWidth()
-    //                            )
-    //                            ExpandableDescriptionContentComponent(
-    //                                questionDetailExpanded,
-    //                                questionIndex,
-    //                                question,
-    //                                imageClickListener = { imageTypeDescriptionContent ->
-    //                                    onMediaTypeDescriptionAction(
-    //                                        DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
-    //                                        imageTypeDescriptionContent
-    //                                    )
-    //                                },
-    //                                videoLinkClicked = { videoTypeDescriptionContent ->
-    //                                    onMediaTypeDescriptionAction(
-    //                                        DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
-    //                                        videoTypeDescriptionContent
-    //                                    )
-    //                                }
-    //                            )
-                            }
-
-                        }
-                    }
-                }
-            }*//*
-        }*/
-
     }
 }

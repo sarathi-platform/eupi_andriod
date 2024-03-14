@@ -13,11 +13,11 @@ class GetActivityStateFromDBUseCase @Inject constructor(private val repository: 
         return repository.getMissionActivitiesStatusFromDB(activityId, surveyeeCardState)
     }
 
-    suspend fun getActivitiesAllTaskStatus(
+    suspend fun updateActivityAllTaskStatus(
         activityId: Int,
         isAllTask: Boolean
     ) {
-        return repository.getMissionActivitiesAllTaskStatusFromDB(activityId, isAllTask)
+        return repository.updateActivityAllTaskStatus(activityId, isAllTask)
     }
 
     suspend fun getActivity(activityId: Int): MissionActivityEntity {

@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.model.datamodel
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.nrlm.baselinesurvey.BLANK_STRING
 
 data class SaveAnswerEventOptionItemDto(
     @SerializedName("optionId")
@@ -9,5 +10,11 @@ data class SaveAnswerEventOptionItemDto(
     val optionId: Int,
     @SerializedName("selectedValue")
     @Expose
-    val selectedValue: String?
+    val selectedValue: String?,
+    @SerializedName("referenceId")
+    @Expose
+    val referenceId: String = "",
+    @SerializedName("tag")
+    @Expose
+    val tag: String = BLANK_STRING
 )

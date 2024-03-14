@@ -621,7 +621,7 @@ fun saveFormQuestionResponseEntity(
 }
 
 fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObjectDto(
-    optionsItemEntityList: List<OptionItemEntity>, questionTag: String
+    optionsItemEntityList: List<OptionItemEntity>, questionTag: String?
 ): List<FormResponseObjectDto> {
     val householdMembersList = mutableListOf<FormResponseObjectDto>()
     val referenceIdMap = this.groupBy { it.referenceId }
@@ -630,7 +630,7 @@ fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObject
         val householdMemberDetailsMap = mutableMapOf<Int, String>()
         householdMember.referenceId = formQuestionResponseEntityList.key
         householdMember.questionId = formQuestionResponseEntityList.value.first().questionId
-        householdMember.questionTag = questionTag
+        householdMember.questionTag = questionTag ?: BLANK_STRING
         formQuestionResponseEntityList.value.forEachIndexed { index, formQuestionResponseEntity ->
             householdMemberDetailsMap.put(formQuestionResponseEntity.optionId, formQuestionResponseEntity.selectedValue)
             /*var option = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }
@@ -1079,4 +1079,68 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemDto(type: QuestionT
     }
 
     return saveAnswerEventOptionItemDtoList
+}
+
+
+fun List<FormQuestionResponseEntity>.convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto(
+    type: QuestionType
+): List<SaveAnswerEventOptionItemDto> {
+    val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
+    if (type == QuestionType.Form) {
+        this.forEach { formQuestionResponseEntity ->
+            val saveAnswerEventOptionItemDto = SaveAnswerEventOptionItemDto(
+                optionId = formQuestionResponseEntity.optionId,
+                selectedValue = formQuestionResponseEntity.selectedValue,
+                referenceId = formQuestionResponseEntity.referenceId
+            )
+            saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
+        }
+    }
+
+    return saveAnswerEventOptionItemDtoList
+}
+
+fun List<FormResponseObjectDto>.convertFormResponseObjectToSaveAnswerEventOptionDto(): List<SaveAnswerEventOptionItemDto> {
+    val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
+
+    this.forEach { formResponseObjectDto ->
+        formResponseObjectDto.memberDetailsMap.forEach { memberDetails ->
+            val saveAnswerEventOptionItemDto = SaveAnswerEventOptionItemDto(
+                optionId = memberDetails.key,
+                selectedValue = memberDetails.value,
+                referenceId = formResponseObjectDto.referenceId
+            )
+            saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
+        }
+    }
+
+    return saveAnswerEventOptionItemDtoList
+}
+
+fun List<InputTypeQuestionAnswerEntity>.convertInputTypeQuestionToEventOptionItemDto(
+    questionId: Int,
+    questionType: QuestionType
+): List<SaveAnswerEventOptionItemDto> {
+    val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
+
+    if (questionType != QuestionType.InputNumber)
+        return emptyList()
+
+    if (questionId == 0 || questionId == -1)
+        return emptyList()
+
+    val filteredAnswerListForQuestion = this.filter { it.questionId == questionId }
+    filteredAnswerListForQuestion.forEach { inputTypeQuestionAnswerEntity ->
+        val saveAnswerEventOptionItemDto = SaveAnswerEventOptionItemDto(
+            optionId = inputTypeQuestionAnswerEntity.optionId,
+            selectedValue = inputTypeQuestionAnswerEntity.inputValue
+        )
+        saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
+    }
+
+    return saveAnswerEventOptionItemDtoList
+}
+
+fun List<FormResponseObjectDto>.getIndexForReferenceId(referenceId: String): Int {
+    return this.map { it.referenceId }.indexOf(referenceId)
 }

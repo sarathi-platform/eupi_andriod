@@ -14,9 +14,12 @@ data class SaveAnswerEventDto(
     @SerializedName("referenceId")
     @Expose
     val referenceId: Int,
-    @SerializedName("sections")
+    @SerializedName("sectionId")
     @Expose
-    val sections: List<SaveAnswerEventSectionItemDto>,
+    val sectionId: Int,
+    @SerializedName("question")
+    @Expose
+    val question: SaveAnswerEventQuestionItemDto,
     @SerializedName("subjectId")
     @Expose
     val subjectId: Int,
