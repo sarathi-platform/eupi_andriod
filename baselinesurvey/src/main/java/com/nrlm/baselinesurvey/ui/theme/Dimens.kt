@@ -34,5 +34,13 @@ val dimen_100_dp = 100.dp
 val dimen_450_px = 450
 val dimen_400_px = 400
 
+val weight_10_percent = 0.1f
+val weight_20_percent = 0.2f
+val weight_40_percent = 0.4f
+val weight_50_percent = 0.5f
+val weight_60_percent = 0.6f
+val weight_80_percent = 0.8f
+val weight_100_percent = 1f
+
 
 

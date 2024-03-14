@@ -16,7 +16,8 @@ enum class QuestionType {
     Toggle,
     InputNumber,
     InputNumberEditText,
-    Calculation;
+    Calculation,
+    SingleValueForm;
 
     companion object {
         fun getQuestionTypeFromName(name: String): QuestionType? {

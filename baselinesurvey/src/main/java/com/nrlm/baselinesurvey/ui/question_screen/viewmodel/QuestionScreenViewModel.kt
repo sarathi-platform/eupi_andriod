@@ -19,6 +19,7 @@ import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
+import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
 import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
@@ -94,10 +95,16 @@ class QuestionScreenViewModel @Inject constructor(
     val filterSectionList: State<SectionListItem> get() = _filterSectionList
 
     val answeredQuestionCount = mutableSetOf<Int>()
-    val totalQuestionCount = mutableIntStateOf(questionEntityStateList.filter { it.showQuestion }.size)
+    val totalQuestionCount = mutableIntStateOf(0)
 
     val isSectionCompleted = mutableStateOf(false)
     val contentMapping = mutableStateOf<Map<String, ContentEntity>>(mutableMapOf())
+
+    private val _formResponseEntityToQuestionMap =
+        mutableStateOf(mutableMapOf<Int, List<FormQuestionResponseEntity>>())
+    val formResponseEntityToQuestionMap: State<Map<Int, List<FormQuestionResponseEntity>>> get() = _formResponseEntityToQuestionMap
+
+    var didiDetails: SurveyeeEntity? = null
 
     fun initQuestionScreenHandler(surveyeeId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -144,6 +151,9 @@ class QuestionScreenViewModel @Inject constructor(
     fun init(surveyId: Int, sectionId: Int, surveyeeId: Int) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
+            didiDetails = questionScreenUseCase.getSurveyeeDetailsUserCase.invoke(surveyeeId)
+
             val selectedlanguageId = questionScreenUseCase.getSectionUseCase.getSelectedLanguage()
             _sectionDetail.value =
                 questionScreenUseCase.getSectionUseCase.invoke(
@@ -152,11 +162,12 @@ class QuestionScreenViewModel @Inject constructor(
                     selectedlanguageId
                 )
             val questionAnswerMap = mutableMapOf<Int, List<OptionItemEntity>>()
-            _inputTypeQuestionAnswerEntityList.value = questionScreenUseCase.getSectionUseCase.getInputTypeQuestionAnswers(
-                surveyId = surveyId,
-                sectionId = sectionId,
-                didiId = surveyeeId
-            )
+            _inputTypeQuestionAnswerEntityList.value =
+                questionScreenUseCase.getSectionUseCase.getInputTypeQuestionAnswers(
+                    surveyId = surveyId,
+                    sectionId = sectionId,
+                    didiId = surveyeeId
+                )
 
             val localAnswerList =
                 questionScreenUseCase.getSectionAnswersUseCase.getSectionAnswerForDidi(
@@ -185,6 +196,33 @@ class QuestionScreenViewModel @Inject constructor(
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
+            getFormResponseCountsForSection(surveyId, sectionId, surveyeeId)
+        }
+
+    }
+
+    private suspend fun getFormResponseCountsForSection(
+        surveyId: Int,
+        sectionId: Int,
+        surveyeeId: Int
+    ) {
+        val formQuestionResponseEntityList =
+            questionScreenUseCase.getFormQuestionResponseUseCase.getFormQuestionCountForSection(
+                surveyId = surveyId,
+                sectionId = sectionId,
+                didiId = surveyeeId
+            )
+        val map = formQuestionResponseEntityList.groupBy { it.questionId }
+        _formResponseEntityToQuestionMap.value.putAll(map)
+        val tempList = questionEntityStateList.toList()
+            .filter { it.questionEntity?.type == QuestionType.Form.name }
+        map.keys.forEach { questionId ->
+            onEvent(
+                QuestionScreenEvents.UpdateAnsweredQuestionCount(
+                    tempList.find { it.questionId == questionId }!!,
+                    false
+                )
+            )
         }
     }
 
@@ -538,15 +576,6 @@ class QuestionScreenViewModel @Inject constructor(
                     optionItemEntity = event.optionItemEntity,
                     selectedValue = event.selectedValue
                 )
-            }
-
-            is QuestionTypeEvent.DeleteFormQuestionResponseEvent -> {
-                viewModelScope.launch(Dispatchers.IO) {
-                    questionScreenUseCase.deleteFormQuestionResponseUseCase.invoke(referenceId = event.referenceId)
-                    Log.d("TAG", "onEvent: DeleteFormQuestionResponseEvent -> totalQuestionCount.intValue = ${totalQuestionCount.intValue}, answeredQuestionCount: ${answeredQuestionCount.size}" +
-                            " isSectionCompleted.value = ${answeredQuestionCount.size == totalQuestionCount.intValue || answeredQuestionCount.size > totalQuestionCount.intValue}")
-                }
-
             }
 
             is QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption ->  {
@@ -1063,5 +1092,10 @@ class QuestionScreenViewModel @Inject constructor(
             contentEntity?.let { map.put(it.contentType, contentEntity) }
         }
         return map
+    }
+
+    fun getFormResponseItemCountForQuestion(questionId: Int?): Int {
+        val formResponseItemListForQuestion = formResponseEntityToQuestionMap.value[questionId]
+        return formResponseItemListForQuestion?.groupBy { it.referenceId }?.keys?.size ?: 0
     }
 }

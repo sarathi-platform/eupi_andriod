@@ -18,6 +18,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -34,10 +35,11 @@ import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
+import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
-import com.nrlm.baselinesurvey.ui.Constants.QuestionType
-import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
+import com.nrlm.baselinesurvey.ui.form_response_summary_screen.viewmodel.FormResponseSummaryScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
@@ -53,7 +55,7 @@ import java.util.Locale
 @Composable
 fun FormResponseCard(
     modifier: Modifier = Modifier,
-    householdMemberDto: FormResponseObjectDto,
+    formResponseObjectDto: FormResponseObjectDto,
     optionItemListWithConditionals: List<OptionItemEntity>,
     viewModel: BaseViewModel,
     isPictureRequired: Boolean = true,
@@ -61,9 +63,7 @@ fun FormResponseCard(
     onUpdate: (referenceId: String) -> Unit
 ) {
 
-    val questionScreenViewModel = viewModel as QuestionScreenViewModel
-
-    val fromTypeQuestionList = questionScreenViewModel.questionEntityStateList.filter { it.questionEntity?.type == QuestionType.Form.name }.toList()
+    val formResponseSummaryScreenViewModel = viewModel as FormResponseSummaryScreenViewModel
 
     Card(
         elevation = CardDefaults.cardElevation(
@@ -108,62 +108,67 @@ fun FormResponseCard(
                 Spacer(modifier = Modifier.width(dimen_14_dp))
                 Column {
                     Text(text = buildAnnotatedString {
-                        if (householdMemberDto.questionTag.equals("Household information")) {
-                            append(householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                        if (formResponseObjectDto.questionTag.equals("Household information")) {
+                            append(formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                 it.display?.contains(
                                     stringResource(id = R.string.name_comparision),
                                     ignoreCase = true
                                 )!!
                             }?.optionId] ?: BLANK_STRING)
-                        } else if (householdMemberDto.questionTag.equals("Livelihood sources")) {
+                        } else if (formResponseObjectDto.questionTag.equals("Livelihood sources")) {
                             append(
-                                householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                     it.display?.contains(
                                         stringResource(id = R.string.income_source_comparision),
                                         ignoreCase = true
                                     )!!
-                                }?.optionId]  ?: BLANK_STRING
+                                }?.optionId] ?: BLANK_STRING
                             )
 
 
-                            var income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                it.display?.contains(
-                                    stringResource(id = R.string.agriculture_produce_comparision),
-                                    ignoreCase = true
-                                )!!
-                            }?.optionId] ?: BLANK_STRING
-
-                            if (income == BLANK_STRING)
-                                income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                            var income =
+                                formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                     it.display?.contains(
-                                        stringResource(id = R.string.livestock_comparision),
+                                        stringResource(id = R.string.agriculture_produce_comparision),
                                         ignoreCase = true
                                     )!!
                                 }?.optionId] ?: BLANK_STRING
 
                             if (income == BLANK_STRING)
-                                income = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                    it.display?.contains(
-                                        stringResource(id = R.string.income_frequency_comparision),
-                                        ignoreCase = true
-                                    )!!
-                                }?.optionId] ?: BLANK_STRING
+                                income =
+                                    formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                        it.display?.contains(
+                                            stringResource(id = R.string.livestock_comparision),
+                                            ignoreCase = true
+                                        )!!
+                                    }?.optionId] ?: BLANK_STRING
+
+                            if (income == BLANK_STRING)
+                                income =
+                                    formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                        it.display?.contains(
+                                            stringResource(id = R.string.income_frequency_comparision),
+                                            ignoreCase = true
+                                        )!!
+                                    }?.optionId] ?: BLANK_STRING
 
                             if (income != BLANK_STRING) {
                                 append(" | ")
                             }
 
                             append(income)
-                        } else if (householdMemberDto.questionTag.equals("Public Infra")) {
-                            val questionState = fromTypeQuestionList.filter { it.questionEntity?.type == QuestionType.Form.name }.find { it.questionId == householdMemberDto.questionId }
-                            var source = when (questionState?.questionEntity?.questionDisplay) {
+                        } else if (formResponseObjectDto.questionTag.equals("Public Infra")) {
+                            val questionState = formResponseSummaryScreenViewModel.questionEntity
+                            var source = when (questionState?.questionDisplay) {
                                 stringResource(R.string.to_the_block_office_comparision),
                                 stringResource(R.string.to_the_nearest_primary_health_care_centre_comparision),
                                 stringResource(R.string.to_the_nearest_government_school_comparision),
                                 stringResource(R.string.to_the_nearest_permanent_market_comparision),
                                 stringResource(R.string.to_the_nearest_bank_comparsion) -> {
-                                    questionState.questionEntity.questionDisplay?.replace(
-                                        stringResource(R.string.to_the_replacement_string), BLANK_STRING)?.capitalize(Locale.ROOT)
+                                    questionState.questionDisplay?.replace(
+                                        stringResource(R.string.to_the_replacement_string),
+                                        BLANK_STRING
+                                    )?.capitalize(Locale.ROOT)
                                 }
 
                                 else -> {
@@ -174,26 +179,32 @@ fun FormResponseCard(
                             append(source)
 
                             var mode = BLANK_STRING
-                            mode = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                it.display?.contains(
-                                    stringResource(R.string.acess_to_public_transportation_comparision),
-                                    ignoreCase = true
-                                )!!
-                            }?.optionId] ?: BLANK_STRING
+                            mode =
+                                formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                    it.display?.contains(
+                                        stringResource(R.string.acess_to_public_transportation_comparision),
+                                        ignoreCase = true
+                                    )!!
+                                }?.optionId] ?: BLANK_STRING
 
                             if (mode != BLANK_STRING)
                                 append(" | ")
 
                             append(mode)
 
-                        } else if (householdMemberDto.questionTag.contains("key programme", true)) {
+                        } else if (formResponseObjectDto.questionTag.contains(
+                                "key programme",
+                                true
+                            )
+                        ) {
                             var name = BLANK_STRING
-                            name = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                it.display?.contains(
-                                    stringResource(id = R.string.name_comparision),
-                                    ignoreCase = true
-                                )!!
-                            }?.optionId] ?: BLANK_STRING
+                            name =
+                                formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                    it.display?.contains(
+                                        stringResource(id = R.string.name_comparision),
+                                        ignoreCase = true
+                                    )!!
+                                }?.optionId] ?: BLANK_STRING
 
                             append("${stringResource(id = R.string.name_comparision)}: $name")
 
@@ -202,31 +213,33 @@ fun FormResponseCard(
                     }, style = smallTextStyleWithNormalWeight)
 
                     Text(text = buildAnnotatedString {
-                        if (householdMemberDto.questionTag.equals("Household information")) {
-                            this.append(householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                        if (formResponseObjectDto.questionTag.equals("Household information")) {
+                            this.append(formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                 it.display?.contains(
                                     stringResource(id = R.string.relationship_comparision),
                                     ignoreCase = true
                                 )!!
                             }?.optionId] ?: BLANK_STRING)
                             this.append(" | ")
-                            this.append(householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                            this.append(formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                 it.display?.contains(
                                     stringResource(id = R.string.age_comparision),
                                     ignoreCase = true
                                 )!!
                             }?.optionId] ?: BLANK_STRING)
                             this.append(" yrs")
-                        } else if (householdMemberDto.questionTag.equals("Livelihood sources")) {
-                            if ((householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                        } else if (formResponseObjectDto.questionTag.equals("Livelihood sources")) {
+                            if ((formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                     it.display?.contains(
                                         stringResource(id = R.string.income_source_comparision),
                                         ignoreCase = true
                                     )!!
-                                }?.optionId]  ?: BLANK_STRING) != stringResource(id = R.string.no_income_comparision)) {
+                                }?.optionId]
+                                    ?: BLANK_STRING) != stringResource(id = R.string.no_income_comparision)
+                            ) {
                                 append(stringResource(R.string.total_income_lable))
                                 var income =
-                                    householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                    formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                         it.display?.contains(
                                             stringResource(id = R.string.total_income_comparision),
                                             ignoreCase = true
@@ -235,7 +248,7 @@ fun FormResponseCard(
 
                                 if (income == BLANK_STRING)
                                     income =
-                                        householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                        formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                             it.display?.contains(
                                                 stringResource(id = R.string.total_unit_comparision),
                                                 ignoreCase = true
@@ -252,14 +265,15 @@ fun FormResponseCard(
                                     }.forEach {
                                         if (income == BLANK_STRING) {
                                             income =
-                                                householdMemberDto.memberDetailsMap[it.optionId] ?: BLANK_STRING
+                                                formResponseObjectDto.memberDetailsMap[it.optionId]
+                                                    ?: BLANK_STRING
                                         }
                                         return@forEach
                                     }
 
                                 if (income == BLANK_STRING)
                                     income =
-                                        householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                        formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                             it.display?.contains(
                                                 stringResource(id = R.string.small_business_comparision),
                                                 ignoreCase = true
@@ -268,26 +282,33 @@ fun FormResponseCard(
 
                                 append(income)
                             }
-                        } else if (householdMemberDto.questionTag.equals("Public Infra")) {
-                            val avgCost = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                it.display?.trim()?.contains(
-                                    stringResource(R.string.average_travel_cost_comparision).trim(),
-                                    ignoreCase = true
-                                )!!
-                            }?.optionId] ?: BLANK_STRING
+                        } else if (formResponseObjectDto.questionTag.equals("Public Infra")) {
+                            val avgCost =
+                                formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                    it.display?.trim()?.contains(
+                                        stringResource(R.string.average_travel_cost_comparision).trim(),
+                                        ignoreCase = true
+                                    )!!
+                                }?.optionId] ?: BLANK_STRING
 
                             append("Average Cost: ₹ $avgCost")
 
-                        } else if (householdMemberDto.questionTag.contains("key programme", true)) {
+                        } else if (formResponseObjectDto.questionTag.contains(
+                                "key programme",
+                                true
+                            )
+                        ) {
                             var influenceType = BLANK_STRING
-                            influenceType = householdMemberDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                it.display?.contains(
-                                    stringResource(R.string.influence_type_comparision_and_label),
-                                    ignoreCase = true
-                                )!! || it.display.contains(
-                                    stringResource(R.string.designation_comparision_and_label), true
-                                )!!
-                            }?.optionId] ?: BLANK_STRING
+                            influenceType =
+                                formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                    it.display?.contains(
+                                        stringResource(R.string.influence_type_comparision_and_label),
+                                        ignoreCase = true
+                                    )!! || it.display.contains(
+                                        stringResource(R.string.designation_comparision_and_label),
+                                        true
+                                    )!!
+                                }?.optionId] ?: BLANK_STRING
 
                             append("${stringResource(R.string.influence_type_comparision_and_label)}: $influenceType")
 
@@ -298,33 +319,196 @@ fun FormResponseCard(
                 }
             }
             Spacer(modifier = Modifier.height(dimen_16_dp))
-            Divider(thickness = dimen_1_dp, modifier = Modifier.fillMaxWidth(), color = borderGreyLight)
-            Row(modifier = Modifier
-                .fillMaxWidth()
-            ) {
-                /*TextButton(onClick = { onUpdate(householdMemberDto.referenceId) }, modifier = Modifier
+            Divider(
+                thickness = dimen_1_dp,
+                modifier = Modifier.fillMaxWidth(),
+                color = borderGreyLight
+            )
+            Row(
+                modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = blueDark)
+            ) {
+                TextButton(
+                    onClick = { onUpdate(formResponseObjectDto.referenceId) }, modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = blueDark
+                    )
                 ) {
-                    Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit Button", tint = blueDark)
-                }*/
+                    Icon(
+                        imageVector = Icons.Outlined.Edit,
+                        contentDescription = "Edit Button",
+                        tint = blueDark
+                    )
+                }
                 Divider(
                     color = borderGreyLight,
                     modifier = Modifier
                         .fillMaxHeight()  //fill the max height
                         .width(1.dp)
                 )
-                TextButton(onClick = { onDelete(householdMemberDto.referenceId) }, modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = blueDark)
+                TextButton(
+                    onClick = { onDelete(formResponseObjectDto.referenceId) }, modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = blueDark
+                    )
                 ) {
-                    Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete Button", tint = blueDark)
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = "Delete Button",
+                        tint = blueDark
+                    )
                 }
             }
         }
     }
+}
+
+@Composable
+fun DidiInfoCard(
+    modifier: Modifier = Modifier,
+    didiIntoEntity: DidiIntoEntity,
+    didiDetails: SurveyeeEntity?,
+    onUpdate: (didiId: Int) -> Unit
+) {
+
+    if (didiDetails != null) {
+
+        Card(
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = defaultCardElevation
+            ),
+            shape = RoundedCornerShape(roundedCornerRadiusDefault),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(white)
+                .clickable {
+
+                }
+                .then(modifier)
+        ) {
+
+            val dividerHeight = remember {
+                mutableStateOf(0.dp)
+            }
+
+            Column(
+                modifier = Modifier
+                    .background(white)
+                    .padding(vertical = dimen_8_dp)
+            ) {
+                Spacer(modifier = Modifier.width(dimen_14_dp))
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimen_8_dp),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(modifier = Modifier.width(dimen_14_dp))
+
+                    Box(modifier = Modifier.padding(start = 16.dp)) {
+                        CircularImageViewComponent(
+                            modifier = Modifier
+                                .height(45.dp)
+                                .width(45.dp),
+                            imagePath = didiDetails.crpImageLocalPath
+                        )
+                    }
+
+
+                    Spacer(modifier = Modifier.width(dimen_14_dp))
+                    Column {
+                        Text(text = buildAnnotatedString {
+                            append("Didi Name: ")
+                            append(didiDetails.didiName)
+                        }, style = smallTextStyleWithNormalWeight)
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(dimen_8_dp)
+                        )
+                        Text(text = buildAnnotatedString {
+                            append("Dada Name: ")
+                            append(didiDetails.dadaName)
+                        }, style = smallTextStyleWithNormalWeight)
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(dimen_8_dp)
+                        )
+                        Text(text = buildAnnotatedString {
+                            append("Aadhar Card: ")
+                            append(SHGFlag.fromInt(didiIntoEntity.isAdharCard ?: -1).name)
+                        }, style = smallTextStyleWithNormalWeight)
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(dimen_8_dp)
+                        )
+                        Text(text = buildAnnotatedString {
+                            append("VoterId Card: ")
+                            append(SHGFlag.fromInt(didiIntoEntity.isVoterCard ?: -1).name)
+                        }, style = smallTextStyleWithNormalWeight)
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(dimen_8_dp)
+                        )
+                        Text(text = buildAnnotatedString {
+                            append("Phone Number: ")
+                            append(didiIntoEntity.phoneNumber)
+                        }, style = smallTextStyleWithNormalWeight)
+                    }
+                }
+                Spacer(modifier = Modifier.height(dimen_16_dp))
+                Divider(
+                    thickness = dimen_1_dp,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = borderGreyLight
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    TextButton(
+                        onClick = { onUpdate(didiIntoEntity.didiId ?: 0) }, modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = blueDark
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Edit,
+                            contentDescription = "Edit Button",
+                            tint = blueDark
+                        )
+                    }
+                    Divider(
+                        color = borderGreyLight,
+                        modifier = Modifier
+                            .fillMaxHeight()  //fill the max height
+                            .width(1.dp)
+                    )
+                    /*TextButton(onClick = { onDelete(formResponseObjectDto.referenceId) }, modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = blueDark)
+                    ) {
+                        Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete Button", tint = blueDark)
+                    }*/
+                }
+            }
+        }
+    }
+
 }
 
 /*

@@ -621,7 +621,7 @@ fun saveFormQuestionResponseEntity(
 }
 
 fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObjectDto(
-    optionsItemEntityList: List<OptionItemEntity>, questionTag: String
+    optionsItemEntityList: List<OptionItemEntity>, questionTag: String?
 ): List<FormResponseObjectDto> {
     val householdMembersList = mutableListOf<FormResponseObjectDto>()
     val referenceIdMap = this.groupBy { it.referenceId }
@@ -630,7 +630,7 @@ fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObject
         val householdMemberDetailsMap = mutableMapOf<Int, String>()
         householdMember.referenceId = formQuestionResponseEntityList.key
         householdMember.questionId = formQuestionResponseEntityList.value.first().questionId
-        householdMember.questionTag = questionTag
+        householdMember.questionTag = questionTag ?: BLANK_STRING
         formQuestionResponseEntityList.value.forEachIndexed { index, formQuestionResponseEntity ->
             householdMemberDetailsMap.put(formQuestionResponseEntity.optionId, formQuestionResponseEntity.selectedValue)
             /*var option = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }
@@ -1139,4 +1139,8 @@ fun List<InputTypeQuestionAnswerEntity>.convertInputTypeQuestionToEventOptionIte
     }
 
     return saveAnswerEventOptionItemDtoList
+}
+
+fun List<FormResponseObjectDto>.getIndexForReferenceId(referenceId: String): Int {
+    return this.map { it.referenceId }.indexOf(referenceId)
 }

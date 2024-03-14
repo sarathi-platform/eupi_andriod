@@ -312,4 +312,6 @@ const val LANGUAGE_OPEN_FROM_SETTING = "language_open_from_setting"
 const val ARG_FROM_SECTION_SCREEN = "from_section_screen"
 const val ARG_FROM_QUESTION_SCREEN = "from_question_screen"
 
+const val ROOM_INTEGRITY_EXCEPTION = "Room cannot verify the data integrity."
+
 

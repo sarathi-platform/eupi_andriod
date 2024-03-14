@@ -46,6 +46,7 @@ import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_reposito
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.EventsWriterUserCase
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.GetCasteListUseCase
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.UpdateSurveyStateUserCase
+import com.nrlm.baselinesurvey.ui.form_response_summary_screen.domain.use_case.FormResponseSummaryScreenUseCase
 import com.nrlm.baselinesurvey.ui.language.domain.repository.LanguageScreenRepository
 import com.nrlm.baselinesurvey.ui.language.domain.repository.LanguageScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.GetLanguageListFromDbUseCase
@@ -697,6 +698,19 @@ object BaselineModule {
             activityDao = activityDao,
             missionEntityDao = missionEntityDao,
             didiSectionProgressEntityDao = didiSectionProgressEntityDao
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideFormResponseSummaryScreenUseCase(
+        repository: FormQuestionResponseRepository,
+        eventsWriterRepository: EventsWriterRepository
+    ): FormResponseSummaryScreenUseCase {
+        return FormResponseSummaryScreenUseCase(
+            getFormQuestionResponseUseCase = GetFormQuestionResponseUseCase(repository),
+            deleteFormQuestionResponseUseCase = DeleteFormQuestionResponseUseCase(repository),
+            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }
 
