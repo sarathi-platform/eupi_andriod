@@ -139,3 +139,7 @@ val h6 = TextStyle(
     fontSize = 15.sp,
     letterSpacing = 0.15.sp
 )
+
+val h6Bold = h6.copy(
+    fontWeight = FontWeight.SemiBold
+)

@@ -34,7 +34,6 @@ data class OptionsItem(
     @SerializedName("type")
     var optionType: String? = BLANK_STRING,
 
-
     @SerializedName("conditional")
     @Expose
     val conditional: Boolean = false,
@@ -53,7 +52,11 @@ data class OptionsItem(
 
     @SerializedName("conditions")
     @Expose
-    val conditions: List<ConditionsDto?>? = emptyList()
+    val conditions: List<ConditionsDto?>? = emptyList(),
+
+    @SerializedName("tag")
+    @Expose
+    val tag: String? = BLANK_STRING
 
 
 )

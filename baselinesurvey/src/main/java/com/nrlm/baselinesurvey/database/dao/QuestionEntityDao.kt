@@ -40,4 +40,8 @@ interface QuestionEntityDao {
         languageId: Int
     ): QuestionEntity?
 
+
+    @Query("SELECT tag from $QUESTION_TABLE where surveyId = :surveyId and sectionId = :sectionId and questionId = :questionId")
+    fun getQuestionTag(surveyId: Int, sectionId: Int, questionId: Int): String
+
 }

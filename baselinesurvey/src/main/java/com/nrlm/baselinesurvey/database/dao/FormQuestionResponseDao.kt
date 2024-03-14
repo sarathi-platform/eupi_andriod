@@ -71,6 +71,19 @@ interface FormQuestionResponseDao {
     fun deleteFormResponseQuestionForReferenceId(referenceId: String)
 
     @Query("DELETE from $FORM_QUESTION_RESPONSE_TABLE where optionId = :optionId AND questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId AND didiId = :surveyeeId")
-    fun deleteFormResponseQuestionForOption(optionId: Int, questionId: Int, sectionId: Int, surveyId: Int, surveyeeId: Int)
+    fun deleteFormResponseQuestionForOption(
+        optionId: Int,
+        questionId: Int,
+        sectionId: Int,
+        surveyId: Int,
+        surveyeeId: Int
+    )
+
+    @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where surveyId = :surveyId and sectionId = :sectionId and didiId = :didiId")
+    fun getFormQuestionCountForSection(
+        surveyId: Int,
+        sectionId: Int,
+        didiId: Int
+    ): List<FormQuestionResponseEntity>
 
 }

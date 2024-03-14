@@ -80,6 +80,11 @@ data class OptionItemEntity(
     @ColumnInfo(name = "languageId")
     var languageId: Int? = 1,
 
+    @SerializedName("optionTag")
+    @Expose
+    @ColumnInfo(name = "optionTag")
+    val optionTag: String = BLANK_STRING,
+
     @SerializedName("conditions")
     @Expose
     @TypeConverters(ConditionsDtoConvertor::class)
