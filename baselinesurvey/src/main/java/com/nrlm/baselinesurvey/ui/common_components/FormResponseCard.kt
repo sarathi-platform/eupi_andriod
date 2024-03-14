@@ -228,7 +228,7 @@ fun FormResponseCard(
                                 )!!
                             }?.optionId] ?: BLANK_STRING)
                             this.append(" yrs")
-                        } else if (formResponseObjectDto.questionTag.equals("Livelihood sources")) {
+                        } else if (formResponseObjectDto.questionTag.equals("Livelihood sources")) { //TODO Handle all tag and static string comparisons through backend Question API Response
                             if ((formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                     it.display?.contains(
                                         stringResource(id = R.string.income_source_comparision),
@@ -434,7 +434,7 @@ fun DidiInfoCard(
                                 .height(dimen_8_dp)
                         )
                         Text(text = buildAnnotatedString {
-                            append("Dada Name: ")
+                            append("Dada Name: ") //TODO Remove Hard coded strings
                             append(didiDetails.dadaName)
                         }, style = smallTextStyleWithNormalWeight)
                         Spacer(

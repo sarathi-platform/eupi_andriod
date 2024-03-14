@@ -56,7 +56,11 @@ fun FormQuestionSummaryScreen(
                 backgroundColor = white,
                 contentColor = textColorDark,
                 title = {
-                    Text(text = "Summary", style = h6Bold, color = textColorDark)
+                    Text(
+                        text = "Summary",
+                        style = h6Bold,
+                        color = textColorDark
+                    ) //TODO Remove Hard coded strings
                 },
                 navigationIcon = {
                     IconButton(

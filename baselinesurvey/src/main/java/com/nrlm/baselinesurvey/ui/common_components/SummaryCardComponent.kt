@@ -68,7 +68,7 @@ fun SummaryCardComponent(
                         .height(dimen_8_dp)
                 )
                 Text(
-                    text = "Summary",
+                    text = "Summary", //TODO Remove Hard coded strings
                     color = blueDark,
                     style = TextStyle(
                         fontFamily = NotoSans,
