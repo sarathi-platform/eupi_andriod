@@ -15,10 +15,12 @@ import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
 import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
 import com.nrlm.baselinesurvey.PREF_STATE_ID
+import com.nrlm.baselinesurvey.SUCCESS_CODE
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.ContentDao
+import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
@@ -41,12 +43,14 @@ import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.Sections
+import com.nrlm.baselinesurvey.model.mappers.DidiSectionStatusEntityMapper.getDidiSectionStatusEntity
 import com.nrlm.baselinesurvey.model.mappers.FormQuestionEntityMapper.getFormQuestionEntity
 import com.nrlm.baselinesurvey.model.mappers.InputTypeQuestionAnswerEntityMapper
 import com.nrlm.baselinesurvey.model.mappers.SectionAnswerEntityMapper.getSectionAnswerEntity
 import com.nrlm.baselinesurvey.model.request.ContentMangerRequest
 import com.nrlm.baselinesurvey.model.request.GetSurveyAnswerRequest
 import com.nrlm.baselinesurvey.model.request.MissionRequest
+import com.nrlm.baselinesurvey.model.request.SectionStatusRequest
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.model.response.BeneficiaryApiResponse
@@ -75,7 +79,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     val missionActivityDao: MissionActivityDao,
     val activityTaskDao: ActivityTaskDao,
     val contentDao: ContentDao,
-    val baselineDatabase: NudgeBaselineDatabase
+    val baselineDatabase: NudgeBaselineDatabase,
+    val didiSectionProgressEntityDao: DidiSectionProgressEntityDao
 ) : DataLoadingScreenRepository {
     override suspend fun fetchLocalLanguageList(): List<LanguageEntity> {
         return languageListDao.getAllLanguages()
@@ -508,6 +513,27 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
 
     override fun getStateId(): Int {
         return prefRepo.getPref(PREF_STATE_ID, -1)
+    }
+
+    override suspend fun getSectionStatus(sectionStatusRequest: SectionStatusRequest) {
+        try {
+
+
+            val sectionStatusResponse = apiService.getSectionStatus(sectionStatusRequest)
+            if (sectionStatusResponse.status.equals(
+                    SUCCESS_CODE,
+                    true
+                )
+            ) {
+                didiSectionProgressEntityDao.addDidiSectionProgress(
+                    getDidiSectionStatusEntity(
+                        sectionStatusResponse.data!!
+                    )
+                )
+            }
+        } catch (ecxpetion: Exception) {
+            Log.e("SectionStatus", ecxpetion.message.toString())
+        }
     }
 
 }
