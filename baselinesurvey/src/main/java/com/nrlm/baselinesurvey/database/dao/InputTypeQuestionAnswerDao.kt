@@ -55,4 +55,7 @@ interface InputTypeQuestionAnswerDao {
         optionItemId: Int
     ): Int
 
+    @Query("Delete from $INPUT_TYPE_QUESTION_ANSWER_TABLE")
+    fun deleteAllInputTypeAnswers()
+
 }

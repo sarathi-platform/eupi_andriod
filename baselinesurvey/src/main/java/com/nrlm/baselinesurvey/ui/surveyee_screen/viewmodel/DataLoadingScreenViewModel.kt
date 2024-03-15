@@ -166,4 +166,12 @@ class DataLoadingScreenViewModel @Inject constructor(
     fun isUserLoggedIn(): Boolean {
         return fetchDataUseCase.loggedInUseCase.invoke()
     }
+
+    fun isAllDataFetched(): Boolean {
+        return fetchDataUseCase.loggedInUseCase.isDataSynced()
+    }
+
+    fun setAllDataFetched() {
+        fetchDataUseCase.loggedInUseCase.setDataSynced()
+    }
 }

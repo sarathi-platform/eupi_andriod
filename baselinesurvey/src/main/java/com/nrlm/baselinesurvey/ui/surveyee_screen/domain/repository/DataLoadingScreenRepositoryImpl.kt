@@ -496,9 +496,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
 
     private fun saveSurveyAnswerToDb(questionAnswerResponseModels: List<QuestionAnswerResponseModel>?) {
         try {
-
-
-        questionAnswerResponseModels?.forEach { questionAnswerResponseModel ->
+            questionAnswerResponseModels?.forEach { questionAnswerResponseModel ->
             val question = questionEntityDao.getQuestionForSurveySectionForLanguage(
                 questionId = questionAnswerResponseModel.question?.questionId ?: DEFAULT_ID,
                 sectionId = questionAnswerResponseModel.sectionId.toInt(),
@@ -535,7 +533,6 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
 
     override suspend fun getSectionStatus() {
         try {
-
             getSurveyId()?.forEach {
                 val sectionStatusResponse = apiService.getSectionStatus(
                     SectionStatusRequest(

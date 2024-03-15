@@ -8,6 +8,7 @@ import com.nrlm.baselinesurvey.ARG_FROM_HOME
 import com.nrlm.baselinesurvey.ARG_PAGE_FROM
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
+import com.nrlm.baselinesurvey.PREF_KEY_IS_DATA_SYNC
 import com.nrlm.baselinesurvey.PREF_KEY_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.PREF_KEY_LANGUAGE_ID
 import com.nrlm.baselinesurvey.PREF_KEY_PAGE_FROM
@@ -145,5 +146,21 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     override fun getUserId(): String {
         return prefs.getString(PREF_KEY_USER_NAME, "") ?: ""
     }
+
+    override fun clearSharedPreference() {
+        val editor = prefs.edit()
+        editor.clear()
+        editor.apply()
+    }
+
+    override fun setDataSyncStatus(status: Boolean) {
+        prefs.edit().putBoolean(PREF_KEY_IS_DATA_SYNC, status).apply()
+
+    }
+
+    override fun getDataSyncStatus(): Boolean {
+        return prefs.getBoolean(PREF_KEY_IS_DATA_SYNC, false)
+    }
+
 
 }

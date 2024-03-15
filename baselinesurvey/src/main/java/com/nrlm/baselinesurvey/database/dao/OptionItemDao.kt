@@ -63,4 +63,6 @@ interface OptionItemDao {
     @Query("Select COUNT(*) FROM $ANSWER_TABLE where questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId")
     fun isOptionAlreadyPresent(questionId: Int, sectionId: Int, surveyId: Int): Int
 
+    @Query("Delete from $OPTION_TABLE")
+    fun deleteOptions()
 }

@@ -24,4 +24,8 @@ interface DidiSectionProgressEntityDao {
     @Query("Update $DIDI_SECTION_PROGRESS_TABLE set sectionStatus = :sectionStatus where surveyId = :surveyId and sectionId = :sectionId and didiId = :didiId")
     fun updateSectionStatusForDidi(surveyId: Int, sectionId: Int, didiId: Int, sectionStatus: Int)
 
+    @Query("Delete from $DIDI_SECTION_PROGRESS_TABLE")
+    fun deleteAllSectionProgress()
+
+
 }
