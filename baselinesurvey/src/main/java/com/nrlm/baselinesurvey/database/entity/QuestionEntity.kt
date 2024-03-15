@@ -77,7 +77,7 @@ data class QuestionEntity(
     @SerializedName("tag")
     @Expose
     @ColumnInfo(name = "tag")
-    var tag: String = BLANK_STRING,
+    var tag: Int = 0,
     @TypeConverters(ContentListConverter::class)
     val contentEntities: List<ContentList> = listOf()
 )

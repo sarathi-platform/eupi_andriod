@@ -230,7 +230,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     //  options = question.options,
                     languageId = languageId,
                     isConditional = isSubQuestionList,
-                    tag = question.attributeTag ?: BLANK_STRING,
+                    tag = question.attributeTag ?: 0,
                     contentEntities = question.contentList
                 )
                 questionEntityDao.insertQuestion(questionEntity)
@@ -261,7 +261,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                             values = optionsItem.values,
                             languageId = languageId,
                             conditions = optionsItem.conditions,
-                            optionTag = optionsItem.tag ?: BLANK_STRING
+                            optionTag = optionsItem.tag ?: 0
                         )
                         optionItemDao.insertOption(optionItemEntity)
 
@@ -323,7 +323,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                 values = optionsItem.values,
                 languageId = languageId,
                 conditions = optionsItem.conditions,
-                optionTag = optionsItem.tag ?: BLANK_STRING
+                optionTag = optionsItem.tag ?: 0
             )
             optionItemDao.insertOption(optionItemEntity)
         }

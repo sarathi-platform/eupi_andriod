@@ -56,7 +56,7 @@ data class OptionsItem(
 
     @SerializedName("tag")
     @Expose
-    val tag: String? = BLANK_STRING
+    val tag: Int? = 0
 
 
 )
