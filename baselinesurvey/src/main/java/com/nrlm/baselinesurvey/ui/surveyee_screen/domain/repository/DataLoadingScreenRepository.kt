@@ -26,7 +26,10 @@ interface DataLoadingScreenRepository {
 
     suspend fun fetchSurveyFromNetwork(surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<SurveyResponseModel>
 
-    fun saveSurveyToDb(surveyResponseModel: SurveyResponseModel, languageId: Int)
+    suspend fun saveSurveyToDb(
+        surveyResponseModel: SurveyResponseModel,
+        languageId: Int,
+    )
 
     fun saveUserDetails(userDetailsResponse: UserDetailsResponse)
 
@@ -66,6 +69,8 @@ interface DataLoadingScreenRepository {
     suspend fun saveContentsToDB(contents: List<ContentEntity>)
     suspend fun getContentKeyFromDB(): List<String?>
     suspend fun getSelectedLanguageId(): String
+    suspend fun getSurveyAnswers()
     fun getStateId(): Int
+    suspend fun getSectionStatus()
 
 }

@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.DEFAULT_ID
 import com.nrlm.baselinesurvey.PREF_CASTE_LIST
 import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nrlm.baselinesurvey.PREF_KEY_IDENTITY_NUMBER
@@ -14,10 +15,12 @@ import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
 import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
 import com.nrlm.baselinesurvey.PREF_STATE_ID
+import com.nrlm.baselinesurvey.SUCCESS_CODE
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.ContentDao
+import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
@@ -40,14 +43,21 @@ import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.Sections
+import com.nrlm.baselinesurvey.model.mappers.DidiSectionStatusEntityMapper.getDidiSectionStatusEntity
+import com.nrlm.baselinesurvey.model.mappers.FormQuestionEntityMapper.getFormQuestionEntity
+import com.nrlm.baselinesurvey.model.mappers.InputTypeQuestionAnswerEntityMapper
+import com.nrlm.baselinesurvey.model.mappers.SectionAnswerEntityMapper.getSectionAnswerEntity
 import com.nrlm.baselinesurvey.model.request.ContentMangerRequest
+import com.nrlm.baselinesurvey.model.request.GetSurveyAnswerRequest
 import com.nrlm.baselinesurvey.model.request.MissionRequest
+import com.nrlm.baselinesurvey.model.request.SectionStatusRequest
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.model.response.BeneficiaryApiResponse
 import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.model.response.ContentResponse
 import com.nrlm.baselinesurvey.model.response.MissionResponseModel
+import com.nrlm.baselinesurvey.model.response.QuestionAnswerResponseModel
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
@@ -69,7 +79,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     val missionActivityDao: MissionActivityDao,
     val activityTaskDao: ActivityTaskDao,
     val contentDao: ContentDao,
-    val baselineDatabase: NudgeBaselineDatabase
+    val baselineDatabase: NudgeBaselineDatabase,
+    val didiSectionProgressEntityDao: DidiSectionProgressEntityDao
 ) : DataLoadingScreenRepository {
     override suspend fun fetchLocalLanguageList(): List<LanguageEntity> {
         return languageListDao.getAllLanguages()
@@ -87,7 +98,10 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         return apiService.getSurveyFromNetwork(surveyRequestBodyModel)
     }
 
-    override fun saveSurveyToDb(surveyResponseModel: SurveyResponseModel, languageId: Int) {
+    override suspend fun saveSurveyToDb(
+        surveyResponseModel: SurveyResponseModel,
+        languageId: Int,
+    ) {
         baselineDatabase.runInTransaction {
             surveyEntityDao.deleteSurveyFroLanguage(surveyResponseModel.surveyId, languageId)
             val surveyEntity = SurveyEntity(
@@ -198,6 +212,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     )
                 }
             }
+
         }
 
     }
@@ -457,8 +472,91 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         return prefRepo.getAppLanguage() ?: "en"
     }
 
+    override suspend fun getSurveyAnswers() {
+        getSurveyId()?.forEach {
+            val surveyAnswersResponse = apiService.getSurveyAnswers(
+                GetSurveyAnswerRequest(
+                    surveyId = it,
+                    mobileNumber = prefRepo.getMobileNumber() ?: ""
+                )
+            )
+            if (surveyAnswersResponse.status.equals(
+                    SUCCESS_CODE,
+                    true
+                ) && surveyAnswersResponse.data != null
+            ) {
+                saveSurveyAnswerToDb(surveyAnswersResponse.data)
+            }
+        }
+    }
+
+    private fun getSurveyId(): List<Int>? {
+        return surveyEntityDao.getSurveyIds()
+    }
+
+    private fun saveSurveyAnswerToDb(questionAnswerResponseModels: List<QuestionAnswerResponseModel>?) {
+        try {
+            questionAnswerResponseModels?.forEach { questionAnswerResponseModel ->
+            val question = questionEntityDao.getQuestionForSurveySectionForLanguage(
+                questionId = questionAnswerResponseModel.question?.questionId ?: DEFAULT_ID,
+                sectionId = questionAnswerResponseModel.sectionId.toInt(),
+                surveyId = questionAnswerResponseModel.surveyId,
+                languageId = questionAnswerResponseModel.languageId
+            )
+            if (questionAnswerResponseModel.question?.questionType.equals(QuestionType.Form.name)) {
+                baselineDatabase.formQuestionResponseDao()
+                    .addFormResponseList(getFormQuestionEntity(questionAnswerResponseModel))
+
+            } else if (questionAnswerResponseModel.question?.questionType == QuestionType.InputNumber.name) {
+                baselineDatabase.inputTypeQuestionAnswerDao().saveInputTypeAnswersForQuestion(
+                    InputTypeQuestionAnswerEntityMapper.getInputTypeQuestionAnswerEntity(
+                        questionAnswerResponseModel,
+                        question
+                    )
+                )
+            } else {
+                val sectionAnswerEntity =
+                    getSectionAnswerEntity(questionAnswerResponseModel, question)
+                baselineDatabase.sectionAnswerEntityDao().insertAnswer(sectionAnswerEntity)
+            }
+
+        }
+        } catch (exception: Exception) {
+            Log.e("QuestionType", exception.message.toString())
+        }
+
+    }
+
     override fun getStateId(): Int {
         return prefRepo.getPref(PREF_STATE_ID, -1)
+    }
+
+    override suspend fun getSectionStatus() {
+        try {
+            getSurveyId()?.forEach {
+                val sectionStatusResponse = apiService.getSectionStatus(
+                    SectionStatusRequest(
+                        sectionId = 2,
+                        surveyId = it,
+                        mobileNumber = prefRepo.getMobileNumber() ?: ""
+                    )
+                )
+            if (sectionStatusResponse.status.equals(
+                    SUCCESS_CODE,
+                    true
+                )
+            ) {
+                didiSectionProgressEntityDao.addDidiSectionProgress(
+                    getDidiSectionStatusEntity(
+                        sectionStatusResponse.data!!
+                    )
+                )
+            }
+            }
+        } catch (ecxpetion: Exception) {
+            Log.e("SectionStatus", ecxpetion.message.toString())
+        }
+
     }
 
 }

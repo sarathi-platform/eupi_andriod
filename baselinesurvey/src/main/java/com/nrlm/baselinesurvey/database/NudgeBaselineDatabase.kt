@@ -111,7 +111,6 @@ abstract class NudgeBaselineDatabase: RoomDatabase()  {
 
     abstract fun inputTypeQuestionAnswerDao(): InputTypeQuestionAnswerDao
 
-
     companion object {
 
         // ADD THIS TYPE OF SQL QUERY FOR TABLE CREATION OR ALTERATION

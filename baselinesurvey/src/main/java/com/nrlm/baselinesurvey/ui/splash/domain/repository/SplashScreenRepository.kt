@@ -16,5 +16,8 @@ interface SplashScreenRepository {
 
     fun saveLanguageOpenFrom()
 
+    fun isDataSynced(): Boolean
+    fun setAllDataSynced()
+
 
 }

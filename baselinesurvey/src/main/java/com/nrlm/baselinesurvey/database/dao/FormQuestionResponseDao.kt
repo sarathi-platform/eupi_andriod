@@ -86,4 +86,8 @@ interface FormQuestionResponseDao {
         didiId: Int
     ): List<FormQuestionResponseEntity>
 
+    @Query("Delete from $FORM_QUESTION_RESPONSE_TABLE")
+    fun deleteAllFormQuestions()
+
+
 }
