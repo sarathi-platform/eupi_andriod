@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.splash.domain.repository
 
+import android.text.TextUtils
 import com.nrlm.baselinesurvey.LANGUAGE_OPEN_FROM_SETTING
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
@@ -35,11 +36,19 @@ class SplashScreenRepositoryImpl @Inject constructor(
     }
 
     override fun isLoggedIn(): Boolean {
-        return prefRepo.getAccessToken()?.isNotEmpty() == true
+        return !TextUtils.isEmpty(prefRepo.getAccessToken())
     }
 
     override fun saveLanguageOpenFrom() {
         prefRepo.savePref(LANGUAGE_OPEN_FROM_SETTING,false)
+    }
+
+    override fun isDataSynced(): Boolean {
+        return prefRepo.getDataSyncStatus()
+    }
+
+    override fun setAllDataSynced() {
+        prefRepo.setDataSyncStatus(true)
     }
 
 }

@@ -15,6 +15,7 @@ class FetchSurveyFromNetworkUseCase(
     suspend operator fun invoke(surveyRequestBodyModel: SurveyRequestBodyModel): Boolean {
         try {
             //TODO Run a loop on language id later
+
             var surveyResponseModel: SurveyResponseModel? = null
             val testSurvey =
                 BaselineCore.getAppContext().resources.openRawResource(R.raw.survey).use {
@@ -27,14 +28,22 @@ class FetchSurveyFromNetworkUseCase(
             } else {
                 return false
             }
+
             /*val surveyApiResponse = repository.fetchSurveyFromNetwork(surveyRequestBodyModel)
-            if (surveyApiResponse.status.equals(SUCCESS_CODE, true)) {
+            if (surveyApiResponse.status.equals(
+                    SUCCESS_CODE,
+                    true
+                )
+            ) {
                 surveyApiResponse.data?.let { surveyApiResponse ->
 //                    for (survey in surveyApiResponse) {
                     Log.d("invoke", "surveyApiResponse.sections.find -> ${surveyApiResponse.sections.find { it.sectionId == 8 }} \n" +
                             "\n" +
                             "\n")
-                    repository.saveSurveyToDb(surveyApiResponse, languageId = surveyRequestBodyModel.languageId)
+                    repository.saveSurveyToDb(
+                        surveyApiResponse,
+                        languageId = surveyRequestBodyModel.languageId,
+                    )
 //                    }
                     return true
                 }

@@ -5,10 +5,12 @@ import com.nrlm.baselinesurvey.KEY_HEADER_TYPE
 import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.model.request.ContentMangerRequest
 import com.nrlm.baselinesurvey.model.request.FetchSavedSurveyAnswersRequest
+import com.nrlm.baselinesurvey.model.request.GetSurveyAnswerRequest
 import com.nrlm.baselinesurvey.model.request.LoginRequest
 import com.nrlm.baselinesurvey.model.request.MissionRequest
 import com.nrlm.baselinesurvey.model.request.OtpRequest
 import com.nrlm.baselinesurvey.model.request.SaveSurveyRequestModel
+import com.nrlm.baselinesurvey.model.request.SectionStatusRequest
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.model.response.BeneficiaryApiResponse
@@ -16,7 +18,9 @@ import com.nrlm.baselinesurvey.model.response.ConfigResponseModel
 import com.nrlm.baselinesurvey.model.response.ContentResponse
 import com.nrlm.baselinesurvey.model.response.MissionResponseModel
 import com.nrlm.baselinesurvey.model.response.OtpVerificationModel
+import com.nrlm.baselinesurvey.model.response.QuestionAnswerResponseModel
 import com.nrlm.baselinesurvey.model.response.SavedSurveyAnswersResponse
+import com.nrlm.baselinesurvey.model.response.SectionStatusResponseModel
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.TransactionResponse
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
@@ -31,7 +35,9 @@ import com.nrlm.baselinesurvey.network.SUBPATH_GET_MISSION
 import com.nrlm.baselinesurvey.network.SUBPATH_GET_SAVED_SURVEY
 import com.nrlm.baselinesurvey.network.SUBPATH_LOGOUT
 import com.nrlm.baselinesurvey.network.SUBPATH_SAVE_SURVEY_ANSWES
+import com.nrlm.baselinesurvey.network.SUBPATH_SURVEY_ANSWERS
 import com.nrlm.baselinesurvey.network.SUBPATH_USER_VIEW
+import com.nrlm.baselinesurvey.network.GET_SECTION_STATUS
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -81,6 +87,8 @@ interface ApiService {
     @GET(SUBPATH_GET_CASTE_LIST)
     suspend fun getCasteList(@Query("languageId") languageId: Int): ApiResponseModel<List<CasteModel>>
 
+    @POST(GET_SECTION_STATUS)
+    suspend fun getSectionStatus(@Body sectionStatusRequest: SectionStatusRequest): ApiResponseModel<List<SectionStatusResponseModel>>
 
     @POST(SUBPATH_LOGOUT)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
@@ -88,4 +96,7 @@ interface ApiService {
 
     @POST(SUBPATH_CONTENT_MANAGER)
     suspend fun getAllContent(@Body contentMangerRequest: ContentMangerRequest): ApiResponseModel<List<ContentResponse>>
+
+    @POST(SUBPATH_SURVEY_ANSWERS)
+    suspend fun getSurveyAnswers(@Body surveyAnswerRequest: GetSurveyAnswerRequest): ApiResponseModel<List<QuestionAnswerResponseModel>>
 }

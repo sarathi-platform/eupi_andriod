@@ -12,6 +12,9 @@ interface SurveyEntityDao {
     @Insert
     fun insertSurvey(surveyEntity: SurveyEntity)
 
+    @Query("Select surveyId from $SURVEY_TABLE")
+    fun getSurveyIds(): List<Int>
+
     @Query("Select * from $SURVEY_TABLE where surveyId = :surveyId and languageId = :languageId")
     fun getSurveyDetailForLanguage(surveyId: Int, languageId: Int): SurveyEntity?
 
@@ -20,5 +23,8 @@ interface SurveyEntityDao {
 
     @Query("Delete from $SURVEY_TABLE where surveyId = :surveyId and languageId = :languageId")
     fun deleteSurveyFroLanguage(surveyId: Int, languageId: Int)
+
+    @Query("Delete from $SURVEY_TABLE")
+    fun deleteAllSurvey()
 
 }

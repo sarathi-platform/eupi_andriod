@@ -126,6 +126,8 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeList
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchCastesFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchContentDataFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSectionStatusFromNetworkUseCase
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyAnswerFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyeeListFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchUserDetailFromNetworkUseCase
@@ -441,7 +443,9 @@ object BaselineModule {
         missionActivityDao: MissionActivityDao,
         activityTaskDao: ActivityTaskDao,
         contentDao: ContentDao,
-        baselineDatabase: NudgeBaselineDatabase
+        baselineDatabase: NudgeBaselineDatabase,
+        didiSectionProgressEntityDao: DidiSectionProgressEntityDao
+
     ): DataLoadingScreenRepository {
         return DataLoadingScreenRepositoryImpl(
             prefRepo,
@@ -456,7 +460,8 @@ object BaselineModule {
             missionActivityDao,
             activityTaskDao,
             contentDao,
-            baselineDatabase
+            baselineDatabase,
+            didiSectionProgressEntityDao
         )
     }
 
@@ -473,6 +478,8 @@ object BaselineModule {
             fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository),
             fetchCastesFromNetworkUseCase = FetchCastesFromNetworkUseCase(repository),
             fetchContentnDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(repository),
+            fetchSectionStatusFromNetworkUseCase = FetchSectionStatusFromNetworkUseCase(repository),
+            fetchSurveyAnswerFromNetworkUseCase = FetchSurveyAnswerFromNetworkUseCase(repository),
             loggedInUseCase = LoggedInUseCase(splashScreenRepository)
         )
     }
