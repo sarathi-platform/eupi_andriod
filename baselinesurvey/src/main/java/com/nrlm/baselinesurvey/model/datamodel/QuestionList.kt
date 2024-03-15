@@ -39,7 +39,7 @@ data class QuestionList (
 
     @SerializedName("tag")
     @Expose
-    var attributeTag: String? = null,
+    var attributeTag: Int? = null,
 
     @SerializedName("contents")
     @Expose

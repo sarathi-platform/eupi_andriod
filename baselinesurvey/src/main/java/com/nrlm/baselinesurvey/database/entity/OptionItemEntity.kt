@@ -83,7 +83,7 @@ data class OptionItemEntity(
     @SerializedName("optionTag")
     @Expose
     @ColumnInfo(name = "optionTag")
-    val optionTag: String = BLANK_STRING,
+    val optionTag: Int = 0,
 
     @SerializedName("conditions")
     @Expose
