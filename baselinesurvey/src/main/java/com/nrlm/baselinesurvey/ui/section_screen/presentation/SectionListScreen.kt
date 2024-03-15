@@ -230,7 +230,7 @@ fun SectionListScreen(
             }
         },
         bottomBar = {
-            if (viewModel.allSessionCompleted.value) {
+            if (viewModel.allSessionCompleted.value && viewModel.didiDetails?.surveyStatus != SurveyState.COMPLETED.ordinal) {
                 Box(
                     modifier = Modifier
                         .padding(horizontal = dimensionResource(id = R.dimen.dp_15))

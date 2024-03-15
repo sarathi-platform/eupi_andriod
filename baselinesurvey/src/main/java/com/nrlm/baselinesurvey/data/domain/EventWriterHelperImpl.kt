@@ -94,7 +94,7 @@ class EventWriterHelperImpl @Inject constructor(
         didiId: Int,
         questionId: Int,
         questionType: String,
-        questionTag: String,
+        questionTag: Int,
         showQuestion: Boolean,
         saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     ): Events {
@@ -132,7 +132,7 @@ class EventWriterHelperImpl @Inject constructor(
         didiId: Int,
         questionId: Int,
         questionType: String,
-        questionTag: String,
+        questionTag: Int,
         showQuestion: Boolean,
         saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     ): Events {

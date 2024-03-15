@@ -313,11 +313,11 @@ class EventsWriterRepositoryImpl @Inject constructor(
     ) {
         try {
             val selectedEventWriter = mutableListOf<EventWriterName>(
-                EventWriterName.FILE_EVENT_WRITER,
                 EventWriterName.LOG_EVENT_WRITER
             )
 
             if (eventType == EventType.STATEFUL) {
+                selectedEventWriter.add(EventWriterName.FILE_EVENT_WRITER)
                 selectedEventWriter.add(EventWriterName.DB_EVENT_WRITER)
             }
 

@@ -18,7 +18,7 @@ sealed class EventWriterEvents {
         val didiId: Int,
         val questionId: Int,
         val questionType: String,
-        val questionTag: String,
+        val questionTag: Int,
         val showConditionalQuestion: Boolean = true,
         val saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     )

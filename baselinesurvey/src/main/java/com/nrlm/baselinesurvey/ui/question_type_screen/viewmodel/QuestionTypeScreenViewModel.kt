@@ -420,7 +420,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
                             didiId = didiId,
                             questionId = finalFormQuestionResponseList.first().questionId,
                             questionType = QuestionType.Form.name,
-                            questionTag = question?.tag ?: BLANK_STRING,
+                            questionTag = question?.tag ?: -1,
                             saveAnswerEventOptionItemDtoList = completeOptionListForQuestion
                                 .convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto(
                                     QuestionType.Form

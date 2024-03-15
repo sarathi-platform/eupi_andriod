@@ -475,7 +475,7 @@ class QuestionScreenViewModel @Inject constructor(
                                 didiId = event.didiId,
                                 questionId = questionList.questionId ?: 0,
                                 questionType = questionList.type ?: BLANK_STRING,
-                                questionTag = questionList.attributeTag ?: BLANK_STRING,
+                                questionTag = questionList.attributeTag ?: -1,
                                 showQuestion = false,
                                 saveAnswerEventOptionItemDtoList = emptyList()
                             ),

@@ -108,14 +108,22 @@ fun FormResponseCard(
                 Spacer(modifier = Modifier.width(dimen_14_dp))
                 Column {
                     Text(text = buildAnnotatedString {
-                        if (formResponseObjectDto.questionTag.equals("Household information")) {
+                        if (formResponseObjectDto.questionTag.equals(
+                                "Household information",
+                                true
+                            )
+                        ) {
                             append(formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                 it.display?.contains(
                                     stringResource(id = R.string.name_comparision),
                                     ignoreCase = true
                                 )!!
                             }?.optionId] ?: BLANK_STRING)
-                        } else if (formResponseObjectDto.questionTag.equals("Livelihood sources")) {
+                        } else if (formResponseObjectDto.questionTag.equals(
+                                "LivelihoodSources",
+                                true
+                            )
+                        ) {
                             append(
                                 formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                     it.display?.contains(
@@ -157,7 +165,7 @@ fun FormResponseCard(
                             }
 
                             append(income)
-                        } else if (formResponseObjectDto.questionTag.equals("Public Infra")) {
+                        } else if (formResponseObjectDto.questionTag.equals("Public Infra", true)) {
                             val questionState = formResponseSummaryScreenViewModel.questionEntity
                             var source = when (questionState?.questionDisplay) {
                                 stringResource(R.string.to_the_block_office_comparision),
@@ -213,7 +221,11 @@ fun FormResponseCard(
                     }, style = smallTextStyleWithNormalWeight)
 
                     Text(text = buildAnnotatedString {
-                        if (formResponseObjectDto.questionTag.equals("Household information")) {
+                        if (formResponseObjectDto.questionTag.equals(
+                                "Household information",
+                                true
+                            )
+                        ) {
                             this.append(formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                 it.display?.contains(
                                     stringResource(id = R.string.relationship_comparision),
@@ -228,7 +240,11 @@ fun FormResponseCard(
                                 )!!
                             }?.optionId] ?: BLANK_STRING)
                             this.append(" yrs")
-                        } else if (formResponseObjectDto.questionTag.equals("Livelihood sources")) { //TODO Handle all tag and static string comparisons through backend Question API Response
+                        } else if (formResponseObjectDto.questionTag.equals(
+                                "LivelihoodSources",
+                                true
+                            )
+                        ) { //TODO Handle all tag and static string comparisons through backend Question API Response
                             if ((formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                     it.display?.contains(
                                         stringResource(id = R.string.income_source_comparision),
@@ -282,7 +298,7 @@ fun FormResponseCard(
 
                                 append(income)
                             }
-                        } else if (formResponseObjectDto.questionTag.equals("Public Infra")) {
+                        } else if (formResponseObjectDto.questionTag.equals("Public Infra", true)) {
                             val avgCost =
                                 formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                     it.display?.trim()?.contains(
