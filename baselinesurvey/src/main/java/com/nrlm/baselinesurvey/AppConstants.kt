@@ -10,7 +10,7 @@ const val DEFAULT_LANGUAGE_LOCAL_NAME = "English"
 const val MOBILE_NUMBER_LENGTH=10
 const val ASSET_VALUE_LENGTH = 8
 const val MAXIMUM_RANGE = 999999
-const val MAXIMUM_RANGE_LENGTH = 12
+const val MAXIMUM_RANGE_LENGTH = 10
 const val OTP_LENGTH = 6
 var OTP_RESEND_DURATION: Long = 30 * 1000
 var EXPANSTION_TRANSITION_DURATION: Int = 450
@@ -285,6 +285,7 @@ const val ARG_QUESTION_ID = "question_id"
 
 const val THIS_WEEK_TAB = "This Week"
 const val ALL_TAB = "All"
+const val DIDI_LIST = "DIDI_LIST"
 
 const val QUESTION_DATA_TAB = "Questions Data"
 const val SECTION_INFORMATION_TAB = "Section Information"

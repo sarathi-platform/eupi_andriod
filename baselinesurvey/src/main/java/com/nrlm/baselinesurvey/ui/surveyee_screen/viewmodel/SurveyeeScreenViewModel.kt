@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.DIDI_LIST
 import com.nrlm.baselinesurvey.NO_TOLA_TITLE
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
@@ -246,12 +247,55 @@ class SurveyeeScreenViewModel @Inject constructor(
     }
 
     override fun performSearchQuery(queryTerm: String, isFilterApplied: Boolean, fromScreen: String) {
-        if (fromScreen == ALL_TAB) {
+        if (fromScreen == DIDI_LIST) {
             if (!isFilterApplied) {
                 _filteredSurveyeeListState.value = if (queryTerm.isNotEmpty()) {
                     val filteredList = ArrayList<SurveyeeCardState>()
                     surveyeeListState.value.forEach { surveyeeCardState ->
                         if (surveyeeCardState.surveyeeDetails.didiName.lowercase()
+                                .contains(queryTerm.lowercase())
+                        ) {
+                            filteredList.add(surveyeeCardState)
+                        }
+                    }
+                    filteredList
+                } else {
+                    _surveyeeListState.value
+                }
+            } else {
+                if (queryTerm.isNotEmpty()) {
+                    val mFilterMap = mutableMapOf<String, MutableList<SurveyeeCardState>>()
+                    tolaMapList.keys.forEach { key ->
+                        val mSurveyeeCardState = ArrayList<SurveyeeCardState>()
+                        tolaMapList[key]?.forEach { surveyeeCardState ->
+                            if (surveyeeCardState.surveyeeDetails.didiName.lowercase()
+                                    .contains(queryTerm.lowercase())
+                                || surveyeeCardState.surveyeeDetails.dadaName.lowercase()
+                                    .contains(queryTerm.lowercase())
+                                || surveyeeCardState.surveyeeDetails.houseNo.lowercase()
+                                    .contains(queryTerm.lowercase())
+                            ) {
+                                mSurveyeeCardState.add(surveyeeCardState)
+                            }
+                        }
+                        if (mSurveyeeCardState.isNotEmpty())
+                            mFilterMap[key] = mSurveyeeCardState
+                    }
+                    _filteredTolaMapSurveyeeListState.value = mFilterMap
+                } else {
+                    _filteredTolaMapSurveyeeListState.value = tolaMapSurveyeeListState.value
+                }
+            }
+        } else {
+            if (!isFilterApplied) {
+                _filteredSurveyeeListState.value = if (queryTerm.isNotEmpty()) {
+                    val filteredList = ArrayList<SurveyeeCardState>()
+                    surveyeeListState.value.forEach { surveyeeCardState ->
+                        if (surveyeeCardState.surveyeeDetails.didiName.lowercase()
+                                .contains(queryTerm.lowercase())
+                            || surveyeeCardState.surveyeeDetails.dadaName.lowercase()
+                                .contains(queryTerm.lowercase())
+                            || surveyeeCardState.surveyeeDetails.houseNo.lowercase()
                                 .contains(queryTerm.lowercase())
                         ) {
                             filteredList.add(surveyeeCardState)
@@ -281,8 +325,6 @@ class SurveyeeScreenViewModel @Inject constructor(
                     _filteredTolaMapSurveyeeListState.value = tolaMapSurveyeeListState.value
                 }
             }
-        } else {
-
         }
 
     }

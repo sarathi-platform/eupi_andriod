@@ -12,7 +12,8 @@ const val SUBPATH_AUTH_VALIDATE_OTP = "/auth-api/user/validate-otp"
 const val SUBPATH_USER_VIEW = "/read-api/user/view"
 
 // DIDI List API
-const val SUBPATH_GET_DIDI_LIST = "/read-api/web/upcm/view"
+const val SUBPATH_GET_DIDI_LIST = "didi-service/upcm/view"
+//    "/read-api/web/upcm/view"
 
 // Survey API
 //const val SUBPATH_FETCH_SURVEY_FROM_NETWORK = "/survey-engine/survey/view"
