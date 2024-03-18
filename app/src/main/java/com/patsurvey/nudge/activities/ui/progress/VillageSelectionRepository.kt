@@ -3925,9 +3925,14 @@ class VillageSelectionRepository @Inject constructor(
                         RetryHelper.stepListApiVillageId.add(village.id)
                     }
                     onCatchError(ex, ApiType.STEP_LIST_API)
+                    withContext(Dispatchers.Main) {
+                        taskCompleted(false)
+                    }
                 }
             }
-            taskCompleted(true)
+            withContext(Dispatchers.Main) {
+                taskCompleted(true)
+            }
         }
     }
 
@@ -3938,7 +3943,7 @@ class VillageSelectionRepository @Inject constructor(
                 val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                 val localLanguageList = languageListDao.getAllLanguages()
                 val villageReq= createMultiLanguageVillageRequest(localLanguageList)
-                if (!forceRefresh) {
+                if (!forceRefresh && !localVillageList.isNullOrEmpty()) {
                 if (!localVillageList.isNullOrEmpty()) {
                     val stateId = localVillageList[0].stateId
                     userAndVillageDetailsModel = UserAndVillageDetailsModel(true, localVillageList, stateId = stateId)
@@ -3954,11 +3959,7 @@ class VillageSelectionRepository @Inject constructor(
                         if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {
                                 saveUserDetailsInPref(UserDetailsModel(it.username ?: "", it.name ?: "", it.email ?: "", it.identityNumber  ?: "", it.profileImage ?: "", it.roleName ?: "", it.typeName ?: ""))
-                                val oldVillageList: List<VillageEntity> = villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID)
-                                villageListDao.insertAll(it.villageList ?: listOf())
-                                if (forceRefresh)
-                                    preserveOldRecord(oldVillageList)
-
+                                villageListDao.deleteAndInsertData(it.villageList ?: listOf())
                                 val stateId = if (it.villageList?.isNotEmpty() == true) it.villageList?.get(0)?.stateId?:1 else -1
                                 val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                                 val defaultLanguageVillageList = villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID)

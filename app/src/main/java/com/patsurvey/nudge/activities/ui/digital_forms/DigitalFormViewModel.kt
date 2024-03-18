@@ -179,7 +179,7 @@ class DigitalFormViewModel @Inject constructor(
                 }
                 PdfUtils.getFormBPdf(
                     context, villageEntity = digitalFormRepository.getSelectedVillage(),
-                    didiDetailList = didiDetailList.value.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit },
+                    didiDetailList = didiDetailList.value.filter { it.score!! >= 7.0 && it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit },
                     casteList = casteList.value,
                     completionDate = changeMilliDateToDate(
                         digitalFormRepository.getPref(

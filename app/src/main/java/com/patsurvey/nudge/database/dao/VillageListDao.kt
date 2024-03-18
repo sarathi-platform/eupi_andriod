@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.utils.VILLAGE_TABLE_NAME
 
@@ -25,6 +26,11 @@ interface VillageListDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(villages: List<VillageEntity>)
 
+    @Transaction()
+    fun deleteAndInsertData(villages: List<VillageEntity>) {
+        deleteAllVilleges()
+        insertAll(villages)
+    }
     @Query("UPDATE $VILLAGE_TABLE_NAME SET steps_completed = :stepId where id = :villageId")
     fun updateLastCompleteStep(villageId: Int, stepId: List<Int>)
 

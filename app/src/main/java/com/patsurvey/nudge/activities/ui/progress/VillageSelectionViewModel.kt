@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.MyApplication
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.RetryHelper.crpPatQuestionApiLanguageId
 import com.patsurvey.nudge.RetryHelper.retryApiList
@@ -102,6 +103,7 @@ import com.patsurvey.nudge.utils.formatRatio
 import com.patsurvey.nudge.utils.getAuthImagePath
 import com.patsurvey.nudge.utils.getImagePath
 import com.patsurvey.nudge.utils.intToString
+import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import com.patsurvey.nudge.utils.videoList
@@ -1740,6 +1742,7 @@ class VillageSelectionViewModel @Inject constructor(
     fun refreshBpcData(context: Context) {
         showLoader.value = true
         villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) {
+            if (it.success) {
             _filterVillageList.value = it.villageList.distinctBy {
                 it.id
             }
@@ -1752,25 +1755,40 @@ class VillageSelectionViewModel @Inject constructor(
 
             }
 
+            } else {
+                showCustomToast(
+                    context,
+                    context.getString(R.string.refresh_failed_please_try_again)
+                )
         }
+
+        }
+
     }
 
     fun refreshCrpData(context: Context) {
+
         showLoader.value = true
         villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) {
+            if (it.success) {
             _filterVillageList.value = it.villageList.distinctBy {
                 it.id
             }
             _villagList.value = it.villageList.distinctBy {
                 it.id
-
             }
-            villageSelectionRepository.refreshStepListData(it.villageList) {
-                showLoader.value = false
+                villageSelectionRepository.refreshStepListData(_villagList.value) { stepListStatus ->
+                    if (stepListStatus) {
 
+                        //  showCustomToast(context, context.getString(R.string.fetched_successfully))
+                    }
+                    showLoader.value = false
+                }
+            } else {
+                showLoader.value = false
+                //showCustomToast(context, context.getString(R.string.refresh_failed_please_try_again))
             }
         }
-
     }
 
 

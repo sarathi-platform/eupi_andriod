@@ -77,7 +77,7 @@ class BpcVillageScreenViewModel @Inject constructor(
     fun isUserBpc() = villageSelectionRepository.isUserBPC()
 
     private fun fetchUserAndVillageDetails() {
-        villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) {
+        villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = false) {
             villageSelectionRepository.fetchPatQuestionsFromNetwork()
             _villagList.value = it.villageList
             _filterVillageList.value = villageList.value
