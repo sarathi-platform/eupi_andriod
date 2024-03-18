@@ -43,7 +43,7 @@ data class ActivityTaskEntity(
             return ActivityTaskEntity(
                 missionId = missionId,
                 activityId = activityId,
-                taskId = task.taskId,
+                taskId = task.id ?: 0,
                 didiId = task.subjectId ?: -1,
                 taskDate = task.taskDate,
                 taskName = task.taskName,

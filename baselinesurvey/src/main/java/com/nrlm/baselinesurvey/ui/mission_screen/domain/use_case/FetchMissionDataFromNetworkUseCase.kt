@@ -30,7 +30,7 @@ class FetchMissionDataFromNetworkUseCase(
                                 )
                             )
                             activity.tasks.forEach { task ->
-                                if (task.didiId != null) {
+                                if (task.id != null) {
                                     repository.saveActivityTaskToDB(
                                         ActivityTaskEntity.getActivityTaskEntity(
                                             missionId = mission.missionId,
