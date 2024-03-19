@@ -167,7 +167,7 @@ fun BpcVillageSelectionScreen(
         viewModel.showLoader.value,
         {
             if ((context as MainActivity).isOnline.value) {
-            viewModel.refreshVillageData()
+                viewModel.refreshVillageData(context)
             }
         })
 

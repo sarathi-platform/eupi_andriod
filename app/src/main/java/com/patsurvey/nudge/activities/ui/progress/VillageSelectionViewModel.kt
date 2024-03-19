@@ -144,6 +144,7 @@ class VillageSelectionViewModel @Inject constructor(
     val villageSelectionRepository: VillageSelectionRepository
 
 ) : BaseViewModel() {
+    private var isNeedToCallVillageApi: Boolean = true
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
     val villageList: StateFlow<List<VillageEntity>> get() = _villagList
 
@@ -1750,7 +1751,7 @@ class VillageSelectionViewModel @Inject constructor(
                 it.id
 
             }
-            villageSelectionRepository.refreshStepListData(it.villageList) {
+                villageSelectionRepository.refreshStepListData() {
                 showLoader.value = false
 
             }
@@ -1767,27 +1768,44 @@ class VillageSelectionViewModel @Inject constructor(
     }
 
     fun refreshCrpData(context: Context) {
-
         showLoader.value = true
-        villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) {
-            if (it.success) {
-            _filterVillageList.value = it.villageList.distinctBy {
+        if (isNeedToCallVillageApi) {
+            villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) { userAndVillageDetailModel ->
+                if (userAndVillageDetailModel.success) {
+                    isNeedToCallVillageApi = false
+                    _filterVillageList.value = userAndVillageDetailModel.villageList.distinctBy {
                 it.id
             }
-            _villagList.value = it.villageList.distinctBy {
+                    _villagList.value = userAndVillageDetailModel.villageList.distinctBy {
                 it.id
             }
-                villageSelectionRepository.refreshStepListData(_villagList.value) { stepListStatus ->
-                    if (stepListStatus) {
-
-                        //  showCustomToast(context, context.getString(R.string.fetched_successfully))
-                    }
-                    showLoader.value = false
-                }
+                    refreshStepData(context)
             } else {
+                    isNeedToCallVillageApi = true
                 showLoader.value = false
-                //showCustomToast(context, context.getString(R.string.refresh_failed_please_try_again))
+                    showCustomToast(
+                        context,
+                        context.getString(R.string.refresh_failed_please_try_again)
+                    )
             }
+        }
+        } else {
+            refreshStepData(context = context)
+        }
+    }
+
+    private fun refreshStepData(context: Context) {
+        villageSelectionRepository.refreshStepListData() { stepListStatus ->
+            if (stepListStatus) {
+                showCustomToast(context, context.getString(R.string.fetched_successfully))
+                isNeedToCallVillageApi = true
+            } else {
+                showCustomToast(
+                    context,
+                    context.getString(R.string.refresh_failed_please_try_again)
+                )
+            }
+            showLoader.value = false
         }
     }
 
