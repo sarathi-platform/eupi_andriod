@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.common_components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -32,6 +33,7 @@ import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.utils.onlyNumberField
 
+@SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CalculationResultComponent(
@@ -42,9 +44,7 @@ fun CalculationResultComponent(
     maxLength: Int = 150,
 ) {
 
-    val txt = remember {
-        mutableStateOf(defaultValue)
-    }
+    val txt =mutableStateOf(defaultValue)
     if (txt.value.isBlank()) {
         txt.value = defaultValue
     }

@@ -727,6 +727,10 @@ fun List<FormQuestionResponseEntity>.getResponseForOptionId(optionId: Int): Form
     return this.find { it.optionId == optionId }
 }
 
+fun List<FormQuestionResponseEntity>.findOptionExist(optionId: Int): Boolean {
+    return this.find { it.optionId == optionId }!=null
+}
+
 fun  List<QuestionEntity>.findIndexForQuestionId(questionId: Int): Int {
     return this.map { it.questionId }.indexOf(questionId)
 }
