@@ -17,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -139,9 +140,16 @@ fun MissionScreen_1(
                 } else {
                     LazyColumn {
                         items(filteredMissionList.value) { mission ->
+
+                            val pendingTaskCountForMission =
+                                viewModel.getPendingTaskCountForMissionLive(mission.missionId)
+                                    .observeAsState().value ?: 0
+
                             MissonRowScreen_1(
                                 mission = mission,
                                 missionDueDate = mission.startDate,
+                                viewModel = viewModel,
+                                pendingCount = pendingTaskCountForMission,
                                 onViewStatusClick = {},
                                 onStartClick = {
                                     navController.navigate("${MISSION_SUMMARY_SCREEN_ROUTE_NAME}/${mission.missionId}/${mission.missionName}/${mission.endDate}")

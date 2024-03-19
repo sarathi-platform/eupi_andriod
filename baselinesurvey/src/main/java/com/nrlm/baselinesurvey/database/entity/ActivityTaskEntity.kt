@@ -9,6 +9,8 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.TASK_TABLE_NAME
 import com.nrlm.baselinesurvey.model.datamodel.MissionTaskModel
+import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nrlm.baselinesurvey.utils.states.toStringList
 
 @Entity(tableName = TASK_TABLE_NAME)
 data class ActivityTaskEntity(
@@ -23,7 +25,7 @@ data class ActivityTaskEntity(
     var didiId: Int,
     var taskDate: String,
     var taskName: String,
-    var status: String?,
+    var status: String? = SurveyState.NOT_STARTED.name,
     var actualStartDate: String = BLANK_STRING,
     var actualCompletedDate: String = BLANK_STRING,
     var activityName: String,
@@ -47,12 +49,17 @@ data class ActivityTaskEntity(
                 didiId = task.subjectId ?: -1,
                 taskDate = task.taskDate,
                 taskName = task.taskName,
-                status = task.status,
+                status = getStatusForTask(task.status ?: SurveyState.NOT_STARTED.name),
                 activityName = activityName,
                 activityState = 0,
                 subjectId = task.subjectId ?: -1,
                 language = task.language ?: DEFAULT_LANGUAGE_CODE
             )
+        }
+
+        fun getStatusForTask(status: String): String {
+            return SurveyState.values().toStringList().find { it.equals(status, true) }
+                ?: SurveyState.NOT_STARTED.name
         }
     }
 }

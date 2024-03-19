@@ -18,7 +18,7 @@ enum class SurveyState {
         }
 
         fun getStatusFromOrdinal(surveyState: Int) : SurveyState {
-            return when(surveyState) {
+            return when (surveyState) {
                 NOT_AVAILABLE.ordinal -> NOT_AVAILABLE
                 INPROGRESS.ordinal -> INPROGRESS
                 COMPLETED.ordinal -> COMPLETED
@@ -26,5 +26,13 @@ enum class SurveyState {
                 else -> NOT_STARTED
             }
         }
-     }
+    }
+}
+
+fun Array<SurveyState>.toStringList(): List<String> {
+    val stringList = mutableListOf<String>()
+    this.forEach {
+        stringList.add(it.name)
+    }
+    return stringList
 }

@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.database.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -7,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.nrlm.baselinesurvey.TASK_TABLE_NAME
 import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
+import com.nrlm.baselinesurvey.utils.states.SurveyState
 
 @Dao
 interface ActivityTaskDao {
@@ -73,5 +75,20 @@ interface ActivityTaskDao {
         updateTaskStatus(taskId, activityId, missionId, status)
         updateTaskCompletedDate(taskId, actualCompletedDate)
     }
+
+    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where activityId = :activityId AND status != :status")
+    fun getPendingTaskCountLive(
+        activityId: Int,
+        status: String = SurveyState.COMPLETED.name
+    ): LiveData<Int>
+
+    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where missionId = :missionId")
+    fun getTaskCountForMission(missionId: Int): Int
+
+    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where missionId = :missionId AND status != :status")
+    fun getPendingTaskCountLiveForMission(
+        missionId: Int,
+        status: String = SurveyState.COMPLETED.name
+    ): LiveData<Int>
 
 }

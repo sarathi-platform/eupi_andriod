@@ -60,10 +60,12 @@ import com.nrlm.baselinesurvey.ui.mission_screen.domain.repository.MissionScreen
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.repository.MissionScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.FetchMissionDataFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.GetMissionListFromDbUseCase
+import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.GetTaskDetailsFromDbUseCase
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.MissionScreenUseCase
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.repository.MissionSummaryScreenRepository
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.repository.MissionSummaryScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.GetMissionActivitiesFromDBUseCase
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.GetPendingTaskCountLiveUseCase
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.MissionSummaryScreenUseCase
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.UpdateMisisonState
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.UpdateMissionStatusUseCase
@@ -194,7 +196,8 @@ object BaselineModule {
             fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(
                 dataLoadingScreenRepository
             ),
-            getMissionListFromDbUseCase = GetMissionListFromDbUseCase(missionScreenRepository)
+            getMissionListFromDbUseCase = GetMissionListFromDbUseCase(missionScreenRepository),
+            getTaskDetailsFromDbUseCase = GetTaskDetailsFromDbUseCase(missionScreenRepository)
         )
     }
 
@@ -210,6 +213,9 @@ object BaselineModule {
             ),
             updateMisisonState = UpdateMisisonState(missionSummaryScreenRepository),
             updateMissionStatusUseCase = UpdateMissionStatusUseCase(missionSummaryScreenRepository),
+            getPendingTaskCountLiveUseCase = GetPendingTaskCountLiveUseCase(
+                missionSummaryScreenRepository
+            ),
             eventsWriterUserCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }
@@ -569,9 +575,10 @@ object BaselineModule {
     @Singleton
     fun provideMissionRepository(
         missionEntityDao: MissionEntityDao,
-        missionActivityDao: MissionActivityDao
+        missionActivityDao: MissionActivityDao,
+        taskDao: ActivityTaskDao
     ): MissionScreenRepository {
-        return MissionScreenRepositoryImpl(missionEntityDao, missionActivityDao)
+        return MissionScreenRepositoryImpl(missionEntityDao, missionActivityDao, taskDao)
     }
 
     @Provides

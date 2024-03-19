@@ -559,4 +559,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
 
     }
 
+    override suspend fun getTaskForSubjectId(didiId: Int?): ActivityTaskEntity {
+        return activityTaskDao.getTaskFromSubjectId(didiId ?: 0)
+    }
+
 }

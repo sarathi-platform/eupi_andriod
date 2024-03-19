@@ -9,6 +9,7 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.MISSION_TABLE_NAME
 import com.nrlm.baselinesurvey.model.response.MissionResponseModel
 import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nrlm.baselinesurvey.utils.states.toStringList
 
 @Entity(tableName = MISSION_TABLE_NAME)
 data class MissionEntity(
@@ -37,13 +38,18 @@ data class MissionEntity(
                 missionName = mission.missionName,
                 startDate = mission.startDate,
                 endDate = mission.endDate,
-                status = "",
+                status = getStatusForMission(mission.missionStatus ?: SurveyState.NOT_STARTED.name),
                 activityTaskSize = activityTaskSize,
                 missionStatus = 0,
                 pendingActivity = activityTaskSize,
                 activityComplete = SurveyState.NOT_STARTED.ordinal,
                 language = mission.language
             )
+        }
+
+        private fun getStatusForMission(status: String): String {
+            return SurveyState.values().toStringList().find { it.equals(status, true) }
+                ?: SurveyState.NOT_STARTED.name
         }
     }
 }
