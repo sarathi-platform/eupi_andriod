@@ -98,4 +98,11 @@ interface EventWriterHelper {
 
     suspend fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto
 
+    suspend fun getMissionActivityTaskEventList(
+        missionId: Int,
+        activityId: Int,
+        taskId: Int,
+        status: SectionStatus
+    ): List<Events>
+
 }

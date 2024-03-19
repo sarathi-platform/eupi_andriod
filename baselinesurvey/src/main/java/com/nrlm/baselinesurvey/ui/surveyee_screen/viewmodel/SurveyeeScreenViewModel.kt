@@ -109,9 +109,8 @@ class SurveyeeScreenViewModel @Inject constructor(
                 _surveyeeListState.value
             )
             isEnableNextBTn.value =
-                allTaskDone() && !surveyeeScreenUseCase.getActivityStateFromDBUseCase.getActivity(
-                    activityId
-                ).isAllTask
+                filteredSurveyeeListState.value.filter { it.surveyState != SurveyState.COMPLETED }
+                    .isEmpty()
 
             filterList(pageFrom.value)
 

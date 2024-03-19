@@ -757,11 +757,28 @@ class QuestionScreenViewModel @Inject constructor(
             is EventWriterEvents.UpdateMissionActivityTaskStatus -> {
                 CoroutineScope(Dispatchers.IO).launch {
                     eventsWriterHelperImpl.markMissionActivityTaskInProgress(
-                        event.missionId,
-                        event.activityId,
-                        event.taskId,
-                        event.status
+                        missionId = event.missionId,
+                        activityId = event.activityId,
+                        taskId = event.taskId,
+                        status = event.status
                     )
+                }
+            }
+
+            is EventWriterEvents.UpdateMissionActivityTaskStatusEvent -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val eventList = eventsWriterHelperImpl.getMissionActivityTaskEventList(
+                        missionId = event.missionId,
+                        activityId = event.activityId,
+                        taskId = event.taskId,
+                        status = event.status
+                    )
+                    eventList.forEach { event ->
+                        questionScreenUseCase.eventsWriterUseCase.invoke(
+                            events = event,
+                            eventType = EventType.STATEFUL
+                        )
+                    }
                 }
             }
 
@@ -783,6 +800,14 @@ class QuestionScreenViewModel @Inject constructor(
         val activityForSubjectDto = eventsWriterHelperImpl.getActivityFromSubjectId(didiId)
         onEvent(
             EventWriterEvents.UpdateMissionActivityTaskStatus(
+                missionId = activityForSubjectDto.missionId,
+                activityId = activityForSubjectDto.activityId,
+                taskId = activityForSubjectDto.taskId,
+                status = sectionStatus
+            )
+        )
+        onEvent(
+            EventWriterEvents.UpdateMissionActivityTaskStatusEvent(
                 missionId = activityForSubjectDto.missionId,
                 activityId = activityForSubjectDto.activityId,
                 taskId = activityForSubjectDto.taskId,

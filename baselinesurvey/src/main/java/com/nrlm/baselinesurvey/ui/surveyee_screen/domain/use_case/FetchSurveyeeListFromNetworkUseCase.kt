@@ -36,7 +36,7 @@ class FetchSurveyeeListFromNetworkUseCase(
                             villageName = it.villageName ?: BLANK_STRING,
                             ableBodied = it.ableBodied ?: BLANK_STRING,
                             surveyStatus = SurveyState.toInt(
-                                taskForSubject.status ?: SurveyState.NOT_STARTED.name
+                                taskForSubject?.status ?: SurveyState.NOT_STARTED.name
                             )
                         )
                         repository.saveSurveyeeList(surveyeeEntity)
@@ -66,7 +66,7 @@ class FetchSurveyeeListFromNetworkUseCase(
                             villageName = it.villageName ?: BLANK_STRING,
                             ableBodied = BLANK_STRING,
                             surveyStatus = SurveyState.toInt(
-                                taskForSubject.status ?: SurveyState.NOT_STARTED.name
+                                taskForSubject?.status ?: SurveyState.NOT_STARTED.name
                             )
                         )
                         repository.saveSurveyeeList(hamletSurveyEntity)

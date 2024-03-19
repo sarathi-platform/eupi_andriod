@@ -62,4 +62,11 @@ sealed class EventWriterEvents {
         val status: SectionStatus
     )
 
+    data class UpdateMissionActivityTaskStatusEvent(
+        val missionId: Int,
+        val activityId: Int,
+        val taskId: Int,
+        val status: SectionStatus
+    )
+
 }
