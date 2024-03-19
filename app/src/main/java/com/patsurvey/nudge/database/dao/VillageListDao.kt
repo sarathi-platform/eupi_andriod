@@ -20,6 +20,8 @@ interface VillageListDao {
     @Query("Select * FROM $VILLAGE_TABLE_NAME where id = :id")
     fun getVillage(id: Int): VillageEntity
 
+    @Query("Select * FROM $VILLAGE_TABLE_NAME where id = :id and languageId=:languageId")
+    fun getVillageFromId(id: Int, languageId: Int): VillageEntity?
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertVillage(village: VillageEntity)
 
@@ -27,10 +29,20 @@ interface VillageListDao {
     fun insertAll(villages: List<VillageEntity>)
 
     @Transaction()
-    fun deleteAndInsertData(villages: List<VillageEntity>) {
-        deleteAllVilleges()
-        insertAll(villages)
+    fun insertOnlyNewData(villages: List<VillageEntity>, userBPC: Boolean) {
+        villages.forEach {
+            val localVillage = getVillageFromId(it.id, it.languageId)
+            if (localVillage == null) {
+                insertVillage(it)
+            } else if (localVillage.isDataLoadTriedOnce != 1 && userBPC) {
+                deleteVillageById(localVillage.localVillageId)
+                insertVillage(it)
+            }
+        }
     }
+
+    @Query("DELETE from $VILLAGE_TABLE_NAME where localVillageId= :localVillageId")
+    fun deleteVillageById(localVillageId: Int)
     @Query("UPDATE $VILLAGE_TABLE_NAME SET steps_completed = :stepId where id = :villageId")
     fun updateLastCompleteStep(villageId: Int, stepId: List<Int>)
 

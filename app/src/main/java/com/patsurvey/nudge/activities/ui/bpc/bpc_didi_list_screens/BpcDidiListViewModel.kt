@@ -137,6 +137,7 @@ class BpcDidiListViewModel @Inject constructor(
             it.add(didiId)
         }
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
             val didiEntity = repository.getDidiFromDB(didiId)
             val didiPatProgress = didiEntity.patSurveyStatus
             if (didiPatProgress == PatSurveyStatus.INPROGRESS.ordinal || didiPatProgress == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
@@ -156,11 +157,12 @@ class BpcDidiListViewModel @Inject constructor(
             repository.updateNeedToPostPAT(true, didiId)
             pendingDidiCount.value =
                 repository.getAllPendingPATDidisCount()
+            val updatedDidiEntity = repository.getDidiFromDB(didiId)
 
             repository.saveEvent(
-                eventItem = didiEntity,
+                eventItem = updatedDidiEntity,
                 eventName = getPatScoreEventName(
-                    didiEntity,
+                    updatedDidiEntity,
                     repository.prefRepo.isUserBPC()
                 ),
                 EventType.STATEFUL

@@ -142,7 +142,6 @@ class BpcVillageScreenViewModel @Inject constructor(
             if (it.success) {
                 _villagList.value = it.villageList
                 _filterVillageList.value = villageList.value
-                showLoader.value = false
                 showCustomToast(context, context.getString(R.string.fetched_successfully))
 
             } else {
@@ -152,6 +151,8 @@ class BpcVillageScreenViewModel @Inject constructor(
                 )
 
             }
+            showLoader.value = false
+
         }
     }
 
