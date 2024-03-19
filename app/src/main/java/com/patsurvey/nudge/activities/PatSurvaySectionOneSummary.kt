@@ -316,7 +316,7 @@ fun PatSurvaySectionSummaryScreen(
                     } else {
                         showPatCompletion.value = true
                     }
-                    patSectionSummaryViewModel.savePATEvent()
+                    patSectionSummaryViewModel.savePATEvent(isExclusion = true)
                 } else {
                     patSectionSummaryViewModel.updateExclusionStatus(didi.value.id,ExclusionType.NO_EXCLUSION.ordinal,
                         TYPE_EXCLUSION)
