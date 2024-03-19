@@ -31,8 +31,10 @@ import com.nrlm.baselinesurvey.utils.convertFormTypeQuestionListToOptionItemEnti
 import com.nrlm.baselinesurvey.utils.convertQuestionListToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.convertToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.findIndexOfListByOptionId
+import com.nrlm.baselinesurvey.utils.findOptionExist
 import com.nrlm.baselinesurvey.utils.getResponseForOptionId
 import com.nrlm.baselinesurvey.utils.isNumeric
+import com.nrlm.baselinesurvey.utils.json
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -339,13 +341,15 @@ class QuestionTypeScreenViewModel @Inject constructor(
                                 optionIds.add(va.toInt())
                             }
                         }
-                        var areAllValuesPresent = true
+                        var areAllValuesPresent = 0
                         if (optionIds.isNotEmpty()) {
                             optionIds.forEach { option ->
-                                if (storeCacheForResponse.getResponseForOptionId(option) == null)
-                                    areAllValuesPresent = false
+                                val findOPtion = storeCacheForResponse.findOptionExist(option)
+                                if (findOPtion == true){
+                                    areAllValuesPresent ++
+                                }
                             }
-                            if (areAllValuesPresent) {
+                            if (areAllValuesPresent == optionIds.size) {
                                 val result =
                                     conditionDto?.calculateResultForFormula(storeCacheForResponse)
                                 calculatedResult.value = result ?: BLANK_STRING

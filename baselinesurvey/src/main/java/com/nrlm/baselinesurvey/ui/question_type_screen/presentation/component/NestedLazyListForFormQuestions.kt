@@ -153,7 +153,6 @@ fun NestedLazyListForFormQuestions(
                                             value
                                         )
                                     )
-                                    questionTypeScreenViewModel.onEvent(QuestionTypeEvent.UpdateCalculationTypeQuestionValue)
                                     questionTypeScreenViewModel.formTypeOption?.let { formTypeOption ->
                                         saveCacheFormData(
                                             saveFormQuestionResponseEntity(
@@ -164,6 +163,7 @@ fun NestedLazyListForFormQuestions(
                                             )
                                         )
                                     }
+                                    questionTypeScreenViewModel.onEvent(QuestionTypeEvent.UpdateCalculationTypeQuestionValue)
                                     answeredQuestionCountIncreased()
                                 }
                             }
@@ -221,7 +221,6 @@ fun NestedLazyListForFormQuestions(
                                                 )
                                             )
                                         }
-                                        questionTypeScreenViewModel.onEvent(QuestionTypeEvent.UpdateCalculationTypeQuestionValue)
                                         saveCacheFormData(
                                             saveFormQuestionResponseEntity(
                                                 questionTypeScreenViewModel.formTypeOption,
@@ -230,6 +229,8 @@ fun NestedLazyListForFormQuestions(
                                                 viewModel.referenceId
                                             )
                                         )
+                                        questionTypeScreenViewModel.onEvent(QuestionTypeEvent.UpdateCalculationTypeQuestionValue)
+
                                     }
                                     answeredQuestionCountIncreased()
                                 }
