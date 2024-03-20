@@ -72,5 +72,6 @@ interface DataLoadingScreenRepository {
     suspend fun getSurveyAnswers()
     fun getStateId(): Int
     suspend fun getSectionStatus()
+    suspend fun getTaskForSubjectId(didiId: Int?): ActivityTaskEntity?
 
 }

@@ -17,9 +17,12 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BaselineApplication.Companion.appScopeLaunch
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.CasteModel
+import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
+import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SurveyStateEvents
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.start_screen.domain.use_case.StartSurveyScreenUserCase
@@ -27,6 +30,7 @@ import com.nrlm.baselinesurvey.ui.start_screen.presentation.StartSurveyScreenEve
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LocationCoordinates
 import com.nrlm.baselinesurvey.utils.LocationUtil
+import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,7 +43,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BaseLineStartViewModel @Inject constructor(
-    private val startSurveyScreenUserCase: StartSurveyScreenUserCase
+    private val startSurveyScreenUserCase: StartSurveyScreenUserCase,
+    private val eventsWriterHelperImpl: EventWriterHelperImpl
 ) : BaseViewModel() {
     var imagePath = ""
 
@@ -77,6 +82,10 @@ class BaseLineStartViewModel @Inject constructor(
     }
     val adharCardState = mutableStateOf(OptionItemEntityState.getEmptyStateObject())
 
+    var sectionDetails: SectionListItem = SectionListItem(
+        languageId = 2
+    )
+
     fun getFileName(context: Context, didi: SurveyeeEntity): File {
         val directory = getImagePath(context)
         val filePath = File(
@@ -100,6 +109,7 @@ class BaseLineStartViewModel @Inject constructor(
                     didiEntity.value,
                 )
             }
+
             is SurveyStateEvents.UpdateDidiSurveyStatus -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     startSurveyScreenUserCase.updateSurveyStateUseCase.invoke(
@@ -107,6 +117,22 @@ class BaseLineStartViewModel @Inject constructor(
                         event.didiSurveyState
                     )
                     startSurveyScreenUserCase.updateSurveyStateUseCase.saveDidiInfoInDB(event.didiInfo)
+                }
+            }
+
+            is EventWriterEvents.UpdateSectionStatusEvent -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val updateSectionStatusEvent =
+                        eventsWriterHelperImpl.createUpdateSectionStatusEvent(
+                            event.surveyId,
+                            event.sectionId,
+                            event.didiId,
+                            event.sectionStatus
+                        )
+                    startSurveyScreenUserCase.eventsWriterUserCase.invoke(
+                        events = updateSectionStatusEvent,
+                        eventType = EventType.STATEFUL
+                    )
                 }
             }
         }
@@ -138,8 +164,15 @@ class BaseLineStartViewModel @Inject constructor(
         }
     }
 
-    fun getDidiDetails(didiId: Int) {
+    fun getDidiDetails(didiId: Int, sectionId: Int, surveyId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val selectedLanguage = startSurveyScreenUserCase.getSectionUseCase.getSelectedLanguage()
+            sectionDetails = startSurveyScreenUserCase.getSectionUseCase.invoke(
+                sectionId,
+                surveyId,
+                selectedLanguage
+            )
+
             _didiEntity.emit(startSurveyScreenUserCase.getSurveyeeDetailsUserCase.invoke(didiId))
             _didiInfo.emit(
                 startSurveyScreenUserCase.getSurveyeeDetailsUserCase.getDidiIndoDetail(

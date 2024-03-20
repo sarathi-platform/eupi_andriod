@@ -41,8 +41,8 @@ class DataLoadingScreenViewModel @Inject constructor(
                     fetchDataUseCase.fetchUserDetailFromNetworkUseCase.invoke()
                 if (fetchUserDetailFromNetworkUseCaseSuccess) {
                     fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke()
-                    fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
                     fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
+                    fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
                     fetchDataUseCase.fetchContentnDataFromNetworkUseCase.invoke()
 
                 } else {

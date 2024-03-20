@@ -11,7 +11,7 @@ const val DEFAULT_LANGUAGE_LOCAL_NAME = "English"
 const val MOBILE_NUMBER_LENGTH=10
 const val ASSET_VALUE_LENGTH = 8
 const val MAXIMUM_RANGE = 999999
-const val MAXIMUM_RANGE_LENGTH = 12
+const val MAXIMUM_RANGE_LENGTH = 10
 const val OTP_LENGTH = 6
 var OTP_RESEND_DURATION: Long = 30 * 1000
 var EXPANSTION_TRANSITION_DURATION: Int = 450
@@ -287,6 +287,7 @@ const val ARG_QUESTION_ID = "question_id"
 
 const val THIS_WEEK_TAB = "This Week"
 const val ALL_TAB = "All"
+const val DIDI_LIST = "DIDI_LIST"
 
 const val QUESTION_DATA_TAB = "Questions Data"
 const val SECTION_INFORMATION_TAB = "Section Information"
@@ -314,5 +315,4 @@ const val LANGUAGE_OPEN_FROM_SETTING = "language_open_from_setting"
 const val ARG_FROM_SECTION_SCREEN = "from_section_screen"
 const val ARG_FROM_QUESTION_SCREEN = "from_question_screen"
 
-
-
+const val ROOM_INTEGRITY_EXCEPTION = "Room cannot verify the data integrity."

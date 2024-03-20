@@ -77,8 +77,6 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.convertInputTypeQuestionToEventOptionItemDto
-import com.nrlm.baselinesurvey.utils.convertFormResponseObjectToSaveAnswerEventOptionDto
-import com.nrlm.baselinesurvey.utils.convertInputTypeQuestionToEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.convertToSaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.findOptionFromId
 import com.nrlm.baselinesurvey.utils.mapToOptionItem
@@ -720,9 +718,10 @@ fun NestedLazyList(
                                             )
                                         ) {
                                             navigateToBaseLineStartScreen(
-                                                surveyeeId,
-                                                sectionDetails.surveyId,
-                                                navController
+                                                surveyeeId = surveyeeId,
+                                                survyId = sectionDetails.surveyId,
+                                                sectionId = sectionDetails.sectionId,
+                                                navController = navController
                                             )
                                         } else {
                                             /*if (householdMemberDtoList.value.size > 0 || !answeredQuestionIndices.value.contains(
@@ -989,9 +988,10 @@ fun NestedLazyList(
                                             didiDetails = questionScreenViewModel.didiDetails,
                                             onUpdate = {
                                                 navigateToBaseLineStartScreen(
-                                                    surveyeeId,
-                                                    sectionDetails.surveyId,
-                                                    navController
+                                                    surveyeeId = surveyeeId,
+                                                    survyId = sectionDetails.surveyId,
+                                                    sectionId = sectionDetails.sectionId,
+                                                    navController = navController
                                                 )
                                             }
                                         )

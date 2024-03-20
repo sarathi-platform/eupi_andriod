@@ -80,7 +80,7 @@ class GetFormQuestionResponseUseCase(private val repository: FormQuestionRespons
         )
     }
 
-    suspend fun getQuestionTag(surveyId: Int, sectionId: Int, questionId: Int): String {
+    suspend fun getQuestionTag(surveyId: Int, sectionId: Int, questionId: Int): Int {
         return repository.getQuestionTag(surveyId, sectionId, questionId)
     }
 

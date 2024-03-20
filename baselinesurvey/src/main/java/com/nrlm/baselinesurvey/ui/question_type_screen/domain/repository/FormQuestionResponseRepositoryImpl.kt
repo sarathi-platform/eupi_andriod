@@ -176,7 +176,7 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun getQuestionTag(surveyId: Int, sectionId: Int, questionId: Int): String {
+    override suspend fun getQuestionTag(surveyId: Int, sectionId: Int, questionId: Int): Int {
         return questionEntityDao.getQuestionTag(surveyId, sectionId, questionId)
     }
 

@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.mission_summary_screen.viewModel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
@@ -54,6 +55,10 @@ class MissionSummaryViewModel @Inject constructor(
                 _activities.value
             )
         }
+    }
+
+    fun getPendingDidiCountLive(activityId: Int): LiveData<Int> {
+        return missionSummaryScreenUseCase.getPendingTaskCountLiveUseCase.invoke(activityId)
     }
 
 }

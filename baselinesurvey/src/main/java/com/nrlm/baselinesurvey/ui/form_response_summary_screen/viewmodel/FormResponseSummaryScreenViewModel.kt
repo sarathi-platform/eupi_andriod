@@ -16,9 +16,11 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionType
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.convertFormResponseObjectToSaveAnswerEventOptionDto
 import com.nrlm.baselinesurvey.utils.convertToOptionItemEntity
+import com.nrlm.baselinesurvey.utils.findIdFromTag
 import com.nrlm.baselinesurvey.utils.getIndexForReferenceId
 import com.nrlm.baselinesurvey.utils.mapFormQuestionResponseToFromResponseObjectDto
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nrlm.baselinesurvey.utils.tagList
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -63,7 +65,7 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
                             sectionId = event.sectionId,
                             didiId = event.surveyeeId,
                             questionId = item?.questionId ?: 0,
-                            questionTag = item?.questionTag ?: BLANK_STRING,
+                            questionTag = tagList.findIdFromTag(item?.questionTag ?: BLANK_STRING),
                             questionType = QuestionType.Form.name,
                             saveAnswerEventOptionItemDtoList = formResponseObjectDtoList.value.convertFormResponseObjectToSaveAnswerEventOptionDto()
                         )

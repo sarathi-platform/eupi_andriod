@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.repository
 
+import androidx.lifecycle.LiveData
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
@@ -55,5 +56,9 @@ class MissionSummaryScreenRepositoryImpl @Inject constructor(
                 actualStartDate = System.currentTimeMillis().toDate().toString()
             )
         }
+    }
+
+    override fun getPendingTaskCountLive(activityId: Int): LiveData<Int> {
+        return taskDao.getPendingTaskCountLive(activityId)
     }
 }

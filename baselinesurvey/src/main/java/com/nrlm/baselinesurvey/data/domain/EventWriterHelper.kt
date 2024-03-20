@@ -20,7 +20,7 @@ interface EventWriterHelper {
         didiId: Int,
         questionId: Int,
         questionType: String,
-        questionTag: String,
+        questionTag: Int,
         showQuestion: Boolean = true,
         saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     ): Events
@@ -31,7 +31,7 @@ interface EventWriterHelper {
         didiId: Int,
         questionId: Int,
         questionType: String,
-        questionTag: String,
+        questionTag: Int,
         showQuestion: Boolean = true,
         saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     ): Events
@@ -97,5 +97,12 @@ interface EventWriterHelper {
 
 
     suspend fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto
+
+    suspend fun getMissionActivityTaskEventList(
+        missionId: Int,
+        activityId: Int,
+        taskId: Int,
+        status: SectionStatus
+    ): List<Events>
 
 }

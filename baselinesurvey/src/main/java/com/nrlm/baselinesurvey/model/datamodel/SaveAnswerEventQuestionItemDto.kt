@@ -12,7 +12,7 @@ data class SaveAnswerEventQuestionItemDto(
     val questionType: String,
     @SerializedName("tag")
     @Expose
-    val tag: String,
+    val tag: Int,
     @SerializedName("showQuestion")
     @Expose
     val showQuestion: Boolean = true,

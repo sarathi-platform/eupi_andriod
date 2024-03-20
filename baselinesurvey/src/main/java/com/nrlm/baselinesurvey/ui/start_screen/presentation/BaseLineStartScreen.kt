@@ -60,6 +60,7 @@ import com.nrlm.baselinesurvey.ui.common_components.DialogComponent
 import com.nrlm.baselinesurvey.ui.common_components.DoubleButtonBox
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.YesNoButtonComponent
+import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SurveyStateEvents
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.start_screen.viewmodel.BaseLineStartViewModel
@@ -71,6 +72,7 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark50
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.openSettings
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.uriFromFile
 import kotlinx.coroutines.flow.StateFlow
@@ -81,7 +83,8 @@ fun BaseLineStartScreen(
     navController: NavHostController,
     baseLineStartViewModel: BaseLineStartViewModel,
     didiId: Int,
-    surveyId: Int
+    surveyId: Int,
+    sectionId: Int
 ) {
     val localContext = LocalContext.current
     val screenHeight = LocalConfiguration.current.screenHeightDp
@@ -91,7 +94,11 @@ fun BaseLineStartScreen(
 
     val didi = baseLineStartViewModel.didiEntity
     LaunchedEffect(key1 = true) {
-        baseLineStartViewModel.getDidiDetails(didiId)
+        baseLineStartViewModel.getDidiDetails(
+            didiId = didiId,
+            sectionId = sectionId,
+            surveyId = surveyId
+        )
     }
 
 
@@ -661,6 +668,14 @@ private fun updateDidiDetails(
                     phoneNumber = baseLineStartViewModel.phoneNumber.value
                 ),
                 SurveyState.INPROGRESS
+            )
+        )
+        baseLineStartViewModel.onEvent(
+            EventWriterEvents.UpdateSectionStatusEvent(
+                surveyId = baseLineStartViewModel.sectionDetails.surveyId,
+                sectionId = baseLineStartViewModel.sectionDetails.sectionId,
+                didiId = didi.value.didiId ?: 0,
+                sectionStatus = SectionStatus.COMPLETED
             )
         )
     }

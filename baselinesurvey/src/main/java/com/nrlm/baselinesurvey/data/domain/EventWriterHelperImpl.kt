@@ -94,7 +94,7 @@ class EventWriterHelperImpl @Inject constructor(
         didiId: Int,
         questionId: Int,
         questionType: String,
-        questionTag: String,
+        questionTag: Int,
         showQuestion: Boolean,
         saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     ): Events {
@@ -132,7 +132,7 @@ class EventWriterHelperImpl @Inject constructor(
         didiId: Int,
         questionId: Int,
         questionType: String,
-        questionTag: String,
+        questionTag: Int,
         showQuestion: Boolean,
         saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     ): Events {
@@ -362,6 +362,47 @@ class EventWriterHelperImpl @Inject constructor(
 
     override suspend fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto {
         return activityDao.getActivityFromSubjectId(subjectId)
+    }
+
+    override suspend fun getMissionActivityTaskEventList(
+        missionId: Int,
+        activityId: Int,
+        taskId: Int,
+        status: SectionStatus
+    ): List<Events> {
+        val missionEntity = missionEntityDao.getMission(missionId)
+        val activityEntity = activityDao.getActivity(missionId, activityId)
+        val taskEntity = taskDao.getTask(activityId, missionId, taskId)
+
+        val eventList = mutableListOf<Events>()
+
+        if (taskEntity.status != SectionStatus.COMPLETED.name && taskEntity.status != SectionStatus.INPROGRESS.name) {
+            val taskStatusUpdateEvent = createTaskStatusUpdateEvent(taskEntity.subjectId, status)
+            eventList.add(taskStatusUpdateEvent)
+        }
+
+        if (activityEntity.status != SectionStatus.COMPLETED.name && activityEntity.status != SectionStatus.INPROGRESS.name) {
+            if (activityEntity.status == null) {
+                val activityStatusUpdateEvent =
+                    createActivityStatusUpdateEvent(missionId, activityId, SectionStatus.INPROGRESS)
+                eventList.add(activityStatusUpdateEvent)
+            } else {
+                val activityStatusUpdateEvent =
+                    createActivityStatusUpdateEvent(missionId, activityId, status)
+                eventList.add(activityStatusUpdateEvent)
+            }
+        }
+        if (missionEntity.status != SectionStatus.COMPLETED.name && missionEntity.status != SectionStatus.INPROGRESS.name) {
+            if (missionEntity.status == null) {
+                val missionStatusUpdateEvent =
+                    createMissionStatusUpdateEvent(missionId, SectionStatus.INPROGRESS)
+                eventList.add(missionStatusUpdateEvent)
+            } else {
+                val missionStatusUpdateEvent = createMissionStatusUpdateEvent(missionId, status)
+                eventList.add(missionStatusUpdateEvent)
+            }
+        }
+        return eventList
     }
 
     /*override suspend fun creteSubjectStatusUpdateEvent(

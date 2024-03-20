@@ -211,13 +211,18 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
                 name = ARG_SURVEY_ID
             ) {
                 type = NavType.IntType
+            }, navArgument(
+                name = ARG_SECTION_ID
+            ) {
+                type = NavType.IntType
             }
         )) {
             BaseLineStartScreen(
                 navController = navController,
                 baseLineStartViewModel = hiltViewModel(),
                 it.arguments?.getInt(ARG_DIDI_ID) ?: -1,
-                surveyId = it.arguments?.getInt(ARG_SURVEY_ID) ?: -1
+                surveyId = it.arguments?.getInt(ARG_SURVEY_ID) ?: -1,
+                sectionId = it.arguments?.getInt(ARG_SECTION_ID) ?: -1
             )
         }
 
@@ -432,7 +437,7 @@ sealed class HomeScreens(val route: String) {
         HomeScreens(route = "${FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME}/{$ARG_QUESTION_NAME}/{$ARG_SURVEY_ID}/{$ARG_SECTION_ID}/{$ARG_QUESTION_ID}/{$ARG_DIDI_ID}?{$ARG_FORM_QUESTION_RESPONSE_REFERENCE_ID}")
 
     object BaseLineStartScreen :
-        HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}/{$ARG_SURVEY_ID}")
+        HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}/{$ARG_SURVEY_ID}/{$ARG_SECTION_ID}")
 
     object SearchScreen : HomeScreens(route = "$SEARCH_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_DIDI_ID}/{$ARG_FROM_SCREEN}")
     object Home_SCREEN : HomeScreens(route = HOME_SCREEN_ROUTE_NAME)
@@ -473,8 +478,13 @@ const val PROFILE_BS_SCREEN_ROUTE_NAME = "profile_bs_screen"
 const val FORM_QUESTION_SUMMARY_SCREEN_ROUTE_NAME = "form_question_summary_screen"
 
 
-fun navigateToBaseLineStartScreen(surveyeeId: Int, survyId: Int, navController: NavController) {
-    navController.navigate("$BASELINE_START_SCREEN_ROUTE_NAME/$surveyeeId/$survyId")
+fun navigateToBaseLineStartScreen(
+    surveyeeId: Int,
+    survyId: Int,
+    sectionId: Int,
+    navController: NavController
+) {
+    navController.navigate("$BASELINE_START_SCREEN_ROUTE_NAME/$surveyeeId/$survyId/$sectionId")
 }
 
 fun navigateBackToSurveyeeListScreen(navController: NavController) {

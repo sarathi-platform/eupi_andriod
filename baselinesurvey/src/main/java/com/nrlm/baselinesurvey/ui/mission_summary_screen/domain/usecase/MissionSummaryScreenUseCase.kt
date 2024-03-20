@@ -6,5 +6,6 @@ data class MissionSummaryScreenUseCase(
     val getMissionActivitiesFromDBUseCase: GetMissionActivitiesFromDBUseCase,
     val updateMisisonState: UpdateMisisonState,
     val updateMissionStatusUseCase: UpdateMissionStatusUseCase,
+    val getPendingTaskCountLiveUseCase: GetPendingTaskCountLiveUseCase,
     val eventsWriterUserCase: EventsWriterUserCase
 )

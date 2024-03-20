@@ -72,5 +72,5 @@ interface FormQuestionResponseRepository {
         didiId: Int
     ): List<FormQuestionResponseEntity>
 
-    suspend fun getQuestionTag(surveyId: Int, sectionId: Int, questionId: Int): String
+    suspend fun getQuestionTag(surveyId: Int, sectionId: Int, questionId: Int): Int
 }

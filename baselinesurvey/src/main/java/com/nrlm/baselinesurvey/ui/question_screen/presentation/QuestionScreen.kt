@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.absolutePadding
@@ -61,6 +62,7 @@ import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
 import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nrlm.baselinesurvey.utils.states.SurveyState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -179,52 +181,54 @@ fun QuestionScreen(
                     .padding(top = dimen_10_dp)
                     .fillMaxSize(),
                 bottomBar = {
-                    BottomAppBar(
-                        containerColor = white,
-                        tonalElevation = defaultCardElevation
-                    ) {
-                        Column {
-                            ExtendedFloatingActionButton(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
+                    if (viewModel.didiDetails?.surveyStatus != SurveyState.COMPLETED.ordinal) {
+                        BottomAppBar(
+                            containerColor = white,
+                            tonalElevation = defaultCardElevation
+                        ) {
+                            Column {
+                                ExtendedFloatingActionButton(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
 //                        shape = RoundedCornerShape(bottomStart = roundedCornerRadiusDefault, bottomEnd = roundedCornerRadiusDefault),
-                                shape = RoundedCornerShape(roundedCornerRadiusDefault),
-                                containerColor = if (viewModel.isSectionCompleted.value) blueDark else inactiveLightBlue,
-                                contentColor = if (viewModel.isSectionCompleted.value) white else inactiveTextBlue,
-                                onClick = {
-                                    if (viewModel.isSectionCompleted.value) {
-                                        viewModel.onEvent(
-                                            QuestionScreenEvents.SectionProgressUpdated(
-                                                surveyId = sectionDetails.surveyId,
-                                                sectionId = sectionDetails.sectionId,
-                                                didiId = surveyeeId,
-                                                SectionStatus.COMPLETED
+                                    shape = RoundedCornerShape(roundedCornerRadiusDefault),
+                                    containerColor = if (viewModel.isSectionCompleted.value) blueDark else inactiveLightBlue,
+                                    contentColor = if (viewModel.isSectionCompleted.value) white else inactiveTextBlue,
+                                    onClick = {
+                                        if (viewModel.isSectionCompleted.value) {
+                                            viewModel.onEvent(
+                                                QuestionScreenEvents.SectionProgressUpdated(
+                                                    surveyId = sectionDetails.surveyId,
+                                                    sectionId = sectionDetails.sectionId,
+                                                    didiId = surveyeeId,
+                                                    SectionStatus.COMPLETED
+                                                )
                                             )
-                                        )
 //                                viewModel.onEvent(QuestionScreenEvents.SendAnswersToServer(surveyId = sectionDetails.surveyId, sectionId = sectionDetails.sectionId, surveyeeId))
 
-                                        if (sectionDetails.sectionName.equals(
-                                                NO_SECTION,
-                                                true
+                                            if (sectionDetails.sectionName.equals(
+                                                    NO_SECTION,
+                                                    true
+                                                )
                                             )
-                                        )
-                                            navigateBackToSurveyeeListScreen(navController)
-                                        else
-                                            nextSectionHandler(sectionId)
+                                                navigateBackToSurveyeeListScreen(navController)
+                                            else
+                                                nextSectionHandler(sectionId)
+                                        }
                                     }
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.save_next_section_button_text),
+                                        style = defaultTextStyle,
+                                        color = if (viewModel.isSectionCompleted.value) white else inactiveTextBlue
+                                    )
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowForward,
+                                        contentDescription = "save section button",
+                                        tint = if (viewModel.isSectionCompleted.value) white else inactiveTextBlue,
+                                        modifier = Modifier.absolutePadding(top = dimen_3_dp)
+                                    )
                                 }
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.save_next_section_button_text),
-                                    style = defaultTextStyle,
-                                    color = if (viewModel.isSectionCompleted.value) white else inactiveTextBlue
-                                )
-                                Icon(
-                                    imageVector = Icons.Default.ArrowForward,
-                                    contentDescription = "save section button",
-                                    tint = if (viewModel.isSectionCompleted.value) white else inactiveTextBlue,
-                                    modifier = Modifier.absolutePadding(top = dimen_3_dp)
-                                )
                             }
                         }
                     }
@@ -292,17 +296,27 @@ fun handleOnMediaTypeDescriptionActions(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun TestPreviewPreview() {
-    Scaffold(Modifier.fillMaxSize(), bottomBar = {
-        BottomAppBar(containerColor = white, tonalElevation = defaultCardElevation, contentPadding = PaddingValues(horizontal = dimen_16_dp)) {
-            ExtendedFloatingActionButton(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(roundedCornerRadiusDefault),
-                containerColor = inactiveLightBlue,
-                contentColor = inactiveTextBlue,
-                onClick = {  }
+    Scaffold(
+        Modifier
+            .fillMaxSize()
+            .background(white), containerColor = white, bottomBar = {
+            BottomAppBar(
+                containerColor = white,
+                tonalElevation = defaultCardElevation,
+                contentPadding = PaddingValues(horizontal = dimen_16_dp)
             ) {
-                Text(text = "Save & Next Section")
-                Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "save section button")
+                ExtendedFloatingActionButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(roundedCornerRadiusDefault),
+                    containerColor = inactiveLightBlue,
+                    contentColor = inactiveTextBlue,
+                    onClick = { }
+                ) {
+                    Text(text = "Save & Next Section")
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = "save section button"
+                    )
             }
         }
     }) {
