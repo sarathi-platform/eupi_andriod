@@ -240,11 +240,11 @@ fun WealthRankingScreen(
                     }
                     if (filterSelected) {
                         itemsIndexed(
-                            newFilteredTolaDidiList.keys.toList().reversed()
+                            newFilteredTolaDidiList.keys.toList()
                         ) { index, item ->
                              ShowDidisFromTola(
                                 didiTola = item,
-                                didiList = newFilteredTolaDidiList[item]?.reversed() ?: emptyList(),
+                                 didiList = newFilteredDidiList.value ?: emptyList(),
                                 viewModel = viewModel,
                                 expandedIds = expandedCardIds,
                                 modifier = Modifier,
@@ -790,6 +790,9 @@ fun ShowDidisFromTola(
     coroutineScope: CoroutineScope,
     listState: LazyListState
 ) {
+//    if(didiList.isNotEmpty()) {
+//        viewModel.onCardArrowClicked(didiList[0].id, coroutineScope, listState,0)
+//    }
     Column(modifier = Modifier.then(modifier)) {
         Row(
             modifier = Modifier.padding(start = 8.dp, end = 16.dp, bottom = 10.dp, top = 4.dp),

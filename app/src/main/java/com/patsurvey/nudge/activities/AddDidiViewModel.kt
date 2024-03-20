@@ -26,6 +26,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
+import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
 import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -119,25 +120,10 @@ class AddDidiViewModel @Inject constructor(
         }
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
-                val localDidList = addDidiRepository.getAllDidisForVillage(villageId)
                 castList = addDidiRepository.getAllCasteForLanguage(
                     addDidiRepository.getAppLanguageId() ?: 2
                 )
-                val updatedList = mutableListOf<DidiEntity>()
-                localDidList.forEach {
-                    if (it.cohortId != 0 && it.cohortName == BLANK_STRING) {
-                        val tola = addDidiRepository.fetchSingleTola(it.cohortId)
-                        if (tola != null) {
-                            it.cohortName = tola.name
-                            updatedList.add(it)
-                        } else {
-                            addDidiRepository.deleteDidisForTola(it.cohortId)
-                        }
-                    } else {
-                        updatedList.add(it)
-                    }
-                }
-                _didiList.value = updatedList
+                getValidDidisFromDB()
                 val languageId = addDidiRepository.getAppLanguageId() ?: 2
                 val casteList = addDidiRepository.getAllCasteForLanguage(
                     languageId = languageId
@@ -171,6 +157,28 @@ class AddDidiViewModel @Inject constructor(
             isTolaSynced.value = it
         }
 
+    }
+
+    fun getValidDidisFromDB(){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val localDidList = addDidiRepository.getAllDidisForVillage(villageId)
+            val updatedList = mutableListOf<DidiEntity>()
+            localDidList.forEach {
+                if (it.cohortId != 0 && it.cohortName == BLANK_STRING) {
+                    val tola = addDidiRepository.fetchSingleTola(it.cohortId)
+                    if (tola != null) {
+                        it.cohortName = tola.name
+                        updatedList.add(it)
+                    } else {
+                        addDidiRepository.deleteDidisForTola(it.cohortId)
+                    }
+                } else {
+                    updatedList.add(it)
+                }
+            }
+            _didiList.value = updatedList
+
+        }
     }
 
     fun getCastName(castId : Int) : String{
@@ -685,11 +693,22 @@ class AddDidiViewModel @Inject constructor(
     fun filterList() {
         val map = mutableMapOf<String, MutableList<DidiEntity>>()
         didiList.value.forEachIndexed { _, didiDetailsModel ->
-            if (map.containsKey(didiDetailsModel.cohortName)) {
-                map[didiDetailsModel.cohortName]?.add(didiDetailsModel)
-            } else {
-                map[didiDetailsModel.cohortName] = mutableListOf(didiDetailsModel)
+            if(getFromPage().equals(ARG_FROM_PAT_SURVEY, true)){
+                if (didiDetailsModel.wealth_ranking != BLANK_STRING){
+                    if (map.containsKey(didiDetailsModel.cohortName)) {
+                        map[didiDetailsModel.cohortName]?.add(didiDetailsModel)
+                    } else {
+                        map[didiDetailsModel.cohortName] = mutableListOf(didiDetailsModel)
+                    }
+                }
+            }else{
+                if (map.containsKey(didiDetailsModel.cohortName)) {
+                    map[didiDetailsModel.cohortName]?.add(didiDetailsModel)
+                } else {
+                    map[didiDetailsModel.cohortName] = mutableListOf(didiDetailsModel)
+                }
             }
+
         }
         tolaMapList = map
         filterTolaMapList = map
@@ -1463,6 +1482,7 @@ class AddDidiViewModel @Inject constructor(
     fun deleteDidiOffline(
         didi: DidiEntity,
         isOnline: Boolean,
+        isFilterSelected: Boolean=false,
         networkCallbackListener: NetworkCallbackListener
     ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -1483,6 +1503,8 @@ class AddDidiViewModel @Inject constructor(
 
             _didiList.value = addDidiRepository.getAllDidisForVillage(villageId)
             filterDidiList = addDidiRepository.getAllDidisForVillage(villageId)
+            if(isFilterSelected)
+                 filterList()
 
             if (filterDidiList.isEmpty()) {
                 val currentStep = addDidiRepository.getStepForVillage(villageId, stepId)
