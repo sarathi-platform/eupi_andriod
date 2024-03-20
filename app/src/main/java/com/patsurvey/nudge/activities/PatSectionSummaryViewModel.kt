@@ -308,9 +308,9 @@ class PatSectionSummaryViewModel @Inject constructor(
     fun savePATEvent(isExclusion:Boolean?=false) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             delay(300)
-            if(isExclusion==false){
-                calculateDidiScore(didiEntity.value.id)
-            }
+//            if(isExclusion==false){
+//                calculateDidiScore(didiEntity.value.id)
+//            }
             val updatedDidiEntity = patSectionRepository.getDidiFromDB(didiEntity.value.id)
             patSectionRepository.saveEvent(
                 updatedDidiEntity,
