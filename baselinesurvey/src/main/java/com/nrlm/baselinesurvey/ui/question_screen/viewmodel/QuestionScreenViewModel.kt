@@ -381,7 +381,7 @@ class QuestionScreenViewModel @Inject constructor(
                         event.didiId,
                         event.sectionStatus
                     )
-                    updateMissionActivityTaskStatus(event.didiId, event.sectionStatus)
+                    updateMissionActivityTaskStatus(event.didiId, SectionStatus.INPROGRESS)
                 }
             }
 

@@ -505,13 +505,17 @@ object BaselineModule {
     fun provideStartSurveyScreenUseCase(
         repository: StartScreenRepository,
         surveyStateRepository: SurveyStateRepository,
-        casteListRepository: CasteListRepository
+        casteListRepository: CasteListRepository,
+        questionScreenRepository: QuestionScreenRepository,
+        eventsWriterRepository: EventsWriterRepository
     ): StartSurveyScreenUserCase {
         return StartSurveyScreenUserCase(
             getSurveyeeDetailsUserCase = GetSurveyeeDetailsUserCase(repository),
             saveSurveyeeImagePathUseCase = SaveSurveyeeImagePathUseCase(repository),
             updateSurveyStateUseCase = UpdateSurveyStateUserCase(surveyStateRepository),
-            getCasteListUseCase = GetCasteListUseCase(casteListRepository)
+            getCasteListUseCase = GetCasteListUseCase(casteListRepository),
+            getSectionUseCase = GetSectionUseCase(questionScreenRepository),
+            eventsWriterUserCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }
 

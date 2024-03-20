@@ -477,7 +477,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
             val surveyAnswersResponse = apiService.getSurveyAnswers(
                 GetSurveyAnswerRequest(
                     surveyId = it,
-                    userId = prefRepo.getUserId()
+                    mobileNumber = prefRepo.getMobileNumber() ?: "",
+                    userId = prefRepo.getUserId().toInt()
                 )
             )
             if (surveyAnswersResponse.status.equals(
@@ -606,20 +607,20 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     SectionStatusRequest(
                         sectionId = 2,
                         surveyId = it,
-                        mobileNumber = prefRepo.getMobileNumber() ?: ""
+                        userId = prefRepo.getUserId().toInt()
                     )
                 )
-            if (sectionStatusResponse.status.equals(
-                    SUCCESS_CODE,
-                    true
-                )
-            ) {
-                didiSectionProgressEntityDao.addDidiSectionProgress(
-                    getDidiSectionStatusEntity(
-                        sectionStatusResponse.data!!
+                if (sectionStatusResponse.status.equals(
+                        SUCCESS_CODE,
+                        true
                     )
-                )
-            }
+                ) {
+                    didiSectionProgressEntityDao.addDidiSectionProgress(
+                        getDidiSectionStatusEntity(
+                            sectionStatusResponse.data!!
+                        )
+                    )
+                }
             }
         } catch (ecxpetion: Exception) {
             Log.e("SectionStatus", ecxpetion.message.toString())

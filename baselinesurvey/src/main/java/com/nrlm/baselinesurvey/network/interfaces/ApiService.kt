@@ -24,6 +24,7 @@ import com.nrlm.baselinesurvey.model.response.SectionStatusResponseModel
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.TransactionResponse
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
+import com.nrlm.baselinesurvey.network.GET_SECTION_STATUS
 import com.nrlm.baselinesurvey.network.SUBPATH_AUTH_GENERATE_OTP
 import com.nrlm.baselinesurvey.network.SUBPATH_AUTH_VALIDATE_OTP
 import com.nrlm.baselinesurvey.network.SUBPATH_CONFIG_GET_LANGUAGE
@@ -37,7 +38,6 @@ import com.nrlm.baselinesurvey.network.SUBPATH_LOGOUT
 import com.nrlm.baselinesurvey.network.SUBPATH_SAVE_SURVEY_ANSWES
 import com.nrlm.baselinesurvey.network.SUBPATH_SURVEY_ANSWERS
 import com.nrlm.baselinesurvey.network.SUBPATH_USER_VIEW
-import com.nrlm.baselinesurvey.network.GET_SECTION_STATUS
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -88,6 +88,7 @@ interface ApiService {
     suspend fun getCasteList(@Query("languageId") languageId: Int): ApiResponseModel<List<CasteModel>>
 
     @POST(GET_SECTION_STATUS)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getSectionStatus(@Body sectionStatusRequest: SectionStatusRequest): ApiResponseModel<List<SectionStatusResponseModel>>
 
     @POST(SUBPATH_LOGOUT)
@@ -98,5 +99,6 @@ interface ApiService {
     suspend fun getAllContent(@Body contentMangerRequest: ContentMangerRequest): ApiResponseModel<List<ContentResponse>>
 
     @POST(SUBPATH_SURVEY_ANSWERS)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getSurveyAnswers(@Body surveyAnswerRequest: GetSurveyAnswerRequest): ApiResponseModel<List<QuestionAnswerResponseModel>>
 }
