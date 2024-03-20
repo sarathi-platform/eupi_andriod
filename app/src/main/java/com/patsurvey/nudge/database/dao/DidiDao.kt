@@ -20,6 +20,9 @@ interface DidiDao {
     @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId and activeStatus = 1 ORDER BY localCreatedDate DESC")
     fun getAllDidisForVillage(villageId: Int): List<DidiEntity>
 
+    @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId and activeStatus = 1")
+    fun getAllDidisForVillageWithoutDesc(villageId: Int): List<DidiEntity>
+
     @Query("Select * FROM $DIDI_TABLE where id = :id and activeStatus = 1")
     fun getDidi(id: Int): DidiEntity
 
