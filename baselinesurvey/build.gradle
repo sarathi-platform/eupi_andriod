@@ -1,5 +1,5 @@
 plugins {
-    id 'com.android.application'
+    id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-android'
     id 'androidx.navigation.safeargs.kotlin'
@@ -13,12 +13,9 @@ android {
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.nrlm.baselinesurvey"
         minSdk 23
-        targetSdk 33
         versionCode 1
         versionName version
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true
@@ -37,14 +34,14 @@ android {
 
     buildTypes {
         release {
-            shrinkResources true
+            //shrinkResources true
             minifyEnabled true
             debuggable false
             jniDebuggable = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug{
-            shrinkResources false
+            // shrinkResources false
             minifyEnabled false
             jniDebuggable = true
             debuggable true
@@ -55,18 +52,32 @@ android {
     flavorDimensions "default"
     productFlavors{
         uat{
-            applicationIdSuffix = ".uat"
+            // applicationIdSuffix = ".uat"
+            versionName version
             manifestPlaceholders.app_name= "Baseline UAT"
             buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
+            buildConfigField 'String', 'VERSION_NAME', '"1.1.10"'
+            buildConfigField 'int', 'VERSION_CODE', '1'
+            buildConfigField 'String', 'APPLICATION_ID', '"com.nrlm.baselinesurvey"'
+
         }
         staging{
-            applicationIdSuffix = ".stage"
+            versionName version
+            //  applicationIdSuffix = ".stage"
             manifestPlaceholders.app_name= "Baseline STAGE"
+            buildConfigField 'String', 'VERSION_NAME', '"1.1.10"'
+            buildConfigField 'int', 'VERSION_CODE', '1'
+            buildConfigField 'String', 'APPLICATION_ID', '"com.nrlm.baselinesurvey"'
+
             buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
         }
         production{
-            manifestPlaceholders.app_name= "Baseline"
+            // manifestPlaceholders.app_name= "Baseline"
 //            versionName prodVersion
+            buildConfigField 'String', 'VERSION_NAME', '"1.1.10"'
+            buildConfigField 'int', 'VERSION_CODE', '1'
+            buildConfigField 'String', 'APPLICATION_ID', '"com.nrlm.baselinesurvey"'
+
             buildConfigField 'String', 'BASE_URL', '"https://sarathi.lokos.in/"'
         }
     }
@@ -94,10 +105,10 @@ android {
 kapt {
     correctErrorTypes = true
 }
-android.applicationVariants.all {
-    def aptOutputDir = new File(buildDir, "generated/source/kapt/${it.unitTestVariant.dirName}")
-    it.unitTestVariant.addJavaSourceFoldersToModel(aptOutputDir)
-}
+//android.applicationVariants.all {
+//    def aptOutputDir = new File(buildDir, "generated/source/kapt/${it.unitTestVariant.dirName}")
+//    it.unitTestVariant.addJavaSourceFoldersToModel(aptOutputDir)
+//}
 
 dependencies {
 
