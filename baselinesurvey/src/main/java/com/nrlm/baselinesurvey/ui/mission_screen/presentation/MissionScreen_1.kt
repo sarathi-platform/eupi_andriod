@@ -17,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,8 +35,10 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.navigation.home.MISSION_SUMMARY_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
+import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
 import com.nrlm.baselinesurvey.ui.mission_screen.viewmodel.MissionViewModel
+import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
@@ -51,7 +54,12 @@ fun MissionScreen_1(
 ) {
     val context = LocalContext.current
 
+    val filteredMissionList = viewModel.filterMissionList
+
+    val loaderState = viewModel.loaderState.value
+
     LaunchedEffect(key1 = true) {
+        viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.init()
     }
     BackHandler {
@@ -112,33 +120,44 @@ fun MissionScreen_1(
                 onFilterSelected = {},
                 onSearchValueChange = { queryTerm ->
                 })
-            if (viewModel.filterMissionList.value.isEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        stringResource(R.string.not_able_to_load),
-                        style = defaultTextStyle,
-                        color = textColorDark
-                    )
-                }
-            } else {
-                LazyColumn {
-                    items(viewModel.filterMissionList.value) { mission ->
-                        MissonRowScreen_1(
-                            mission = mission,
-                            missionDueDate = mission.startDate,
-                            onViewStatusClick = {},
-                            onStartClick = {
-                                navController.navigate("${MISSION_SUMMARY_SCREEN_ROUTE_NAME}/${mission.missionId}/${mission.missionName}/${mission.endDate}")
-                            })
+
+            LoaderComponent(visible = loaderState.isLoaderVisible)
+
+            if (!loaderState.isLoaderVisible) {
+                if (filteredMissionList.value.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            stringResource(R.string.not_able_to_load),
+                            style = defaultTextStyle,
+                            color = textColorDark
+                        )
+                    }
+                } else {
+                    LazyColumn {
+                        items(filteredMissionList.value) { mission ->
+
+                            val pendingTaskCountForMission =
+                                viewModel.getPendingTaskCountForMissionLive(mission.missionId)
+                                    .observeAsState().value ?: 0
+
+                            MissonRowScreen_1(
+                                mission = mission,
+                                missionDueDate = mission.startDate,
+                                viewModel = viewModel,
+                                pendingCount = pendingTaskCountForMission,
+                                onViewStatusClick = {},
+                                onStartClick = {
+                                    navController.navigate("${MISSION_SUMMARY_SCREEN_ROUTE_NAME}/${mission.missionId}/${mission.missionName}/${mission.endDate}")
+                                })
+                        }
                     }
                 }
             }
-
         }
     }
 

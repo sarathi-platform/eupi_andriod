@@ -41,9 +41,8 @@ class DataLoadingScreenViewModel @Inject constructor(
                     fetchDataUseCase.fetchUserDetailFromNetworkUseCase.invoke()
                 if (fetchUserDetailFromNetworkUseCaseSuccess) {
                     fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke()
-                    fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
                     fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
-                    fetchSurveyForAllLanguages()
+                    fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
                     fetchDataUseCase.fetchContentnDataFromNetworkUseCase.invoke()
 
                 } else {
@@ -52,13 +51,15 @@ class DataLoadingScreenViewModel @Inject constructor(
                         callBack()
                     }
                 }
+                fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
+                fetchSurveyForAllLanguages()
+                fetchDataUseCase.fetchSectionStatusFromNetworkUseCase.invoke()
+                fetchDataUseCase.fetchSurveyAnswerFromNetworkUseCase.invoke()
                 withContext(Dispatchers.Main) {
                     onEvent(LoaderEvent.UpdateLoaderState(false))
                     callBack()
                 }
 
-                    fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
-                    fetchSurveyForAllLanguages()
 
             }
         } catch (ex: Exception) {
@@ -164,5 +165,13 @@ class DataLoadingScreenViewModel @Inject constructor(
 
     fun isUserLoggedIn(): Boolean {
         return fetchDataUseCase.loggedInUseCase.invoke()
+    }
+
+    fun isAllDataFetched(): Boolean {
+        return fetchDataUseCase.loggedInUseCase.isDataSynced()
+    }
+
+    fun setAllDataFetched() {
+        fetchDataUseCase.loggedInUseCase.setDataSynced()
     }
 }

@@ -11,10 +11,18 @@ sealed class QuestionTypeEvent {
     ) : QuestionTypeEvent()
 
     data class DeleteFormQuestionResponseEvent(
+        val surveyId: Int,
+        val sectionId: Int,
+        val questionId: Int,
+        val surveyeeId: Int,
         val referenceId: String
     ) : QuestionTypeEvent()
 
     data class SaveCacheFormQuestionResponseToDbEvent(
+        val surveyId: Int,
+        val sectionId: Int,
+        val questionId: Int,
+        val subjectId: Int,
         val formQuestionResponseList: List<FormQuestionResponseEntity>
     ) : QuestionTypeEvent()
 
@@ -32,13 +40,30 @@ sealed class QuestionTypeEvent {
 
     data class UpdateConditionalOptionState(val optionItemEntityState: OptionItemEntityState?, val userInputValue: String)
 
-    data class UpdateConditionQuestionStateForUserInput(val questionEntityState: QuestionEntityState?, val userInputValue: String)
+    data class UpdateConditionQuestionStateForUserInput(
+        val questionEntityState: QuestionEntityState?,
+        val userInputValue: String
+    )
 
-    data class UpdateConditionQuestionStateForSingleOption(val questionEntityState: QuestionEntityState?, val optionItemEntity: OptionItemEntity)
+    data class UpdateConditionQuestionStateForSingleOption(
+        val questionEntityState: QuestionEntityState?,
+        val optionItemEntity: OptionItemEntity
+    )
 
-    data class UpdateConditionQuestionStateForMultipleOption(val questionEntityState: QuestionEntityState?, val optionItemEntityList: List<OptionItemEntity>)
+    data class UpdateConditionQuestionStateForMultipleOption(
+        val questionEntityState: QuestionEntityState?,
+        val optionItemEntityList: List<OptionItemEntity>
+    )
 
-    data class UpdateConditionQuestionStateForInputNumberOptions(val questionEntityState: QuestionEntityState?, val optionItemEntity: OptionItemEntity)
+    data class UpdateConditionQuestionStateForInputNumberOptions(
+        val questionEntityState: QuestionEntityState?,
+        val optionItemEntity: OptionItemEntity
+    )
 
-    data class UpdateConditionQuestionStateForAnsweredQuestions(val questionEntityState: QuestionEntityState?, val answeredOptionItemEntityList: List<OptionItemEntity>)
+    data class UpdateConditionQuestionStateForAnsweredQuestions(
+        val questionEntityState: QuestionEntityState?,
+        val answeredOptionItemEntityList: List<OptionItemEntity>
+    )
+
+    object UpdateCalculationTypeQuestionValue
 }

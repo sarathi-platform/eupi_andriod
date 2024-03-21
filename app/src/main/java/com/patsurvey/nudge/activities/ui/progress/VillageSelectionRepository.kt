@@ -3787,20 +3787,22 @@ class VillageSelectionRepository @Inject constructor(
     }
 
     fun refreshStepListData(
-        villageList: List<VillageEntity>,
         taskCompleted: (success: Boolean) -> Unit
     ) {
 
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
+            val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
             villageList.forEach { village ->
                 try {
-
 
                     //Fetch Step List Data try {
                     NudgeLogger.d(
                         "VillageSelectionRepository",
                         "refreshBpcData getStepsList request -> village.id = ${village.id}"
                     )
+
+                    if (stepsListDao.getAllStepsForVillage(village.id).isEmpty()) {
                     val response = apiService.getStepsList(village.id)
                     NudgeLogger.d(
                         "VillageSelectionRepository", "refreshBpcData getStepsList " +
@@ -3917,6 +3919,7 @@ class VillageSelectionRepository @Inject constructor(
                         RetryHelper.stepListApiVillageId.add(village.id)
                         onCatchError(ex, ApiType.STEP_LIST_API)
                     }
+                    }
                 } catch (ex: Exception) {
                     if (ex !is JsonSyntaxException) {
                         if (!RetryHelper.retryApiList.contains(ApiType.STEP_LIST_API)) RetryHelper.retryApiList.add(
@@ -3925,9 +3928,15 @@ class VillageSelectionRepository @Inject constructor(
                         RetryHelper.stepListApiVillageId.add(village.id)
                     }
                     onCatchError(ex, ApiType.STEP_LIST_API)
+                    withContext(Dispatchers.Main) {
+                        taskCompleted(false)
+                    }
                 }
+
             }
-            taskCompleted(true)
+            withContext(Dispatchers.Main) {
+                taskCompleted(true)
+            }
         }
     }
 
@@ -3938,13 +3947,15 @@ class VillageSelectionRepository @Inject constructor(
                 val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                 val localLanguageList = languageListDao.getAllLanguages()
                 val villageReq= createMultiLanguageVillageRequest(localLanguageList)
-                if (!forceRefresh) {
+                if (!forceRefresh && !localVillageList.isNullOrEmpty()) {
                 if (!localVillageList.isNullOrEmpty()) {
                     val stateId = localVillageList[0].stateId
                     userAndVillageDetailsModel = UserAndVillageDetailsModel(true, localVillageList, stateId = stateId)
 //                    _villagList.value = localVillageList
 //                    _filterVillageList.value = villageList.value
-                    apiSuccess(userAndVillageDetailsModel)
+                    withContext(Dispatchers.Main) {
+                        apiSuccess(userAndVillageDetailsModel!!)
+                    }
                 }
                 } else {
                     NudgeLogger.d("VillageSelectionRepository", "fetchUserAndVillageDetails -> villageReq: $villageReq")
@@ -3954,11 +3965,10 @@ class VillageSelectionRepository @Inject constructor(
                         if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {
                                 saveUserDetailsInPref(UserDetailsModel(it.username ?: "", it.name ?: "", it.email ?: "", it.identityNumber  ?: "", it.profileImage ?: "", it.roleName ?: "", it.typeName ?: ""))
-                                val oldVillageList: List<VillageEntity> = villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID)
-                                villageListDao.insertAll(it.villageList ?: listOf())
-                                if (forceRefresh)
-                                    preserveOldRecord(oldVillageList)
-
+                                villageListDao.insertOnlyNewData(
+                                    it.villageList ?: listOf(),
+                                    prefRepo.isUserBPC()
+                                )
                                 val stateId = if (it.villageList?.isNotEmpty() == true) it.villageList?.get(0)?.stateId?:1 else -1
                                 val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                                 val defaultLanguageVillageList = villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID)
@@ -3972,13 +3982,17 @@ class VillageSelectionRepository @Inject constructor(
                                 } else {
                                     UserAndVillageDetailsModel(true, getEmitLanguageList(defaultLanguageVillageList, localVillageList, prefRepo.getAppLanguageId() ?: 2), stateId)
                                 }
-
-                                apiSuccess(userAndVillageDetailsModel!!)
+                                withContext(Dispatchers.Main) {
+                                    apiSuccess(userAndVillageDetailsModel!!)
+                                }
                             }
 
                             if (response.data == null) {
+                                withContext(Dispatchers.Main) {
                                 apiSuccess(UserAndVillageDetailsModel.getFailedResponseModel())
                             }
+                            }
+
 
                             if(!response.lastSyncTime.isNullOrEmpty()){
                                 updateLastSyncTime(prefRepo,response.lastSyncTime)
@@ -3990,7 +4004,9 @@ class VillageSelectionRepository @Inject constructor(
                             withContext(Dispatchers.Main) {
                                 NudgeLogger.d("VillageSelectionScreen", "fetchUserDetails response.status.equals(FAIL, true) -> viewModel.showLoader.value = false")
                             }
+                            withContext(Dispatchers.Main) {
                             apiSuccess(UserAndVillageDetailsModel.getFailedResponseModel())
+                            }
                             NudgeLogger.d("VillageSelectionViewModel", "fetchUserDetails -> response.status: ${response.status}, message: ${response.message}")
                         } else {
                             NudgeLogger.d("VillageSelectionViewModel", "fetchUserDetails -> Error: ${response.message}")
@@ -4014,8 +4030,8 @@ class VillageSelectionRepository @Inject constructor(
                 NudgeLogger.e("VillageSelectionViewModel", "fetchUserDetails -> catch called", ex)
                 withContext(Dispatchers.Main){
                     NudgeLogger.d("VillageSelectionScreen", "fetchUserDetails catch (ex: Exception) -> viewModel.showLoader.value = false")
+                    apiSuccess(UserAndVillageDetailsModel.getFailedResponseModel())
                 }
-                apiSuccess(UserAndVillageDetailsModel.getFailedResponseModel())
                 onCatchError(ex, ApiType.VILLAGE_LIST_API)
                 if (ex is HttpException) {
                     if (ex.response()?.code() == RESPONSE_CODE_UNAUTHORIZED || ex.response()

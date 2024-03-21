@@ -9,5 +9,7 @@ data class ActivityForSubjectDto(
     var subject: String,
     var reviewer: String,
     var taskId: Int,
-    var didiId: Int
+    var didiId: Int,
+    var actualStartDate: String,
+    var actualCompletedDate: String
 )

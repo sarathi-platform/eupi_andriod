@@ -67,7 +67,11 @@ object CalculatorUtils {
             i++
         }
         while (!operatorStack.empty()) {
-            myNumStack.push(applyOperator(operatorStack.pop(), myNumStack.pop(), myNumStack.pop()))
+            try {
+                myNumStack.push(applyOperator(operatorStack.pop(), myNumStack.pop(),myNumStack.pop()))
+            }catch (ex:Exception){
+                return myNumStack.pop()
+            }
         }
         return myNumStack.pop()
     }

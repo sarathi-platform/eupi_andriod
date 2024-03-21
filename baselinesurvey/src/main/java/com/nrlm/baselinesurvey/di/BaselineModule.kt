@@ -46,6 +46,7 @@ import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_reposito
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.EventsWriterUserCase
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.GetCasteListUseCase
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.UpdateSurveyStateUserCase
+import com.nrlm.baselinesurvey.ui.form_response_summary_screen.domain.use_case.FormResponseSummaryScreenUseCase
 import com.nrlm.baselinesurvey.ui.language.domain.repository.LanguageScreenRepository
 import com.nrlm.baselinesurvey.ui.language.domain.repository.LanguageScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.GetLanguageListFromDbUseCase
@@ -59,12 +60,15 @@ import com.nrlm.baselinesurvey.ui.mission_screen.domain.repository.MissionScreen
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.repository.MissionScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.FetchMissionDataFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.GetMissionListFromDbUseCase
+import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.GetTaskDetailsFromDbUseCase
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.MissionScreenUseCase
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.repository.MissionSummaryScreenRepository
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.repository.MissionSummaryScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.GetMissionActivitiesFromDBUseCase
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.GetPendingTaskCountLiveUseCase
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.MissionSummaryScreenUseCase
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.UpdateMisisonState
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.UpdateMissionStatusUseCase
 import com.nrlm.baselinesurvey.ui.profile.domain.repository.ProfileBSRepository
 import com.nrlm.baselinesurvey.ui.profile.domain.repository.ProfileBSRepositoryImpl
 import com.nrlm.baselinesurvey.ui.profile.domain.use_case.GetIdentityNumberUseCase
@@ -124,6 +128,8 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeList
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchCastesFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchContentDataFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSectionStatusFromNetworkUseCase
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyAnswerFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyeeListFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchUserDetailFromNetworkUseCase
@@ -131,6 +137,7 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.GetActivitySta
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.GetSurveyeeListUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.MoveSurveyeeToThisWeekUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivityStatusUseCase
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
 import dagger.Module
@@ -189,20 +196,27 @@ object BaselineModule {
             fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(
                 dataLoadingScreenRepository
             ),
-            getMissionListFromDbUseCase = GetMissionListFromDbUseCase(missionScreenRepository)
+            getMissionListFromDbUseCase = GetMissionListFromDbUseCase(missionScreenRepository),
+            getTaskDetailsFromDbUseCase = GetTaskDetailsFromDbUseCase(missionScreenRepository)
         )
     }
 
     @Provides
     @Singleton
     fun provideMissionSummaryScreenUseCase(
-        missionSummaryScreenRepository: MissionSummaryScreenRepository
+        missionSummaryScreenRepository: MissionSummaryScreenRepository,
+        eventsWriterRepository: EventsWriterRepository
     ): MissionSummaryScreenUseCase {
         return MissionSummaryScreenUseCase(
             getMissionActivitiesFromDBUseCase = GetMissionActivitiesFromDBUseCase(
                 missionSummaryScreenRepository,
             ),
-            updateMisisonState = UpdateMisisonState(missionSummaryScreenRepository)
+            updateMisisonState = UpdateMisisonState(missionSummaryScreenRepository),
+            updateMissionStatusUseCase = UpdateMissionStatusUseCase(missionSummaryScreenRepository),
+            getPendingTaskCountLiveUseCase = GetPendingTaskCountLiveUseCase(
+                missionSummaryScreenRepository
+            ),
+            eventsWriterUserCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }
 
@@ -277,13 +291,18 @@ object BaselineModule {
 
     @Provides
     @Singleton
-    fun provideSurveyeeScreenUseCase(surveyeeListScreenRepository: SurveyeeListScreenRepository): SurveyeeScreenUseCase {
+    fun provideSurveyeeScreenUseCase(
+        surveyeeListScreenRepository: SurveyeeListScreenRepository,
+        eventsWriterRepository: EventsWriterRepository
+    ): SurveyeeScreenUseCase {
         return SurveyeeScreenUseCase(
             getSurveyeeListUseCase = GetSurveyeeListUseCase(surveyeeListScreenRepository),
             moveSurveyeeToThisWeek = MoveSurveyeeToThisWeekUseCase(surveyeeListScreenRepository),
             getActivityStateFromDBUseCase = GetActivityStateFromDBUseCase(
                 surveyeeListScreenRepository
-            )
+            ),
+            updateActivityStatusUseCase = UpdateActivityStatusUseCase(surveyeeListScreenRepository),
+            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }
 
@@ -430,7 +449,9 @@ object BaselineModule {
         missionActivityDao: MissionActivityDao,
         activityTaskDao: ActivityTaskDao,
         contentDao: ContentDao,
-        baselineDatabase: NudgeBaselineDatabase
+        baselineDatabase: NudgeBaselineDatabase,
+        didiSectionProgressEntityDao: DidiSectionProgressEntityDao
+
     ): DataLoadingScreenRepository {
         return DataLoadingScreenRepositoryImpl(
             prefRepo,
@@ -445,7 +466,8 @@ object BaselineModule {
             missionActivityDao,
             activityTaskDao,
             contentDao,
-            baselineDatabase
+            baselineDatabase,
+            didiSectionProgressEntityDao
         )
     }
 
@@ -462,6 +484,8 @@ object BaselineModule {
             fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository),
             fetchCastesFromNetworkUseCase = FetchCastesFromNetworkUseCase(repository),
             fetchContentnDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(repository),
+            fetchSectionStatusFromNetworkUseCase = FetchSectionStatusFromNetworkUseCase(repository),
+            fetchSurveyAnswerFromNetworkUseCase = FetchSurveyAnswerFromNetworkUseCase(repository),
             loggedInUseCase = LoggedInUseCase(splashScreenRepository)
         )
     }
@@ -481,13 +505,17 @@ object BaselineModule {
     fun provideStartSurveyScreenUseCase(
         repository: StartScreenRepository,
         surveyStateRepository: SurveyStateRepository,
-        casteListRepository: CasteListRepository
+        casteListRepository: CasteListRepository,
+        questionScreenRepository: QuestionScreenRepository,
+        eventsWriterRepository: EventsWriterRepository
     ): StartSurveyScreenUserCase {
         return StartSurveyScreenUserCase(
             getSurveyeeDetailsUserCase = GetSurveyeeDetailsUserCase(repository),
             saveSurveyeeImagePathUseCase = SaveSurveyeeImagePathUseCase(repository),
             updateSurveyStateUseCase = UpdateSurveyStateUserCase(surveyStateRepository),
-            getCasteListUseCase = GetCasteListUseCase(casteListRepository)
+            getCasteListUseCase = GetCasteListUseCase(casteListRepository),
+            getSectionUseCase = GetSectionUseCase(questionScreenRepository),
+            eventsWriterUserCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }
 
@@ -510,11 +538,13 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideFormQuestionResponseRepository(
+        questionEntityDao: QuestionEntityDao,
         optionItemDao: OptionItemDao,
         formQuestionResponseDao: FormQuestionResponseDao,
         prefRepo: PrefRepo
     ): FormQuestionResponseRepository {
         return FormQuestionResponseRepositoryImpl(
+            questionEntityDao = questionEntityDao,
             optionItemDao = optionItemDao,
             formQuestionResponseDao = formQuestionResponseDao,
             prefRepo = prefRepo
@@ -524,7 +554,8 @@ object BaselineModule {
     @Provides
     @Singleton
     fun providesQuestionTypeScreenUseCase(
-        formQuestionResponse: FormQuestionResponseRepository
+        formQuestionResponse: FormQuestionResponseRepository,
+        eventsWriterRepository: EventsWriterRepository
     ): FormQuestionScreenUseCase {
         return FormQuestionScreenUseCase(
             getFormQuestionResponseUseCase = GetFormQuestionResponseUseCase(
@@ -539,7 +570,8 @@ object BaselineModule {
             ),
             deleteFormQuestionResponseUseCase = DeleteFormQuestionResponseUseCase(
                 formQuestionResponse
-            )
+            ),
+            eventsWriterUserCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }
 
@@ -547,9 +579,10 @@ object BaselineModule {
     @Singleton
     fun provideMissionRepository(
         missionEntityDao: MissionEntityDao,
-        missionActivityDao: MissionActivityDao
+        missionActivityDao: MissionActivityDao,
+        taskDao: ActivityTaskDao
     ): MissionScreenRepository {
-        return MissionScreenRepositoryImpl(missionEntityDao, missionActivityDao)
+        return MissionScreenRepositoryImpl(missionEntityDao, missionActivityDao, taskDao)
     }
 
     @Provides
@@ -669,6 +702,7 @@ object BaselineModule {
         surveyeeEntityDao: SurveyeeEntityDao,
         taskDao: ActivityTaskDao,
         activityDao: MissionActivityDao,
+        missionEntityDao: MissionEntityDao,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao
     ): EventWriterHelper {
         return EventWriterHelperImpl(
@@ -680,7 +714,21 @@ object BaselineModule {
             surveyeeEntityDao = surveyeeEntityDao,
             taskDao = taskDao,
             activityDao = activityDao,
+            missionEntityDao = missionEntityDao,
             didiSectionProgressEntityDao = didiSectionProgressEntityDao
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideFormResponseSummaryScreenUseCase(
+        repository: FormQuestionResponseRepository,
+        eventsWriterRepository: EventsWriterRepository
+    ): FormResponseSummaryScreenUseCase {
+        return FormResponseSummaryScreenUseCase(
+            getFormQuestionResponseUseCase = GetFormQuestionResponseUseCase(repository),
+            deleteFormQuestionResponseUseCase = DeleteFormQuestionResponseUseCase(repository),
+            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }
 

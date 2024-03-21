@@ -43,15 +43,18 @@ abstract class BaseViewModel : ViewModel(){
     var job: Job? = null
     var networkErrorMessage = mutableStateOf(BLANK_STRING)
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, e ->
+        BaselineLogger.e("BaseViewModel", "exceptionHandler: ${e.message}", e)
         when (e) {
             is HttpException -> {
                 when (e.response()?.code() ?: 0) {
                     RESPONSE_CODE_UNAUTHORIZED -> {
                         onServerError(ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE))
                     }
+
                     RESPONSE_CODE_CONFLICT -> {
                         onServerError(ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE))
                     }
+
                     RESPONSE_CODE_NOT_FOUND ->
                         onServerError(ErrorModel(message = UNREACHABLE_ERROR_MSG,
                             statusCode = e.response()?.code() ?: -1))
@@ -67,15 +70,19 @@ abstract class BaseViewModel : ViewModel(){
                             message = e.message?: COMMON_ERROR_MSG))
                 }
             }
+
             is SocketTimeoutException -> {
                 onServerError(ErrorModel(statusCode = RESPONSE_CODE_TIMEOUT,message = TIMEOUT_ERROR_MSG))
             }
+
             is IOException -> {
                 onServerError(ErrorModel(statusCode = RESPONSE_CODE_NETWORK_ERROR))
             }
+
             is JsonSyntaxException ->{
                 onServerError(ErrorModel(-1, e.message, statusCode = RESPONSE_CODE_NO_DATA))
             }
+
             else -> onServerError(ErrorModel(-1, e.message))
         }
     }

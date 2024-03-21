@@ -32,6 +32,7 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.common_components.CalculationResultComponent
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.RadioOptionTypeComponent
 import com.nrlm.baselinesurvey.ui.common_components.TypeMultiSelectedDropDownComponent
@@ -162,6 +163,7 @@ fun NestedLazyListForFormQuestions(
                                             )
                                         )
                                     }
+                                    questionTypeScreenViewModel.onEvent(QuestionTypeEvent.UpdateCalculationTypeQuestionValue)
                                     answeredQuestionCountIncreased()
                                 }
                             }
@@ -179,6 +181,7 @@ fun NestedLazyListForFormQuestions(
                                             value
                                         )
                                     )
+                                    questionTypeScreenViewModel.onEvent(QuestionTypeEvent.UpdateCalculationTypeQuestionValue)
                                     questionTypeScreenViewModel.formTypeOption?.let { formTypeOption ->
                                         saveCacheFormData(
                                             saveFormQuestionResponseEntity(
@@ -226,6 +229,8 @@ fun NestedLazyListForFormQuestions(
                                                 viewModel.referenceId
                                             )
                                         )
+                                        questionTypeScreenViewModel.onEvent(QuestionTypeEvent.UpdateCalculationTypeQuestionValue)
+
                                     }
                                     answeredQuestionCountIncreased()
                                 }
@@ -267,6 +272,7 @@ fun NestedLazyListForFormQuestions(
                                                 selectedValue
                                             )
                                         )
+                                        questionTypeScreenViewModel.onEvent(QuestionTypeEvent.UpdateCalculationTypeQuestionValue)
                                         questionTypeScreenViewModel.formTypeOption?.let { formTypeOption ->
                                             saveCacheFormData(
                                                 saveFormQuestionResponseEntity(
@@ -284,6 +290,15 @@ fun NestedLazyListForFormQuestions(
 
                             QuestionType.MultiSelect.name,
                             QuestionType.Grid.name -> {
+                            }
+
+                            QuestionType.Calculation.name -> {
+
+                                CalculationResultComponent(
+                                    title = option.optionItemEntity.display,
+                                    showQuestion = option,
+                                    defaultValue = questionTypeScreenViewModel.calculatedResult.value
+                                )
                             }
                         }
                     }

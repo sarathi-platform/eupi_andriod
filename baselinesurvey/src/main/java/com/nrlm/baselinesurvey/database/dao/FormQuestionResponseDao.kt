@@ -44,6 +44,16 @@ interface FormQuestionResponseDao {
         optionId: Int
     ): List<FormQuestionResponseEntity>
 
+    @Query("SELECT COUNT(*) from $FORM_QUESTION_RESPONSE_TABLE where surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND referenceId = :referenceId AND didiId = :didiId and optionId = :optionId")
+    fun isQuestionOptionAlreadyAnswered(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        referenceId: String,
+        didiId: Int,
+        optionId: Int
+    ): Int
+
     @Query("Update $FORM_QUESTION_RESPONSE_TABLE set selectedValue = :selectedValue where didiId = :didiId AND surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND optionId = :optionId AND referenceId = :referenceId")
     fun updateOptionItemValue(
         surveyId: Int,
@@ -71,6 +81,23 @@ interface FormQuestionResponseDao {
     fun deleteFormResponseQuestionForReferenceId(referenceId: String)
 
     @Query("DELETE from $FORM_QUESTION_RESPONSE_TABLE where optionId = :optionId AND questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId AND didiId = :surveyeeId")
-    fun deleteFormResponseQuestionForOption(optionId: Int, questionId: Int, sectionId: Int, surveyId: Int, surveyeeId: Int)
+    fun deleteFormResponseQuestionForOption(
+        optionId: Int,
+        questionId: Int,
+        sectionId: Int,
+        surveyId: Int,
+        surveyeeId: Int
+    )
+
+    @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where surveyId = :surveyId and sectionId = :sectionId and didiId = :didiId")
+    fun getFormQuestionCountForSection(
+        surveyId: Int,
+        sectionId: Int,
+        didiId: Int
+    ): List<FormQuestionResponseEntity>
+
+    @Query("Delete from $FORM_QUESTION_RESPONSE_TABLE")
+    fun deleteAllFormQuestions()
+
 
 }

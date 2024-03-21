@@ -166,7 +166,9 @@ fun BpcVillageSelectionScreen(
     val pullRefreshState = rememberPullRefreshState(
         viewModel.showLoader.value,
         {
-            viewModel.refreshVillageData()
+            if ((context as MainActivity).isOnline.value) {
+                viewModel.refreshVillageData(context)
+            }
         })
 
     if (viewModel.showLoader.value) {

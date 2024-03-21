@@ -411,7 +411,18 @@
     <string name="questions_data_tab_title">Questions Data</string>
     <string name="section_information_tab_title">Section Information</string>
     <string name="search_hamlet">Search Hamlet</string>
+    <string name="mission_completed_text">Mission Completed</string>
     <string name="aadhar_card_titile_assam">বাইদেউ’ৰ আধাৰ কাৰ্ড আছে নেকি?</string>
     <string name="voter_card_title_assam">বাইদেউ’ৰ ভোটাৰ কাৰ্ড আছে নেকি?</string>
     <string name="not_able_to_load">ডাটা লোড কৰিব পৰা নাই অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক..</string>
+    <string name="designation_comparision_and_label">পদবী</string>
+    <string name="didi_info">" বাইদেউ’ৰ তথ্য"</string>
+    <string name="default_confirm_button_text">Confirm</string>
+    <string name="default_dismiss_button_text">Dismiss</string>
+    <string name="delete_text">Delete</string>
+    <string name="cancel_text">Cancel</string>
+    <string name="alert_dialog_title_text">Alert</string>
+    <string name="alart_dialog_entry_deleteion_message_text">Do you want to delete this entry?</string>
+    <string name="didi_list_empty_state">No Didis assigned. Please contact your administrator.</string>
+    <string name="empty_task_message">No task assigned. Please contact your administrator.</string>
 </resources>

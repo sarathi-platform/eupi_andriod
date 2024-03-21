@@ -6,8 +6,10 @@ import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.ACTIVITY_TABLE_NAME
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.model.datamodel.MissionActivityModel
 import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nrlm.baselinesurvey.utils.states.toStringList
 
 @Entity(tableName = ACTIVITY_TABLE_NAME)
 data class MissionActivityEntity(
@@ -25,16 +27,18 @@ data class MissionActivityEntity(
     var endDate: String,
     var reviewer: String,
     var startDate: String,
+    var actualStartDate: String = BLANK_STRING,
+    val actualCompleteDate: String = BLANK_STRING,
     var subject: String,
-    var status: String,
+    var status: String?,
     var activityTaskSize: Int,
     var activityStatus: Int,
     var pendingDidi: Int,
     val isAllTask: Boolean,
-    var language: String,
+    var language: String?,
 
 
-) {
+    ) {
     companion object {
         fun getMissionActivityEntity(
             missionId: Int,
@@ -52,7 +56,7 @@ data class MissionActivityEntity(
                 endDate = activity.endDate,
                 reviewer = activity.reviewer,
                 subject = activity.subject,
-                status = activity.status,
+                status = getStatusForActivity(activity.status ?: SurveyState.NOT_STARTED.name),
                 activityTaskSize = activityTaskSize,
                 activityStatus = SurveyState.INPROGRESS.ordinal,
                 pendingDidi = activityTaskSize,
@@ -60,5 +64,11 @@ data class MissionActivityEntity(
                 language = activity.language
             )
         }
+
+        fun getStatusForActivity(status: String): String {
+            return SurveyState.values().toStringList().find { it.equals(status, true) }
+                ?: SurveyState.NOT_STARTED.name
+        }
+
     }
 }

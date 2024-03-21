@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ALL_TAB
+import com.nrlm.baselinesurvey.DIDI_LIST
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.MoveSurveyeesUpdateBannerComponent
@@ -76,7 +77,7 @@ fun AllSurveyeeListTab(
 
     val surveyeeList = viewModel.filteredSurveyeeListState.value
 
-    val surveyeeListWithTolaFilter = viewModel.tolaMapSurveyeeListState.value
+    val surveyeeListWithTolaFilter = viewModel.filteredTolaMapSurveyeeListState.value
 
     val isFilterAppliedState = remember {
         mutableStateOf(FilterListState())
@@ -111,7 +112,9 @@ fun AllSurveyeeListTab(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            stringResource(R.string.not_able_to_load),
+                            if (!activityName.equals("Conduct Hamlet Survey")) stringResource(R.string.didi_list_empty_state) else stringResource(
+                                R.string.empty_task_message
+                            ),
                             style = defaultTextStyle,
                             color = textColorDark
                         )
@@ -173,7 +176,7 @@ fun AllSurveyeeListTab(
                                         SearchEvent.PerformSearch(
                                             queryTerm,
                                             viewModel.isFilterAppliedState.value.isFilterApplied,
-                                            ALL_TAB
+                                            if (!activityName.equals("Conduct Hamlet Survey")) DIDI_LIST else ALL_TAB
                                         )
                                     )
                                 }

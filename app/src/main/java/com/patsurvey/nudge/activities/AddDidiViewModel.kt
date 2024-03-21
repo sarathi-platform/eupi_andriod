@@ -718,7 +718,6 @@ class AddDidiViewModel @Inject constructor(
                     map[didiDetailsModel.cohortName] = mutableListOf(didiDetailsModel)
                 }
             }
-
         }
         tolaMapList = map
         filterTolaMapList = map

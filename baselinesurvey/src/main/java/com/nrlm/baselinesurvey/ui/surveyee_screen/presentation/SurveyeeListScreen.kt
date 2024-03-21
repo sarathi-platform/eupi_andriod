@@ -22,15 +22,16 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.THIS_WEEK_TAB
 import com.nrlm.baselinesurvey.navigation.home.Step_Complition_Screen_ROUTE_NAME
-import com.nrlm.baselinesurvey.navigation.home.navigateBackToMissionSummaryScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToSectionListScreen
 import com.nrlm.baselinesurvey.ui.common_components.DoubleButtonBox
+import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreenActions.CheckBoxClicked
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.SurveyeeScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.FilterListState
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -101,6 +102,14 @@ fun SurveyeeListScreen(
                             SurveyeeListEvents.UpdateActivityAllTask(
                                 activityId,
                                 viewModel.isEnableNextBTn.value
+                            )
+                        )
+
+                        viewModel.onEvent(
+                            EventWriterEvents.UpdateActivityStatusEvent(
+                                missionId,
+                                activityId,
+                                SectionStatus.COMPLETED
                             )
                         )
                         navController.navigate("${Step_Complition_Screen_ROUTE_NAME}/${"You have successfully completed the ${activityName} activity"}")
@@ -225,6 +234,10 @@ fun handleButtonClick(
         }
 
         is ButtonName.EXPORT_BUTTON -> {
+
+        }
+
+        else -> {
 
         }
     }

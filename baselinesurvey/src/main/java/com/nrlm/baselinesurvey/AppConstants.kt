@@ -3,6 +3,7 @@ package com.nrlm.baselinesurvey
 import androidx.compose.ui.unit.dp
 
 const val BLANK_STRING=""
+const val DEFAULT_ID = -1
 const val ZERO_RESULT = "0"
 const val DEFAULT_LANGUAGE_CODE="en"
 const val DEFAULT_LANGUAGE_NAME = "English"
@@ -10,7 +11,7 @@ const val DEFAULT_LANGUAGE_LOCAL_NAME = "English"
 const val MOBILE_NUMBER_LENGTH=10
 const val ASSET_VALUE_LENGTH = 8
 const val MAXIMUM_RANGE = 999999
-const val MAXIMUM_RANGE_LENGTH = 12
+const val MAXIMUM_RANGE_LENGTH = 10
 const val OTP_LENGTH = 6
 var OTP_RESEND_DURATION: Long = 30 * 1000
 var EXPANSTION_TRANSITION_DURATION: Int = 450
@@ -276,6 +277,7 @@ const val PREF_KEY_QUESTIONS_OPEN_FROM = "questions_open_from"
 const val PREF_KEY_VO_SUMMARY_OPEN_FROM = "questions_open_from"
 const val PREF_KEY_QUESTIONS_SUMMARY_OPEN_FROM = "questions_summary_open_from"
 const val PREF_KEY_NEED_TO_SCROLL = "questions_need_to_scroll"
+const val PREF_KEY_IS_DATA_SYNC = "is_data_sync"
 
 const val NO_SECTION = "NO_SECTION"
 const val ARG_SECTION_ID = "section_id"
@@ -285,6 +287,7 @@ const val ARG_QUESTION_ID = "question_id"
 
 const val THIS_WEEK_TAB = "This Week"
 const val ALL_TAB = "All"
+const val DIDI_LIST = "DIDI_LIST"
 
 const val QUESTION_DATA_TAB = "Questions Data"
 const val SECTION_INFORMATION_TAB = "Section Information"
@@ -312,4 +315,4 @@ const val LANGUAGE_OPEN_FROM_SETTING = "language_open_from_setting"
 const val ARG_FROM_SECTION_SCREEN = "from_section_screen"
 const val ARG_FROM_QUESTION_SCREEN = "from_question_screen"
 
-
+const val ROOM_INTEGRITY_EXCEPTION = "Room cannot verify the data integrity."

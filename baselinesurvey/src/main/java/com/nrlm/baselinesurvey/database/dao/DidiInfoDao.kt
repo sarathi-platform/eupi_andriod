@@ -18,4 +18,7 @@ interface DidiInfoDao {
 
     @Query("SELECT * FROM $DIDI_INFO_TABLE_NAME where didiId=:didiId")
     fun getDidiInfoLive(didiId: Int): LiveData<List<DidiIntoEntity>>
+
+    @Query("delete from $DIDI_INFO_TABLE_NAME")
+    fun deleteAllDidiInfo()
 }

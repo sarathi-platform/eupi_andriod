@@ -4,13 +4,15 @@ import android.annotation.SuppressLint
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.DIDI_LIST
 import com.nrlm.baselinesurvey.NO_TOLA_TITLE
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
+import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
@@ -19,6 +21,7 @@ import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
+import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +31,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SurveyeeScreenViewModel @Inject constructor(
-    private val surveyeeScreenUseCase: SurveyeeScreenUseCase
+    private val surveyeeScreenUseCase: SurveyeeScreenUseCase,
+    private val eventWriterHelperImpl: EventWriterHelperImpl
 ) : BaseViewModel() {
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
@@ -51,6 +55,10 @@ class SurveyeeScreenViewModel @Inject constructor(
 
     private var _tolaMapSurveyeeListState = mutableStateOf(mapOf<String, List<SurveyeeCardState>>())
     val tolaMapSurveyeeListState: State<Map<String, List<SurveyeeCardState>>> get() = _tolaMapSurveyeeListState
+
+    private var _filteredTolaMapSurveyeeListState =
+        mutableStateOf(mapOf<String, List<SurveyeeCardState>>())
+    val filteredTolaMapSurveyeeListState: State<Map<String, List<SurveyeeCardState>>> get() = _filteredTolaMapSurveyeeListState
 
     private var _thisWeekTolaMapSurveyeeListState =
         mutableStateOf(mapOf<String, List<SurveyeeCardState>>())
@@ -101,9 +109,8 @@ class SurveyeeScreenViewModel @Inject constructor(
                 _surveyeeListState.value
             )
             isEnableNextBTn.value =
-                allTaskDone() && !surveyeeScreenUseCase.getActivityStateFromDBUseCase.getActivity(
-                    activityId
-                ).isAllTask
+                filteredSurveyeeListState.value.filter { it.surveyState != SurveyState.COMPLETED }
+                    .isEmpty()
 
             filterList(pageFrom.value)
 
@@ -202,20 +209,35 @@ class SurveyeeScreenViewModel @Inject constructor(
 
             is SurveyeeListEvents.UpdateActivityStatus -> {
                 CoroutineScope(Dispatchers.IO).launch {
-                    if (event.surveyList != null) {
-                        surveyeeScreenUseCase.getActivityStateFromDBUseCase.getActivitiesStatus(
-                            event.activityId,
-                            event.surveyList
-                        )
-                    }
+
                 }
             }
 
             is SurveyeeListEvents.UpdateActivityAllTask -> {
                 CoroutineScope(Dispatchers.IO).launch {
-                    surveyeeScreenUseCase.getActivityStateFromDBUseCase.getActivitiesAllTaskStatus(
+                    surveyeeScreenUseCase.getActivityStateFromDBUseCase.updateActivityAllTaskStatus(
                         event.activityId,
                         event.isAllTask
+                    )
+                }
+            }
+
+            is EventWriterEvents.UpdateActivityStatusEvent -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    surveyeeScreenUseCase.updateActivityStatusUseCase.invoke(
+                        missionId = event.missionId,
+                        activityId = event.activityId,
+                        status = event.status
+                    )
+                    val updateTaskStatusEvent =
+                        eventWriterHelperImpl.createActivityStatusUpdateEvent(
+                            missionId = event.missionId,
+                            activityId = event.activityId,
+                            status = event.status
+                        )
+                    surveyeeScreenUseCase.eventsWriterUseCase.invoke(
+                        events = updateTaskStatusEvent,
+                        eventType = EventType.STATEFUL
                     )
                 }
             }
@@ -224,12 +246,55 @@ class SurveyeeScreenViewModel @Inject constructor(
     }
 
     override fun performSearchQuery(queryTerm: String, isFilterApplied: Boolean, fromScreen: String) {
-        if (fromScreen == ALL_TAB) {
+        if (fromScreen == DIDI_LIST) {
             if (!isFilterApplied) {
                 _filteredSurveyeeListState.value = if (queryTerm.isNotEmpty()) {
                     val filteredList = ArrayList<SurveyeeCardState>()
                     surveyeeListState.value.forEach { surveyeeCardState ->
                         if (surveyeeCardState.surveyeeDetails.didiName.lowercase()
+                                .contains(queryTerm.lowercase())
+                        ) {
+                            filteredList.add(surveyeeCardState)
+                        }
+                    }
+                    filteredList
+                } else {
+                    _surveyeeListState.value
+                }
+            } else {
+                if (queryTerm.isNotEmpty()) {
+                    val mFilterMap = mutableMapOf<String, MutableList<SurveyeeCardState>>()
+                    tolaMapList.keys.forEach { key ->
+                        val mSurveyeeCardState = ArrayList<SurveyeeCardState>()
+                        tolaMapList[key]?.forEach { surveyeeCardState ->
+                            if (surveyeeCardState.surveyeeDetails.didiName.lowercase()
+                                    .contains(queryTerm.lowercase())
+                                || surveyeeCardState.surveyeeDetails.dadaName.lowercase()
+                                    .contains(queryTerm.lowercase())
+                                || surveyeeCardState.surveyeeDetails.houseNo.lowercase()
+                                    .contains(queryTerm.lowercase())
+                            ) {
+                                mSurveyeeCardState.add(surveyeeCardState)
+                            }
+                        }
+                        if (mSurveyeeCardState.isNotEmpty())
+                            mFilterMap[key] = mSurveyeeCardState
+                    }
+                    _filteredTolaMapSurveyeeListState.value = mFilterMap
+                } else {
+                    _filteredTolaMapSurveyeeListState.value = tolaMapSurveyeeListState.value
+                }
+            }
+        } else {
+            if (!isFilterApplied) {
+                _filteredSurveyeeListState.value = if (queryTerm.isNotEmpty()) {
+                    val filteredList = ArrayList<SurveyeeCardState>()
+                    surveyeeListState.value.forEach { surveyeeCardState ->
+                        if (surveyeeCardState.surveyeeDetails.didiName.lowercase()
+                                .contains(queryTerm.lowercase())
+                            || surveyeeCardState.surveyeeDetails.dadaName.lowercase()
+                                .contains(queryTerm.lowercase())
+                            || surveyeeCardState.surveyeeDetails.houseNo.lowercase()
                                 .contains(queryTerm.lowercase())
                         ) {
                             filteredList.add(surveyeeCardState)
@@ -254,13 +319,11 @@ class SurveyeeScreenViewModel @Inject constructor(
                         if (mSurveyeeCardState.isNotEmpty())
                             mFilterMap[key] = mSurveyeeCardState
                     }
-                    _tolaMapSurveyeeListState.value = mFilterMap
+                    _filteredTolaMapSurveyeeListState.value = mFilterMap
                 } else {
-                    _surveyeeListState.value
+                    _filteredTolaMapSurveyeeListState.value = tolaMapSurveyeeListState.value
                 }
             }
-        } else {
-
         }
 
     }
@@ -287,6 +350,7 @@ class SurveyeeScreenViewModel @Inject constructor(
             }
             tolaMapList = map
             _tolaMapSurveyeeListState.value = map
+            _filteredTolaMapSurveyeeListState.value = map
         } else {
             val map = mutableMapOf<String, MutableList<SurveyeeCardState>>()
             thisWeekSurveyeeListState.value.forEachIndexed { index, thisWeekSurveyeeCardState ->

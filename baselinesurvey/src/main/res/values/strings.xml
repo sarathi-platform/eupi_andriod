@@ -455,8 +455,19 @@
     <string name="share_export_file" translatable="false">Share exported file</string>
     <string name="share_export_image" translatable="false">Share exported image</string>
     <string name="search_hamlet">Search Hamlet</string>
+    <string name="mission_completed_text">Mission Completed</string>
     <string name="aadhar_card_titile_assam">Do you have aadhar card?</string>
     <string name="voter_card_title_assam">Do you have voter card?</string>
     <string name="not_able_to_load">Not able to load data please try again..</string>
+    <string name="designation_comparision_and_label">Designation</string>
+    <string name="didi_info">Didi Information</string>
+    <string name="default_confirm_button_text">Confirm</string>
+    <string name="default_dismiss_button_text">Dismiss</string>
+    <string name="delete_text">Delete</string>
+    <string name="cancel_text">Cancel</string>
+    <string name="alert_dialog_title_text">Alert</string>
+    <string name="alart_dialog_entry_deleteion_message_text">Do you want to delete this entry?</string>
+    <string name="didi_list_empty_state">No Didis assigned. Please contact your administrator.</string>
+    <string name="empty_task_message">No task assigned. Please contact your administrator.</string>
 
 </resources>

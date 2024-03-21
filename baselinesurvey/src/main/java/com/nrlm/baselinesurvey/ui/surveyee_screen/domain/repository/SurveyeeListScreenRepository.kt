@@ -3,6 +3,7 @@ package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository
 import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
 
 interface SurveyeeListScreenRepository {
@@ -20,9 +21,15 @@ interface SurveyeeListScreenRepository {
         surveyeeCardState: List<SurveyeeCardState>
     )
 
-    suspend fun getMissionActivitiesAllTaskStatusFromDB(
+    suspend fun updateActivityAllTaskStatus(
         activityId: Int,
         isAllTask: Boolean
+    )
+
+    suspend fun updateActivityStatus(
+        missionId: Int,
+        activityId: Int,
+        status: SectionStatus
     )
 
     suspend fun getActivitiyStatusFromDB(

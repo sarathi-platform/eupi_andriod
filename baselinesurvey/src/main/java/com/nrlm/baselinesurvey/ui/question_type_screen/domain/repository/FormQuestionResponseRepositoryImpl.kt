@@ -4,11 +4,14 @@ import androidx.lifecycle.LiveData
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.FormQuestionResponseDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
+import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
+import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import javax.inject.Inject
 
 class FormQuestionResponseRepositoryImpl @Inject constructor(
+    private val questionEntityDao: QuestionEntityDao,
     private val optionItemDao: OptionItemDao,
     private val formQuestionResponseDao: FormQuestionResponseDao,
     private val prefRepo: PrefRepo
@@ -138,14 +141,44 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getOptionItem(formQuestionResponseEntity: FormQuestionResponseEntity): Int {
-        return formQuestionResponseDao.getOptionItem(surveyId = formQuestionResponseEntity.surveyId,
+        return formQuestionResponseDao.getOptionItem(
+            surveyId = formQuestionResponseEntity.surveyId,
             sectionId = formQuestionResponseEntity.sectionId,
             questionId = formQuestionResponseEntity.questionId,
             optionId = formQuestionResponseEntity.optionId,
             referenceId = formQuestionResponseEntity.referenceId,
-            didiId = formQuestionResponseEntity.didiId)
+            didiId = formQuestionResponseEntity.didiId
+        )
     }
 
+    override suspend fun getFormQuestionForId(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int
+    ): QuestionEntity? {
+        return questionEntityDao.getFormQuestionForId(
+            surveyId,
+            sectionId,
+            questionId,
+            languageId = prefRepo.getAppLanguageId() ?: DEFAULT_BUFFER_SIZE
+        )
+    }
+
+    override suspend fun getFormQuestionCountForSection(
+        surveyId: Int,
+        sectionId: Int,
+        didiId: Int
+    ): List<FormQuestionResponseEntity> {
+        return formQuestionResponseDao.getFormQuestionCountForSection(
+            surveyId = surveyId,
+            sectionId = sectionId,
+            didiId = didiId
+        )
+    }
+
+    override suspend fun getQuestionTag(surveyId: Int, sectionId: Int, questionId: Int): Int {
+        return questionEntityDao.getQuestionTag(surveyId, sectionId, questionId)
+    }
 
 }
 

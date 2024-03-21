@@ -218,8 +218,7 @@ class PatSectionSummaryViewModel @Inject constructor(
         var passingMark = 0
         var isDidiAccepted = false
         var comment = LOW_SCORE
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            withContext(Dispatchers.IO) {
+
                 _inclusiveQueList.value = patSectionRepository.getAllInclusiveQues(didiId)
                 if (_inclusiveQueList.value.isNotEmpty()) {
                     var totalWightWithoutNumQue = patSectionRepository.getTotalWeightWithoutNumQues(didiId)
@@ -289,8 +288,7 @@ class PatSectionSummaryViewModel @Inject constructor(
                 }
                 patSectionRepository.updateModifiedDateServerId(didiId)
             }
-        }
-    }
+
 
     fun updateVOEndorseAfterDidiRejected(didiId:Int,forVoEndorsementStatus:Int){
         job = CoroutineScope(Dispatchers.IO +exceptionHandler).launch {
@@ -305,10 +303,12 @@ class PatSectionSummaryViewModel @Inject constructor(
         }
     }
 
-    fun savePATEvent() {
+    fun savePATEvent(isExclusion:Boolean?=false) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             delay(300)
-            calculateDidiScore(didiEntity.value.id)
+            if (isExclusion == false) {
+                calculateDidiScore(didiEntity.value.id)
+            }
             val updatedDidiEntity = patSectionRepository.getDidiFromDB(didiEntity.value.id)
             patSectionRepository.saveEvent(
                 updatedDidiEntity,

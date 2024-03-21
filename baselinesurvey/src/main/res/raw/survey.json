@@ -1,0 +1,2790 @@
+{
+  "surveyId": 1,
+  "referenceId": 31,
+  "referenceType": "STATE",
+  "owner": "UPCM",
+  "subject": "DIDI",
+  "approver": "BPC",
+  "startDate": "15/01/2024",
+  "endDate": "29/01/2024",
+  "publish": "YES",
+  "languageCode": "en",
+  "surveyName": "BASELINE",
+  "passingMark": 7,
+  "thresholdScore": 6,
+  "contents": [],
+  "sections": [
+    {
+      "sectionName": "Didi Information",
+      "imageIcon": "image.webp",
+      "order": 1,
+      "description": "Didi Information",
+      "paraphrase": "",
+      "languageCode": "en",
+      "sectionId": 1,
+      "status": 1,
+      "contents": [],
+      "questions": [
+        {
+          "questionId": 1,
+          "imageIcon": "image.webp",
+          "description": "Enter Didi's personal and identification information",
+          "paraphrase": "Add didi details",
+          "status": 1,
+          "order": 1,
+          "type": "Form",
+          "languageCode": "en",
+          "tag": 0,
+          "contents": [
+            {
+              "contentKey": "question",
+              "contentType": "text",
+              "contentValue": null
+            }
+          ],
+          "options": []
+        }
+      ]
+    },
+    {
+      "sectionName": "Household Information",
+      "imageIcon": "image.webp",
+      "order": 2,
+      "description": "Household Information",
+      "paraphrase": "",
+      "languageCode": "en",
+      "sectionId": 2,
+      "status": 1,
+      "contents": [],
+      "questions": [
+        {
+          "questionId": 1,
+          "imageIcon": "image.webp",
+          "description": "Add Household Member",
+          "paraphrase": "Add Household Member",
+          "status": 1,
+          "order": 1,
+          "type": "Form",
+          "languageCode": "en",
+          "tag": 44,
+          "contents": [
+            {
+              "contentKey": "question",
+              "contentType": "text",
+              "contentValue": null
+            }
+          ],
+          "options": [
+            {
+              "optionId": 1,
+              "description": "Enter name",
+              "status": 1,
+              "weight": 0,
+              "paraphrase": "Enter name",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "InputText",
+              "order": 1,
+              "conditional": false
+            },
+            {
+              "optionId": 2,
+              "description": "Relationship with didi",
+              "status": 1,
+              "weight": 0,
+              "paraphrase": "Relationship with didi",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "SingleSelectDropdown",
+              "order": 2,
+              "conditional": false,
+              "values": [
+                "Spouse",
+                "Son",
+                "Daughter",
+                "Daughter-in-law",
+                "Son-in-law",
+                "Father-in-law",
+                "Mother-in-law",
+                "Brother",
+                "Sister",
+                "Grandson",
+                "Granddaughter",
+                "Nephew",
+                "Niece",
+                "Cousin",
+                "Aunt",
+                "Uncle",
+                "Any other"
+              ]
+            },
+            {
+              "optionId": 3,
+              "description": "Enter age",
+              "status": 0,
+              "conditions": [
+                {
+                  "value": "6",
+                  "operator": "<",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 7,
+                      "description": "Does the child go to Anganwadi?",
+                      "status": 1,
+                      "order": 7,
+                      "type": "RadioButton",
+                      "languageCode": "en",
+                      "tag": 0,
+                      "options": [
+                        {
+                          "optionId": 1,
+                          "description": "YES",
+                          "status": 0,
+                          "weight": 0,
+                          "paraphrase": "YES",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "RadioButton",
+                          "order": 1,
+                          "conditional": false
+                        },
+                        {
+                          "optionId": 2,
+                          "description": "NO",
+                          "status": 0,
+                          "weight": 0,
+                          "paraphrase": "NO",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "RadioButton",
+                          "order": 2,
+                          "conditional": false
+                        }
+                      ],
+                      "conditional": true
+                    },
+                    {
+                      "questionId": 8,
+                      "imageIcon": "image.webp",
+                      "description": "Is the Child fully immunized?",
+                      "paraphrase": "",
+                      "status": 1,
+                      "order": 8,
+                      "type": "SingleSelectDropdown",
+                      "languageCode": "en",
+                      "tag": 0,
+                      "contents": [
+                        {
+                          "contentKey": "B3.2_Fully-Immunized",
+                          "contentType": "text"
+                        }
+                      ],
+                      "options": [
+                        {
+                          "optionId": 1,
+                          "description": "Select",
+                          "status": 0,
+                          "weight": 0,
+                          "paraphrase": "Select",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "SingleSelectDropdown",
+                          "order": 1,
+                          "values": [
+                            "Yes",
+                            "Partial",
+                            "No",
+                            "No MCP card"
+                          ],
+                          "conditional": false
+                        }
+                      ],
+                      "conditional": true
+                    }
+                  ]
+                },
+                {
+                  "value": "6,16",
+                  "operator": "><",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 9,
+                      "imageIcon": "image.webp",
+                      "description": "Does the child go to school?",
+                      "status": 1,
+                      "order": 9,
+                      "type": "RadioButton",
+                      "languageCode": "en",
+                      "tag": 0,
+                      "options": [
+                        {
+                          "optionId": 1,
+                          "description": "YES",
+                          "status": 0,
+                          "weight": 0,
+                          "paraphrase": "YES",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "RadioButton",
+                          "order": 1,
+                          "conditions": [
+                            {
+                              "value": "YES",
+                              "operator": "=",
+                              "resultType": "Questions",
+                              "resultList": [
+                                {
+                                  "questionId": 12,
+                                  "description": "Does the child attend the school reguarly?",
+                                  "status": 1,
+                                  "order": 12,
+                                  "type": "SingleSelectDropDown",
+                                  "languageCode": "en",
+                                  "tag": 0,
+                                  "options": [
+                                    {
+                                      "optionId": 1,
+                                      "description": "",
+                                      "status": 0,
+                                      "weight": 0,
+                                      "paraphrase": "",
+                                      "optionImage": "",
+                                      "languageCode": "en",
+                                      "type": "SingleSelectDropDown",
+                                      "order": 1,
+                                      "conditional": false,
+                                      "values": [
+                                        "Regular",
+                                        "Irregular",
+                                        "Drop-out"
+                                      ]
+                                    }
+                                  ],
+                                  "conditional": true
+                                }
+                              ]
+                            }
+                          ],
+                          "conditional": false
+                        },
+                        {
+                          "optionId": 2,
+                          "description": "NO",
+                          "status": 0,
+                          "weight": 0,
+                          "paraphrase": "NO",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "RadioButton",
+                          "order": 2,
+                          "conditional": false
+                        }
+                      ],
+                      "conditional": true
+                    }
+                  ]
+                },
+                {
+                  "value": "16",
+                  "operator": ">=",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 10,
+                      "imageIcon": "image.webp",
+                      "description": "Highest Education",
+                      "status": 1,
+                      "order": 10,
+                      "type": "SingleSelectDropdown",
+                      "languageCode": "en",
+                      "tag": 0,
+                      "options": [
+                        {
+                          "optionId": 1,
+                          "description": "",
+                          "status": 0,
+                          "weight": 0,
+                          "paraphrase": "",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "SingleSelectDropdown",
+                          "order": 1,
+                          "conditional": false,
+                          "values": [
+                            "Illiterate",
+                            "Less than Class 8th",
+                            "Between Class 8 -12th",
+                            "Graduate & Above"
+                          ]
+                        }
+                      ],
+                      "conditional": true
+                    }
+                  ]
+                },
+                {
+                  "value": "18",
+                  "operator": ">=",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 11,
+                      "imageIcon": "image.webp",
+                      "description": "Marital Status",
+                      "status": 1,
+                      "order": 11,
+                      "type": "SingleSelectDropdown",
+                      "languageCode": "en",
+                      "tag": 0,
+                      "options": [
+                        {
+                          "optionId": 1,
+                          "description": "",
+                          "status": 0,
+                          "weight": 0,
+                          "paraphrase": "",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "SingleSelectDropdown",
+                          "order": 1,
+                          "conditional": false,
+                          "values": [
+                            "Unmarried",
+                            "Married",
+                            "Widow",
+                            "Separated"
+                          ]
+                        }
+                      ],
+                      "conditional": true
+                    }
+                  ]
+                }
+              ],
+              "weight": 0,
+              "paraphrase": "",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "InputNumberEditText",
+              "order": 3,
+              "conditional": false
+            },
+            {
+              "optionId": 5,
+              "description": "Is this household member disabled?",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "Is this household member disabled?",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "Toggle",
+              "order": 5,
+              "conditional": false,
+              "values": [
+                "Yes",
+                "No"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionName": "Food Security & Nutritional Diversity",
+      "imageIcon": "image.webp",
+      "order": 3,
+      "description": "Food Security & Nutritional Diversity",
+      "paraphrase": "",
+      "languageCode": "en",
+      "sectionId": 3,
+      "status": 0,
+      "contents": [
+        {
+          "contentKey": "C_Food-Security-Nutritional-Diversity",
+          "contentType": "text",
+          "contentValue": null
+        }
+      ],
+      "questions": [
+        {
+          "questionId": 1,
+          "imageIcon": "image.webp",
+          "description": "Did everyone in didi's family have at least 2 meals per day in the last 1 month?",
+          "paraphrase": "2 meals per day",
+          "status": 0,
+          "order": 1,
+          "type": "RadioButton",
+          "languageCode": "en",
+          "tag": 8,
+          "contents": [
+            {
+              "contentKey": "question",
+              "contentType": "text",
+              "contentValue": null
+            }
+          ],
+          "options": [
+            {
+              "optionId": 1,
+              "description": "YES",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "YES",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "RadioButton",
+              "order": 1,
+              "conditional": false
+            },
+            {
+              "optionId": 2,
+              "description": "NO",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "NO",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "RadioButton",
+              "order": 2,
+              "conditional": false
+            }
+          ]
+        },
+        {
+          "questionId": 2,
+          "imageIcon": "image.webp",
+          "description": "Did everyone in your family have at least 2 meals per day in the last 12 months?",
+          "paraphrase": "Goes to anganwadi",
+          "status": 0,
+          "order": 2,
+          "type": "RadioButton",
+          "languageCode": "en",
+          "tag": 9,
+          "contents": [
+            {
+              "contentKey": "question",
+              "contentType": "text",
+              "contentValue": null
+            }
+          ],
+          "options": [
+            {
+              "optionId": 1,
+              "description": "YES",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "YES",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "RadioButton",
+              "order": 1,
+              "conditional": false
+            },
+            {
+              "optionId": 2,
+              "description": "NO",
+              "status": 0,
+              "conditions": [
+                {
+                  "value": "NO",
+                  "operator": "=",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 3,
+                      "imageIcon": "image.webp",
+                      "description": "During which months did didi face food shortage?",
+                      "paraphrase": "2 meals per day",
+                      "status": 0,
+                      "order": 3,
+                      "type": "MultiSelect",
+                      "languageCode": "en",
+                      "tag": 3,
+                      "contents": [
+                        {
+                          "contentKey": "C2.1_Food-Shortage",
+                          "contentType": "text"
+                        }
+                      ],
+                      "options": [
+                        {
+                          "optionId": 1,
+                          "description": "Summer (Apr – Jun)",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "Summer (Apr – Jun)",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "MultiSelect",
+                          "order": 1,
+                          "tag": 3,
+                          "conditional": false
+                        },
+                        {
+                          "optionId": 2,
+                          "description": "Monsoon (Jul – Aug)",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "Monsoon (Jul – Aug)",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "MultiSelect",
+                          "order": 2,
+                          "tag": 3,
+                          "conditional": false
+                        },
+                        {
+                          "optionId": 3,
+                          "description": "Autumn (Sep – Nov)",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "Autumn (Sep – Nov)",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "MultiSelect",
+                          "order": 3,
+                          "tag": 3,
+                          "conditional": false
+                        },
+                        {
+                          "optionId": 4,
+                          "description": "Winter (Dec – Jan)",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "Winter (Dec – Jan)",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "MultiSelect",
+                          "order": 4,
+                          "tag": 3,
+                          "conditional": false
+                        },
+                        {
+                          "optionId": 5,
+                          "description": "Spring (Feb – Mar)",
+                          "status": 1,
+                          "weight": 0,
+                          "tag": 3,
+                          "paraphrase": "Spring (Feb – Mar)",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "MultiSelect",
+                          "order": 5,
+                          "conditional": false
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "weight": 0,
+              "paraphrase": "NO",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "RadioButton",
+              "order": 2,
+              "conditional": false
+            }
+          ]
+        },
+        {
+          "questionId": 4,
+          "imageIcon": "image.webp",
+          "description": "Do you have a kitchen garden?",
+          "paraphrase": "Owns kitchen garden",
+          "status": 0,
+          "order": 4,
+          "type": "RadioButton",
+          "languageCode": "en",
+          "tag": 4,
+          "contents": [
+            {
+              "contentKey": "C3_Kitchen-garden",
+              "contentType": "text",
+              "contentValue": null
+            }
+          ],
+          "options": [
+            {
+              "optionId": 1,
+              "description": "YES",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "YES",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "RadioButton",
+              "order": 1,
+              "conditional": false
+            },
+            {
+              "optionId": 2,
+              "description": "NO",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "NO",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "RadioButton",
+              "order": 2,
+              "conditional": false
+            }
+          ]
+        },
+        {
+          "questionId": 5,
+          "imageIcon": "image.webp",
+          "description": "Which of the following did didi consume at least once in the last 7 days?",
+          "paraphrase": "",
+          "status": 0,
+          "order": 5,
+          "type": "MultiSelect",
+          "languageCode": "en",
+          "tag": 10,
+          "contents": [
+            {
+              "contentKey": "question",
+              "contentType": "text",
+              "contentValue": null
+            }
+          ],
+          "options": [
+            {
+              "optionId": 1,
+              "description": "Fruits",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "Fruits",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 1,
+              "tag": 10,
+              "conditional": false
+            },
+            {
+              "optionId": 2,
+              "description": "Egg",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "Egg",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 2,
+              "tag": 10,
+              "conditional": false
+            },
+            {
+              "optionId": 3,
+              "description": "Meat",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "Meat",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 3,
+              "tag": 10,
+              "conditional": false
+            },
+            {
+              "optionId": 4,
+              "description": "Fish",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "Fish",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 4,
+              "tag": 10,
+              "conditional": false
+            },
+            {
+              "optionId": 5,
+              "description": "Milk and milk products",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "Milk and milk products",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 5,
+              "tag": 10,
+              "conditional": false
+            },
+            {
+              "optionId": 6,
+              "description": "Others",
+              "status": 0,
+              "conditions": [
+                {
+                  "value": "Others",
+                  "operator": "=",
+                  "resultType": "Options",
+                  "resultList": [
+                    {
+                      "optionId": 1,
+                      "description": "",
+                      "status": 0,
+                      "weight": 0,
+                      "type": "Input",
+                      "order": 1,
+                      "tag": 5,
+                      "conditional": false
+                    }
+                  ]
+                }
+              ],
+              "weight": 0,
+              "paraphrase": "Others",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 6,
+              "tag": 10,
+              "conditional": false
+            }
+          ]
+        },
+        {
+          "questionId": 6,
+          "imageIcon": "image.webp",
+          "description": "Which of the following did didi consume at least thrice in the last 7 days?",
+          "paraphrase": "",
+          "status": 0,
+          "order": 6,
+          "type": "MultiSelect",
+          "languageCode": "en",
+          "tag": 11,
+          "contents": [
+            {
+              "contentKey": "question",
+              "contentType": "text",
+              "contentValue": null
+            }
+          ],
+          "options": [
+            {
+              "optionId": 1,
+              "description": "Green/leafy vegetables/saag",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "Green/ leafy vegetables",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "tag": 11,
+              "order": 1,
+              "conditional": false
+            },
+            {
+              "optionId": 2,
+              "description": "Bamboo Shoots",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "Bamboo Shoots",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "tag": 11,
+              "order": 2,
+              "conditional": false
+            },
+            {
+              "optionId": 3,
+              "description": "Daal",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "Daal",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "tag": 11,
+              "order": 3,
+              "conditional": false
+            },
+            {
+              "optionId": 4,
+              "description": "Rice",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "Rice",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "tag": 11,
+              "order": 4,
+              "conditional": false
+            },
+            {
+              "optionId": 5,
+              "description": "Others",
+              "status": 0,
+              "conditions": [
+                {
+                  "value": "Others",
+                  "operator": "=",
+                  "resultType": "Options",
+                  "resultList": [
+                    {
+                      "optionId": 1,
+                      "description": "",
+                      "status": 0,
+                      "weight": 0,
+                      "type": "Input",
+                      "order": 0,
+                      "conditional": false
+                    }
+                  ]
+                }
+              ],
+              "weight": 0,
+              "paraphrase": "Others",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "tag": 11,
+              "order": 5,
+              "conditional": false
+            }
+          ]
+        },
+        {
+          "questionId": 7,
+          "imageIcon": "image.webp",
+          "description": "Which type of ration card does didi have?",
+          "paraphrase": "",
+          "status": 0,
+          "order": 7,
+          "type": "SingleSelectDropdown",
+          "languageCode": "en",
+          "tag": 6,
+          "contents": [
+            {
+              "contentKey": "question",
+              "contentType": "text",
+              "contentValue": null
+            }
+          ],
+          "options": [
+            {
+              "optionId": 1,
+              "description": "",
+              "status": 1,
+              "conditions": [
+                {
+                  "value": "I don’t have ration card",
+                  "operator": "<>",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 8,
+                      "imageIcon": "image.webp",
+                      "description": "How much does didi get every month through PDS?",
+                      "paraphrase": "How much does didi get every month through PDS?",
+                      "status": 1,
+                      "order": 8,
+                      "type": "InputNumber",
+                      "languageCode": "en",
+                      "tag": 7,
+                      "options": [
+                        {
+                          "optionId": 1,
+                          "description": "Atta (kg)",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "Atta (kg)",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "InputNumber",
+                          "order": 1,
+                          "conditional": false
+                        },
+                        {
+                          "optionId": 2,
+                          "description": "Sugar (kg)",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "Sugar (kg)",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "InputNumber",
+                          "order": 2,
+                          "conditional": false
+                        },
+                        {
+                          "optionId": 3,
+                          "description": "Rice (kg)",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "Rice (kg)",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "InputNumber",
+                          "order": 3,
+                          "conditional": false
+                        },
+                        {
+                          "optionId": 4,
+                          "description": "Salt (kg)",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "Salt (kg)",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "InputNumber",
+                          "order": 4,
+                          "conditional": false
+                        },
+                        {
+                          "optionId": 5,
+                          "description": "Wheat (kg)",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "Wheat (kg)",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "InputNumber",
+                          "order": 5,
+                          "conditional": false
+                        },
+                        {
+                          "optionId": 6,
+                          "description": "Oil (ltr)",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "Oil (ltr)",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "InputNumber",
+                          "order": 6,
+                          "conditional": false
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "weight": 0,
+              "paraphrase": "",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "SingleSelectDropdown",
+              "order": 1,
+              "conditional": false,
+              "values": [
+                "BPL Adhoc",
+                "BPL",
+                "AAY",
+                "I don’t have ration card",
+                "Others (specify)"
+              ]
+            }
+          ],
+          "conditional": true
+        }
+      ]
+    },
+    {
+      "sectionName": "Social Inclusion",
+      "imageIcon": "image.webp",
+      "order": 4,
+      "description": "Social Inclusion",
+      "paraphrase": "",
+      "languageCode": "en",
+      "sectionId": 4,
+      "status": 1,
+      "contents": [
+        {
+          "contentKey": "question",
+          "contentType": "text",
+          "contentValue": null
+        }
+      ],
+      "questions": [
+        {
+          "questionId": 1,
+          "imageIcon": "image.webp",
+          "description": "Is didi a member of an SHG?",
+          "paraphrase": "",
+          "status": 1,
+          "order": 1,
+          "type": "RadioButton",
+          "languageCode": "en",
+          "tag": 13,
+          "contents": [
+            {
+              "contentKey": "question",
+              "contentType": "text",
+              "contentValue": null
+            }
+          ],
+          "options": [
+            {
+              "optionId": 1,
+              "description": "YES",
+              "status": 1,
+              "conditions": [
+                {
+                  "value": "YES",
+                  "operator": "=",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 2,
+                      "imageIcon": "image.webp",
+                      "description": "Enter SHG name",
+                      "paraphrase": "",
+                      "order": 2,
+                      "type": "InputText",
+                      "languageCode": "en",
+                      "tag": 14,
+                      "contents": [
+                        {
+                          "contentKey": "question",
+                          "contentType": "text"
+                        }
+                      ],
+                      "options": [
+                        {
+                          "optionId": 1,
+                          "description": "",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "InputText",
+                          "order": 1,
+                          "conditional": false
+                        }
+                      ]
+                    },
+                    {
+                      "questionId": 3,
+                      "imageIcon": "image.webp",
+                      "description": "How long has didi been in SHG? (yrs)",
+                      "paraphrase": "",
+                      "order": 3,
+                      "type": "InputNumber",
+                      "languageCode": "en",
+                      "tag": 15,
+                      "contents": [
+                        {
+                          "contentKey": "question",
+                          "contentType": "text"
+                        }
+                      ],
+                      "options": [
+                        {
+                          "optionId": 1,
+                          "description": "",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "InputNumber",
+                          "order": 1,
+                          "conditional": false
+                        }
+                      ]
+                    },
+                    {
+                      "questionId": 4,
+                      "imageIcon": "image.webp",
+                      "description": "How often does didi attend SHG meetings?",
+                      "paraphrase": "",
+                      "order": 4,
+                      "type": "SingleSelectDropdown",
+                      "languageCode": "en",
+                      "tag": 0,
+                      "contents": [
+                        {
+                          "contentKey": "question",
+                          "contentType": "text"
+                        }
+                      ],
+                      "options": [
+                        {
+                          "optionId": 1,
+                          "description": "",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "SingleSelectDropdown",
+                          "order": 1,
+                          "conditional": false,
+                          "values": [
+                            "Regular",
+                            "Sometimes",
+                            "Never"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "questionId": 5,
+                      "imageIcon": "image.webp",
+                      "description": "Does didi save in SHG?",
+                      "paraphrase": "",
+                      "order": 5,
+                      "type": "RadioButton",
+                      "languageCode": "en",
+                      "tag": 16,
+                      "contents": [
+                        {
+                          "contentKey": "question",
+                          "contentType": "text"
+                        }
+                      ],
+                      "options": [
+                        {
+                          "optionId": 1,
+                          "description": "YES",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "YES",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "RadioButton",
+                          "order": 1,
+                          "conditional": true,
+                          "conditions": [
+                            {
+                              "value": "YES",
+                              "operator": "=",
+                              "resultType": "Questions",
+                              "resultList": [
+                                {
+                                  "questionId": 6,
+                                  "imageIcon": "image.webp",
+                                  "description": "How much is didi's current savings?",
+                                  "paraphrase": "",
+                                  "order": 6,
+                                  "type": "InputNumber",
+                                  "languageCode": "en",
+                                  "tag": 17,
+                                  "contents": [
+                                    {
+                                      "contentKey": "question",
+                                      "contentType": "text"
+                                    }
+                                  ],
+                                  "options": [
+                                    {
+                                      "optionId": 6,
+                                      "description": "",
+                                      "status": 1,
+                                      "weight": 0,
+                                      "paraphrase": "",
+                                      "optionImage": "",
+                                      "languageCode": "en",
+                                      "type": "InputNumber",
+                                      "order": 1,
+                                      "conditional": false
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "optionId": 2,
+                          "description": "NO",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "NO",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "RadioButton",
+                          "order": 2,
+                          "conditional": false
+                        }
+                      ]
+                    },
+                    {
+                      "questionId": 7,
+                      "imageIcon": "image.webp",
+                      "description": "Has didi taken a loan from SHG before?",
+                      "paraphrase": "Part of an SHG",
+                      "order": 7,
+                      "type": "RadioButton",
+                      "languageCode": "en",
+                      "tag": 18,
+                      "contents": [
+                        {
+                          "contentKey": "question",
+                          "contentType": "text"
+                        }
+                      ],
+                      "options": [
+                        {
+                          "optionId": 1,
+                          "description": "YES",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "YES",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "RadioButton",
+                          "order": 1,
+                          "conditional": true,
+                          "conditions": [
+                            {
+                              "value": "YES",
+                              "operator": "=",
+                              "resultType": "Questions",
+                              "resultList": [
+                                {
+                                  "questionId": 8,
+                                  "imageIcon": "image.webp",
+                                  "description": "How much loan has didi taken from SHG? (Rs)",
+                                  "paraphrase": "",
+                                  "order": 8,
+                                  "type": "InputNumber",
+                                  "languageCode": "en",
+                                  "tag": 19,
+                                  "contents": [
+                                    {
+                                      "contentKey": "question",
+                                      "contentType": "text"
+                                    }
+                                  ],
+                                  "options": [
+                                    {
+                                      "optionId": 30,
+                                      "description": "",
+                                      "status": 1,
+                                      "weight": 0,
+                                      "paraphrase": "",
+                                      "optionImage": "",
+                                      "languageCode": "en",
+                                      "type": "InputNumber",
+                                      "order": 30,
+                                      "conditional": false
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "optionId": 2,
+                          "description": "NO",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "NO",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "RadioButton",
+                          "order": 2,
+                          "conditional": false
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "weight": 0,
+              "paraphrase": "YES",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "RadioButton",
+              "order": 1,
+              "conditional": true
+            },
+            {
+              "optionId": 2,
+              "description": "NO",
+              "status": 1,
+              "conditions": [
+                {
+                  "value": "NO",
+                  "operator": "=",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 9,
+                      "imageIcon": "image.webp",
+                      "description": "Has didi been part of an SHG before?",
+                      "paraphrase": "",
+                      "order": 9,
+                      "type": "RadioButton",
+                      "languageCode": "en",
+                      "tag": 0,
+                      "contents": [
+                        {
+                          "contentKey": "question",
+                          "contentType": "text"
+                        }
+                      ],
+                      "options": [
+                        {
+                          "optionId": 1,
+                          "description": "YES",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "YES",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "RadioButton",
+                          "order": 1,
+                          "conditional": false
+                        },
+                        {
+                          "optionId": 2,
+                          "description": "NO",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "NO",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "RadioButton",
+                          "order": 2,
+                          "conditional": false
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "weight": 0,
+              "paraphrase": "NO",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "RadioButton",
+              "order": 2,
+              "conditional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionName": "Women Empowerment",
+      "imageIcon": "image.webp",
+      "order": 5,
+      "description": "Women Empowerment",
+      "paraphrase": "",
+      "languageCode": "en",
+      "sectionId": 5,
+      "status": 0,
+      "contents": [
+        {
+          "contentKey": "question",
+          "contentType": "text",
+          "contentValue": null
+        }
+      ],
+      "questions": [
+        {
+          "questionId": 1,
+          "imageIcon": "image.webp",
+          "description": "What is the role of didi in family decision making?",
+          "paraphrase": "Role in family decisions",
+          "status": 0,
+          "order": 1,
+          "type": "SingleSelectDropdown",
+          "languageCode": "en",
+          "tag": 21,
+          "contents": [
+            {
+              "contentKey": "E1_Didi-Role",
+              "contentType": "text",
+              "contentValue": null
+            }
+          ],
+          "options": [
+            {
+              "optionId": 1,
+              "description": "",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "SingleSelectDropdown",
+              "order": 1,
+              "conditional": false,
+              "values": [
+                "In all the decisions",
+                "Sometimes",
+                "Never"
+              ]
+            }
+          ]
+        },
+        {
+          "questionId": 2,
+          "imageIcon": "image.webp",
+          "description": "How frequently does Didi do a monetary contribution for family?",
+          "paraphrase": "Monetary contribution",
+          "status": 0,
+          "order": 2,
+          "type": "SingleSelectDropdown",
+          "languageCode": "en",
+          "tag": 22,
+          "contents": [
+            {
+              "contentKey": "E2_Monetary-Contribution",
+              "contentType": "text",
+              "contentValue": null
+            }
+          ],
+          "options": [
+            {
+              "optionId": 1,
+              "description": "",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "SingleSelectDropdown",
+              "order": 1,
+              "conditional": false,
+              "values": [
+                "All the times",
+                "Sometimes",
+                "Never"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionName": "Financial Inclusion",
+      "imageIcon": "image.webp",
+      "order": 6,
+      "description": "Financial Inclusion",
+      "paraphrase": "",
+      "languageCode": "en",
+      "sectionId": 6,
+      "status": 0,
+      "contents": [
+        {
+          "contentKey": "F_Financial-Inclusion",
+          "contentType": "text",
+          "contentValue": null
+        }
+      ],
+      "questions": [
+        {
+          "questionId": 1,
+          "imageIcon": "image.webp",
+          "description": "Does didi have a bank account?",
+          "paraphrase": "bank accounts",
+          "status": 0,
+          "order": 1,
+          "type": "RadioButton",
+          "languageCode": "en",
+          "tag": 24,
+          "options": [
+            {
+              "optionId": 1,
+              "description": "YES",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "YES",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "RadioButton",
+              "order": 1,
+              "conditional": false
+            },
+            {
+              "optionId": 2,
+              "description": "NO",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "NO",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "RadioButton",
+              "order": 2,
+              "conditional": false
+            }
+          ]
+        },
+        {
+          "questionId": 2,
+          "imageIcon": "image.webp",
+          "description": "Does didi save other than SHG?",
+          "paraphrase": "Saving",
+          "status": 0,
+          "order": 2,
+          "type": "RadioButton",
+          "languageCode": "en",
+          "tag": 25,
+          "contents": [
+            {
+              "contentKey": "question",
+              "contentType": "text",
+              "contentValue": null
+            }
+          ],
+          "options": [
+            {
+              "optionId": 1,
+              "description": "YES",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "YES",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "RadioButton",
+              "order": 1,
+              "conditional": false
+            },
+            {
+              "optionId": 2,
+              "description": "NO",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "NO",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "RadioButton",
+              "order": 2,
+              "conditional": false
+            }
+          ]
+        },
+        {
+          "questionId": 3,
+          "imageIcon": "image.webp",
+          "description": "Where does didi keep her current savings?",
+          "paraphrase": "Saving",
+          "status": 0,
+          "order": 3,
+          "type": "MultiSelect",
+          "languageCode": "en",
+          "tag": 0,
+          "contents": [
+            {
+              "contentKey": "question",
+              "contentType": "text",
+              "contentValue": null
+            }
+          ],
+          "options": [
+            {
+              "optionId": 1,
+              "description": "Bank",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "Bank",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 1,
+              "conditional": false
+            },
+            {
+              "optionId": 2,
+              "description": "Cash at home",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "Cash at home",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 2,
+              "conditional": false
+            },
+            {
+              "optionId": 3,
+              "description": "Others",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "Others",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 3,
+              "conditional": false
+            }
+          ]
+        },
+        {
+          "questionId": 4,
+          "imageIcon": "image.webp",
+          "description": "Does didi currently owe anyone any money?",
+          "paraphrase": "Saving",
+          "status": 0,
+          "order": 4,
+          "type": "RadioButton",
+          "languageCode": "en",
+          "tag": 26,
+          "contents": [
+            {
+              "contentKey": "question",
+              "contentType": "text",
+              "contentValue": null
+            }
+          ],
+          "options": [
+            {
+              "optionId": 1,
+              "description": "YES",
+              "status": 0,
+              "conditions": [
+                {
+                  "value": "YES",
+                  "operator": "=",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 5,
+                      "imageIcon": "image.webp",
+                      "description": "Whom does didi owe money?",
+                      "paraphrase": "",
+                      "status": 1,
+                      "order": 5,
+                      "type": "MultiSelect",
+                      "languageCode": "en",
+                      "tag": 27,
+                      "contents": [
+                        {
+                          "contentKey": "question",
+                          "contentType": "text"
+                        }
+                      ],
+                      "options": [
+                        {
+                          "optionId": 1,
+                          "description": "Friends/ relatives",
+                          "status": 0,
+                          "conditions": [],
+                          "weight": 0,
+                          "paraphrase": "Friends/ relatives",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "MultiSelect",
+                          "order": 1,
+                          "tag": 27,
+                          "conditional": false
+                        },
+                        {
+                          "optionId": 2,
+                          "description": "Moneylender",
+                          "status": 0,
+                          "weight": 0,
+                          "paraphrase": "Moneylender",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "MultiSelect",
+                          "order": 2,
+                          "tag": 27,
+                          "conditional": false
+                        },
+                        {
+                          "optionId": 3,
+                          "description": "SHGs",
+                          "status": 0,
+                          "weight": 0,
+                          "paraphrase": "SHGs",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "MultiSelect",
+                          "order": 3,
+                          "tag": 27,
+                          "conditional": false
+                        },
+                        {
+                          "optionId": 4,
+                          "description": "MFI",
+                          "status": 0,
+                          "weight": 0,
+                          "paraphrase": "MFI",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "MultiSelect",
+                          "order": 4,
+                          "tag": 27,
+                          "conditional": false
+                        },
+                        {
+                          "optionId": 5,
+                          "description": "Banks",
+                          "status": 0,
+                          "weight": 0,
+                          "paraphrase": "Banks",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "tag": 27,
+                          "type": "MultiSelect",
+                          "order": 5,
+                          "conditional": false
+                        },
+                        {
+                          "optionId": 6,
+                          "description": "Others",
+                          "status": 0,
+                          "conditions": [
+                            {
+                              "value": "Others",
+                              "operator": "=",
+                              "resultType": "Options",
+                              "resultList": [
+                                {
+                                  "optionId": 1,
+                                  "description": "",
+                                  "status": 0,
+                                  "weight": 0,
+                                  "type": "Input",
+                                  "order": 0,
+                                  "conditional": false
+                                }
+                              ]
+                            }
+                          ],
+                          "weight": 0,
+                          "paraphrase": "Others",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "MultiSelect",
+                          "tag": 27,
+                          "order": 5,
+                          "conditional": false
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "weight": 0,
+              "paraphrase": "YES",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "RadioButton",
+              "order": 1,
+              "conditional": false
+            },
+            {
+              "optionId": 2,
+              "description": "NO",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "NO",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "RadioButton",
+              "order": 2,
+              "conditional": false
+            }
+          ]
+        },
+        {
+          "questionId": 6,
+          "imageIcon": "image.webp",
+          "description": "Does didi have any active insurance at present?",
+          "paraphrase": "Saving",
+          "status": 0,
+          "order": 6,
+          "type": "MultiSelect",
+          "languageCode": "en",
+          "tag": 28,
+          "contents": [
+            {
+              "contentKey": "question",
+              "contentType": "text",
+              "contentValue": null
+            }
+          ],
+          "options": [
+            {
+              "optionId": 1,
+              "description": "No insurance",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "No insurance",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "tag": 28,
+              "order": 1,
+              "conditional": false
+            },
+            {
+              "optionId": 2,
+              "description": "Health",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "Health",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "tag": 28,
+              "order": 2,
+              "conditional": false
+            },
+            {
+              "optionId": 3,
+              "description": "Life",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "Life",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "tag": 28,
+              "order": 3,
+              "conditional": false
+            },
+            {
+              "optionId": 4,
+              "description": "Accident",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "Accident",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "tag": 28,
+              "order": 4,
+              "conditional": false
+            },
+            {
+              "optionId": 5,
+              "description": "Crop",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "Crop",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "tag": 28,
+              "order": 5,
+              "conditional": false
+            },
+            {
+              "optionId": 6,
+              "description": "Livestock",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "Livestock",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "tag": 28,
+              "order": 6,
+              "conditional": false
+            },
+            {
+              "optionId": 7,
+              "description": "Machinery/Vehicle",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "Machinery/Vehicle",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "tag": 28,
+              "order": 7,
+              "conditional": false
+            },
+            {
+              "optionId": 8,
+              "description": "Others",
+              "status": 0,
+              "conditions": [
+                {
+                  "value": "Others",
+                  "operator": "=",
+                  "resultType": "Options",
+                  "resultList": [
+                    {
+                      "optionId": 1,
+                      "description": "",
+                      "status": 0,
+                      "weight": 0,
+                      "type": "Input",
+                      "order": 0,
+                      "conditional": false
+                    }
+                  ]
+                }
+              ],
+              "weight": 0,
+              "paraphrase": "Others",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "tag": 28,
+              "order": 8,
+              "conditional": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionName": "Household Entitlements",
+      "imageIcon": "image.webp",
+      "order": 7,
+      "description": "Household Entitlements",
+      "paraphrase": "",
+      "languageCode": "en",
+      "sectionId": 7,
+      "status": 0,
+      "contents": [
+        {
+          "contentKey": "question",
+          "contentType": "text",
+          "contentValue": null
+        }
+      ],
+      "questions": [
+        {
+          "questionId": 1,
+          "imageIcon": "image.webp",
+          "description": "Which of the following government schemes has the household availed?",
+          "paraphrase": "household schemes",
+          "status": 0,
+          "order": 1,
+          "type": "Grid",
+          "languageCode": "en",
+          "tag": 0,
+          "contents": [
+            {
+              "contentKey": "question",
+              "contentType": "text",
+              "contentValue": null
+            }
+          ],
+          "options": [
+            {
+              "optionId": 1,
+              "description": "PVTG pension",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "PVTG pension",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 1,
+              "conditional": false
+            },
+            {
+              "optionId": 2,
+              "description": "Awas Yojana",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "Awas Yojana",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 2,
+              "conditional": false
+            },
+            {
+              "optionId": 3,
+              "description": "Janani Suraksha Yojana",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "Janani Suraksha Yojana",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 3,
+              "conditional": false
+            },
+            {
+              "optionId": 4,
+              "description": "MGNREGA",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "MGNREGA",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 4,
+              "conditional": false
+            },
+            {
+              "optionId": 5,
+              "description": "Ujjwala",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "Ujjwala",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 5,
+              "conditional": false
+            },
+            {
+              "optionId": 6,
+              "description": "Ayushman Bharat",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "Ayushman Bharat",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 6,
+              "conditional": false
+            },
+            {
+              "optionId": 7,
+              "description": "Pradhan Mantri Suraksha BimaYojana (Insurance covers Accidental Death/Disability)",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "PMSB",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 7,
+              "conditional": false
+            },
+            {
+              "optionId": 8,
+              "description": "Pradhan Mantri Jeevan Jyoti Bima Yojana (Life Insurance)",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "Life Insurance",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 8,
+              "conditional": false
+            },
+            {
+              "optionId": 9,
+              "description": "Pradhan Mantri Kishan Samman Nidhi Yojna",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "Pradhan Mantri Kishan Samman Nidhi Yojna",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 9,
+              "conditional": false
+            },
+            {
+              "optionId": 10,
+              "description": "Pradhan Mantri Matritva Vandana Yojna (PMMVY)",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "Pradhan Mantri Matritva Vandana Yojna (PMMVY)",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 10,
+              "conditional": false
+            },
+            {
+              "optionId": 11,
+              "description": "Jal Jeevan Mission",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "Jal Jeevan Mission",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 11,
+              "conditional": false
+            },
+            {
+              "optionId": 12,
+              "description": "Tripura Incentive to Girl Child Scheme",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "Tripura Incentive to Girl Child Scheme",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 12,
+              "conditional": false
+            },
+            {
+              "optionId": 13,
+              "description": "Mukhyamantri Samajik Sahayata Prakalpa",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "Mukhyamantri Samajik Sahayata Prakalpa",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 13,
+              "conditional": false
+            },
+            {
+              "optionId": 14,
+              "description": "Asangathita Shramik Sahayika Prakalpa",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "Asangathita Shramik Sahayika Prakalpa",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 14,
+              "conditional": false
+            },
+            {
+              "optionId": 15,
+              "description": "The Tripura Health Assurance Scheme for Poor (THASP)",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "The Tripura Health Assurance Scheme for Poor (THASP)",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 15,
+              "conditional": false
+            },
+            {
+              "optionId": 16,
+              "description": "Others",
+              "status": 0,
+              "weight": 0,
+              "paraphrase": "Others",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "MultiSelect",
+              "order": 16,
+              "conditional": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionName": "Livelihood Sources",
+      "imageIcon": "image.webp",
+      "order": 8,
+      "description": "Livelihood Sources",
+      "paraphrase": "",
+      "languageCode": "en",
+      "sectionId": 8,
+      "status": 1,
+      "contents": [
+        {
+          "contentKey": "G_Livelihood-Sources",
+          "contentType": "text",
+          "contentValue": null
+        }
+      ],
+      "questions": [
+        {
+          "questionId": 30,
+          "description": "Does didi have any family member who sends her money regularly?",
+          "status": 1,
+          "order": 30,
+          "type": "RadioButton",
+          "tag": 30,
+          "options": [
+            {
+              "optionId": 1,
+              "description": "YES",
+              "status": 1,
+              "weight": 0,
+              "paraphrase": "YES",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "RadioButton",
+              "order": 1,
+              "conditional": false
+            },
+            {
+              "optionId": 2,
+              "description": "NO",
+              "status": 1,
+              "weight": 0,
+              "paraphrase": "NO",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "RadioButton",
+              "order": 2,
+              "conditional": false
+            }
+          ],
+          "values": [],
+          "conditional": false
+        },
+        {
+          "questionId": 1,
+          "imageIcon": "image.webp",
+          "description": "How many sources of income does didi's family have?",
+          "paraphrase": "Add income sources",
+          "status": 0,
+          "order": 1,
+          "type": "Form",
+          "languageCode": "en",
+          "tag": 29,
+          "contents": [
+            {
+              "contentKey": "G2_Sources-Of-Income",
+              "contentType": "text",
+              "contentValue": null
+            }
+          ],
+          "options": [
+            {
+              "optionId": 1,
+              "description": "How many sources of income does didi's family have?",
+              "status": 0,
+              "conditions": [
+                {
+                  "value": "Farming",
+                  "operator": "=",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 4,
+                      "description": "What is the Income from agriculture in the last 12 months ?",
+                      "parapharse": "What is the Income from agriculture in the last 12 months ?",
+                      "type": "Form",
+                      "status": 1,
+                      "order": 4,
+                      "tag": 29,
+                      "options": [
+                        {
+                          "optionId": 5,
+                          "description": "What is the Income from agriculture in the last 12 months? \n\n(A) Agricultural produce - ",
+                          "parapharse": "(A) Agricultural produce - ",
+                          "type": "SingleSelectDropdown",
+                          "values": [
+                            "Paddy",
+                            "Maize",
+                            "Vegetables",
+                            "Fruits",
+                            "Others"
+                          ],
+                          "conditions": [
+                            {
+                              "value": "Others",
+                              "operator": "=",
+                              "resultType": "Option",
+                              "resultList": [
+                                {
+                                  "optionId": 6,
+                                  "order": 6,
+                                  "conditional": false,
+                                  "description": "(Please Specify)",
+                                  "type": "Input",
+                                  "values": []
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "optionId": 7,
+                          "description": "(B) Total quantity in Kg sold in market",
+                          "parapharse": "(B) Total quantity in Kg sold in market",
+                          "type": "InputNumberEditText",
+                          "order": 7,
+                          "conditional": false,
+                          "values": [],
+                          "conditions": []
+                        },
+                        {
+                          "optionId": 8,
+                          "description": "(C) Price per Kg",
+                          "parapharse": "(C) Price per Kg",
+                          "type": "InputNumberEditText",
+                          "values": [],
+                          "conditions": []
+                        },
+                        {
+                          "optionId": 9,
+                          "description": "(D) Total expenses",
+                          "parapharse": "(D) Total expenses",
+                          "type": "InputNumberEditText",
+                          "values": [],
+                          "conditions": []
+                        },
+                        {
+                          "optionId": 10,
+                          "description": "(E) Total Income",
+                          "parapharse": "(E) Total Income",
+                          "type": "Calculation",
+                          "values": [],
+                          "conditions": [
+                            {
+                              "value": "( 7 * 8 ) - 9",
+                              "operator": "*,-",
+                              "resultType": "Formula",
+                              "resultList": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "value": "Livestock rearing",
+                  "operator": "=",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 11,
+                      "description": "What is the household income from livestock rearing in the last 12 months?",
+                      "parapharse": "What is the household income from livestock rearing in the last 12 months?",
+                      "type": "Form",
+                      "options": [
+                        {
+                          "optionId": 12,
+                          "description": "What is the household income from livestock rearing in the last 12 months? \n\n(A) Type of livestock - ",
+                          "parapharse": "(A) Type of livestock - ",
+                          "type": "SingleSelectDropdown",
+                          "values": [
+                            "Goat",
+                            "Pig",
+                            "Poultry",
+                            "Duck",
+                            "Fisheries",
+                            "Dairy"
+                          ],
+                          "conditions": []
+                        },
+                        {
+                          "optionId": 14,
+                          "description": "(B) Price per unit",
+                          "parapharse": "(B) Price per unit",
+                          "type": "InputNumberEditText",
+                          "values": [],
+                          "conditions": []
+                        },
+                        {
+                          "optionId": 15,
+                          "description": "(C) No. of units sold",
+                          "parapharse": "(C) No. of units sold",
+                          "type": "InputNumberEditText",
+                          "values": [],
+                          "conditions": []
+                        },
+                        {
+                          "optionId": 16,
+                          "description": "(D) Total units",
+                          "parapharse": "(D) Total units",
+                          "type": "Calculation",
+                          "values": [],
+                          "conditions": [
+                            {
+                              "value": "( 14 * 15 )",
+                              "operator": "*",
+                              "resultType": "Formula",
+                              "resultList": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "value": "Casual labour - agri",
+                  "operator": "=",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 17,
+                      "description": "Total Income",
+                      "parapharse": "Total Income",
+                      "type": "Form",
+                      "options": [
+                        {
+                          "optionId": 18,
+                          "order": 18,
+                          "conditional": false,
+                          "description": "Income frequency",
+                          "type": "SingleSelectDropdown",
+                          "values": [
+                            "Monthly",
+                            "Annually"
+                          ]
+                        },
+                        {
+                          "optionId": 19,
+                          "order": 19,
+                          "conditional": false,
+                          "description": "Income",
+                          "type": "InputNumberEditText",
+                          "values": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "value": "Casual labour - manual",
+                  "operator": "=",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 20,
+                      "description": "Total Income",
+                      "parapharse": "Total Income",
+                      "type": "Form",
+                      "options": [
+                        {
+                          "optionId": 21,
+                          "order": 21,
+                          "conditional": false,
+                          "description": "Income frequency",
+                          "type": "SingleSelectDropdown",
+                          "values": [
+                            "Monthly",
+                            "Annually"
+                          ]
+                        },
+                        {
+                          "optionId": 22,
+                          "order": 22,
+                          "conditional": false,
+                          "description": "Income",
+                          "type": "InputNumberEditText",
+                          "values": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "value": "MNREGA",
+                  "operator": "=",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 23,
+                      "description": "Total Income",
+                      "parapharse": "Total Income",
+                      "type": "Form",
+                      "options": [
+                        {
+                          "optionId": 24,
+                          "order": 24,
+                          "conditional": false,
+                          "description": "Income frequency",
+                          "type": "SingleSelectDropdown",
+                          "values": [
+                            "Monthly",
+                            "Annually"
+                          ]
+                        },
+                        {
+                          "optionId": 25,
+                          "order": 25,
+                          "conditional": false,
+                          "description": "Income",
+                          "type": "InputNumberEditText",
+                          "values": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "value": "Remittance from migration",
+                  "operator": "=",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 26,
+                      "description": "Total Income",
+                      "parapharse": "Total Income",
+                      "type": "Form",
+                      "options": [
+                        {
+                          "optionId": 27,
+                          "order": 27,
+                          "conditional": false,
+                          "description": "Income frequency",
+                          "type": "SingleSelectDropdown",
+                          "values": [
+                            "Monthly",
+                            "Annually"
+                          ]
+                        },
+                        {
+                          "optionId": 28,
+                          "order": 28,
+                          "conditional": false,
+                          "description": "Income",
+                          "type": "InputNumberEditText",
+                          "values": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "value": "Self-employment/Small business Private jobs",
+                  "operator": "=",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 29,
+                      "description": "Average Income",
+                      "parapharse": "Average Income",
+                      "type": "Form",
+                      "options": [
+                        {
+                          "optionId": 30,
+                          "order": 30,
+                          "conditional": true,
+                          "description": "What is the household income from small business in the last 12 months?",
+                          "type": "InputNumberEditText",
+                          "values": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "value": "Salary",
+                  "operator": "=",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 31,
+                      "description": "Total Income",
+                      "parapharse": "Total Income",
+                      "type": "Form",
+                      "options": [
+                        {
+                          "optionId": 32,
+                          "order": 32,
+                          "conditional": false,
+                          "description": "Income frequency",
+                          "type": "SingleSelectDropdown",
+                          "values": [
+                            "Monthly",
+                            "Annually"
+                          ]
+                        },
+                        {
+                          "optionId": 33,
+                          "order": 33,
+                          "conditional": false,
+                          "description": "Income",
+                          "type": "InputNumberEditText",
+                          "values": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "value": "Pension",
+                  "operator": "=",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 34,
+                      "description": "Total Income",
+                      "parapharse": "Total Income",
+                      "type": "Form",
+                      "options": [
+                        {
+                          "optionId": 35,
+                          "order": 35,
+                          "conditional": false,
+                          "description": "Income frequency",
+                          "type": "SingleSelectDropdown",
+                          "values": [
+                            "Monthly",
+                            "Annually"
+                          ]
+                        },
+                        {
+                          "optionId": 36,
+                          "order": 36,
+                          "conditional": false,
+                          "description": "Income",
+                          "type": "InputNumberEditText",
+                          "values": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "value": "Other (specify)",
+                  "operator": "=",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 37,
+                      "description": "Total Income",
+                      "parapharse": "Total Income",
+                      "type": "Form",
+                      "options": [
+                        {
+                          "optionId": 38,
+                          "order": 38,
+                          "conditional": false,
+                          "description": "Income frequency",
+                          "type": "SingleSelectDropdown",
+                          "values": [
+                            "Monthly",
+                            "Annually"
+                          ]
+                        },
+                        {
+                          "optionId": 39,
+                          "order": 39,
+                          "conditional": false,
+                          "description": "Income",
+                          "type": "InputNumberEditText",
+                          "values": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "weight": 0,
+              "type": "SingleSelectDropdown",
+              "order": 0,
+              "conditional": false,
+              "tag": 31,
+              "values": [
+                "No income",
+                "Farming",
+                "Livestock rearing",
+                "Casual labour - agri",
+                "Casual labour - manual",
+                "MNREGA",
+                "Remittance from migration",
+                "Self-employment/Small business Private jobs",
+                "Salary",
+                "Pension",
+                "Other (specify)"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sectionName": "Non Market Outcomes",
+      "imageIcon": "image.webp",
+      "order": 9,
+      "description": "Non Market Outcomes",
+      "paraphrase": "",
+      "languageCode": "en",
+      "sectionId": 9,
+      "status": 0,
+      "contents": [
+        {
+          "contentKey": "I_Non-market-outcomes",
+          "contentType": "text",
+          "contentValue": null
+        }
+      ],
+      "questions": [
+        {
+          "questionId": 1,
+          "imageIcon": "image.webp",
+          "description": "Does didi visit the block office/ panchayat office for any purpose?",
+          "paraphrase": "visits the block office/panchayat",
+          "status": 0,
+          "order": 1,
+          "type": "RadioButton",
+          "languageCode": "en",
+          "tag": 42,
+          "options": [
+            {
+              "optionId": 1,
+              "description": "YES",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "YES",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "RadioButton",
+              "order": 1,
+              "conditional": false
+            },
+            {
+              "optionId": 2,
+              "description": "NO",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "NO",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "RadioButton",
+              "order": 2,
+              "conditional": false
+            }
+          ]
+        },
+        {
+          "questionId": 2,
+          "imageIcon": "image.webp",
+          "description": "Does didi vote in the panchayat elections?",
+          "paraphrase": "votes in elections",
+          "status": 0,
+          "order": 2,
+          "type": "RadioButton",
+          "languageCode": "en",
+          "tag": 43,
+          "options": [
+            {
+              "optionId": 1,
+              "description": "YES",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "YES",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "RadioButton",
+              "order": 1,
+              "conditional": false
+            },
+            {
+              "optionId": 2,
+              "description": "NO",
+              "status": 0,
+              "conditions": [],
+              "weight": 0,
+              "paraphrase": "NO",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "RadioButton",
+              "order": 2,
+              "conditional": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

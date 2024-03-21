@@ -28,6 +28,9 @@ interface InputTypeQuestionAnswerDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveInputTypeAnswersForQuestion(inputTypeQuestionAnswerEntity: InputTypeQuestionAnswerEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun saveInputTypeAnswersForQuestion(inputTypeQuestionAnswerEntity: List<InputTypeQuestionAnswerEntity>)
+
     @Query("UPDATE $INPUT_TYPE_QUESTION_ANSWER_TABLE set inputValue = :inputValue where " +
             "surveyId = :surveyId " +
             "AND sectionId = :sectionId " +
@@ -51,5 +54,8 @@ interface InputTypeQuestionAnswerDao {
         questionId: Int,
         optionItemId: Int
     ): Int
+
+    @Query("Delete from $INPUT_TYPE_QUESTION_ANSWER_TABLE")
+    fun deleteAllInputTypeAnswers()
 
 }
