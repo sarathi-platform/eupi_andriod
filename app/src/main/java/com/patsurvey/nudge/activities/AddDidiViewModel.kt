@@ -164,7 +164,7 @@ class AddDidiViewModel @Inject constructor(
     fun getValidDidisFromDB(isComingFromSocialPage: Boolean = false) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val localDidList =
-                if (isComingFromSocialPage) addDidiRepository.getAllDidisForVillageWithoutOnlyDesc(
+                if (isComingFromSocialPage) addDidiRepository.getAllDidisForVillageAscending(
                     villageId
                 ) else addDidiRepository.getAllDidisForVillage(villageId)
             val updatedList = mutableListOf<DidiEntity>()
@@ -494,7 +494,7 @@ class AddDidiViewModel @Inject constructor(
                 val localDidList = if (addDidiRepository.prefRepo.getFromPage().equals(
                         ARG_FROM_PAT_SURVEY, true
                     )
-                ) addDidiRepository.getAllDidisForVillageWithoutOnlyDesc(villageId) else addDidiRepository.getAllDidisForVillage(
+                ) addDidiRepository.getAllDidisForVillageAscending(villageId) else addDidiRepository.getAllDidisForVillage(
                     villageId
                 )
                 val updatedList = mutableListOf<DidiEntity>()

@@ -138,8 +138,8 @@ class AddDidiRepository @Inject constructor(
         return this.didiDao.getAllDidisForVillage(villageId)
     }
 
-    fun getAllDidisForVillageWithoutOnlyDesc(villageId: Int): List<DidiEntity> {
-        return this.didiDao.getAllDidisForVillageWithoutOnlyDesc(villageId)
+    fun getAllDidisForVillageAscending(villageId: Int): List<DidiEntity> {
+        return this.didiDao.getAllDidisForVillageAscending(villageId)
     }
 
 
