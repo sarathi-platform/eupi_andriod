@@ -17,7 +17,11 @@ enum class QuestionType {
     InputNumber,
     InputNumberEditText,
     Calculation,
-    SingleValueForm;
+    SingleValueForm,
+    DidiDetails,
+    YesNoButton,
+    PhoneNumber,
+    Image;
 
     companion object {
         fun getQuestionTypeFromName(name: String): QuestionType? {
@@ -38,6 +42,10 @@ enum class QuestionType {
                 MultiSelectDropDown.name -> MultiSelectDropDown
                 Toggle.name -> Toggle
                 Calculation.name -> Calculation
+                DidiDetails.name -> DidiDetails
+                YesNoButton.name -> YesNoButton
+                PhoneNumber.name -> PhoneNumber
+                Image.name -> Image
                 else -> {
                     null
                 }

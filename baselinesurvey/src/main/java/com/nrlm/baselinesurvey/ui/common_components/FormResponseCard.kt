@@ -120,7 +120,7 @@ fun FormResponseCard(
                                 )!!
                             }?.optionId] ?: BLANK_STRING)
                         } else if (formResponseObjectDto.questionTag.equals(
-                                "LivelihoodSources",
+                                "Livelihood Sources",
                                 true
                             )
                         ) {
@@ -241,7 +241,7 @@ fun FormResponseCard(
                             }?.optionId] ?: BLANK_STRING)
                             this.append(" yrs")
                         } else if (formResponseObjectDto.questionTag.equals(
-                                "LivelihoodSources",
+                                "Livelihood Sources",
                                 true
                             )
                         ) { //TODO Handle all tag and static string comparisons through backend Question API Response

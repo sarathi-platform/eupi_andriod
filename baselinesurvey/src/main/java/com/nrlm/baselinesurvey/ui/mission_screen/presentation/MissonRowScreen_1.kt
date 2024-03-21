@@ -64,14 +64,14 @@ fun MissonRowScreen_1(
     onStartClick: () -> Unit
 ) {
 
-    val pendingProgress =
+    val completedProgress =
         (viewModel.missionTaskCountMap.value[mission.missionId]?.minus(pendingCount)) ?: 0
 
     val curPercentage = animateFloatAsState(
         targetValue = if (viewModel.missionTaskCountMap.value[mission.missionId] == null || viewModel.missionTaskCountMap.value[mission.missionId] == 0)
             0.toFloat()
         else
-            (pendingProgress).toFloat() / (viewModel.missionTaskCountMap.value[mission.missionId]
+            (completedProgress).toFloat() / (viewModel.missionTaskCountMap.value[mission.missionId]
                 ?: 0).toFloat(),
         label = "",
         animationSpec = tween()
@@ -137,7 +137,7 @@ fun MissonRowScreen_1(
                 )
             }
             Text(
-                text = "Task Completed - ${pendingCount}/${viewModel.missionTaskCountMap.value[mission.missionId]}",
+                text = "Task Completed - ${completedProgress}/${viewModel.missionTaskCountMap.value[mission.missionId]}",
                 fontFamily = NotoSans,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
