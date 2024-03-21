@@ -6,8 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.ui.Constants.ItemType
+import com.nrlm.baselinesurvey.model.datamodel.ComplexSearchState
 import com.nrlm.baselinesurvey.ui.common_components.SearchTab
+import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.search.use_case.SearchScreenUseCase
 import com.nrlm.baselinesurvey.utils.convertToComplexSearchState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,7 +52,7 @@ class SearchScreenViewModel @Inject constructor(
         }
     }
 
-    fun onSearchTextChange(queryTerm: String, tabFilter: SearchTab) {
+    private fun onSearchTextChange(queryTerm: String, tabFilter: SearchTab) {
         _searchText.value = queryTerm
         val filterList = ArrayList<ComplexSearchState>()
         when (tabFilter) {
@@ -106,42 +107,16 @@ class SearchScreenViewModel @Inject constructor(
     }*/
 
     override fun <T> onEvent(event: T) {
-        /*when (event) {
+        when (event) {
             is SearchEvent.SearchTabChanged -> {
-                searchItems = searchItems.combine(_searchItems) {
-                        text, searchItems ->
-                    when (searchTabFilter.value) {
-                        is SearchTab.ALL_TAB -> {
-                            searchItems
-                        }
-                        is SearchTab.QUESTION_DATA_TAB -> {searchItems.filter { !it.isSectionSearchOnly }}
-                        is SearchTab.SECTION_INFORMATION_TAB -> {
-                            searchItems.filter { it.isSectionSearchOnly }
-                        }
-
-                        else -> { searchItems}
-                    }
-                }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(500), initialValue = emptyList<ComplexSearchState>())
+                _searchTabFilter.value = event.searchTab
             }
-        }*/
+
+            is SearchEvent.PerformComplexSearch -> {
+                onSearchTextChange(event.searchTerm, event.tabFilter)
+            }
+        }
 
     }
 }
 
-data class ComplexSearchState(
-    val itemId: Int,
-    val itemParentId: Int = -1,
-    val itemType: ItemType,
-    val sectionName: String,
-    val questionTitle: String,
-    val isSectionSearchOnly: Boolean = false
-)
-
-/*val sampleSearchStates = listOf<ComplexSearchState>(
-    ComplexSearchState("Financial Inclusion", "Do you have a bank account?"),
-    ComplexSearchState("Social Inclusion", "Are you a member of an SHG?"),
-    ComplexSearchState("Social Inclusion", "Do you attend SHG meetings regularly?"),
-    ComplexSearchState("Social Inclusion", "", true),
-    ComplexSearchState("Food Security", "Did everyone in your family have at least 2 meals per day in the last 1 month?"),
-    ComplexSearchState("Food Security", "Did everyone in your family have at least 2 meals per day in the last 12 month?")
-)*/
