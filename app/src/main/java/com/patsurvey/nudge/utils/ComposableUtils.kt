@@ -539,7 +539,7 @@ fun ShowDidisFromTola(
                         },
                         prefRepo = prefRepo,
                         onNotAvailableClick = { didi->
-//                            didiViewModel.setDidiAsUnavailable(didi.id)
+                            addDidiViewModel?.setDidiAsUnavailable(didi.id)
                         },
                         onItemClick = { didi ->
                             onNavigate(didi)

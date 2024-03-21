@@ -486,7 +486,7 @@ class AddDidiViewModel @Inject constructor(
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
-                val localDidList = addDidiRepository.getAllDidisForVillage(villageId)
+                val localDidList = addDidiRepository.getAllDidisForVillageWithoutOnlyDesc(villageId)
                 val updatedList = mutableListOf<DidiEntity>()
                 localDidList.forEach {
                     if (it.cohortId != 0 && it.cohortName == BLANK_STRING) {
