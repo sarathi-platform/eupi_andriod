@@ -381,14 +381,19 @@ class BPCProgressScreenRepository @Inject constructor(
                                     "cohortResponse status = ${cohortResponse.status}, message = ${cohortResponse.message}, data = ${cohortResponse.data.toString()}"
                         )
                         if (cohortResponse.status.equals(SUCCESS, true)) {
-                            cohortResponse.data?.let {
+                            cohortResponse.data?.let {remoteTolaList->
                                 NudgeLogger.d(
                                     "VillageSelectionScreen",
                                     "fetchDataForBpc getCohortFromNetwork " +
                                             "tolaDao.insertAll(it) before"
                                 )
+                                if (remoteTolaList.isNotEmpty()) {
+                                    for (tola in remoteTolaList) {
+                                        tola.serverId = tola.id
+                                    }
+                                }
 //                                tolaDao.insertAll(it)
-                                tolaDao.updateTolaData(forceRefresh, village.id, it)
+                                tolaDao.updateTolaData(forceRefresh, village.id, remoteTolaList)
                                 NudgeLogger.d(
                                     "VillageSelectionScreen",
                                     "fetchDataForBpc getCohortFromNetwork " +

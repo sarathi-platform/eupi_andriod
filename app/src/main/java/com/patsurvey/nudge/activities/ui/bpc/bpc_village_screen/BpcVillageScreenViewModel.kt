@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.ui.bpc.bpc_village_screen
 import android.content.Context
 import android.text.TextUtils
 import androidx.compose.runtime.mutableStateOf
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.progress.VillageSelectionRepository
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.VillageEntity
@@ -23,6 +24,7 @@ import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.showCustomToast
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -77,7 +79,7 @@ class BpcVillageScreenViewModel @Inject constructor(
     fun isUserBpc() = villageSelectionRepository.isUserBPC()
 
     private fun fetchUserAndVillageDetails() {
-        villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) {
+        villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = false) {
             villageSelectionRepository.fetchPatQuestionsFromNetwork()
             _villagList.value = it.villageList
             _filterVillageList.value = villageList.value
@@ -134,12 +136,23 @@ class BpcVillageScreenViewModel @Inject constructor(
         villageSelectionRepository.saveSettingOpenFrom(fromPage)
     }
 
-    fun refreshVillageData() {
+    fun refreshVillageData(context: Context) {
         showLoader.value = true
         villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) {
-            _villagList.value = it.villageList
-            _filterVillageList.value = villageList.value
+            if (it.success) {
+                _villagList.value = it.villageList
+                _filterVillageList.value = villageList.value
+                showCustomToast(context, context.getString(R.string.fetched_successfully))
+
+            } else {
+                showCustomToast(
+                    context,
+                    context.getString(R.string.refresh_failed_please_try_again)
+                )
+
+            }
             showLoader.value = false
+
         }
     }
 
