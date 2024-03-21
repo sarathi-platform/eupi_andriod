@@ -24,6 +24,7 @@ import com.nrlm.baselinesurvey.model.response.SectionStatusResponseModel
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.TransactionResponse
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
+import com.nrlm.baselinesurvey.network.GET_SECTION_STATUS
 import com.nrlm.baselinesurvey.network.SUBPATH_AUTH_GENERATE_OTP
 import com.nrlm.baselinesurvey.network.SUBPATH_AUTH_VALIDATE_OTP
 import com.nrlm.baselinesurvey.network.SUBPATH_CONFIG_GET_LANGUAGE
@@ -37,14 +38,13 @@ import com.nrlm.baselinesurvey.network.SUBPATH_LOGOUT
 import com.nrlm.baselinesurvey.network.SUBPATH_SAVE_SURVEY_ANSWES
 import com.nrlm.baselinesurvey.network.SUBPATH_SURVEY_ANSWERS
 import com.nrlm.baselinesurvey.network.SUBPATH_USER_VIEW
-import com.nrlm.baselinesurvey.network.GET_SECTION_STATUS
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Query
 
-interface ApiService {
+interface BaseLineApiService {
 
     @GET(SUBPATH_CONFIG_GET_LANGUAGE)
     suspend fun fetchLanguageConfigDetailsFromNetwork() : ApiResponseModel<ConfigResponseModel?>

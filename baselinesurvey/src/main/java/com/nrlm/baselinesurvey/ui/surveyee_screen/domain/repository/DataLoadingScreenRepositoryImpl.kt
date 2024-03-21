@@ -60,7 +60,7 @@ import com.nrlm.baselinesurvey.model.response.MissionResponseModel
 import com.nrlm.baselinesurvey.model.response.QuestionAnswerResponseModel
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
-import com.nrlm.baselinesurvey.network.interfaces.ApiService
+import com.nrlm.baselinesurvey.network.interfaces.BaseLineApiService
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
 import com.nrlm.baselinesurvey.utils.BaselineLogger
@@ -68,7 +68,7 @@ import javax.inject.Inject
 
 class DataLoadingScreenRepositoryImpl @Inject constructor(
     val prefRepo: PrefRepo,
-    val apiService: ApiService,
+    val baseLineApiService: BaseLineApiService,
     val languageListDao: LanguageListDao,
     val surveyeeEntityDao: SurveyeeEntityDao,
     val surveyEntityDao: SurveyEntityDao,
@@ -87,15 +87,15 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchUseDetialsFromNetwork(userViewApiRequest: String): ApiResponseModel<UserDetailsResponse> {
-        return apiService.userAndVillageListAPI(userViewApiRequest)
+        return baseLineApiService.userAndVillageListAPI(userViewApiRequest)
     }
 
     override suspend fun fetchSurveyeeListFromNetwork(userId: Int): ApiResponseModel<BeneficiaryApiResponse> {
-        return apiService.getDidisFromNetwork(userId)
+        return baseLineApiService.getDidisFromNetwork(userId)
     }
 
     override suspend fun fetchSurveyFromNetwork(surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<SurveyResponseModel> {
-        return apiService.getSurveyFromNetwork(surveyRequestBodyModel)
+        return baseLineApiService.getSurveyFromNetwork(surveyRequestBodyModel)
     }
 
     override suspend fun saveSurveyToDb(
@@ -376,7 +376,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     override suspend fun fetchSavedSurveyFromServer() {
         val savedSurveyAnswersRequest: List<Int> = emptyList()
 //        surveyeeEntityDao
-//        apiService.fetchSavedSurveyAnswersFromServer()
+//        baseLineApiService.fetchSavedSurveyAnswersFromServer()
     }
 
     override suspend fun fetchMissionDataFromServer(
@@ -384,7 +384,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         missionName: String
     ): ApiResponseModel<List<MissionResponseModel>> {
         val missionRequest = MissionRequest(languageCode, missionName)
-        return apiService.getBaseLineMission(missionRequest)
+        return baseLineApiService.getBaseLineMission(missionRequest)
     }
 
     override suspend fun saveMissionToDB(missions: MissionEntity) {
@@ -420,7 +420,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getCasteListFromNetwork(languageId: Int): ApiResponseModel<List<CasteModel>> {
-        return apiService.getCasteList(languageId)
+        return baseLineApiService.getCasteList(languageId)
     }
 
     override fun saveCasteList(castes: String) {
@@ -436,7 +436,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchContentsFromServer(contentMangerRequest: ContentMangerRequest): ApiResponseModel<List<ContentResponse>> {
-        return apiService.getAllContent(contentMangerRequest)
+        return baseLineApiService.getAllContent(contentMangerRequest)
     }
 
     override suspend fun deleteContentFromDB() {
@@ -474,7 +474,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
 
     override suspend fun getSurveyAnswers() {
         getSurveyId()?.forEach {
-            val surveyAnswersResponse = apiService.getSurveyAnswers(
+            val surveyAnswersResponse = baseLineApiService.getSurveyAnswers(
                 GetSurveyAnswerRequest(
                     surveyId = it,
                     userId = prefRepo.getUserId()
@@ -602,7 +602,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     override suspend fun getSectionStatus() {
         try {
             getSurveyId()?.forEach {
-                val sectionStatusResponse = apiService.getSectionStatus(
+                val sectionStatusResponse = baseLineApiService.getSectionStatus(
                     SectionStatusRequest(
                         sectionId = 2,
                         surveyId = it,

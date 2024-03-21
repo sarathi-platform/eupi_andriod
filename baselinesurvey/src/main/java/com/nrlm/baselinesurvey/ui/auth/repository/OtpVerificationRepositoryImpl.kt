@@ -7,20 +7,20 @@ import com.nrlm.baselinesurvey.model.request.LoginRequest
 import com.nrlm.baselinesurvey.model.request.OtpRequest
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.model.response.OtpVerificationModel
-import com.nrlm.baselinesurvey.network.interfaces.ApiService
+import com.nrlm.baselinesurvey.network.interfaces.BaseLineApiService
 import javax.inject.Inject
 
 class OtpVerificationRepositoryImpl @Inject constructor(
     private val prefRepo: PrefRepo,
-    private val apiService: ApiService
+    private val baseLineApiService: BaseLineApiService
 ): OtpVerificationRepository {
 
     override suspend fun validateOtp(otpRequest: OtpRequest): ApiResponseModel<OtpVerificationModel> {
-        return apiService.validateOtp(otpRequest)
+        return baseLineApiService.validateOtp(otpRequest)
     }
 
     override suspend fun resendOtp(loginRequest: LoginRequest): ApiResponseModel<String> {
-        return apiService.generateOtp(loginRequest)
+        return baseLineApiService.generateOtp(loginRequest)
     }
 
     override fun getMobileNumber(): String {

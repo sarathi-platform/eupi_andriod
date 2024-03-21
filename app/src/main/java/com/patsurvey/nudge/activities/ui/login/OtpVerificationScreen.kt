@@ -8,10 +8,29 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,16 +46,25 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
-import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.activities.ui.theme.buttonBgColor
+import com.patsurvey.nudge.activities.ui.theme.greenOnline
+import com.patsurvey.nudge.activities.ui.theme.placeholderGrey
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.navigation.home.LogoutScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.OTP_LENGTH
+import com.patsurvey.nudge.utils.OTP_RESEND_DURATION
+import com.patsurvey.nudge.utils.SEC_30_STRING
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 @SuppressLint("StateFlowValueCalledInComposition", "StringFormatInvalid")
 @Composable
@@ -193,25 +221,27 @@ fun OtpVerificationScreen(
                         fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Start,
                         textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.padding(start = 2.dp).clickable(enabled = isResendOTPEnable.value) {
-                            viewModel.resendOtp() { success, message ->
-                                snackState.addMessage(
-                                    message = context.getString(
-                                        R.string.otp_resend_to_mobile_number_message,
-                                        mobileNumber
-                                    ), isSuccess = true, isCustomIcon = false
-                                )
+                        modifier = Modifier
+                            .padding(start = 2.dp)
+                            .clickable(enabled = isResendOTPEnable.value) {
+                                viewModel.resendOtp() { success, message ->
+                                    snackState.addMessage(
+                                        message = context.getString(
+                                            R.string.otp_resend_to_mobile_number_message,
+                                            mobileNumber
+                                        ), isSuccess = true, isCustomIcon = false
+                                    )
+                                }
+                                formattedTime.value = SEC_30_STRING
+                                isResendOTPEnable.value = false
                             }
-                            formattedTime.value = SEC_30_STRING
-                            isResendOTPEnable.value = false
-                        }
                     )
                 }
             }
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_25)))
             Button(
                 onClick = {
-                    viewModel.validateOtp { success, message ->
+                    viewModel.validateOtp(context) { success, message ->
                         if (success){
                             if(navController.graph.route?.equals(Graph.HOME,true) == true){
                                 navController.navigate(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route){

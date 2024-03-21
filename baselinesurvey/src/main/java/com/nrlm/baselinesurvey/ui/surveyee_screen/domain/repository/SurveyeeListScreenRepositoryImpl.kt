@@ -18,7 +18,7 @@ import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
-import com.nrlm.baselinesurvey.network.interfaces.ApiService
+import com.nrlm.baselinesurvey.network.interfaces.BaseLineApiService
 import com.nrlm.baselinesurvey.utils.createMultiLanguageVillageRequest
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
@@ -28,7 +28,7 @@ import javax.inject.Inject
 
 class SurveyeeListScreenRepositoryImpl @Inject constructor(
     private val prefRepo: PrefRepo,
-    private val apiService: ApiService,
+    private val baseLineApiService: BaseLineApiService,
     private val surveyeeEntityDao: SurveyeeEntityDao,
     private val languageListDao: LanguageListDao,
     private val activityTaskDao: ActivityTaskDao,
@@ -63,7 +63,8 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
         try {
             val localLanguageList = languageListDao.getAllLanguages()
             val userViewApiRequest = createMultiLanguageVillageRequest(localLanguageList)
-            val userApiResponse = apiService.userAndVillageListAPI(languageId = userViewApiRequest)
+            val userApiResponse =
+                baseLineApiService.userAndVillageListAPI(languageId = userViewApiRequest)
             if (userApiResponse.status.equals(SUCCESS, true)) {
                 userApiResponse.data?.let {
                     prefRepo.savePref(PREF_KEY_USER_NAME, it.username ?: "")
@@ -75,7 +76,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
                     prefRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: "")
                 }
                 val apiResponse = userApiResponse.data?.username?.toInt()
-                    ?.let { apiService.getDidisFromNetwork(userId = it) }
+                    ?.let { baseLineApiService.getDidisFromNetwork(userId = it) }
                 if (apiResponse?.status?.equals(SUCCESS, false) == true) {
                     if (apiResponse?.data?.didiList != null) {
                         surveyeeEntityDao.deleteSurveyees()

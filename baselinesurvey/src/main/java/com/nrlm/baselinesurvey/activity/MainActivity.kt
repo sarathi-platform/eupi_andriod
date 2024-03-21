@@ -22,7 +22,6 @@ import com.nrlm.baselinesurvey.ui.common_components.NetworkBanner
 import com.nrlm.baselinesurvey.ui.theme.The_nudgeTheme
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
-import com.nrlm.baselinesurvey.utils.ConnectionMonitor
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 import javax.inject.Inject
@@ -36,7 +35,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
 
     private val mViewModel: MainActivityViewModel by viewModels()
 
-    private lateinit var connectionLiveData: ConnectionMonitor
+    // private lateinit var connectionLiveData: ConnectionMonitor
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -78,16 +77,16 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
         localizationDelegate.addOnLocaleChangedListener(this)
         localizationDelegate.onCreate()
 
-        connectionLiveData = BaselineCore.getConnectionMonitorLive()
-        connectionLiveData.observe(this) { isNetworkAvailable ->
-            BaselineCore.isOnline.value = isNetworkAvailable
-        }
+        //   connectionLiveData = BaselineCore.getConnectionMonitorLive()
+//        connectionLiveData.observe(this) { isNetworkAvailable ->
+//            BaselineCore.isOnline.value = isNetworkAvailable
+//        }
 
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        connectionLiveData.removeObservers(this)
+        // connectionLiveData.removeObservers(this)
     }
 
     override fun attachBaseContext(newBase: Context) {

@@ -14,13 +14,13 @@ import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
-import com.nrlm.baselinesurvey.network.interfaces.ApiService
+import com.nrlm.baselinesurvey.network.interfaces.BaseLineApiService
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 
 class SectionListScreenRepositoryImpl(
     private val prefRepo: PrefRepo,
-    private val apiService: ApiService,
+    private val baseLineApiService: BaseLineApiService,
     private val surveyEntityDao: SurveyEntityDao,
     private val sectionEntityDao: SectionEntityDao,
     private val questionEntityDao: QuestionEntityDao,

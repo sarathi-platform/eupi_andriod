@@ -7,7 +7,6 @@ import android.content.res.Resources
 import android.util.Log
 import com.akexorcist.localizationactivity.core.LocalizationApplicationDelegate
 import com.nrlm.baselinesurvey.utils.BaselineCore
-import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -16,7 +15,6 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 import kotlin.coroutines.CoroutineContext
 
-@HiltAndroidApp
 class BaselineApplication: Application() {
 
     override fun onCreate() {

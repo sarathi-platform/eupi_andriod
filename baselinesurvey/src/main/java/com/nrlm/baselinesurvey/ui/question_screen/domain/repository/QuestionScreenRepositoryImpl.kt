@@ -25,7 +25,7 @@ import com.nrlm.baselinesurvey.model.request.AnswerDetailDTOList
 import com.nrlm.baselinesurvey.model.request.Options
 import com.nrlm.baselinesurvey.model.request.SaveSurveyRequestModel
 import com.nrlm.baselinesurvey.model.request.SectionList
-import com.nrlm.baselinesurvey.network.interfaces.ApiService
+import com.nrlm.baselinesurvey.network.interfaces.BaseLineApiService
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.json
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
@@ -33,7 +33,7 @@ import javax.inject.Inject
 
 class QuestionScreenRepositoryImpl @Inject constructor(
     private val prefRepo: PrefRepo,
-    private val apiService: ApiService,
+    private val baseLineApiService: BaseLineApiService,
     private val surveyeeEntityDao: SurveyeeEntityDao,
     private val surveyEntityDao: SurveyEntityDao,
     private val sectionEntityDao: SectionEntityDao,
@@ -277,7 +277,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
             "QuestionScreenRepositoryImpl",
             "saveSectionAnswersToServer: saveAnswersToServerApiRequest -> ${saveSurveyRequestModel.json()}"
         )
-        // val saveAnswersToServerApiResponse = apiService.saveAnswersToServer(saveSurveyRequestModel)
+        // val saveAnswersToServerApiResponse = baseLineApiService.saveAnswersToServer(saveSurveyRequestModel)
         //  BaselineLogger.d("QuestionScreenRepositoryImpl", "saveSectionAnswersToServer: saveAnswersToServerApiResponse -> ${saveAnswersToServerApiResponse.json()}")
     }
 

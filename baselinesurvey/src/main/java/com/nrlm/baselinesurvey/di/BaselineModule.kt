@@ -24,7 +24,7 @@ import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.dao.VillageListDao
-import com.nrlm.baselinesurvey.network.interfaces.ApiService
+import com.nrlm.baselinesurvey.network.interfaces.BaseLineApiService
 import com.nrlm.baselinesurvey.ui.auth.repository.LoginScreenRepository
 import com.nrlm.baselinesurvey.ui.auth.repository.LoginScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.auth.repository.OtpVerificationRepository
@@ -153,10 +153,10 @@ object BaselineModule {
     @Singleton
     fun provideSplashScreenRepository(
         prefRepo: PrefRepo,
-        apiService: ApiService,
+        baseLineApiService: BaseLineApiService,
         languageListDao: LanguageListDao
     ): SplashScreenRepository {
-        return SplashScreenRepositoryImpl(prefRepo, apiService, languageListDao)
+        return SplashScreenRepositoryImpl(prefRepo, baseLineApiService, languageListDao)
     }
 
     @Provides
@@ -224,7 +224,7 @@ object BaselineModule {
     @Singleton
     fun provideLanguageScreenRepository(
         prefRepo: PrefRepo,
-        apiService: ApiService,
+        baseLineApiService: BaseLineApiService,
         languageListDao: LanguageListDao,
         villageListDao: VillageListDao
     ): LanguageScreenRepository {
@@ -235,9 +235,9 @@ object BaselineModule {
     @Singleton
     fun provideLoginScreenRepository(
         prefRepo: PrefRepo,
-        apiService: ApiService
+        baseLineApiService: BaseLineApiService
     ): LoginScreenRepository {
-        return LoginScreenRepositoryImpl(prefRepo, apiService)
+        return LoginScreenRepositoryImpl(prefRepo, baseLineApiService)
     }
 
     @Provides
@@ -253,9 +253,9 @@ object BaselineModule {
     @Singleton
     fun provideOtpVerificationRepository(
         prefRepo: PrefRepo,
-        apiService: ApiService
+        baseLineApiService: BaseLineApiService
     ): OtpVerificationRepository {
-        return OtpVerificationRepositoryImpl(prefRepo, apiService)
+        return OtpVerificationRepositoryImpl(prefRepo, baseLineApiService)
     }
 
     @Provides
@@ -273,7 +273,7 @@ object BaselineModule {
     @Singleton
     fun provideSurveyeeListScreenRepository(
         prefRepo: PrefRepo,
-        apiService: ApiService,
+        baseLineApiService: BaseLineApiService,
         surveyeeEntityDao: SurveyeeEntityDao,
         languageListDao: LanguageListDao,
         activityTaskDao: ActivityTaskDao,
@@ -281,7 +281,7 @@ object BaselineModule {
     ): SurveyeeListScreenRepository {
         return SurveyeeListScreenRepositoryImpl(
             prefRepo,
-            apiService,
+            baseLineApiService,
             surveyeeEntityDao,
             languageListDao,
             activityTaskDao,
@@ -310,7 +310,7 @@ object BaselineModule {
     @Singleton
     fun provideSectionListScreenRepository(
         prefRepo: PrefRepo,
-        apiService: ApiService,
+        baseLineApiService: BaseLineApiService,
         surveyEntityDao: SurveyEntityDao,
         sectionEntityDao: SectionEntityDao,
         questionEntityDao: QuestionEntityDao,
@@ -322,7 +322,7 @@ object BaselineModule {
     ): SectionListScreenRepository {
         return SectionListScreenRepositoryImpl(
             prefRepo,
-            apiService,
+            baseLineApiService,
             surveyEntityDao,
             sectionEntityDao,
             questionEntityDao,
@@ -356,7 +356,7 @@ object BaselineModule {
     @Singleton
     fun provideQuestionScreenRepository(
         prefRepo: PrefRepo,
-        apiService: ApiService,
+        baseLineApiService: BaseLineApiService,
         surveyeeEntityDao: SurveyeeEntityDao,
         surveyEntityDao: SurveyEntityDao,
         sectionEntityDao: SectionEntityDao,
@@ -370,7 +370,7 @@ object BaselineModule {
     ): QuestionScreenRepository {
         return QuestionScreenRepositoryImpl(
             prefRepo = prefRepo,
-            apiService = apiService,
+            baseLineApiService = baseLineApiService,
             surveyeeEntityDao = surveyeeEntityDao,
             surveyEntityDao = surveyEntityDao,
             sectionEntityDao = sectionEntityDao,
@@ -419,9 +419,9 @@ object BaselineModule {
     @Singleton
     fun provideMainActivityRepository(
         prefRepo: PrefRepo,
-        apiService: ApiService
+        baseLineApiService: BaseLineApiService
     ): MainActivityRepository {
-        return MainActivityRepositoryImpl(prefRepo, apiService)
+        return MainActivityRepositoryImpl(prefRepo, baseLineApiService)
     }
 
     @Provides
@@ -438,7 +438,7 @@ object BaselineModule {
     @Singleton
     fun provideDataLoadingScreenRepository(
         prefRepo: PrefRepo,
-        apiService: ApiService,
+        baseLineApiService: BaseLineApiService,
         languageListDao: LanguageListDao,
         surveyeeEntityDao: SurveyeeEntityDao,
         surveyEntityDao: SurveyEntityDao,
@@ -455,7 +455,7 @@ object BaselineModule {
     ): DataLoadingScreenRepository {
         return DataLoadingScreenRepositoryImpl(
             prefRepo,
-            apiService,
+            baseLineApiService,
             languageListDao,
             surveyeeEntityDao,
             surveyEntityDao,
@@ -601,9 +601,9 @@ object BaselineModule {
     @Singleton
     fun provideSettingBSScreenRepository(
         prefRepo: PrefRepo,
-        apiService: ApiService
+        baseLineApiService: BaseLineApiService
     ): SettingBSRepository {
-        return SettingBSRepositoryImpl(prefRepo, apiService)
+        return SettingBSRepositoryImpl(prefRepo, baseLineApiService)
     }
 
     @Provides

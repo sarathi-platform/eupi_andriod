@@ -69,7 +69,12 @@ fun QuestionScreen(
     sectionType:String,
     questionIndex:Int
 ) {
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(
+        initialPage = 0,
+        initialPageOffsetFraction = 0f
+    ) {
+        viewModel.questionList.value.size
+    }
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(key1 = Unit) {
         try {
@@ -198,7 +203,6 @@ fun QuestionScreen(
                 viewModel.findListTypeSelectedAnswer(pagerState.currentPage, didiId)
                 eventToPageChange.value = false
                 HorizontalPager(
-                    pageCount = questionList.size,
                     state = pagerState,
                     userScrollEnabled = false
                 ) {

@@ -37,7 +37,7 @@ class OtpVerificationViewModelTest {
                 ""
             )
             whenever(otpVerificationRepository.validateOtp("123456")).thenReturn(mockCollection)
-            otpVerificationViewModel.validateOtp { _, _ -> }
+            otpVerificationViewModel.validateOtp(context) { _, _ -> }
             assert(mockCollection.status == SUCCESS)
             assert(mockCollection.data != null)
         }
@@ -76,7 +76,7 @@ class OtpVerificationViewModelTest {
         runTest {
             val mockCollection = ApiResponseModel<OtpVerificationModel>(FAIL, "", null, "")
             whenever(otpVerificationRepository.validateOtp("123456")).thenReturn(mockCollection)
-            otpVerificationViewModel.validateOtp { _, _ -> }
+            otpVerificationViewModel.validateOtp(context) { _, _ -> }
             assert(mockCollection.status == FAIL)
             assert(mockCollection.data == null)
         }
