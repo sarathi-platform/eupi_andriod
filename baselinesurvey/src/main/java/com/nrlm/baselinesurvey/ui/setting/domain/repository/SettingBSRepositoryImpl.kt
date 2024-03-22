@@ -7,6 +7,7 @@ import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nudge.core.getDefaultBackUpFileName
+import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
 
 class SettingBSRepositoryImpl(private val prefRepo: PrefRepo,
@@ -26,7 +27,7 @@ class SettingBSRepositoryImpl(private val prefRepo: PrefRepo,
             )
         )
         coreSharedPrefs.setImageBackupFileName(
-            getDefaultBackUpFileName(
+            getDefaultImageBackUpFileName(
                 prefRepo.getMobileNumber() ?: ""
             )
         )
