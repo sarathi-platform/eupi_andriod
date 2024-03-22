@@ -5,7 +5,9 @@ import com.nrlm.baselinesurvey.LANGUAGE_OPEN_FROM_SETTING
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
-import com.nudge.core.model.SettingOptionModel
+import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nudge.core.getDefaultBackUpFileName
+import com.nudge.core.preference.CoreSharedPrefs
 
 class SettingBSRepositoryImpl(private val prefRepo: PrefRepo,
                               private val apiService: ApiService,
@@ -17,6 +19,20 @@ class SettingBSRepositoryImpl(private val prefRepo: PrefRepo,
 
     override fun clearSharedPref() {
         prefRepo.saveAccessToken(BLANK_STRING)
+        val coreSharedPrefs = CoreSharedPrefs.getInstance(BaselineCore.getAppContext())
+        coreSharedPrefs.setBackupFileName(
+            getDefaultBackUpFileName(
+                prefRepo.getMobileNumber() ?: BLANK_STRING
+            )
+        )
+        coreSharedPrefs.setImageBackupFileName(
+            getDefaultBackUpFileName(
+                prefRepo.getMobileNumber() ?: ""
+            )
+        )
+        coreSharedPrefs.setFileExported(false)
+        prefRepo.setPreviousUserMobile(prefRepo.getMobileNumber() ?: BLANK_STRING)
+
     }
 
     override fun saveLanguageScreenOpenFrom() {
