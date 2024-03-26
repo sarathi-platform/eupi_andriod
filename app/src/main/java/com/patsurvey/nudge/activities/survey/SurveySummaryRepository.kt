@@ -206,13 +206,16 @@ class SurveySummaryRepository @Inject constructor(
         return "${PREF_FORM_PATH}_${prefRepo.getSelectedVillage().id}_${subPath}"
     }
 
-    fun markBPCStepComplete(stepId: Int, isComplete: Int = 0,villageId:Int){
-        stepsListDao.markStepAsCompleteOrInProgress(
-            stepId = stepId,
-            isComplete = isComplete,
-            villageId = villageId
-        )
-        villageListDao.updateStepAndStatusId(villageId,stepId,StepStatus.COMPLETED.ordinal)
+    fun markBPCStepComplete(stepId: Int, isComplete: Int = 0, villageId: Int) {
+        val pendingVerificationDidiCount = didiDao.fetchPendingVerificationDidiCount(villageId)
+        if (pendingVerificationDidiCount == 0) {
+            stepsListDao.markStepAsCompleteOrInProgress(
+                stepId = stepId,
+                isComplete = isComplete,
+                villageId = villageId
+            )
+            villageListDao.updateStepAndStatusId(villageId, stepId, StepStatus.COMPLETED.ordinal)
+        }
     }
 
     fun updateBeneficiaryProcessStatus(didiId: Int, status: List<BeneficiaryProcessStatusModel>){
