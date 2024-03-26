@@ -65,6 +65,7 @@ class SettingBSViewModel @Inject constructor(
                 val compression = ZipFileCompression()
                 val fileUri = compression.compressBackupFiles(
                     BaselineCore.getAppContext(),
+                    listOf(),
                     prefRepo.getMobileNumber() ?: ""
                 )
 

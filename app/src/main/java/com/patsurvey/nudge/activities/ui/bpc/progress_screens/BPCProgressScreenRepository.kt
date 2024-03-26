@@ -240,18 +240,6 @@ class BPCProgressScreenRepository @Inject constructor(
         repoJob = MyApplication.appScopeLaunch(Dispatchers.IO) {
             val awaitDiff = CoroutineScope(Dispatchers.IO + exceptionHandler).async {
                 try {
-                    val villageList =
-                        villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
-                    val villageIdList: ArrayList<Int> = arrayListOf()
-
-                    val localAnswerList = answerDao.getAllAnswer()
-                    if (localAnswerList.isNotEmpty()) {
-                        answerDao.deleteAnswerTable()
-                    }
-                    val localNumAnswerList = numericAnswerDao.getAllNumericAnswers()
-                    if (localNumAnswerList.isNotEmpty()) {
-                        numericAnswerDao.deleteNumericTable()
-                    }
                     try {
                         NudgeLogger.d(
                             "VillageSelectionScreen",
@@ -339,7 +327,7 @@ class BPCProgressScreenRepository @Inject constructor(
                                         it.stepList.sortedBy { stepEntity -> stepEntity.orderNumber }
                                             .last().id
                                     if (it.stepList[it.stepList.map { it.id }
-                                            .indexOf(bpcStepId)].status != StepStatus.COMPLETED.name)
+                                            .indexOf(bpcStepId)].status == StepStatus.NOT_STARTED.name)
                                         stepsListDao.markStepAsCompleteOrInProgress(
                                             bpcStepId,
                                             StepStatus.INPROGRESS.ordinal,
@@ -953,6 +941,7 @@ class BPCProgressScreenRepository @Inject constructor(
                                             }
                                         }
                                     }
+
                                 }
                                 if (answerList.isNotEmpty()) {
 //                                    answerDao.insertAll(answerList)
