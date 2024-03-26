@@ -416,7 +416,14 @@ fun SettingScreen(
                                     viewModel.compressEventData(context.getString(R.string.share_export_file))
                                 }
                                 8 -> {
-                                    viewModel.showLoadConfimationDialog.value=true
+                                    if ((context as MainActivity).isOnline.value) {
+                                        viewModel.showLoadConfimationDialog.value = true
+                                    }else{
+                                        showToast(
+                                            context,
+                                            context.getString(R.string.logout_no_internet_error_message)
+                                        )
+                                    }
                                 }
 
                                 else -> {

@@ -375,10 +375,6 @@
     <string name="network_not_available_message">नेटवर्क गैया, अन्नानै उनाव आरोबाव नाजा!</string>
     <string name="total_members_can_not_be_less_than_earning_members">Total family members can not be less than Earning members.</string>
     <string name="logout_confirmation">Are you sure to logout?</string>
-    <string name="warning">Папярэджанне</string>
-    <string name="data_lost_message">Выяўлены іншы карыстальнік, калі вы працягнеце, вы страціце даныя папярэдняга карыстальніка</string>
-    <string name="proceed">" Працягвайце"</string>
-    <string name="fetched_successfully">खारिआ जाफुंसारै लाबोदों</string>
     <string name="load_server_data">Load Server Data</string>
     <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure you want to load data from server?</string>
     <string name="warning">Warning!</string>
