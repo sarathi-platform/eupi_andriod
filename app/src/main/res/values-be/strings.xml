@@ -381,4 +381,9 @@
     <string name="fetched_successfully">खारिआ जाफुंसारै लाबोदों</string>
     <string name="load_server_data">Load Server Data</string>
     <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure you want to load data from server?</string>
+    <string name="warning">Warning!</string>
+    <string name="data_lost_message">Another user detected if you proceed you will lost previous user\'s data</string>
+    <string name="proceed">Proceed</string>
+    <string name="fetched_successfully">Data fetched successfully</string>
+
 </resources>

@@ -64,6 +64,7 @@ import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import javax.inject.Inject
 
 class DataLoadingScreenRepositoryImpl @Inject constructor(
@@ -615,11 +616,20 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                         true
                     )
                 ) {
-                    didiSectionProgressEntityDao.addDidiSectionProgress(
-                        getDidiSectionStatusEntity(
-                            sectionStatusResponse.data!!
-                        )
+                    val didiSectionStatusEntity = getDidiSectionStatusEntity(
+                        sectionStatusResponse.data!!
                     )
+                    didiSectionProgressEntityDao.addDidiSectionProgress(
+                        didiSectionStatusEntity
+                    )
+                    didiSectionStatusEntity.groupBy { it.didiId }.forEach { map ->
+                        if (map.value.any { it.sectionStatus == SectionStatus.INPROGRESS.ordinal || it.sectionStatus == SectionStatus.COMPLETED.ordinal }) {
+                            surveyeeEntityDao.updateDidiSurveyStatusAfterCheck(
+                                map.key,
+                                SectionStatus.INPROGRESS.ordinal
+                            )
+                        }
+                    }
                 }
             }
         } catch (ecxpetion: Exception) {

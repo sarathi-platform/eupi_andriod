@@ -27,7 +27,6 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingBSViewModel @Inject constructor(
     private val settingBSUserCase: SettingBSUserCase,
-    private val nudgeBaselineDatabase: NudgeBaselineDatabase,
     val prefRepo: PrefRepo
 ):BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
@@ -40,39 +39,11 @@ class SettingBSViewModel @Inject constructor(
     fun performLogout(onLogout: (Boolean) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val settingUseCaseResponse = settingBSUserCase.logoutUseCase.invoke()
-
-            clearLocalData()
             withContext(Dispatchers.Main) {
                 onLogout(settingUseCaseResponse)
             }
 
         }
-    }
-
-    fun clearLocalData() {//TOdo move this logic to repository
-        nudgeBaselineDatabase.contentEntityDao().deleteContent()
-        nudgeBaselineDatabase.didiDao().deleteSurveyees()
-        nudgeBaselineDatabase.activityTaskEntityDao().deleteActivityTask()
-        nudgeBaselineDatabase.missionEntityDao().deleteMissions()
-        nudgeBaselineDatabase.missionActivityEntityDao().deleteActivities()
-        nudgeBaselineDatabase.optionItemDao().deleteOptions()
-        nudgeBaselineDatabase.questionEntityDao().deleteAllQuestions()
-        nudgeBaselineDatabase.sectionAnswerEntityDao().deleteAllSectionAnswer()
-        nudgeBaselineDatabase.inputTypeQuestionAnswerDao().deleteAllInputTypeAnswers()
-        nudgeBaselineDatabase.formQuestionResponseDao().deleteAllFormQuestions()
-        nudgeBaselineDatabase.didiSectionProgressEntityDao().deleteAllSectionProgress()
-        nudgeBaselineDatabase.villageListDao().deleteAllVilleges()
-        nudgeBaselineDatabase.surveyEntityDao().deleteAllSurvey()
-        nudgeBaselineDatabase.didiInfoEntityDao().deleteAllDidiInfo()
-        clearSharedPref()
-    }
-
-    fun clearSharedPref() {
-        val languageId = prefRepo.getAppLanguageId()
-        val language = prefRepo.getAppLanguage()
-        prefRepo.clearSharedPreference()
-        prefRepo.saveAppLanguage(language)
-        prefRepo.saveAppLanguageId(languageId)
     }
 
     fun saveLanguagePageFrom() {

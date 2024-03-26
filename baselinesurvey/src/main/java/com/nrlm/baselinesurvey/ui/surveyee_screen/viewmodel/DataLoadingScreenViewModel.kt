@@ -1,12 +1,16 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel
 
+import android.content.Context
+import android.text.TextUtils
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
+import com.nrlm.baselinesurvey.ui.common_components.common_events.DialogEvents
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nrlm.baselinesurvey.utils.states.DialogState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -17,11 +21,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DataLoadingScreenViewModel @Inject constructor(
-    private val fetchDataUseCase: FetchDataUseCase
+    private val fetchDataUseCase: FetchDataUseCase,
 ): BaseViewModel() {
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
     val loaderState: State<LoaderState> get() = _loaderState
+
+    private val _showUserChangedDialog = mutableStateOf<DialogState>(DialogState())
+    val showUserChangedDialog: State<DialogState> get() = _showUserChangedDialog
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -30,6 +37,26 @@ class DataLoadingScreenViewModel @Inject constructor(
                     isLoaderVisible = event.showLoader
                 )
             }
+
+            is DialogEvents.ShowDialogEvent -> {
+                _showUserChangedDialog.value = _showUserChangedDialog.value
+                    .copy(
+                        isDialogVisible = event.showDialog
+                    )
+            }
+        }
+    }
+
+    fun compareWithPreviousUser(context: Context, isDataLoadingAllowed: (Boolean) -> Unit) {
+        val previousMobileNumber = fetchDataUseCase.loggedInUseCase.getPreviousMobileNumber()
+        val mobileNumber = fetchDataUseCase.loggedInUseCase.getMobileNumber()
+        if (TextUtils.isEmpty(previousMobileNumber) || previousMobileNumber
+                .equals(mobileNumber)
+        ) {
+            isDataLoadingAllowed(true)
+        } else {
+            isDataLoadingAllowed(false)
+
         }
     }
 
@@ -59,8 +86,6 @@ class DataLoadingScreenViewModel @Inject constructor(
                     onEvent(LoaderEvent.UpdateLoaderState(false))
                     callBack()
                 }
-
-
             }
         } catch (ex: Exception) {
             BaselineLogger.e("DataLoadingScreenViewModel", "fetchAllData", ex)
@@ -173,5 +198,16 @@ class DataLoadingScreenViewModel @Inject constructor(
 
     fun setAllDataFetched() {
         fetchDataUseCase.loggedInUseCase.setDataSynced()
+    }
+
+    fun logout() {
+        fetchDataUseCase.loggedInUseCase.performLogout()
+    }
+
+    fun clearLocalDB(isDataLoadingAllowed: () -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            fetchDataUseCase.loggedInUseCase.performLogout(true)
+            isDataLoadingAllowed()
+        }
     }
 }

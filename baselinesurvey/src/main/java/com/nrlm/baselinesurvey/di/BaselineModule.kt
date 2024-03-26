@@ -154,9 +154,10 @@ object BaselineModule {
     fun provideSplashScreenRepository(
         prefRepo: PrefRepo,
         apiService: ApiService,
-        languageListDao: LanguageListDao
+        languageListDao: LanguageListDao,
+        baselineDatabase: NudgeBaselineDatabase
     ): SplashScreenRepository {
-        return SplashScreenRepositoryImpl(prefRepo, apiService, languageListDao)
+        return SplashScreenRepositoryImpl(prefRepo, apiService, languageListDao, baselineDatabase)
     }
 
     @Provides
