@@ -46,6 +46,7 @@ import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
+import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
 import com.patsurvey.nudge.utils.LogWriter
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -109,6 +110,7 @@ class SettingViewModel @Inject constructor(
     var hitApiStatus = mutableStateOf(0)
     var showLogoutDialog = mutableStateOf(false)
     var syncErrorMessage = mutableStateOf("")
+    val showLoadConfimationDialog = mutableStateOf(false)
     private val _optionList = MutableStateFlow(listOf<SettingOptionModel>())
     val optionList: StateFlow<List<SettingOptionModel>> get() = _optionList
     val showLoader = mutableStateOf(false)
@@ -839,9 +841,9 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    fun clearLocalDB(context: Context, logout: MutableState<Boolean>) {
+    fun clearLocalDB(onPageChange:()->Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            casteListDao.deleteCasteTable()
+//            casteListDao.deleteCasteTable()
             tolaDao.deleteAllTola()
             didiDao.deleteAllDidi()
             lastSelectedTolaDao.deleteAllLastSelectedTola()
@@ -849,17 +851,16 @@ class SettingViewModel @Inject constructor(
             answerDao.deleteAllAnswers()
             questionDao.deleteQuestionTable()
             stepsListDao.deleteAllStepsFromDB()
-            userDao.deleteAllUserDetail()
-            villegeListDao.deleteAllVilleges()
+//            userDao.deleteAllUserDetail()
+//            villegeListDao.deleteAllVilleges()
             bpcSummaryDao.deleteAllSummary()
             poorDidiListDao.deleteAllDidis()
-            clearSharedPreference()
+            prefRepo.savePref(LAST_UPDATE_TIME, 0L)
+//            clearSharedPreference()
             //cleared cache in case of logout
 //            context.cacheDir.deleteRecursively()
             withContext(Dispatchers.Main) {
-                showAPILoader.value = false
-                logout.value = true
-                onLogoutError.value = false
+                onPageChange()
             }
         }
     }

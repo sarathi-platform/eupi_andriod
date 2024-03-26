@@ -379,4 +379,6 @@
     <string name="data_lost_message">Выяўлены іншы карыстальнік, калі вы працягнеце, вы страціце даныя папярэдняга карыстальніка</string>
     <string name="proceed">" Працягвайце"</string>
     <string name="fetched_successfully">खारिआ जाफुंसारै लाबोदों</string>
+    <string name="load_server_data">Load Server Data</string>
+    <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure you want to load data from server?</string>
 </resources>

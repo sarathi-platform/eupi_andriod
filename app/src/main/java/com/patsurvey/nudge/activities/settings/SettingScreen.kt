@@ -160,6 +160,7 @@ fun SettingScreen(
         list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
         list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
         list.add(SettingOptionModel(7, stringResource(id = R.string.export_file), BLANK_STRING))
+        list.add(SettingOptionModel(8, stringResource(id = R.string.load_server_data), BLANK_STRING))
 
         /*if (BuildConfig.DEBUG) *//*list.add(
             SettingOptionModel(
@@ -188,15 +189,27 @@ fun SettingScreen(
         list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
         list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
         list.add(SettingOptionModel(7, stringResource(id = R.string.export_file), BLANK_STRING))
-        /*if (BuildConfig.DEBUG) *//*list.add(
-            SettingOptionModel(
-                6,
-                stringResource(id = R.string.user_bug_report_text),
-                BLANK_STRING
-            )
-        )*/
+        list.add(SettingOptionModel(8, stringResource(id = R.string.load_server_data), BLANK_STRING))
     }
     viewModel.createSettingMenu(list)
+
+    if(viewModel.showLoadConfimationDialog.value){
+        showCustomDialog(
+            title = stringResource(id = R.string.are_you_sure),
+            message =stringResource(id = R.string.are_you_sure_you_want_to_load_data_from_server),
+            positiveButtonTitle = stringResource(id = R.string.yes_text),
+            negativeButtonTitle = stringResource(id = R.string.option_no),
+            onNegativeButtonClick = {viewModel.showLoadConfimationDialog.value =false},
+            onPositiveButtonClick = {
+                viewModel.clearLocalDB(){
+                    if (navController.graph.route == Graph.ROOT) {
+                        navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route)
+                    } else {
+                        navController.navigate(Graph.LOGOUT_GRAPH)
+                    }
+                }
+            })
+    }
 //    }
     LaunchedEffect(key1 = true) {
         val villageId = viewModel.prefRepo.getSelectedVillage().id
@@ -401,6 +414,9 @@ fun SettingScreen(
 
                                 7 -> {
                                     viewModel.compressEventData(context.getString(R.string.share_export_file))
+                                }
+                                8 -> {
+                                    viewModel.showLoadConfimationDialog.value=true
                                 }
 
                                 else -> {
