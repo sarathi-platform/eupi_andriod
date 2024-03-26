@@ -26,6 +26,7 @@ import javax.inject.Singleton
 class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Context) :PrefRepo {
     companion object {
         const val PREFS_NAME = "secured_nudge_baseline_prefs"
+        const val PREF_KEY_PREVIOUS_USER_MOBILE = "previous_user_mobile"
     }
 
     val prefs: SharedPreferences by lazy {
@@ -162,5 +163,12 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         return prefs.getBoolean(PREF_KEY_IS_DATA_SYNC, false)
     }
 
+    override fun setPreviousUserMobile(mobileNumber: String) {
+        prefs.edit().putString(PREF_KEY_PREVIOUS_USER_MOBILE, mobileNumber).apply()
+    }
+
+    override fun getPreviousUserMobile(): String {
+        return prefs.getString(PREF_KEY_PREVIOUS_USER_MOBILE, "") ?: ""
+    }
 
 }

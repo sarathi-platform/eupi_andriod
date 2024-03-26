@@ -16,4 +16,17 @@ class LoggedInUseCase(private val repository: SplashScreenRepository) {
         return repository.setAllDataSynced()
     }
 
+    fun getPreviousMobileNumber(): String {
+        return repository.getPreviousMobileNumber()
+    }
+
+    fun getMobileNumber(): String {
+        return repository.getMobileNumber()
+    }
+
+    fun performLogout(clearData: Boolean = false) {
+        repository.performLogout(clearData)
+    }
+
+
 }

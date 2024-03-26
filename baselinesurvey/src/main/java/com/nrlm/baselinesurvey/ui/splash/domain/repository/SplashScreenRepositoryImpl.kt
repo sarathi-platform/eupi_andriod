@@ -1,8 +1,10 @@
 package com.nrlm.baselinesurvey.ui.splash.domain.repository
 
 import android.text.TextUtils
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.LANGUAGE_OPEN_FROM_SETTING
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
@@ -15,7 +17,8 @@ import javax.inject.Inject
 class SplashScreenRepositoryImpl @Inject constructor(
     private val prefRepo: PrefRepo,
     private val apiService: ApiService,
-    private val languageListDao: LanguageListDao
+    private val languageListDao: LanguageListDao,
+    private val nudgeBaselineDatabase: NudgeBaselineDatabase
 ) : SplashScreenRepository, BaseRepository() {
 
     override suspend fun getLanguageConfigFromNetwork(): ApiResponseModel<ConfigResponseModel?> {
@@ -40,7 +43,7 @@ class SplashScreenRepositoryImpl @Inject constructor(
     }
 
     override fun saveLanguageOpenFrom() {
-        prefRepo.savePref(LANGUAGE_OPEN_FROM_SETTING,false)
+        prefRepo.savePref(LANGUAGE_OPEN_FROM_SETTING, false)
     }
 
     override fun isDataSynced(): Boolean {
@@ -49,6 +52,53 @@ class SplashScreenRepositoryImpl @Inject constructor(
 
     override fun setAllDataSynced() {
         prefRepo.setDataSyncStatus(true)
+    }
+
+    override fun performLogout(clearData: Boolean) {
+        if (clearData) {
+            clearLocalData()
+        } else {
+            prefRepo.saveAccessToken("")
+            prefRepo.saveMobileNumber("")
+        }
+    }
+
+    override fun getPreviousMobileNumber(): String {
+        return prefRepo.getPreviousUserMobile()
+    }
+
+    override fun getMobileNumber(): String {
+        return prefRepo.getMobileNumber() ?: BLANK_STRING
+    }
+
+    override fun clearLocalData() {
+        nudgeBaselineDatabase.contentEntityDao().deleteContent()
+        nudgeBaselineDatabase.didiDao().deleteSurveyees()
+        nudgeBaselineDatabase.activityTaskEntityDao().deleteActivityTask()
+        nudgeBaselineDatabase.missionEntityDao().deleteMissions()
+        nudgeBaselineDatabase.missionActivityEntityDao().deleteActivities()
+        nudgeBaselineDatabase.optionItemDao().deleteOptions()
+        nudgeBaselineDatabase.questionEntityDao().deleteAllQuestions()
+        nudgeBaselineDatabase.sectionAnswerEntityDao().deleteAllSectionAnswer()
+        nudgeBaselineDatabase.inputTypeQuestionAnswerDao().deleteAllInputTypeAnswers()
+        nudgeBaselineDatabase.formQuestionResponseDao().deleteAllFormQuestions()
+        nudgeBaselineDatabase.didiSectionProgressEntityDao().deleteAllSectionProgress()
+        nudgeBaselineDatabase.villageListDao().deleteAllVilleges()
+        nudgeBaselineDatabase.surveyEntityDao().deleteAllSurvey()
+        nudgeBaselineDatabase.didiInfoEntityDao().deleteAllDidiInfo()
+        clearSharedPref()
+    }
+
+    override fun clearSharedPref() {
+        val languageId = prefRepo.getAppLanguageId()
+        val language = prefRepo.getAppLanguage()
+        val accessToken = prefRepo.getAccessToken()
+        val mobileNumber = prefRepo.getMobileNumber()
+        prefRepo.clearSharedPreference()
+        prefRepo.saveAccessToken(accessToken ?: BLANK_STRING)
+        prefRepo.saveMobileNumber(mobileNumber ?: BLANK_STRING)
+        prefRepo.saveAppLanguage(language)
+        prefRepo.saveAppLanguageId(languageId)
     }
 
 }

@@ -60,4 +60,8 @@ interface PrefRepo {
 
     fun setDataSyncStatus(status: Boolean)
     fun getDataSyncStatus(): Boolean
+
+    fun setPreviousUserMobile(mobileNumber: String)
+
+    fun getPreviousUserMobile(): String
 }
