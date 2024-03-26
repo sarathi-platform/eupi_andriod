@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import androidx.room.Update
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.utils.STEPS_LIST_TABLE
 
@@ -91,9 +90,13 @@ interface StepsListDao {
 
     @Transaction
     fun updateStepListForVillage(forceRefresh: Boolean = false, villageId: Int, stepList: List<StepListEntity>) {
-        if (forceRefresh)
-            deleteAllStepsForVillage(villageId)
-        insertAll(stepList)
+        stepList.forEach { step ->
+            if (!forceRefresh || getAllStepsForVillage(step.villageId).isEmpty()) {
+
+                insert(step)
+
+            }
+        }
     }
 
 }
