@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.database.dao
 
+import android.text.TextUtils
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
@@ -8,6 +9,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.utils.STEPS_LIST_TABLE
+import com.patsurvey.nudge.utils.StepStatus
 
 @Dao
 interface StepsListDao {
@@ -91,9 +93,14 @@ interface StepsListDao {
     @Transaction
     fun updateStepListForVillage(forceRefresh: Boolean = false, villageId: Int, stepList: List<StepListEntity>) {
         stepList.forEach { step ->
-            if (!forceRefresh || getAllStepsForVillage(step.villageId).isEmpty()) {
 
-                insert(step)
+            if (!forceRefresh || getAllStepsForVillage(step.villageId).isEmpty()) {
+                var currentStep = step
+                if (TextUtils.isEmpty(step.status)) {
+                    currentStep = currentStep.copy(status = StepStatus.NOT_STARTED.name)
+
+                }
+                insert(currentStep)
 
             }
         }
