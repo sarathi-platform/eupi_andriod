@@ -436,7 +436,7 @@
     <string name="caste_titile">"Caste: "</string>
     <string name="aadhar_card_titile">Does Didi have aadhar card?</string>
     <string name="voter_card_title">Does didi have voter card?</string>
-    <string name="phone_number_title">Enter didi\'s family phone number</string>
+    <string name="phone_number_title">Enter didi\'s own/family phone number</string>
     <string name="add_didi_details_label">Add didi details</string>
     <string name="household_information_comparision">Household information</string>
     <string name="total_income_lable">Total Income: ₹</string>
