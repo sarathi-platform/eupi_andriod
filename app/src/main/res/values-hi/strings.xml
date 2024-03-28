@@ -392,7 +392,7 @@
     <string name="proceed">आगे बढ़ें</string>
     <string name="fetched_successfully">डेटा सफलतापूर्वक लाया गया</string>
     <string name="load_server_data">सर्वर डेटा लोड करें</string>
-    <string name="are_you_sure_you_want_to_load_data_from_server">क्या आप वाकई सर्वर से डेटा लोड करना चाहते हैं?</string>
+    <string name="are_you_sure_you_want_to_load_data_from_server">" क्या आप निश्चित रूप से सर्वर से ताज़ा डेटा पुनः लोड करना चाहते हैं जिससे अनसिंक किए गए डेटा की हानि हो सकती है?"</string>
 
 
 </resources>

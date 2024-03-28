@@ -391,7 +391,7 @@
     <string name="proceed">" আগবাঢ়ক"</string>
     <string name="fetched_successfully">" তথ্য সফলতাৰে আহৰণ কৰা হৈছে"</string>
     <string name="load_server_data">চাৰ্ভাৰ ডাটা লোড কৰক</string>
-    <string name="are_you_sure_you_want_to_load_data_from_server">আপুনি নিশ্চিত নেকি যে আপুনি চাৰ্ভাৰৰ পৰা তথ্য লোড কৰিব বিচাৰে?</string>
+    <string name="are_you_sure_you_want_to_load_data_from_server">" আপুনি চাৰ্ভাৰৰ পৰা সতেজ তথ্য পুনৰায় ল'ড কৰাটো নিশ্চিত নেকি যি অচিংক কৰা তথ্য হেৰুৱাব পাৰে?"</string>
 
 
 </resources>

@@ -865,7 +865,7 @@ class SettingViewModel @Inject constructor(
             questionDao.deleteQuestionTable()
             stepsListDao.deleteAllStepsFromDB()
 //            userDao.deleteAllUserDetail()
-//            villegeListDao.deleteAllVilleges()
+            villegeListDao.deleteAllVilleges()
             bpcSummaryDao.deleteAllSummary()
             poorDidiListDao.deleteAllDidis()
             prefRepo.savePref(LAST_UPDATE_TIME, 0L)
