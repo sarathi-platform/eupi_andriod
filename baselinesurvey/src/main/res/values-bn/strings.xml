@@ -427,6 +427,7 @@
     <string name="didi_list_empty_state">No Didis assigned. Please contact your administrator.</string>
     <string name="empty_task_message">No task assigned. Please contact your administrator.</string>
 
+    <string name="start">শুরু করুন</string>
     <string name="warning">" সতর্কতা"</string>
     <string name="data_lost_message">অন্য একজন ব্যবহারকারী সনাক্ত করেছেন যদি আপনি এগিয়ে যান তবে আপনি আগের ব্যবহারকারীর ডেটা হারিয়ে ফেলবেন৷</string>
     <string name="proceed">এগিয়ে যান</string>

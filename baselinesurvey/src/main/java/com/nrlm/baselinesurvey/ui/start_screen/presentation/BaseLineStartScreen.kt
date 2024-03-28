@@ -128,6 +128,7 @@ fun BaseLineStartScreen(
                 isPositiveButtonActive = isContinueButtonActive.value,
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
+                    baseLineStartViewModel.addDidiInfoEvent(didi.value)
                     updateDidiDetails(didi, baseLineStartViewModel)
                     navController.popBackStack()
 //                    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
@@ -717,5 +718,5 @@ fun BaseLineStartScreenPreview(
 private fun getCasteName(casteId: Int, baseLineStartViewModel: BaseLineStartViewModel): String {
     var casteList = baseLineStartViewModel.getCasteListForSelectedLanguage()
 
-    return casteList.find { it.casteId == casteId }?.casteName ?: BLANK_STRING
+    return casteList.find { it.id == casteId }?.casteName ?: BLANK_STRING
 }

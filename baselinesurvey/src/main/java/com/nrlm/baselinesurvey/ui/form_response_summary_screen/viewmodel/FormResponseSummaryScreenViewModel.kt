@@ -64,10 +64,11 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
                             surveyId = event.surveyId,
                             sectionId = event.sectionId,
                             didiId = event.surveyeeId,
-                            questionId = item?.questionId ?: 0,
+                            questionId = event.questionId,
                             questionTag = tagList.findIdFromTag(item?.questionTag ?: BLANK_STRING),
                             questionType = QuestionType.Form.name,
-                            saveAnswerEventOptionItemDtoList = formResponseObjectDtoList.value.convertFormResponseObjectToSaveAnswerEventOptionDto()
+                            saveAnswerEventOptionItemDtoList = formResponseObjectDtoList.value.filter { it.referenceId != event.referenceId }
+                                .convertFormResponseObjectToSaveAnswerEventOptionDto()
                         )
                     )
                 }

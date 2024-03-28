@@ -475,5 +475,6 @@
     <string name="proceed">Proceed</string>
     <string name="fetched_successfully">Data fetched successfully</string>
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
+    <string name="start">"Start "</string>
 
 </resources>

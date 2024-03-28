@@ -76,7 +76,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
     val totalOptionSize = mutableIntStateOf(0)
     val answeredOptionCount = mutableIntStateOf(0)
 
-    var question: QuestionEntity? = null
+    var question = mutableStateOf<QuestionEntity?>(null)
 
     private var didiId = -1
 
@@ -94,7 +94,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
         onEvent(LoaderEvent.UpdateLoaderState(true))
         didiId = surveyeeId
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            question =
+            question.value =
                 formQuestionScreenUseCase.getFormQuestionResponseUseCase.getFormQuestionForId(
                     surveyId,
                     sectionId,
@@ -429,7 +429,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
                             didiId = didiId,
                             questionId = finalFormQuestionResponseList.first().questionId,
                             questionType = QuestionType.Form.name,
-                            questionTag = question?.tag ?: -1,
+                            questionTag = question?.value?.tag ?: -1,
                             saveAnswerEventOptionItemDtoList = completeOptionListForQuestion
                                 .convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto(
                                     QuestionType.Form

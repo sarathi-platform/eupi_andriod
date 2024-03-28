@@ -651,7 +651,8 @@ fun NestedLazyList(
                                 )
                             }
 
-                            QuestionType.Form.name -> {
+                            QuestionType.Form.name,
+                            QuestionType.DidiDetails.name -> {
                                 val contentData =
                                     sectionDetails.questionContentMapping[question.questionId]
                                 FormTypeQuestionComponent(
@@ -941,6 +942,7 @@ fun NestedLazyList(
                                         DidiInfoCard(
                                             didiIntoEntity = didiInfoEntity,
                                             didiDetails = questionScreenViewModel.didiDetails,
+                                            isEditAllowed = questionScreenViewModel.isEditAllowed,
                                             onUpdate = {
                                                 navigateToBaseLineStartScreen(
                                                     surveyeeId = surveyeeId,

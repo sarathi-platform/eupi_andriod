@@ -21,7 +21,10 @@ import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.CasteModel
+import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
+import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.common_components.SHGFlag
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SurveyStateEvents
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
@@ -30,6 +33,8 @@ import com.nrlm.baselinesurvey.ui.start_screen.presentation.StartSurveyScreenEve
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LocationCoordinates
 import com.nrlm.baselinesurvey.utils.LocationUtil
+import com.nrlm.baselinesurvey.utils.findTagForId
+import com.nrlm.baselinesurvey.utils.tagList
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -129,8 +134,27 @@ class BaseLineStartViewModel @Inject constructor(
                             event.didiId,
                             event.sectionStatus
                         )
-                    startSurveyScreenUserCase.eventsWriterUserCase.invoke(
+                    startSurveyScreenUserCase.eventsWriterUseCase.invoke(
                         events = updateSectionStatusEvent,
+                        eventType = EventType.STATEFUL
+                    )
+                }
+            }
+
+            is EventWriterEvents.SaveAnswerEvent -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val saveAnswerEvent =
+                        eventsWriterHelperImpl.createSaveAnswerEventForFormTypeQuestion(
+                            surveyId = event.surveyId,
+                            sectionId = event.sectionId,
+                            didiId = event.didiId,
+                            questionId = event.questionId,
+                            questionType = event.questionType,
+                            questionTag = event.questionTag,
+                            saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
+                        )
+                    startSurveyScreenUserCase.eventsWriterUseCase.invoke(
+                        events = saveAnswerEvent,
                         eventType = EventType.STATEFUL
                     )
                 }
@@ -300,6 +324,46 @@ class BaseLineStartViewModel @Inject constructor(
 
     fun getStateId(): Int {
         return startSurveyScreenUserCase.getSurveyeeDetailsUserCase.getStateId()
+    }
+
+    fun addDidiInfoEvent(didi: SurveyeeEntity) {
+        val didiInfo = DidiIntoEntity(
+            didiId = didi.didiId,
+            isAdharCard = isAdharCard.value,
+            isVoterCard = isVoterCard.value,
+            adharNumber = aadharNumber.value,
+            phoneNumber = phoneNumber.value
+        )
+        val question = sectionDetails.questionList.first()
+        val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
+        sectionDetails.optionsItemMap[question.questionId]?.forEach {
+            val saveAnswerEventOptionItemDto = SaveAnswerEventOptionItemDto(
+                optionId = it.optionId ?: 0,
+                selectedValue = if (tagList.findTagForId(it.optionTag)
+                        .equals("Aadhar", true)
+                ) SHGFlag.fromInt(didiInfo.isAdharCard ?: 0).name
+                else if (tagList.findTagForId(it.optionTag).equals("Voter", true)) SHGFlag.fromInt(
+                    didiInfo.isVoterCard ?: 0
+                ).name
+                else didiInfo.phoneNumber ?: BLANK_STRING,
+                referenceId = didiInfo.didiId.toString(),
+                tag = it.optionTag
+            )
+            saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
+        }
+        onEvent(
+            EventWriterEvents.SaveAnswerEvent(
+                surveyId = sectionDetails.surveyId,
+                sectionId = sectionDetails.surveyId,
+                didiId = didiInfo.didiId ?: 0,
+                questionId = question.questionId ?: 0,
+                questionType = question.type ?: QuestionType.Form.name,
+                questionTag = question.tag,
+                saveAnswerEventOptionItemDtoList = saveAnswerEventOptionItemDtoList.toList()
+            )
+        )
+
+
     }
 
 }

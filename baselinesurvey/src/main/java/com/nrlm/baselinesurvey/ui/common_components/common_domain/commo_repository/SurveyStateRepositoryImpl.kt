@@ -19,7 +19,7 @@ class SurveyStateRepositoryImpl(
     }
 
     override suspend fun saveDidiInfo(didiIntoEntity: DidiIntoEntity) {
-        didiInfoDao.insertMission(didiIntoEntity)
+        didiInfoDao.insertDidiInfo(didiIntoEntity)
     }
 
 }

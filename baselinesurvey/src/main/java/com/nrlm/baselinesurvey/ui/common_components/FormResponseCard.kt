@@ -133,7 +133,6 @@ fun FormResponseCard(
                                 }?.optionId] ?: BLANK_STRING
                             )
 
-
                             var income =
                                 formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                     it.display?.contains(
@@ -407,6 +406,7 @@ fun DidiInfoCard(
     modifier: Modifier = Modifier,
     didiIntoEntity: DidiIntoEntity,
     didiDetails: SurveyeeEntity?,
+    isEditAllowed: Boolean = true,
     onUpdate: (didiId: Int) -> Unit
 ) {
 
@@ -500,43 +500,48 @@ fun DidiInfoCard(
                     }
                 }
                 Spacer(modifier = Modifier.height(dimen_16_dp))
-                Divider(
-                    thickness = dimen_1_dp,
-                    modifier = Modifier.fillMaxWidth(),
-                    color = borderGreyLight
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    TextButton(
-                        onClick = { onUpdate(didiIntoEntity.didiId ?: 0) }, modifier = Modifier
+                if (isEditAllowed) {
+                    Divider(
+                        thickness = dimen_1_dp,
+                        modifier = Modifier.fillMaxWidth(),
+                        color = borderGreyLight
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        TextButton(
+                            onClick = {
+                                onUpdate(didiIntoEntity.didiId ?: 0)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.White,
+                                contentColor = blueDark
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Edit,
+                                contentDescription = "Edit Button",
+                                tint = blueDark
+                            )
+                        }
+                        Divider(
+                            color = borderGreyLight,
+                            modifier = Modifier
+                                .fillMaxHeight()  //fill the max height
+                                .width(1.dp)
+                        )
+                        /*TextButton(onClick = { onDelete(formResponseObjectDto.referenceId) }, modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.White,
-                            contentColor = blueDark
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Edit,
-                            contentDescription = "Edit Button",
-                            tint = blueDark
-                        )
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = blueDark)
+                        ) {
+                            Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete Button", tint = blueDark)
+                        }*/
                     }
-                    Divider(
-                        color = borderGreyLight,
-                        modifier = Modifier
-                            .fillMaxHeight()  //fill the max height
-                            .width(1.dp)
-                    )
-                    /*TextButton(onClick = { onDelete(formResponseObjectDto.referenceId) }, modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = blueDark)
-                    ) {
-                        Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete Button", tint = blueDark)
-                    }*/
                 }
             }
         }

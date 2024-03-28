@@ -520,7 +520,7 @@ object BaselineModule {
             updateSurveyStateUseCase = UpdateSurveyStateUserCase(surveyStateRepository),
             getCasteListUseCase = GetCasteListUseCase(casteListRepository),
             getSectionUseCase = GetSectionUseCase(questionScreenRepository),
-            eventsWriterUserCase = EventsWriterUserCase(eventsWriterRepository)
+            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }
 

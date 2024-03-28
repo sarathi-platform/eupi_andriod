@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
@@ -240,7 +241,10 @@ fun SurveyeeCardComponent(
                                 ),
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text(text = "Continue", style = smallTextStyleMediumWeight)
+                                Text(
+                                    text = stringResource(id = R.string.continue_text),
+                                    style = smallTextStyleMediumWeight
+                                )
                             }
                         } else if (surveyeeState.surveyState == SurveyState.NOT_STARTED) {
                             Button(

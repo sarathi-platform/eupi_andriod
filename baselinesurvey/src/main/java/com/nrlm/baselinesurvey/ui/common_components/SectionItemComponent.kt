@@ -30,16 +30,14 @@ import androidx.constraintlayout.compose.Dimension
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
-import com.nrlm.baselinesurvey.ui.theme.dimen_20_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_30_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_40_dp
 import com.nrlm.baselinesurvey.ui.theme.greenLight
 import com.nrlm.baselinesurvey.ui.theme.greenOnline
 import com.nrlm.baselinesurvey.ui.theme.greyBorder
 import com.nrlm.baselinesurvey.ui.theme.sectionIconCompletedBg
-import com.nrlm.baselinesurvey.ui.theme.sectionIconInProgressBg
 import com.nrlm.baselinesurvey.ui.theme.sectionIconNotStartedBg
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
-import com.nrlm.baselinesurvey.ui.theme.stepBoxActiveColor
 import com.nrlm.baselinesurvey.ui.theme.stepIconCompleted
 import com.nrlm.baselinesurvey.ui.theme.stepIconDisableColor
 import com.nrlm.baselinesurvey.ui.theme.stepIconEnableColor
@@ -195,7 +193,7 @@ fun SectionItemComponent(
                                 top.linkTo(textContainer.top)
                                 end.linkTo(parent.end)
                             }
-                            .size(40.dp)) {
+                            .size(dimen_40_dp)) {
                         Icon(
                             painter = painterResource(id = R.drawable.info_icon),
                             contentDescription = "section info screen",
@@ -203,6 +201,8 @@ fun SectionItemComponent(
                         )
 
                     }
+                } else {
+                    Spacer(modifier = Modifier.size(dimen_30_dp))
                 }
             }
         }

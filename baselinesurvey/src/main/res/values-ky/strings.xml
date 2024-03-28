@@ -465,4 +465,6 @@
     <string name="didi_list_empty_state">No Didis assigned. Please contact your administrator.</string>
     <string name="empty_task_message">No task assigned. Please contact your administrator.</string>
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
+    <string name="start">"Start "</string>
+    <string name="share_export_image">আৰম্ভ কৰক</string>
 </resources>
