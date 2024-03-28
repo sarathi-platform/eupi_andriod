@@ -7,7 +7,6 @@ import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
-import com.nudge.core.eventswriter.entities.EventV1
 import com.nudge.core.getSizeInLong
 import com.nudge.core.json
 import com.nudge.core.model.MetadataDto
@@ -356,25 +355,6 @@ class SurveySummaryRepository @Inject constructor(
         }
     }
 
-    suspend fun writeBpcMatchScoreEvent(
-        villageId: Int,
-        passingScore: Int,
-        bpcStep: StepListEntity,
-        didiList: List<DidiEntity>
-    ) {
-        val event = EventV1(
-            eventTopic = EventName.SAVE_BPC_MATCH_SCORE.topicName,
-            payload = SaveMatchSummaryRequest.getSaveMatchSummaryRequestForBpc(
-                villageId = villageId,
-                stepListEntity = bpcStep,
-                didiList = didiList,
-                questionPassionScore = passingScore
-            ).json(),
-            mobileNumber = prefRepo.getMobileNumber() ?: BLANK_STRING
-        )
 
-        //  saveEventToMultipleSources(event)
-
-    }
 
 }

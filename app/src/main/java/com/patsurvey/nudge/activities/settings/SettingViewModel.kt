@@ -14,6 +14,7 @@ import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.enums.NetworkSpeed
 import com.nudge.core.getDefaultBackUpFileName
+import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.json
 import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.MyApplication
@@ -895,7 +896,7 @@ class SettingViewModel @Inject constructor(
             )
         )
         CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setImageBackupFileName(
-            getDefaultBackUpFileName(
+            getDefaultImageBackUpFileName(
                 prefRepo.getMobileNumber() ?: ""
             )
         )
