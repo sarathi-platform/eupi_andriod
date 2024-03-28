@@ -38,11 +38,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
@@ -60,6 +62,7 @@ import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
+import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
@@ -74,6 +77,7 @@ fun RadioQuestionBoxComponent(
     optionItemEntityList: List<OptionItemEntity>,
     selectedOptionIndex: Int = -1,
     maxCustomHeight: Dp,
+    isEditAllowed: Boolean = true,
     onAnswerSelection: (questionIndex: Int, optionItem: OptionItemEntity) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit
@@ -106,6 +110,7 @@ fun RadioQuestionBoxComponent(
         mutableStateOf(false)
     }
 
+    val context = LocalContext.current
 
     BoxWithConstraints(
         modifier = modifier
@@ -180,10 +185,19 @@ fun RadioQuestionBoxComponent(
                                                     optionsItem = optionsItem,
                                                     selectedIndex = selectedIndex
                                                 ) {
-                                                    selectedIndex = _index
-                                                    onAnswerSelection(questionIndex, optionsItem)
+                                                    if (isEditAllowed) {
+                                                        selectedIndex = _index
+                                                        onAnswerSelection(
+                                                            questionIndex,
+                                                            optionsItem
+                                                        )
+                                                    } else {
+                                                        showCustomToast(
+                                                            context,
+                                                            context.getString(R.string.edit_disable_message)
+                                                        )
+                                                    }
                                                 }
-
                                             }
                                         }
                                     }

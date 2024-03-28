@@ -48,7 +48,6 @@ import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -106,10 +105,20 @@ class QuestionScreenViewModel @Inject constructor(
 
     var didiDetails: SurveyeeEntity? = null
 
-    fun initQuestionScreenHandler(surveyeeId: Int) {
+    var isEditAllowed: Boolean = true
+
+    fun initQuestionScreenHandler(surveyeeId: Int, subjectId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _sectionsList.value = questionScreenUseCase.getSectionsListUseCase.invoke(surveyeeId)
                 .sortedBySectionOrder()
+            val task =
+                questionScreenUseCase.getPendingTaskCountLiveUseCase.getActivityFromSubjectId(
+                    subjectId
+                )
+            isEditAllowed = questionScreenUseCase.getPendingTaskCountLiveUseCase.isActivityComplete(
+                task.missionId,
+                task.activityId
+            )
         }
     }
 
@@ -733,22 +742,23 @@ class QuestionScreenViewModel @Inject constructor(
             is QuestionScreenEvents.UpdateAnsweredQuestionCount -> {
                 try {
                     val tempList = questionEntityStateList.toList()
-                    viewModelScope.launch(Dispatchers.IO) {
-                        if (event.isAllMultipleTypeQuestionUnanswered) {
-                            event.question.questionId?.let {
-                                if (answeredQuestionCount.contains(it))
-                                    answeredQuestionCount.remove(it)
-                            }
-                        } else {
-                            event.question.questionId?.let { answeredQuestionCount.add(it) }
+//                    viewModelScope.launch(Dispatchers.IO) {
+                    if (event.isAllMultipleTypeQuestionUnanswered) {
+                        event.question.questionId?.let {
+                            if (answeredQuestionCount.contains(it))
+                                answeredQuestionCount.remove(it)
                         }
-                        totalQuestionCount.intValue = tempList.filter { it.showQuestion }.distinctBy { it.questionId }.size
-                        delay(100)
-                        withContext(Dispatchers.Main) {
-                            isSectionCompleted.value =
-                                answeredQuestionCount.size == totalQuestionCount.intValue || answeredQuestionCount.size > totalQuestionCount.intValue
-                        }
+                    } else {
+                        event.question.questionId?.let { answeredQuestionCount.add(it) }
                     }
+                    totalQuestionCount.intValue =
+                        tempList.filter { it.showQuestion }.distinctBy { it.questionId }.size
+//                        delay(100)
+//                        withContext(Dispatchers.Main) {
+                    isSectionCompleted.value =
+                        answeredQuestionCount.size == totalQuestionCount.intValue || answeredQuestionCount.size > totalQuestionCount.intValue
+//                        }
+//                    }
                 } catch (ex: Exception) {
                     Log.e("TAG", "onEvent: exception; ${ex.message}", ex)
                 }

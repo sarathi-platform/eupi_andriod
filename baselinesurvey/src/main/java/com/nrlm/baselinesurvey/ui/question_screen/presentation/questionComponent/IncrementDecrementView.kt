@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -53,11 +54,13 @@ import com.nrlm.baselinesurvey.ui.theme.redOffline
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.onlyNumberField
+import com.nrlm.baselinesurvey.utils.showCustomToast
 
 @Composable
 fun IncrementDecrementView(
     title: String = BLANK_STRING,
     currentValue: String? = "0",
+    isEditAllowed: Boolean = true,
     showQuestion: OptionItemEntityState = OptionItemEntityState.getEmptyStateObject(),
     onAnswerSelection: (selectValue: String) -> Unit,
     isRequiredField: Boolean = false
@@ -65,6 +68,9 @@ fun IncrementDecrementView(
     val currentCount: MutableState<String> = remember {
         mutableStateOf(currentValue ?: "")
     }
+
+    val context = LocalContext.current
+
     VerticalAnimatedVisibilityComponent(visible = showQuestion.showQuestion) {
         Column(
             modifier = Modifier
@@ -145,8 +151,15 @@ fun IncrementDecrementView(
                                         )
                                     )
                                     .clickable {
-                                        currentCount.value = incDecValue(0, currentCount.value)
-                                        onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
+                                        if (isEditAllowed) {
+                                            currentCount.value = incDecValue(0, currentCount.value)
+                                            onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
+                                        } else {
+                                            showCustomToast(
+                                                context,
+                                                context.getString(R.string.edit_disable_message)
+                                            )
+                                        }
                                     }, contentAlignment = Alignment.Center
                             ) {
 
@@ -175,15 +188,22 @@ fun IncrementDecrementView(
                             value = currentCount.value,
                             readOnly = false,
                             onValueChange = {
-                                if (onlyNumberField(it)) {
-                                    var isValidCount = true
-                                    if (isValidCount) {
-                                        val currentIt = if (it.isEmpty()) 0 else it.toInt()
-                                        if (currentIt <= MAXIMUM_RANGE) {
-                                            currentCount.value = it.ifEmpty { "" }
-                                            onAnswerSelection(it)
+                                if (isEditAllowed) {
+                                    if (onlyNumberField(it)) {
+                                        var isValidCount = true
+                                        if (isValidCount) {
+                                            val currentIt = if (it.isEmpty()) 0 else it.toInt()
+                                            if (currentIt <= MAXIMUM_RANGE) {
+                                                currentCount.value = it.ifEmpty { "" }
+                                                onAnswerSelection(it)
+                                            }
                                         }
                                     }
+                                } else {
+                                    showCustomToast(
+                                        context,
+                                        context.getString(R.string.edit_disable_message)
+                                    )
                                 }
                             },
                             placeholder = {
@@ -241,8 +261,15 @@ fun IncrementDecrementView(
                                 )
                             )
                             .clickable {
-                                currentCount.value = incDecValue(1, currentCount.value)
-                                onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
+                                if (isEditAllowed) {
+                                    currentCount.value = incDecValue(1, currentCount.value)
+                                    onAnswerSelection(if (currentCount.value.isEmpty()) "0" else currentCount.value)
+                                } else {
+                                    showCustomToast(
+                                        context,
+                                        context.getString(R.string.edit_disable_message)
+                                    )
+                                }
                             }, contentAlignment = Alignment.Center
                     ) {
                         Icon(

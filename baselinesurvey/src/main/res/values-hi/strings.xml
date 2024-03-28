@@ -431,6 +431,7 @@
     <string name="logout_confirmation">क्या आप निश्चित रूप से लॉगआउट करेंगे?</string>
     <string name="proceed">आगे बढ़ें</string>
     <string name="fetched_successfully">डेटा सफलतापूर्वक लाया गया</string>
+    <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
 
 
 </resources>

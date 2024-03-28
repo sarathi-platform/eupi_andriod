@@ -391,6 +391,7 @@ object BaselineModule {
         questionScreenRepository: QuestionScreenRepository,
         formQuestionResponseRepository: FormQuestionResponseRepository,
         startScreenRepository: StartScreenRepository,
+        missionSummaryScreenRepository: MissionSummaryScreenRepository,
         eventsWriterRepository: EventsWriterRepository
     ): QuestionScreenUseCase {
         return QuestionScreenUseCase(
@@ -412,6 +413,9 @@ object BaselineModule {
                 formQuestionResponseRepository
             ),
             getSurveyeeDetailsUserCase = GetSurveyeeDetailsUserCase(startScreenRepository),
+            getPendingTaskCountLiveUseCase = GetPendingTaskCountLiveUseCase(
+                missionSummaryScreenRepository
+            ),
             eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }

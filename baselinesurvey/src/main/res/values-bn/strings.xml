@@ -431,6 +431,7 @@
     <string name="data_lost_message">অন্য একজন ব্যবহারকারী সনাক্ত করেছেন যদি আপনি এগিয়ে যান তবে আপনি আগের ব্যবহারকারীর ডেটা হারিয়ে ফেলবেন৷</string>
     <string name="proceed">এগিয়ে যান</string>
     <string name="fetched_successfully">" ডেটা সফলভাবে আনা হয়েছে৷"</string>
+    <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
 
 
 </resources>

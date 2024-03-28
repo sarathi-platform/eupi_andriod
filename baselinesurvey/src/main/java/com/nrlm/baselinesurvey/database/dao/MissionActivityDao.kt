@@ -90,4 +90,7 @@ interface MissionActivityDao {
         )
     }
 
+    @Query("SELECT * from $ACTIVITY_TABLE_NAME where missionId = :missionId and activityId = :activityId")
+    fun isActivityCompleted(missionId: Int, activityId: Int): MissionActivityEntity
+
 }

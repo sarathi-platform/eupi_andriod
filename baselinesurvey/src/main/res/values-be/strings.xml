@@ -422,5 +422,6 @@
     <string name="data_lost_message">Another user detected if you proceed you will lost previous user\'s data</string>
     <string name="proceed">Proceed</string>
     <string name="fetched_successfully">Data fetched successfully</string>
+    <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
 
 </resources>

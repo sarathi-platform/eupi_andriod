@@ -146,57 +146,7 @@ fun NestedLazyList(
     val mQuestionEntity =
         questionScreenViewModel.questionEntityStateList.distinctBy { it.questionId }
             .filter { it.showQuestion } ?: emptyList()
-    /*DisposableEffect(key1 = context) {
 
-        try {
-            coroutineScope.launch(Dispatchers.IO) {
-                mQuestionEntity.forEach { question ->
-                    if (question.questionEntity?.type?.equals(QuestionType.Form.name, true) == true) {
-                        val optionItemEntityList =
-                            questionScreenViewModel.getFormQuestionsOptionsItemEntityList(
-                                sectionDetails.surveyId,
-                                sectionDetails.sectionId,
-                                question.questionId!!
-                            )
-
-                        questionScreenViewModel.optionItemEntityList = optionItemEntityList
-                        questionScreenViewModel.formResponsesForQuestionLive =
-                            questionScreenViewModel.getFormQuestionResponseEntityLive(
-                                sectionDetails.surveyId,
-                                sectionDetails.sectionId,
-                                question.questionId!!,
-                                surveyeeId
-                            )
-                        withContext(Dispatchers.Main) {
-                            questionScreenViewModel.formResponsesForQuestionLive.observe(
-                                lifecycleOwner
-                            ) {
-                                householdMemberDtoList.value.addAll(
-                                    it.mapFormQuestionResponseToFromResponseObjectDto(
-                                        optionItemEntityList,
-                                        question.questionEntity.tag ?: BLANK_STRING
-                                    )
-                                )
-                                if (it.isNotEmpty()) {
-                                    val questionEntityStateList =
-                                        questionScreenViewModel.questionEntityStateList.toList()
-                                    answeredQuestionCountIncreased(
-                                        questionEntityStateList.find { questionEntityState -> questionEntityState.questionId == it.first().questionId }!!,
-                                        false
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (ex: Exception) {
-            Log.e("TAG", "NestedLazyList -> DisposableEffect -> exception: ${ex.message} ", ex)
-        }
-        onDispose {
-            questionScreenViewModel.formResponsesForQuestionLive.removeObservers(lifecycleOwner)
-        }
-    }*/
 
     DisposableEffect(key1 = context) {
         coroutineScope.launch(Dispatchers.IO) {
@@ -430,11 +380,10 @@ fun NestedLazyList(
                                     maxCustomHeight = maxHeight,
                                     contests = contentData,
                                     optionItemEntityList = optionList!!,
+                                    isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     selectedOptionIndex = optionList.indexOf(optionList.find { it.optionId == selectedOption?.optionId })
                                         ?: -1,
                                     onAnswerSelection = { questionIndex, optionItem ->
-
-                                        answeredQuestionCountIncreased(question, false)
 
                                         questionScreenViewModel.onEvent(
                                             QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(
@@ -487,6 +436,8 @@ fun NestedLazyList(
                                                 )
                                             )
                                         )
+
+                                        answeredQuestionCountIncreased(question, false)
                                     },
                                     questionDetailExpanded = {
                                         scope.launch {
@@ -524,6 +475,7 @@ fun NestedLazyList(
                                         ?: -1*/,
                                     questionIndex = index,
                                     maxCustomHeight = maxHeight,
+                                    isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionIndex, optionItem ->
 
                                         answeredQuestionCountIncreased(question, false)
@@ -622,6 +574,7 @@ fun NestedLazyList(
                                     optionItemEntityList = optionList,
                                     selectedOptionIndices = selectedIndices,
                                     maxCustomHeight = maxHeight,
+                                    isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionIndex, optionItems, selectedIndeciesCount ->
 
                                         answeredQuestionCountIncreased(
@@ -710,6 +663,7 @@ fun NestedLazyList(
                                         question.questionId
                                     ),
                                     maxCustomHeight = maxHeight,
+                                    isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionIndex ->
                                         //TODO need to be dynamic..
                                         if (question.questionEntity.questionSummary.equals(
@@ -804,6 +758,7 @@ fun NestedLazyList(
                                     selectedOptionMapForNumericInputTypeQuestions = selectedOptionMapForNumericInputTypeQuestions,
                                     selectedOption = selectedOption,
                                     maxCustomHeight = maxHeight,
+                                    isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionIndex, optionItem, selectedValue ->
 
                                         answeredQuestionCountIncreased(question, false)

@@ -151,14 +151,31 @@ fun FormResponseCard(
                                         )!!
                                     }?.optionId] ?: BLANK_STRING
 
-                            if (income == BLANK_STRING)
-                                income =
+                            if (income == BLANK_STRING) {
+                                val options = optionItemListWithConditionals.filter {
+                                    it.display?.contains(
+                                        stringResource(id = R.string.income_frequency_comparision),
+                                        ignoreCase = true
+                                    )!!
+                                }
+                                for (option in options) {
+                                    val value =
+                                        formResponseObjectDto.memberDetailsMap[option.optionId]
+                                    if (value != null) {
+                                        income = value
+                                        break
+                                    } else {
+                                        income = BLANK_STRING
+                                    }
+                                }
+                                /*income =
                                     formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                         it.display?.contains(
                                             stringResource(id = R.string.income_frequency_comparision),
                                             ignoreCase = true
                                         )!!
-                                    }?.optionId] ?: BLANK_STRING
+                                    }?.optionId] ?: BLANK_STRING*/
+                            }
 
                             if (income != BLANK_STRING) {
                                 append(" | ")

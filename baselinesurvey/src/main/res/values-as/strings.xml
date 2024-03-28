@@ -430,5 +430,6 @@
     <string name="data_lost_message">" আন এজন ব্যৱহাৰকাৰী ধৰা পৰিছে যদি আপুনি আগবাঢ়ি যায় আপুনি পূৰ্বৰ ব্যৱহাৰকাৰীৰ তথ্য হেৰুৱাব"</string>
     <string name="proceed">" আগবাঢ়ক"</string>
     <string name="fetched_successfully">" তথ্য সফলতাৰে আহৰণ কৰা হৈছে"</string>
+    <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
 
 </resources>

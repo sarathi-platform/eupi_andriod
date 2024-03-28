@@ -32,9 +32,7 @@ import com.nrlm.baselinesurvey.utils.convertQuestionListToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.convertToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.findIndexOfListByOptionId
 import com.nrlm.baselinesurvey.utils.findOptionExist
-import com.nrlm.baselinesurvey.utils.getResponseForOptionId
 import com.nrlm.baselinesurvey.utils.isNumeric
-import com.nrlm.baselinesurvey.utils.json
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -362,21 +360,28 @@ class QuestionTypeScreenViewModel @Inject constructor(
 
             is QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    val finalFormQuestionResponseList =
-                        event.formQuestionResponseList.toMutableList()
-                    val unchangedValues = mutableListOf<FormQuestionResponseEntity>()
-                    formQuestionResponseEntity.value.forEach { formQuestionResponseEntity ->
-                        finalFormQuestionResponseList.forEach { finalFormQuestionResponseItem ->
-                            if (formQuestionResponseEntity.optionId != finalFormQuestionResponseItem.optionId)
-                                unchangedValues.add(formQuestionResponseEntity)
-                        }
+                    val finalFormQuestionResponseList = mutableListOf<FormQuestionResponseEntity>()
+
+                    val unchangedValues = mutableMapOf<Int, FormQuestionResponseEntity>()
+                    val formQuestionResponseEntityMap =
+                        formQuestionResponseEntity.value.associateBy { it.optionId }
+                    unchangedValues.putAll(formQuestionResponseEntityMap)
+                    event.formQuestionResponseList.forEach {
+                        unchangedValues[it.optionId] = it
                     }
-                    finalFormQuestionResponseList.addAll(unchangedValues)
+
+                    finalFormQuestionResponseList.addAll(unchangedValues.values.toList())
 
                     updatedOptionList.forEach {
-                        if (it.optionItemEntity?.optionType?.equals(QuestionType.Calculation.name, true) == true) {
+                        if (it.optionItemEntity?.optionType?.equals(
+                                QuestionType.Calculation.name,
+                                true
+                            ) == true
+                        ) {
                             it.optionItemEntity?.conditions?.forEach { conditionDto ->
-                                val resultedValue = conditionDto?.calculateResultForFormula(finalFormQuestionResponseList)
+                                val resultedValue = conditionDto?.calculateResultForFormula(
+                                    finalFormQuestionResponseList
+                                )
                                 if (!resultedValue.isNullOrBlank()) {
                                     finalFormQuestionResponseList.add(
                                         FormQuestionResponseEntity(
