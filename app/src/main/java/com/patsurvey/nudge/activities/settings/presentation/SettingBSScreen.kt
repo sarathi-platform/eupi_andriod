@@ -1,5 +1,6 @@
-package com.nrlm.baselinesurvey.ui.setting.presentation
+package com.patsurvey.nudge.activities.settings.presentation
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -16,14 +17,14 @@ import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.navigation.home.SettingBSScreens
-import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
-import com.nrlm.baselinesurvey.ui.setting.domain.SettingTagEnum
-import com.nrlm.baselinesurvey.ui.setting.viewmodel.SettingBSViewModel
+import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
+import com.patsurvey.nudge.activities.settings.viewmodel.SettingBSViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nudge.core.model.SettingOptionModel
+import com.nudge.core.ui.navigation.CoreGraph
+import com.patsurvey.nudge.navigation.selection.SettingScreens
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -38,6 +39,7 @@ fun SettingBSScreen(
     val loaderState = viewModel.loaderState
 
     LaunchedEffect(key1 = true){
+        Log.d("TAG", "SettingBSScreen: Setting Screen Opened")
         val lastSyncTimeInMS = System.currentTimeMillis()
         val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.US)
         val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
@@ -111,11 +113,11 @@ fun SettingBSScreen(
             when (option.tag) {
                 SettingTagEnum.LANGUAGE.name -> {
                     viewModel.saveLanguagePageFrom()
-                    navController.navigate(SettingBSScreens.LANGUAGE_SCREEN.route)
+                    navController.navigate(SettingScreens.LANGUAGE_SCREEN.route)
                 }
 
                 SettingTagEnum.PROFILE.name -> {
-                    navController.navigate(SettingBSScreens.PROFILE_SCREEN.route)
+                    navController.navigate(SettingScreens.PROFILE_SCREEN.route)
 
                 }
 
@@ -131,7 +133,8 @@ fun SettingBSScreen(
        onLogoutClick = {
            viewModel.performLogout {
                if (it)
-                   navController.navigate(Graph.LOGOUT_GRAPH)
+                   navController.navigate(CoreGraph.LOGOUT_GRAPH)
+//                   navController.navigate(Graph)
                else showCustomToast(context, context.getString(R.string.something_went_wrong))
            }
        }

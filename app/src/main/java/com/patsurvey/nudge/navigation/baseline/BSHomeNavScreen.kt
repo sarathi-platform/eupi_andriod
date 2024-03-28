@@ -1,20 +1,19 @@
-package com.nrlm.baselinesurvey.navigation.home
+package com.patsurvey.nudge.navigation.baseline
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.navigation.BottomNavigationBar
 
 @Composable
-fun HomeNavScreen(navController: NavHostController = rememberNavController()) {
+fun BSHomeNavScreen(navController: NavHostController = rememberNavController()) {
     Scaffold(bottomBar = { BottomNavigationBar(navController = navController) }) {
         it
-        NavHomeGraph(
+        BSNavHomeGraph(
             navController = navController,
             modifier = Modifier.padding(bottom = 30.dp)
         )

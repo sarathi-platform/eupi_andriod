@@ -94,7 +94,7 @@ fun LoginScreenComponent(
     LaunchedEffect(key1 = mobileNumberState) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
         if (mobileNumberState.isMobileNumberValidatedFromServer) {
-            if(navController.graph.route?.equals(Graph.HOME,true) == true){
+            if(navController.graph.route?.equals(Graph.BASE_HOME,true) == true){
                 navController.navigate(route = "otp_verification_screen/" + mobileNumberState.mobileNumber.text)
             }else
                 navController.navigate(route = "otp_verification_screen/" + mobileNumberState.mobileNumber.text)

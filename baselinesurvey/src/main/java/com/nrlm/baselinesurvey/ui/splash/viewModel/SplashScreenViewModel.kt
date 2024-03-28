@@ -64,7 +64,7 @@ class SplashScreenViewModel @Inject constructor(
                         ))
 
                         splashScreenUseCase.saveLanguageConfigUseCase.invoke(langList)
-                        BaselineCore.downloadQuestionImages(configResponseModel.image_profile_link)
+//                        BaselineCore.downloadQuestionImages(configResponseModel.image_profile_link)
                         delay(SPLASH_SCREEN_DURATION)
                         withContext(Dispatchers.Main) {
                             callBack()

@@ -22,7 +22,7 @@ import androidx.navigation.compose.rememberNavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.navigation.ScreenRoutes
-import com.patsurvey.nudge.navigation.home.HomeScreens
+import com.patsurvey.nudge.navigation.selection.HomeScreens
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.BottomNavItem
 

@@ -1,9 +1,7 @@
 package com.patsurvey.nudge.activities.ui.login
 
 import android.content.Context
-import android.content.Intent
 import androidx.compose.runtime.mutableStateOf
-import com.nrlm.baselinesurvey.activity.MainActivity
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.VillageEntity
@@ -11,6 +9,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.UPCM_USER
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +29,7 @@ class OtpVerificationViewModel @Inject constructor(
     private val _villageList= MutableStateFlow<List<VillageEntity>?>(emptyList())
     val villageList=_villageList.asStateFlow()
 
-    fun validateOtp(context: Context, onOtpResponse: (success: Boolean, message: String) -> Unit) {
+    fun validateOtp(context: Context, onOtpResponse: (isUPCMUser:Boolean,success: Boolean, message: String) -> Unit) {
         showLoader.value = true
         val otpNum = if (otpNumber.value == "") RetryHelper.autoReadOtp.value else otpNumber.value
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -38,22 +37,23 @@ class OtpVerificationViewModel @Inject constructor(
             if (response.status.equals(SUCCESS, true)) {
                 response.data?.let {
                     otpVerificationRepository.saveAccessToken(it.token)
-                    if (it.typeName.equals("Ultra Poor change maker (UPCM)")) {
-                        withContext(Dispatchers.Main) {
-                            context.startActivity(Intent(context, MainActivity::class.java))
-                        }
-                    }
+//                    if (it.typeName.equals("Ultra Poor change maker (UPCM)")) {
+//                        withContext(Dispatchers.Main) {
+//                            context.startActivity(Intent(context, MainActivity::class.java))
+//                        }
+//                    }
                     otpVerificationRepository.setIsUserBPC(it.typeName ?: "")
+                    showLoader.value = false
+                    withContext(Dispatchers.Main) {
+                        onOtpResponse(it.typeName.equals(UPCM_USER),true,response.message)
+                    }
                 }
-                showLoader.value = false
-                withContext(Dispatchers.Main) {
-                    onOtpResponse(true, response.message)
-                }
+
             } else {
                 onError(tag = "OtpVerificationViewModel", "Error : ${response.message}")
                 withContext(Dispatchers.Main) {
                     showLoader.value = false
-                    onOtpResponse(false, response.message)
+                    onOtpResponse(false,false, response.message)
                 }
             }
         }

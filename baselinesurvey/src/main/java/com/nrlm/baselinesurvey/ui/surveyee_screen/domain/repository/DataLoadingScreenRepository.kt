@@ -73,5 +73,5 @@ interface DataLoadingScreenRepository {
     fun getStateId(): Int
     suspend fun getSectionStatus()
     suspend fun getTaskForSubjectId(didiId: Int?): ActivityTaskEntity?
-
+    fun saveSettingScreenOpen()
 }

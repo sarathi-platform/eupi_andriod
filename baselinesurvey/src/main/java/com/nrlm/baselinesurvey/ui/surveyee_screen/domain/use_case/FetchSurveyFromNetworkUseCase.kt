@@ -1,10 +1,12 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case
 
+import android.util.Log
 import com.nrlm.baselinesurvey.SUCCESS_CODE
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepository
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nrlm.baselinesurvey.utils.json
 
 class FetchSurveyFromNetworkUseCase(
     private val repository: DataLoadingScreenRepository
@@ -27,7 +29,7 @@ class FetchSurveyFromNetworkUseCase(
              } else {
                  return false
              }*/
-
+            Log.d("TAG", "invoke fetchSurveyFromNetwork: ${surveyRequestBodyModel.json()}")
             val surveyApiResponse = repository.fetchSurveyFromNetwork(surveyRequestBodyModel)
             if (surveyApiResponse.status.equals(
                     SUCCESS_CODE,

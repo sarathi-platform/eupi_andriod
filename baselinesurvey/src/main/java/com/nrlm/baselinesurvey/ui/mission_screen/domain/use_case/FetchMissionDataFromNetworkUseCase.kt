@@ -11,6 +11,10 @@ import kotlinx.coroutines.delay
 class FetchMissionDataFromNetworkUseCase(
     private val repository: DataLoadingScreenRepository
 ) {
+
+    fun saveSettingScreenOpen(){
+        repository.saveSettingScreenOpen()
+    }
     suspend operator fun invoke(): Boolean {
         try {
             val apiResponse = repository.fetchMissionDataFromServer("en", "BASELINE")

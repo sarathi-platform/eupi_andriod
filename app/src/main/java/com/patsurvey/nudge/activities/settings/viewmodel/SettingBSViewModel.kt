@@ -1,4 +1,4 @@
-package com.nrlm.baselinesurvey.ui.setting.viewmodel
+package com.patsurvey.nudge.activities.settings.viewmodel
 
 import android.content.Intent
 import android.net.Uri
@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
-import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SettingBSUserCase
+import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger

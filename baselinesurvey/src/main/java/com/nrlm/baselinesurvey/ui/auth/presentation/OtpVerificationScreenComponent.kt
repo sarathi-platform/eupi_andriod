@@ -2,7 +2,6 @@ package com.nrlm.baselinesurvey.ui.auth.presentation
 
 import android.annotation.SuppressLint
 import android.os.CountDownTimer
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -48,6 +47,7 @@ import com.nrlm.baselinesurvey.OTP_LENGTH
 import com.nrlm.baselinesurvey.OTP_RESEND_DURATION
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.SEC_30_STRING
+import com.nrlm.baselinesurvey.navigation.BaseAuthScreen
 import com.nrlm.baselinesurvey.ui.auth.viewmodel.OtpVerificationViewModel
 import com.nrlm.baselinesurvey.ui.common_components.CustomSnackBarShow
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
@@ -62,11 +62,9 @@ import com.nrlm.baselinesurvey.ui.theme.greenOnline
 import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
-import com.nrlm.baselinesurvey.utils.BaselineCore
-import com.nrlm.baselinesurvey.navigation.AuthScreen
-import com.nrlm.baselinesurvey.navigation.home.LogoutBSScreens
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -280,21 +278,21 @@ fun OtpVerificationScreenComponent(
     LaunchedEffect(key1 = viewModel.validateApiSuccess.value) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
         if (viewModel.validateApiSuccess.value) {
-            if(navController.graph.route?.equals(Graph.HOME,true) == true){
+            if(navController.graph.route?.equals(Graph.BASE_HOME,true) == true){
                 //Commented for now
 
-                navController.navigate(route = Graph.HOME){
+                navController.navigate(route = Graph.BASE_HOME){
                     launchSingleTop=true
-                    popUpTo(AuthScreen.START_SCREEN.route){
+                    popUpTo(BaseAuthScreen.START_SCREEN.route){
                         inclusive=true
                     }
                 }
 
                 viewModel.validateApiSuccess.value
             }else{
-                navController.navigate(route = Graph.HOME){
+                navController.navigate(route = Graph.BASE_HOME){
                     launchSingleTop=true
-                    popUpTo(AuthScreen.START_SCREEN.route){
+                    popUpTo(BaseAuthScreen.START_SCREEN.route){
                         inclusive=true
                     }
                 }

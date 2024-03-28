@@ -21,16 +21,16 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScree
 fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.AUTHENTICATION,
-        startDestination = AuthScreen.START_SCREEN.route
+        startDestination = BaseAuthScreen.START_SCREEN.route
     ) {
 
-        composable(route = AuthScreen.START_SCREEN.route) {
+        composable(route = BaseAuthScreen.START_SCREEN.route) {
             SplashScreenComponent(
                 navController = navController, modifier = Modifier.fillMaxSize(),
                 hiltViewModel()
             )
         }
-        composable(route = AuthScreen.LANGUAGE_SCREEN.route
+        composable(route = BaseAuthScreen.LANGUAGE_SCREEN.route
         ) {
             LanguageScreenComponent(
                 navController = navController,
@@ -41,7 +41,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
 
         }
 
-        composable(route = AuthScreen.LOGIN.route) {
+        composable(route = BaseAuthScreen.LOGIN.route) {
             LoginScreenComponent(
                 navController,
                 viewModel = hiltViewModel(),
@@ -49,7 +49,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             )
         }
         composable(
-            route = AuthScreen.OTP_VERIFICATION.route,
+            route = BaseAuthScreen.OTP_VERIFICATION.route,
             arguments = listOf(navArgument(ARG_MOBILE_NUMBER) {
                 type = NavType.StringType
             })
@@ -62,7 +62,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             )
         }
 
-        composable(route = AuthScreen.SURVEYEE_LIST_SCREEN.route) {
+        composable(route = BaseAuthScreen.SURVEYEE_LIST_SCREEN.route) {
             /*VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()){
                 navController.navigate(AuthScreen.AUTH_SETTING_SCREEN.route)
             }*/
@@ -99,13 +99,13 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
 //    logoutGraph(navController =navController)
 }
 
-sealed class AuthScreen(val route: String) {
-    object START_SCREEN : AuthScreen(route = "start_screen")
-    object LANGUAGE_SCREEN : AuthScreen(route = "language_screen")
-    object LOGIN : AuthScreen(route = "login_screen")
-    object SURVEYEE_LIST_SCREEN : AuthScreen(route = "surveyee_list_screen")
-    object OTP_VERIFICATION : AuthScreen(route = "otp_verification_screen/{$ARG_MOBILE_NUMBER}")
-    object AUTH_SETTING_SCREEN : AuthScreen(route = "setting_screen")
-    object PROFILE_SCREEN : AuthScreen(route = "profile_screen")
-    object VIDEO_LIST_SCREEN : AuthScreen(route = "video_list_screen")
+sealed class BaseAuthScreen(val route: String) {
+    object START_SCREEN : BaseAuthScreen(route = "start_screen")
+    object LANGUAGE_SCREEN : BaseAuthScreen(route = "language_screen")
+    object LOGIN : BaseAuthScreen(route = "login_screen")
+    object SURVEYEE_LIST_SCREEN : BaseAuthScreen(route = "surveyee_list_screen")
+    object OTP_VERIFICATION : BaseAuthScreen(route = "otp_verification_screen/{$ARG_MOBILE_NUMBER}")
+    object AUTH_SETTING_SCREEN : BaseAuthScreen(route = "setting_screen")
+    object PROFILE_SCREEN : BaseAuthScreen(route = "profile_screen")
+    object VIDEO_LIST_SCREEN : BaseAuthScreen(route = "video_list_screen")
 }

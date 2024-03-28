@@ -14,7 +14,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.BaselineApplication.Companion.appScopeLaunch
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
@@ -24,6 +23,7 @@ import com.nrlm.baselinesurvey.ui.common_components.common_events.SurveyStateEve
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.start_screen.domain.use_case.StartSurveyScreenUserCase
 import com.nrlm.baselinesurvey.ui.start_screen.presentation.StartSurveyScreenEvents
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LocationCoordinates
 import com.nrlm.baselinesurvey.utils.LocationUtil
@@ -117,7 +117,7 @@ class BaseLineStartViewModel @Inject constructor(
         locationCoordinates: LocationCoordinates,
         didiEntity: SurveyeeEntity
     ) {
-        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+        job = BaselineCore.appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             BaselineLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> start")
 
             didiImageLocation.value = "{${locationCoordinates.lat}, ${locationCoordinates.long}}"

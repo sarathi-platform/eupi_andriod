@@ -64,6 +64,7 @@ import com.nrlm.baselinesurvey.network.interfaces.BaseLineApiService
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nudge.core.PREF_KEY_IS_SETTING_SCREEN_OPEN
 import javax.inject.Inject
 
 class DataLoadingScreenRepositoryImpl @Inject constructor(
@@ -629,6 +630,10 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
 
     override suspend fun getTaskForSubjectId(didiId: Int?): ActivityTaskEntity? {
         return activityTaskDao.getTaskFromSubjectId(didiId ?: 0)
+    }
+
+    override fun saveSettingScreenOpen() {
+        prefRepo.savePref(PREF_KEY_IS_SETTING_SCREEN_OPEN,false)
     }
 
 }

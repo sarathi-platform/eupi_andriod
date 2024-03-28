@@ -1,4 +1,4 @@
-package com.nrlm.baselinesurvey.navigation.home
+package com.patsurvey.nudge.navigation.baseline
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -30,7 +30,6 @@ import com.nrlm.baselinesurvey.ARG_SECTION_ID
 import com.nrlm.baselinesurvey.ARG_SURVEY_ID
 import com.nrlm.baselinesurvey.ARG_VIDEO_PATH
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.auth.presentation.LoginScreenComponent
@@ -54,7 +53,7 @@ import com.nrlm.baselinesurvey.ui.video_player.presentation.FullscreenView
 import com.nrlm.baselinesurvey.utils.BaselineCore
 
 @Composable
-fun NavHomeGraph(navController: NavHostController, modifier: Modifier) {
+fun BSNavHomeGraph(navController: NavHostController, modifier: Modifier) {
     NavHost(
         modifier = Modifier
             .fillMaxSize()
@@ -409,8 +408,8 @@ fun NavGraphBuilder.settingNavGraph(navHostController: NavHostController){
 
 sealed class SettingBSScreens(val route: String){
     object SETTING_SCREEN : SettingBSScreens(route = SETTING_ROUTE_NAME)
-    object LANGUAGE_SCREEN : SettingBSScreens(route =LANGUAGE_SCREEN_ROUTE_NAME )
-    object PROFILE_SCREEN : SettingBSScreens(route =PROFILE_BS_SCREEN_ROUTE_NAME )
+    object LANGUAGE_SCREEN : SettingBSScreens(route = LANGUAGE_SCREEN_ROUTE_NAME )
+    object PROFILE_SCREEN : SettingBSScreens(route = PROFILE_BS_SCREEN_ROUTE_NAME )
 }
 
 sealed class HomeScreens(val route: String) {
@@ -428,7 +427,7 @@ sealed class HomeScreens(val route: String) {
         HomeScreens(route = "$VIDEO_PLAYER_SCREEN_ROUTE_NAME/{$ARG_VIDEO_PATH}")
 
     object FormTypeQuestionScreen :
-        HomeScreens(route = "${FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME}/{$ARG_QUESTION_NAME}/{$ARG_SURVEY_ID}/{$ARG_SECTION_ID}/{$ARG_QUESTION_ID}/{$ARG_DIDI_ID}?{$ARG_FORM_QUESTION_RESPONSE_REFERENCE_ID}")
+        HomeScreens(route = "$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/{$ARG_QUESTION_NAME}/{$ARG_SURVEY_ID}/{$ARG_SECTION_ID}/{$ARG_QUESTION_ID}/{$ARG_DIDI_ID}?{$ARG_FORM_QUESTION_RESPONSE_REFERENCE_ID}")
 
     object BaseLineStartScreen :
         HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}/{$ARG_SURVEY_ID}")

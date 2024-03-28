@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.nudge.core.ui.navigation.CoreGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
@@ -57,8 +58,7 @@ import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.navigation.AuthScreen
-import com.patsurvey.nudge.navigation.home.LogoutScreens
-import com.patsurvey.nudge.navigation.navgraph.Graph
+import com.patsurvey.nudge.navigation.selection.LogoutScreens
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.OTP_LENGTH
 import com.patsurvey.nudge.utils.OTP_RESEND_DURATION
@@ -241,20 +241,25 @@ fun OtpVerificationScreen(
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_25)))
             Button(
                 onClick = {
-                    viewModel.validateOtp(context) { success, message ->
+                    viewModel.validateOtp(context) { isUPCMUser,success, message ->
+
                         if (success){
-                            if(navController.graph.route?.equals(Graph.HOME,true) == true){
-                                navController.navigate(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route){
-                                    launchSingleTop=true
-                                    popUpTo(AuthScreen.START_SCREEN.route){
-                                        inclusive=true
+                            if(isUPCMUser){
+                                    navController.navigate(route = com.nrlm.baselinesurvey.navigation.navgraph.Graph.BASE_HOME)
+                            }else {
+                                if (navController.graph.route?.equals(CoreGraph.HOME, true) == true) {
+                                    navController.navigate(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route) {
+                                        launchSingleTop = true
+                                        popUpTo(AuthScreen.START_SCREEN.route) {
+                                            inclusive = true
+                                        }
                                     }
-                                }
-                            }else{
-                                navController.navigate(route = AuthScreen.VILLAGE_SELECTION_SCREEN.route){
-                                    launchSingleTop=true
-                                    popUpTo(AuthScreen.START_SCREEN.route){
-                                        inclusive=true
+                                } else {
+                                    navController.navigate(route = AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
+                                        launchSingleTop = true
+                                        popUpTo(AuthScreen.START_SCREEN.route) {
+                                            inclusive = true
+                                        }
                                     }
                                 }
                             }

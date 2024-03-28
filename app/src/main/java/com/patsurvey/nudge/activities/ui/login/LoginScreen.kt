@@ -29,13 +29,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.nudge.core.ui.navigation.CoreGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
-import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.MOBILE_NUMBER_LENGTH
 import com.patsurvey.nudge.utils.onlyNumberField
@@ -198,7 +198,7 @@ fun LoginScreen(
                     } else {
                         viewModel.generateOtp { success, message ->
                             if (success) {
-                                if(navController.graph.route?.equals(Graph.HOME,true) == true){
+                                if(navController.graph.route?.equals(CoreGraph.HOME,true) == true){
                                     navController.navigate(route = "otp_verification_screen/" + viewModel.mobileNumber.value.text)
                                 }else
                                     navController.navigate(route = "otp_verification_screen/" + viewModel.mobileNumber.value.text)

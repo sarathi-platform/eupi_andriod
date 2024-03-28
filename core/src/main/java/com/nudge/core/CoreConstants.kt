@@ -39,6 +39,7 @@ const val SARATHI_DIRECTORY_NAME = "/SARATHI"
 const val LOCAL_BACKUP_EXTENSION = ".txt"
 const val EVENT_DELIMETER = "~@-"
 const val ZIP_MIME_TYPE = "application/zip"
+const val PREF_KEY_IS_SETTING_SCREEN_OPEN= "is_setting_open"
 
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),

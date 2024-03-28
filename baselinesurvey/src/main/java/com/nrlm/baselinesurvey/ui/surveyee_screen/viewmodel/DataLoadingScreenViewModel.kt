@@ -2,7 +2,10 @@ package com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.nrlm.baselinesurvey.ROOM_INTEGRITY_EXCEPTION
+import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
@@ -33,10 +36,44 @@ class DataLoadingScreenViewModel @Inject constructor(
         }
     }
 
+    fun fetchLanguageConfigDetails() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val languageConfigResponse = fetchDataUseCase.fetchLanguageConfigFromNetworkUseCase.invoke()
+                if (languageConfigResponse.status.equals(SUCCESS, true)) {
+                    languageConfigResponse.data?.let { configResponseModel ->
+
+                        val langList:ArrayList<LanguageEntity> = arrayListOf()
+                        langList.addAll(configResponseModel.languageList)
+                        langList.add(
+                            LanguageEntity(id = 6, orderNumber = 6, langCode = "ky",
+                            language = "Kokborok",
+                            localName = "Kokborok"
+                        )
+                        )
+
+                        fetchDataUseCase.saveLanguageConfigUseCase.invoke(langList)
+
+                    }
+                } else {
+                    fetchDataUseCase.saveLanguageConfigUseCase.addDefaultLanguage()
+
+                }
+            } catch (ex: Exception) {
+                onCatchError(ex)
+                if (ex.message?.contains(ROOM_INTEGRITY_EXCEPTION, true) == false) {
+                    fetchDataUseCase.saveLanguageConfigUseCase.addDefaultLanguage()
+                }
+
+            }
+        }
+    }
+
     fun fetchAllData(callBack: () -> Unit) {
         try {
 //            BaselineApplication.appScopeLaunch(Dispatchers.IO) {
             CoroutineScope(Dispatchers.IO).launch {
+                   fetchLanguageConfigDetails()
                 val fetchUserDetailFromNetworkUseCaseSuccess =
                     fetchDataUseCase.fetchUserDetailFromNetworkUseCase.invoke()
                 if (fetchUserDetailFromNetworkUseCaseSuccess) {
@@ -69,7 +106,7 @@ class DataLoadingScreenViewModel @Inject constructor(
         }
     }
 
-    private suspend fun fetchSurveyForAllLanguages() {
+        private suspend fun fetchSurveyForAllLanguages() {
 
         val stateId = getStateId()
 
@@ -96,65 +133,7 @@ class DataLoadingScreenViewModel @Inject constructor(
                         hamletSurveyRequestBodyModel
                     )
                 }
-//            val baselineSurveyRequestBodyModel = SurveyRequestBodyModel(
-//                languageId = 2,
-//                surveyName = "BASELINE",
-//                referenceId = stateId,
-//                referenceType = "STATE"
-//            )
-//            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-//                baselineSurveyRequestBodyModel
-//            )
-//
-//            val hamletSurveyRequestBodyModel = SurveyRequestBodyModel(
-//                languageId = 2,
-//                surveyName = "HAMLET",
-//                referenceId = stateId,
-//                referenceType = "STATE"
-//            )
-//            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-//                hamletSurveyRequestBodyModel
-//            )
-//
-//            val baselineSurveyRequestBodyModelForKokBorok = SurveyRequestBodyModel(
-//                languageId = 6,
-//                surveyName = "BASELINE",
-//                referenceId = stateId,
-//                referenceType = "STATE"
-//            )
-//            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-//                baselineSurveyRequestBodyModelForKokBorok
-//            )
-//
-//            val baselineSurveyRequestBodyModelForBangla = SurveyRequestBodyModel(
-//                languageId = 3,
-//                surveyName = "BASELINE",
-//                referenceId = stateId,
-//                referenceType = "STATE"
-//            )
-//            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-//                baselineSurveyRequestBodyModelForBangla
-//            )
-//
-//            val hamletSurveyRequestBodyModelForBangla = SurveyRequestBodyModel(
-//                languageId = 3,
-//                surveyName = "HAMLET",
-//                referenceId = stateId,
-//                referenceType = "STATE"
-//            )
-//            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-//                hamletSurveyRequestBodyModelForBangla
-//            )
-//
-//            val hamletSurveyRequestBodyModelForKokborok = SurveyRequestBodyModel(
-//                languageId = 6,
-//                surveyName = "HAMLET",
-//                referenceId = stateId,
-//                referenceType = "STATE"
-//            )
-//            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-//                hamletSurveyRequestBodyModelForKokborok
-//            )
+
         }
 
     }

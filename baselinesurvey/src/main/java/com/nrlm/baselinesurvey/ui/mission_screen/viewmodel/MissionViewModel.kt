@@ -93,4 +93,9 @@ class MissionViewModel @Inject constructor(
             missionId
         )
     }
+
+    fun saveSettingScreenOpen(){
+        missionScreenUseCase.fetchMissionDataFromNetworkUseCase.saveSettingScreenOpen()
+
+    }
 }

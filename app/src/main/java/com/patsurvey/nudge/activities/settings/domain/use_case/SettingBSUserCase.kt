@@ -1,4 +1,4 @@
-package com.nrlm.baselinesurvey.ui.setting.domain.use_case
+package com.patsurvey.nudge.activities.settings.domain.use_case
 
 data class SettingBSUserCase (
     val getSettingOptionListUseCase: GetSettingOptionListUseCase,

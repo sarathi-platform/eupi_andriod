@@ -25,7 +25,8 @@ import javax.inject.Singleton
 @Singleton
 class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Context) :PrefRepo {
     companion object {
-        const val PREFS_NAME = "secured_nudge_baseline_prefs"
+//        const val PREFS_NAME = "secured_nudge_baseline_prefs"
+        const val PREFS_NAME = "secured_nudge_prefs"
     }
 
     val prefs: SharedPreferences by lazy {

@@ -1,6 +1,6 @@
-package com.nrlm.baselinesurvey.ui.setting.domain.use_case
+package com.patsurvey.nudge.activities.settings.domain.use_case
 
-import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepository
+import com.patsurvey.nudge.activities.settings.domain.repository.SettingBSRepository
 
 
 class SaveLanguageScreenOpenFromUseCase(private val repository: SettingBSRepository) {

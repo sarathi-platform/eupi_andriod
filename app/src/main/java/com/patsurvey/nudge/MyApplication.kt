@@ -12,6 +12,7 @@ import com.akexorcist.localizationactivity.core.LocalizationApplicationDelegate
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.syncmanager.SyncManager
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.NudgeLogger.e
@@ -45,6 +46,7 @@ class MyApplication : Application(), androidx.work.Configuration.Provider {
     private fun init() {
         instance = this
         NudgeCore.initEventObserver(syncManager)
+        BaselineCore.init(instance.applicationContext)
     }
 
     override fun onCreate() {

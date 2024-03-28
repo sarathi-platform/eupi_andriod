@@ -1,18 +1,18 @@
-package com.nrlm.baselinesurvey.ui.setting.domain.repository
+package com.patsurvey.nudge.activities.settings.domain.repository
 
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.LANGUAGE_OPEN_FROM_SETTING
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
-import com.nrlm.baselinesurvey.model.response.ApiResponseModel
-import com.nrlm.baselinesurvey.network.interfaces.BaseLineApiService
+import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.model.response.ApiResponseModel
+import com.patsurvey.nudge.network.interfaces.ApiService
 
 class SettingBSRepositoryImpl(
     private val prefRepo: PrefRepo,
-    private val baseLineApiService: BaseLineApiService,
-):SettingBSRepository {
+    private val apiService: ApiService,
+): SettingBSRepository {
 
     override suspend fun performLogout(): ApiResponseModel<String> {
-        return baseLineApiService.performLogout()
+        return apiService.performLogout()
     }
 
     override fun clearSharedPref() {

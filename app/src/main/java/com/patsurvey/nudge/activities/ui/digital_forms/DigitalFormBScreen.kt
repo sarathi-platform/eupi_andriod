@@ -46,13 +46,13 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import com.nudge.core.ui.navigation.CoreGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.white
-import com.patsurvey.nudge.navigation.home.HomeScreens
-import com.patsurvey.nudge.navigation.navgraph.Graph
+import com.patsurvey.nudge.navigation.selection.HomeScreens
 import com.patsurvey.nudge.utils.ARG_FROM_SETTING
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiStatus
@@ -85,7 +85,7 @@ fun DigitalFormBScreen(
         if (fromScreen == ARG_FROM_SETTING)
             navController.popBackStack()
         else {
-            navController.navigate(Graph.HOME) {
+            navController.navigate(CoreGraph.HOME) {
                 popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                     inclusive = true
                     saveState = false
@@ -521,7 +521,7 @@ fun DigitalFormBScreen(
                         if (fromScreen == ARG_FROM_SETTING)
                             navController.popBackStack()
                         else {
-                            navController.navigate(Graph.HOME) {
+                            navController.navigate(CoreGraph.HOME) {
                                 popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                                     inclusive = true
                                     saveState = false

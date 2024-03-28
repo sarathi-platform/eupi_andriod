@@ -38,8 +38,8 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.CustomFloatingButton
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.model.response.OptionsItem
-import com.patsurvey.nudge.navigation.home.BpcDidiListScreens
-import com.patsurvey.nudge.navigation.home.PatScreens
+import com.patsurvey.nudge.navigation.selection.BpcDidiListScreens
+import com.patsurvey.nudge.navigation.selection.PatScreens
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonArrowNegative
 import com.patsurvey.nudge.utils.EXTENSION_WEBP

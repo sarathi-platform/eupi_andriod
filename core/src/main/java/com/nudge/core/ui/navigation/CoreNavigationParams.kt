@@ -1,0 +1,34 @@
+package com.nudge.core.ui.navigation
+
+sealed class CoreNavigationParams (val value:String){
+    
+    object ARG_USER_TYPE : CoreNavigationParams("user_type")
+
+    object ARG_MOBILE_NUMBER : CoreNavigationParams("mobile")
+    object ARG_PAGE_FROM : CoreNavigationParams("from_page")
+    object ARG_FROM_HOME : CoreNavigationParams("from_home")
+    object ARG_FROM_SETTING : CoreNavigationParams("from_setting")
+    object ARG_FROM_PROGRESS : CoreNavigationParams("from_progress_screen")
+    object ARG_FROM_PAT_SURVEY : CoreNavigationParams("from_pat_survey")
+    object ARG_VILLAGE_NAME : CoreNavigationParams("villageName")
+    object ARG_VILLAGE_ID : CoreNavigationParams("villageId")
+    object ARG_DIDI_DETAILS_ID : CoreNavigationParams("didi_details_id")
+    object ARG_STEP_ID : CoreNavigationParams("stepId")
+    object ARG_DIDI_ID : CoreNavigationParams("didiId")
+    object ARG_DIDI_STATUS : CoreNavigationParams("didi_status")
+    object ARG_SECTION_TYPE : CoreNavigationParams("section_type")
+    object ARG_QUESTION_INDEX : CoreNavigationParams("question_index")
+    object ARG_IS_STEP_COMPLETE : CoreNavigationParams("isStepComplete")
+    object ARG_STEP_INDEX : CoreNavigationParams("step_index")
+    object ARG_COMPLETION_MESSAGE : CoreNavigationParams("completion_message")
+    object ARG_PAT_SUCCESS_MESSAGE : CoreNavigationParams("pat_success_message")
+    object ARG_FROM_SCREEN : CoreNavigationParams("fromScreen")
+    object ARG_FROM_PAT_DIDI_LIST_SCREEN : CoreNavigationParams("from_pat_didi_list_screen")
+    object ARG_FROM_PAT_SUMMARY_SCREEN : CoreNavigationParams("from_pat_summary_screen")
+    object ARG_FROM_VO_ENDORSEMENT_SCREEN : CoreNavigationParams("from_vo_endorsement_screen")
+    object ARG_VIDEO_ID : CoreNavigationParams("video_id")
+    object PREF_FORM_PATH : CoreNavigationParams("pref_form_path")
+    object ARG_FORM_PATH : CoreNavigationParams("form_path")
+    object ARG_IMAGE_PATH : CoreNavigationParams("image_path")
+    object ARG_FOR_REPLACEMENT : CoreNavigationParams("for_replacement")
+}

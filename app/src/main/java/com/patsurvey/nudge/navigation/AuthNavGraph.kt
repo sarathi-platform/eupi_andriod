@@ -9,6 +9,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
+import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreen
+import com.nudge.core.ui.navigation.CoreGraph
 import com.patsurvey.nudge.ProfileScreen
 import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.VillageScreen
@@ -19,14 +21,13 @@ import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
-import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
 import com.patsurvey.nudge.utils.ARG_VIDEO_ID
 
 fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
     navigation(
-        route = Graph.AUTHENTICATION,
+        route = CoreGraph.AUTHENTICATION,
         startDestination = AuthScreen.START_SCREEN.route
     ) {
 
@@ -109,6 +110,21 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             ProfileScreen(profileScreenVideModel = hiltViewModel(), navController = navController)
         }
 
+        composable(route = AuthScreen.SURVEYEE_LIST_SCREEN.route) {
+            /*VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()){
+                navController.navigate(AuthScreen.AUTH_SETTING_SCREEN.route)
+            }*/
+//            VillageSelectionScreen()
+            SurveyeeListScreen(
+                viewModel = hiltViewModel(),
+                navController = navController,
+                activityName = "",
+                missionId = 0,
+                activityDate = "",
+                activityId = 0
+            )
+        }
+
 
     }
 //    settingNavGraph(navController)
@@ -126,4 +142,6 @@ sealed class AuthScreen(val route: String) {
     object PROFILE_SCREEN : AuthScreen(route = "profile_screen")
     object VIDEO_LIST_SCREEN : AuthScreen(route = "video_list_screen")
     object VIDEO_PLAYER_SCREEN : AuthScreen(route = "video_player_screen/{$ARG_VIDEO_ID}")
+
+    object SURVEYEE_LIST_SCREEN :AuthScreen(route = "surveyee_list_screen")
 }

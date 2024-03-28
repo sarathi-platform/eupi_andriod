@@ -102,12 +102,6 @@ import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSurvyeDetail
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.SectionListScreenUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.UpdateSubjectStatusUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.UpdateTaskStatusUseCase
-import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepository
-import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepositoryImpl
-import com.nrlm.baselinesurvey.ui.setting.domain.use_case.GetSettingOptionListUseCase
-import com.nrlm.baselinesurvey.ui.setting.domain.use_case.LogoutUseCase
-import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SaveLanguageScreenOpenFromUseCase
-import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SettingBSUserCase
 import com.nrlm.baselinesurvey.ui.splash.domain.repository.SplashScreenRepository
 import com.nrlm.baselinesurvey.ui.splash.domain.repository.SplashScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.splash.domain.use_case.FetchLanguageFromNetworkConfigUseCase
@@ -486,7 +480,9 @@ object BaselineModule {
             fetchContentnDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(repository),
             fetchSectionStatusFromNetworkUseCase = FetchSectionStatusFromNetworkUseCase(repository),
             fetchSurveyAnswerFromNetworkUseCase = FetchSurveyAnswerFromNetworkUseCase(repository),
-            loggedInUseCase = LoggedInUseCase(splashScreenRepository)
+            loggedInUseCase = LoggedInUseCase(splashScreenRepository),
+            fetchLanguageConfigFromNetworkUseCase = FetchLanguageFromNetworkConfigUseCase(splashScreenRepository),
+            saveLanguageConfigUseCase = SaveLanguageConfigUseCase(splashScreenRepository)
         )
     }
 
@@ -597,26 +593,26 @@ object BaselineModule {
         )
     }
 
-    @Provides
-    @Singleton
-    fun provideSettingBSScreenRepository(
-        prefRepo: PrefRepo,
-        baseLineApiService: BaseLineApiService
-    ): SettingBSRepository {
-        return SettingBSRepositoryImpl(prefRepo, baseLineApiService)
-    }
-
-    @Provides
-    @Singleton
-    fun providesSettingScreenUseCase(
-        repository: SettingBSRepository
-    ): SettingBSUserCase {
-        return SettingBSUserCase(
-            getSettingOptionListUseCase = GetSettingOptionListUseCase(repository),
-            logoutUseCase = LogoutUseCase(repository),
-            saveLanguageScreenOpenFromUseCase = SaveLanguageScreenOpenFromUseCase(repository)
-        )
-    }
+//    @Provides
+//    @Singleton
+//    fun provideSettingBSScreenRepository(
+//        prefRepo: PrefRepo,
+//        baseLineApiService: BaseLineApiService
+//    ): SettingBSRepository {
+//        return SettingBSRepositoryImpl(prefRepo, baseLineApiService)
+//    }
+//
+//    @Provides
+//    @Singleton
+//    fun providesSettingScreenUseCase(
+//        repository: SettingBSRepository
+//    ): SettingBSUserCase {
+//        return SettingBSUserCase(
+//            getSettingOptionListUseCase = GetSettingOptionListUseCase(repository),
+//            logoutUseCase = LogoutUseCase(repository),
+//            saveLanguageScreenOpenFromUseCase = SaveLanguageScreenOpenFromUseCase(repository)
+//        )
+//    }
 
     @Provides
     @Singleton

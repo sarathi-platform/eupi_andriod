@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.splash
 
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcScorePercentageEntity
@@ -11,6 +12,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.ConfigResponseModel
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.addDefaultLanguage
 import javax.inject.Inject
 
@@ -45,6 +47,9 @@ class ConfigRepository @Inject constructor(
 
     fun getAccessToken(): String?{
         return prefRepo.getAccessToken();
+    }
+    fun getUserType(): String?{
+        return prefRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING)
     }
     override fun onServerError(errorModel: ErrorModelWithApi?) {
         addDefaultLanguage(languageListDao)

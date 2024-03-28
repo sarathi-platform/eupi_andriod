@@ -8,6 +8,7 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
+import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.RetryHelper.crpPatQuestionApiLanguageId
@@ -94,6 +95,7 @@ import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.UPCM_USER
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.WealthRank
@@ -1565,6 +1567,9 @@ class VillageSelectionViewModel @Inject constructor(
                                 prefRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: "")
                                 villageListDao.insertAll(it.villageList ?: listOf())
                                 stateId.value= it.villageList?.get(0)?.stateId?:1
+                                if(it.typeName.equals(UPCM_USER)){
+                                    prefRepo.savePref(PREF_STATE_ID, it.referenceId.first().stateId ?: -1)
+                                }
                                 val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                                 if (localVillageList.isNotEmpty()) {
                                     _villagList.emit(localVillageList)

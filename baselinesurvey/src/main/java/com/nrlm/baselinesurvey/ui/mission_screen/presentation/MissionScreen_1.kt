@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.mission_screen.presentation
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,7 +35,6 @@ import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.navigation.home.MISSION_SUMMARY_SCREEN_ROUTE_NAME
-import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
 import com.nrlm.baselinesurvey.ui.mission_screen.viewmodel.MissionViewModel
@@ -44,9 +44,9 @@ import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nudge.core.ui.navigation.CoreGraph
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Preview(showBackground = true)
 @Composable
 fun MissionScreen_1(
     navController: NavController = rememberNavController(),
@@ -92,7 +92,9 @@ fun MissionScreen_1(
                 },
                 actions = {
                     IconButton(onClick = {
-                        navController.navigate(Graph.SETTING_GRAPH)
+                            viewModel.saveSettingScreenOpen()
+                            navController.navigate(CoreGraph.SETTING_GRAPH)
+                        Log.d("TAG", "HomeUserScreen: ${navController.graph.route} ")
                     }) {
                         Icon(
                             painter = painterResource(id = R.drawable.more_icon),

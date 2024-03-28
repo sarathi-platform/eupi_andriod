@@ -241,4 +241,5 @@ const val MIN_PROGRESS_COUNT_FLOAT = 0F
 
 const val TOTAL_FAMILY_MEMBERS_OPTION_VALUE=1
 const val EARNING_FAMILY_MEMBERS_OPTION_VALUE=2
+const val UPCM_USER="Ultra Poor change maker (UPCM)"
 

@@ -1,4 +1,4 @@
-package com.nrlm.baselinesurvey.ui.setting.domain
+package com.patsurvey.nudge.activities.settings.domain
 
 enum class SettingTagEnum {
     SYNC_NOW,
