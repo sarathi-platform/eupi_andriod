@@ -189,7 +189,7 @@ fun SocialMappingDidiListScreen(
     LaunchedEffect(key1 = true) {
         didiViewModel.isSocialMappingComplete(stepId)
         if(filterSelected){
-            didiViewModel.getValidDidisFromDB()
+            didiViewModel.getValidDidisFromDB(didiViewModel.isComingPatScreen())
             didiViewModel.filterList()
         }
     }
