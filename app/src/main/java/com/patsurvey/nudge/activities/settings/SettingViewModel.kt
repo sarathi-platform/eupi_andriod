@@ -870,6 +870,7 @@ class SettingViewModel @Inject constructor(
             bpcSummaryDao.deleteAllSummary()
             poorDidiListDao.deleteAllDidis()
             prefRepo.savePref(LAST_UPDATE_TIME, 0L)
+            clearEventWriterFileName()
 //            clearSharedPreference()
             //cleared cache in case of logout
 //            context.cacheDir.deleteRecursively()
@@ -890,6 +891,13 @@ class SettingViewModel @Inject constructor(
 
     fun clearAccessToken() {
         prefRepo.saveAccessToken("")
+        clearEventWriterFileName()
+        prefRepo.setPreviousUserMobile(mobileNumber = prefRepo.getMobileNumber())
+        prefRepo.saveSettingOpenFrom(0)
+
+    }
+
+    private fun clearEventWriterFileName() {
         CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setBackupFileName(
             getDefaultBackUpFileName(
                 prefRepo.getMobileNumber() ?: ""
@@ -901,9 +909,6 @@ class SettingViewModel @Inject constructor(
             )
         )
         CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setFileExported(false)
-        prefRepo.setPreviousUserMobile(mobileNumber = prefRepo.getMobileNumber())
-        prefRepo.saveSettingOpenFrom(0)
-
     }
 
     fun buildAndShareLogs() {
