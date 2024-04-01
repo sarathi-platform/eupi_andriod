@@ -219,8 +219,8 @@
     <string name="vo_endorsement">VO गनायथि</string>
     <string name="close">बन्द खालाम</string>
     <string name="add_more">अधिक जोड़े</string>
-    <string name="bpc_didi_screen_title">PAT नायबिजिरनायनि थाखाय आब’मोननि अट’ सिलेक्टेट फारिलाइ</string>
-    <string name="bpc_final_pat_submition_message">नोंथाङा BPM गनायथिनि थाखाय बे VO खौ गनायनो नागिरो?</string>
+    <string name="bpc_didi_screen_title">फोरमान खालामनो थाखाय दिदिस दं</string>
+    <string name="bpc_final_pat_submition_message">नोंथाङा %1$s didis नि थाखाय PAT फोरमान खालामनायखौ गथायनो लुबैयो नामा?</string>
     <string name="didi_selected_text_singular">%1$s दीदी चुनी गई</string>
     <string name="didi_selected_text_plural">%1$s दीदीया  चुनी गई</string>
     <string name="didi_replace_button">बदलें</string>

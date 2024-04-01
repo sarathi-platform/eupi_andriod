@@ -245,8 +245,8 @@
     <string name="vo_endorsement">VO Endorsement</string>
     <string name="close">Close</string>
     <string name="add_more">Add More</string>
-    <string name="bpc_didi_screen_title">List of Didis auto selected For PAT Verification</string>
-    <string name="bpc_final_pat_submition_message">Do you want to submit this VO for BPM Approval?</string>
+    <string name="bpc_didi_screen_title">Didis available for verification</string>
+    <string name="bpc_final_pat_submition_message">Do you want to submit PAT verification for %1$s didis?</string>
 
     <string name="didi_selected_text_singular">%1$s Didi Selected</string>
     <string name="didi_selected_text_plural">%1$s Didis Selected</string>

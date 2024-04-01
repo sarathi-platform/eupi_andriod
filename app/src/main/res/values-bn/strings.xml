@@ -230,8 +230,8 @@
     <string name="vo_endorsement">গ্রাম সংগঠন (VO) অনুমোদন</string>
     <string name="close">বন্ধ করুন</string>
     <string name="add_more">আরো যোগ করো</string>
-    <string name="bpc_didi_screen_title">PAT যাচাইকরণের জন্য নির্বাচিত দিদির স্বয়ংক্রিয় তালিকা</string>
-    <string name="bpc_final_pat_submition_message">আপনি কি BPM অনুমোদনের জন্য এই VO জমা দিতে চান?</string>
+    <string name="bpc_didi_screen_title">যাচাইয়ের জন্য দিদিস উপলব্ধ</string>
+    <string name="bpc_final_pat_submition_message">" আপনি কি %1$s ডিডিসের জন্য PAT যাচাইকরণ জমা দিতে চান?"</string>
     <string name="didi_selected_text_singular">%1$s দিদি নির্বাচিত করা হয়েছে</string>
     <string name="didi_selected_text_plural">%1$s দিদিদের নির্বাচিত করা হয়েছে</string>
     <string name="didi_replace_button">বদলি করুন</string>
