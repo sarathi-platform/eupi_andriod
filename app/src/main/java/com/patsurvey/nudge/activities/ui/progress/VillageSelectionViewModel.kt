@@ -8,6 +8,7 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
+import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
@@ -137,6 +138,7 @@ class VillageSelectionViewModel @Inject constructor(
     val answerDao: AnswerDao,
     val bpcSummaryDao: BpcSummaryDao,
     val poorDidiListDao: PoorDidiListDao,
+    private val syncManagerDatabase: SyncManagerDatabase,
     val userDao: UserDao,
     val downloader: AndroidDownloader,
     val lastSelectedTolaDao: LastSelectedTolaDao,
@@ -185,6 +187,8 @@ class VillageSelectionViewModel @Inject constructor(
             villageListDao.deleteAllVilleges()
             bpcSummaryDao.deleteAllSummary()
             poorDidiListDao.deleteAllDidis()
+            syncManagerDatabase.eventsDao().deleteAllEvents()
+            syncManagerDatabase.eventsDependencyDao().deleteAllDependentEvents()
             clearSharedPreference()
             init(context)
         }
