@@ -1,7 +1,7 @@
 package com.nrlm.baselinesurvey.model.mappers
 
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
+import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
 import com.nrlm.baselinesurvey.model.response.QuestionAnswerResponseModel
 import com.nrlm.baselinesurvey.ui.common_components.SHGFlag
 import com.nrlm.baselinesurvey.utils.findTagForId
@@ -11,12 +11,12 @@ object DidiInfoEntityMapper {
 
     fun getDidiDidiInfoEntity(
         questionResponseModel: QuestionAnswerResponseModel
-    ): DidiIntoEntity {
+    ): DidiInfoEntity {
 
         val optionItemEntities = OptionEntityMapper.getOptionEntitiesMapperForForm(
             questionResponseModel,
         )
-        var didiInfoEntity = DidiIntoEntity.getEmptyDidiIntoEntity()
+        var didiInfoEntity = DidiInfoEntity.getEmptyDidiInfoEntity()
         optionItemEntities.forEach { questionOptionsResponseModel ->
             if (tagList.findTagForId(questionOptionsResponseModel.tag)
                     ?.equals("Aadhar", true) == true

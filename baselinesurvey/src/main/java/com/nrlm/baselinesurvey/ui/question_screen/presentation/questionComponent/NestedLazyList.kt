@@ -927,7 +927,7 @@ fun NestedLazyList(
                         }
                     }
 //                    }
-                    if (sectionDetails.sectionName.equals(
+                    if (sectionDetails.sectionName.contains(
                             context.getString(R.string.didi_info),
                             true
                         )
@@ -940,7 +940,7 @@ fun NestedLazyList(
                                     ?.forEach { didiInfoEntity ->
 
                                         DidiInfoCard(
-                                            didiIntoEntity = didiInfoEntity,
+                                            didiInfoEntity = didiInfoEntity,
                                             didiDetails = questionScreenViewModel.didiDetails,
                                             isEditAllowed = questionScreenViewModel.isEditAllowed,
                                             onUpdate = {

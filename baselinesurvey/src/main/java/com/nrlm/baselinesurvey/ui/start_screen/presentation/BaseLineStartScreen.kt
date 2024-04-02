@@ -52,7 +52,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
+import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.ui.common_components.BlueButtonWithIcon
 import com.nrlm.baselinesurvey.ui.common_components.ButtonOutline
@@ -661,7 +661,7 @@ private fun updateDidiDetails(
         baseLineStartViewModel.onEvent(
             SurveyStateEvents.UpdateDidiSurveyStatus(
                 it,
-                didiInfo = DidiIntoEntity(
+                didiInfo = DidiInfoEntity(
                     didiId = it,
                     isAdharCard = baseLineStartViewModel.isAdharCard.value,
                     isVoterCard = baseLineStartViewModel.isVoterCard.value,

@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
+import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
@@ -404,7 +404,7 @@ fun FormResponseCard(
 @Composable
 fun DidiInfoCard(
     modifier: Modifier = Modifier,
-    didiIntoEntity: DidiIntoEntity,
+    didiInfoEntity: DidiInfoEntity,
     didiDetails: SurveyeeEntity?,
     isEditAllowed: Boolean = true,
     onUpdate: (didiId: Int) -> Unit
@@ -477,7 +477,7 @@ fun DidiInfoCard(
                         )
                         Text(text = buildAnnotatedString {
                             append("Aadhar Card: ")
-                            append(SHGFlag.fromInt(didiIntoEntity.isAdharCard ?: -1).name)
+                            append(SHGFlag.fromInt(didiInfoEntity.isAdharCard ?: -1).name)
                         }, style = smallTextStyleWithNormalWeight)
                         Spacer(
                             modifier = Modifier
@@ -486,7 +486,7 @@ fun DidiInfoCard(
                         )
                         Text(text = buildAnnotatedString {
                             append("VoterId Card: ")
-                            append(SHGFlag.fromInt(didiIntoEntity.isVoterCard ?: -1).name)
+                            append(SHGFlag.fromInt(didiInfoEntity.isVoterCard ?: -1).name)
                         }, style = smallTextStyleWithNormalWeight)
                         Spacer(
                             modifier = Modifier
@@ -495,7 +495,7 @@ fun DidiInfoCard(
                         )
                         Text(text = buildAnnotatedString {
                             append("Phone Number: ")
-                            append(didiIntoEntity.phoneNumber)
+                            append(didiInfoEntity.phoneNumber)
                         }, style = smallTextStyleWithNormalWeight)
                     }
                 }
@@ -512,7 +512,7 @@ fun DidiInfoCard(
                     ) {
                         TextButton(
                             onClick = {
-                                onUpdate(didiIntoEntity.didiId ?: 0)
+                                onUpdate(didiInfoEntity.didiId ?: 0)
                             },
                             modifier = Modifier
                                 .fillMaxWidth()

@@ -417,7 +417,7 @@
     <string name="voter_card_title_assam">আপোনাৰ  ভোটাৰ কাৰ্ড আছে নে?</string>
     <string name="not_able_to_load">ডাটা লোড কৰিব পৰা নাই অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক..</string>
     <string name="designation_comparision_and_label">পদবী</string>
-    <string name="didi_info">" বাইদেউ’ৰ তথ্য"</string>
+    <string name="didi_info">বাইদেউ’ৰ তথ্য</string>
     <string name="default_confirm_button_text">Confirm</string>
     <string name="default_dismiss_button_text">Dismiss</string>
     <string name="delete_text">Delete</string>

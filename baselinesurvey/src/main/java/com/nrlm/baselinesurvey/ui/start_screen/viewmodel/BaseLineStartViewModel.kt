@@ -18,7 +18,7 @@ import com.nrlm.baselinesurvey.BaselineApplication.Companion.appScopeLaunch
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
-import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
+import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventOptionItemDto
@@ -77,10 +77,10 @@ class BaseLineStartViewModel @Inject constructor(
         SurveyeeEntity.getEmptySurveyeeEntity()
     )
     private val _didiInfo = MutableStateFlow(
-        DidiIntoEntity.getEmptyDidiIntoEntity()
+        DidiInfoEntity.getEmptyDidiInfoEntity()
     )
     val didiEntity: StateFlow<SurveyeeEntity> get() = _didiEntity
-    val didiInfo: StateFlow<DidiIntoEntity> get() = _didiInfo
+    val didiInfo: StateFlow<DidiInfoEntity> get() = _didiInfo
 
     var isAdharTxtVisible = derivedStateOf {
         isAdharCard.value == 1
@@ -327,7 +327,7 @@ class BaseLineStartViewModel @Inject constructor(
     }
 
     fun addDidiInfoEvent(didi: SurveyeeEntity) {
-        val didiInfo = DidiIntoEntity(
+        val didiInfo = DidiInfoEntity(
             didiId = didi.didiId,
             isAdharCard = isAdharCard.value,
             isVoterCard = isVoterCard.value,

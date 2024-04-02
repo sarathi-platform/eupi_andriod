@@ -13,7 +13,7 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
-import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
+import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
@@ -136,13 +136,13 @@ class QuestionScreenViewModel @Inject constructor(
         )
     }
 
-    suspend fun getDidiInfoObjectLive(didiId: Int): LiveData<List<DidiIntoEntity>> {
+    suspend fun getDidiInfoObjectLive(didiId: Int): LiveData<List<DidiInfoEntity>> {
         return questionScreenUseCase.getSurveyeeDetailsUserCase.getDidiInfoObjectLive(didiId)
     }
 
     var formResponsesForQuestionLive: LiveData<List<FormQuestionResponseEntity>> = MutableLiveData(mutableListOf())
 
-    var didiInfoObjectLive: LiveData<List<DidiIntoEntity>> = MutableLiveData()
+    var didiInfoObjectLive: LiveData<List<DidiInfoEntity>> = MutableLiveData()
 
     var optionItemEntityList = emptyList<OptionItemEntity>()
     suspend fun getFormQuestionsOptionsItemEntityList(
