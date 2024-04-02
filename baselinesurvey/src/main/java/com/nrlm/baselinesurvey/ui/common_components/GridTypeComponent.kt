@@ -37,6 +37,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -45,6 +46,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
@@ -68,6 +70,7 @@ import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
 import com.nrlm.baselinesurvey.utils.getIndexById
+import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
@@ -81,6 +84,7 @@ fun GridTypeComponent(
     contests: List<ContentEntity?>? = listOf(),
     selectedOptionIndices: List<Int>,
     maxCustomHeight: Dp,
+    isEditAllowed: Boolean = true,
     onAnswerSelection: (questionIndex: Int, optionItems: List<OptionItemEntity>, selectedIndeciesCount: List<Int>) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
@@ -100,6 +104,8 @@ fun GridTypeComponent(
     selectedIndices.value.addAll(selectedOptionIndices)
 
     val selectedOptionsItem = remember { mutableSetOf<OptionItemEntity>() }
+
+    val context = LocalContext.current
 
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
@@ -196,56 +202,62 @@ fun GridTypeComponent(
                                                     index = _index,
                                                     selectedIndex = selectedIndices.value.toList()
                                                 ) { selectedOptionId ->
-
-                                                    try {
-                                                        if (!selectedIndices.value.contains(
-                                                                selectedOptionId
-                                                            )
-                                                        ) {
-                                                            selectedIndices.value.add(
-                                                                selectedOptionId
-                                                            )
-                                                            selectedOptionsItem.add(
-                                                                optionItemEntityList[optionItemEntityList.getIndexById(
+                                                    if (isEditAllowed) {
+                                                        try {
+                                                            if (!selectedIndices.value.contains(
                                                                     selectedOptionId
-                                                                )]
-                                                            )
-                                                        } else {
-                                                            selectedIndices.value.remove(
-                                                                selectedOptionId
-                                                            )
-                                                            selectedOptionsItem.remove(
-                                                                optionItemEntityList[optionItemEntityList.getIndexById(
-                                                                    selectedOptionId
-                                                                )]
-                                                            )
-                                                        }
-
-                                                        optionItemEntityList.forEach { optionItemEntity ->
-                                                            if (selectedIndices.value.contains(
-                                                                    optionItemEntity.optionId
                                                                 )
                                                             ) {
+                                                                selectedIndices.value.add(
+                                                                    selectedOptionId
+                                                                )
                                                                 selectedOptionsItem.add(
-                                                                    optionItemEntityList[
-                                                                        optionItemEntityList.getIndexById(
-                                                                            optionItemEntity.optionId!!
-                                                                        )
-                                                                    ]
+                                                                    optionItemEntityList[optionItemEntityList.getIndexById(
+                                                                        selectedOptionId
+                                                                    )]
+                                                                )
+                                                            } else {
+                                                                selectedIndices.value.remove(
+                                                                    selectedOptionId
+                                                                )
+                                                                selectedOptionsItem.remove(
+                                                                    optionItemEntityList[optionItemEntityList.getIndexById(
+                                                                        selectedOptionId
+                                                                    )]
                                                                 )
                                                             }
-                                                        }
 
-                                                        onAnswerSelection(
-                                                            questionIndex,
-                                                            selectedOptionsItem.toList(),
-                                                            selectedOptionIndices
-                                                        )
-                                                    } catch (ex: Exception) {
-                                                        BaselineLogger.e(
-                                                            "GridTypeComponent",
-                                                            "GridOptionCard onOptionSelected exception -> ${ex.localizedMessage}",
-                                                            ex
+                                                            optionItemEntityList.forEach { optionItemEntity ->
+                                                                if (selectedIndices.value.contains(
+                                                                        optionItemEntity.optionId
+                                                                    )
+                                                                ) {
+                                                                    selectedOptionsItem.add(
+                                                                        optionItemEntityList[
+                                                                            optionItemEntityList.getIndexById(
+                                                                                optionItemEntity.optionId!!
+                                                                            )
+                                                                        ]
+                                                                    )
+                                                                }
+                                                            }
+
+                                                            onAnswerSelection(
+                                                                questionIndex,
+                                                                selectedOptionsItem.toList(),
+                                                                selectedOptionIndices
+                                                            )
+                                                        } catch (ex: Exception) {
+                                                            BaselineLogger.e(
+                                                                "GridTypeComponent",
+                                                                "GridOptionCard onOptionSelected exception -> ${ex.localizedMessage}",
+                                                                ex
+                                                            )
+                                                        }
+                                                    } else {
+                                                        showCustomToast(
+                                                            context,
+                                                            context.getString(R.string.edit_disable_message)
                                                         )
                                                     }
                                                 }
@@ -273,57 +285,64 @@ fun GridTypeComponent(
                                                         ?: BLANK_STRING,
                                                     isOnlyNumber = optionItemEntityState?.optionItemEntity?.optionType == QuestionType.InputNumber.name
                                                 ) { value ->
-                                                    val updatedOptionItem =
-                                                        optionItem.copy(selectedValue = value)
-                                                    try {
-                                                        if (!selectedIndices.value.contains(
-                                                                updatedOptionItem.optionId
-                                                            )
-                                                        ) {
-                                                            selectedIndices.value.add(
-                                                                updatedOptionItem.optionId!!
-                                                            )
-                                                            selectedOptionsItem.add(
-                                                                optionItemEntityList[optionItemEntityList.getIndexById(
-                                                                    updatedOptionItem.optionId!!
-                                                                )]
-                                                            )
-                                                        } else {
-                                                            selectedIndices.value.remove(
-                                                                updatedOptionItem.optionId
-                                                            )
-                                                            selectedOptionsItem.remove(
-                                                                optionItemEntityList[optionItemEntityList.getIndexById(
-                                                                    updatedOptionItem.optionId!!
-                                                                )]
-                                                            )
-                                                        }
-
-                                                        optionItemEntityList.forEach { optionItemEntity ->
-                                                            if (selectedIndices.value.contains(
-                                                                    optionItemEntity.optionId
+                                                    if (isEditAllowed) {
+                                                        val updatedOptionItem =
+                                                            optionItem.copy(selectedValue = value)
+                                                        try {
+                                                            if (!selectedIndices.value.contains(
+                                                                    updatedOptionItem.optionId
                                                                 )
                                                             ) {
+                                                                selectedIndices.value.add(
+                                                                    updatedOptionItem.optionId!!
+                                                                )
                                                                 selectedOptionsItem.add(
-                                                                    optionItemEntityList[
-                                                                        optionItemEntityList.getIndexById(
-                                                                            optionItemEntity.optionId!!
-                                                                        )
-                                                                    ]
+                                                                    optionItemEntityList[optionItemEntityList.getIndexById(
+                                                                        updatedOptionItem.optionId!!
+                                                                    )]
+                                                                )
+                                                            } else {
+                                                                selectedIndices.value.remove(
+                                                                    updatedOptionItem.optionId
+                                                                )
+                                                                selectedOptionsItem.remove(
+                                                                    optionItemEntityList[optionItemEntityList.getIndexById(
+                                                                        updatedOptionItem.optionId!!
+                                                                    )]
                                                                 )
                                                             }
-                                                        }
 
-                                                        onAnswerSelection(
-                                                            questionIndex,
-                                                            selectedOptionsItem.toList(),
-                                                            selectedOptionIndices
-                                                        )
-                                                    } catch (ex: Exception) {
-                                                        BaselineLogger.e(
-                                                            "GridTypeComponent",
-                                                            "GridOptionCard onOptionSelected exception -> ${ex.localizedMessage}",
-                                                            ex
+                                                            optionItemEntityList.forEach { optionItemEntity ->
+                                                                if (selectedIndices.value.contains(
+                                                                        optionItemEntity.optionId
+                                                                    )
+                                                                ) {
+                                                                    selectedOptionsItem.add(
+                                                                        optionItemEntityList[
+                                                                            optionItemEntityList.getIndexById(
+                                                                                optionItemEntity.optionId!!
+                                                                            )
+                                                                        ]
+                                                                    )
+                                                                }
+                                                            }
+
+                                                            onAnswerSelection(
+                                                                questionIndex,
+                                                                selectedOptionsItem.toList(),
+                                                                selectedOptionIndices
+                                                            )
+                                                        } catch (ex: Exception) {
+                                                            BaselineLogger.e(
+                                                                "GridTypeComponent",
+                                                                "GridOptionCard onOptionSelected exception -> ${ex.localizedMessage}",
+                                                                ex
+                                                            )
+                                                        }
+                                                    } else {
+                                                        showCustomToast(
+                                                            context,
+                                                            context.getString(R.string.edit_disable_message)
                                                         )
                                                     }
                                                 }

@@ -25,10 +25,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.ui.common_components.ExpandableDescriptionContentComponent
@@ -50,6 +52,7 @@ import com.nrlm.baselinesurvey.ui.theme.weight_20_percent
 import com.nrlm.baselinesurvey.ui.theme.weight_60_percent
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
+import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
@@ -62,6 +65,7 @@ fun FormTypeQuestionComponent(
     maxCustomHeight: Dp,
     contests: List<ContentEntity?>? = listOf(),
     itemCount: Int = 0,
+    isEditAllowed: Boolean = true,
     onAnswerSelection: (questionIndex: Int) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit,
@@ -70,6 +74,9 @@ fun FormTypeQuestionComponent(
     val scope = rememberCoroutineScope()
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyListState = rememberLazyListState()
+
+    val context = LocalContext.current
+
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
             scope.launch { outerState.scrollToItem(outerState.layoutInfo.totalItemsCount) }
@@ -153,7 +160,14 @@ fun FormTypeQuestionComponent(
                                             .fillMaxWidth()
                                             .weight(weight_60_percent)
                                     ) {
-                                        onAnswerSelection(questionIndex)
+                                        if (isEditAllowed) {
+                                            onAnswerSelection(questionIndex)
+                                        } else {
+                                            showCustomToast(
+                                                context,
+                                                context.getString(R.string.edit_disable_message)
+                                            )
+                                        }
                                     }
                                     Spacer(
                                         modifier = Modifier

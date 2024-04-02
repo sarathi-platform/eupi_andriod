@@ -53,7 +53,6 @@ import kotlinx.coroutines.delay
 fun FormTypeQuestionScreen(
     navController: NavHostController,
     viewModel: QuestionTypeScreenViewModel = hiltViewModel(),
-    questionName: String = "",
     surveyID: Int = 0,
     sectionId: Int = 0,
     questionId: Int = 0,
@@ -88,7 +87,7 @@ fun FormTypeQuestionScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = questionName,
+                        text = viewModel.question?.value?.questionDisplay ?: BLANK_STRING,
                         color = textColorDark,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Start,

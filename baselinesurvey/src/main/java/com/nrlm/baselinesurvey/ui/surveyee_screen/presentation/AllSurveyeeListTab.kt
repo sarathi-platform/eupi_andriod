@@ -238,7 +238,9 @@ fun AllSurveyeeListTab(
                                         )
                                     },
                                     //Todo add proper tex
-                                    primaryButtonText = "Start " + activityName.split(" ")[1],
+                                    primaryButtonText = stringResource(R.string.start) + activityName.split(
+                                        " "
+                                    )[1],
                                     buttonClicked = { buttonName, surveyeeId ->
                                         BaselineCore.setCurrentActivityName(activityName)
                                         handleButtonClick(

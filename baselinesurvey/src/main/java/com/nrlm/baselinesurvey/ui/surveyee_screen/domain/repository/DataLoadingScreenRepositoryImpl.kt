@@ -43,6 +43,7 @@ import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.Sections
+import com.nrlm.baselinesurvey.model.mappers.DidiInfoEntityMapper.getDidiDidiInfoEntity
 import com.nrlm.baselinesurvey.model.mappers.DidiSectionStatusEntityMapper.getDidiSectionStatusEntity
 import com.nrlm.baselinesurvey.model.mappers.FormQuestionEntityMapper.getFormQuestionEntity
 import com.nrlm.baselinesurvey.model.mappers.InputTypeQuestionAnswerEntityMapper
@@ -564,6 +565,11 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                             )
                     }
                 }
+
+            } else if (questionAnswerResponseModel.question?.questionType.equals(QuestionType.DidiDetails.name)) {
+
+                val didiIntoEntity = getDidiDidiInfoEntity(questionAnswerResponseModel)
+                baselineDatabase.didiInfoEntityDao().checkAndUpdateDidiInfo(didiIntoEntity)
 
             } else {
                 val sectionAnswerEntity =

@@ -319,6 +319,8 @@ fun TextButtonWithIcon(
 fun LinkTextButtonWithIcon(
     modifier: Modifier = Modifier,
     title: String = stringResource(id = R.string.show),
+    textColor: Color = textColorDark,
+    iconTint: Color = blueDark,
     onClick: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -338,7 +340,7 @@ fun LinkTextButtonWithIcon(
         Text(
             text = title,
             style = smallTextStyleMediumWeight,
-            color = textColorDark,
+            color = textColor,
             maxLines = 2,
             textDecoration = TextDecoration.Underline,
             overflow = TextOverflow.Ellipsis
@@ -346,7 +348,7 @@ fun LinkTextButtonWithIcon(
         Icon(
             imageVector = Icons.Default.ArrowForward,
             contentDescription = null,
-            tint = blueDark,
+            tint = iconTint,
             modifier = Modifier
                 .absolutePadding(top = 4.dp, left = 2.dp)
                 .size(24.dp)

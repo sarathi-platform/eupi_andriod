@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
+import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
@@ -133,7 +133,6 @@ fun FormResponseCard(
                                 }?.optionId] ?: BLANK_STRING
                             )
 
-
                             var income =
                                 formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                     it.display?.contains(
@@ -151,14 +150,31 @@ fun FormResponseCard(
                                         )!!
                                     }?.optionId] ?: BLANK_STRING
 
-                            if (income == BLANK_STRING)
-                                income =
+                            if (income == BLANK_STRING) {
+                                val options = optionItemListWithConditionals.filter {
+                                    it.display?.contains(
+                                        stringResource(id = R.string.income_frequency_comparision),
+                                        ignoreCase = true
+                                    )!!
+                                }
+                                for (option in options) {
+                                    val value =
+                                        formResponseObjectDto.memberDetailsMap[option.optionId]
+                                    if (value != null) {
+                                        income = value
+                                        break
+                                    } else {
+                                        income = BLANK_STRING
+                                    }
+                                }
+                                /*income =
                                     formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                         it.display?.contains(
                                             stringResource(id = R.string.income_frequency_comparision),
                                             ignoreCase = true
                                         )!!
-                                    }?.optionId] ?: BLANK_STRING
+                                    }?.optionId] ?: BLANK_STRING*/
+                            }
 
                             if (income != BLANK_STRING) {
                                 append(" | ")
@@ -388,8 +404,9 @@ fun FormResponseCard(
 @Composable
 fun DidiInfoCard(
     modifier: Modifier = Modifier,
-    didiIntoEntity: DidiIntoEntity,
+    didiInfoEntity: DidiInfoEntity,
     didiDetails: SurveyeeEntity?,
+    isEditAllowed: Boolean = true,
     onUpdate: (didiId: Int) -> Unit
 ) {
 
@@ -460,7 +477,7 @@ fun DidiInfoCard(
                         )
                         Text(text = buildAnnotatedString {
                             append("Aadhar Card: ")
-                            append(SHGFlag.fromInt(didiIntoEntity.isAdharCard ?: -1).name)
+                            append(SHGFlag.fromInt(didiInfoEntity.isAdharCard ?: -1).name)
                         }, style = smallTextStyleWithNormalWeight)
                         Spacer(
                             modifier = Modifier
@@ -469,7 +486,7 @@ fun DidiInfoCard(
                         )
                         Text(text = buildAnnotatedString {
                             append("VoterId Card: ")
-                            append(SHGFlag.fromInt(didiIntoEntity.isVoterCard ?: -1).name)
+                            append(SHGFlag.fromInt(didiInfoEntity.isVoterCard ?: -1).name)
                         }, style = smallTextStyleWithNormalWeight)
                         Spacer(
                             modifier = Modifier
@@ -478,48 +495,53 @@ fun DidiInfoCard(
                         )
                         Text(text = buildAnnotatedString {
                             append("Phone Number: ")
-                            append(didiIntoEntity.phoneNumber)
+                            append(didiInfoEntity.phoneNumber)
                         }, style = smallTextStyleWithNormalWeight)
                     }
                 }
                 Spacer(modifier = Modifier.height(dimen_16_dp))
-                Divider(
-                    thickness = dimen_1_dp,
-                    modifier = Modifier.fillMaxWidth(),
-                    color = borderGreyLight
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    TextButton(
-                        onClick = { onUpdate(didiIntoEntity.didiId ?: 0) }, modifier = Modifier
+                if (isEditAllowed) {
+                    Divider(
+                        thickness = dimen_1_dp,
+                        modifier = Modifier.fillMaxWidth(),
+                        color = borderGreyLight
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        TextButton(
+                            onClick = {
+                                onUpdate(didiInfoEntity.didiId ?: 0)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.White,
+                                contentColor = blueDark
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Edit,
+                                contentDescription = "Edit Button",
+                                tint = blueDark
+                            )
+                        }
+                        Divider(
+                            color = borderGreyLight,
+                            modifier = Modifier
+                                .fillMaxHeight()  //fill the max height
+                                .width(1.dp)
+                        )
+                        /*TextButton(onClick = { onDelete(formResponseObjectDto.referenceId) }, modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.White,
-                            contentColor = blueDark
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Edit,
-                            contentDescription = "Edit Button",
-                            tint = blueDark
-                        )
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = blueDark)
+                        ) {
+                            Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete Button", tint = blueDark)
+                        }*/
                     }
-                    Divider(
-                        color = borderGreyLight,
-                        modifier = Modifier
-                            .fillMaxHeight()  //fill the max height
-                            .width(1.dp)
-                    )
-                    /*TextButton(onClick = { onDelete(formResponseObjectDto.referenceId) }, modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = blueDark)
-                    ) {
-                        Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete Button", tint = blueDark)
-                    }*/
                 }
             }
         }

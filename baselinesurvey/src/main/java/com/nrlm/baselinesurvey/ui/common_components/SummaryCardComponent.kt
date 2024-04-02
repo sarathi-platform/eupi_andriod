@@ -30,6 +30,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
+import com.nrlm.baselinesurvey.ui.theme.summaryCardViewBlue
 import com.nrlm.baselinesurvey.ui.theme.white
 
 @Composable
@@ -94,7 +95,7 @@ fun SummaryCardComponent(
                                 fontSize = 14.sp
                             )
                         ) {
-                            append("Items Added: ")
+                            append("Total added: ")
                         }
                         withStyle(
                             style = SpanStyle(
@@ -120,7 +121,9 @@ fun SummaryCardComponent(
                         .height(dimen_10_dp)
                 )
                 LinkTextButtonWithIcon(
-                    title = "View Summary"
+                    title = "View Summary",
+                    textColor = summaryCardViewBlue,
+                    iconTint = summaryCardViewBlue
                 ) {
                     onViewSummaryClicked(question?.questionId!!)
                 }

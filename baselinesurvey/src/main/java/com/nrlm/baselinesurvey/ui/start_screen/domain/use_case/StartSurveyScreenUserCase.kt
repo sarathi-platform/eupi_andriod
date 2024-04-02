@@ -11,5 +11,5 @@ data class StartSurveyScreenUserCase(
     val updateSurveyStateUseCase: UpdateSurveyStateUserCase,
     val getCasteListUseCase: GetCasteListUseCase,
     val getSectionUseCase: GetSectionUseCase,
-    val eventsWriterUserCase: EventsWriterUserCase
+    val eventsWriterUseCase: EventsWriterUserCase
 )

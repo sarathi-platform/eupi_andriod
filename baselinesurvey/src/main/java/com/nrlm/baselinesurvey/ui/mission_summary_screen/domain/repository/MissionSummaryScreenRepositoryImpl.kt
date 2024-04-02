@@ -6,6 +6,7 @@ import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
+import com.nrlm.baselinesurvey.model.datamodel.ActivityForSubjectDto
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.toDate
 import javax.inject.Inject
@@ -60,5 +61,16 @@ class MissionSummaryScreenRepositoryImpl @Inject constructor(
 
     override fun getPendingTaskCountLive(activityId: Int): LiveData<Int> {
         return taskDao.getPendingTaskCountLive(activityId)
+    }
+
+    override fun isActivityCompleted(missionId: Int, activityId: Int): Boolean {
+        return missionActivityDao.isActivityCompleted(
+            missionId,
+            activityId
+        ).status != SectionStatus.COMPLETED.name
+    }
+
+    override fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto {
+        return missionActivityDao.getActivityFromSubjectId(subjectId)
     }
 }

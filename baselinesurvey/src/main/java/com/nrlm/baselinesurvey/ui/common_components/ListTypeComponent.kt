@@ -34,6 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
@@ -59,6 +61,7 @@ import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
+import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
@@ -73,6 +76,7 @@ fun ListTypeQuestion(
     questionIndex: Int,
     selectedOptionIndex: Int = -1,
     maxCustomHeight: Dp,
+    isEditAllowed: Boolean = true,
     onAnswerSelection: (questionIndex: Int, optionItem: OptionItemEntity) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
@@ -88,6 +92,8 @@ fun ListTypeQuestion(
     }
 
     val selectedIndex = remember { mutableIntStateOf(selectedOptionIndex) }
+
+    val context = LocalContext.current
 
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
@@ -181,8 +187,15 @@ fun ListTypeQuestion(
                                             index = _index,
                                             selectedIndex = selectedIndex.value,
                                         ) {
-                                            selectedIndex.value = it
-                                            onAnswerSelection(questionIndex, optionsItem)
+                                            if (isEditAllowed) {
+                                                selectedIndex.value = it
+                                                onAnswerSelection(questionIndex, optionsItem)
+                                            } else {
+                                                showCustomToast(
+                                                    context,
+                                                    context.getString(R.string.edit_disable_message)
+                                                )
+                                            }
                                         }
                                         Spacer(modifier = Modifier.height(dimen_8_dp))
                                     }
