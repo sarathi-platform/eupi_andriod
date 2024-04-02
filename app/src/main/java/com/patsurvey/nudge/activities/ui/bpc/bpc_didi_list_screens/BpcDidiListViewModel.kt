@@ -4,23 +4,17 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.nudge.core.enums.EventType
 import com.patsurvey.nudge.activities.ui.bpc.ReplaceHelper
 import com.patsurvey.nudge.base.BaseViewModel
-import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.TolaEntity
-import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.QuestionListDao
-import com.patsurvey.nudge.database.dao.StepsListDao
-import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
-import com.patsurvey.nudge.utils.AbleBodiedFlag
-import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.getPatScoreEventName
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -143,7 +137,9 @@ class BpcDidiListViewModel @Inject constructor(
             it.add(didiId)
         }
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiPatProgress = repository.getDidiFromDB(didiId).patSurveyStatus
+
+            val didiEntity = repository.getDidiFromDB(didiId)
+            val didiPatProgress = didiEntity.patSurveyStatus
             if (didiPatProgress == PatSurveyStatus.INPROGRESS.ordinal || didiPatProgress == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
                 _selectedDidiList.value[_selectedDidiList.value.map { it.id }
                     .indexOf(didiId)].patSurveyStatus =
@@ -161,7 +157,18 @@ class BpcDidiListViewModel @Inject constructor(
             repository.updateNeedToPostPAT(true, didiId)
             pendingDidiCount.value =
                 repository.getAllPendingPATDidisCount()
+            val updatedDidiEntity = repository.getDidiFromDB(didiId)
+
+            repository.saveEvent(
+                eventItem = updatedDidiEntity,
+                eventName = getPatScoreEventName(
+                    updatedDidiEntity,
+                    repository.prefRepo.isUserBPC()
+                ),
+                EventType.STATEFUL
+            )
         }
+
     }
 
     override fun onServerError(error: ErrorModel?) {

@@ -400,6 +400,7 @@ fun ProgressScreen(
                                     isCompleted = isStepCompleted == StepStatus.COMPLETED.ordinal
                                 ) { index ->
                                     viewModel.stepSelected.value = index
+                                    mainActivity?.isFilterApplied?.value=false
                                     val step=viewModel.stepList.value[index]
                                     viewModel.saveFromPage(ARG_FROM_PROGRESS)
                                     if (mainActivity?.isOnline?.value == true) {

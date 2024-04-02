@@ -17,10 +17,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.model.FormResponseObjectDto
 import com.nrlm.baselinesurvey.navigation.home.navigateToFormTypeQuestionScreen
+import com.nrlm.baselinesurvey.ui.common_components.AlertDialogComponent
 import com.nrlm.baselinesurvey.ui.common_components.FormResponseCard
 import com.nrlm.baselinesurvey.ui.form_response_summary_screen.viewmodel.FormResponseSummaryScreenViewModel
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
@@ -30,6 +36,8 @@ import com.nrlm.baselinesurvey.ui.theme.h6Bold
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
+
+val DEFAULT_OPEN_DIALOG_VALUE = Pair<Boolean, FormResponseObjectDto?>(false, null)
 
 @Composable
 fun FormQuestionSummaryScreen(
@@ -45,6 +53,9 @@ fun FormQuestionSummaryScreen(
     LaunchedEffect(key1 = true) {
         formResponseSummaryScreenViewModel.init(surveyId, sectionId, questionId, surveyeeId)
     }
+
+    val openAlertDialog = remember { mutableStateOf(DEFAULT_OPEN_DIALOG_VALUE) }
+
 
     BackHandler {
         navController.popBackStack()
@@ -79,9 +90,36 @@ fun FormQuestionSummaryScreen(
             )
         }
     ) {
-        it
+
+        if (openAlertDialog.value.first) {
+            AlertDialogComponent(
+                onDismissRequest = { openAlertDialog.value = DEFAULT_OPEN_DIALOG_VALUE },
+                onConfirmation = {
+                    formResponseSummaryScreenViewModel.updateFormResponseObjectDtoList(
+                        openAlertDialog.value.second?.referenceId!!
+                    )
+                    formResponseSummaryScreenViewModel.onEvent(
+                        QuestionTypeEvent.DeleteFormQuestionResponseEvent(
+                            surveyId = surveyId,
+                            sectionId = sectionId,
+                            questionId = questionId,
+                            surveyeeId = surveyeeId,
+                            referenceId = openAlertDialog.value.second?.referenceId!!
+                        )
+                    )
+                    openAlertDialog.value = DEFAULT_OPEN_DIALOG_VALUE
+                },
+                dialogTitle = stringResource(R.string.alert_dialog_title_text),
+                dialogText = stringResource(R.string.alart_dialog_entry_deleteion_message_text),
+                confirmButtonText = stringResource(R.string.delete_text),
+                dismissButtonText = stringResource(R.string.cancel_text)
+            )
+        }
+
         LazyColumn(
-            modifier = Modifier.padding(horizontal = dimen_16_dp),
+            modifier = Modifier
+                .padding(it)
+                .padding(horizontal = dimen_16_dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val optionItemEntityListWithConditions =
@@ -99,18 +137,7 @@ fun FormQuestionSummaryScreen(
                     optionItemListWithConditionals = optionItemEntityListWithConditions,
                     viewModel = formResponseSummaryScreenViewModel,
                     onDelete = {
-                        formResponseSummaryScreenViewModel.updateFormResponseObjectDtoList(
-                            formResponseObjectDto.referenceId
-                        )
-                        formResponseSummaryScreenViewModel.onEvent(
-                            QuestionTypeEvent.DeleteFormQuestionResponseEvent(
-                                surveyId = surveyId,
-                                sectionId = sectionId,
-                                questionId = questionId,
-                                surveyeeId = surveyeeId,
-                                referenceId = formResponseObjectDto.referenceId
-                            )
-                        )
+                        openAlertDialog.value = Pair(true, formResponseObjectDto)
                     },
                     onUpdate = {
                         formResponseSummaryScreenViewModel.questionEntity?.let { it1 ->

@@ -18,7 +18,7 @@ sealed class EventWriterEvents {
         val didiId: Int,
         val questionId: Int,
         val questionType: String,
-        val questionTag: String,
+        val questionTag: Int,
         val showConditionalQuestion: Boolean = true,
         val saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     )
@@ -56,6 +56,13 @@ sealed class EventWriterEvents {
     )
 
     data class UpdateMissionActivityTaskStatus(
+        val missionId: Int,
+        val activityId: Int,
+        val taskId: Int,
+        val status: SectionStatus
+    )
+
+    data class UpdateMissionActivityTaskStatusEvent(
         val missionId: Int,
         val activityId: Int,
         val taskId: Int,

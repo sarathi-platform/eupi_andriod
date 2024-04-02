@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.repository
 
+import androidx.lifecycle.LiveData
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 
@@ -11,4 +12,5 @@ interface MissionSummaryScreenRepository {
     )
 
     suspend fun updateMissionStatus(missionId: Int, status: SectionStatus)
+    fun getPendingTaskCountLive(activityId: Int): LiveData<Int>
 }

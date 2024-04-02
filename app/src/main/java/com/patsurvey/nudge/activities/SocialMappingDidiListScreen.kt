@@ -176,11 +176,7 @@ fun SocialMappingDidiListScreen(
     }
     var filterSelected by remember {
         mutableStateOf(
-            if (!didiViewModel.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
                 (context as MainActivity).isFilterApplied.value
-            } else {
-                false
-            }
         )
     }
 
@@ -193,6 +189,7 @@ fun SocialMappingDidiListScreen(
     LaunchedEffect(key1 = true) {
         didiViewModel.isSocialMappingComplete(stepId)
         if(filterSelected){
+            didiViewModel.getValidDidisFromDB(didiViewModel.isComingPatScreen())
             didiViewModel.filterList()
         }
     }
@@ -362,11 +359,7 @@ fun SocialMappingDidiListScreen(
                                 onFilterSelected = {
                                     if (didiList.value.isNotEmpty()) {
                                         filterSelected = !it
-                                        if (!didiViewModel.getFromPage()
-                                                .equals(ARG_FROM_PAT_SURVEY, true)
-                                        ) {
                                             (context as MainActivity).isFilterApplied.value = !it
-                                        }
                                         didiViewModel.filterList()
                                     }
                                 }, onSearchValueChange = {
@@ -474,9 +467,10 @@ fun SocialMappingDidiListScreen(
                                     onDeleteClicked = { didi ->
                                         didiViewModel.deleteDidiOffline(
                                             didi,
+                                            isFilterSelected = true,
                                             isOnline = (context as MainActivity).isOnline.value
                                                 ?: false,
-                                            object : NetworkCallbackListener {
+                                            networkCallbackListener = object : NetworkCallbackListener {
                                                 override fun onSuccess() {
                                                     showCustomToast(
                                                         context,
@@ -577,7 +571,7 @@ fun SocialMappingDidiListScreen(
                                                 didi,
                                                 isOnline = (context as MainActivity).isOnline.value
                                                     ?: false,
-                                                object : NetworkCallbackListener {
+                                                networkCallbackListener = object : NetworkCallbackListener {
                                                     override fun onSuccess() {
                                                         showCustomToast(
                                                             context,

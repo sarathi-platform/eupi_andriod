@@ -241,8 +241,24 @@ class PatSectionSummaryRepository @Inject constructor(
 
                 EventName.REJECTED_PAT_SCORE, EventName.INPROGRESS_PAT_SCORE, EventName.COMPLETED_PAT_SCORE, EventName.NOT_AVAILBLE_PAT_SCORE -> {
                     filteredList = eventList.filter {
-                        it.payloadLocalId == dependentEvent.payloadLocalId
-
+                        if (prefRepo.isUserBPC()) {
+                            var editRequest = Gson().fromJson(
+                                it.request_payload,
+                                EditDidiWealthRankingRequest::class.java
+                            )
+                            dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
+                                ?.get(KEY_PARENT_ENTITY_DIDI_NAME)?.equals(editRequest.name, true)!!
+                                    && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
+                                ?.get(KEY_PARENT_ENTITY_DADA_NAME)
+                                ?.equals(editRequest.guardianName, true)!!
+                                    && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
+                                ?.get(KEY_PARENT_ENTITY_ADDRESS).equals(editRequest.address, true)
+                                    && dependentEvent.metadata?.getMetaDataDtoFromString()?.parentEntity
+                                ?.get(KEY_PARENT_ENTITY_TOLA_NAME)
+                                ?.equals(editRequest.cohortName, true)!!
+                        } else {
+                            it.payloadLocalId == dependentEvent.payloadLocalId
+                        }
                     }
                 }
 

@@ -16,5 +16,17 @@ interface SplashScreenRepository {
 
     fun saveLanguageOpenFrom()
 
+    fun isDataSynced(): Boolean
+    fun setAllDataSynced()
+    fun performLogout(clearData: Boolean)
+
+    fun clearLocalData()
+
+    fun clearSharedPref()
+
+    fun getPreviousMobileNumber(): String
+
+    fun getMobileNumber(): String
+
 
 }

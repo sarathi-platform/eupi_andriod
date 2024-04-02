@@ -40,5 +40,8 @@ interface SectionAnswerEntityDao {
     @Query("Select COUNT(*) FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId")
     fun isQuestionAlreadyAnswered(didiId: Int, questionId: Int, sectionId: Int, surveyId: Int): Int
 
+    @Query("Delete from $ANSWER_TABLE")
+    fun deleteAllSectionAnswer()
+
 
 }

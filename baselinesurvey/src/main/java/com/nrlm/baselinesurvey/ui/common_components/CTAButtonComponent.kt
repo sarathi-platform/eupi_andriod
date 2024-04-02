@@ -164,7 +164,7 @@ fun OutlinedCTAButtonComponent(
 @Composable
 fun CTAButtonComponent60PercentWidth(
     modifier: Modifier = Modifier,
-    tittle: String? = BLANK_STRING,
+    title: String? = BLANK_STRING,
     isActive: Boolean = true,
     textColor: Color = Color.White,
     onClick: () -> Unit
@@ -179,7 +179,7 @@ fun CTAButtonComponent60PercentWidth(
                 .weight(weight_10_percent)
         )
         OutlinedCTAButtonComponent(
-            tittle = tittle,
+            tittle = title,
             isActive = isActive,
             textColor = textColor,
             modifier = Modifier

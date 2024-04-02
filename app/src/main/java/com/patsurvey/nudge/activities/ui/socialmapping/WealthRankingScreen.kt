@@ -240,14 +240,15 @@ fun WealthRankingScreen(
                     }
                     if (filterSelected) {
                         itemsIndexed(
-                            newFilteredTolaDidiList.keys.toList().reversed()
+                            newFilteredTolaDidiList.keys.toList()
                         ) { index, item ->
                              ShowDidisFromTola(
                                 didiTola = item,
-                                didiList = newFilteredTolaDidiList[item]?.reversed() ?: emptyList(),
+                                 didiList = newFilteredTolaDidiList[item] ?: emptyList(),
                                 viewModel = viewModel,
                                 expandedIds = expandedCardIds,
                                 modifier = Modifier,
+                                 parentIndex = index,
                                  coroutineScope = coroutineScope,
                                  listState = listState
                             )
@@ -787,9 +788,13 @@ fun ShowDidisFromTola(
     viewModel: WealthRankingViewModel,
     expandedIds: List<Int>,
     modifier: Modifier,
+    parentIndex: Int,
     coroutineScope: CoroutineScope,
     listState: LazyListState
 ) {
+//    if(didiList.isNotEmpty()) {
+//        viewModel.onCardArrowClicked(didiList[0].id, coroutineScope, listState,0)
+//    }
     Column(modifier = Modifier.then(modifier)) {
         Row(
             modifier = Modifier.padding(start = 8.dp, end = 16.dp, bottom = 10.dp, top = 4.dp),
@@ -862,12 +867,27 @@ fun ShowDidisFromTola(
                         viewModel = viewModel,
                         onCardArrowClick = {
                             if (it)
-                                viewModel.onCardArrowClicked(didi.id,coroutineScope, listState,index)
+                                viewModel.onCardArrowClicked(
+                                    didi.id,
+                                    coroutineScope,
+                                    listState,
+                                    parentIndex
+                                )
                             else {
-                                viewModel.onCardArrowClicked(didi.id,coroutineScope, listState,index)
+                                viewModel.onCardArrowClicked(
+                                    didi.id,
+                                    coroutineScope,
+                                    listState,
+                                    parentIndex
+                                )
                                 val nextIndex = index + 1
                                 if (nextIndex < didiList.size) {
-                                    viewModel.onCardArrowClicked(didiList[nextIndex].id,coroutineScope, listState,nextIndex)
+                                    viewModel.onCardArrowClicked(
+                                        didiList[nextIndex].id,
+                                        coroutineScope,
+                                        listState,
+                                        parentIndex
+                                    )
                                 } else if (nextIndex == didiList.size){
                                     viewModel.closeLastCard(didi.id)
 //                                    viewModel.onCardArrowClicked(didi.id)

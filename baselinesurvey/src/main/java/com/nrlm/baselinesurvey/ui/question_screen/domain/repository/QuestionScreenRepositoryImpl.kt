@@ -158,7 +158,6 @@ class QuestionScreenRepositoryImpl @Inject constructor(
             sectionId = sectionId,
             surveyId = surveyId,
             questionId = questionId,
-            villageId = villageIdForSurveyee,
             optionItems = optionItems,
             questionType = questionType,
             questionSummary = questionSummary

@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,6 +37,7 @@ import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +45,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
@@ -72,11 +76,14 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_30_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.lightBlue
 import com.nrlm.baselinesurvey.ui.theme.lightGray2
-import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
+import com.nrlm.baselinesurvey.ui.theme.progressIndicatorColor
+import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
+import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
@@ -124,6 +131,8 @@ fun SectionListScreen(
     val isBannerExpanded = remember {
         mutableStateOf(false)
     }
+
+    val linearProgress = mutableStateOf(0.0f)
 
     BackHandler {
         BaselineCore.setCurrentActivityName(BLANK_STRING)
@@ -230,7 +239,7 @@ fun SectionListScreen(
             }
         },
         bottomBar = {
-            if (viewModel.allSessionCompleted.value) {
+            if (viewModel.allSessionCompleted.value && viewModel.didiDetails?.surveyStatus != SurveyState.COMPLETED.ordinal) {
                 Box(
                     modifier = Modifier
                         .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
@@ -338,11 +347,34 @@ fun SectionListScreen(
                         }
 
                         item {
-                            Text(
+
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                linearProgress.value =
+                                    (sectionsList.filter { it.sectionStatus == SectionStatus.COMPLETED }.size.toFloat()
+                                            /*.coerceIn(0.0F, 1.0F)*/ / if (sectionsList.isNotEmpty()) sectionsList.size.toFloat() else 0.0F
+                                            /*.coerceIn(0.0F, 1.0F)*/)
+                                LinearProgressIndicator(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(dimen_8_dp)
+                                        .padding(top = 1.dp)
+                                        .clip(RoundedCornerShape(14.dp)),
+                                    color = progressIndicatorColor,
+                                    trackColor = trackColor,
+                                    progress = linearProgress.value
+                                )
+                                Spacer(modifier = Modifier.width(dimen_8_dp))
+                                androidx.compose.material3.Text(
+                                    text = "${sectionsList.filter { it.sectionStatus == SectionStatus.COMPLETED }.size}/${sectionsList.size}",
+                                    color = textColorDark,
+                                    style = smallTextStyle
+                                )
+                            }
+                            /*Text(
                                 text = "Choose Section",
                                 style = smallerTextStyle,
                                 color = textColorDark
-                            )
+                            )*/
                         }
 
                         itemsIndexed(items = sectionsList) { index, sectionStateItem ->

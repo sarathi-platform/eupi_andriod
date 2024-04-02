@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.splash.viewModel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.nrlm.baselinesurvey.ROOM_INTEGRITY_EXCEPTION
 import com.nrlm.baselinesurvey.SPLASH_SCREEN_DURATION
 import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.base.BaseViewModel
@@ -77,7 +78,9 @@ class SplashScreenViewModel @Inject constructor(
                 }
             } catch (ex: Exception) {
                 onCatchError(ex)
-                splashScreenUseCase.saveLanguageConfigUseCase.addDefaultLanguage()
+                if (ex.message?.contains(ROOM_INTEGRITY_EXCEPTION, true) == false) {
+                    splashScreenUseCase.saveLanguageConfigUseCase.addDefaultLanguage()
+                }
                 withContext(Dispatchers.Main) {
                     callBack()
                 }

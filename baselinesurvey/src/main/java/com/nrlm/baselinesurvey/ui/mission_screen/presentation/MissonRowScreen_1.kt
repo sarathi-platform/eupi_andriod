@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
+import com.nrlm.baselinesurvey.ui.mission_screen.viewmodel.MissionViewModel
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
@@ -56,13 +57,22 @@ import com.nrlm.baselinesurvey.ui.theme.white
 fun MissonRowScreen_1(
     modifier: Modifier = Modifier,
     mission: MissionEntity,
+    viewModel: MissionViewModel,
+    pendingCount: Int,
     missionDueDate: String = BLANK_STRING,
     onViewStatusClick: () -> Unit,
     onStartClick: () -> Unit
 ) {
-    val missionTask = mission.activityTaskSize
+
+    val completedProgress =
+        (viewModel.missionTaskCountMap.value[mission.missionId]?.minus(pendingCount)) ?: 0
+
     val curPercentage = animateFloatAsState(
-        targetValue = mission.activityComplete / mission.activityTaskSize.toFloat(),
+        targetValue = if (viewModel.missionTaskCountMap.value[mission.missionId] == null || viewModel.missionTaskCountMap.value[mission.missionId] == 0)
+            0.toFloat()
+        else
+            (completedProgress).toFloat() / (viewModel.missionTaskCountMap.value[mission.missionId]
+                ?: 0).toFloat(),
         label = "",
         animationSpec = tween()
     )
@@ -76,7 +86,7 @@ fun MissonRowScreen_1(
             .clip(RoundedCornerShape(6.dp))
             .border(
                 width = 1.dp,
-                color = if (mission.pendingActivity == 0) greenOnline else greyLightColor,
+                color = if (pendingCount == 0) greenOnline else greyLightColor,
                 shape = RoundedCornerShape(6.dp)
             )
             .background(Color.Transparent)
@@ -85,22 +95,22 @@ fun MissonRowScreen_1(
         Column(
             modifier = modifier
                 .fillMaxWidth()
-                .background(if (mission.pendingActivity == 0) greenLight else white)
+                .background(if (pendingCount == 0) greenLight else white)
         ) {
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .background(if (mission.pendingActivity == 0) greenOnline else greyLightColor)
+                    .background(if (pendingCount == 0) greenOnline else greyLightColor)
                     .padding(horizontal = 16.dp, vertical = 5.dp)
             ) {
                 Text(
-                    text = if (mission.pendingActivity == 0) "Completed"
+                    text = if (pendingCount == 0) "Completed"
                     else stringResource(
                         id = R.string.start_by_x_date,
                         missionDueDate
                     ),
                     style = smallerTextStyle,
-                    color = if (mission.pendingActivity == 0) white else black100Percent,
+                    color = if (pendingCount == 0) white else black100Percent,
                 )
             }
 
@@ -127,7 +137,7 @@ fun MissonRowScreen_1(
                 )
             }
             Text(
-                text = "Task Completed - ${mission.activityComplete}/${mission.activityTaskSize}",
+                text = "Task Completed - ${completedProgress}/${viewModel.missionTaskCountMap.value[mission.missionId]}",
                 fontFamily = NotoSans,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
@@ -182,7 +192,7 @@ fun MissonRowScreen_1(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = if (mission.pendingActivity == 0) "View" else "Start",
+                        text = if (pendingCount == 0) "View" else "Start",
                         style = smallTextStyleMediumWeight,
                         color = white
                     )

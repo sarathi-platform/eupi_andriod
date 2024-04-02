@@ -33,18 +33,19 @@ import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
+import com.nrlm.baselinesurvey.model.datamodel.ComplexSearchState
 import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
+import com.nrlm.baselinesurvey.model.datamodel.TagMappingDto
 import com.nrlm.baselinesurvey.ui.Constants.ItemType
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
-import com.nrlm.baselinesurvey.ui.search.viewmodel.ComplexSearchState
 import com.nudge.core.enums.EventName
 import java.io.File
 import java.text.SimpleDateFormat
@@ -621,7 +622,7 @@ fun saveFormQuestionResponseEntity(
 }
 
 fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObjectDto(
-    optionsItemEntityList: List<OptionItemEntity>, questionTag: String?
+    optionsItemEntityList: List<OptionItemEntity>, questionTag: Int?
 ): List<FormResponseObjectDto> {
     val householdMembersList = mutableListOf<FormResponseObjectDto>()
     val referenceIdMap = this.groupBy { it.referenceId }
@@ -630,7 +631,7 @@ fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObject
         val householdMemberDetailsMap = mutableMapOf<Int, String>()
         householdMember.referenceId = formQuestionResponseEntityList.key
         householdMember.questionId = formQuestionResponseEntityList.value.first().questionId
-        householdMember.questionTag = questionTag ?: BLANK_STRING
+        householdMember.questionTag = tagList.findTagForId(questionTag ?: -1)
         formQuestionResponseEntityList.value.forEachIndexed { index, formQuestionResponseEntity ->
             householdMemberDetailsMap.put(formQuestionResponseEntity.optionId, formQuestionResponseEntity.selectedValue)
             /*var option = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }
@@ -724,6 +725,10 @@ fun List<FormQuestionResponseEntity>.getResponseForOptionId(optionId: Int): Form
     if (optionId == -1)
         return null
     return this.find { it.optionId == optionId }
+}
+
+fun List<FormQuestionResponseEntity>.findOptionExist(optionId: Int): Boolean {
+    return this.find { it.optionId == optionId }!=null
 }
 
 fun  List<QuestionEntity>.findIndexForQuestionId(questionId: Int): Int {
@@ -1021,8 +1026,12 @@ fun <T> getParentEntityMapForEvent(eventItem: T, eventName: EventName): Map<Stri
     }
 }
 
-fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType): List<SaveAnswerEventOptionItemDto> {
+fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType?): List<SaveAnswerEventOptionItemDto> {
     val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
+
+    if (type == null)
+        return saveAnswerEventOptionItemDtoList
+
     when (type) {
         QuestionType.RadioButton -> {
             val mSaveAnswerEventOptionItemDto =
@@ -1143,4 +1152,125 @@ fun List<InputTypeQuestionAnswerEntity>.convertInputTypeQuestionToEventOptionIte
 
 fun List<FormResponseObjectDto>.getIndexForReferenceId(referenceId: String): Int {
     return this.map { it.referenceId }.indexOf(referenceId)
+}
+
+
+//TODO remove this list and fetch this from server.
+val tagList: List<TagMappingDto> = listOf(
+    TagMappingDto(id = 1, name = "Personal Info"),
+    TagMappingDto(id = 2, name = "HouseHold Details"),
+    TagMappingDto(id = 3, name = "Food Security"),
+    TagMappingDto(id = 4, name = "Social Inclusion"),
+    TagMappingDto(id = 5, name = "Women Empowerment"),
+    TagMappingDto(id = 6, name = "Financial Inclusion"),
+    TagMappingDto(id = 7, name = "Household Entitlements"),
+    TagMappingDto(id = 8, name = "Livelihood Sources"),
+    TagMappingDto(id = 9, name = "Name"),
+    TagMappingDto(id = 10, name = "Age"),
+    TagMappingDto(id = 11, name = "Photo"),
+    TagMappingDto(id = 12, name = "Caste"),
+    TagMappingDto(id = 13, name = "Aadhar"),
+    TagMappingDto(id = 14, name = "Voter"),
+    TagMappingDto(id = 15, name = "Martial Status"),
+    TagMappingDto(id = 16, name = "Village Name"),
+    TagMappingDto(id = 17, name = "Village Organization Name"),
+    TagMappingDto(id = 18, name = "Hamlet / Tola Name"),
+    TagMappingDto(id = 19, name = "Small group name"),
+    TagMappingDto(id = 20, name = "House No"),
+    TagMappingDto(id = 21, name = "Able-bodied women"),
+    TagMappingDto(id = 22, name = "UPCM name"),
+    TagMappingDto(id = 23, name = "UPCM contact"),
+    TagMappingDto(id = 24, name = "HouseHoldCount"),
+    TagMappingDto(id = 25, name = "Had 2 Meals"),
+    TagMappingDto(id = 26, name = "Food Shortage months"),
+    TagMappingDto(id = 27, name = "Owns Kitchen Garden"),
+    TagMappingDto(id = 28, name = "Last 7 days food consumption"),
+    TagMappingDto(id = 29, name = "Ration Card Type"),
+    TagMappingDto(id = 30, name = "PDS Items"),
+    TagMappingDto(id = 31, name = "Last 1 month"),
+    TagMappingDto(id = 32, name = "Last 12 months"),
+    TagMappingDto(id = 33, name = "At least once"),
+    TagMappingDto(id = 34, name = "At least thrice"),
+    TagMappingDto(id = 35, name = "SHG Membership Status"),
+    TagMappingDto(id = 36, name = "SHG name"),
+    TagMappingDto(id = 37, name = "SHG Membership Tenure"),
+    TagMappingDto(id = 38, name = "SHG Savings Account"),
+    TagMappingDto(id = 39, name = "Amount in SHG Savings"),
+    TagMappingDto(id = 40, name = "SHG Loan Status"),
+    TagMappingDto(id = 41, name = "Amount of SHG Loan"),
+    TagMappingDto(id = 42, name = "Decision Making"),
+    TagMappingDto(id = 43, name = "Monetary contribution"),
+    TagMappingDto(id = 44, name = "HasBankAccount"),
+    TagMappingDto(id = 45, name = "Savings Beyond SHG"),
+    TagMappingDto(id = 46, name = "Debt Status"),
+    TagMappingDto(id = 47, name = "Debt Sources"),
+    TagMappingDto(id = 48, name = "Active Insurance"),
+    TagMappingDto(id = 49, name = "Government Scheme"),
+    TagMappingDto(id = 50, name = "Has family financial support"),
+    TagMappingDto(id = 51, name = "Income Sources Count"),
+    TagMappingDto(id = 52, name = "Income Soruces"),
+    TagMappingDto(id = 53, name = "Farming Income"),
+    TagMappingDto(id = 54, name = "Livestock Income"),
+    TagMappingDto(id = 55, name = "Small Business Income"),
+    TagMappingDto(id = 56, name = "Casual Labour - Agri Income"),
+    TagMappingDto(id = 57, name = "Total Income"),
+    TagMappingDto(id = 58, name = "Household Information"),
+    TagMappingDto(id = 59, name = "Public Infra"),
+    TagMappingDto(id = 60, name = "Key programme"),
+)
+/*listOf(
+TagMappingDto(id = 1, name = "FoodSecurtiy"),
+TagMappingDto(id = 2, name = "Had 2 Meals per day"),
+TagMappingDto(id = 3, name = "Food Shortage"),
+TagMappingDto(id = 4, name = "Owns Kitchen Garden"),
+TagMappingDto(id = 5, name = "Last 7 days food consumption"),
+TagMappingDto(id = 6, name = "Ration Card type"),
+TagMappingDto(id = 7, name = "PDS Items"),
+TagMappingDto(id = 8, name = "last 1 month"),
+TagMappingDto(id = 9, name = "last 12 months"),
+TagMappingDto(id = 12, name = "SocialInclusion"),
+TagMappingDto(id = 13, name = "SHG Membership Status"),
+TagMappingDto(id = 14, name = "SHG Name"),
+TagMappingDto(id = 15, name = "SHG Membership Tenure"),
+TagMappingDto(id = 16, name = "SHG Savings Account"),
+TagMappingDto(id = 17, name = "Amount in SHG Savings"),
+TagMappingDto(id = 18, name = "SHG Loan Status"),
+TagMappingDto(id = 19, name = "Amount of SHG Loan"),
+TagMappingDto(id = 20, name = "WomenEmpowerment"),
+TagMappingDto(id = 21, name = "Decision Making"),
+TagMappingDto(id = 22, name = "Monetary contribution"),
+TagMappingDto(id = 23, name = "FinancialInclusion"),
+TagMappingDto(id = 24, name = "HasBankAccount"),
+TagMappingDto(id = 25, name = "SavingsBeyondSHG"),
+TagMappingDto(id = 26, name = "DebtStatus"),
+TagMappingDto(id = 27, name = "DebtSources"),
+TagMappingDto(id = 28, name = "Active Insurance"),
+TagMappingDto(id = 29, name = "LivelihoodSources"),
+TagMappingDto(id = 30, name = "Has family financial support"),
+TagMappingDto(id = 31, name = "IncomeSourcesCount"),
+TagMappingDto(id = 32, name = "IncomeSources"),
+TagMappingDto(id = 37, name = "Farming"),
+TagMappingDto(id = 38, name = "Livestock"),
+TagMappingDto(id = 39, name = "Small Business"),
+TagMappingDto(id = 40, name = "NonMarketOutcomes"),
+TagMappingDto(id = 42, name = "Civic Engagement"),
+TagMappingDto(id = 43, name = "Political Participation"),
+TagMappingDto(id = 10, name = "At least once"),
+TagMappingDto(id = 11, name = "At least thrice"),
+TagMappingDto(id = 44, name = "Household Information"),
+TagMappingDto(id = 45, name = "Public Infra"),
+TagMappingDto(id = 46, name = "Key programme"),
+)*/
+
+fun List<TagMappingDto>.findTagForId(id: Int): String {
+    if (id == -1)
+        return BLANK_STRING
+
+    return this.find { it.id == id }?.name ?: BLANK_STRING
+}
+
+fun List<TagMappingDto>.findIdFromTag(tag: String): Int {
+    if (tag == BLANK_STRING)
+        return -1
+    return this.find { it.name == tag }?.id ?: -1
 }

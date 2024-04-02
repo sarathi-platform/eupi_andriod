@@ -38,11 +38,6 @@ data class SectionAnswerEntity(
     @ColumnInfo(name = "sectionId")
     var sectionId : Int,
 
-    @SerializedName("villageId")
-    @Expose
-    @ColumnInfo(name = "villageId")
-    var villageId : Int,
-
     @SerializedName("questionType")
     @Expose
     @ColumnInfo(name = "questionType")

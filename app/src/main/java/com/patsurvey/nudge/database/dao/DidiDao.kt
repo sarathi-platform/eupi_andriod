@@ -20,6 +20,12 @@ interface DidiDao {
     @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId and activeStatus = 1 ORDER BY localCreatedDate DESC")
     fun getAllDidisForVillage(villageId: Int): List<DidiEntity>
 
+    @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId and activeStatus = 1 ORDER BY  cohortId ASC")
+    fun getAllDidisForVillageTolaIdAscending(villageId: Int): List<DidiEntity>
+
+    @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId and activeStatus = 1 order by localCreatedDate asc")
+    fun getAllDidisForVillageAscending(villageId: Int): List<DidiEntity>
+
     @Query("Select * FROM $DIDI_TABLE where id = :id and activeStatus = 1")
     fun getDidi(id: Int): DidiEntity
 
@@ -266,7 +272,7 @@ interface DidiDao {
     @Query("SELECT * from $DIDI_TABLE where needsToPostVo = :needsToPostVo and transactionId = :transactionId")
     fun getAllNeedToPostVoDidis(needsToPostVo: Boolean, transactionId: String): List<DidiEntity>
 
-    @Query("UPDATE $DIDI_TABLE SET patExclusionStatus = :patExclusionStatus, crpComment=:crpComment WHERE id = :didiId")
+    @Query("UPDATE $DIDI_TABLE SET patExclusionStatus = :patExclusionStatus, crpComment=:crpComment,score=0 WHERE id = :didiId")
     fun updateExclusionStatus(didiId: Int, patExclusionStatus: Int, crpComment:String)
 
     @Query("UPDATE $DIDI_TABLE SET localPath = :localPath WHERE id = :didiId")

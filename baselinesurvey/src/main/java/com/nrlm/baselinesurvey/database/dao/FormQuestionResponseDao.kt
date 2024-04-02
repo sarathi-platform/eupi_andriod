@@ -44,6 +44,16 @@ interface FormQuestionResponseDao {
         optionId: Int
     ): List<FormQuestionResponseEntity>
 
+    @Query("SELECT COUNT(*) from $FORM_QUESTION_RESPONSE_TABLE where surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND referenceId = :referenceId AND didiId = :didiId and optionId = :optionId")
+    fun isQuestionOptionAlreadyAnswered(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        referenceId: String,
+        didiId: Int,
+        optionId: Int
+    ): Int
+
     @Query("Update $FORM_QUESTION_RESPONSE_TABLE set selectedValue = :selectedValue where didiId = :didiId AND surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND optionId = :optionId AND referenceId = :referenceId")
     fun updateOptionItemValue(
         surveyId: Int,
@@ -85,5 +95,9 @@ interface FormQuestionResponseDao {
         sectionId: Int,
         didiId: Int
     ): List<FormQuestionResponseEntity>
+
+    @Query("Delete from $FORM_QUESTION_RESPONSE_TABLE")
+    fun deleteAllFormQuestions()
+
 
 }

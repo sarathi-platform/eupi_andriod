@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.mission_screen.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
 import com.nrlm.baselinesurvey.DELAY_2_SEC
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
@@ -30,6 +31,9 @@ class MissionViewModel @Inject constructor(
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
     val loaderState: State<LoaderState> get() = _loaderState
 
+    private val _missionTaskCountMap = mutableStateOf(mutableMapOf<Int, Int>())
+    val missionTaskCountMap: State<Map<Int, Int>> get() = _missionTaskCountMap
+
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -57,6 +61,11 @@ class MissionViewModel @Inject constructor(
                 _missionList.value = it
                 _filterMissionList.value = missionList.value
             }
+            mMissionList?.forEach {
+                val taskCountForMission =
+                    missionScreenUseCase.getTaskDetailsFromDbUseCase.getTotalTaskCountForMission(it.missionId)
+                _missionTaskCountMap.value.put(it.missionId, taskCountForMission)
+            }
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
@@ -77,5 +86,11 @@ class MissionViewModel @Inject constructor(
             filteredList.addAll(missionList.value)
         }
         _filterMissionList.value = filteredList
+    }
+
+    fun getPendingTaskCountForMissionLive(missionId: Int): LiveData<Int> {
+        return missionScreenUseCase.getTaskDetailsFromDbUseCase.getPendingTaskCountForMission(
+            missionId
+        )
     }
 }

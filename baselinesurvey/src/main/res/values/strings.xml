@@ -461,5 +461,18 @@
     <string name="not_able_to_load">Not able to load data please try again..</string>
     <string name="designation_comparision_and_label">Designation</string>
     <string name="didi_info">Didi Information</string>
+    <string name="default_confirm_button_text">Confirm</string>
+    <string name="default_dismiss_button_text">Dismiss</string>
+    <string name="delete_text">Delete</string>
+    <string name="cancel_text">Cancel</string>
+    <string name="alert_dialog_title_text">Alert</string>
+    <string name="alart_dialog_entry_deleteion_message_text">Do you want to delete this entry?</string>
+    <string name="didi_list_empty_state">No Didis assigned. Please contact your administrator.</string>
+    <string name="empty_task_message">No task assigned. Please contact your administrator.</string>
+
+    <string name="warning">Warning!</string>
+    <string name="data_lost_message">Another user detected if you proceed you will lost previous user\'s data</string>
+    <string name="proceed">Proceed</string>
+    <string name="fetched_successfully">Data fetched successfully</string>
 
 </resources>

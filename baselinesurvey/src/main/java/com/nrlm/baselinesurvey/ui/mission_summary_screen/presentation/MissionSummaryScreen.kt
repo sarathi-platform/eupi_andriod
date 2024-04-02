@@ -12,6 +12,7 @@ import androidx.compose.material.Text
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -102,16 +103,20 @@ fun MissionSummaryScreen(
                         items = activities
                     ) { index, activity ->
                         var subTitle = if (activity.activityId == 1) "Didis" else "Hamlets"
+
+                        val pendingTasks = viewModel.getPendingDidiCountLive(activity.activityId)
+                            .observeAsState().value ?: 0
+
                         StepsBox(
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                             boxTitle = activity.activityName,
                             subTitle = stringResource(
                                 id = R.string.x_dii_pending,
-                                activity.pendingDidi,
+                                pendingTasks,
                                 subTitle,
                             ),
-                            stepNo = activity.activityTypeId,
-                            index = 1,
+                            stepNo = index + 1,
+                            index = index,
                             isCompleted = activity.status == SectionStatus.COMPLETED.name,
                             iconResourceId = R.drawable.ic_mission_inprogress,
                             backgroundColor = inprogressYellow,
