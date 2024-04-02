@@ -133,8 +133,8 @@
     <string name="share_button_text">শ্বেয়াৰ</string>
     <string name="download_button_text">ডাউনলোড</string>
     <string name="downloading_button_text">ডাউনলোড হয় আছে</string>
-    <string name="option_yes">হয়</string>
-    <string name="option_no">নহয়</string>
+    <string name="option_yes">আছে</string>
+    <string name="option_no">নাই</string>
     <string name="no_photo_available_text">কোনো ফটো উপলব্ধ নাই</string>
     <string name="enter_name_text">নাম লিখক</string>
     <string name="enter_tola_name_message">পাৰাৰ নাম লিখক</string>
@@ -374,49 +374,50 @@
     <string name="this_week_tab_title">This Week</string>
     <string name="all_tab_title">All</string>
     <string name="search_question_placeholder">Search Question</string>
-    <string name="save_next_section_button_text"><string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>--><![CDATA[Save]]></string></string>
+    <string name="save_next_section_button_text"><string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>-->
+        <![CDATA[Save]]></string></string>
     <string name="ok_text">Ok</string>
     <string name="save">চেভ</string>
 
-    <string name="name_comparision">Name</string>
-    <string name="age_comparision">Age</string>
-    <string name="relationship_comparision">Relationship</string>
-    <string name="income_source_comparision">sources of income</string>
-    <string name="agriculture_produce_comparision">(A) Agricultural produce - </string>
-    <string name="livestock_comparision">(A) Type of livestock - </string>
+    <string name="name_comparision">নাম</string>
+    <string name="age_comparision">বয়স কিমান</string>
+    <string name="relationship_comparision">বাইদেউ’ৰ সৈতে সম্পৰ্ক</string>
+    <string name="income_source_comparision">আয়ৰ উৎস কিমান</string>
+    <string name="agriculture_produce_comparision">(ক) কৃষি উৎপাদিত সামগ্ৰী</string>
+    <string name="livestock_comparision">(ক) পশুধনৰ প্ৰকাৰ</string>
     <string name="income_frequency_comparision">Income frequency</string>
-    <string name="no_income_comparision">No income</string>
+    <string name="no_income_comparision">কোনো আয় নাই</string>
     <string name="total_income_comparision">(E) Total Income</string>
     <string name="total_unit_comparision">(D) Total units</string>
     <string name="income_comparision">Income</string>
-    <string name="small_business_comparision">What is the household income from small business in the last 12 months?</string>
+    <string name="small_business_comparision">যোৱা ১২ মাহত ক্ষুদ্ৰ ব্যৱসায়ৰ পৰা ঘৰুৱা আয় কিমান?</string>
     <string name="didi_title">"দিদি:"</string>
     <string name="dada_title">"দাদা: "</string>
     <string name="caste_titile">"জাতি: "</string>
     <string name="aadhar_card_titile">দিদিৰ আধাৰ কাৰ্ড আছে নেকি?</string>
     <string name="voter_card_title">দিদিৰ ভোটাৰ কাৰ্ড আছে নেকি?</string>
-    <string name="phone_number_title">didi\'s পৰিয়ালৰ ফোন নম্বৰ দিয়ক</string>
+    <string name="phone_number_title">বাইদেউৰ / পৰিয়ালৰ সদস্যৰ যোগাযোগ নম্বৰ</string>
     <string name="add_didi_details_label">Add didi details</string>
     <string name="household_information_comparision">Household information</string>
     <string name="total_income_lable">Total Income: ₹</string>
-    <string name="influence_type_comparision_and_label">Influence type</string>
-    <string name="acess_to_public_transportation_comparision">Acess to public transportation</string>
+    <string name="influence_type_comparision_and_label">প্ৰভাৱৰ ধৰণ</string>
+    <string name="acess_to_public_transportation_comparision">ৰাজহুৱা পৰিবহণৰ হাৰ</string>
     <string name="to_the_block_office_comparision">To the block office</string>
     <string name="to_the_nearest_primary_health_care_centre_comparision">To the nearest primary health care centre</string>
     <string name="to_the_nearest_government_school_comparision">To the nearest government school</string>
     <string name="to_the_nearest_permanent_market_comparision">To the nearest permanent market</string>
     <string name="to_the_nearest_bank_comparsion">To the nearest bank</string>
     <string name="to_the_replacement_string">""</string>
-    <string name="average_travel_cost_comparision">"Average travel cost "</string>
+    <string name="average_travel_cost_comparision">"গড় যাত্ৰা খৰচ (সংখ্যা) "</string>
     <string name="questions_data_tab_title">Questions Data</string>
     <string name="section_information_tab_title">Section Information</string>
     <string name="search_hamlet">Search Hamlet</string>
     <string name="mission_completed_text">Mission Completed</string>
-    <string name="aadhar_card_titile_assam">বাইদেউ’ৰ আধাৰ কাৰ্ড আছে নেকি?</string>
-    <string name="voter_card_title_assam">বাইদেউ’ৰ ভোটাৰ কাৰ্ড আছে নেকি?</string>
+    <string name="aadhar_card_titile_assam">আপোনাৰ আধাৰ কাৰ্ড আছে নে?</string>
+    <string name="voter_card_title_assam">আপোনাৰ  ভোটাৰ কাৰ্ড আছে নে?</string>
     <string name="not_able_to_load">ডাটা লোড কৰিব পৰা নাই অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক..</string>
     <string name="designation_comparision_and_label">পদবী</string>
-    <string name="didi_info">" বাইদেউ’ৰ তথ্য"</string>
+    <string name="didi_info">বাইদেউ’ৰ তথ্য</string>
     <string name="default_confirm_button_text">Confirm</string>
     <string name="default_dismiss_button_text">Dismiss</string>
     <string name="delete_text">Delete</string>
@@ -430,5 +431,7 @@
     <string name="data_lost_message">" আন এজন ব্যৱহাৰকাৰী ধৰা পৰিছে যদি আপুনি আগবাঢ়ি যায় আপুনি পূৰ্বৰ ব্যৱহাৰকাৰীৰ তথ্য হেৰুৱাব"</string>
     <string name="proceed">" আগবাঢ়ক"</string>
     <string name="fetched_successfully">" তথ্য সফলতাৰে আহৰণ কৰা হৈছে"</string>
+    <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
+    <string name="start">"আৰম্ভ কৰক "</string>
 
 </resources>

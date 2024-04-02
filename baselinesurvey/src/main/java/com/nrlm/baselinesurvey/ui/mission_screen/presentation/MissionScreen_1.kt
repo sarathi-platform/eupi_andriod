@@ -37,6 +37,7 @@ import com.nrlm.baselinesurvey.navigation.home.MISSION_SUMMARY_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
+import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.mission_screen.viewmodel.MissionViewModel
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
@@ -119,6 +120,7 @@ fun MissionScreen_1(
                 showFilter = false,
                 onFilterSelected = {},
                 onSearchValueChange = { queryTerm ->
+                    viewModel.onEvent(SearchEvent.PerformSearch(queryTerm, false, ""))
                 })
 
             LoaderComponent(visible = loaderState.isLoaderVisible)

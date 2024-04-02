@@ -135,6 +135,10 @@ fun FormQuestionSummaryScreen(
                 FormResponseCard(
                     formResponseObjectDto = formResponseObjectDto,
                     optionItemListWithConditionals = optionItemEntityListWithConditions,
+                    isPictureRequired = formResponseObjectDto.questionTag.equals(
+                        stringResource(R.string.household_information_comparision),
+                        true
+                    ),
                     viewModel = formResponseSummaryScreenViewModel,
                     onDelete = {
                         openAlertDialog.value = Pair(true, formResponseObjectDto)

@@ -34,6 +34,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -48,7 +49,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -64,6 +64,7 @@ import com.nrlm.baselinesurvey.navigation.home.navigateToSearchScreen
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.ComplexSearchComponent
 import com.nrlm.baselinesurvey.ui.common_components.SectionItemComponent
+import com.nrlm.baselinesurvey.ui.common_components.emptySpacer
 import com.nrlm.baselinesurvey.ui.description_component.presentation.DescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ImageExpanderDialogComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
@@ -132,7 +133,7 @@ fun SectionListScreen(
         mutableStateOf(false)
     }
 
-    val linearProgress = mutableStateOf(0.0f)
+    val linearProgress = remember { mutableStateOf(0.0f) }
 
     BackHandler {
         BaselineCore.setCurrentActivityName(BLANK_STRING)
@@ -240,31 +241,36 @@ fun SectionListScreen(
         },
         bottomBar = {
             if (viewModel.allSessionCompleted.value && viewModel.didiDetails?.surveyStatus != SurveyState.COMPLETED.ordinal) {
-                Box(
+                BottomAppBar(
                     modifier = Modifier
-                        .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
-                        .padding(vertical = dimensionResource(id = R.dimen.dp_15))
+                        .background(white)
                 ) {
-                    ButtonPositive(
-                        buttonTitle = "Submit ${if (surveyId == 1) "BaseLine" else "Hamlet"} for ${viewModel.didiName.value}",
-                        isArrowRequired = false,
-                        isActive = true
+                    Box(
+                        modifier = Modifier
+                            .background(white)
+                            .padding(dimen_16_dp)
                     ) {
-                        viewModel.onEvent(
-                            SectionScreenEvent.UpdateSubjectStatus(
-                                didiId,
-                                SurveyState.COMPLETED
+                        ButtonPositive(
+                            buttonTitle = "Submit ${if (surveyId == 1) "Baseline" else "Hamlet"} for ${viewModel.didiName.value}",
+                            isArrowRequired = false,
+                            isActive = true
+                        ) {
+                            viewModel.onEvent(
+                                SectionScreenEvent.UpdateSubjectStatus(
+                                    didiId,
+                                    SurveyState.COMPLETED
+                                )
                             )
-                        )
-                        viewModel.onEvent(
-                            SectionScreenEvent.UpdateTaskStatus(
-                                didiId,
-                                SectionStatus.COMPLETED
+                            viewModel.onEvent(
+                                SectionScreenEvent.UpdateTaskStatus(
+                                    didiId,
+                                    SectionStatus.COMPLETED
+                                )
                             )
-                        )
-                        BaselineCore.setCurrentActivityName(BLANK_STRING)
-                        navigateBackToSurveyeeListScreen(navController)
+                            BaselineCore.setCurrentActivityName(BLANK_STRING)
+                            navigateBackToSurveyeeListScreen(navController)
 
+                        }
                     }
                 }
             }
@@ -303,11 +309,13 @@ fun SectionListScreen(
                                     tint = blueDark
                                 )
                             }
-                            Divider(
-                                thickness = dimen_1_dp,
-                                color = lightGray2,
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            if (scaffoldState.isVisible) {
+                                Divider(
+                                    thickness = dimen_1_dp,
+                                    color = lightGray2,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
                             DescriptionContentComponent(
                                 buttonClickListener = {
                                     scope.launch {
@@ -421,6 +429,11 @@ fun SectionListScreen(
                                 }
                             )
                         }
+                        emptySpacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(dimen_16_dp)
+                        )
                     }
                 }
             }

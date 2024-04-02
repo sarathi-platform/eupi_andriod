@@ -52,7 +52,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
+import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.ui.common_components.BlueButtonWithIcon
 import com.nrlm.baselinesurvey.ui.common_components.ButtonOutline
@@ -128,6 +128,7 @@ fun BaseLineStartScreen(
                 isPositiveButtonActive = isContinueButtonActive.value,
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
+                    baseLineStartViewModel.addDidiInfoEvent(didi.value)
                     updateDidiDetails(didi, baseLineStartViewModel)
                     navController.popBackStack()
 //                    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
@@ -660,7 +661,7 @@ private fun updateDidiDetails(
         baseLineStartViewModel.onEvent(
             SurveyStateEvents.UpdateDidiSurveyStatus(
                 it,
-                didiInfo = DidiIntoEntity(
+                didiInfo = DidiInfoEntity(
                     didiId = it,
                     isAdharCard = baseLineStartViewModel.isAdharCard.value,
                     isVoterCard = baseLineStartViewModel.isVoterCard.value,
@@ -717,5 +718,5 @@ fun BaseLineStartScreenPreview(
 private fun getCasteName(casteId: Int, baseLineStartViewModel: BaseLineStartViewModel): String {
     var casteList = baseLineStartViewModel.getCasteListForSelectedLanguage()
 
-    return casteList.find { it.casteId == casteId }?.casteName ?: BLANK_STRING
+    return casteList.find { it.id == casteId }?.casteName ?: BLANK_STRING
 }

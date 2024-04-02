@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.navigation.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,7 +26,6 @@ import com.nrlm.baselinesurvey.ARG_MISSION_ID
 import com.nrlm.baselinesurvey.ARG_MISSION_NAME
 import com.nrlm.baselinesurvey.ARG_MOBILE_NUMBER
 import com.nrlm.baselinesurvey.ARG_QUESTION_ID
-import com.nrlm.baselinesurvey.ARG_QUESTION_NAME
 import com.nrlm.baselinesurvey.ARG_SECTION_ID
 import com.nrlm.baselinesurvey.ARG_SURVEY_ID
 import com.nrlm.baselinesurvey.ARG_VIDEO_PATH
@@ -51,6 +51,7 @@ import com.nrlm.baselinesurvey.ui.splash.presentaion.SplashScreenComponent
 import com.nrlm.baselinesurvey.ui.start_screen.presentation.BaseLineStartScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreen
+import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.ui.video_player.presentation.FullscreenView
 import com.nrlm.baselinesurvey.utils.BaselineCore
 
@@ -59,6 +60,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
     NavHost(
         modifier = Modifier
             .fillMaxSize()
+            .background(color = white)
             .then(modifier),
         navController = navController,
         route = Graph.HOME,
@@ -175,9 +177,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
             )
         }
         composable(route = HomeScreens.FormTypeQuestionScreen.route, arguments = listOf(
-            navArgument(name = ARG_QUESTION_NAME) {
-                type = NavType.StringType
-            }, navArgument(name = ARG_SURVEY_ID) {
+            navArgument(name = ARG_SURVEY_ID) {
                 type = NavType.IntType
             },
             navArgument(name = ARG_SECTION_ID) {
@@ -194,10 +194,9 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
             FormTypeQuestionScreen(
                 navController = navController,
                 viewModel = hiltViewModel(),
-                it.arguments?.getString(ARG_QUESTION_NAME) ?: "",
-                it.arguments?.getInt(ARG_SURVEY_ID) ?: -1,
-                it.arguments?.getInt(ARG_SECTION_ID) ?: -1,
-                it.arguments?.getInt(ARG_QUESTION_ID) ?: -1,
+                surveyID = it.arguments?.getInt(ARG_SURVEY_ID) ?: -1,
+                sectionId = it.arguments?.getInt(ARG_SECTION_ID) ?: -1,
+                questionId = it.arguments?.getInt(ARG_QUESTION_ID) ?: -1,
                 surveyeeId = it.arguments?.getInt(ARG_DIDI_ID) ?: -1,
                 referenceId = BaselineCore.getReferenceId()
             )
@@ -434,7 +433,7 @@ sealed class HomeScreens(val route: String) {
         HomeScreens(route = "$VIDEO_PLAYER_SCREEN_ROUTE_NAME/{$ARG_VIDEO_PATH}")
 
     object FormTypeQuestionScreen :
-        HomeScreens(route = "${FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME}/{$ARG_QUESTION_NAME}/{$ARG_SURVEY_ID}/{$ARG_SECTION_ID}/{$ARG_QUESTION_ID}/{$ARG_DIDI_ID}?{$ARG_FORM_QUESTION_RESPONSE_REFERENCE_ID}")
+        HomeScreens(route = "${FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME}/{$ARG_SURVEY_ID}/{$ARG_SECTION_ID}/{$ARG_QUESTION_ID}/{$ARG_DIDI_ID}?{$ARG_FORM_QUESTION_RESPONSE_REFERENCE_ID}")
 
     object BaseLineStartScreen :
         HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}/{$ARG_SURVEY_ID}/{$ARG_SECTION_ID}")
@@ -543,7 +542,7 @@ fun navigateToFormTypeQuestionScreen(
     sectionId: Int,
     surveyeeId: Int
 ) {
-    navController.navigate("$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/${question.questionDisplay}/${surveyId}/${sectionId}/${question.questionId}/${surveyeeId}")
+    navController.navigate("$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/${surveyId}/${sectionId}/${question.questionId}/${surveyeeId}")
 
 }
 

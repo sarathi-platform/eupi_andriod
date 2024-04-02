@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.DIDI_INFO_TABLE_NAME
 
 @Entity(tableName = DIDI_INFO_TABLE_NAME)
-data class DidiIntoEntity(
+data class DidiInfoEntity(
     @PrimaryKey(autoGenerate = false)
     @SerializedName("didiId")
     @Expose
@@ -21,7 +21,7 @@ data class DidiIntoEntity(
     var isAdharCard: Int? = -1,
 ) {
     companion object {
-        fun getEmptyDidiIntoEntity() = DidiIntoEntity(
+        fun getEmptyDidiInfoEntity() = DidiInfoEntity(
             // id = 0,
             didiId = 0,
             adharNumber = "",
