@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.start_screen.domain.repository
 
 import androidx.lifecycle.LiveData
 import com.nrlm.baselinesurvey.PREF_STATE_ID
+import com.nrlm.baselinesurvey.PREF_USER_TYPE
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.DidiInfoDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
@@ -40,6 +41,10 @@ class StartScreenRepositoryImpl @Inject constructor(
 
     override fun getStateId(): Int {
         return prefRepo.getPref(PREF_STATE_ID, -1)
+    }
+
+    override fun getUserType(): String? {
+        return prefRepo.getPref(PREF_USER_TYPE, "")
     }
 
 

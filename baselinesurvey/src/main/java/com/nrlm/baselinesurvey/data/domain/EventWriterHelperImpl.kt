@@ -8,12 +8,15 @@ import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
+import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.ActivityForSubjectDto
+import com.nrlm.baselinesurvey.model.datamodel.ImageUploadRequest
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventForFormQuestionDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventQuestionItemDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventQuestionItemForFormQuestionDto
+import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.model.datamodel.SectionStatusUpdateEventDto
 import com.nrlm.baselinesurvey.model.datamodel.UpdateActivityStatusEventDto
 import com.nrlm.baselinesurvey.model.datamodel.UpdateMissionStatusEventDto
@@ -26,6 +29,7 @@ import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
+import com.nudge.core.json
 import com.nudge.core.toDate
 import javax.inject.Inject
 
@@ -403,6 +407,42 @@ class EventWriterHelperImpl @Inject constructor(
             }
         }
         return eventList
+    }
+
+    override fun createImageUploadEvent(
+        didi: SurveyeeEntity,
+        location: String,
+        filePath: String,
+        userType: String,
+        questionId: Int,
+        referenceId: String,
+        sectionDetails: SectionListItem,
+        subjectType: String
+    ): Events? {
+
+        val payload = ImageUploadRequest.getRequestObjectForUploadImage(
+            didi = didi,
+            location = location,
+            filePath = filePath,
+            userType = userType,
+            questionId = questionId,
+            referenceId = referenceId,
+            sectionDetails = sectionDetails,
+            subjectType = "Didi"
+        ).json()
+
+        /*val dependsOn = patDidiSummaryRepository.createEventDependency(
+            didiEntity,
+            if (patDidiSummaryRepository.prefRepo.isUserBPC()) EventName.BPC_IMAGE else EventName.CRP_IMAGE,
+            imageUploadEvent
+        )
+        val metadata = imageUploadEvent.metadata?.getMetaDataDtoFromString()
+        val updatedMetaData = metadata?.copy(depends_on = dependsOn.getDependentEventsId())
+        imageUploadEvent = imageUploadEvent.copy(
+            metadata = updatedMetaData?.json()
+        )*/
+
+        return null
     }
 
     /*override suspend fun creteSubjectStatusUpdateEvent(
