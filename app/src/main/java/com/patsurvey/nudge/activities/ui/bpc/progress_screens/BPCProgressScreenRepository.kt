@@ -1035,11 +1035,13 @@ class BPCProgressScreenRepository @Inject constructor(
             updateWorkflowStatus(stepStatus = StepStatus.INPROGRESS, villageId, bpcStep.id)
             val voEndorsementStep =
                 stepsListDao.getStepByOrder(VO_ENDORSEMENT_STEP_ORDER, villageId)
-            villageListDao.updateStepAndStatusId(
-                villageId,
-                voEndorsementStep.id,
-                StepStatus.COMPLETED.ordinal
-            )
+            if (prefRepo.getSelectedVillage().stepId == bpcStep.id && prefRepo.getSelectedVillage().statusId == StepStatus.COMPLETED.ordinal) {
+                villageListDao.updateStepAndStatusId(
+                    villageId,
+                    voEndorsementStep.id,
+                    StepStatus.COMPLETED.ordinal
+                )
+            }
             prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + villageId, false)
 
         }
