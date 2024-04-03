@@ -18,7 +18,9 @@ import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
+import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.getPatScoreSaveEvent
 import javax.inject.Inject
 
@@ -27,6 +29,7 @@ class BPCDidiListRepository @Inject constructor(
     val tolaDao: TolaDao,
     val stepsListDao: StepsListDao,
     val questionListDao: QuestionListDao,
+    val villageListDao: VillageListDao,
     val answerDao: AnswerDao
 ):BaseRepository() {
 
@@ -59,6 +62,17 @@ class BPCDidiListRepository @Inject constructor(
        return didiDao.getAllPendingPATDidisCount(prefRepo.getSelectedVillage().id)
     }
 
+    fun markBPCStepInProgress() {
+        val villageId = prefRepo.getSelectedVillage().id
+        val bpcStepId = getAllStepsForVillage().sortedBy { it.orderNumber }.last().id
+        stepsListDao.markStepAsCompleteOrInProgress(
+            stepId = bpcStepId,
+            isComplete = StepStatus.INPROGRESS.ordinal,
+            villageId = villageId
+        )
+        villageListDao.updateStepAndStatusId(villageId, bpcStepId, StepStatus.INPROGRESS.ordinal)
+
+    }
     fun isStepComplete(stepId: Int,villageId: Int): Int{
        return stepsListDao.isStepComplete(stepId, villageId)
     }

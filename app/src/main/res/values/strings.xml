@@ -297,6 +297,8 @@
     <string name="do_not_close_app_message">Please don\'t close the app or switch off the phone.</string>
     <string name="vo_endorsement_completed_village_banner_text">VO Endorsement completed</string>
     <string name="bpc_verification_completed_village_banner_text">BPC Verification Completed</string>
+    <string name="bpc_verification_in_progress_village_banner_text">BPC Verification In Progress</string>
+
     <string name="empty_tola_success_message">This Village does not have any Para / Tola.</string>
 
     <string name="total_poor_didis">Total Poor Didis</string>
@@ -425,5 +427,6 @@
     <string name="fetched_successfully">Data fetched successfully</string>
     <string name="load_server_data">Load Server Data</string>
     <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
+    <string name="didi_verified_by_bpc">Didi verified by BPC</string>
 
 </resources>

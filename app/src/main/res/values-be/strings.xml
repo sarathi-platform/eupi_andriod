@@ -381,5 +381,7 @@
     <string name="data_lost_message">Another user detected if you proceed you will lost previous user\'s data</string>
     <string name="proceed">Proceed</string>
     <string name="fetched_successfully">Data fetched successfully</string>
+    <string name="didi_verified_by_bpc">बिपिसिजों फोरमान खालामजानाय दिदि</string>
+    <string name="bpc_verification_in_progress_village_banner_text">BPC फोरमान खालामनाया सोलिगासिनो दं</string>
 
 </resources>

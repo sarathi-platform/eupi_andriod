@@ -391,6 +391,8 @@
     <string name="fetched_successfully">" ডেটা সফলভাবে আনা হয়েছে৷"</string>
     <string name="load_server_data">সার্ভার ডেটা লোড করুন</string>
     <string name="are_you_sure_you_want_to_load_data_from_server">" আপনি কি সার্ভার থেকে নতুন ডেটা পুনরায় লোড করার বিষয়ে নিশ্চিত যা সিঙ্ক না করা ডেটা হারাতে পারে?"</string>
+    <string name="didi_verified_by_bpc">Didis BPC দ্বারা যাচাই</string>
+    <string name="bpc_verification_in_progress_village_banner_text">" BPC যাচাইকরণ প্রক্রিয়াধীন"</string>
 
 
 </resources>

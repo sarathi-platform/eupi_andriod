@@ -587,6 +587,40 @@ fun BpcProgressScreen(
                                             }
 
 
+                                            Row(
+                                                Modifier.fillMaxWidth(),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                TableCell(
+                                                    text = bpcProgreesScreenViewModel.bpcCompletedDidiCount.value.toString()
+                                                        ?: "0",
+                                                    style = TextStyle(
+                                                        color = textColorDark,
+                                                        fontSize = 18.sp,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        fontFamily = NotoSans
+                                                    ),
+                                                    alignment = TextAlign.End,
+                                                    weight = numberColumnWeight,
+                                                    modifier = Modifier
+                                                        .padding(vertical = 8.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(10.dp))
+                                                TableCell(
+                                                    text = stringResource(R.string.didi_verified_by_bpc),
+                                                    style = TextStyle(
+                                                        color = textColorDark,
+                                                        fontSize = 15.sp,
+                                                        fontWeight = FontWeight.Normal,
+                                                        fontFamily = NotoSans
+                                                    ),
+                                                    alignment = TextAlign.Start,
+                                                    weight = labelColumnWeight,
+                                                    modifier = Modifier
+                                                        .padding(vertical = 8.dp)
+                                                )
+
+                                            }
 
                                             Row(
                                                 Modifier.fillMaxWidth(),
