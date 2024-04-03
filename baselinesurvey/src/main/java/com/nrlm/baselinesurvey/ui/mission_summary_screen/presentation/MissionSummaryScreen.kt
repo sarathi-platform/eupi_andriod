@@ -1,7 +1,6 @@
 package com.nrlm.baselinesurvey.ui.mission_summary_screen.presentation
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,12 +9,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Text
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -35,6 +32,7 @@ import com.nrlm.baselinesurvey.ui.theme.inprogressYellow
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 
