@@ -11,6 +11,7 @@ import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEve
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.SectionListScreenUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.presentation.SectionScreenEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.findItemBySectionId
 import com.nrlm.baselinesurvey.utils.states.LoaderState
@@ -27,6 +28,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SectionListScreenViewModel @Inject constructor(
     val sectionScreenUseCase: SectionListScreenUseCase,
+    private val fetchDataUseCase: FetchDataUseCase,
     private val eventWriterHelperImpl: EventWriterHelperImpl
 ): BaseViewModel() {
 
@@ -196,5 +198,9 @@ class SectionListScreenViewModel @Inject constructor(
             }
         }
         return null
+    }
+
+    fun refreshData() {
+        refreshData(fetchDataUseCase)
     }
 }

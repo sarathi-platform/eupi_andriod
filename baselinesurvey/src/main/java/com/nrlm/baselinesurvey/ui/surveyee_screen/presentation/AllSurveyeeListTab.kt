@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material3.LinearProgressIndicator
@@ -29,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -74,6 +76,7 @@ fun AllSurveyeeListTab(
     activityDate: String,
     activityId: Int,
 ) {
+    val context = LocalContext.current
 
     val surveyeeList = viewModel.filteredSurveyeeListState.value
 
@@ -312,11 +315,11 @@ fun AllSurveyeeListTab(
             }
         }
 
-//        PullRefreshIndicator(
-//            refreshing = loaderState.isLoaderVisible,
-//            state = pullRefreshState,
-//            modifier = Modifier.align(Alignment.TopCenter),
-//            contentColor = blueDark,
-//        )
+        PullRefreshIndicator(
+            refreshing = loaderState.isLoaderVisible,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+            contentColor = blueDark,
+        )
     }
 }

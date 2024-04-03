@@ -73,6 +73,7 @@ fun MissionScreen_1(
                     context,
                     context.getString(R.string.refresh_failed_please_try_again)
                 )
+
             }
 
         })

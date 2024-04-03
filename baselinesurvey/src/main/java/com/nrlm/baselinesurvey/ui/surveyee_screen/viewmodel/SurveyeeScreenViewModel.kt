@@ -15,6 +15,7 @@ import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListEvents
 import com.nrlm.baselinesurvey.utils.states.FilterListState
@@ -32,7 +33,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SurveyeeScreenViewModel @Inject constructor(
     private val surveyeeScreenUseCase: SurveyeeScreenUseCase,
-    private val eventWriterHelperImpl: EventWriterHelperImpl
+    private val eventWriterHelperImpl: EventWriterHelperImpl,
+    private val fetchDataUseCase: FetchDataUseCase
 ) : BaseViewModel() {
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
@@ -379,6 +381,10 @@ class SurveyeeScreenViewModel @Inject constructor(
             isFlag = task.surveyState.ordinal == 2
         }
         return isFlag
+    }
+
+    fun refreshData() {
+        refreshData(fetchDataUseCase)
     }
 
 

@@ -3,11 +3,9 @@ package com.nrlm.baselinesurvey.ui.mission_screen.viewmodel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.DELAY_2_SEC
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
-import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.MissionScreenUseCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
@@ -100,40 +98,7 @@ class MissionViewModel @Inject constructor(
     }
 
     fun refreshData() {
-        onEvent(LoaderEvent.UpdateLoaderState(true))
-        viewModelScope.launch(Dispatchers.IO) {
-            val baselineSurveyRequestBodyModel = SurveyRequestBodyModel(
-                languageId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getAppLanguageId(),
-                surveyName = "BASELINE",
-                referenceId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getStateId(),
-                referenceType = "STATE"
-            )
-            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-                baselineSurveyRequestBodyModel
-            )
-
-            val hamletSurveyRequestBodyModel = SurveyRequestBodyModel(
-                languageId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getAppLanguageId(),
-                surveyName = "HAMLET",
-                referenceId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getStateId(),
-                referenceType = "STATE"
-            )
-            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-                hamletSurveyRequestBodyModel
-            )
-
-            val fetchUserDetailFromNetworkUseCaseSuccess =
-                fetchDataUseCase.fetchUserDetailFromNetworkUseCase.invoke()
-            if (fetchUserDetailFromNetworkUseCaseSuccess) {
-                fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke()
-                fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
-                fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
-                fetchDataUseCase.fetchContentnDataFromNetworkUseCase.invoke()
-
-            }
-            withContext(Dispatchers.Main) {
-                onEvent(LoaderEvent.UpdateLoaderState(false))
-            }
-        }
+        refreshData(fetchDataUseCase)
     }
+
 }
