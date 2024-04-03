@@ -616,7 +616,6 @@ class QuestionTypeScreenViewModel @Inject constructor(
                         val contentEntity =
                             formQuestionScreenUseCase.getFormQuestionResponseUseCase.getContentData(
                                 content?.contentKey ?: BLANK_STRING,
-                                2
                             )
                         if (contentEntity != null) {
                             content?.contentValue = contentEntity.contentValue

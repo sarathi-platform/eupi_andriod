@@ -241,7 +241,6 @@ fun FormTypeQuestionScreen(
                             },
                             sectionInfoButtonClicked = { content ->
                                 scope.launch {
-                                    //TODO Modify code to handle contentList.
                                     selectedSectionDescription.value =
                                         selectedSectionDescription.value.copy(
                                             textTypeDescriptionContent = viewModel.getContentData(

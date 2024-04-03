@@ -85,8 +85,8 @@ class GetFormQuestionResponseUseCase(private val repository: FormQuestionRespons
         return repository.getQuestionTag(surveyId, sectionId, questionId)
     }
 
-    suspend fun getContentData(contentKey: String, languageId: Int): ContentEntity {
-        return repository.getContentFromDB(contentKey, languageId)
+    suspend fun getContentData(contentKey: String): ContentEntity {
+        return repository.getContentFromDB(contentKey)
     }
 
 }

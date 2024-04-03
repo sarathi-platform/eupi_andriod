@@ -74,5 +74,5 @@ interface FormQuestionResponseRepository {
     ): List<FormQuestionResponseEntity>
 
     suspend fun getQuestionTag(surveyId: Int, sectionId: Int, questionId: Int): Int
-    suspend fun getContentFromDB(contentKey: String, languageId: Int): ContentEntity
+    suspend fun getContentFromDB(contentKey: String): ContentEntity
 }

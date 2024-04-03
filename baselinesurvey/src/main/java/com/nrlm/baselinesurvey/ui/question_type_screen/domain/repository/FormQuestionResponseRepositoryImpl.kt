@@ -183,8 +183,8 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
         return questionEntityDao.getQuestionTag(surveyId, sectionId, questionId)
     }
 
-    override suspend fun getContentFromDB(contentKey: String, languageId: Int): ContentEntity {
-        return contentDao.getContentFromIds(contentKey, languageId)
+    override suspend fun getContentFromDB(contentKey: String): ContentEntity {
+        return contentDao.getContentFromIds(contentKey, languageId = getSelectedLanguage())
     }
 
 }
