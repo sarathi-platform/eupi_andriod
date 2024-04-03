@@ -93,7 +93,7 @@ fun SurveyeeListScreen(
         navController=navController,
         onBackIconClick = { navController.popBackStack() },
         onBottomUI = {
-            if (viewModel.isEnableNextBTn.value) {
+            if (viewModel.isEnableNextBTn.value && viewModel.filteredSurveyeeListState.value.isNotEmpty()) {
 
                 DoubleButtonBox(
                     modifier = Modifier
