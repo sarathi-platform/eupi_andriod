@@ -82,7 +82,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
 
     val calculatedResult = mutableStateOf("")
 
-//    val calculationResult = mutableStateOf()
+    var tempRefId = mutableStateOf(BLANK_STRING)
 
     fun init(
         sectionId: Int,
@@ -110,6 +110,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
             BaselineLogger.d(TAG, "init: referenceId: ${this@QuestionTypeScreenViewModel.referenceId}")
             if (referenceId.isNotBlank()) {
                 this@QuestionTypeScreenViewModel.referenceId = referenceId
+                tempRefId.value = referenceId
                 BaselineLogger.d(
                     TAG,
                     "init: referenceId after update: ${this@QuestionTypeScreenViewModel.referenceId}"
@@ -329,9 +330,9 @@ class QuestionTypeScreenViewModel @Inject constructor(
 
             is QuestionTypeEvent.UpdateCalculationTypeQuestionValue -> {
                 val optionList = updatedOptionList.toList()
-                if (optionList.any { it.optionItemEntity?.optionType == QuestionType.Calculation.name }) {
+                if (optionList.any { it.optionItemEntity?.optionType == QuestionType.Calculation.name && it.showQuestion }) {
                     val calculationOption =
-                        optionList.find { it.optionItemEntity?.optionType == QuestionType.Calculation.name }
+                        optionList.find { it.optionItemEntity?.optionType == QuestionType.Calculation.name && it.showQuestion }
                     calculationOption?.optionItemEntity?.conditions?.forEach { conditionDto ->
                         val optionIds = mutableListOf<Int>()
                         conditionDto?.value?.split(" ")?.filter { it != "" }?.forEach { va ->
@@ -342,9 +343,9 @@ class QuestionTypeScreenViewModel @Inject constructor(
                         var areAllValuesPresent = 0
                         if (optionIds.isNotEmpty()) {
                             optionIds.forEach { option ->
-                                val findOPtion = storeCacheForResponse.findOptionExist(option)
-                                if (findOPtion == true){
-                                    areAllValuesPresent ++
+                                val findOption = storeCacheForResponse.findOptionExist(option)
+                                if (findOption == true) {
+                                    areAllValuesPresent++
                                 }
                             }
                             if (areAllValuesPresent == optionIds.size) {

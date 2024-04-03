@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,6 +28,14 @@ fun TypeDropDownComponent(
     onAnswerSelection: (selectValue: String) -> Unit,
 
     ) {
+
+    Log.d(
+        "TAG", "TypeDropDownComponent: display = " +
+                "${showQuestionState?.optionItemEntity?.display} " +
+                "&& tag = ${showQuestionState?.optionItemEntity?.optionTag}" +
+                "&& isEditAllowed = $isEditAllowed"
+    )
+
     val defaultSourceList = if (sources == null) listOf("Yes", "No") else sources
     var expanded by remember { mutableStateOf(false) }
     var selectedOptionText by remember { mutableStateOf(if (selectOptionText.equals(BLANK_STRING)) hintText else selectOptionText) }
