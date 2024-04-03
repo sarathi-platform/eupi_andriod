@@ -112,7 +112,7 @@ fun MissionSummaryScreen(
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                             boxTitle = activity.activityName,
                             subTitle = stringResource(
-                                id = R.string.x_dii_pending,
+                                id = R.string.x_didi_pending,
                                 pendingTasks,
                                 subTitle,
                             ),
