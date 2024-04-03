@@ -31,6 +31,7 @@ import com.nrlm.baselinesurvey.ui.theme.inprogressYellow
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 
 
@@ -104,8 +105,8 @@ fun MissionSummaryScreen(
                     ) { index, activity ->
                         var subTitle = if (activity.activityId == 1) "Didis" else "Hamlets"
 
-                        val pendingTasks = viewModel.getPendingDidiCountLive(activity.activityId)
-                            .observeAsState().value ?: 0
+                        val pendingTasks = numberInEnglishFormat(viewModel.getPendingDidiCountLive(activity.activityId)
+                            .observeAsState().value ?: 0)
 
                         StepsBox(
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
