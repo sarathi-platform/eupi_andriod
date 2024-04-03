@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_ID
+import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.PREF_CASTE_LIST
 import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nrlm.baselinesurvey.PREF_KEY_IDENTITY_NUMBER
@@ -85,6 +86,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     val didiSectionProgressEntityDao: DidiSectionProgressEntityDao
 ) : DataLoadingScreenRepository {
     override suspend fun fetchLocalLanguageList(): List<LanguageEntity> {
+
         return languageListDao.getAllLanguages()
     }
 
@@ -646,6 +648,10 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
 
     override suspend fun getTaskForSubjectId(didiId: Int?): ActivityTaskEntity? {
         return activityTaskDao.getTaskFromSubjectId(didiId ?: 0)
+    }
+
+    override fun getAppLanguageId(): Int {
+        return prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
     }
 
 }

@@ -10,9 +10,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,7 +39,6 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.navigation.home.MISSION_SUMMARY_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
-import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.mission_screen.viewmodel.MissionViewModel
@@ -45,7 +48,9 @@ import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.showCustomToast
 
+@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Preview(showBackground = true)
 @Composable
@@ -58,6 +63,19 @@ fun MissionScreen_1(
     val filteredMissionList = viewModel.filterMissionList
 
     val loaderState = viewModel.loaderState.value
+    val pullRefreshState = rememberPullRefreshState(
+        viewModel.loaderState.value.isLoaderVisible,
+        {
+            if (true) {
+                viewModel.refreshData()
+            } else {
+                showCustomToast(
+                    context,
+                    context.getString(R.string.refresh_failed_please_try_again)
+                )
+            }
+
+        })
 
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -123,9 +141,20 @@ fun MissionScreen_1(
                     viewModel.onEvent(SearchEvent.PerformSearch(queryTerm, false, ""))
                 })
 
-            LoaderComponent(visible = loaderState.isLoaderVisible)
 
-            if (!loaderState.isLoaderVisible) {
+
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .pullRefresh(pullRefreshState))
+            {
+                PullRefreshIndicator(
+                    refreshing = viewModel.loaderState.value.isLoaderVisible,
+                    state = pullRefreshState,
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    contentColor = blueDark,
+                )
+                if (!loaderState.isLoaderVisible) {
+
                 if (filteredMissionList.value.isEmpty()) {
                     Box(
                         modifier = Modifier
@@ -157,8 +186,11 @@ fun MissionScreen_1(
                                     navController.navigate("${MISSION_SUMMARY_SCREEN_ROUTE_NAME}/${mission.missionId}/${mission.missionName}/${mission.endDate}")
                                 })
                         }
+
                     }
                 }
+                }
+
             }
         }
     }
