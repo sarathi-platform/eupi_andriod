@@ -47,6 +47,9 @@ import com.nrlm.baselinesurvey.ui.common_components.CustomOutlineTextField
 import com.nrlm.baselinesurvey.ui.common_components.VerticalAnimatedVisibilityComponent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
+import com.nrlm.baselinesurvey.ui.theme.blueDark
+import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.greenOnline
 import com.nrlm.baselinesurvey.ui.theme.lightGray2
 import com.nrlm.baselinesurvey.ui.theme.red
@@ -61,9 +64,11 @@ fun IncrementDecrementView(
     title: String = BLANK_STRING,
     currentValue: String? = "0",
     isEditAllowed: Boolean = true,
+    isContent: Boolean = false,
     showQuestion: OptionItemEntityState = OptionItemEntityState.getEmptyStateObject(),
+    onInfoButtonClicked: () -> Unit,
     onAnswerSelection: (selectValue: String) -> Unit,
-    isRequiredField: Boolean = false
+    isRequiredField: Boolean = false,
 ) {
     val currentCount: MutableState<String> = remember {
         mutableStateOf(currentValue ?: "")
@@ -78,32 +83,51 @@ fun IncrementDecrementView(
                 .padding(5.dp)
         ) {
             if (!title.equals(BLANK_STRING)) {
-                Text(
-                    text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                color = textColorDark,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                fontFamily = NotoSans
-                            )
-                        ) {
-                            append(title)
-                        }
-                        if (isRequiredField) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(modifier = Modifier.fillMaxWidth(.9f),
+                        text = buildAnnotatedString {
                             withStyle(
                                 style = SpanStyle(
-                                    color = red,
-                                    fontSize = 14.sp,
+                                    color = textColorDark,
+                                    fontSize = 16.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     fontFamily = NotoSans
                                 )
                             ) {
-                                append("*")
+                                append(title)
+                            }
+                            if (isRequiredField) {
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = red,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontFamily = NotoSans
+                                    )
+                                ) {
+                                    append("*")
+                                }
                             }
                         }
+                    )
+                    if (isContent) {
+                        Spacer(modifier = Modifier.size(dimen_8_dp))
+                        Icon(
+                            painter = painterResource(id = R.drawable.info_icon),
+                            contentDescription = "question info button",
+                            Modifier
+                                .size(dimen_18_dp)
+                                .clickable {
+                                    onInfoButtonClicked()
+                                },
+
+                            tint = blueDark
+                        )
                     }
-                )
+                }
             }
             Box(
                 modifier = Modifier
@@ -313,5 +337,6 @@ fun IncrementDecrementViewPreview() {
     IncrementDecrementView(
         title = "IncrementDecrementView",
         "0",
+        onInfoButtonClicked = {},
         onAnswerSelection = {})
 }

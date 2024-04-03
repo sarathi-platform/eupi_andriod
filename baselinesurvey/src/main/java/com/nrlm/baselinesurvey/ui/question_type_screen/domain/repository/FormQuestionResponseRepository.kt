@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.domain.repository
 
 import androidx.lifecycle.LiveData
+import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
@@ -73,4 +74,5 @@ interface FormQuestionResponseRepository {
     ): List<FormQuestionResponseEntity>
 
     suspend fun getQuestionTag(surveyId: Int, sectionId: Int, questionId: Int): Int
+    suspend fun getContentFromDB(contentKey: String, languageId: Int): ContentEntity
 }

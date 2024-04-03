@@ -37,7 +37,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -48,7 +47,6 @@ import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.CTAButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
-import com.nrlm.baselinesurvey.ui.common_components.GridOptionCard
 import com.nrlm.baselinesurvey.ui.common_components.OptionCard
 import com.nrlm.baselinesurvey.ui.common_components.RadioButtonOptionComponent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.TypeDropDownComponent
@@ -361,7 +359,8 @@ private fun DropDownType(optionsItem: OptionItemEntity) {
     TypeDropDownComponent(
         optionsItem.display,
         optionsItem.selectedValue ?: "Select",
-        optionsItem.values
+        optionsItem.values,
+        onInfoButtonClicked = {}
     ) {
         //onAnswerSelection(optionsItem.optionId?:0,it)
     }
@@ -371,7 +370,8 @@ private fun DropDownType(optionsItem: OptionItemEntity) {
 private fun InputType(optionsItem: OptionItemEntity) {
     EditTextWithTitleComponent(
         optionsItem.display,
-        optionsItem.selectedValue ?: ""
+        optionsItem.selectedValue ?: "",
+        onInfoButtonClicked = {}
     ) {
         //  onAnswerSelection(optionsItem.optionId?:0,it)
     }

@@ -171,13 +171,15 @@ fun MiscQuestionBoxComponent(
                                     ) { _index: Int, optionsItem: OptionItemEntityState ->
                                         when (optionsItem.optionItemEntity?.optionType) {
                                             QuestionType.Input.name,
-                                            QuestionType.InputText.name -> {
+                                            QuestionType.InputText.name,
+                                            QuestionType.InputNumberEditText.name -> {
                                                 EditTextWithTitleComponent(
                                                     optionsItem.optionItemEntity.display,
                                                     showQuestion = optionsItem,
                                                     defaultValue = selectedOption?.selectedValue
                                                         ?: "",
-                                                    isOnlyNumber = optionsItem?.optionItemEntity?.optionType == QuestionType.InputNumber.name
+                                                    isOnlyNumber = optionsItem?.optionItemEntity.optionType == QuestionType.InputNumberEditText.name,
+                                                    onInfoButtonClicked = {}
                                                 ) { inputValue ->
                                                     if (isEditAllowed) {
                                                         onAnswerSelection(
@@ -202,6 +204,7 @@ fun MiscQuestionBoxComponent(
                                                     showQuestion = optionsItem,
                                                     isEditAllowed = isEditAllowed,
                                                     currentValue = selectedOptionMapForNumericInputTypeQuestions[optionsItem.optionId]?.inputValue,
+                                                    onInfoButtonClicked = {},
                                                     onAnswerSelection = { inputValue ->
                                                         if (isEditAllowed) {
                                                             onAnswerSelection(
@@ -230,7 +233,8 @@ fun MiscQuestionBoxComponent(
                                                     showQuestionState = optionsItem,
                                                     sources = optionsItem.optionItemEntity.values,
                                                     selectOptionText = selectedOption?.selectedValue
-                                                        ?: BLANK_STRING
+                                                        ?: BLANK_STRING,
+                                                    onInfoButtonClicked = {}
                                                 ) {
                                                     if (isEditAllowed) {
                                                         onAnswerSelection(

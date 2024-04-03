@@ -9,8 +9,10 @@ import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.OPTION_TABLE
 import com.nrlm.baselinesurvey.database.converters.ConditionsDtoConvertor
+import com.nrlm.baselinesurvey.database.converters.ContentListConverter
 import com.nrlm.baselinesurvey.database.converters.StringConverter
 import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
+import com.nrlm.baselinesurvey.model.response.ContentList
 
 @Entity(tableName = OPTION_TABLE)
 data class OptionItemEntity(
@@ -93,5 +95,7 @@ data class OptionItemEntity(
     @SerializedName("isSelected")
     var isSelected: Boolean? = false,
     @SerializedName("selectedValue")
-    var selectedValue: String? = BLANK_STRING
+    var selectedValue: String? = BLANK_STRING,
+    @TypeConverters(ContentListConverter::class)
+    val contentEntities: List<ContentList> = listOf()
 )

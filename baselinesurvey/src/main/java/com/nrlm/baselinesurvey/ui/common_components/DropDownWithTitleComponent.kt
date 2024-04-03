@@ -3,9 +3,13 @@ package com.nrlm.baselinesurvey.ui.common_components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -28,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -41,6 +46,8 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGrey
+import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.red
@@ -57,13 +64,15 @@ fun <T> DropDownWithTitleComponent(
     dropDownBorder: Color = borderGrey,
     dropDownBackground: Color = white,
     isRequiredField: Boolean = false,
+    isContent: Boolean = false,
     selectedItem: String = "",
     expanded: Boolean = false,
     mTextFieldSize: Size,
     onExpandedChange: (Boolean) -> Unit,
     onDismissRequest: () -> Unit,
     onGlobalPositioned: (LayoutCoordinates) -> Unit,
-    onItemSelected: (T) -> Unit
+    onItemSelected: (T) -> Unit,
+    onInfoButtonClicked: () -> Unit,
 ) {
     // Up Icon when expanded and down icon when collapsed
     val icon = if (expanded)
@@ -80,32 +89,51 @@ fun <T> DropDownWithTitleComponent(
         horizontalAlignment = Alignment.Start
     ) {
         if (title.isNotBlank()) {
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            color = textColorDark,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            fontFamily = NotoSans
-                        )
-                    ) {
-                        append(title)
-                    }
-                    if (isRequiredField) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(modifier = Modifier.fillMaxWidth(.9f),
+                    text = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                color = red,
-                                fontSize = 14.sp,
+                                color = textColorDark,
+                                fontSize = 16.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 fontFamily = NotoSans
                             )
                         ) {
-                            append("*")
+                            append(title)
+                        }
+                        if (isRequiredField) {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = red,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontFamily = NotoSans
+                                )
+                            ) {
+                                append("*")
+                            }
                         }
                     }
+                )
+                if (isContent) {
+                    Spacer(modifier = Modifier.size(dimen_8_dp))
+                    Icon(
+                        painter = painterResource(id = R.drawable.info_icon),
+                        contentDescription = "question info button",
+                        Modifier
+                            .size(dimen_18_dp)
+                            .clickable {
+                                onInfoButtonClicked()
+                            },
+
+                        tint = blueDark
+                    )
                 }
-            )
+            }
         }
         CustomOutlineTextField(
             value = selectedItem,
@@ -198,13 +226,14 @@ fun DropDownWithTittleCompoentPerview(){
         "Other"
     )
     DropDownWithTitleComponent(
-        title = "Select",
+        title = "How many sources",
         items = screens,
         modifier =  Modifier.padding(10.dp),
         mTextFieldSize =casteTextFieldSize ,
         onExpandedChange = { },
         onDismissRequest = { },
         onGlobalPositioned = {},
-        onItemSelected ={}
+        onItemSelected = {},
+        onInfoButtonClicked = {}
     )
 }
