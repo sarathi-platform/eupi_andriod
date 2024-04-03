@@ -392,7 +392,7 @@
     <string name="income_comparision">আয়</string>
     <string name="small_business_comparision">গত 12 মাসে ছোট ব্যবসা থেকে পরিবারের আয় কত?</string>
     <string name="didi_title">"দিদির নাম: "</string>
-    <string name="dada_title">"দাদা নাম: "</string>
+    <string name="dada_title">"স্বামীর / বাবার নাম: "</string>
     <string name="caste_titile">"জাত: "</string>
     <string name="aadhar_card_titile">আপনার কি আধার কার্ড আছে?</string>
     <string name="voter_card_title">আপনার ভোটার কার্ড আছে?</string>
