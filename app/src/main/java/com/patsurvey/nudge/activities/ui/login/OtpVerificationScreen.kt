@@ -245,7 +245,7 @@ fun OtpVerificationScreen(
 
                         if (success){
                             if(isUPCMUser){
-                                    navController.navigate(route = com.nrlm.baselinesurvey.navigation.navgraph.Graph.BASE_HOME)
+                                    navController.navigate(route = CoreGraph.BASE_HOME)
                             }else {
                                 if (navController.graph.route?.equals(CoreGraph.HOME, true) == true) {
                                     navController.navigate(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route) {

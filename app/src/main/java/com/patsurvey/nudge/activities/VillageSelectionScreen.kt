@@ -379,6 +379,9 @@ fun VillageSelectionScreen(
                             isArrowRequired = false,
                             isActive = villages.isNotEmpty()
                         ) {
+                            Log.d("TAG", "VillageSelectionScreen: ${viewModel.prefRepo.getPref(
+                                PREF_KEY_TYPE_NAME, ""
+                            ) ?: ""}")
                             if (viewModel.prefRepo.isUserBPC()) {
                                val stepId= villages[viewModel.villageSelected.value].stepId
                                val statusId= villages[viewModel.villageSelected.value].statusId

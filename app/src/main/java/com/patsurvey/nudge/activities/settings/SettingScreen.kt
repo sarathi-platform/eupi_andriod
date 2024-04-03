@@ -77,6 +77,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.ui.navigation.CoreGraph
+import com.nudge.core.ui.navigation.SettingScreens
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
@@ -107,7 +108,6 @@ import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.navigation.selection.HomeScreens
-import com.patsurvey.nudge.navigation.selection.SettingScreens
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive

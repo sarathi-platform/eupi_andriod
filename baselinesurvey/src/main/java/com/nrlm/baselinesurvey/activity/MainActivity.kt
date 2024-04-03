@@ -17,7 +17,6 @@ import com.akexorcist.localizationactivity.core.LocalizationActivityDelegate
 import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
 import com.nrlm.baselinesurvey.activity.viewmodel.MainActivityViewModel
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
-import com.nrlm.baselinesurvey.navigation.navgraph.RootNavigationGraph
 import com.nrlm.baselinesurvey.ui.common_components.NetworkBanner
 import com.nrlm.baselinesurvey.ui.theme.The_nudgeTheme
 import com.nrlm.baselinesurvey.ui.theme.white
@@ -67,7 +66,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                                 height = Dimension.fillToConstraints
                             }
                             .fillMaxSize()) {
-                            RootNavigationGraph(navController = rememberNavController(), sharedPrefs)
+//                            RootNavigationGraph(navController = rememberNavController(), sharedPrefs)
                         }
                     }
                 }

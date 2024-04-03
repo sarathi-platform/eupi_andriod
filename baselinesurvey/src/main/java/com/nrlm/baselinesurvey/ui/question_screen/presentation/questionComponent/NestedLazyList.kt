@@ -51,11 +51,6 @@ import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
-import com.nrlm.baselinesurvey.navigation.home.HomeScreens
-import com.nrlm.baselinesurvey.navigation.home.navigateToBaseLineStartScreen
-import com.nrlm.baselinesurvey.navigation.home.navigateToFormQuestionSummaryScreen
-import com.nrlm.baselinesurvey.navigation.home.navigateToFormTypeQuestionScreen
-import com.nrlm.baselinesurvey.navigation.home.navigateToSearchScreen
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.ComplexSearchComponent
 import com.nrlm.baselinesurvey.ui.common_components.DidiInfoCard
@@ -81,6 +76,11 @@ import com.nrlm.baselinesurvey.utils.convertToSaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.findOptionFromId
 import com.nrlm.baselinesurvey.utils.mapToOptionItem
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.core.ui.navigation.BSHomeScreens
+import com.nudge.core.ui.navigation.navigateToBaseLineStartScreen
+import com.nudge.core.ui.navigation.navigateToFormQuestionSummaryScreen
+import com.nudge.core.ui.navigation.navigateToFormTypeQuestionScreen
+import com.nudge.core.ui.navigation.navigateToSearchScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -273,7 +273,11 @@ fun NestedLazyList(
         ) {
             item {
                 ComplexSearchComponent {
-                    navigateToSearchScreen(navController, sectionDetails.surveyId, surveyeeId, fromScreen = ARG_FROM_QUESTION_SCREEN)
+                    navController.navigateToSearchScreen(
+                        sectionDetails.surveyId,
+                        surveyeeId,
+                        fromScreen = ARG_FROM_QUESTION_SCREEN
+                    )
                 }
             }
 
@@ -294,7 +298,7 @@ fun NestedLazyList(
                                 navController.popBackStack()
                             else
                                 navController.popBackStack(
-                                    HomeScreens.SURVEYEE_LIST_SCREEN.route,
+                                    BSHomeScreens.SURVEYEE_LIST_SCREEN.route,
                                     false
                                 )
                         })
@@ -698,7 +702,7 @@ fun NestedLazyList(
                                 )
                             }
 
-                            QuestionType.Form.name -> {
+                            QuestionType.Form.name,QuestionType.DidiDetails.name -> {
                                 val contentData =
                                     sectionDetails.questionContentMapping[question.questionId]
                                 FormTypeQuestionComponent(
@@ -717,11 +721,8 @@ fun NestedLazyList(
                                                 true
                                             )
                                         ) {
-                                            navigateToBaseLineStartScreen(
-                                                surveyeeId,
-                                                sectionDetails.surveyId,
-                                                navController
-                                            )
+                                            navController.navigateToBaseLineStartScreen( surveyeeId,
+                                                sectionDetails.surveyId)
                                         } else {
                                             /*if (householdMemberDtoList.value.size > 0 || !answeredQuestionIndices.value.contains(
                                                     questionIndex
@@ -737,9 +738,8 @@ fun NestedLazyList(
                                                 answeredQuestionCountIncreased(answeredQuestionCount.value)
                                             }*/
                                             BaselineCore.setReferenceId(BLANK_STRING)
-                                            navigateToFormTypeQuestionScreen(
-                                                navController,
-                                                question.questionEntity,
+                                            navController.navigateToFormTypeQuestionScreen(questionDisplay = question.questionEntity.questionDisplay?: BLANK_STRING,
+                                                questionId = question.questionEntity.questionId?:0,
                                                 surveyId = sectionDetails.surveyId,
                                                 sectionId = sectionDetails.sectionId,
                                                 surveyeeId
@@ -754,8 +754,7 @@ fun NestedLazyList(
                                     },
                                     onMediaTypeDescriptionAction = { descriptionContentType, contentLink -> },
                                     onViewSummaryClicked = { questionId ->
-                                        navigateToFormQuestionSummaryScreen(
-                                            navController = navController,
+                                        navController.navigateToFormQuestionSummaryScreen(
                                             surveyId = sectionDetails.surveyId,
                                             sectionId = sectionDetails.sectionId,
                                             questionId = questionId,
@@ -986,11 +985,10 @@ fun NestedLazyList(
                                             didiIntoEntity = didiInfoEntity,
                                             didiDetails = questionScreenViewModel.didiDetails,
                                             onUpdate = {
-                                                navigateToBaseLineStartScreen(
+                                                navController.navigateToBaseLineStartScreen(
                                                     surveyeeId,
-                                                    sectionDetails.surveyId,
-                                                    navController
-                                                )
+                                                    sectionDetails.surveyId)
+
                                             }
                                         )
 

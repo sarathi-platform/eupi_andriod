@@ -37,8 +37,6 @@ import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
-import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.DescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ImageExpanderDialogComponent
@@ -63,6 +61,8 @@ import com.nrlm.baselinesurvey.utils.DescriptionContentType
 import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nudge.core.ui.navigation.VIDEO_PLAYER_SCREEN_ROUTE_NAME
+import com.nudge.core.ui.navigation.navigateBackToSurveyeeListScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -211,7 +211,7 @@ fun QuestionScreen(
                                                     true
                                                 )
                                             )
-                                                navigateBackToSurveyeeListScreen(navController)
+                                             navController.navigateBackToSurveyeeListScreen()
                                             else
                                                 nextSectionHandler(sectionId)
                                         }

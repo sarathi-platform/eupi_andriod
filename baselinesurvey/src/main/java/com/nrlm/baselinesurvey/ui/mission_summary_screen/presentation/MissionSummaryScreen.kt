@@ -20,7 +20,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.navigation.home.navigateBackToMissionScreen
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.StepsBox
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
@@ -32,6 +31,7 @@ import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.core.ui.navigation.navigateBackToMissionScreen
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -71,7 +71,7 @@ fun MissionSummaryScreen(
                                 status = SectionStatus.COMPLETED
                             )
                         )
-                        navigateBackToMissionScreen(navController)
+                        navController.navigateBackToMissionScreen()
                     }
                 }
             }
@@ -121,7 +121,7 @@ fun MissionSummaryScreen(
                             iconResourceId = R.drawable.ic_mission_inprogress,
                             backgroundColor = inprogressYellow,
                             onclick = {
-                                navController.navigate("add_didi_graph/${activity.activityName}/${missionId}/${activity.endDate}/${activity.activityId}")
+                                navController.navigate("mission_summary_graph/${activity.activityName}/${missionId}/${activity.endDate}/${activity.activityId}")
                             })
                     }
 

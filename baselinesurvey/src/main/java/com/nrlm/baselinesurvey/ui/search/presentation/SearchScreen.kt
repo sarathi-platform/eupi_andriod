@@ -50,7 +50,6 @@ import com.nrlm.baselinesurvey.ARG_FROM_SECTION_SCREEN
 import com.nrlm.baselinesurvey.QUESTION_DATA_TAB
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.SECTION_INFORMATION_TAB
-import com.nrlm.baselinesurvey.navigation.home.navigateToSelectedSectionFromSearch
 import com.nrlm.baselinesurvey.ui.common_components.CustomOutlineTextField
 import com.nrlm.baselinesurvey.ui.common_components.SearchTab
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
@@ -67,6 +66,7 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.unselectedTabColor
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.showCustomToast
+import com.nudge.core.ui.navigation.navigateToSelectedSectionFromSearch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

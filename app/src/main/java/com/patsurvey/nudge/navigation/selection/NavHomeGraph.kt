@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nudge.core.ui.navigation.CoreGraph
+import com.nudge.core.ui.navigation.SettingScreens
 import com.patsurvey.nudge.ProfileScreen
 import com.patsurvey.nudge.activities.AddDidiScreen
 import com.patsurvey.nudge.activities.DidiScreen
@@ -22,8 +23,6 @@ import com.patsurvey.nudge.activities.PatSurvaySectionSummaryScreen
 import com.patsurvey.nudge.activities.PatSurveyCompleteSummary
 import com.patsurvey.nudge.activities.StepCompletionScreen
 import com.patsurvey.nudge.activities.VillageScreen
-import com.patsurvey.nudge.activities.VillageSelectionScreen
-import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
 import com.patsurvey.nudge.activities.survey.PatSuccessScreen
 import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
@@ -693,19 +692,7 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
     }
 }
 
-sealed class SettingScreens(val route: String) {
-    object SETTING_SCREEN : SettingScreens(route = "setting_screen")
-    object LANGUAGE_SCREEN : SettingScreens(route = "language_screen")
-    object BUG_LOGGING_SCREEN : SettingScreens(route = "Bug_Logging")
-    object VIDEO_LIST_SCREEN : SettingScreens(route = "video_list_screen")
-    object VIDEO_PLAYER_SCREEN : SettingScreens(route = "video_player_screen/{$ARG_VIDEO_ID}")
-    object PROFILE_SCREEN : SettingScreens(route = "profile_screen")
-    object FORM_A_SCREEN : SettingScreens(route = "form_a_screen")
-    object FORM_B_SCREEN : SettingScreens(route = "form_b_screen")
-    object FORM_C_SCREEN : SettingScreens(route = "form_c_screen")
-    object PDF_VIEWER : SettingScreens(route = "pdf_viewer/{$ARG_FORM_PATH}")
-    object IMAGE_VIEWER : SettingScreens(route = "image_viewer/{$ARG_IMAGE_PATH}")
-}
+
 
 fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
     navigation(route = CoreGraph.VO_ENDORSEMENT_GRAPH,

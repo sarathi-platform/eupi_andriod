@@ -31,4 +31,18 @@ sealed class CoreNavigationParams (val value:String){
     object ARG_FORM_PATH : CoreNavigationParams("form_path")
     object ARG_IMAGE_PATH : CoreNavigationParams("image_path")
     object ARG_FOR_REPLACEMENT : CoreNavigationParams("for_replacement")
+    object ARG_SECTION_ID : CoreNavigationParams( "section_id")
+    object ARG_SURVEY_ID : CoreNavigationParams("survey_id")
+    object ARG_QUESTION_NAME : CoreNavigationParams("question_name")
+    object ARG_QUESTION_ID : CoreNavigationParams("question_id")
+
+    object ARG_VIDEO_PATH : CoreNavigationParams("video_path")
+    object ARG_ACTIVITY_ID : CoreNavigationParams("activity_id")
+    object ARG_ACTIVITY_DATE : CoreNavigationParams("activity_date")
+    object ARG_MISSION_ID : CoreNavigationParams("mission_id")
+    object ARG_MISSION_NAME : CoreNavigationParams("mission_name")
+    object ARG_MISSION_DATE : CoreNavigationParams("mission_date")
+    object ARG_ACTIVITY_NAME : CoreNavigationParams("activity_name")
+
+    object ARG_FORM_QUESTION_RESPONSE_REFERENCE_ID : CoreNavigationParams("formQuestionResponseReferenceId")
 }

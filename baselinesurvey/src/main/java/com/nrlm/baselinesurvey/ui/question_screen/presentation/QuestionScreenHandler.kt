@@ -11,9 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.NO_SECTION
-import com.nrlm.baselinesurvey.navigation.home.navigateBackToDidiScreen
-import com.nrlm.baselinesurvey.navigation.home.navigateBackToSectionListScreen
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
+import com.nudge.core.ui.navigation.navigateBackToDidiScreen
+import com.nudge.core.ui.navigation.navigateBackToSectionListScreen
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnrememberedMutableState")
@@ -47,7 +47,7 @@ fun QuestionScreenHandler(
             sectionId = selectedSectionId.value
         ) { currentSectionId ->
             if (sectionsList.size == 1 && sectionsList[0].sectionName.equals(NO_SECTION, true)) {
-                navigateBackToDidiScreen(navController)
+                navController.navigateBackToDidiScreen()
             } else {
                 navController.navigateBackToSectionListScreen(surveyeeId = didiId, surveyeId = surveyId)
                /* try {

@@ -53,7 +53,7 @@ import com.nrlm.baselinesurvey.ui.theme.buttonBgColor
 import com.nrlm.baselinesurvey.utils.onlyNumberField
 import com.nrlm.baselinesurvey.utils.setKeyboardToReadjust
 import com.nrlm.baselinesurvey.utils.stringToInt
-import com.nrlm.baselinesurvey.navigation.navgraph.Graph
+//import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 
@@ -94,10 +94,10 @@ fun LoginScreenComponent(
     LaunchedEffect(key1 = mobileNumberState) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
         if (mobileNumberState.isMobileNumberValidatedFromServer) {
-            if(navController.graph.route?.equals(Graph.BASE_HOME,true) == true){
-                navController.navigate(route = "otp_verification_screen/" + mobileNumberState.mobileNumber.text)
-            }else
-                navController.navigate(route = "otp_verification_screen/" + mobileNumberState.mobileNumber.text)
+//            if(navController.graph.route?.equals(Graph.BASE_HOME,true) == true){
+//                navController.navigate(route = "otp_verification_screen/" + mobileNumberState.mobileNumber.text)
+//            }else
+//                navController.navigate(route = "otp_verification_screen/" + mobileNumberState.mobileNumber.text)
         } else {
             if (!mobileNumberState.errorMessage.equals(BLANK_STRING, true)) {
                 snackState.addMessage(

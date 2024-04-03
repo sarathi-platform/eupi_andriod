@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities.survey
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.nrlm.baselinesurvey.utils.json
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.NumericAnswerEntity
@@ -109,6 +110,9 @@ class QuestionScreenViewModel @Inject constructor(
                     }
                     questionList?.let {
                         _questionList.value = it
+                        Log.d("TAG", "getAllQuestionsAnswers Step 1: ${questionList.json()}")
+                        Log.d("TAG", "QuestionScreenOpen Step 1 Data: ")
+
                     }
                     localAnswerList?.let {
                         _answerList.value = it

@@ -7,10 +7,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.nrlm.baselinesurvey.navigation.home.HomeScreens
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.DataLoadingScreenViewModel
+import com.nudge.core.ui.navigation.BSHomeScreens
 
 @Composable
 fun DataLoadingScreenComponent(
@@ -27,11 +27,11 @@ fun DataLoadingScreenComponent(
             viewModel.fetchAllData {
                 viewModel.setAllDataFetched()
 
-            navController.navigate(HomeScreens.Home_SCREEN.route)
+            navController.navigate(BSHomeScreens.Home_SCREEN.route)
         }
         } else {
 
-            navController.navigate(HomeScreens.Home_SCREEN.route)
+            navController.navigate(BSHomeScreens.Home_SCREEN.route)
         }
     }
 

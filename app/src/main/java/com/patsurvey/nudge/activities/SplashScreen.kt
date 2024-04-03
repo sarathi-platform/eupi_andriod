@@ -27,8 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
-import com.nrlm.baselinesurvey.navigation.BaseAuthScreen
-import com.nrlm.baselinesurvey.navigation.navgraph.Graph
+import com.nudge.core.ui.navigation.CoreGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.splash.ConfigViewModel
 import com.patsurvey.nudge.activities.ui.theme.blueDark
@@ -70,7 +69,7 @@ fun SplashScreen(
                 delay(SPLASH_SCREEN_DURATION)
                 viewModel.showLoader.value=false
                 if(viewModel.getUserType().equals(UPCM_USER)){
-                    navController.navigate(route = Graph.BASE_HOME){
+                    navController.navigate(route = CoreGraph.HOME){
                         launchSingleTop=true
                         popUpTo(AuthScreen.START_SCREEN.route){
                             inclusive=true
@@ -107,7 +106,7 @@ fun SplashScreen(
                 }
                 if (isLoggedIn) {
                     if(viewModel.getUserType().equals(UPCM_USER)){
-                        navController.navigate(route = Graph.BASE_HOME){
+                        navController.navigate(route = CoreGraph.BASE_HOME){
                             launchSingleTop=true
                             popUpTo(AuthScreen.START_SCREEN.route){
                                 inclusive=true

@@ -78,6 +78,7 @@ fun QuestionScreen(
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(key1 = Unit) {
         try {
+            Log.d("TAG", "QuestionScreenOpen Step1: ")
             viewModel.setDidiDetails(didiId)
             viewModel.sectionType.value=sectionType
             viewModel.getAllQuestionsAnswers(didiId)
@@ -111,6 +112,7 @@ fun QuestionScreen(
     }
 
     LaunchedEffect(key1 = Unit, key2 = !questionList.isNullOrEmpty()) {
+        Log.d("TAG", "QuestionScreenOpen Step 2: ")
         try {
             delay(100)
             val mAnswerList  = viewModel.answerList.value
@@ -159,6 +161,8 @@ fun QuestionScreen(
        viewModel.prevButtonVisible.value= pagerState.currentPage > 0
     }
     LaunchedEffect(pagerState) {
+        Log.d("TAG", "QuestionScreenOpen Step 3: ")
+
         snapshotFlow { pagerState.currentPage }.collect { page ->
             Log.d("TAG", "QuestionScreen: State2 $page")
         }
@@ -206,228 +210,155 @@ fun QuestionScreen(
                     state = pagerState,
                     userScrollEnabled = false
                 ) {
+                    Log.d("TAG", "QuestionScreenOpen Step 4: ")
+
                     Log.d("TAG", "QuestionScreen: State1 $it")
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Spacer(modifier = Modifier.height(10.dp))
-                        if (questionList[it].questionImageUrl?.isNotEmpty() == true) {
-                            val quesImage: File? =
-                                questionList[it].questionImageUrl?.let { it1 ->
-                                    getImagePath(
-                                        context,
-                                        it1
-                                    )
-                                }
-                            if (quesImage?.extension.equals(EXTENSION_WEBP, true)) {
-                                if (quesImage?.exists() == true) {
-                                    GlideImage(
-                                        model = quesImage,
-                                        contentDescription = "Question Image",
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .width(/*dimensionResource(id = R.dimen.ques_image_width)*/
-                                                60.dp
-                                            )
-                                            .height(/*dimensionResource(id = R.dimen.ques_image_width)*/
-                                                60.dp
-                                            ),
-                                    )
-                                }
-                            } else {
-                                if (quesImage?.exists() == true) {
-                                    GlideImage(
-                                        model = quesImage,
-                                        contentDescription = "Question Image",
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .width(/*dimensionResource(id = R.dimen.ques_image_width)*/
-                                                60.dp
-                                            )
-                                            .height(/*dimensionResource(id = R.dimen.ques_image_width)*/
-                                                60.dp
-                                            ),
-                                    )
-                                }
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(10.dp))
-                        if (questionList[it].type == QuestionType.RadioButton.name) {
-                            val sortedOptionList =
-                                questionList[it].options?.sortedBy { it?.optionValue }
-                            var selectedOption = -1
-                            answerList.forEach { answer ->
-                                if (questionList[it].questionId == answer.questionId) {
-                                    selectedOption = answer.optionValue ?: -1
-                                }
-                            }
-                            RadioButtonTypeQuestion(
-                                modifier = modifier,
-                                questionNumber = (it + 1),
-                                question = questionList[it].questionDisplay ?: "",
-                                selectedOptionIndex = selectedOption,
-                                optionList = sortedOptionList,
-                                isLastIndex = (it == questionList.size - 1),
-                                isAnswerSelected = viewModel.isAnswerSelected.value
-                            ) { selectedIndex, nextButtonClick ->
-                                viewModel.prevButtonVisible.value = false
-                                viewModel.nextButtonVisible.value = false
-                                viewModel.isAnswerSelected.value = true
-                                viewModel.setAnswerToQuestion(
-                                    didiId = didiId,
-                                    questionId = questionList[it].questionId ?: 0,
-                                    answerOptionModel = sortedOptionList?.get(selectedIndex)!!,
-                                    assetAmount = 0.0,
-                                    quesType = QuestionType.RadioButton.name,
-                                    summary = questionList[it].questionSummary ?: BLANK_STRING,
-                                    selIndex = selectedIndex,
-                                    enteredAssetAmount = "0",
-                                    questionFlag = BLANK_STRING
-                                ) {
-                                    if (viewModel.repository.prefRepo.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal) {
-                                        if (!nextButtonClick)
-                                            viewModel.updateDidiQuesSection(
-                                                didiId,
-                                                PatSurveyStatus.INPROGRESS.ordinal
-                                            )
-                                    }
-
-
-                                    coroutineScope.launch {
-                                        delay(250)
-                                        if (answeredQuestion.value < (questionList.size)) {
-                                            selQuesIndex.value = selQuesIndex.value + 1
-                                            answeredQuestion.value = answeredQuestion.value + 1
-                                            val nextPageIndex = pagerState.currentPage + 1
-                                            coroutineScope.launch {
-                                                delay(150)
-                                                eventToPageChange.value = true
-                                            }
-                                            pagerState.animateScrollToPage(
-                                                nextPageIndex
-                                            )
-                                            viewModel.isAnswerSelected.value = false
-
-
-                                        } else {
-                                            navigateToSummeryPage(
-                                                navController,
-                                                didiId,
-                                                viewModel
-                                            )
-                                        }
-                                    }
-
-
-                                }
-                            }
-                        } else if (questionList[it].type == QuestionType.List.name) {
-                            val sortedOptionList = questionList[it].options.sortedBy {it.optionValue}
-                            ListTypeQuestion(
-                                modifier = modifier,
-                                questionNumber = (it + 1),
-                                index = viewModel.selIndValue.collectAsState().value,
-                                question = questionList[it].questionDisplay ?: "",
-                                selectedIndex = viewModel.selIndValue.collectAsState().value,
-                                optionList = sortedOptionList,
-                                isAnswerSelected = viewModel.isAnswerSelected.value
-                            ) { selectedOptionId,selectedIndex ->
-                                viewModel.prevButtonVisible.value = false
-                                viewModel.nextButtonVisible.value = false
-                                viewModel.repository.prefRepo.saveNeedQuestionToScroll(true)
-                                viewModel.isAnswerSelected.value = true
-                                if (viewModel.repository.prefRepo.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
-                                    viewModel.updateDidiQuesSection(
-                                        didiId,
-                                        PatSurveyStatus.INPROGRESS.ordinal
-                                    )
-                                viewModel.setAnswerToQuestion(
-                                    didiId = didiId,
-                                    questionId = questionList[it].questionId ?: 0,
-                                    answerOptionModel = sortedOptionList[selectedIndex] /*questionList[it].options[questionList[it].options.map {it.optionId }.indexOf(selectedOptionId)]*/,
-                                    assetAmount = 0.0,
-                                    quesType = QuestionType.List.name,
-                                    summary = questionList[it].questionSummary ?: BLANK_STRING,
-                                    selIndex = viewModel.listTypeAnswerIndex.value,
-                                    enteredAssetAmount = "0",
-                                    questionFlag = BLANK_STRING
-                                ) {
-                                    coroutineScope.launch {
-                                        delay(250)
-                                        if (answeredQuestion.value < (questionList.size)) {
-                                            selQuesIndex.value = selQuesIndex.value + 1
-                                            answeredQuestion.value = answeredQuestion.value + 1
-                                            val nextPageIndex = pagerState.currentPage + 1
-                                            viewModel.findListTypeSelectedAnswer(
-                                                pagerState.currentPage,
-                                                didiId
-                                            )
-                                            coroutineScope.launch {
-                                                delay(150)
-                                                eventToPageChange.value = true
-                                            }
-                                            pagerState.animateScrollToPage(
-                                                nextPageIndex
-                                            )
-                                            viewModel.isAnswerSelected.value = false
-                                        } else {
-                                            navigateToSummeryPage(
-                                                navController,
-                                                didiId,
-                                                viewModel
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        } else if (questionList[it].type == QuestionType.Numeric_Field.name) {
-                            NumericFieldTypeQuestion(
-                                modifier = modifier,
-                                questionNumber = (it + 1),
-                                question = questionList[it].questionDisplay ?: "",
-                                didiId = didiId,
-                                questionId = questionList[it].questionId ?: 0,
-                                optionList = questionList[it].options,
-                                viewModel = viewModel,
-                                showNextButton = (viewModel.prevButtonVisible.value && !viewModel.nextButtonVisible.value),
-                                questionFlag = questionList[it].questionFlag
-                                    ?: QUESTION_FLAG_WEIGHT,
-                                totalValueTitle = questionList[it].headingProductAssetValue
-                                    ?: BLANK_STRING,
-                                pagerState = pagerState
-                            ) { value ->
-                                val newAnswerOptionModel = OptionsItem(
-                                    display = (if (questionList[it].questionFlag?.equals(
-                                            QUESTION_FLAG_RATIO,
-                                            true
-                                        ) == true
-                                    ) viewModel.totalAmount.value.toString()
-                                    else (viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString()),
-                                    0,
-                                    0,
-                                    0,
-                                    BLANK_STRING
-                                )
-                                viewModel.setAnswerToQuestion(
-                                    didiId = didiId,
-                                    questionId = questionList[it].questionId ?: 0,
-                                    answerOptionModel = newAnswerOptionModel,
-                                    assetAmount = if (questionList[it].questionFlag.equals(
-                                            QUESTION_FLAG_RATIO, true
+                        Log.d("TAG", "questionImageUrl:  ${questionList.size} :: $it")
+                        if(questionList.isNotEmpty()){
+                            if (questionList[it]?.questionImageUrl?.isNotEmpty() == true) {
+                                val quesImage: File? =
+                                    questionList[it]?.questionImageUrl?.let { it1 ->
+                                        getImagePath(
+                                            context,
+                                            it1
                                         )
-                                    ) viewModel.totalAmount.value else (viewModel.totalAmount.value + stringToDouble(
-                                        viewModel.enteredAmount.value
-                                    )),
-                                    quesType = QuestionType.Numeric_Field.name,
-                                    summary = questionList[it].questionSummary ?: BLANK_STRING/*(questionList[it].questionSummary?: BLANK_STRING) + " " + if (questionList[it].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) context.getString(R.string.total_productive_asset_value_for_ratio,viewModel.totalAmount.value.toString())
-                                    else context.getString(R.string.total_productive_asset_value,(viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString())*/,
-                                    selIndex = -1,
-                                    enteredAssetAmount = if (viewModel.enteredAmount.value.isNullOrEmpty()) BLANK_STRING else viewModel.enteredAmount.value,
-                                    questionFlag = questionList[it].questionFlag
-                                        ?: QUESTION_FLAG_WEIGHT
-                                ) {
-                                    if (value == 1) {
-                                        viewModel.prevButtonVisible.value = false
-                                        viewModel.nextButtonVisible.value = false
-                                        viewModel.repository.prefRepo.saveNeedQuestionToScroll(true)
+                                    }
+                                if (quesImage?.extension.equals(EXTENSION_WEBP, true)) {
+                                    if (quesImage?.exists() == true) {
+                                        GlideImage(
+                                            model = quesImage,
+                                            contentDescription = "Question Image",
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .width(/*dimensionResource(id = R.dimen.ques_image_width)*/
+                                                    60.dp
+                                                )
+                                                .height(/*dimensionResource(id = R.dimen.ques_image_width)*/
+                                                    60.dp
+                                                ),
+                                        )
+                                    }
+                                } else {
+                                    if (quesImage?.exists() == true) {
+                                        GlideImage(
+                                            model = quesImage,
+                                            contentDescription = "Question Image",
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .width(/*dimensionResource(id = R.dimen.ques_image_width)*/
+                                                    60.dp
+                                                )
+                                                .height(/*dimensionResource(id = R.dimen.ques_image_width)*/
+                                                    60.dp
+                                                ),
+                                        )
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+                            if (questionList[it].type == QuestionType.RadioButton.name) {
+                                val sortedOptionList =
+                                    questionList[it].options?.sortedBy { it?.optionValue }
+                                var selectedOption = -1
+                                answerList.forEach { answer ->
+                                    if (questionList[it].questionId == answer.questionId) {
+                                        selectedOption = answer.optionValue ?: -1
+                                    }
+                                }
+                                RadioButtonTypeQuestion(
+                                    modifier = modifier,
+                                    questionNumber = (it + 1),
+                                    question = questionList[it].questionDisplay ?: "",
+                                    selectedOptionIndex = selectedOption,
+                                    optionList = sortedOptionList,
+                                    isLastIndex = (it == questionList.size - 1),
+                                    isAnswerSelected = viewModel.isAnswerSelected.value
+                                ) { selectedIndex, nextButtonClick ->
+                                    viewModel.prevButtonVisible.value = false
+                                    viewModel.nextButtonVisible.value = false
+                                    viewModel.isAnswerSelected.value = true
+                                    viewModel.setAnswerToQuestion(
+                                        didiId = didiId,
+                                        questionId = questionList[it].questionId ?: 0,
+                                        answerOptionModel = sortedOptionList?.get(selectedIndex)!!,
+                                        assetAmount = 0.0,
+                                        quesType = QuestionType.RadioButton.name,
+                                        summary = questionList[it].questionSummary ?: BLANK_STRING,
+                                        selIndex = selectedIndex,
+                                        enteredAssetAmount = "0",
+                                        questionFlag = BLANK_STRING
+                                    ) {
+                                        if (viewModel.repository.prefRepo.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal) {
+                                            if (!nextButtonClick)
+                                                viewModel.updateDidiQuesSection(
+                                                    didiId,
+                                                    PatSurveyStatus.INPROGRESS.ordinal
+                                                )
+                                        }
+
+
+                                        coroutineScope.launch {
+                                            delay(250)
+                                            if (answeredQuestion.value < (questionList.size)) {
+                                                selQuesIndex.value = selQuesIndex.value + 1
+                                                answeredQuestion.value = answeredQuestion.value + 1
+                                                val nextPageIndex = pagerState.currentPage + 1
+                                                coroutineScope.launch {
+                                                    delay(150)
+                                                    eventToPageChange.value = true
+                                                }
+                                                pagerState.animateScrollToPage(
+                                                    nextPageIndex
+                                                )
+                                                viewModel.isAnswerSelected.value = false
+
+
+                                            } else {
+                                                navigateToSummeryPage(
+                                                    navController,
+                                                    didiId,
+                                                    viewModel
+                                                )
+                                            }
+                                        }
+
+
+                                    }
+                                }
+                            } else if (questionList[it].type == QuestionType.List.name) {
+                                val sortedOptionList = questionList[it].options.sortedBy {it.optionValue}
+                                ListTypeQuestion(
+                                    modifier = modifier,
+                                    questionNumber = (it + 1),
+                                    index = viewModel.selIndValue.collectAsState().value,
+                                    question = questionList[it].questionDisplay ?: "",
+                                    selectedIndex = viewModel.selIndValue.collectAsState().value,
+                                    optionList = sortedOptionList,
+                                    isAnswerSelected = viewModel.isAnswerSelected.value
+                                ) { selectedOptionId,selectedIndex ->
+                                    viewModel.prevButtonVisible.value = false
+                                    viewModel.nextButtonVisible.value = false
+                                    viewModel.repository.prefRepo.saveNeedQuestionToScroll(true)
+                                    viewModel.isAnswerSelected.value = true
+                                    if (viewModel.repository.prefRepo.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
+                                        viewModel.updateDidiQuesSection(
+                                            didiId,
+                                            PatSurveyStatus.INPROGRESS.ordinal
+                                        )
+                                    viewModel.setAnswerToQuestion(
+                                        didiId = didiId,
+                                        questionId = questionList[it].questionId ?: 0,
+                                        answerOptionModel = sortedOptionList[selectedIndex] /*questionList[it].options[questionList[it].options.map {it.optionId }.indexOf(selectedOptionId)]*/,
+                                        assetAmount = 0.0,
+                                        quesType = QuestionType.List.name,
+                                        summary = questionList[it].questionSummary ?: BLANK_STRING,
+                                        selIndex = viewModel.listTypeAnswerIndex.value,
+                                        enteredAssetAmount = "0",
+                                        questionFlag = BLANK_STRING
+                                    ) {
                                         coroutineScope.launch {
                                             delay(250)
                                             if (answeredQuestion.value < (questionList.size)) {
@@ -438,12 +369,14 @@ fun QuestionScreen(
                                                     pagerState.currentPage,
                                                     didiId
                                                 )
+                                                coroutineScope.launch {
+                                                    delay(150)
+                                                    eventToPageChange.value = true
+                                                }
                                                 pagerState.animateScrollToPage(
                                                     nextPageIndex
                                                 )
-                                                viewModel.isQuestionChange.value = true
-                                                eventToPageChange.value = true
-
+                                                viewModel.isAnswerSelected.value = false
                                             } else {
                                                 navigateToSummeryPage(
                                                     navController,
@@ -454,8 +387,86 @@ fun QuestionScreen(
                                         }
                                     }
                                 }
+                            } else if (questionList[it].type == QuestionType.Numeric_Field.name) {
+                                NumericFieldTypeQuestion(
+                                    modifier = modifier,
+                                    questionNumber = (it + 1),
+                                    question = questionList[it].questionDisplay ?: "",
+                                    didiId = didiId,
+                                    questionId = questionList[it].questionId ?: 0,
+                                    optionList = questionList[it].options,
+                                    viewModel = viewModel,
+                                    showNextButton = (viewModel.prevButtonVisible.value && !viewModel.nextButtonVisible.value),
+                                    questionFlag = questionList[it].questionFlag
+                                        ?: QUESTION_FLAG_WEIGHT,
+                                    totalValueTitle = questionList[it].headingProductAssetValue
+                                        ?: BLANK_STRING,
+                                    pagerState = pagerState
+                                ) { value ->
+                                    val newAnswerOptionModel = OptionsItem(
+                                        display = (if (questionList[it].questionFlag?.equals(
+                                                QUESTION_FLAG_RATIO,
+                                                true
+                                            ) == true
+                                        ) viewModel.totalAmount.value.toString()
+                                        else (viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString()),
+                                        0,
+                                        0,
+                                        0,
+                                        BLANK_STRING
+                                    )
+                                    viewModel.setAnswerToQuestion(
+                                        didiId = didiId,
+                                        questionId = questionList[it].questionId ?: 0,
+                                        answerOptionModel = newAnswerOptionModel,
+                                        assetAmount = if (questionList[it].questionFlag.equals(
+                                                QUESTION_FLAG_RATIO, true
+                                            )
+                                        ) viewModel.totalAmount.value else (viewModel.totalAmount.value + stringToDouble(
+                                            viewModel.enteredAmount.value
+                                        )),
+                                        quesType = QuestionType.Numeric_Field.name,
+                                        summary = questionList[it].questionSummary ?: BLANK_STRING/*(questionList[it].questionSummary?: BLANK_STRING) + " " + if (questionList[it].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) context.getString(R.string.total_productive_asset_value_for_ratio,viewModel.totalAmount.value.toString())
+                                    else context.getString(R.string.total_productive_asset_value,(viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString())*/,
+                                        selIndex = -1,
+                                        enteredAssetAmount = if (viewModel.enteredAmount.value.isNullOrEmpty()) BLANK_STRING else viewModel.enteredAmount.value,
+                                        questionFlag = questionList[it].questionFlag
+                                            ?: QUESTION_FLAG_WEIGHT
+                                    ) {
+                                        if (value == 1) {
+                                            viewModel.prevButtonVisible.value = false
+                                            viewModel.nextButtonVisible.value = false
+                                            viewModel.repository.prefRepo.saveNeedQuestionToScroll(true)
+                                            coroutineScope.launch {
+                                                delay(250)
+                                                if (answeredQuestion.value < (questionList.size)) {
+                                                    selQuesIndex.value = selQuesIndex.value + 1
+                                                    answeredQuestion.value = answeredQuestion.value + 1
+                                                    val nextPageIndex = pagerState.currentPage + 1
+                                                    viewModel.findListTypeSelectedAnswer(
+                                                        pagerState.currentPage,
+                                                        didiId
+                                                    )
+                                                    pagerState.animateScrollToPage(
+                                                        nextPageIndex
+                                                    )
+                                                    viewModel.isQuestionChange.value = true
+                                                    eventToPageChange.value = true
+
+                                                } else {
+                                                    navigateToSummeryPage(
+                                                        navController,
+                                                        didiId,
+                                                        viewModel
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
+
                     }
                 }
 

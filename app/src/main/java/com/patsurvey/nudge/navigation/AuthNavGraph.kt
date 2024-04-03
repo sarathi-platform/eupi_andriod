@@ -16,6 +16,7 @@ import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.VillageScreen
 import com.patsurvey.nudge.activities.settings.BugLogggingMechanismScreen
 import com.patsurvey.nudge.activities.settings.SettingScreen
+import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
@@ -86,10 +87,9 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
         }
 
         composable(route = AuthScreen.AUTH_SETTING_SCREEN.route) {
-            SettingScreen(
+            SettingBSScreen(
                 navController = navController,
-                viewModel = hiltViewModel(),
-                modifier = Modifier.fillMaxSize()
+                viewModel = hiltViewModel()
             )
         }
 

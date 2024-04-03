@@ -47,7 +47,6 @@ import com.nrlm.baselinesurvey.OTP_LENGTH
 import com.nrlm.baselinesurvey.OTP_RESEND_DURATION
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.SEC_30_STRING
-import com.nrlm.baselinesurvey.navigation.BaseAuthScreen
 import com.nrlm.baselinesurvey.ui.auth.viewmodel.OtpVerificationViewModel
 import com.nrlm.baselinesurvey.ui.common_components.CustomSnackBarShow
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
@@ -62,7 +61,6 @@ import com.nrlm.baselinesurvey.ui.theme.greenOnline
 import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
-import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import java.text.SimpleDateFormat
@@ -277,7 +275,7 @@ fun OtpVerificationScreenComponent(
 
     LaunchedEffect(key1 = viewModel.validateApiSuccess.value) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
-        if (viewModel.validateApiSuccess.value) {
+        /*if (viewModel.validateApiSuccess.value) {
             if(navController.graph.route?.equals(Graph.BASE_HOME,true) == true){
                 //Commented for now
 
@@ -300,12 +298,12 @@ fun OtpVerificationScreenComponent(
             }
             BaselineCore.autoReadOtp.value = ""
         } else {
-            /*snackState.addMessage(
+            *//*snackState.addMessage(
                 message = viewModel.message.value,
                 isSuccess = false,
                 isCustomIcon = false
-            )*/
-        }
+            )*//*
+        }*/
     }
 
     LaunchedEffect(key1 = viewModel.resendApiSuccess.value) {

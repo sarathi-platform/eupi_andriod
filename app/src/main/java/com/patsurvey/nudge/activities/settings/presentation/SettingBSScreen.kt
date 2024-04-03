@@ -24,7 +24,7 @@ import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.ui.navigation.CoreGraph
-import com.patsurvey.nudge.navigation.selection.SettingScreens
+import com.nudge.core.ui.navigation.SettingScreens
 import java.text.SimpleDateFormat
 import java.util.Locale
 

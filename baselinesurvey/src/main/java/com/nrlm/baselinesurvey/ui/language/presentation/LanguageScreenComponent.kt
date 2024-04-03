@@ -44,7 +44,6 @@ import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.ONE_SECOND
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.activity.MainActivity
-import com.nrlm.baselinesurvey.navigation.BaseAuthScreen
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.SarathiLogoTextViewComponent
 import com.nrlm.baselinesurvey.ui.language.viewModel.LanguageScreenViewModel
@@ -191,7 +190,7 @@ fun LanguageScreenComponent(
                     if(viewModel.getLanguageScreenOpenFrom()){
                         navController.popBackStack()
                     }else {
-                        navController.navigate(BaseAuthScreen.LOGIN.route)
+//                        navController.navigate(BaseAuthScreen.LOGIN.route)
                     }
                 } catch (ex: Exception) {
                     BaselineLogger.e("LanguageScreen", "Continue Button click", ex)

@@ -1,19 +1,9 @@
 package com.nrlm.baselinesurvey.ui.description_component.presentation
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
 import androidx.compose.material.ModalBottomSheetDefaults
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
@@ -27,31 +17,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
-import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.navigation.home.HomeScreens
-import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
-import com.nrlm.baselinesurvey.ui.theme.blueDark
-import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
-import com.nrlm.baselinesurvey.ui.theme.greyBorder
-import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
-import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
-import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
-import com.nrlm.baselinesurvey.ui.theme.textColorDark
+
 import com.nrlm.baselinesurvey.ui.theme.white
-import kotlinx.coroutines.delay
+import com.nudge.core.ui.navigation.VIDEO_PLAYER_SCREEN_ROUTE_NAME
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)

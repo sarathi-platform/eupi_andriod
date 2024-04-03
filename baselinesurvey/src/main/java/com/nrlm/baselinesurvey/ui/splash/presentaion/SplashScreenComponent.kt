@@ -29,8 +29,6 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.ONE_SECOND
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.SPLASH_SCREEN_DURATION
-import com.nrlm.baselinesurvey.navigation.BaseAuthScreen
-import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.splash.viewModel.SplashScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
@@ -55,7 +53,7 @@ fun SplashScreenComponent(
     val loaderState = viewModel.loaderState.value
     val isLoggedIn = viewModel.isLoggedIn
 
-    LaunchedEffect(key1 = Unit) {
+    /*LaunchedEffect(key1 = Unit) {
         if (!BaselineCore.isOnline.value) {
             if (viewModel.isLoggedIn) {
                 delay(ONE_SECOND)
@@ -96,7 +94,7 @@ fun SplashScreenComponent(
                 }
             }
         }
-    }
+    }*/
 
     ConstraintLayout(
         modifier = Modifier

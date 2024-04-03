@@ -34,7 +34,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.activity.MainActivity
-import com.nrlm.baselinesurvey.navigation.home.MISSION_SUMMARY_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
 import com.nrlm.baselinesurvey.ui.mission_screen.viewmodel.MissionViewModel
@@ -45,6 +44,7 @@ import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nudge.core.ui.navigation.CoreGraph
+import com.nudge.core.ui.navigation.MISSION_SUMMARY_SCREEN_ROUTE_NAME
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

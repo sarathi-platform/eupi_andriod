@@ -23,9 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
-import com.nrlm.baselinesurvey.navigation.home.navigateToFormTypeQuestionScreen
 import com.nrlm.baselinesurvey.ui.common_components.AlertDialogComponent
 import com.nrlm.baselinesurvey.ui.common_components.FormResponseCard
 import com.nrlm.baselinesurvey.ui.form_response_summary_screen.viewmodel.FormResponseSummaryScreenViewModel
@@ -36,6 +36,7 @@ import com.nrlm.baselinesurvey.ui.theme.h6Bold
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nudge.core.ui.navigation.navigateToFormTypeQuestionScreen
 
 val DEFAULT_OPEN_DIALOG_VALUE = Pair<Boolean, FormResponseObjectDto?>(false, null)
 
@@ -142,12 +143,11 @@ fun FormQuestionSummaryScreen(
                     onUpdate = {
                         formResponseSummaryScreenViewModel.questionEntity?.let { it1 ->
                             BaselineCore.setReferenceId(formResponseObjectDto.referenceId)
-                            navigateToFormTypeQuestionScreen(
-                                navController = navController,
-                                question = it1,
+                            navController.navigateToFormTypeQuestionScreen(questionDisplay = it1.questionDisplay?: BLANK_STRING,
+                                questionId = it1.questionId?:0,
                                 surveyId = surveyId,
                                 sectionId = sectionId,
-                                surveyeeId = surveyeeId
+                               surveyeeId = surveyeeId
                             )
                         }
                     }
