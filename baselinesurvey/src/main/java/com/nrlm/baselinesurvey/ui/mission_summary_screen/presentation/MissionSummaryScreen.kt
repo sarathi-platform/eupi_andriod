@@ -111,14 +111,14 @@ fun MissionSummaryScreen(
                         ) { index, activity ->
                             var subTitle = if (activity.activityId == 1) "Didis" else "Hamlets"
 
-                            val pendingTasks = viewModel.getPendingDidiCountLive(activity.activityId)
-                                .observeAsState().value ?: 0
+                            val pendingTasks = numberInEnglishFormat(viewModel.getPendingDidiCountLive(activity.activityId)
+                                .observeAsState().value ?: 0)
 
                             StepsBox(
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                                 boxTitle = activity.activityName,
                                 subTitle = stringResource(
-                                    id = R.string.x_dii_pending,
+                                    id = R.string.x_didi_pending,
                                     pendingTasks,
                                     subTitle,
                                 ),
