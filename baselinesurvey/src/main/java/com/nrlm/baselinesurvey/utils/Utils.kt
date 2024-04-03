@@ -901,3 +901,9 @@ fun String.getImagePathFromString(): String {
         BLANK_STRING
     }
 }
+
+fun List<FormQuestionResponseEntity>.findUnchangedOptions(storeCacheForResponse: List<FormQuestionResponseEntity>): List<FormQuestionResponseEntity> {
+    val unchangedList = this.toMutableList()
+    unchangedList.removeAll(storeCacheForResponse)
+    return unchangedList
+}

@@ -222,7 +222,10 @@ class QuestionScreenViewModel @Inject constructor(
                 didiId = surveyeeId
             )
         val map = formQuestionResponseEntityList.groupBy { it.questionId }
-        _formResponseEntityToQuestionMap.value.putAll(map)
+        if (map.isEmpty())
+            _formResponseEntityToQuestionMap.value.clear()
+        else
+            _formResponseEntityToQuestionMap.value.putAll(map)
         val tempList = questionEntityStateList.toList()
             .filter { it.questionEntity?.type == QuestionType.Form.name }
         map.keys.forEach { questionId ->
