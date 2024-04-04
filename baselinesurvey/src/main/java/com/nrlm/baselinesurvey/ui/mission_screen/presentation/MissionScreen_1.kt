@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -147,8 +148,6 @@ fun MissionScreen_1(
                     viewModel.onEvent(SearchEvent.PerformSearch(queryTerm, false, ""))
                 })
 
-
-
             Box(modifier = Modifier
                 .fillMaxSize()
                 .pullRefresh(pullRefreshState))
@@ -156,7 +155,9 @@ fun MissionScreen_1(
                 PullRefreshIndicator(
                     refreshing = viewModel.loaderState.value.isLoaderVisible,
                     state = pullRefreshState,
-                    modifier = Modifier.align(Alignment.TopCenter),
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .zIndex(1f),
                     contentColor = blueDark,
                 )
                 if (!loaderState.isLoaderVisible) {

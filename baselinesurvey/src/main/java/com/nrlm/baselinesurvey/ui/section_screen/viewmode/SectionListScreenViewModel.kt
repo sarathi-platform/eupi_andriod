@@ -223,4 +223,10 @@ class SectionListScreenViewModel @Inject constructor(
     fun refreshData() {
         refreshData(fetchDataUseCase)
     }
+
+    fun close() {
+        _loaderState.value = LoaderState()
+        _sectionsList.value = listOf()
+        _sectionItemStateList.value = mutableListOf<SectionState>()
+    }
 }

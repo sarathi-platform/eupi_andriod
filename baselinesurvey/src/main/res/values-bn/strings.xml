@@ -409,8 +409,8 @@
     <string name="to_the_nearest_bank_comparsion">কাছের ব্যাঙ্কে</string>
     <string name="to_the_replacement_string">""</string>
     <string name="average_travel_cost_comparision">"গড় ভ্রমণ খরচ"</string>
-    <string name="questions_data_tab_title">Questions Data</string>
-    <string name="section_information_tab_title">Section Information</string>
+    <string name="questions_data_tab_title">Questions</string>
+    <string name="section_information_tab_title">Sections</string>
     <string name="search_hamlet">Search Hamlet</string>
     <string name="mission_completed_text">Mission Completed</string>
     <string name="aadhar_card_titile_assam">Do you have aadhar card?</string>

@@ -43,6 +43,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -113,9 +114,21 @@ fun SectionListScreen(
 
 
     val loaderState = viewModel.loaderState.value
+    val isSettingScreenOpened = remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(key1 = true) {
         viewModel.init(didiId, surveyId)
+    }
+
+    DisposableEffect(key1 = Unit) {
+        isSettingScreenOpened.value = false
+        onDispose {
+            if (isSettingScreenOpened.value) {
+                viewModel.close()
+            }
+        }
     }
 
     val sectionsList = viewModel.sectionItemStateList.value
@@ -206,7 +219,9 @@ fun SectionListScreen(
                                 tint = blueDark,
                                 modifier = Modifier
                                     .background(Color.White)
-                                    .padding(10.dp).clickable {
+                                    .padding(10.dp)
+                                    .clickable {
+                                        isSettingScreenOpened.value = true
                                         navController.navigate(Graph.SETTING_GRAPH)
                                     }
                             )
