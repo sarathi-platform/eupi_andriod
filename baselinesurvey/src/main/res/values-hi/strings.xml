@@ -387,11 +387,11 @@
     <string name="income_frequency_comparision">Income frequency</string>
     <string name="no_income_comparision">No income</string>
     <string name="total_income_comparision">(E) Total Income</string>
-    <string name="total_unit_comparision">(D) Total units</string>
+    <string name="total_unit_comparision">(D) Total income</string>
     <string name="income_comparision">Income</string>
     <string name="small_business_comparision">What is the household income from small business in the last 12 months?</string>
     <string name="didi_title">"Didi: "</string>
-    <string name="dada_title">"Dada: "</string>
+    <string name="dada_title">"Husband / Father\'s Name: "</string>
     <string name="caste_titile">"Caste: "</string>
     <string name="aadhar_card_titile">Does Didi have aadhar card?</string>
     <string name="voter_card_title">Does didi have voter card?</string>

@@ -388,11 +388,11 @@
     <string name="income_frequency_comparision">Income frequency</string>
     <string name="no_income_comparision">কোনো আয় নাই</string>
     <string name="total_income_comparision">(E) Total Income</string>
-    <string name="total_unit_comparision">(D) Total units</string>
+    <string name="total_unit_comparision">(D) Total income</string>
     <string name="income_comparision">Income</string>
     <string name="small_business_comparision">যোৱা ১২ মাহত ক্ষুদ্ৰ ব্যৱসায়ৰ পৰা ঘৰুৱা আয় কিমান?</string>
     <string name="didi_title">"দিদি:"</string>
-    <string name="dada_title">"দাদা: "</string>
+    <string name="dada_title">"বাইদেউৰ  স্বামীৰ নাম: "</string>
     <string name="caste_titile">"জাতি: "</string>
     <string name="aadhar_card_titile">দিদিৰ আধাৰ কাৰ্ড আছে নেকি?</string>
     <string name="voter_card_title">দিদিৰ ভোটাৰ কাৰ্ড আছে নেকি?</string>

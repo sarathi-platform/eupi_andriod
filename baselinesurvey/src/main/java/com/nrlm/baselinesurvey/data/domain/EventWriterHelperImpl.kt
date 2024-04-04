@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.data.domain
 
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
@@ -8,12 +9,15 @@ import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
+import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.ActivityForSubjectDto
+import com.nrlm.baselinesurvey.model.datamodel.ImageUploadRequest
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventForFormQuestionDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventQuestionItemDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventQuestionItemForFormQuestionDto
+import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.model.datamodel.SectionStatusUpdateEventDto
 import com.nrlm.baselinesurvey.model.datamodel.UpdateActivityStatusEventDto
 import com.nrlm.baselinesurvey.model.datamodel.UpdateMissionStatusEventDto
@@ -21,12 +25,18 @@ import com.nrlm.baselinesurvey.model.datamodel.UpdateTaskStatusEventDto
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.EventsWriterRepositoryImpl
 import com.nrlm.baselinesurvey.utils.StatusReferenceType
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.core.EventSyncStatus
+import com.nudge.core.SELECTION_MISSION
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
+import com.nudge.core.getSizeInLong
+import com.nudge.core.json
+import com.nudge.core.model.MetadataDto
 import com.nudge.core.toDate
+import java.util.UUID
 import javax.inject.Inject
 
 class EventWriterHelperImpl @Inject constructor(
@@ -405,17 +415,48 @@ class EventWriterHelperImpl @Inject constructor(
         return eventList
     }
 
-    /*override suspend fun creteSubjectStatusUpdateEvent(
-        surveyId: Int,
-        subjectId: Int,
-        status: SectionStatus
-    ): Events {
-        val activityForSubjectDto = activityDao.getActivityFromSubjectId(subjectId)
+    override fun createImageUploadEvent(
+        didi: SurveyeeEntity,
+        location: String,
+        filePath: String,
+        userType: String,
+        questionId: Int,
+        referenceId: String,
+        sectionDetails: SectionListItem,
+        subjectType: String
+    ): Events? {
 
+        val payload = ImageUploadRequest.getRequestObjectForUploadImage(
+            didi = didi,
+            location = location,
+            filePath = filePath,
+            userType = userType,
+            questionId = questionId,
+            referenceId = referenceId,
+            sectionDetails = sectionDetails,
+            subjectType = "Didi"
+        ).json()
 
+        val eventName = EventName.UPLOAD_IMAGE_RESPONSE_EVENT
 
-
-    }*/
-
+        return Events(
+            name = eventName.name,
+            type = eventName.topicName,
+            createdBy = prefRepo.getUserId(),
+            mobile_number = prefRepo.getMobileNumber() ?: "",
+            request_payload = payload,
+            status = EventSyncStatus.OPEN.name,
+            modified_date = System.currentTimeMillis().toDate(),
+            result = null,
+            consumer_status = BLANK_STRING,
+            payloadLocalId = UUID.randomUUID().toString(),
+            metadata = MetadataDto(
+                mission = SELECTION_MISSION,
+                depends_on = listOf(),
+                request_payload_size = payload.getSizeInLong(),
+                parentEntity = mapOf()
+            ).json()
+        ) ?: Events.getEmptyEvent()
+    }
 
 }

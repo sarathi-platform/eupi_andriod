@@ -316,3 +316,7 @@ const val ARG_FROM_SECTION_SCREEN = "from_section_screen"
 const val ARG_FROM_QUESTION_SCREEN = "from_question_screen"
 
 const val ROOM_INTEGRITY_EXCEPTION = "Room cannot verify the data integrity."
+
+const val LIVELIHOOD_SOURCE_TAG = "Income Soruces"
+
+const val PREF_USER_TYPE = "pref_user_type"

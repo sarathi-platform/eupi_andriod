@@ -38,9 +38,6 @@ import com.nrlm.baselinesurvey.ui.theme.greyBorder
 import com.nrlm.baselinesurvey.ui.theme.sectionIconCompletedBg
 import com.nrlm.baselinesurvey.ui.theme.sectionIconNotStartedBg
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
-import com.nrlm.baselinesurvey.ui.theme.stepIconCompleted
-import com.nrlm.baselinesurvey.ui.theme.stepIconDisableColor
-import com.nrlm.baselinesurvey.ui.theme.stepIconEnableColor
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark50
 import com.nrlm.baselinesurvey.ui.theme.white
@@ -125,17 +122,30 @@ fun SectionItemComponent(
                         ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            painter = painterResource(id = getIcon(index)),
+                        Image(
+                            painter = painterResource(id = getIcon(sectionStateItem.section.sectionIcon)),
                             contentDescription = null,
-                            tint = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.INPROGRESS.name) or sectionStateItem.sectionStatus.name.equals(
-                                    SectionStatus.COMPLETED.name
-                                )
-                            ) {
-                                if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) stepIconCompleted else stepIconEnableColor
-                            } else stepIconDisableColor,
+//                            colorFilter = ColorFilter.tint(
+//                                color = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.INPROGRESS.name) or sectionStateItem.sectionStatus.name.equals(
+//                                        SectionStatus.COMPLETED.name
+//                                    )
+//                                ) {
+//                                    if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) stepIconCompleted else stepIconEnableColor
+//                                } else stepIconDisableColor,blendMode = BlendMode.Modulate
+//                            ),
                             modifier = Modifier
                         )
+//                        Icon(
+//                            painter = painterResource(id = getIcon(index)),
+//                            contentDescription = null,
+//                            tint = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.INPROGRESS.name) or sectionStateItem.sectionStatus.name.equals(
+//                                    SectionStatus.COMPLETED.name
+//                                )
+//                            ) {
+//                                if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) stepIconCompleted else stepIconEnableColor
+//                            } else stepIconDisableColor,
+//                            modifier = Modifier
+//                        )
                     }
                 }
 
@@ -229,30 +239,62 @@ fun SectionItemComponent(
 
 }
 
-fun getIcon(index: Int): Int {
+fun getIcon(index: String): Int {
     when (index) {
-        0 -> {
-            return R.drawable.house_hold_icon
+        "baseline_household_information" -> {
+            return R.drawable.baseline_household_information
         }
 
-        1 -> {
-            return R.drawable.ic_food_security_icon
+        "baseline_food_security_sutritional_diversity" -> {
+            return R.drawable.baseline_food_security_sutritional_diversity
         }
 
-        2 -> {
-            return R.drawable.ic_social_inclusion_icon
+        "baseline_social_inclusion" -> {
+            return R.drawable.baseline_social_inclusion
         }
 
-        3 -> {
-            return R.drawable.ic_finacial_inclusion_icon
+        "baseline_financial_inclusion" -> {
+            return R.drawable.baseline_financial_inclusion
         }
 
-        4 -> {
-            return R.drawable.icon_goverment_icon
+        "baseline_household_entitlements" -> {
+            return R.drawable.baseline_household_entitlements
         }
 
-        5 -> {
-            return R.drawable.ic_livilihood_incom_icon
+        "baseline_livelihood_sources" -> {
+            return R.drawable.baseline_livelihood_sources
+        }
+
+        "demographic" -> {
+            return R.drawable.demographic
+        }
+
+        "key_gov_program" -> {
+            return R.drawable.key_gov_program
+        }
+
+        "cimate_change" -> {
+            return R.drawable.cimate_change
+        }
+
+        "governance" -> {
+            return R.drawable.governance
+        }
+
+        "health_community" -> {
+            return R.drawable.health_community
+        }
+
+        "small_business" -> {
+            return R.drawable.small_business
+        }
+
+        "alternative_livelihood" -> {
+            return R.drawable.alternative_livelihood
+        }
+
+        "infrastructure" -> {
+            return R.drawable.infrastructure
         }
 
         else -> {

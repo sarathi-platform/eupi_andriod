@@ -22,11 +22,13 @@ fun TypeDropDownComponent(
     hintText: String = "Select",
     sources: List<String>?,
     isEditAllowed: Boolean = true,
+    isContent: Boolean = false,
     showQuestionState: OptionItemEntityState? = OptionItemEntityState.getEmptyStateObject(),
     selectOptionText: String = BLANK_STRING,
-    onAnswerSelection: (selectValue: String) -> Unit,
-
+    onInfoButtonClicked: () -> Unit,
+    onAnswerSelection: (selectValue: String) -> Unit
     ) {
+
     val defaultSourceList = if (sources == null) listOf("Yes", "No") else sources
     var expanded by remember { mutableStateOf(false) }
     var selectedOptionText by remember { mutableStateOf(if (selectOptionText.equals(BLANK_STRING)) hintText else selectOptionText) }
@@ -42,6 +44,7 @@ fun TypeDropDownComponent(
             mTextFieldSize = textFieldSize,
             expanded = expanded,
             selectedItem = selectedOptionText,
+            isContent = isContent,
             onExpandedChange = {
                 expanded = !it
             },
@@ -63,6 +66,9 @@ fun TypeDropDownComponent(
                     )
                 }
             },
+            onInfoButtonClicked = {
+                onInfoButtonClicked()
+            }
         )
     }
 }
