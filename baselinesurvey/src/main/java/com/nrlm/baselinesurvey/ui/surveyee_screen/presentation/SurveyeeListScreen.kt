@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.presentation
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,6 +25,7 @@ import com.nrlm.baselinesurvey.THIS_WEEK_TAB
 import com.nrlm.baselinesurvey.navigation.home.Step_Complition_Screen_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.navigateToSectionListScreen
 import com.nrlm.baselinesurvey.ui.common_components.DoubleButtonBox
+import com.nrlm.baselinesurvey.ui.common_components.ToolbarWithMenuComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreenActions.CheckBoxClicked
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.SurveyeeScreenViewModel
@@ -85,9 +87,12 @@ fun SurveyeeListScreen(
 
         })
 
-    Scaffold(
-        bottomBar = {
-
+    ToolbarWithMenuComponent(
+        title = BLANK_STRING,
+        modifier = Modifier.fillMaxSize(),
+        navController=navController,
+        onBackIconClick = { navController.popBackStack() },
+        onBottomUI = {
             if (viewModel.isEnableNextBTn.value && viewModel.filteredSurveyeeListState.value.isNotEmpty()) {
 
                 DoubleButtonBox(
@@ -121,90 +126,42 @@ fun SurveyeeListScreen(
                 )
             }
         },
-        containerColor = white
-    ) {
-        AllSurveyeeListTab(
-            paddingValues = it,
-            loaderState = loaderState,
-            pullRefreshState = pullRefreshState,
-            viewModel = viewModel,
-            isSelectionEnabled = isSelectionEnabled,
-            navController = navController,
-            activityName = activityName,
-            activityDate = activityDate,
-            activityId = activityId,
-            onActionEvent = { surveyeeListScreenActions ->
-                when (surveyeeListScreenActions) {
-                    is CheckBoxClicked -> {
-                        if (surveyeeListScreenActions.isChecked) {
-                            viewModel.checkedItemsState.value.add(
-                                surveyeeListScreenActions.surveyeeEntity.didiId ?: -1
-                            )
-                        } else {
-                            viewModel.checkedItemsState.value.remove(
-                                surveyeeListScreenActions.surveyeeEntity.didiId
+        onContentUI = {
+            AllSurveyeeListTab(
+                paddingValues = it,
+                loaderState = loaderState,
+                pullRefreshState = pullRefreshState,
+                viewModel = viewModel,
+                isSelectionEnabled = isSelectionEnabled,
+                navController = navController,
+                activityName = activityName,
+                activityDate = activityDate,
+                activityId = activityId,
+                onActionEvent = { surveyeeListScreenActions ->
+                    when (surveyeeListScreenActions) {
+                        is CheckBoxClicked -> {
+                            if (surveyeeListScreenActions.isChecked) {
+                                viewModel.checkedItemsState.value.add(
+                                    surveyeeListScreenActions.surveyeeEntity.didiId ?: -1
+                                )
+                            } else {
+                                viewModel.checkedItemsState.value.remove(
+                                    surveyeeListScreenActions.surveyeeEntity.didiId
+                                )
+                            }
+                        }
+
+                        is SurveyeeListScreenActions.IsFilterApplied -> {
+                            isFilterAppliedState.value = isFilterAppliedState.value.copy(
+                                isFilterApplied = surveyeeListScreenActions.isFilterAppliedState.isFilterApplied
                             )
                         }
-                    }
 
-                    is SurveyeeListScreenActions.IsFilterApplied -> {
-                        isFilterAppliedState.value = isFilterAppliedState.value.copy(
-                            isFilterApplied = surveyeeListScreenActions.isFilterAppliedState.isFilterApplied
-                        )
+                        else -> {}
                     }
-
-                    else -> {}
                 }
-            }
-        )
-
-//        when (selectedTabIndex.intValue) {
-//            0 -> {
-//                ThisWeekSurvyeeListTab(
-//                    paddingValues = it,
-//                    loaderState = loaderState,
-//                    pullRefreshState = pullRefreshState,
-//                    viewModel = viewModel,
-//                    navController = navController,
-//                    onActionEvent = { surveyeeListScreenActions ->
-//
-//                    }
-//                )
-//            }
-//
-//            1 -> {
-//                AllSurveyeeListTab(
-//                    paddingValues = it,
-//                    loaderState = loaderState,
-//                    pullRefreshState = pullRefreshState,
-//                    viewModel = viewModel,
-//                    isSelectionEnabled = isSelectionEnabled,
-//                    navController = navController,
-//                    onActionEvent = { surveyeeListScreenActions ->
-//                        when (surveyeeListScreenActions) {
-//                            is CheckBoxClicked -> {
-//                                if (surveyeeListScreenActions.isChecked) {
-//                                    viewModel.checkedItemsState.value.add(
-//                                        surveyeeListScreenActions.surveyeeEntity.didiId ?: -1
-//                                    )
-//                                } else {
-//                                    viewModel.checkedItemsState.value.remove(
-//                                        surveyeeListScreenActions.surveyeeEntity.didiId
-//                                    )
-//                                }
-//                            }
-//
-//                            is SurveyeeListScreenActions.IsFilterApplied -> {
-//                                isFilterAppliedState.value = isFilterAppliedState.value.copy(
-//                                    isFilterApplied = surveyeeListScreenActions.isFilterAppliedState.isFilterApplied
-//                                )
-//                            }
-//                        }
-//                    }
-//                )
-//            }
-//        }
-    }
+            )
+        })
 }
 
 fun handleButtonClick(

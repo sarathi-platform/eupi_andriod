@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository
 
+import android.net.Uri
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
@@ -352,6 +353,26 @@ class EventsWriterRepositoryImpl @Inject constructor(
             sectionId,
             didiId
         ) == null
+    }
+
+    override suspend fun saveImageEventToMultipleSources(event: Events, uri: Uri) {
+
+        val eventFormatter: IEventFormatter = getEventFormatter()
+        try {
+            eventFormatter.saveAndFormatEvent(
+                event = event,
+                dependencyEntity = listOf(),
+                listOf(
+                    EventWriterName.FILE_EVENT_WRITER,
+                    EventWriterName.IMAGE_EVENT_WRITER,
+                    EventWriterName.DB_EVENT_WRITER,
+                    EventWriterName.LOG_EVENT_WRITER
+                ), uri
+            )
+        } catch (exception: Exception) {
+            BaselineLogger.e("ImageEventWriter", exception.message ?: "")
+        }
+
     }
 
 }
