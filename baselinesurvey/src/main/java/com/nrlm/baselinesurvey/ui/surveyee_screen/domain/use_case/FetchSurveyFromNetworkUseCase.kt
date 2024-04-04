@@ -57,6 +57,10 @@ class FetchSurveyFromNetworkUseCase(
         return repository.fetchLocalLanguageList()
     }
 
+    fun getAppLanguageId(): Int {
+        return repository.getAppLanguageId()
+    }
+
     fun getStateId(): Int {
         return repository.getStateId()
     }

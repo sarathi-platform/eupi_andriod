@@ -73,11 +73,7 @@ fun SurveyeeListScreen(
         loaderState.isLoaderVisible,
         {
             if (BaselineCore.isOnline.value) {
-//                if (selectedTabIndex.intValue == tabs.indexOf(THIS_WEEK_TAB)) {
-//                    //Handle API Call
-//                } else {
-//                    //Handle API/DB Call
-//                }
+                viewModel.refreshData()
             } else {
                 showCustomToast(
                     context,

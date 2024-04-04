@@ -433,5 +433,6 @@
     <string name="fetched_successfully">" তথ্য সফলতাৰে আহৰণ কৰা হৈছে"</string>
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"আৰম্ভ কৰক "</string>
+    <string name="retry">" পুনৰ চেষ্টা কৰক"</string>
 
 </resources>

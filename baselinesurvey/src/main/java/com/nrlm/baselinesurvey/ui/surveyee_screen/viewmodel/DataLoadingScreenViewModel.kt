@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DataLoadingScreenViewModel @Inject constructor(
-    private val fetchDataUseCase: FetchDataUseCase,
+    val fetchDataUseCase: FetchDataUseCase,
 ): BaseViewModel() {
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
@@ -67,7 +67,7 @@ class DataLoadingScreenViewModel @Inject constructor(
                 val fetchUserDetailFromNetworkUseCaseSuccess =
                     fetchDataUseCase.fetchUserDetailFromNetworkUseCase.invoke()
                 if (fetchUserDetailFromNetworkUseCaseSuccess) {
-                    fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke()
+                    fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke(true)
                     fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
                     fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
                     fetchDataUseCase.fetchContentnDataFromNetworkUseCase.invoke()

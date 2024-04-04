@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case
 
 import com.nrlm.baselinesurvey.SUCCESS
+import com.nrlm.baselinesurvey.network.SUBPATH_USER_VIEW
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepository
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.createMultiLanguageVillageRequest
@@ -12,6 +13,7 @@ class FetchUserDetailFromNetworkUseCase (
         try {
             val localLanguageList = repository.fetchLocalLanguageList()
             val userViewApiRequest = createMultiLanguageVillageRequest(localLanguageList)
+            repository.insertApiStatus(SUBPATH_USER_VIEW)
             val userApiResponse = repository.fetchUseDetialsFromNetwork(userViewApiRequest = userViewApiRequest)
             return if (userApiResponse.status.equals(SUCCESS, true)) {
                 if(userApiResponse.data != null) {

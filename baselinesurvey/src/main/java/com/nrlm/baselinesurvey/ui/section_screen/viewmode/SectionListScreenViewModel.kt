@@ -2,17 +2,22 @@ package com.nrlm.baselinesurvey.ui.section_screen.viewmode
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
+import com.nrlm.baselinesurvey.ui.common_components.common_events.ApiStatusEvent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.SectionListScreenUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.presentation.SectionScreenEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.findItemBySectionId
+import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SectionState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
@@ -27,6 +32,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SectionListScreenViewModel @Inject constructor(
     val sectionScreenUseCase: SectionListScreenUseCase,
+    private val fetchDataUseCase: FetchDataUseCase,
     private val eventWriterHelperImpl: EventWriterHelperImpl
 ): BaseViewModel() {
 
@@ -47,8 +53,11 @@ class SectionListScreenViewModel @Inject constructor(
     val allSessionCompleted = mutableStateOf(false)
 
     val isSurveyCompletedForDidi = mutableStateOf(true)
-
+    var didiId: Int = 0
+    var surveyId: Int = 0
     fun init(didiId: Int, surveyId: Int) {
+        this.surveyId = surveyId
+        this.didiId = didiId
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
@@ -168,6 +177,19 @@ class SectionListScreenViewModel @Inject constructor(
                     )
                 }
             }
+            is ApiStatusEvent.showApiStatus -> {
+                if (event.errorCode == 200) {
+                    init(didiId, surveyId)
+                    showCustomToast(
+                        BaselineCore.getAppContext(), BaselineCore.getAppContext().getString(
+                        R.string.fetched_successfully))
+                } else {
+                    showCustomToast(
+                        BaselineCore.getAppContext(),
+                        BaselineCore.getAppContext().getString(R.string.refresh_failed_please_try_again)
+                    )
+                }
+            }
         }
     }
 
@@ -196,5 +218,9 @@ class SectionListScreenViewModel @Inject constructor(
             }
         }
         return null
+    }
+
+    fun refreshData() {
+        refreshData(fetchDataUseCase)
     }
 }

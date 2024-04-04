@@ -9,14 +9,19 @@ import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DIDI_LIST
 import com.nrlm.baselinesurvey.NO_TOLA_TITLE
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
+import com.nrlm.baselinesurvey.ui.common_components.common_events.ApiStatusEvent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListEvents
+import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SurveyState
@@ -32,7 +37,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SurveyeeScreenViewModel @Inject constructor(
     private val surveyeeScreenUseCase: SurveyeeScreenUseCase,
-    private val eventWriterHelperImpl: EventWriterHelperImpl
+    private val eventWriterHelperImpl: EventWriterHelperImpl,
+    private val fetchDataUseCase: FetchDataUseCase
 ) : BaseViewModel() {
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
@@ -73,11 +79,16 @@ class SurveyeeScreenViewModel @Inject constructor(
 
     val isFilterAppliedState = mutableStateOf(FilterListState())
     val pageFrom = mutableStateOf(ALL_TAB)
-
+    var missionId: Int = 0
+    var activityName: String = ""
+    var activityId: Int = 0
 
 
     @SuppressLint("SuspiciousIndentation")
     fun init(missionId: Int, activityName: String, activityId: Int) {
+        this.missionId = missionId
+        this.activityName = activityName
+        this.activityId = activityId
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val surveyeeListFromDb =
@@ -241,6 +252,19 @@ class SurveyeeScreenViewModel @Inject constructor(
                     )
                 }
             }
+            is ApiStatusEvent.showApiStatus -> {
+                if (event.errorCode == 200) {
+                    init(missionId, activityName, activityId)
+                    showCustomToast(
+                        BaselineCore.getAppContext(), BaselineCore.getAppContext().getString(
+                        R.string.fetched_successfully))
+                } else {
+                    showCustomToast(
+                        BaselineCore.getAppContext(),
+                        BaselineCore.getAppContext().getString(R.string.refresh_failed_please_try_again)
+                    )
+                }
+            }
 
         }
     }
@@ -379,6 +403,10 @@ class SurveyeeScreenViewModel @Inject constructor(
             isFlag = task.surveyState.ordinal == 2
         }
         return isFlag
+    }
+
+    fun refreshData() {
+        refreshData(fetchDataUseCase)
     }
 
 
