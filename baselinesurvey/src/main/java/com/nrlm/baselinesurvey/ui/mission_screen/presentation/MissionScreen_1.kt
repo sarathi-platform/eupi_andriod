@@ -48,6 +48,7 @@ import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.showCustomToast
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -66,7 +67,7 @@ fun MissionScreen_1(
     val pullRefreshState = rememberPullRefreshState(
         viewModel.loaderState.value.isLoaderVisible,
         {
-            if (true) {
+            if (BaselineCore.isOnline.value) {
                 viewModel.refreshData()
             } else {
                 showCustomToast(

@@ -9,15 +9,19 @@ import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DIDI_LIST
 import com.nrlm.baselinesurvey.NO_TOLA_TITLE
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
+import com.nrlm.baselinesurvey.ui.common_components.common_events.ApiStatusEvent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListEvents
+import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SurveyState
@@ -240,6 +244,18 @@ class SurveyeeScreenViewModel @Inject constructor(
                     surveyeeScreenUseCase.eventsWriterUseCase.invoke(
                         events = updateTaskStatusEvent,
                         eventType = EventType.STATEFUL
+                    )
+                }
+            }
+            is ApiStatusEvent.showApiStatus -> {
+                if (event.errorCode == 200) {
+                    showCustomToast(
+                        BaselineCore.getAppContext(), BaselineCore.getAppContext().getString(
+                        R.string.fetched_successfully))
+                } else {
+                    showCustomToast(
+                        BaselineCore.getAppContext(),
+                        BaselineCore.getAppContext().getString(R.string.refresh_failed_please_try_again)
                     )
                 }
             }

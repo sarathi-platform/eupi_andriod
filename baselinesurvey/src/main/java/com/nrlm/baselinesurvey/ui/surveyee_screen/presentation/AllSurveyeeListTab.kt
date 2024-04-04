@@ -104,8 +104,6 @@ fun AllSurveyeeListTab(
                 .then(modifier)
         ) {
 
-            LoaderComponent(visible = loaderState.isLoaderVisible)
-
             if (!loaderState.isLoaderVisible) {
                 if (surveyeeList.isEmpty()) {
                     Box(

@@ -13,6 +13,7 @@ import com.nrlm.baselinesurvey.RESPONSE_CODE_DEACTIVATED
 import com.nrlm.baselinesurvey.RESPONSE_CODE_NETWORK_ERROR
 import com.nrlm.baselinesurvey.RESPONSE_CODE_NOT_FOUND
 import com.nrlm.baselinesurvey.RESPONSE_CODE_NO_DATA
+import com.nrlm.baselinesurvey.RESPONSE_CODE_SERVER_ERROR
 import com.nrlm.baselinesurvey.RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE
 import com.nrlm.baselinesurvey.RESPONSE_CODE_TIMEOUT
 import com.nrlm.baselinesurvey.RESPONSE_CODE_UNAUTHORIZED
@@ -200,41 +201,50 @@ abstract class BaseViewModel() : ViewModel() {
     fun refreshData(fetchDataUseCase: FetchDataUseCase) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO) {
-            val baselineSurveyRequestBodyModel = SurveyRequestBodyModel(
-                languageId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getAppLanguageId(),
-                surveyName = "BASELINE",
-                referenceId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getStateId(),
-                referenceType = "STATE"
-            )
-            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-                baselineSurveyRequestBodyModel
-            )
+            try {
+                val baselineSurveyRequestBodyModel = SurveyRequestBodyModel(
+                    languageId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getAppLanguageId(),
+                    surveyName = "BASELINE",
+                    referenceId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getStateId(),
+                    referenceType = "STATE"
+                )
+                fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+                    baselineSurveyRequestBodyModel
+                )
 
-            val hamletSurveyRequestBodyModel = SurveyRequestBodyModel(
-                languageId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getAppLanguageId(),
-                surveyName = "HAMLET",
-                referenceId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getStateId(),
-                referenceType = "STATE"
-            )
-            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-                hamletSurveyRequestBodyModel
-            )
+                val hamletSurveyRequestBodyModel = SurveyRequestBodyModel(
+                    languageId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getAppLanguageId(),
+                    surveyName = "HAMLET",
+                    referenceId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getStateId(),
+                    referenceType = "STATE"
+                )
+                fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+                    hamletSurveyRequestBodyModel
+                )
 
-            val fetchUserDetailFromNetworkUseCaseSuccess =
-                fetchDataUseCase.fetchUserDetailFromNetworkUseCase.invoke()
-            if (fetchUserDetailFromNetworkUseCaseSuccess) {
-                fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke(false)
-                fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
-                fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
-                fetchDataUseCase.fetchContentnDataFromNetworkUseCase.invoke()
+                val fetchUserDetailFromNetworkUseCaseSuccess =
+                    fetchDataUseCase.fetchUserDetailFromNetworkUseCase.invoke()
+                if (fetchUserDetailFromNetworkUseCaseSuccess) {
+                    fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke(false)
+                    fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
+                    fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
+                    fetchDataUseCase.fetchContentnDataFromNetworkUseCase.invoke()
+                }
 
-            }
-            withContext(Dispatchers.Main) {
-                onEvent(LoaderEvent.UpdateLoaderState(false))
-                onEvent(ApiStatusEvent.showApiStatus(SUCCESS_CODE.toInt()))
+                withContext(Dispatchers.Main) {
+                    onEvent(LoaderEvent.UpdateLoaderState(false))
+                    onEvent(ApiStatusEvent.showApiStatus(SUCCESS_CODE.toInt()))
+                }
+            } catch (e: Exception) {
+                // Handle the exception here
+                withContext(Dispatchers.Main) {
+                    onEvent(LoaderEvent.UpdateLoaderState(false))
+                    onEvent(ApiStatusEvent.showApiStatus(RESPONSE_CODE_SERVER_ERROR))
+                }
             }
         }
     }
+
 
 
 }

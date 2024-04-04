@@ -2,18 +2,22 @@ package com.nrlm.baselinesurvey.ui.section_screen.viewmode
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
+import com.nrlm.baselinesurvey.ui.common_components.common_events.ApiStatusEvent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.SectionListScreenUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.presentation.SectionScreenEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.findItemBySectionId
+import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SectionState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
@@ -167,6 +171,18 @@ class SectionListScreenViewModel @Inject constructor(
                     sectionScreenUseCase.eventsWriterUseCase.invoke(
                         updateTaskStatusEvent,
                         eventType = EventType.STATEFUL
+                    )
+                }
+            }
+            is ApiStatusEvent.showApiStatus -> {
+                if (event.errorCode == 200) {
+                    showCustomToast(
+                        BaselineCore.getAppContext(), BaselineCore.getAppContext().getString(
+                        R.string.fetched_successfully))
+                } else {
+                    showCustomToast(
+                        BaselineCore.getAppContext(),
+                        BaselineCore.getAppContext().getString(R.string.refresh_failed_please_try_again)
                     )
                 }
             }
