@@ -23,4 +23,8 @@ class GetSurveyeeDetailsUserCase (private val repository: StartScreenRepository)
         return repository.getStateId()
     }
 
+    fun getUserType(): String? {
+        return repository.getUserType()
+    }
+
 }

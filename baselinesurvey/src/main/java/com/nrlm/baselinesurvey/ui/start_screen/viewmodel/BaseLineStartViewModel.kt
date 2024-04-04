@@ -30,15 +30,20 @@ import com.nrlm.baselinesurvey.ui.common_components.common_events.SurveyStateEve
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.start_screen.domain.use_case.StartSurveyScreenUserCase
 import com.nrlm.baselinesurvey.ui.start_screen.presentation.StartSurveyScreenEvents
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LocationCoordinates
 import com.nrlm.baselinesurvey.utils.LocationUtil
 import com.nrlm.baselinesurvey.utils.findTagForId
+import com.nrlm.baselinesurvey.utils.getFileNameFromURL
 import com.nrlm.baselinesurvey.utils.tagList
+import com.nudge.core.compressImage
+import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -157,9 +162,39 @@ class BaseLineStartViewModel @Inject constructor(
                         events = saveAnswerEvent,
                         eventType = EventType.STATEFUL
                     )
+
+                    writeImageUploadEvent()
                 }
             }
         }
+    }
+
+    private suspend fun writeImageUploadEvent() {
+        val question = sectionDetails.questionList.first()
+
+
+        val imageUploadEvent = eventsWriterHelperImpl.createImageUploadEvent(
+            didi = didiEntity.value,
+            location = didiImageLocation.value,
+            filePath = updatedLocalPath.value ?: "",
+            userType = startSurveyScreenUserCase.getSurveyeeDetailsUserCase.getUserType()
+                ?: BLANK_STRING,
+            questionId = question.questionId ?: 0,
+            referenceId = didiInfo.value.didiId?.toString() ?: "0",
+            sectionDetails = sectionDetails,
+            subjectType = "Didi"
+        )
+
+        delay(500)
+        val compressedDidi = compressImage(
+            updatedLocalPath.value,
+            BaselineCore.getAppContext(),
+            getFileNameFromURL(photoUri.value.path ?: "")
+        )
+        photoUri.value = File(compressedDidi).toUri()
+        startSurveyScreenUserCase.eventsWriterUseCase.writeImageEventIntoLogFile(
+            imageUploadEvent ?: Events.getEmptyEvent(), photoUri.value
+        )
     }
 
     private fun saveFilePathInDb(

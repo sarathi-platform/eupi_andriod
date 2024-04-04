@@ -903,3 +903,13 @@ fun String.getImagePathFromString(): String {
         BLANK_STRING
     }
 }
+
+fun numberInEnglishFormat(number: Int): String {
+    return String.format(Locale.ENGLISH,"%s", number)
+}
+
+fun List<FormQuestionResponseEntity>.findUnchangedOptions(storeCacheForResponse: List<FormQuestionResponseEntity>): List<FormQuestionResponseEntity> {
+    val unchangedList = this.toMutableList()
+    unchangedList.removeAll(storeCacheForResponse)
+    return unchangedList
+}

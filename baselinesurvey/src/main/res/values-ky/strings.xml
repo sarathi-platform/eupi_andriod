@@ -410,7 +410,7 @@
     <string name="task" translatable="false">Task</string>
     <string name="day_tab" translatable="false">Day</string>
     <string name="search" translatable="false">Search</string>
-    <string name="x_dii_pending" translatable="false">%d %sPending</string>
+    <string name="x_didi_pending" translatable="false">%s %sPending</string>
     <string name="due_by_x" translatable="false">Due by %s</string>
     <string name="start_by_x_date" translatable="false">Start by %s</string>
 
@@ -430,7 +430,7 @@
     <string name="income_comparision">Income</string>
     <string name="small_business_comparision">Chikon baniani bagwi: thanai tal chinwio chikon baniani simi nukhungni bebak ajimung?</string>
     <string name="didi_title">"Aibi: "</string>
-    <string name="dada_title">"Ata: "</string>
+    <string name="dada_title">"Husband / Father\'s Name: "</string>
     <string name="caste_titile">"Dopha: "</string>
     <string name="aadhar_card_titile">Nini Aadhar Card de tong?</string>
     <string name="voter_card_title">Nini Voter Card de tong?</string>

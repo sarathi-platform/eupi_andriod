@@ -29,6 +29,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.LIVELIHOOD_SOURCE_TAG
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.model.response.ContentList
@@ -45,8 +46,10 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_14_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_30_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_64_dp
+import com.nrlm.baselinesurvey.utils.findTagForId
 import com.nrlm.baselinesurvey.utils.getResponseForOptionId
 import com.nrlm.baselinesurvey.utils.saveFormQuestionResponseEntity
+import com.nrlm.baselinesurvey.utils.tagList
 import kotlinx.coroutines.launch
 
 @Composable
@@ -140,12 +143,25 @@ fun NestedLazyListForFormQuestions(
                         when (option.optionItemEntity?.optionType) {
                             QuestionType.SingleSelectDropdown.name,
                             QuestionType.SingleSelectDropDown.name -> {
+                                val isEditAllowed =
+                                    if (tagList.findTagForId(option.optionItemEntity.optionTag)
+                                            .contains(LIVELIHOOD_SOURCE_TAG, true)
+                                    ) {
+                                        if (questionTypeScreenViewModel.tempRefId.value == BLANK_STRING) {
+                                            true
+                                        } else {
+                                            false
+                                        }
+                                    } else {
+                                        true
+                                    }
                                 TypeDropDownComponent(
                                     option.optionItemEntity?.display,
                                     option.optionItemEntity.selectedValue ?: "Select",
                                     showQuestionState = option,
                                     isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
                                     sources = option.optionItemEntity.values,
+                                    isEditAllowed = isEditAllowed,
                                     selectOptionText = formQuestionResponseEntity.value.getResponseForOptionId(
                                         option.optionId ?: -1
                                     )?.selectedValue ?: BLANK_STRING,

@@ -28,6 +28,7 @@ fun TypeDropDownComponent(
     onInfoButtonClicked: () -> Unit,
     onAnswerSelection: (selectValue: String) -> Unit
     ) {
+
     val defaultSourceList = if (sources == null) listOf("Yes", "No") else sources
     var expanded by remember { mutableStateOf(false) }
     var selectedOptionText by remember { mutableStateOf(if (selectOptionText.equals(BLANK_STRING)) hintText else selectOptionText) }

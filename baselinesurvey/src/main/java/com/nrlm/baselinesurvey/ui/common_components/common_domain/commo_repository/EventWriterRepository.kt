@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository
 
+import android.net.Uri
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.getDependentEventsId
@@ -54,5 +55,7 @@ interface EventsWriterRepository {
 
         return mEvent
     }
+
+    suspend fun saveImageEventToMultipleSources(event: Events, uri: Uri)
 
 }
