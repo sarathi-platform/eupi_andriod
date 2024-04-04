@@ -131,7 +131,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
             totalOptionSize.intValue = updatedOptionList.filter { it.showQuestion }.size
             if (referenceId.isNotBlank()) {
                 calculatedResult.value =
-                    formQuestionResponseEntity.value.find { it.optionId == updatedOptionList.find { it.optionItemEntity?.optionType == QuestionType.Calculation.name }?.optionId }?.selectedValue
+                    formQuestionResponseEntity.value.find { it.optionId == updatedOptionList.find { it.optionItemEntity?.optionType == QuestionType.Calculation.name && it.showQuestion }?.optionId }?.selectedValue
                         ?: BLANK_STRING
             }
 
@@ -341,16 +341,29 @@ class QuestionTypeScreenViewModel @Inject constructor(
                             }
                         }
                         var areAllValuesPresent = 0
+                        val listOfValuesToCalculate = mutableListOf<FormQuestionResponseEntity>()
                         if (optionIds.isNotEmpty()) {
                             optionIds.forEach { option ->
                                 val findOption = storeCacheForResponse.findOptionExist(option)
                                 if (findOption == true) {
                                     areAllValuesPresent++
+                                    storeCacheForResponse.find { it.optionId == option }
+                                        ?.let { listOfValuesToCalculate.add(it) }
+                                } else {
+                                    val findOptionInSavedValues = formQuestionResponseEntity.value
+                                    val findUnchangedOption =
+                                        findOptionInSavedValues.findOptionExist(option)
+                                    if (findUnchangedOption == true) {
+                                        areAllValuesPresent++
+                                        findOptionInSavedValues.find { it.optionId == option }
+                                            ?.let { listOfValuesToCalculate.add(it) }
+                                    }
                                 }
                             }
+
                             if (areAllValuesPresent == optionIds.size) {
                                 val result =
-                                    conditionDto?.calculateResultForFormula(storeCacheForResponse)
+                                    conditionDto?.calculateResultForFormula(listOfValuesToCalculate)
                                 calculatedResult.value = result ?: BLANK_STRING
                             }
                         }
@@ -377,30 +390,37 @@ class QuestionTypeScreenViewModel @Inject constructor(
                         if (it.optionItemEntity?.optionType?.equals(
                                 QuestionType.Calculation.name,
                                 true
-                            ) == true
+                            ) == true && it.showQuestion
                         ) {
                             it.optionItemEntity?.conditions?.forEach { conditionDto ->
                                 val resultedValue = conditionDto?.calculateResultForFormula(
                                     finalFormQuestionResponseList
                                 )
                                 if (!resultedValue.isNullOrBlank()) {
-                                    finalFormQuestionResponseList.add(
-                                        FormQuestionResponseEntity(
-                                            id = 0,
-                                            didiId = didiId,
-                                            questionId = event.questionId,
-                                            surveyId = event.surveyId,
-                                            sectionId = event.sectionId,
-                                            referenceId = referenceId,
-                                            optionId = it.optionId ?: -1,
-                                            selectedValue = resultedValue
+                                    val map =
+                                        finalFormQuestionResponseList.associateBy { it.optionId }
+                                            .toMutableMap()
+                                    it.optionId?.let { optionId ->
+                                        map.put(
+                                            optionId, FormQuestionResponseEntity(
+                                                id = 0,
+                                                didiId = didiId,
+                                                questionId = event.questionId,
+                                                surveyId = event.surveyId,
+                                                sectionId = event.sectionId,
+                                                referenceId = referenceId,
+                                                optionId = it.optionId ?: -1,
+                                                selectedValue = resultedValue
+                                            )
                                         )
-                                    )
+                                    }
+                                    finalFormQuestionResponseList.clear()
+                                    finalFormQuestionResponseList.addAll(map.values.toList())
                                 }
                             }
                         }
                     }
-                    finalFormQuestionResponseList.forEach {
+                    finalFormQuestionResponseList.distinctBy { it.optionId }.forEach {
                         val existingFormQuestionResponseEntity =
                             formQuestionScreenUseCase.saveFormQuestionResponseUseCase.getOptionItem(
                                 it
