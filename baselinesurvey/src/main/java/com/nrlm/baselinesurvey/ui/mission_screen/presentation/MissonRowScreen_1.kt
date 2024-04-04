@@ -86,7 +86,7 @@ fun MissonRowScreen_1(
             .clip(RoundedCornerShape(6.dp))
             .border(
                 width = 1.dp,
-                color = if (pendingCount == 0) greenOnline else greyLightColor,
+                color = if (pendingCount == 0 && viewModel.missionTaskCountMap.value[mission.missionId] != 0) greenOnline else greyLightColor,
                 shape = RoundedCornerShape(6.dp)
             )
             .background(Color.Transparent)
@@ -95,22 +95,22 @@ fun MissonRowScreen_1(
         Column(
             modifier = modifier
                 .fillMaxWidth()
-                .background(if (pendingCount == 0) greenLight else white)
+                .background(if (pendingCount == 0 && viewModel.missionTaskCountMap.value[mission.missionId] != 0) greenLight else white)
         ) {
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .background(if (pendingCount == 0) greenOnline else greyLightColor)
+                    .background(if (pendingCount == 0 && viewModel.missionTaskCountMap.value[mission.missionId] != 0) greenOnline else greyLightColor)
                     .padding(horizontal = 16.dp, vertical = 5.dp)
             ) {
                 Text(
-                    text = if (pendingCount == 0) "Completed"
+                    text = if (pendingCount == 0 && viewModel.missionTaskCountMap.value[mission.missionId] != 0) "Completed"
                     else stringResource(
                         id = R.string.start_by_x_date,
                         missionDueDate
                     ),
                     style = smallerTextStyle,
-                    color = if (pendingCount == 0) white else black100Percent,
+                    color = if (pendingCount == 0 && viewModel.missionTaskCountMap.value[mission.missionId] != 0) white else black100Percent,
                 )
             }
 
@@ -192,7 +192,7 @@ fun MissonRowScreen_1(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = if (pendingCount == 0) "View" else "Start",
+                        text = if (pendingCount == 0 && viewModel.missionTaskCountMap.value[mission.missionId] != 0) "View" else "Start",
                         style = smallTextStyleMediumWeight,
                         color = white
                     )
