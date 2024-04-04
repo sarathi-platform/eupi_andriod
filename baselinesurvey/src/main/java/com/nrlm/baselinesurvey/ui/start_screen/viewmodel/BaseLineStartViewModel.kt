@@ -34,10 +34,10 @@ import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LocationCoordinates
 import com.nrlm.baselinesurvey.utils.LocationUtil
-import com.nrlm.baselinesurvey.utils.compressImage
 import com.nrlm.baselinesurvey.utils.findTagForId
 import com.nrlm.baselinesurvey.utils.getFileNameFromURL
 import com.nrlm.baselinesurvey.utils.tagList
+import com.nudge.core.compressImage
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel

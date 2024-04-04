@@ -5,8 +5,8 @@ import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 
 data class ImageUploadRequest(
-    @SerializedName("didiId")
-    val didiId: String,
+    @SerializedName("subjectId")
+    val subjectId: String,
     @SerializedName("location")
     val location: String,
     @SerializedName("userType")
@@ -51,7 +51,7 @@ data class ImageUploadRequest(
             val option =
                 sectionDetails.optionsItemMap[questionId]?.find { it.optionType == QuestionType.Image.name }
             return ImageUploadRequest(
-                didiId = didi.didiId.toString(),
+                subjectId = didi.didiId.toString(),
                 filePath = filePath,
                 userType = userType,
                 location = location,
