@@ -45,6 +45,9 @@ interface StepsListDao {
     @Query("SELECT * FROM $STEPS_LIST_TABLE WHERE villageId = :villageId  ORDER BY orderNumber ASC")
     fun getAllStepsForVillage(villageId: Int): List<StepListEntity>
 
+    @Query("SELECT count(*) FROM $STEPS_LIST_TABLE WHERE villageId = :villageId  and id= :stepId ORDER BY orderNumber ASC")
+    fun getStepEntityCountForVillage(villageId: Int, stepId: Int): Int
+
     @Query("SELECT * FROM $STEPS_LIST_TABLE WHERE orderNumber = :orderNumber ORDER BY orderNumber ASC")
     fun getAllStepsWithOrderNumber(orderNumber: Int): List<StepListEntity>
 
@@ -94,7 +97,11 @@ interface StepsListDao {
     fun updateStepListForVillage(forceRefresh: Boolean = false, villageId: Int, stepList: List<StepListEntity>) {
         stepList.forEach { step ->
 
-            if (!forceRefresh || getAllStepsForVillage(step.villageId).isEmpty()) {
+            if (!forceRefresh || getStepEntityCountForVillage(
+                    step.villageId,
+                    stepId = step.id
+                ) == 0
+            ) {
                 var currentStep = step
                 if (TextUtils.isEmpty(step.status)) {
                     currentStep = currentStep.copy(status = StepStatus.NOT_STARTED.name)
