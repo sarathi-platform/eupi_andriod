@@ -32,6 +32,7 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.LIVELIHOOD_SOURCE_TAG
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
+import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.CalculationResultComponent
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
@@ -60,6 +61,7 @@ fun NestedLazyListForFormQuestions(
     onSaveFormTypeOption: (questionTypeEvent: QuestionTypeEvent) -> Unit,
     saveCacheFormData: (formQuestionResponseEntity: FormQuestionResponseEntity) -> Unit,
     answeredQuestionCountIncreased: () -> Unit,
+    sectionInfoButtonClicked: (contents: List<ContentList>) -> Unit,
     ) {
     val scope = rememberCoroutineScope()
     val questionTypeScreenViewModel = (viewModel as QuestionTypeScreenViewModel)
@@ -157,11 +159,15 @@ fun NestedLazyListForFormQuestions(
                                     option.optionItemEntity?.display,
                                     option.optionItemEntity.selectedValue ?: "Select",
                                     showQuestionState = option,
+                                    isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
                                     sources = option.optionItemEntity.values,
                                     isEditAllowed = isEditAllowed,
                                     selectOptionText = formQuestionResponseEntity.value.getResponseForOptionId(
                                         option.optionId ?: -1
-                                    )?.selectedValue ?: BLANK_STRING
+                                    )?.selectedValue ?: BLANK_STRING,
+                                    onInfoButtonClicked = {
+                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
+                                    }
                                 ) { value ->
                                     questionTypeScreenViewModel.onEvent(
                                         QuestionTypeEvent.UpdateConditionalOptionState(
@@ -190,6 +196,10 @@ fun NestedLazyListForFormQuestions(
                                     title = option.optionItemEntity.display,
                                     sources = option.optionItemEntity.values,
                                     showQuestionState = option,
+                                    isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
+                                    onInfoButtonClicked = {
+                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
+                                    }
                                 ) { value ->
                                     questionTypeScreenViewModel.onEvent(
                                         QuestionTypeEvent.UpdateConditionalOptionState(
@@ -223,10 +233,14 @@ fun NestedLazyListForFormQuestions(
                                 EditTextWithTitleComponent(
                                     option.optionItemEntity.display,
                                     showQuestion = option,
+                                    isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
                                     defaultValue = formQuestionResponseEntity.value.getResponseForOptionId(
                                         option.optionId ?: -1
                                     )?.selectedValue ?: BLANK_STRING,
-                                    isOnlyNumber = option.optionItemEntity.optionType == QuestionType.InputNumber.name || option.optionItemEntity.optionType == QuestionType.InputNumberEditText.name
+                                    isOnlyNumber = option.optionItemEntity.optionType == QuestionType.InputNumber.name || option.optionItemEntity.optionType == QuestionType.InputNumberEditText.name,
+                                    onInfoButtonClicked = {
+                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
+                                    }
                                 ) { value ->
                                     questionTypeScreenViewModel.formTypeOption.let { it1 ->
                                         if (!option.optionItemEntity.conditions.isNullOrEmpty()) {
@@ -258,6 +272,10 @@ fun NestedLazyListForFormQuestions(
                                     currentValue = formQuestionResponseEntity.value.getResponseForOptionId(
                                         option.optionId ?: -1
                                     )?.selectedValue ?: BLANK_STRING,
+                                    isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
+                                    onInfoButtonClicked = {
+                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
+                                    },
                                     onAnswerSelection = { selectedValue ->
                                         questionTypeScreenViewModel.formTypeOption.let { formTypeOption ->
                                             saveCacheFormData(
@@ -278,9 +296,13 @@ fun NestedLazyListForFormQuestions(
                             QuestionType.Toggle.name -> {
                                 RadioOptionTypeComponent(
                                     optionItemEntityState = option,
+                                    isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
                                     selectedValue = formQuestionResponseEntity.value.getResponseForOptionId(
                                         option.optionId ?: -1
                                     )?.selectedValue ?: BLANK_STRING,
+                                    onInfoButtonClicked = {
+                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
+                                    },
                                     onOptionSelected = { selectedValue ->
                                         questionTypeScreenViewModel.onEvent(
                                             QuestionTypeEvent.UpdateConditionalOptionState(

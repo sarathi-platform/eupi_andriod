@@ -206,6 +206,7 @@ fun BaseLineStartScreen(
                     .copy(showQuestion = true),
                 isOnlyNumber = true,
                 maxLength = 10,
+                onInfoButtonClicked = {}
             ) {
                 baseLineStartViewModel.phoneNumber.value = it
             }

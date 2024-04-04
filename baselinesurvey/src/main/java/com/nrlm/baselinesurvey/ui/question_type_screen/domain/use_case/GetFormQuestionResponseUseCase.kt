@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case
 
 import androidx.lifecycle.LiveData
+import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
@@ -82,6 +83,10 @@ class GetFormQuestionResponseUseCase(private val repository: FormQuestionRespons
 
     suspend fun getQuestionTag(surveyId: Int, sectionId: Int, questionId: Int): Int {
         return repository.getQuestionTag(surveyId, sectionId, questionId)
+    }
+
+    suspend fun getContentData(contentKey: String): ContentEntity {
+        return repository.getContentFromDB(contentKey)
     }
 
 }
