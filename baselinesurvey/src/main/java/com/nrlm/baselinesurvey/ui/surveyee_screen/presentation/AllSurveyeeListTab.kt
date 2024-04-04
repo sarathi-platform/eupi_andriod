@@ -32,12 +32,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.DIDI_LIST
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
+import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.MoveSurveyeesUpdateBannerComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
@@ -106,19 +107,31 @@ fun AllSurveyeeListTab(
 
             if (!loaderState.isLoaderVisible) {
                 if (surveyeeList.isEmpty()) {
-                    Box(
+                    Column(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = 16.dp),
-                        contentAlignment = Alignment.Center
+                        verticalArrangement = Arrangement.Center,
                     ) {
                         Text(
                             if (!activityName.equals("Conduct Hamlet Survey")) stringResource(R.string.didi_list_empty_state) else stringResource(
                                 R.string.empty_task_message
                             ),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
                             style = defaultTextStyle,
                             color = textColorDark
                         )
+                        Spacer(modifier = Modifier.padding(vertical = 10.dp))
+                        ButtonPositive(
+                            buttonTitle = stringResource(id = R.string.retry),
+                            isActive = true,
+                            isArrowRequired = false,
+                            onClick = {
+                                viewModel.refreshData()
+                            })
+
+
                     }
                 } else {
                     LazyColumn(

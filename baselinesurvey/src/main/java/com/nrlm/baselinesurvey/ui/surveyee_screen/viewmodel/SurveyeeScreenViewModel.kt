@@ -79,11 +79,16 @@ class SurveyeeScreenViewModel @Inject constructor(
 
     val isFilterAppliedState = mutableStateOf(FilterListState())
     val pageFrom = mutableStateOf(ALL_TAB)
-
+    var missionId: Int = 0
+    var activityName: String = ""
+    var activityId: Int = 0
 
 
     @SuppressLint("SuspiciousIndentation")
     fun init(missionId: Int, activityName: String, activityId: Int) {
+        this.missionId = missionId
+        this.activityName = activityName
+        this.activityId = activityId
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val surveyeeListFromDb =
@@ -249,6 +254,7 @@ class SurveyeeScreenViewModel @Inject constructor(
             }
             is ApiStatusEvent.showApiStatus -> {
                 if (event.errorCode == 200) {
+                    init(missionId, activityName, activityId)
                     showCustomToast(
                         BaselineCore.getAppContext(), BaselineCore.getAppContext().getString(
                         R.string.fetched_successfully))

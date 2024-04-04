@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import com.nrlm.baselinesurvey.DELAY_2_SEC
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.SUCCESS_CODE
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.ui.common_components.common_events.ApiStatusEvent
@@ -58,6 +57,7 @@ class MissionViewModel @Inject constructor(
                 if (event.errorCode == 200) {
                     showCustomToast(BaselineCore.getAppContext(), BaselineCore.getAppContext().getString(
                         R.string.fetched_successfully))
+                    init()
                 } else {
                     showCustomToast(
                         BaselineCore.getAppContext(),

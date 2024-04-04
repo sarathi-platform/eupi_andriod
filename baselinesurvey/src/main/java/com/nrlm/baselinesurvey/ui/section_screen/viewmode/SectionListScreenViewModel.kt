@@ -53,8 +53,11 @@ class SectionListScreenViewModel @Inject constructor(
     val allSessionCompleted = mutableStateOf(false)
 
     val isSurveyCompletedForDidi = mutableStateOf(true)
-
+    var didiId: Int = 0
+    var surveyId: Int = 0
     fun init(didiId: Int, surveyId: Int) {
+        this.surveyId = surveyId
+        this.didiId = didiId
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
@@ -176,6 +179,7 @@ class SectionListScreenViewModel @Inject constructor(
             }
             is ApiStatusEvent.showApiStatus -> {
                 if (event.errorCode == 200) {
+                    init(didiId, surveyId)
                     showCustomToast(
                         BaselineCore.getAppContext(), BaselineCore.getAppContext().getString(
                         R.string.fetched_successfully))

@@ -138,6 +138,7 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.GetSurveyeeLis
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.MoveSurveyeeToThisWeekUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivityStatusUseCase
+import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
 import dagger.Module
@@ -455,7 +456,8 @@ object BaselineModule {
         activityTaskDao: ActivityTaskDao,
         contentDao: ContentDao,
         baselineDatabase: NudgeBaselineDatabase,
-        didiSectionProgressEntityDao: DidiSectionProgressEntityDao
+        didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
+        apiStatusDao: ApiStatusDao
 
     ): DataLoadingScreenRepository {
         return DataLoadingScreenRepositoryImpl(
@@ -472,7 +474,8 @@ object BaselineModule {
             activityTaskDao,
             contentDao,
             baselineDatabase,
-            didiSectionProgressEntityDao
+            didiSectionProgressEntityDao,
+            apiStatusDao
         )
     }
 

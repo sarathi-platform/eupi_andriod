@@ -232,7 +232,7 @@ abstract class BaseViewModel() : ViewModel() {
                 }
 
                 withContext(Dispatchers.Main) {
-                    onEvent(LoaderEvent.UpdateLoaderState(false))
+                    // onEvent(LoaderEvent.UpdateLoaderState(false))
                     onEvent(ApiStatusEvent.showApiStatus(SUCCESS_CODE.toInt()))
                 }
             } catch (e: Exception) {

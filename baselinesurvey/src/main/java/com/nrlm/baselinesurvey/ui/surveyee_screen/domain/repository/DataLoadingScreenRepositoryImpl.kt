@@ -67,6 +67,9 @@ import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.core.database.dao.ApiStatusDao
+import com.nudge.core.database.entities.ApiStatusEntity
+import com.nudge.core.toDate
 import javax.inject.Inject
 
 class DataLoadingScreenRepositoryImpl @Inject constructor(
@@ -83,7 +86,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     val activityTaskDao: ActivityTaskDao,
     val contentDao: ContentDao,
     val baselineDatabase: NudgeBaselineDatabase,
-    val didiSectionProgressEntityDao: DidiSectionProgressEntityDao
+    val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
+    val apiStatusDao: ApiStatusDao
 ) : DataLoadingScreenRepository {
     override suspend fun fetchLocalLanguageList(): List<LanguageEntity> {
 
@@ -653,5 +657,26 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     override fun getAppLanguageId(): Int {
         return prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
     }
+
+    override fun updateApiStatus(
+        apiEndPoint: String,
+        status: Int,
+        errorMessage: String,
+        errorCode: Int
+    ) {
+    }
+
+    override fun insertApiStatus(apiEndPoint: String) {
+        val apiStatusEntity = ApiStatusEntity(
+            apiEndpoint = apiEndPoint,
+            status = 0,
+            modifiedDate = System.currentTimeMillis().toDate(),
+            createdDate = System.currentTimeMillis().toDate(),
+            errorCode = 0,
+            errorMessage = ""
+        )
+        apiStatusDao.insert(apiStatusEntity)
+    }
+
 
 }

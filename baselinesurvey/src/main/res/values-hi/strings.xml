@@ -433,6 +433,7 @@
     <string name="fetched_successfully">डेटा सफलतापूर्वक लाया गया</string>
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"शुरू "</string>
+    <string name="retry">पुन: प्रयास करें</string>
 
 
 </resources>

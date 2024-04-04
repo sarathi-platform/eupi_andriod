@@ -6,15 +6,18 @@ import androidx.room.TypeConverters
 import com.nudge.core.SYNC_MANAGER_DB_VERSION
 import com.nudge.core.database.converters.DateConverter
 import com.nudge.core.database.converters.ListConvertor
+import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.entities.ApiStatusEntity
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 
 @Database(
     entities = [
         Events::class,
-        EventDependencyEntity::class
+        EventDependencyEntity::class,
+        ApiStatusEntity::class
     ],
     version = SYNC_MANAGER_DB_VERSION,
     exportSchema = false
@@ -25,5 +28,7 @@ abstract class SyncManagerDatabase : RoomDatabase() {
     abstract fun eventsDao(): EventsDao
 
     abstract fun eventsDependencyDao(): EventDependencyDao
+
+    abstract fun apiStatusDao(): ApiStatusDao
 
 }
