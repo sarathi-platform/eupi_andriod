@@ -61,6 +61,7 @@ import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToQuestionScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToSearchScreen
+import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.ComplexSearchComponent
 import com.nrlm.baselinesurvey.ui.common_components.SectionItemComponent
@@ -178,16 +179,18 @@ fun SectionListScreen(
                             .align(Alignment.CenterEnd)
                             .zIndex(1f)
                     ) {
-//                        Image(
-//                            modifier = Modifier
-//                                .padding(5.dp)
-//                                .clickable {
-//                                    if (!isBannerExpanded.value)
-//                                        isBannerExpanded.value = true
-//                                },
-//                            painter = painterResource(id = R.drawable.info_icon),
-//                            contentDescription = ""
-//                        )
+
+                            Icon(
+                                painter = painterResource(id = R.drawable.more_icon),
+                                contentDescription = "more action button",
+                                tint = blueDark,
+                                modifier = Modifier
+                                    .background(Color.White)
+                                    .padding(10.dp).clickable {
+                                        navController.navigate(Graph.SETTING_GRAPH)
+                                    }
+                            )
+
                     }
                     this@TopAppBar.AnimatedVisibility(
                         visible = isBannerExpanded.value,

@@ -8,4 +8,8 @@ class SaveAccessTokenUseCase(private val repository: OtpVerificationRepository) 
         repository.saveAccessToken(token)
     }
 
+    fun saveUserType(userType: String) {
+        repository.saveUserType(userType)
+    }
+
 }
