@@ -84,7 +84,7 @@ fun SurveyeeListScreen(
     Scaffold(
         bottomBar = {
 
-            if (viewModel.isEnableNextBTn.value) {
+            if (viewModel.isEnableNextBTn.value && viewModel.filteredSurveyeeListState.value.isNotEmpty()) {
 
                 DoubleButtonBox(
                     modifier = Modifier
