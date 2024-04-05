@@ -11,6 +11,7 @@ const val BLANK_STRING = ""
 
 const val EventsTable = "events_table"
 const val EventDependencyTable = "event_dependency_table"
+const val ApiStatusTable = "api_status_table"
 
 // Sync DB Properties
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"

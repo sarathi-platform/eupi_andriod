@@ -769,6 +769,9 @@ fun NestedLazyList(
 
 
                                         when (optionItem.optionType) {
+                                            QuestionType.Input.name,
+                                            QuestionType.InputText.name,
+                                            QuestionType.InputNumberEditText.name,
                                             QuestionType.SingleSelectDropdown.name,
                                             QuestionType.SingleSelectDropDown.name -> {
                                                 val mOptionItem =
@@ -864,6 +867,7 @@ fun NestedLazyList(
 
                                             QuestionType.Input.name,
                                             QuestionType.InputText.name,
+                                            QuestionType.InputNumberEditText.name,
                                             QuestionType.SingleSelectDropdown.name,
                                             QuestionType.SingleSelectDropDown.name -> {
                                                 questionScreenViewModel.onEvent(

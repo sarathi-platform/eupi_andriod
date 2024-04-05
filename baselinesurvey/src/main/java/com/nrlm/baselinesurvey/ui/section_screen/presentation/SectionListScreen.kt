@@ -33,6 +33,9 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Divider
@@ -40,6 +43,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -88,6 +93,7 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
@@ -104,11 +110,25 @@ fun SectionListScreen(
     didiId: Int,
     surveyId: Int
 ) {
+    val context = LocalContext.current
+
 
     val loaderState = viewModel.loaderState.value
+    val isSettingScreenOpened = remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(key1 = true) {
         viewModel.init(didiId, surveyId)
+    }
+
+    DisposableEffect(key1 = Unit) {
+        isSettingScreenOpened.value = false
+        onDispose {
+            if (isSettingScreenOpened.value) {
+                viewModel.close()
+            }
+        }
     }
 
     val sectionsList = viewModel.sectionItemStateList.value
@@ -135,7 +155,20 @@ fun SectionListScreen(
     }
 
     val linearProgress = remember { mutableStateOf(0.0f) }
+    val pullRefreshState = rememberPullRefreshState(
+        viewModel.loaderState.value.isLoaderVisible,
+        {
+            if (BaselineCore.isOnline.value) {
+                viewModel.refreshData()
+            } else {
+                showCustomToast(
+                    context,
+                    context.getString(R.string.refresh_failed_please_try_again)
+                )
 
+            }
+
+        })
     BackHandler {
         BaselineCore.setCurrentActivityName(BLANK_STRING)
         navigateBackToSurveyeeListScreen(navController)
@@ -186,7 +219,9 @@ fun SectionListScreen(
                                 tint = blueDark,
                                 modifier = Modifier
                                     .background(Color.White)
-                                    .padding(10.dp).clickable {
+                                    .padding(10.dp)
+                                    .clickable {
+                                        isSettingScreenOpened.value = true
                                         navController.navigate(Graph.SETTING_GRAPH)
                                     }
                             )
@@ -297,7 +332,8 @@ fun SectionListScreen(
                 ModelBottomSheetDescriptionContentComponent(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(it),
+                        .padding(it)
+                        .pullRefresh(pullRefreshState),
                     sheetContent = {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             IconButton(onClick = {
@@ -432,6 +468,7 @@ fun SectionListScreen(
                                 }
                             )
                         }
+
                         emptySpacer(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -439,7 +476,19 @@ fun SectionListScreen(
                         )
                     }
                 }
+
             }
         }
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState)) {
+            PullRefreshIndicator(
+                refreshing = viewModel.loaderState.value.isLoaderVisible,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter),
+                contentColor = blueDark,
+            )
+        }
+
     }
 }

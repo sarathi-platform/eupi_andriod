@@ -163,13 +163,29 @@ class BaseLineStartViewModel @Inject constructor(
                         eventType = EventType.STATEFUL
                     )
 
-                    writeImageUploadEvent()
+                    onEvent(
+                        EventWriterEvents.SaveImageUploadEvent(
+                            surveyId = event.surveyId,
+                            sectionId = event.sectionId,
+                            didiId = event.didiId,
+                            questionId = event.questionId,
+                            questionType = event.questionType,
+                            questionTag = event.questionTag
+                        )
+                    )
+
+                }
+            }
+
+            is EventWriterEvents.SaveImageUploadEvent -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    writeImageUploadEvent(event.didiId)
                 }
             }
         }
     }
 
-    private suspend fun writeImageUploadEvent() {
+    private suspend fun writeImageUploadEvent(didiId: Int) {
         val question = sectionDetails.questionList.first()
 
 
@@ -180,7 +196,7 @@ class BaseLineStartViewModel @Inject constructor(
             userType = startSurveyScreenUserCase.getSurveyeeDetailsUserCase.getUserType()
                 ?: BLANK_STRING,
             questionId = question.questionId ?: 0,
-            referenceId = didiInfo.value.didiId?.toString() ?: "0",
+            referenceId = didiId.toString() ?: "0",
             sectionDetails = sectionDetails,
             subjectType = "Didi"
         )

@@ -449,8 +449,8 @@
     <string name="to_the_nearest_bank_comparsion">To the nearest bank</string>
     <string name="to_the_replacement_string">"To the "</string>
     <string name="average_travel_cost_comparision">"Average travel cost "</string>
-    <string name="questions_data_tab_title">Questions Data</string>
-    <string name="section_information_tab_title">Section Information</string>
+    <string name="questions_data_tab_title">Questions</string>
+    <string name="section_information_tab_title">Sections</string>
 
     <string name="share_export_file" translatable="false">Share exported file</string>
     <string name="share_export_image" translatable="false">Share exported image</string>
@@ -476,5 +476,6 @@
     <string name="fetched_successfully">Data fetched successfully</string>
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"Start "</string>
+    <string name="retry">Retry</string>
 
 </resources>

@@ -162,9 +162,15 @@ fun NestedLazyListForFormQuestions(
                                     isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
                                     sources = option.optionItemEntity.values,
                                     isEditAllowed = isEditAllowed,
-                                    selectOptionText = formQuestionResponseEntity.value.getResponseForOptionId(
-                                        option.optionId ?: -1
-                                    )?.selectedValue ?: BLANK_STRING,
+                                    selectOptionText = if (viewModel.tempRefId.value != BLANK_STRING)
+                                        formQuestionResponseEntity.value.getResponseForOptionId(
+                                            option.optionId ?: -1
+                                        )?.selectedValue
+                                            ?: BLANK_STRING
+                                    else
+                                        viewModel.storeCacheForResponse.getResponseForOptionId(
+                                            optionId = option.optionId ?: -1
+                                        )?.selectedValue ?: BLANK_STRING,
                                     onInfoButtonClicked = {
                                         sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
                                     }
@@ -197,6 +203,15 @@ fun NestedLazyListForFormQuestions(
                                     sources = option.optionItemEntity.values,
                                     showQuestionState = option,
                                     isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
+                                    selectOptionText = if (viewModel.tempRefId.value != BLANK_STRING)
+                                        formQuestionResponseEntity.value.getResponseForOptionId(
+                                            option.optionId ?: -1
+                                        )?.selectedValue
+                                            ?: BLANK_STRING
+                                    else
+                                        viewModel.storeCacheForResponse.getResponseForOptionId(
+                                            optionId = option.optionId ?: -1
+                                        )?.selectedValue ?: BLANK_STRING,
                                     onInfoButtonClicked = {
                                         sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
                                     }
@@ -234,9 +249,15 @@ fun NestedLazyListForFormQuestions(
                                     option.optionItemEntity.display,
                                     showQuestion = option,
                                     isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
-                                    defaultValue = formQuestionResponseEntity.value.getResponseForOptionId(
-                                        option.optionId ?: -1
-                                    )?.selectedValue ?: BLANK_STRING,
+                                    defaultValue = if (viewModel.tempRefId.value != BLANK_STRING)
+                                        formQuestionResponseEntity.value.getResponseForOptionId(
+                                            option.optionId ?: -1
+                                        )?.selectedValue
+                                            ?: BLANK_STRING
+                                    else
+                                        viewModel.storeCacheForResponse.getResponseForOptionId(
+                                            optionId = option.optionId ?: -1
+                                        )?.selectedValue ?: BLANK_STRING,
                                     isOnlyNumber = option.optionItemEntity.optionType == QuestionType.InputNumber.name || option.optionItemEntity.optionType == QuestionType.InputNumberEditText.name,
                                     onInfoButtonClicked = {
                                         sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
@@ -269,9 +290,15 @@ fun NestedLazyListForFormQuestions(
                             QuestionType.InputNumber.name -> {
                                 IncrementDecrementView(
                                     title = option.optionItemEntity.display ?: BLANK_STRING,
-                                    currentValue = formQuestionResponseEntity.value.getResponseForOptionId(
-                                        option.optionId ?: -1
-                                    )?.selectedValue ?: BLANK_STRING,
+                                    currentValue = if (viewModel.tempRefId.value != BLANK_STRING)
+                                        formQuestionResponseEntity.value.getResponseForOptionId(
+                                            option.optionId ?: -1
+                                        )?.selectedValue
+                                            ?: BLANK_STRING
+                                    else
+                                        viewModel.storeCacheForResponse.getResponseForOptionId(
+                                            optionId = option.optionId ?: -1
+                                        )?.selectedValue ?: BLANK_STRING,
                                     isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
                                     onInfoButtonClicked = {
                                         sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
@@ -297,9 +324,15 @@ fun NestedLazyListForFormQuestions(
                                 RadioOptionTypeComponent(
                                     optionItemEntityState = option,
                                     isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
-                                    selectedValue = formQuestionResponseEntity.value.getResponseForOptionId(
-                                        option.optionId ?: -1
-                                    )?.selectedValue ?: BLANK_STRING,
+                                    selectedValue = if (viewModel.tempRefId.value != BLANK_STRING)
+                                        formQuestionResponseEntity.value.getResponseForOptionId(
+                                            option.optionId ?: -1
+                                        )?.selectedValue
+                                            ?: BLANK_STRING
+                                    else
+                                        viewModel.storeCacheForResponse.getResponseForOptionId(
+                                            optionId = option.optionId ?: -1
+                                        )?.selectedValue ?: BLANK_STRING,
                                     onInfoButtonClicked = {
                                         sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
                                     },
