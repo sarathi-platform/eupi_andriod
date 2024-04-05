@@ -1,9 +1,13 @@
 package com.patsurvey.nudge.activities.settings.viewmodel
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Environment
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
@@ -17,11 +21,27 @@ import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
+import com.patsurvey.nudge.MyApplication
+import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
+import com.patsurvey.nudge.utils.BPC_USER_TYPE
+import com.patsurvey.nudge.utils.DidiStatus
+import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
+import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
+import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PageFrom
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.UPCM_USER
+import com.patsurvey.nudge.utils.VO_ENDORSEMENT_CONSTANT
+import com.patsurvey.nudge.utils.WealthRank
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.util.Timer
+import java.util.TimerTask
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,10 +52,76 @@ class SettingBSViewModel @Inject constructor(
 ):BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val optionList: State<List<SettingOptionModel>> get() = _optionList
-
+    var userType:String= BLANK_STRING
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
-    val loaderState: State<LoaderState> get() = _loaderState
 
+    val formAAvailable = mutableStateOf(false)
+    val formBAvailable = mutableStateOf(false)
+    val formCAvailable = mutableStateOf(false)
+    val loaderState: State<LoaderState> get() = _loaderState
+    fun initOptions(context:Context) {
+        userType = settingBSUserCase.getSettingOptionListUseCase.getUserType().toString()
+        val villageId=settingBSUserCase.getSettingOptionListUseCase.getSelectedVillageId()
+        val settingOpenFrom=settingBSUserCase.getSettingOptionListUseCase.settingOpenFrom()
+        val list = ArrayList<SettingOptionModel>()
+
+        list.add(
+            SettingOptionModel(
+                2,
+                context.getString(R.string.profile),
+                BLANK_STRING,
+                SettingTagEnum.PROFILE.name
+            )
+        )
+        if(userType != UPCM_USER){
+            if(settingOpenFrom!= PageFrom.VILLAGE_PAGE.ordinal) {
+                list.add(
+                    SettingOptionModel(
+                        3,
+                        context.getString(R.string.forms),
+                        BLANK_STRING,
+                        SettingTagEnum.FORMS.name
+                    )
+                )
+            }
+
+            list.add(
+                SettingOptionModel(
+                    4,
+                    context.getString(R.string.training_videos),
+                    BLANK_STRING,
+                    SettingTagEnum.TRAINING_VIDEOS.name
+                )
+            )
+        }
+        list.add(
+            SettingOptionModel(
+                5,
+                context.getString(R.string.language_text),
+                BLANK_STRING,
+                SettingTagEnum.LANGUAGE.name
+            )
+        )
+        list.add(
+            SettingOptionModel(
+                6,
+                context.getString(R.string.share_logs),
+                BLANK_STRING,
+                SettingTagEnum.SHARE_LOGS.name
+            )
+        )
+        list.add(
+            SettingOptionModel(
+                7,
+                context.getString(R.string.export_file),
+                BLANK_STRING,
+                SettingTagEnum.EXPORT_FILE.name
+            )
+        )
+        _optionList.value=list
+
+        checkFormsAvailabilityForVillage(context,villageId)
+    }
 
     fun performLogout(onLogout: (Boolean) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -93,12 +179,12 @@ class SettingBSViewModel @Inject constructor(
                 onEvent(LoaderEvent.UpdateLoaderState(true))
                 val compression = ZipFileCompression()
                 val fileUri = compression.compressBackupFiles(
-                    BaselineCore.getAppContext(),
+                    MyApplication.applicationContext(),
                     prefRepo.getMobileNumber() ?: ""
                 )
 
                 val imageUri = compression.compressBackupImages(
-                    BaselineCore.getAppContext(),
+                    MyApplication.applicationContext(),
                     prefRepo.getMobileNumber() ?: ""
                 )
 
@@ -130,6 +216,100 @@ class SettingBSViewModel @Inject constructor(
                     isLoaderVisible = event.showLoader
                 )
             }
+        }
+    }
+
+    fun showLoaderForTime(time: Long) {
+        onEvent(LoaderEvent.UpdateLoaderState(true))
+        Timer().schedule(object : TimerTask() {
+            override fun run() {
+                job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+                    withContext(Dispatchers.Main) {
+                        onEvent(LoaderEvent.UpdateLoaderState(false))
+                    }
+                }
+            }
+        }, time)
+    }
+
+    fun checkFormsAvailabilityForVillage(context: Context, villageId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val formAFilePath =
+                File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_A_PDF_NAME}_${villageId}.pdf")
+            val formBFilePath =
+                File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_B_PDF_NAME}_${villageId}.pdf")
+            val formCFilePath =
+                File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_C_PDF_NAME}_${villageId}.pdf")
+
+            var didiList=settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(villageId)
+            if(userType == BPC_USER_TYPE){
+                 didiList=settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllPoorDidiForVillage(villageId)
+            }
+
+            // Form A availability check
+            if (formAFilePath.isFile && formAFilePath.exists()) {
+                withContext(Dispatchers.Main) {
+                    formAAvailable.value = true
+                }
+            } else {
+                    if (didiList.any { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }
+                    ) {
+                        withContext(Dispatchers.Main) {
+                            formAAvailable.value = true
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            formAAvailable.value = false
+                        }
+                    }
+            }
+
+            // Form B availability check
+            if (formBFilePath.isFile && formBFilePath.exists()) {
+                withContext(Dispatchers.Main) {
+                    formBAvailable.value = true
+                }
+            } else {
+                if (didiList.any { it.forVoEndorsement == 1 && !it.patEdit }
+                ) {
+                    withContext(Dispatchers.Main) {
+                        formBAvailable.value = true
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        formBAvailable.value = false
+                    }
+                }
+            }
+
+            // Form C availability check
+            if (formCFilePath.isFile && formCFilePath.exists()) {
+                withContext(Dispatchers.Main) {
+                    formCAvailable.value = true
+                }
+            } else {
+                val stepList = settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllStepsForVillage(villageId)
+                val filteredStepList = stepList.filter { it.name.equals(VO_ENDORSEMENT_CONSTANT, true) }
+                if (filteredStepList[0] != null) {
+                    formCAvailable.value =
+                        filteredStepList[0].isComplete == StepStatus.COMPLETED.ordinal
+                } else {
+                    formCAvailable.value = false
+                }
+            }
+
+
+
+        }
+
+    }
+
+    fun buildAndShareLogsForSelection() {
+        NudgeLogger.d("SettingBSViewModel", "buildAndShareLogs SELECTION---------------")
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val context = MyApplication.applicationContext()
+            settingBSUserCase.exportHandlerSettingUseCase.exportAllData(context)
+            com.patsurvey.nudge.utils.LogWriter.buildSupportLogAndShare()
         }
     }
 }

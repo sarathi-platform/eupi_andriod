@@ -37,6 +37,7 @@ android {
 
 dependencies {
 
+    implementation("androidx.navigation:navigation-runtime-ktx:2.7.7")
     val roomVersion =
 
     implementation("androidx.core:core-ktx:1.12.0")

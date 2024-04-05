@@ -234,6 +234,7 @@ const val HEADING_QUESTION_TYPE = "heading"
 const val DEFAULT_LANGUAGE_ID = 2
 const val BPC_VERIFICATION_STEP_ORDER = 6
 const val VO_ENDORSEMENT_STEP_ORDER = 5
+const val VO_ENDORSEMENT_CONSTANT = "VO Endorsement"
 const val EMPTY_STRING="";
 
 const val MIN_PROGRESS_COUNT_INT = 0
