@@ -130,7 +130,7 @@ fun SettingBSScreen(
                 }
                 DigitalFormEnum.DIGITAL_FORM_C.ordinal->{
                     viewModel.showLoaderForTime(500)
-                    if (viewModel.formBAvailable.value)
+                    if (viewModel.formCAvailable.value)
                         navController.navigate(SettingScreens.FORM_C_SCREEN.route)
                     else
                         showToast(
