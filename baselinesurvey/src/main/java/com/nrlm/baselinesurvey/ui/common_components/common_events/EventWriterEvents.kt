@@ -69,4 +69,13 @@ sealed class EventWriterEvents {
         val status: SectionStatus
     )
 
+    data class SaveImageUploadEvent(
+        val surveyId: Int,
+        val sectionId: Int,
+        val didiId: Int,
+        val questionId: Int,
+        val questionType: String,
+        val questionTag: Int,
+    )
+
 }

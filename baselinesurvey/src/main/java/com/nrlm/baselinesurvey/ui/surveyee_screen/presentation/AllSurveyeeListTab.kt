@@ -49,6 +49,7 @@ import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_40_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
@@ -106,7 +107,7 @@ fun AllSurveyeeListTab(
         ) {
 
             if (!loaderState.isLoaderVisible) {
-                if (surveyeeList.isEmpty()) {
+                if (viewModel.surveyeeListState.value.isEmpty()) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -329,7 +330,9 @@ fun AllSurveyeeListTab(
         PullRefreshIndicator(
             refreshing = loaderState.isLoaderVisible,
             state = pullRefreshState,
-            modifier = Modifier.align(Alignment.TopCenter),
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = dimen_40_dp),
             contentColor = blueDark,
         )
     }

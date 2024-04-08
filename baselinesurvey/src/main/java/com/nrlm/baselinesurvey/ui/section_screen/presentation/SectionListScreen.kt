@@ -43,6 +43,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,6 +66,7 @@ import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToQuestionScreen
 import com.nrlm.baselinesurvey.navigation.home.navigateToSearchScreen
+import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.ComplexSearchComponent
 import com.nrlm.baselinesurvey.ui.common_components.SectionItemComponent
@@ -112,9 +114,21 @@ fun SectionListScreen(
 
 
     val loaderState = viewModel.loaderState.value
+    val isSettingScreenOpened = remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(key1 = true) {
         viewModel.init(didiId, surveyId)
+    }
+
+    DisposableEffect(key1 = Unit) {
+        isSettingScreenOpened.value = false
+        onDispose {
+            if (isSettingScreenOpened.value) {
+                viewModel.close()
+            }
+        }
     }
 
     val sectionsList = viewModel.sectionItemStateList.value
@@ -198,16 +212,20 @@ fun SectionListScreen(
                             .align(Alignment.CenterEnd)
                             .zIndex(1f)
                     ) {
-//                        Image(
-//                            modifier = Modifier
-//                                .padding(5.dp)
-//                                .clickable {
-//                                    if (!isBannerExpanded.value)
-//                                        isBannerExpanded.value = true
-//                                },
-//                            painter = painterResource(id = R.drawable.info_icon),
-//                            contentDescription = ""
-//                        )
+
+                            Icon(
+                                painter = painterResource(id = R.drawable.more_icon),
+                                contentDescription = "more action button",
+                                tint = blueDark,
+                                modifier = Modifier
+                                    .background(Color.White)
+                                    .padding(10.dp)
+                                    .clickable {
+                                        isSettingScreenOpened.value = true
+                                        navController.navigate(Graph.SETTING_GRAPH)
+                                    }
+                            )
+
                     }
                     this@TopAppBar.AnimatedVisibility(
                         visible = isBannerExpanded.value,

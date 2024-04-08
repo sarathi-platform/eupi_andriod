@@ -221,11 +221,6 @@ fun NestedLazyList(
                 .heightIn(maxHeight)
                 .padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
         ) {
-            item {
-                ComplexSearchComponent {
-                    navigateToSearchScreen(navController, sectionDetails.surveyId, surveyeeId, fromScreen = ARG_FROM_QUESTION_SCREEN)
-                }
-            }
 
             item {
                 Row(
@@ -320,6 +315,13 @@ fun NestedLazyList(
 
                     )*/
             }
+            item {
+                ComplexSearchComponent {
+                    navigateToSearchScreen(navController, sectionDetails.surveyId, surveyeeId, fromScreen = ARG_FROM_QUESTION_SCREEN)
+                }
+            }
+
+
 
             // TODO Commenting this until it is fixed.
             /*item {
@@ -724,6 +726,7 @@ fun NestedLazyList(
                             QuestionType.Input.name,
                             QuestionType.InputText.name,
                             QuestionType.InputNumber.name,
+                            QuestionType.InputNumberEditText.name,
                             QuestionType.SingleSelectDropdown.name,
                             QuestionType.SingleSelectDropDown.name -> {
                                 val selectedOption =
@@ -766,6 +769,9 @@ fun NestedLazyList(
 
 
                                         when (optionItem.optionType) {
+                                            QuestionType.Input.name,
+                                            QuestionType.InputText.name,
+                                            QuestionType.InputNumberEditText.name,
                                             QuestionType.SingleSelectDropdown.name,
                                             QuestionType.SingleSelectDropDown.name -> {
                                                 val mOptionItem =
@@ -861,6 +867,7 @@ fun NestedLazyList(
 
                                             QuestionType.Input.name,
                                             QuestionType.InputText.name,
+                                            QuestionType.InputNumberEditText.name,
                                             QuestionType.SingleSelectDropdown.name,
                                             QuestionType.SingleSelectDropDown.name -> {
                                                 questionScreenViewModel.onEvent(

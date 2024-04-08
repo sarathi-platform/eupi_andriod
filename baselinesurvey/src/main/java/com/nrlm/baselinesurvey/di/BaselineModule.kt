@@ -549,13 +549,15 @@ object BaselineModule {
         questionEntityDao: QuestionEntityDao,
         optionItemDao: OptionItemDao,
         formQuestionResponseDao: FormQuestionResponseDao,
-        prefRepo: PrefRepo
+        prefRepo: PrefRepo,
+        contentDao: ContentDao
     ): FormQuestionResponseRepository {
         return FormQuestionResponseRepositoryImpl(
             questionEntityDao = questionEntityDao,
             optionItemDao = optionItemDao,
             formQuestionResponseDao = formQuestionResponseDao,
-            prefRepo = prefRepo
+            prefRepo = prefRepo,
+            contentDao = contentDao
         )
     }
 

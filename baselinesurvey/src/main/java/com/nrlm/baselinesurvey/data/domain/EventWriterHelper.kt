@@ -1,7 +1,9 @@
 package com.nrlm.baselinesurvey.data.domain
 
+import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.ActivityForSubjectDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventOptionItemDto
+import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.database.entities.Events
 
@@ -104,5 +106,16 @@ interface EventWriterHelper {
         taskId: Int,
         status: SectionStatus
     ): List<Events>
+
+    fun createImageUploadEvent(
+        didi: SurveyeeEntity,
+        location: String,
+        filePath: String,
+        userType: String,
+        questionId: Int,
+        referenceId: String,
+        sectionDetails: SectionListItem,
+        subjectType: String
+    ): Events?
 
 }

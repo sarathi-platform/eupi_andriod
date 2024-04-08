@@ -285,7 +285,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                             values = optionsItem.values,
                             languageId = languageId,
                             conditions = optionsItem.conditions,
-                            optionTag = optionsItem.tag ?: 0
+                            optionTag = optionsItem.tag ?: 0,
+                            contentEntities = optionsItem.contentList
                         )
                         optionItemDao.insertOption(optionItemEntity)
 

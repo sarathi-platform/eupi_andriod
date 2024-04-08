@@ -388,7 +388,7 @@
     <string name="income_frequency_comparision">Income frequency</string>
     <string name="no_income_comparision">কোনো আয় নাই</string>
     <string name="total_income_comparision">(E) Total Income</string>
-    <string name="total_unit_comparision">(D) Total units</string>
+    <string name="total_unit_comparision">(D) Total income</string>
     <string name="income_comparision">Income</string>
     <string name="small_business_comparision">যোৱা ১২ মাহত ক্ষুদ্ৰ ব্যৱসায়ৰ পৰা ঘৰুৱা আয় কিমান?</string>
     <string name="didi_title">"দিদি:"</string>
@@ -409,8 +409,8 @@
     <string name="to_the_nearest_bank_comparsion">To the nearest bank</string>
     <string name="to_the_replacement_string">""</string>
     <string name="average_travel_cost_comparision">"গড় যাত্ৰা খৰচ (সংখ্যা) "</string>
-    <string name="questions_data_tab_title">Questions Data</string>
-    <string name="section_information_tab_title">Section Information</string>
+    <string name="questions_data_tab_title">Questions</string>
+    <string name="section_information_tab_title">Sections</string>
     <string name="search_hamlet">Search Hamlet</string>
     <string name="mission_completed_text">Mission Completed</string>
     <string name="aadhar_card_titile_assam">আপোনাৰ আধাৰ কাৰ্ড আছে নে?</string>

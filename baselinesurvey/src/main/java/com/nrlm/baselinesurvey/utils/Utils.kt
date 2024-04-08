@@ -285,6 +285,7 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
         optionType = this.type,
         summary = this.questionSummary,
         values = emptyList(),
+        contentEntities = this.options?.first()?.contentList ?: listOf(),
         conditional = this.conditional
     )
     val valuesList = mutableListOf<String>()
@@ -331,6 +332,7 @@ fun QuestionList.convertFormTypeQuestionListToOptionItemEntity(sectionId: Int, s
             order = optionsItem?.order ?: -1,
             values = optionsItem?.values,
             languageId = languageId,
+            contentEntities = optionsItem?.contentList ?: listOf(),
             conditions = optionsItem?.conditions
         )
         optionsItemEntityList.add(optionItemEntity)
@@ -904,4 +906,10 @@ fun String.getImagePathFromString(): String {
 
 fun numberInEnglishFormat(number: Int): String {
     return String.format(Locale.ENGLISH,"%s", number)
+}
+
+fun List<FormQuestionResponseEntity>.findUnchangedOptions(storeCacheForResponse: List<FormQuestionResponseEntity>): List<FormQuestionResponseEntity> {
+    val unchangedList = this.toMutableList()
+    unchangedList.removeAll(storeCacheForResponse)
+    return unchangedList
 }

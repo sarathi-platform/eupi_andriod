@@ -41,7 +41,7 @@ fun SettingBSScreen(
         val lastSyncTimeInMS = System.currentTimeMillis()
         val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.US)
         val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
-        list.add(
+        /*list.add(
             SettingOptionModel(
                 1,
                 context.getString(R.string.sync_up),
@@ -49,7 +49,7 @@ fun SettingBSScreen(
                     .replace("{LAST_SYNC_TIME}", lastSyncTime.toString()),
                 SettingTagEnum.SYNC_NOW.name
             )
-        )
+        )*/
         list.add(
             SettingOptionModel(
                 2,

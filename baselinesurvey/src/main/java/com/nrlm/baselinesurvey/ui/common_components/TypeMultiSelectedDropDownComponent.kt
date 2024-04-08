@@ -14,11 +14,13 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.Op
 
 @Composable
 fun TypeMultiSelectedDropDownComponent(
-    title: String?,
+    title: String? = BLANK_STRING,
     hintText: String = "Select",
     sources: List<String>?,
+    isContent: Boolean = false,
     showQuestionState: OptionItemEntityState? = OptionItemEntityState.getEmptyStateObject(),
     selectOptionText: String = BLANK_STRING,
+    onInfoButtonClicked: () -> Unit,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
     val defaultSourceList = sources ?: listOf("Yes", "No")
@@ -33,6 +35,7 @@ fun TypeMultiSelectedDropDownComponent(
             modifier = Modifier.fillMaxWidth(),
             mTextFieldSize = textFieldSize,
             expanded = expanded,
+            isContent = isContent,
             selectedItems = selectedItems,
             onExpandedChange = {
                 expanded = !it
@@ -50,6 +53,9 @@ fun TypeMultiSelectedDropDownComponent(
                     selectedItems + selectedItem
                 }
                 onAnswerSelection(if (selectedItems.isNotEmpty()) selectedItems.joinToString(", ") else "Select Items")
+            },
+            onInfoButtonClicked = {
+                onInfoButtonClicked()
             }
         )
     }

@@ -428,7 +428,7 @@
     <string name="income_frequency_comparision">Income frequency</string>
     <string name="no_income_comparision">No income</string>
     <string name="total_income_comparision">(E) Total Income</string>
-    <string name="total_unit_comparision">(D) Total units</string>
+    <string name="total_unit_comparision">(D) Total income</string>
     <string name="income_comparision">Income</string>
     <string name="small_business_comparision">What is the household income from small business in the last 12 months?</string>
     <string name="didi_title">"Didi: "</string>
@@ -449,8 +449,8 @@
     <string name="to_the_nearest_bank_comparsion">To the nearest bank</string>
     <string name="to_the_replacement_string">"To the "</string>
     <string name="average_travel_cost_comparision">"Average travel cost "</string>
-    <string name="questions_data_tab_title">Questions Data</string>
-    <string name="section_information_tab_title">Section Information</string>
+    <string name="questions_data_tab_title">Questions</string>
+    <string name="section_information_tab_title">Sections</string>
 
     <string name="share_export_file" translatable="false">Share exported file</string>
     <string name="share_export_image" translatable="false">Share exported image</string>
