@@ -182,7 +182,7 @@ fun QuestionScreen(
                     .padding(top = dimen_10_dp)
                     .fillMaxSize(),
                 bottomBar = {
-                    if (viewModel.didiDetails?.surveyStatus != SurveyState.COMPLETED.ordinal) {
+                    if (viewModel.didiDetails.value?.surveyStatus != SurveyState.COMPLETED.ordinal) {
                         BottomAppBar(
                             containerColor = white,
                             tonalElevation = defaultCardElevation
