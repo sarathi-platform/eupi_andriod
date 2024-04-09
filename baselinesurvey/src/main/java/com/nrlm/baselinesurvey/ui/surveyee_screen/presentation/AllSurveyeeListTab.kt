@@ -43,7 +43,6 @@ import com.nrlm.baselinesurvey.ui.common_components.MoveSurveyeesUpdateBannerCom
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.SurveyeeScreenViewModel
-import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
@@ -52,7 +51,6 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_40_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
-import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.progressIndicatorColor
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
@@ -154,14 +152,15 @@ fun AllSurveyeeListTab(
                                     style = largeTextStyle,
                                     color = blueDark
                                 )
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 10.dp, bottom = 10.dp),
-                                    text = stringResource(id = R.string.due_by_x, activityDate),
-                                    style = newMediumTextStyle,
-                                    color = black100Percent
-                                )
+                                //TODO in future in uncomment whenever get correct data from backend
+//                                Text(
+//                                    modifier = Modifier
+//                                        .fillMaxWidth()
+//                                        .padding(start = 10.dp, bottom = 10.dp),
+//                                    text = stringResource(id = R.string.due_by_x, activityDate),
+//                                    style = newMediumTextStyle,
+//                                    color = black100Percent
+//                                )
                             }
                         }
                         item {

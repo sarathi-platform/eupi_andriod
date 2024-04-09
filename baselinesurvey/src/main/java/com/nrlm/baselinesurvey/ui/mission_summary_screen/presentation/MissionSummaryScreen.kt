@@ -26,14 +26,10 @@ import com.nrlm.baselinesurvey.ui.common_components.StepsBox
 import com.nrlm.baselinesurvey.ui.common_components.ToolbarWithMenuComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.viewModel.MissionSummaryViewModel
-import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.inprogressYellow
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
-import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
-import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
-import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 
 
@@ -93,15 +89,17 @@ fun MissionSummaryScreen(
                         style = largeTextStyle,
                         color = blueDark
                     )
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 10.dp),
-                        text = stringResource(id = R.string.due_by_x, missionDate),
-                        style = newMediumTextStyle,
-                        color = black100Percent
+                    //TODO in future in uncomment whenever get correct data from backend
 
-                    )
+//                    Text(
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(horizontal = 10.dp),
+//                        text = stringResource(id = R.string.due_by_x, missionDate),
+//                        style = newMediumTextStyle,
+//                        color = black100Percent
+//
+//                    )
                     LazyColumn(
                     ) {
                         itemsIndexed(
