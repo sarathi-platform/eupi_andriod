@@ -1,7 +1,7 @@
 package com.nrlm.baselinesurvey.ui.start_screen.domain.repository
 
 import androidx.lifecycle.LiveData
-import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.nrlm.baselinesurvey.PREF_USER_TYPE
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
@@ -17,7 +17,7 @@ class StartScreenRepositoryImpl @Inject constructor(
     val didiInfoDao: DidiInfoDao
 ): StartScreenRepository {
     override suspend fun getSurveyeeDetails(didiId: Int): SurveyeeEntity {
-        return surveyeeEntityDao.getDidi(didiId, getUserId())
+        return surveyeeEntityDao.getDidi(didiId)
     }
 
     override suspend fun getDidiInfoDetails(didiId: Int): DidiInfoEntity {
@@ -32,13 +32,12 @@ class StartScreenRepositoryImpl @Inject constructor(
             surveyeeEntityDao.saveLocalImagePath(
                 path = finalPathWithCoordinates,
                 didiId = it,
-                userId = getUserId()
             )
         }
     }
 
     override suspend fun getDidiInfoObjectLive(didiId: Int): LiveData<List<DidiInfoEntity>> {
-        return didiInfoDao.getDidiInfoLive(didiId)
+        return didiInfoDao.getDidiInfoLive(didiId, getUserId())
     }
 
     override fun getStateId(): Int {
@@ -49,8 +48,8 @@ class StartScreenRepositoryImpl @Inject constructor(
         return prefRepo.getPref(PREF_USER_TYPE, "")
     }
 
-    override fun getUserId(): Int {
-        return prefRepo.getPref(PREF_KEY_USER_NAME, "")?.toInt() ?: 0
+    override fun getUserId(): String {
+        return prefRepo.getMobileNumber() ?: BLANK_STRING
     }
 
 }

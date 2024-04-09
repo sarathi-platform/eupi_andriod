@@ -36,6 +36,6 @@ interface SurveyeeListScreenRepository {
         activityId: Int,
     ): MissionActivityEntity
 
-    fun getUserId(): Int
+    fun getUserId(): String
 
 }

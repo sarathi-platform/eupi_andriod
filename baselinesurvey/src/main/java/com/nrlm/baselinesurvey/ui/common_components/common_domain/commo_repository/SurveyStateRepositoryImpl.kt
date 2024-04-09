@@ -1,6 +1,6 @@
 package com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository
 
-import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.DidiInfoDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
@@ -16,7 +16,7 @@ class SurveyStateRepositoryImpl(
 ): SurveyStateRepository {
 
     override suspend fun updateSurveyState(didiId: Int, surveyState: SurveyState) {
-        surveyeeEntity.updateDidiSurveyStatus(surveyState.ordinal, didiId, getUserId())
+        surveyeeEntity.updateDidiSurveyStatus(surveyState.ordinal, didiId)
     }
 
     override suspend fun saveDidiInfo(didiInfoEntity: DidiInfoEntity) {
@@ -24,8 +24,8 @@ class SurveyStateRepositoryImpl(
         didiInfoDao.insertDidiInfo(didiInfoEntity)
     }
 
-    override fun getUserId(): Int {
-        return prefRepo.getPref(PREF_KEY_USER_NAME, "")?.toInt() ?: 0
+    override fun getUserId(): String {
+        return prefRepo.getMobileNumber() ?: BLANK_STRING
     }
 
 }

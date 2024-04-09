@@ -18,7 +18,7 @@ data class MissionActivityEntity(
     @Expose
     @ColumnInfo(name = "id")
     var id: Int = 0,
-    var userId: Int? = -1,
+    var userId: String? = BLANK_STRING,
     var missionId: Int,
     var activityId: Int,
     var activityName: String,
@@ -42,7 +42,7 @@ data class MissionActivityEntity(
     ) {
     companion object {
         fun getMissionActivityEntity(
-            userId: Int,
+            userId: String,
             missionId: Int,
             activityTaskSize: Int,
             activity: MissionActivityModel

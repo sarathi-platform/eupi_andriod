@@ -14,7 +14,7 @@ interface SectionEntityDao {
 
     @Query("Select * from $SECTION_TABLE where userId=:userId and sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
     fun getSurveySectionForLanguage(
-        userId: Int,
+        userId: String,
         sectionId: Int,
         surveyId: Int,
         languageId: Int
@@ -22,16 +22,21 @@ interface SectionEntityDao {
 
     @Query("Select * from $SECTION_TABLE where  userId=:userId and surveyId = :surveyId and languageId = :languageId")
     fun getAllSectionForSurveyInLanguage(
-        userId: Int,
+        userId: String,
         surveyId: Int,
         languageId: Int
     ): List<SectionEntity>
 
     @Query("Delete from $SECTION_TABLE where userId=:userId and sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
-    fun deleteSurveySectionFroLanguage(userId: Int, sectionId: Int, surveyId: Int, languageId: Int)
+    fun deleteSurveySectionFroLanguage(
+        userId: String,
+        sectionId: Int,
+        surveyId: Int,
+        languageId: Int
+    )
 
     @Query("Select * from $SECTION_TABLE where userId=:userId")
-    fun getSections(userId: Int): List<SectionEntity?>?
+    fun getSections(userId: String): List<SectionEntity?>?
 
 
 }

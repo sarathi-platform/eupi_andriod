@@ -18,7 +18,7 @@ data class SectionEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     val id: Int,
-    var userId: Int? = -1,
+    var userId: String? = BLANK_STRING,
 
     @SerializedName("sectionId")
     @Expose

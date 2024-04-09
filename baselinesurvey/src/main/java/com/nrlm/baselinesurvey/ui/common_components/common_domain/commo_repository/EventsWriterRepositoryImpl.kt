@@ -3,7 +3,6 @@ package com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_reposit
 import android.net.Uri
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
-import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
@@ -375,8 +374,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
 
     }
 
-    override fun getUserId(): Int {
-        return prefRepo.getPref(PREF_KEY_USER_NAME, "")?.toInt() ?: 0
+    override fun getUserId(): String {
+        return prefRepo.getMobileNumber() ?: BLANK_STRING
     }
 
 }

@@ -24,5 +24,5 @@ interface SectionListScreenRepository {
     suspend fun updateSubjectStatus(didiId: Int, surveyState: SurveyState)
 
     suspend fun updateTaskStatus(didiId: Int, surveyState: SectionStatus)
-    fun getUserId(): Int
+    fun getUserId(): String
 }

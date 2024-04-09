@@ -12,17 +12,17 @@ import com.nrlm.baselinesurvey.utils.states.SurveyState
 @Dao
 interface SurveyeeEntityDao {
 
-    @Query("SELECT * FROM $SURVEYEE_TABLE where userId=:userId ORDER BY id DESC ")
-    suspend fun getAllDidis(userId: Int): List<SurveyeeEntity>
+    @Query("SELECT * FROM $SURVEYEE_TABLE ORDER BY id DESC")
+    suspend fun getAllDidis(): List<SurveyeeEntity>
 
-    @Query("SELECT * FROM $SURVEYEE_TABLE where  userId=:userId  and villageId = :villageId  ORDER BY didiId DESC")
-    fun getAllDidisForVillage(villageId: Int, userId: Int): List<SurveyeeEntity>
+    @Query("SELECT * FROM $SURVEYEE_TABLE where villageId = :villageId  ORDER BY didiId DESC")
+    fun getAllDidisForVillage(villageId: Int): List<SurveyeeEntity>
 
-    @Query("Select * FROM $SURVEYEE_TABLE where userId=:userId and didiId = :didiId")
-    fun getDidi(didiId: Int, userId: Int): SurveyeeEntity
+    @Query("Select * FROM $SURVEYEE_TABLE where didiId = :didiId")
+    fun getDidi(didiId: Int): SurveyeeEntity
 
-    @Query("Select * FROM $SURVEYEE_TABLE where  userId=:userId and didiId in(:didiId)")
-    fun isDidiExist(didiId: Int, userId: Int): Boolean
+    @Query("Select * FROM $SURVEYEE_TABLE where didiId in(:didiId)")
+    fun isDidiExist(didiId: Int): Boolean
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertDidi(didi: SurveyeeEntity)
@@ -30,32 +30,32 @@ interface SurveyeeEntityDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(didis: List<SurveyeeEntity>)
 
-    @Query("DELETE FROM $SURVEYEE_TABLE where userId=:userId")
-    fun deleteSurveyees(userId: Int)
+    @Query("DELETE FROM $SURVEYEE_TABLE")
+    fun deleteSurveyees()
 
     @Query("UPDATE $SURVEYEE_TABLE SET crpImageLocalPath = :crpImageLocalPath WHERE didiId = :didiId")
     fun updateImageLocalPath(didiId: Int, crpImageLocalPath: String)
 
-    @Query("Select villageId from $SURVEYEE_TABLE where  userId=:userId and didiId = :didiId")
-    fun getVillageIdForDidi(didiId: Int, userId: Int): Int
+    @Query("Select villageId from $SURVEYEE_TABLE where didiId = :didiId")
+    fun getVillageIdForDidi(didiId: Int): Int
 
-    @Query("UPDATE $SURVEYEE_TABLE SET surveyStatus = :didiSurveyStatus where  userId=:userId and didiId = :didiId")
-    fun updateDidiSurveyStatus(didiSurveyStatus: Int, didiId: Int, userId: Int)
+    @Query("UPDATE $SURVEYEE_TABLE SET surveyStatus = :didiSurveyStatus where didiId = :didiId")
+    fun updateDidiSurveyStatus(didiSurveyStatus: Int, didiId: Int)
 
-    @Query("UPDATE $SURVEYEE_TABLE SET movedToThisWeek = :moveDidisToNextWeek where  userId=:userId and didiId in (:didiIdList)")
-    fun moveSurveyeesToThisWeek(didiIdList: List<Int>, moveDidisToNextWeek: Boolean, userId: Int)
+    @Query("UPDATE $SURVEYEE_TABLE SET movedToThisWeek = :moveDidisToNextWeek where didiId in (:didiIdList)")
+    fun moveSurveyeesToThisWeek(didiIdList: List<Int>, moveDidisToNextWeek: Boolean)
 
-    @Query("UPDATE $SURVEYEE_TABLE SET movedToThisWeek = :moveDidisToNextWeek where userId=:userId and didiId = :didiId")
-    fun moveSurveyeeToThisWeek(didiId: Int, moveDidisToNextWeek: Boolean, userId: Int)
+    @Query("UPDATE $SURVEYEE_TABLE SET movedToThisWeek = :moveDidisToNextWeek where didiId = :didiId")
+    fun moveSurveyeeToThisWeek(didiId: Int, moveDidisToNextWeek: Boolean)
 
-    @Query("UPDATE $SURVEYEE_TABLE SET crpImageLocalPath = :path WHERE userId=:userId and didiId = :didiId")
-    fun saveLocalImagePath(path: String, didiId: Int, userId: Int)
+    @Query("UPDATE $SURVEYEE_TABLE SET crpImageLocalPath = :path WHERE didiId = :didiId")
+    fun saveLocalImagePath(path: String, didiId: Int)
 
     @Transaction
-    fun updateDidiSurveyStatusAfterCheck(didiId: Int, didiSurveyStatus: Int, userId: Int) {
-        val didi = getDidi(didiId, userId)
+    fun updateDidiSurveyStatusAfterCheck(didiId: Int, didiSurveyStatus: Int) {
+        val didi = getDidi(didiId)
         if (didi.surveyStatus != SurveyState.COMPLETED.ordinal) {
-            updateDidiSurveyStatus(didiSurveyStatus, didiId, userId)
+            updateDidiSurveyStatus(didiSurveyStatus, didiId)
         }
     }
 

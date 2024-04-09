@@ -20,7 +20,7 @@ interface FormQuestionResponseDao {
 
     @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where userId=:userId and surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId and didiId = :didiId")
     fun getFormResponsesForQuestion(
-        userId: Int,
+        userId: String,
         surveyId: Int,
         sectionId: Int,
         questionId: Int,
@@ -29,7 +29,7 @@ interface FormQuestionResponseDao {
 
     @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where  userId=:userId and surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId and didiId = :didiId")
     fun getFormResponsesForQuestionLive(
-        userId: Int,
+        userId: String,
         surveyId: Int,
         sectionId: Int,
         questionId: Int,
@@ -38,7 +38,7 @@ interface FormQuestionResponseDao {
 
     @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where  userId=:userId and surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND referenceId = :referenceId AND didiId = :didiId and optionId = :optionId")
     fun getFormResponsesForQuestionOption(
-        userId: Int,
+        userId: String,
         surveyId: Int,
         sectionId: Int,
         questionId: Int,
@@ -52,7 +52,7 @@ interface FormQuestionResponseDao {
                 "surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND referenceId = :referenceId AND didiId = :didiId and optionId = :optionId"
     )
     fun isQuestionOptionAlreadyAnswered(
-        userId: Int,
+        userId: String,
         surveyId: Int,
         sectionId: Int,
         questionId: Int,
@@ -63,7 +63,7 @@ interface FormQuestionResponseDao {
 
     @Query("Update $FORM_QUESTION_RESPONSE_TABLE set selectedValue = :selectedValue where userId=:userId and  didiId = :didiId AND surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND optionId = :optionId AND referenceId = :referenceId")
     fun updateOptionItemValue(
-        userId: Int,
+        userId: String,
         surveyId: Int,
         sectionId: Int,
         questionId: Int,
@@ -76,7 +76,7 @@ interface FormQuestionResponseDao {
 
     @Query("SELECT COUNT(*) from $FORM_QUESTION_RESPONSE_TABLE where userId=:userId and surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND referenceId = :referenceId AND didiId = :didiId and optionId = :optionId")
     fun getOptionItem(
-        userId: Int,
+        userId: String,
         surveyId: Int,
                       sectionId: Int,
                       questionId: Int,
@@ -86,16 +86,16 @@ interface FormQuestionResponseDao {
 
     @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where userId=:userId and referenceId = :referenceId")
     fun getFormResponseForReferenceId(
-        userId: Int,
+        userId: String,
         referenceId: String
     ): List<FormQuestionResponseEntity>
 
     @Query("DELETE from $FORM_QUESTION_RESPONSE_TABLE where userId=:userId and referenceId = :referenceId")
-    fun deleteFormResponseQuestionForReferenceId(userId: Int, referenceId: String)
+    fun deleteFormResponseQuestionForReferenceId(userId: String, referenceId: String)
 
     @Query("DELETE from $FORM_QUESTION_RESPONSE_TABLE where userId=:userId and optionId = :optionId AND questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId AND didiId = :surveyeeId")
     fun deleteFormResponseQuestionForOption(
-        userId: Int,
+        userId: String,
         optionId: Int,
         questionId: Int,
         sectionId: Int,
@@ -105,14 +105,14 @@ interface FormQuestionResponseDao {
 
     @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where userId=:userId and surveyId = :surveyId and sectionId = :sectionId and didiId = :didiId")
     fun getFormQuestionCountForSection(
-        userId: Int,
+        userId: String,
         surveyId: Int,
         sectionId: Int,
         didiId: Int
     ): List<FormQuestionResponseEntity>
 
     @Query("Delete from $FORM_QUESTION_RESPONSE_TABLE where userId=:userId")
-    fun deleteAllFormQuestions(userId: Int)
+    fun deleteAllFormQuestions(userId: String)
 
 
 }

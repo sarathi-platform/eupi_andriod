@@ -12,7 +12,7 @@ interface InputTypeQuestionAnswerDao {
 
     @Query("SELECT * from $INPUT_TYPE_QUESTION_ANSWER_TABLE where userId=:userId and surveyId = :surveyId AND sectionId = :sectionId AND questionId = :questionId AND didiId = :didiId")
     fun getInputTypeAnswersForQuestion(
-        userId: Int,
+        userId: String,
         surveyId: Int,
         sectionId: Int,
         questionId: Int,
@@ -21,7 +21,7 @@ interface InputTypeQuestionAnswerDao {
 
     @Query("SELECT * from $INPUT_TYPE_QUESTION_ANSWER_TABLE where userId=:userId and surveyId = :surveyId AND sectionId = :sectionId AND didiId = :didiId")
     fun getInputTypeAnswersForQuestionForDidi(
-        userId: Int,
+        userId: String,
         surveyId: Int,
         sectionId: Int,
         didiId: Int
@@ -41,7 +41,7 @@ interface InputTypeQuestionAnswerDao {
             "AND didiId = :didiId " +
             "AND optionId = :optionId ")
     fun updateInputTypeAnswersForQuestion(
-        userId: Int,
+        userId: String,
         surveyId: Int,
         sectionId: Int,
         didiId: Int,
@@ -52,7 +52,7 @@ interface InputTypeQuestionAnswerDao {
 
     @Query("SELECT COUNT(*) from $INPUT_TYPE_QUESTION_ANSWER_TABLE where userId=:userId and surveyId = :surveyId AND sectionId = :sectionId AND questionId = :questionId AND didiId = :didiId AND optionId = :optionItemId")
     fun isQuestionAlreadyAnswered(
-        userId: Int,
+        userId: String,
         surveyId: Int,
         sectionId: Int,
         didiId: Int,

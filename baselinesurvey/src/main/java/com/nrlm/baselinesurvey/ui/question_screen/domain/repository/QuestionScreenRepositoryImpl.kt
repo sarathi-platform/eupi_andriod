@@ -3,7 +3,6 @@ package com.nrlm.baselinesurvey.ui.question_screen.domain.repository
 import android.util.Log
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
-import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ContentDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
@@ -165,7 +164,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         questionType: String,
         questionSummary: String
     ) {
-        val villageIdForSurveyee = surveyeeEntityDao.getVillageIdForDidi(didiId, getUserId())
+        val villageIdForSurveyee = surveyeeEntityDao.getVillageIdForDidi(didiId)
         val sectionAnswerEntity = SectionAnswerEntity(
             id = 0,
             userId = getUserId(),
@@ -255,7 +254,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
 
     override suspend fun saveSectionAnswersToServer(didiId: Int, surveyId: Int) {
         val saveSurveyRequestModel = mutableListOf<SaveSurveyRequestModel>()
-        val villageId = surveyeeEntityDao.getVillageIdForDidi(didiId, getUserId())
+        val villageId = surveyeeEntityDao.getVillageIdForDidi(didiId)
         val questionEntityList =
             questionEntityDao.getAllQuestionsForLanguage(surveyId, prefRepo.getAppLanguageId() ?: 2)
         val localSectionAnswersList = sectionAnswerEntityDao.getAllAnswerForDidi(
@@ -332,14 +331,12 @@ class QuestionScreenRepositoryImpl @Inject constructor(
             surveyeeEntityDao.updateDidiSurveyStatus(
                 SectionStatus.INPROGRESS.ordinal,
                 didiId,
-                getUserId()
             )
         else {
 //            surveyeeEntityDao.updateDidiSurveyStatus(SectionStatus.COMPLETED.ordinal, didiId)
             surveyeeEntityDao.moveSurveyeeToThisWeek(
                 didiId = didiId,
                 moveDidisToNextWeek = false,
-                getUserId()
             )
         }
     }
@@ -400,8 +397,8 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun getUserId(): Int {
-        return prefRepo.getPref(PREF_KEY_USER_NAME, "")?.toInt() ?: 0
+    override fun getUserId(): String {
+        return prefRepo.getMobileNumber() ?: BLANK_STRING
     }
 
 

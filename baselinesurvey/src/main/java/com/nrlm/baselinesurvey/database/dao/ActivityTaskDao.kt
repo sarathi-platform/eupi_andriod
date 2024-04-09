@@ -16,49 +16,55 @@ interface ActivityTaskDao {
     fun insertActivityTask(activities: ActivityTaskEntity)
 
     @Query("DELETE FROM $TASK_TABLE_NAME where userId=:userId ")
-    fun deleteActivityTask(userId: Int)
+    fun deleteActivityTask(userId: String)
 
     @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId")
-    suspend fun getAllActivityTask(userId: Int): List<ActivityTaskEntity>
+    suspend fun getAllActivityTask(userId: String): List<ActivityTaskEntity>
 
     @Query("SELECT * FROM $TASK_TABLE_NAME where  userId=:userId and taskId = :taskId")
-    fun getTaskById(userId: Int, taskId: Int): ActivityTaskEntity
+    fun getTaskById(userId: String, taskId: Int): ActivityTaskEntity
 
     @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId and  missionId=:missionId and activityName like :activityName")
     suspend fun getActivityTask(
-        userId: Int,
+        userId: String,
         missionId: Int,
         activityName: String
     ): List<ActivityTaskEntity>
 
     @Query("SELECT * FROM $TASK_TABLE_NAME where  userId=:userId and  activityId=:activityId ")
-    suspend fun getActivityTaskFromIds(userId: Int, activityId: Int): List<ActivityTaskEntity>
+    suspend fun getActivityTaskFromIds(userId: String, activityId: Int): List<ActivityTaskEntity>
 
     @Query("Select * FROM $TASK_TABLE_NAME where  userId=:userId and missionId in(:missionId) and activityName in(:activityName)")
-    fun isTaskExist(userId: Int, missionId: Int, activityName: String): Boolean
+    fun isTaskExist(userId: String, missionId: Int, activityName: String): Boolean
 
     @Query("Select * from $TASK_TABLE_NAME where userId=:userId and  didiId = :subjectId")
-    fun getTaskFromSubjectId(userId: Int, subjectId: Int): ActivityTaskEntity?
+    fun getTaskFromSubjectId(userId: String, subjectId: Int): ActivityTaskEntity?
 
     @Query("UPDATE $TASK_TABLE_NAME set activityState = :surveyStatus where userId=:userId and didiId = :subjectId")
-    fun updateTaskStatus(userId: Int, subjectId: Int, surveyStatus: Int)
+    fun updateTaskStatus(userId: String, subjectId: Int, surveyStatus: Int)
 
     @Query("UPDATE $TASK_TABLE_NAME set status = :status where userId=:userId and taskId = :taskId AND activityId = :activityId AND missionId = :missionId")
-    fun updateTaskStatus(userId: Int, taskId: Int, activityId: Int, missionId: Int, status: String)
+    fun updateTaskStatus(
+        userId: String,
+        taskId: Int,
+        activityId: Int,
+        missionId: Int,
+        status: String
+    )
 
 
     @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId and  activityId=:activityId AND missionId = :missionId and taskId = :taskId")
-    fun getTask(userId: Int, activityId: Int, missionId: Int, taskId: Int): ActivityTaskEntity
+    fun getTask(userId: String, activityId: Int, missionId: Int, taskId: Int): ActivityTaskEntity
 
     @Query("UPDATE $TASK_TABLE_NAME SET actualStartDate = :actualStartDate where  userId=:userId and taskId = :taskId")
-    fun updateTaskStartDate(userId: Int, taskId: Int, actualStartDate: String)
+    fun updateTaskStartDate(userId: String, taskId: Int, actualStartDate: String)
 
     @Query("UPDATE $TASK_TABLE_NAME SET actualCompletedDate = :actualCompletedDate where userId=:userId and  taskId = :taskId")
-    fun updateTaskCompletedDate(userId: Int, taskId: Int, actualCompletedDate: String)
+    fun updateTaskCompletedDate(userId: String, taskId: Int, actualCompletedDate: String)
 
     @Transaction
     fun markTaskInProgress(
-        userId: Int,
+        userId: String,
         taskId: Int,
         activityId: Int,
         missionId: Int,
@@ -71,7 +77,7 @@ interface ActivityTaskDao {
 
     @Transaction
     fun markTaskCompleted(
-        userId: Int,
+        userId: String,
         taskId: Int,
         activityId: Int,
         missionId: Int,
@@ -84,17 +90,17 @@ interface ActivityTaskDao {
 
     @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and activityId = :activityId AND status != :status")
     fun getPendingTaskCountLive(
-        userId: Int,
+        userId: String,
         activityId: Int,
         status: String = SurveyState.COMPLETED.name
     ): LiveData<Int>
 
     @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and missionId = :missionId")
-    fun getTaskCountForMission(userId: Int, missionId: Int): Int
+    fun getTaskCountForMission(userId: String, missionId: Int): Int
 
     @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and missionId = :missionId AND status != :status")
     fun getPendingTaskCountLiveForMission(
-        userId: Int,
+        userId: String,
         missionId: Int,
         status: String = SurveyState.COMPLETED.name
     ): LiveData<Int>

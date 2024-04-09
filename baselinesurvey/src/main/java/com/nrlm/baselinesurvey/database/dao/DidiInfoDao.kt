@@ -16,16 +16,16 @@ interface DidiInfoDao {
     fun insertDidiInfo(didiInfoEntity: DidiInfoEntity)
 
     @Query("SELECT * FROM $DIDI_INFO_TABLE_NAME where userId=:userId and didiId=:didiId ")
-    suspend fun getDidiInfo(userId: Int, didiId: Int): DidiInfoEntity
+    suspend fun getDidiInfo(userId: String, didiId: Int): DidiInfoEntity
 
     @Update
     fun updateDidiInfo(didiInfoEntity: DidiInfoEntity)
 
-    @Query("SELECT * FROM $DIDI_INFO_TABLE_NAME where didiId=:didiId")
-    fun getDidiInfoLive(didiId: Int): LiveData<List<DidiInfoEntity>>
+    @Query("SELECT * FROM $DIDI_INFO_TABLE_NAME where  userId=:userId and didiId=:didiId")
+    fun getDidiInfoLive(didiId: Int, userId: String): LiveData<List<DidiInfoEntity>>
 
     @Query("delete from $DIDI_INFO_TABLE_NAME where userId=:userId")
-    fun deleteAllDidiInfo(userId: Int)
+    fun deleteAllDidiInfo(userId: String)
 
     @Query("SELECT COUNT(*) from $DIDI_INFO_TABLE_NAME where didiId = :didiId")
     fun isDidiInfoAvailable(didiId: Int): Int

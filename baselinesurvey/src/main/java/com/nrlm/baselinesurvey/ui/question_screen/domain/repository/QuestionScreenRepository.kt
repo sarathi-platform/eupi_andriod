@@ -68,6 +68,6 @@ interface QuestionScreenRepository {
         optionId: Int,
         selectedValue: String
     )*/
-    fun getUserId(): Int
+    fun getUserId(): String
 
 }

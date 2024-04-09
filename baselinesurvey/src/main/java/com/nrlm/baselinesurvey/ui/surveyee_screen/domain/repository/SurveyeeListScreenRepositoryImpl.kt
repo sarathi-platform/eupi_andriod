@@ -46,8 +46,8 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
                 val mDidiList = surveyeeEntityDao.getAllDidis()
                 didiList.addAll(mDidiList.filter { it.cohortId == task.didiId }.distinctBy { it.cohortId })
             } else {*/
-            if (surveyeeEntityDao.isDidiExist(task.didiId, getUserId())) {
-                didiList.add(surveyeeEntityDao.getDidi(task.didiId, getUserId()))
+            if (surveyeeEntityDao.isDidiExist(task.didiId)) {
+                didiList.add(surveyeeEntityDao.getDidi(task.didiId))
             }
 //            }
         }
@@ -78,11 +78,11 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
                     ?.let { apiService.getDidisFromNetwork(userId = it) }
                 if (apiResponse?.status?.equals(SUCCESS, false) == true) {
                     if (apiResponse?.data?.didiList != null) {
-                        surveyeeEntityDao.deleteSurveyees(getUserId())
+                        surveyeeEntityDao.deleteSurveyees()
                         apiResponse?.data?.didiList.forEach {
                             val surveyeeEntity = SurveyeeEntity(
                                 id = 0,
-                                userId = getUserId(),
+                                userId = it.userId,
                                 didiId = it.didiId,
                                 didiName = it.didiName ?: BLANK_STRING,
                                 dadaName = it.dadaName ?: BLANK_STRING,
@@ -119,8 +119,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
         didiIdList.forEach {
             surveyeeEntityDao.moveSurveyeesToThisWeek(
                 didiIdList.toList(),
-                moveDidisToNextWeek,
-                getUserId()
+                moveDidisToNextWeek
             )
         }
     }
@@ -129,7 +128,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
         didiId: Int,
         moveDidisToNextWeek: Boolean
     ) {
-        surveyeeEntityDao.moveSurveyeeToThisWeek(didiId, moveDidisToNextWeek, getUserId())
+        surveyeeEntityDao.moveSurveyeeToThisWeek(didiId, moveDidisToNextWeek)
     }
 
     override suspend fun getActivityTasks(
@@ -207,8 +206,8 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
         return activityDao.getActivity(getUserId(), activityId)
     }
 
-    override fun getUserId(): Int {
-        return prefRepo.getPref(PREF_KEY_USER_NAME, "")?.toInt() ?: 0
+    override fun getUserId(): String {
+        return prefRepo.getMobileNumber() ?: BLANK_STRING
     }
 
 

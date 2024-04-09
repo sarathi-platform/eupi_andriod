@@ -2,7 +2,6 @@ package com.nrlm.baselinesurvey.ui.question_type_screen.domain.repository
 
 import androidx.lifecycle.LiveData
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ContentDao
 import com.nrlm.baselinesurvey.database.dao.FormQuestionResponseDao
@@ -156,7 +155,7 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
             selectedValue = formQuestionResponseEntity.selectedValue,
             referenceId = formQuestionResponseEntity.referenceId,
             didiId = formQuestionResponseEntity.didiId,
-            userId = formQuestionResponseEntity.userId ?: 0
+            userId = formQuestionResponseEntity.userId ?: ""
         )
     }
 
@@ -168,7 +167,7 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
             optionId = formQuestionResponseEntity.optionId,
             referenceId = formQuestionResponseEntity.referenceId,
             didiId = formQuestionResponseEntity.didiId,
-            userId = formQuestionResponseEntity.userId ?: 0
+            userId = formQuestionResponseEntity.userId ?: ""
         )
     }
 
@@ -207,8 +206,8 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
         return contentDao.getContentFromIds(contentKey, languageId = getSelectedLanguage())
     }
 
-    override fun getUserId(): Int {
-        return prefRepo.getPref(PREF_KEY_USER_NAME, "")?.toInt() ?: 0
+    override fun getUserId(): String {
+        return prefRepo.getMobileNumber() ?: BLANK_STRING
     }
 
 }

@@ -1,7 +1,7 @@
 package com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.repository
 
 import androidx.lifecycle.LiveData
-import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
@@ -85,7 +85,7 @@ class MissionSummaryScreenRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun getUserId(): Int {
-        return prefRepo.getPref(PREF_KEY_USER_NAME, "")?.toInt() ?: 0
+    override fun getUserId(): String {
+        return prefRepo.getMobileNumber() ?: BLANK_STRING
     }
 }

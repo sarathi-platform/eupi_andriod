@@ -12,13 +12,17 @@ import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
 interface SectionAnswerEntityDao {
 
     @Query("SELECT * FROM $ANSWER_TABLE where userId=:userId")
-    fun getAllAnswer(userId: Int): List<SectionAnswerEntity>
+    fun getAllAnswer(userId: String): List<SectionAnswerEntity>
 
     @Query("SELECT * FROM $ANSWER_TABLE where userId=:userId and didiId = :didiId")
-    fun getAllAnswerForDidi(userId: Int, didiId: Int): List<SectionAnswerEntity>
+    fun getAllAnswerForDidi(userId: String, didiId: Int): List<SectionAnswerEntity>
 
     @Query("Select * FROM $ANSWER_TABLE where  userId=:userId and  didiId = :didiId and sectionId = :sectionId")
-    fun getSectionAnswerForDidi(userId: Int, sectionId: Int, didiId: Int): List<SectionAnswerEntity>
+    fun getSectionAnswerForDidi(
+        userId: String,
+        sectionId: Int,
+        didiId: Int
+    ): List<SectionAnswerEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAnswer(answer: SectionAnswerEntity)
@@ -28,7 +32,7 @@ interface SectionAnswerEntityDao {
 
     @Query("Update $ANSWER_TABLE set optionItems = :optionItems, questionType=:questionType, questionSummary=:questionSummary where  userId=:userId and  didiId = :didiId AND questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId")
     fun updateAnswer(
-        userId: Int,
+        userId: String,
         didiId: Int,
         sectionId: Int,
         questionId: Int,
@@ -40,7 +44,7 @@ interface SectionAnswerEntityDao {
 
     @Query("Select COUNT(*) FROM $ANSWER_TABLE where  userId=:userId and  didiId = :didiId AND questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId")
     fun isQuestionAlreadyAnswered(
-        userId: Int,
+        userId: String,
         didiId: Int,
         questionId: Int,
         sectionId: Int,
@@ -48,7 +52,7 @@ interface SectionAnswerEntityDao {
     ): Int
 
     @Query("Delete from $ANSWER_TABLE where userId=:userId")
-    fun deleteAllSectionAnswer(userId: Int)
+    fun deleteAllSectionAnswer(userId: String)
 
 
 }

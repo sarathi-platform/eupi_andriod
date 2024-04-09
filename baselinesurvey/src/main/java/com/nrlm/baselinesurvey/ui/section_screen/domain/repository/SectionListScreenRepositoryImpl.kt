@@ -1,6 +1,6 @@
 package com.nrlm.baselinesurvey.ui.section_screen.domain.repository
 
-import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.ContentDao
@@ -203,14 +203,13 @@ class SectionListScreenRepositoryImpl(
     }
 
     override fun getSurveyeDetails(didiId: Int): SurveyeeEntity {
-        return surveyeeEntityDao.getDidi(didiId, getUserId())
+        return surveyeeEntityDao.getDidi(didiId)
     }
 
     override suspend fun updateSubjectStatus(didiId: Int, surveyState: SurveyState) {
         surveyeeEntityDao.updateDidiSurveyStatus(
             didiSurveyStatus = surveyState.ordinal,
             didiId = didiId,
-            userId = getUserId()
         )
     }
 
@@ -218,7 +217,7 @@ class SectionListScreenRepositoryImpl(
         taskDao.updateTaskStatus(getUserId(), didiId, surveyState.ordinal)
     }
 
-    override fun getUserId(): Int {
-        return prefRepo.getPref(PREF_KEY_USER_NAME, "")?.toInt() ?: 0
+    override fun getUserId(): String {
+        return prefRepo.getMobileNumber() ?: BLANK_STRING
     }
 }

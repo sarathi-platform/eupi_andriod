@@ -27,17 +27,17 @@ interface MissionEntityDao {
 //    fun insertMission(mission: MissionEntity)
 
     @Query("DELETE FROM $MISSION_TABLE_NAME where userId=:userId")
-    fun deleteMissions(userId: Int)
+    fun deleteMissions(userId: String)
 
     @Query("SELECT * FROM $MISSION_TABLE_NAME where userId=:userId")
-    suspend fun getMissions(userId: Int): List<MissionEntity>
+    suspend fun getMissions(userId: String): List<MissionEntity>
 
     @Query("SELECT * FROM $MISSION_TABLE_NAME where  userId=:userId and missionId=:missionId ")
-    suspend fun getMission(userId: Int, missionId: Int): MissionEntity
+    suspend fun getMission(userId: String, missionId: Int): MissionEntity
 
     @Query("Update $MISSION_TABLE_NAME set pendingActivity=:pendingActivity, activityComplete=:activityComplete where  userId=:userId and missionId = :missionId")
     fun updateMissionStatus(
-        userId: Int,
+        userId: String,
         missionId: Int,
         activityComplete: Int,
         pendingActivity: Int
@@ -47,17 +47,17 @@ interface MissionEntityDao {
 //    fun getMissionActivityTaskDto(missionId: Int, activityId: Int, taskId: Int): MissionActivityDao
 
     @Query("UPDATE $MISSION_TABLE_NAME SET status = :status where  userId=:userId and missionId = :missionId")
-    fun updateMissionStatus(userId: Int, missionId: Int, status: String)
+    fun updateMissionStatus(userId: String, missionId: Int, status: String)
 
     @Query("UPDATE $MISSION_TABLE_NAME SET actualStartDate = :actualStartDate where  userId=:userId and missionId = :missionId")
-    fun updateActualStartDate(userId: Int, missionId: Int, actualStartDate: String)
+    fun updateActualStartDate(userId: String, missionId: Int, actualStartDate: String)
 
     @Query("UPDATE $MISSION_TABLE_NAME SET actualCompletedDate = :actualCompletedDate where  userId=:userId and missionId = :missionId")
-    fun updateActualCompletedDate(userId: Int, missionId: Int, actualCompletedDate: String)
+    fun updateActualCompletedDate(userId: String, missionId: Int, actualCompletedDate: String)
 
     @Transaction
     fun markMissionCompleted(
-        userId: Int,
+        userId: String,
         missionId: Int,
         status: String,
         actualCompletedDate: String
@@ -68,7 +68,7 @@ interface MissionEntityDao {
 
     @Transaction
     fun markMissionInProgress(
-        userId: Int,
+        userId: String,
         missionId: Int,
         status: String,
         actualStartDate: String

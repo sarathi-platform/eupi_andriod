@@ -18,14 +18,14 @@ interface DidiSectionProgressEntityDao {
 
     @Query("Select * from $DIDI_SECTION_PROGRESS_TABLE where  userId=:userId and surveyId = :surveyId and didiId = :didiId")
     fun getAllSectionProgressForDidi(
-        userId: Int,
+        userId: String,
         surveyId: Int,
         didiId: Int
     ): List<DidiSectionProgressEntity>
 
     @Query("Select * from $DIDI_SECTION_PROGRESS_TABLE where  userId=:userId and surveyId = :surveyId and sectionId = :sectionId and didiId = :didiId")
     fun getSectionProgressForDidi(
-        userId: Int,
+        userId: String,
         surveyId: Int,
         sectionId: Int,
         didiId: Int
@@ -33,7 +33,7 @@ interface DidiSectionProgressEntityDao {
 
     @Query("Update $DIDI_SECTION_PROGRESS_TABLE set sectionStatus = :sectionStatus where  userId=:userId and surveyId = :surveyId and sectionId = :sectionId and didiId = :didiId")
     fun updateSectionStatusForDidi(
-        userId: Int,
+        userId: String,
         surveyId: Int,
         sectionId: Int,
         didiId: Int,
@@ -41,7 +41,7 @@ interface DidiSectionProgressEntityDao {
     )
 
     @Query("Delete from $DIDI_SECTION_PROGRESS_TABLE where userId=:userId")
-    fun deleteAllSectionProgress(userId: Int)
+    fun deleteAllSectionProgress(userId: String)
 
 
 }
