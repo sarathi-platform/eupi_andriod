@@ -871,19 +871,19 @@ class QuestionScreenViewModel @Inject constructor(
                             )
 
                             _filterSectionList.value = sectionDetail.value
-                        }
 
-                        onEvent(
-                            EventWriterEvents.SaveAnswerEvent(
-                                surveyId = question?.questionEntity?.surveyId ?: 0,
-                                sectionId = question?.questionEntity?.sectionId ?: 0,
-                                didiId = didiDetails.value?.didiId ?: 0,
-                                questionId = question?.questionEntity?.questionId ?: 0,
-                                questionType = question?.questionEntity?.type ?: BLANK_STRING,
-                                questionTag = question?.questionEntity?.tag ?: 0,
-                                saveAnswerEventOptionItemDtoList = listOf()
+                            onEvent(
+                                EventWriterEvents.SaveAnswerEvent(
+                                    surveyId = question?.questionEntity?.surveyId ?: 0,
+                                    sectionId = question?.questionEntity?.sectionId ?: 0,
+                                    didiId = didiDetails.value?.didiId ?: 0,
+                                    questionId = question?.questionEntity?.questionId ?: 0,
+                                    questionType = question?.questionEntity?.type ?: BLANK_STRING,
+                                    questionTag = question?.questionEntity?.tag ?: 0,
+                                    saveAnswerEventOptionItemDtoList = listOf()
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
@@ -1185,19 +1185,27 @@ class QuestionScreenViewModel @Inject constructor(
     }
 
     fun updateSaveUpdateState() {
-        filterSectionList.value.questionAnswerMapping.forEach {
-            answeredQuestionCount.add(it.key)
-        }
+        try {
+            filterSectionList.value.questionAnswerMapping.forEach {
+                answeredQuestionCount.add(it.key)
+            }
 
-        inputTypeQuestionAnswerEntityList.value.groupBy { it.optionId }.forEach {
-            answeredQuestionCount.add(it.key)
+            inputTypeQuestionAnswerEntityList.value.groupBy { it.optionId }.forEach {
+                answeredQuestionCount.add(it.key)
+            }
+            val qesList = questionEntityStateList.toList()
+            totalQuestionCount.intValue =
+                qesList.filter { it.showQuestion }.distinctBy { it.questionId }.size
+            // Log.d("TAG", "updateSaveUpdateState: questionEntityStateList.filter { it.showQuestion }.size: ${questionEntityStateList.filter { it.showQuestion }.size} answeredQuestionCount: $answeredQuestionCount ::: totalQuestionCount: ${totalQuestionCount.intValue}")
+            isSectionCompleted.value =
+                answeredQuestionCount.size == totalQuestionCount.intValue || answeredQuestionCount.size > totalQuestionCount.intValue
+        } catch (ex: Exception) {
+            BaselineLogger.e(
+                "QuestionScreenViewModel",
+                "updateSaveUpdateState: exception message -> ${ex.message}",
+                ex
+            )
         }
-        val qesList = questionEntityStateList.toList()
-        totalQuestionCount.intValue =
-            qesList.filter { it.showQuestion }.distinctBy { it.questionId }.size
-        // Log.d("TAG", "updateSaveUpdateState: questionEntityStateList.filter { it.showQuestion }.size: ${questionEntityStateList.filter { it.showQuestion }.size} answeredQuestionCount: $answeredQuestionCount ::: totalQuestionCount: ${totalQuestionCount.intValue}")
-        isSectionCompleted.value =
-            answeredQuestionCount.size == totalQuestionCount.intValue || answeredQuestionCount.size > totalQuestionCount.intValue
     }
 
     fun getOptionItemListWithConditionals(): List<OptionItemEntity> {

@@ -60,6 +60,7 @@ import com.nrlm.baselinesurvey.ui.theme.inactiveTextBlue
 import com.nrlm.baselinesurvey.ui.theme.lightGray2
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
 import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
@@ -84,12 +85,16 @@ fun QuestionScreen(
 
 
     LaunchedEffect(key1 = true) {
-        viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-        viewModel.init(surveyId = surveyId, sectionId = sectionId, surveyeeId = surveyeeId)
-        delay(300)
-        viewModel.updateSaveUpdateState()
-        delay(300)
-        viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+        try {
+            viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
+            viewModel.init(surveyId = surveyId, sectionId = sectionId, surveyeeId = surveyeeId)
+            delay(300)
+            viewModel.updateSaveUpdateState()
+            delay(300)
+            viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+        } catch (ex: Exception) {
+            BaselineLogger.e("QuestionScreen", "LaunchedEffect -> exception: ${ex.message}", ex)
+        }
     }
 
     val scaffoldState =
