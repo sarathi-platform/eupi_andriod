@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.data.domain
 
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
+import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
@@ -61,6 +62,7 @@ class EventWriterHelperImpl @Inject constructor(
     ): Events {
 
         return if (didiSectionProgressEntityDao.getSectionProgressForDidi(
+                userId = getUserId(),
                 surveyId,
                 sectionId,
                 didiId
@@ -186,7 +188,7 @@ class EventWriterHelperImpl @Inject constructor(
         sectionStatus: SectionStatus
     ): Events {
         val languageId = prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
-        val activityForSubjectDto = activityDao.getActivityFromSubjectId(subjectId)
+        val activityForSubjectDto = activityDao.getActivityFromSubjectId(getUserId(), subjectId)
 
         val mUpdateTaskStatusEventDto = UpdateTaskStatusEventDto(
             missionId = activityForSubjectDto.missionId,
@@ -213,7 +215,7 @@ class EventWriterHelperImpl @Inject constructor(
         activityId: Int,
         status: SectionStatus
     ): Events {
-        val activity = activityDao.getActivity(activityId)
+        val activity = activityDao.getActivity(getUserId(), activityId)
 
         val mUpdateActivityStatusEventDto = UpdateActivityStatusEventDto(
             missionId = activity.missionId,
@@ -238,7 +240,7 @@ class EventWriterHelperImpl @Inject constructor(
         missionId: Int,
         status: SectionStatus
     ): Events {
-        val mission = missionEntityDao.getMission(missionId)
+        val mission = missionEntityDao.getMission(getUserId(), missionId)
 
         val mUpdateMissionStatusEventDto = UpdateMissionStatusEventDto(
             missionId = mission.missionId,
@@ -260,6 +262,7 @@ class EventWriterHelperImpl @Inject constructor(
 
     override suspend fun markMissionInProgress(missionId: Int, status: SectionStatus) {
         missionEntityDao.markMissionInProgress(
+            userId = getUserId(),
             missionId = missionId,
             status = status.name,
             actualStartDate = System.currentTimeMillis().toDate().toString()
@@ -272,6 +275,7 @@ class EventWriterHelperImpl @Inject constructor(
         status: SectionStatus
     ) {
         activityDao.markActivityStart(
+            userId = getUserId(),
             missionId = missionId,
             activityId = activityId,
             status = status.name,
@@ -286,6 +290,7 @@ class EventWriterHelperImpl @Inject constructor(
         status: SectionStatus
     ) {
         taskDao.markTaskInProgress(
+            userId = getUserId(),
             taskId = taskId,
             activityId,
             missionId,
@@ -300,9 +305,9 @@ class EventWriterHelperImpl @Inject constructor(
         taskId: Int,
         status: SectionStatus
     ) {
-        val missionEntity = missionEntityDao.getMission(missionId)
-        val activityEntity = activityDao.getActivity(missionId, activityId)
-        val taskEntity = taskDao.getTask(activityId, missionId, taskId)
+        val missionEntity = missionEntityDao.getMission(getUserId(), missionId)
+        val activityEntity = activityDao.getActivity(getUserId(), missionId, activityId)
+        val taskEntity = taskDao.getTask(getUserId(), activityId, missionId, taskId)
 
         if (taskEntity.status != SectionStatus.COMPLETED.name && taskEntity.status != SectionStatus.INPROGRESS.name)
             markTaskInProgress(missionId, activityId, taskId, status)
@@ -325,6 +330,7 @@ class EventWriterHelperImpl @Inject constructor(
 
     override suspend fun markMissionCompleted(missionId: Int, status: SectionStatus) {
         missionEntityDao.markMissionCompleted(
+            userId = getUserId(),
             missionId = missionId,
             status = status.name,
             actualCompletedDate = System.currentTimeMillis().toDate().toString()
@@ -337,6 +343,7 @@ class EventWriterHelperImpl @Inject constructor(
         status: SectionStatus
     ) {
         activityDao.markActivityComplete(
+            userId = getUserId(),
             missionId = missionId,
             activityId = activityId,
             status = status.name,
@@ -351,6 +358,7 @@ class EventWriterHelperImpl @Inject constructor(
         status: SectionStatus
     ) {
         taskDao.markTaskCompleted(
+            userId = getUserId(),
             taskId = taskId,
             activityId = activityId,
             missionId = missionId,
@@ -371,7 +379,7 @@ class EventWriterHelperImpl @Inject constructor(
     }
 
     override suspend fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto {
-        return activityDao.getActivityFromSubjectId(subjectId)
+        return activityDao.getActivityFromSubjectId(userId = getUserId(), subjectId)
     }
 
     override suspend fun getMissionActivityTaskEventList(
@@ -380,9 +388,9 @@ class EventWriterHelperImpl @Inject constructor(
         taskId: Int,
         status: SectionStatus
     ): List<Events> {
-        val missionEntity = missionEntityDao.getMission(missionId)
-        val activityEntity = activityDao.getActivity(missionId, activityId)
-        val taskEntity = taskDao.getTask(activityId, missionId, taskId)
+        val missionEntity = missionEntityDao.getMission(getUserId(), missionId)
+        val activityEntity = activityDao.getActivity(getUserId(), missionId, activityId)
+        val taskEntity = taskDao.getTask(getUserId(), activityId, missionId, taskId)
 
         val eventList = mutableListOf<Events>()
 
@@ -457,6 +465,10 @@ class EventWriterHelperImpl @Inject constructor(
                 parentEntity = mapOf()
             ).json()
         ) ?: Events.getEmptyEvent()
+    }
+
+    fun getUserId(): Int {
+        return prefRepo.getPref(PREF_KEY_USER_NAME, "")?.toInt() ?: 0
     }
 
 }

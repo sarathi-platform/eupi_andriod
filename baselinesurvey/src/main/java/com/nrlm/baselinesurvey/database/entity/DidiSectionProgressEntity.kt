@@ -10,6 +10,7 @@ data class DidiSectionProgressEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     val id: Int,
+    val userId: Int? = -1,
 
     @ColumnInfo(name = "surveyId")
     val surveyId: Int,

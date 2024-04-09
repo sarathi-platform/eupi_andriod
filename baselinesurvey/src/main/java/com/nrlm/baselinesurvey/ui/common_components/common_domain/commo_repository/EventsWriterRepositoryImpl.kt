@@ -3,6 +3,7 @@ package com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_reposit
 import android.net.Uri
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
+import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
@@ -183,8 +184,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
 
             EventName.UPDATE_TASK_STATUS_EVENT -> {
                 val requestPayload = (eventItem as UpdateTaskStatusEventDto)
-
-                val mission = missionEntityDao.getMission(requestPayload.missionId)
+                val mission =
+                    missionEntityDao.getMission(userId = getUserId(), requestPayload.missionId)
 
                 var event = Events(
                     name = eventName.name,
@@ -220,8 +221,7 @@ class EventsWriterRepositoryImpl @Inject constructor(
 
             EventName.UPDATE_ACTIVITY_STATUS_EVENT -> {
                 val requestPayload = (eventItem as UpdateActivityStatusEventDto)
-
-                val mission = missionEntityDao.getMission(requestPayload.missionId)
+                val mission = missionEntityDao.getMission(getUserId(), requestPayload.missionId)
 
                 var event = Events(
                     name = eventName.name,
@@ -257,8 +257,7 @@ class EventsWriterRepositoryImpl @Inject constructor(
 
             EventName.UPDATE_MISSION_STATUS_EVENT -> {
                 val requestPayload = (eventItem as UpdateMissionStatusEventDto)
-
-                val mission = missionEntityDao.getMission(requestPayload.missionId)
+                val mission = missionEntityDao.getMission(getUserId(), requestPayload.missionId)
 
                 var event = Events(
                     name = eventName.name,
@@ -349,6 +348,7 @@ class EventsWriterRepositoryImpl @Inject constructor(
         didiId: Int
     ): Boolean {
         return didiSectionProgressEntityDao.getSectionProgressForDidi(
+            userId = getUserId(),
             surveyId,
             sectionId,
             didiId
@@ -373,6 +373,10 @@ class EventsWriterRepositoryImpl @Inject constructor(
             BaselineLogger.e("ImageEventWriter", exception.message ?: "")
         }
 
+    }
+
+    override fun getUserId(): Int {
+        return prefRepo.getPref(PREF_KEY_USER_NAME, "")?.toInt() ?: 0
     }
 
 }

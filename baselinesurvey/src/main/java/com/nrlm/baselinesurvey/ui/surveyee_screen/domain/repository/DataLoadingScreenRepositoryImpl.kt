@@ -127,12 +127,14 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                 val subSubQuestionList = mutableListOf<QuestionList>()
                 val contentLists = mutableListOf<ContentList>()
                 sectionEntityDao.deleteSurveySectionFroLanguage(
+                    userId = getUserId(),
                     section.sectionId,
                     surveyResponseModel.surveyId,
                     languageId
                 )
                 val sectionEntity = SectionEntity(
                     id = 0,
+                    userId = getUserId(),
                     sectionId = section.sectionId,
                     surveyId = surveyResponseModel.surveyId,
                     sectionName = section.sectionName,
@@ -371,15 +373,20 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override fun deleteSurveyeeList() {
-        surveyeeEntityDao.deleteSurveyees()
+        surveyeeEntityDao.deleteSurveyees(
+            userId = getUserId(),
+        )
     }
 
     override fun saveSurveyeeList(surveyeeEntity: SurveyeeEntity) {
+        surveyeeEntity.userId = getUserId()
         surveyeeEntityDao.insertDidi(surveyeeEntity)
     }
 
     override suspend fun fetchSurveyeeListFromLocalDb(): List<SurveyeeEntity> {
-        return surveyeeEntityDao.getAllDidis()
+        return surveyeeEntityDao.getAllDidis(
+            userId = getUserId(),
+        )
     }
 
     override suspend fun fetchSavedSurveyFromServer() {
@@ -409,11 +416,15 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteMissionsFromDB() {
-        missionEntityDao.deleteMissions()
+        missionEntityDao.deleteMissions(
+            userId = getUserId()
+        )
     }
 
     override suspend fun deleteMissionActivitiesFromDB() {
-        missionActivityDao.deleteActivities()
+        missionActivityDao.deleteActivities(
+            userId = getUserId()
+        )
     }
 
     override suspend fun updateActivityStatusForMission(
@@ -421,11 +432,16 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         activityComplete: Int,
         pendingActivity: Int
     ) {
-        missionEntityDao.updateMissionStatus(missionId, activityComplete, pendingActivity)
+        missionEntityDao.updateMissionStatus(
+            userId = getUserId(),
+            missionId, activityComplete, pendingActivity
+        )
     }
 
     override suspend fun deleteActivityTasksFromDB() {
-        activityTaskDao.deleteActivityTask()
+        activityTaskDao.deleteActivityTask(
+            userId = getUserId()
+        )
     }
 
     override suspend fun getCasteListFromNetwork(languageId: Int): ApiResponseModel<List<CasteModel>> {
@@ -458,7 +474,9 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
 
     override suspend fun getContentKeyFromDB(): List<String?> {
         val contentKeys = mutableListOf<String?>()
-        val sections = sectionEntityDao.getSections()
+        val sections = sectionEntityDao.getSections(
+            userId = getUserId(),
+        )
         val questions = questionEntityDao.getQuestions()
         sections?.forEach { section ->
             val sectionContentKey =
@@ -518,6 +536,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                 formQuestionEntityList.forEach { formQuestionResponseEntity ->
                     val isQuestionAnswered =
                         baselineDatabase.formQuestionResponseDao().isQuestionOptionAlreadyAnswered(
+                            userId = getUserId(),
                             surveyId = formQuestionResponseEntity.surveyId,
                             sectionId = formQuestionResponseEntity.sectionId,
                             questionId = formQuestionResponseEntity.questionId,
@@ -527,6 +546,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                         )
                     if (isQuestionAnswered > 0) {
                         baselineDatabase.formQuestionResponseDao().updateOptionItemValue(
+                            userId = getUserId(),
                             surveyId = formQuestionResponseEntity.surveyId,
                             sectionId = formQuestionResponseEntity.sectionId,
                             questionId = formQuestionResponseEntity.questionId,
@@ -549,6 +569,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                 inputTypeQuestionAnswerEntity.forEach { inputTypeQuestionAnswerEntity ->
                     val isQuestionAlreadyAnswered =
                         baselineDatabase.inputTypeQuestionAnswerDao().isQuestionAlreadyAnswered(
+                            inputTypeQuestionAnswerEntity.userId ?: -1,
                             inputTypeQuestionAnswerEntity.surveyId,
                             inputTypeQuestionAnswerEntity.sectionId,
                             inputTypeQuestionAnswerEntity.didiId,
@@ -558,6 +579,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     if (isQuestionAlreadyAnswered > 0) {
                         baselineDatabase.inputTypeQuestionAnswerDao()
                             .updateInputTypeAnswersForQuestion(
+                                userId = getUserId(),
                                 inputTypeQuestionAnswerEntity.surveyId,
                                 inputTypeQuestionAnswerEntity.sectionId,
                                 inputTypeQuestionAnswerEntity.didiId,
@@ -583,6 +605,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     getSectionAnswerEntity(questionAnswerResponseModel, question)
                 val isQuestionAlreadyAnswer = baselineDatabase.sectionAnswerEntityDao()
                     .isQuestionAlreadyAnswered(
+                        userId = getUserId(),
                         sectionAnswerEntity.didiId,
                         sectionAnswerEntity.questionId,
                         sectionAnswerEntity.sectionId,
@@ -590,6 +613,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     )
                 if (isQuestionAlreadyAnswer > 0) {
                     baselineDatabase.sectionAnswerEntityDao().updateAnswer(
+                        userId = getUserId(),
                         didiId = sectionAnswerEntity.didiId,
                         sectionId = sectionAnswerEntity.sectionId,
                         questionId = sectionAnswerEntity.questionId,
@@ -639,7 +663,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                         if (map.value.any { it.sectionStatus == SectionStatus.INPROGRESS.ordinal || it.sectionStatus == SectionStatus.COMPLETED.ordinal }) {
                             surveyeeEntityDao.updateDidiSurveyStatusAfterCheck(
                                 map.key,
-                                SectionStatus.INPROGRESS.ordinal
+                                SectionStatus.INPROGRESS.ordinal,
+                                userId = getUserId()
                             )
                         }
                     }
@@ -652,7 +677,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getTaskForSubjectId(didiId: Int?): ActivityTaskEntity? {
-        return activityTaskDao.getTaskFromSubjectId(didiId ?: 0)
+        return activityTaskDao.getTaskFromSubjectId(getUserId(), didiId ?: 0)
     }
 
     override fun getAppLanguageId(): Int {

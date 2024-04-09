@@ -89,4 +89,8 @@ class GetFormQuestionResponseUseCase(private val repository: FormQuestionRespons
         return repository.getContentFromDB(contentKey)
     }
 
+    fun getUserId(): Int {
+        return repository.getUserId()
+    }
+
 }

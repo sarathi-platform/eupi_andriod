@@ -10,6 +10,7 @@ data class InputTypeQuestionAnswerEntity(
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
+    var userId: Int? = -1,
 
     @ColumnInfo(name = "didiId")
     val didiId: Int,

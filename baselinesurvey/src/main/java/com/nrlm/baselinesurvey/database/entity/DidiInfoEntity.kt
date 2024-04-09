@@ -15,6 +15,7 @@ data class DidiInfoEntity(
     @ColumnInfo(name = "didiId")
     //  var id: Int,
     var didiId: Int?,
+    var userId: Int? = -1,
     var adharNumber: String?,
     var phoneNumber: String?,
     var isVoterCard: Int? = -1,
@@ -24,6 +25,7 @@ data class DidiInfoEntity(
         fun getEmptyDidiInfoEntity() = DidiInfoEntity(
             // id = 0,
             didiId = 0,
+            userId = -1,
             adharNumber = "",
             phoneNumber = "",
             isAdharCard = -1,

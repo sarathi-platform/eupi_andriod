@@ -24,6 +24,7 @@ class FetchMissionDataFromNetworkUseCase(
                         mission.activities.forEach { activity ->
                             repository.saveMissionsActivityToDB(
                                 MissionActivityEntity.getMissionActivityEntity(
+                                    userId = repository.getUserId(),
                                     missionId = mission.missionId,
                                     activity = activity,
                                     activityTaskSize = activity.tasks.size
@@ -33,6 +34,7 @@ class FetchMissionDataFromNetworkUseCase(
                                 if (task.id != null) {
                                     repository.saveActivityTaskToDB(
                                         ActivityTaskEntity.getActivityTaskEntity(
+                                            userId = repository.getUserId(),
                                             missionId = mission.missionId,
                                             activityId = activity.activityId,
                                             activityName = activity.activityName,
@@ -46,6 +48,7 @@ class FetchMissionDataFromNetworkUseCase(
                         delay(100)
                         repository.saveMissionToDB(
                             MissionEntity.getMissionEntity(
+                                userId = repository.getUserId(),
                                 activityTaskSize = activityTaskSize,
                                 mission = mission
                             )

@@ -21,7 +21,7 @@ data class SurveyeeEntity(
     @SerializedName("userId")
     @Expose
     @ColumnInfo(name = "userId")
-    var userId: Int?,
+    var userId: Int? = 0,
 
     @SerializedName("didiId")
     @Expose

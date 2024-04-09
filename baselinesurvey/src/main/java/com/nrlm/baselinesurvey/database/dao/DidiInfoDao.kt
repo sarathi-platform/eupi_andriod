@@ -15,8 +15,8 @@ interface DidiInfoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertDidiInfo(didiInfoEntity: DidiInfoEntity)
 
-    @Query("SELECT * FROM $DIDI_INFO_TABLE_NAME where didiId=:didiId ")
-    suspend fun getDidiInfo(didiId: Int): DidiInfoEntity
+    @Query("SELECT * FROM $DIDI_INFO_TABLE_NAME where userId=:userId and didiId=:didiId ")
+    suspend fun getDidiInfo(userId: Int, didiId: Int): DidiInfoEntity
 
     @Update
     fun updateDidiInfo(didiInfoEntity: DidiInfoEntity)
@@ -24,8 +24,8 @@ interface DidiInfoDao {
     @Query("SELECT * FROM $DIDI_INFO_TABLE_NAME where didiId=:didiId")
     fun getDidiInfoLive(didiId: Int): LiveData<List<DidiInfoEntity>>
 
-    @Query("delete from $DIDI_INFO_TABLE_NAME")
-    fun deleteAllDidiInfo()
+    @Query("delete from $DIDI_INFO_TABLE_NAME where userId=:userId")
+    fun deleteAllDidiInfo(userId: Int)
 
     @Query("SELECT COUNT(*) from $DIDI_INFO_TABLE_NAME where didiId = :didiId")
     fun isDidiInfoAvailable(didiId: Int): Int
