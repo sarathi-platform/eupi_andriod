@@ -5,6 +5,8 @@ plugins {
     id 'androidx.navigation.safeargs.kotlin'
     id("dagger.hilt.android.plugin")
     id 'kotlin-kapt'
+    id("com.google.gms.google-services")
+    id 'com.google.firebase.crashlytics'
 }
 
 def version = "1.13"
@@ -178,6 +180,10 @@ dependencies {
     implementation(project(":CommunicationModule"))
     implementation "com.airbnb.android:lottie-compose:6.1.0"
     implementation 'nl.dionsegijn:konfetti-compose:2.0.2'
+
+    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-crashlytics")
 
 
 }
