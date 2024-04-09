@@ -5,7 +5,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,7 +28,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,7 +37,6 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.ui.mission_screen.viewmodel.MissionViewModel
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
-import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
@@ -48,7 +45,6 @@ import com.nrlm.baselinesurvey.ui.theme.greenOnline
 import com.nrlm.baselinesurvey.ui.theme.greyLightColor
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleMediumWeight
-import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
 
@@ -97,22 +93,23 @@ fun MissonRowScreen_1(
                 .fillMaxWidth()
                 .background(if (pendingCount == 0 && viewModel.missionTaskCountMap.value[mission.missionId] != 0) greenLight else white)
         ) {
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .background(if (pendingCount == 0 && viewModel.missionTaskCountMap.value[mission.missionId] != 0) greenOnline else greyLightColor)
-                    .padding(horizontal = 16.dp, vertical = 5.dp)
-            ) {
-                Text(
-                    text = if (pendingCount == 0 && viewModel.missionTaskCountMap.value[mission.missionId] != 0) "Completed"
-                    else stringResource(
-                        id = R.string.start_by_x_date,
-                        missionDueDate
-                    ),
-                    style = smallerTextStyle,
-                    color = if (pendingCount == 0 && viewModel.missionTaskCountMap.value[mission.missionId] != 0) white else black100Percent,
-                )
-            }
+            //TODO in future in uncomment whenever get correct data from backend
+//            Box(
+//                Modifier
+//                    .fillMaxWidth()
+//                    .background(if (pendingCount == 0 && viewModel.missionTaskCountMap.value[mission.missionId] != 0) greenOnline else greyLightColor)
+//                    .padding(horizontal = 16.dp, vertical = 5.dp)
+//            ) {
+//                Text(
+//                    text = if (pendingCount == 0 && viewModel.missionTaskCountMap.value[mission.missionId] != 0) "Completed"
+//                    else stringResource(
+//                        id = R.string.start_by_x_date,
+//                        missionDueDate
+//                    ),
+//                    style = smallerTextStyle,
+//                    color = if (pendingCount == 0 && viewModel.missionTaskCountMap.value[mission.missionId] != 0) white else black100Percent,
+//                )
+//            }
 
             Row(
                 modifier = Modifier
