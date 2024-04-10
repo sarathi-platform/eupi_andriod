@@ -188,6 +188,13 @@ fun SettingScreen(
         list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
         list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
         list.add(SettingOptionModel(7, stringResource(id = R.string.export_file), BLANK_STRING))
+        list.add(
+            SettingOptionModel(
+                8,
+                stringResource(id = R.string.regenerate_event_file),
+                BLANK_STRING
+            )
+        )
         /*if (BuildConfig.DEBUG) *//*list.add(
             SettingOptionModel(
                 6,
@@ -403,6 +410,9 @@ fun SettingScreen(
                                     viewModel.compressEventData(context.getString(R.string.share_export_file))
                                 }
 
+                                8 -> {
+                                    viewModel.regenerateEventFile(context.getString(R.string.share_export_file))
+                                }
                                 else -> {
                                     showCustomToast(
                                         context,

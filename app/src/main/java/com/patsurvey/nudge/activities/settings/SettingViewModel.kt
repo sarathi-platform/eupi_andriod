@@ -17,6 +17,7 @@ import com.nudge.core.json
 import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.SettingRepository
 import com.patsurvey.nudge.SyncBPCDataOnServer
 import com.patsurvey.nudge.SyncHelper
 import com.patsurvey.nudge.base.BaseViewModel
@@ -92,7 +93,8 @@ class SettingViewModel @Inject constructor(
     val bpcSummaryDao: BpcSummaryDao,
     val poorDidiListDao: PoorDidiListDao,
     val exportHelper: ExportHelper,
-    val eventDao: EventsDao
+    val eventDao: EventsDao,
+    val settingRepository: SettingRepository
 ) : BaseViewModel() {
     val formAAvailabe = mutableStateOf(false)
     val formBAvailabe = mutableStateOf(false)
@@ -984,4 +986,13 @@ class SettingViewModel @Inject constructor(
     fun clearSettingOpenFrom() {
         //    prefRepo.saveSettingOpenFrom(0)
     }
+
+    fun regenerateEventFile(title: String) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            settingRepository.regenerateAllEvent(CoreSharedPrefs.getInstance(NudgeCore.getAppContext()))
+            compressEventData(title)
+        }
+    }
+
+
 }
