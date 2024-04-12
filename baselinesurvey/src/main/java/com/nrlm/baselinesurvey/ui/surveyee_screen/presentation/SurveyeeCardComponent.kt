@@ -25,6 +25,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -77,7 +79,9 @@ fun SurveyeeCardComponent(
     buttonClicked: (buttonName: ButtonName, surveyeeId: Int) -> Unit,
     moveDidiToThisWeek: (surveyeeCardState: SurveyeeCardState, moveToThisWeek: Boolean) -> Unit
 ) {
-
+    val surveyeeMarkedNotAvailable = remember {
+        mutableStateOf(surveyeeState.surveyeeDetails.surveyStatus == SurveyState.NOT_AVAILABLE.ordinal)
+    }
     Card(
         elevation = CardDefaults.cardElevation(
             defaultElevation = defaultCardElevation
@@ -225,6 +229,7 @@ fun SurveyeeCardComponent(
 
                             Button(
                                 onClick = {
+                                    surveyeeMarkedNotAvailable.value = true
                                     buttonClicked(
                                         ButtonName.NOT_AVAILABLE,
                                         surveyeeState.surveyeeDetails.didiId ?: 0
@@ -233,7 +238,7 @@ fun SurveyeeCardComponent(
                                 enabled = true,
                                 shape = RoundedCornerShape(roundedCornerRadiusDefault),
                                 border = BorderStroke(dimen_1_dp, borderGreyLight),
-                                colors = if (surveyeeState.surveyeeDetails.surveyStatus == SurveyState.NOT_AVAILABLE.ordinal) ButtonDefaults.buttonColors(
+                                colors = if (surveyeeMarkedNotAvailable.value) ButtonDefaults.buttonColors(
                                     containerColor = blueDark,
                                     contentColor = white
                                 ) else ButtonDefaults.buttonColors(
@@ -266,7 +271,7 @@ fun SurveyeeCardComponent(
                             },
                             enabled = true,
                             shape = RoundedCornerShape(roundedCornerRadiusDefault),
-                            colors = if (surveyeeState.surveyeeDetails.surveyStatus != SurveyState.NOT_AVAILABLE.ordinal) ButtonDefaults.buttonColors(
+                            colors = if (!surveyeeMarkedNotAvailable.value) ButtonDefaults.buttonColors(
                                 containerColor = blueDark,
                                 contentColor = white
                             ) else ButtonDefaults.buttonColors(
