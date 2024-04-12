@@ -295,6 +295,7 @@ object BaselineModule {
     @Singleton
     fun provideSurveyeeScreenUseCase(
         surveyeeListScreenRepository: SurveyeeListScreenRepository,
+        sectionListScreenRepository: SectionListScreenRepository,
         eventsWriterRepository: EventsWriterRepository
     ): SurveyeeScreenUseCase {
         return SurveyeeScreenUseCase(
@@ -304,7 +305,9 @@ object BaselineModule {
                 surveyeeListScreenRepository
             ),
             updateActivityStatusUseCase = UpdateActivityStatusUseCase(surveyeeListScreenRepository),
-            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)
+            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository),
+            updateSubjectStatusUseCase = UpdateSubjectStatusUseCase(sectionListScreenRepository),
+            updateTaskStatusUseCase = UpdateTaskStatusUseCase(sectionListScreenRepository)
         )
     }
 

@@ -42,6 +42,7 @@ import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.MoveSurveyeesUpdateBannerComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
+import com.nrlm.baselinesurvey.ui.section_screen.presentation.SectionScreenEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.SurveyeeScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
@@ -59,6 +60,7 @@ import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -256,14 +258,36 @@ fun AllSurveyeeListTab(
                                         " "
                                     )[1],
                                     buttonClicked = { buttonName, surveyeeId ->
-                                        BaselineCore.setCurrentActivityName(activityName)
-                                        handleButtonClick(
-                                            buttonName,
-                                            surveyeeId,
-                                            activityId,
-                                            navController,
-                                            activityName
-                                        )
+                                        if (!buttonName.equals(ButtonName.NOT_AVAILABLE)) {
+                                            BaselineCore.setCurrentActivityName(activityName)
+                                            handleButtonClick(
+                                                buttonName,
+                                                surveyeeId,
+                                                activityId,
+                                                navController,
+                                                activityName
+                                            )
+                                        } else {
+                                            viewModel.onEvent(
+                                                SurveyeeListEvents.UpdateSurveyeeStatusForUi(
+                                                    surveyeeId = surveyeeId,
+                                                    isFilterApplied = viewModel.isFilterAppliedState.value.isFilterApplied,
+                                                    state = SurveyState.NOT_AVAILABLE
+                                                )
+                                            )
+                                            viewModel.onEvent(
+                                                SectionScreenEvent.UpdateSubjectStatus(
+                                                    surveyeeId,
+                                                    SurveyState.NOT_AVAILABLE
+                                                )
+                                            )
+                                            viewModel.onEvent(
+                                                SectionScreenEvent.UpdateTaskStatus(
+                                                    surveyeeId,
+                                                    SectionStatus.NOT_AVAILABLE
+                                                )
+                                            )
+                                        }
                                     }
                                 )
                             }
@@ -277,12 +301,37 @@ fun AllSurveyeeListTab(
                                     fromScreen = ALL_TAB,
                                     primaryButtonText = "Start " + activityName.split(" ")[1],
                                     buttonClicked = { buttonName, surveyeeId ->
-                                        handleButtonClick(
-                                            buttonName,
-                                            surveyeeId,
-                                            activityId,
-                                            navController
-                                        )
+                                        if (!buttonName.equals(ButtonName.NOT_AVAILABLE)) {
+                                            BaselineCore.setCurrentActivityName(activityName)
+                                            handleButtonClick(
+                                                buttonName,
+                                                surveyeeId,
+                                                activityId,
+                                                navController,
+                                                activityName
+                                            )
+                                        } else {
+                                            viewModel.onEvent(
+                                                SurveyeeListEvents.UpdateSurveyeeStatusForUi(
+                                                    surveyeeId = surveyeeId,
+                                                    key = key,
+                                                    isFilterApplied = viewModel.isFilterAppliedState.value.isFilterApplied,
+                                                    state = SurveyState.NOT_AVAILABLE
+                                                )
+                                            )
+                                            viewModel.onEvent(
+                                                SectionScreenEvent.UpdateSubjectStatus(
+                                                    surveyeeId,
+                                                    SurveyState.NOT_AVAILABLE
+                                                )
+                                            )
+                                            viewModel.onEvent(
+                                                SectionScreenEvent.UpdateTaskStatus(
+                                                    surveyeeId,
+                                                    SectionStatus.NOT_AVAILABLE
+                                                )
+                                            )
+                                        }
                                     },
                                     checkBoxChecked = { surveyeeEntity, isChecked ->
                                         onActionEvent(
