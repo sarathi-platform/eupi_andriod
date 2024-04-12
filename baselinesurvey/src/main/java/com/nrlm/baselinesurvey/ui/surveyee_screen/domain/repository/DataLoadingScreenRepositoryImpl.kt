@@ -650,7 +650,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     )
                 ) {
                     val didiSectionStatusEntity = getDidiSectionStatusEntity(
-                        sectionStatusResponse.data!!
+                        sectionStatusResponse.data!!, getBaseLineUserId()
                     )
                     didiSectionProgressEntityDao.addDidiSectionProgress(
                         didiSectionStatusEntity
