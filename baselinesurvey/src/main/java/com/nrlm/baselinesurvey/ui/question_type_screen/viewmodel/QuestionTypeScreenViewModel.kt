@@ -497,7 +497,8 @@ class QuestionTypeScreenViewModel @Inject constructor(
                             questionTag = question?.value?.tag ?: -1,
                             saveAnswerEventOptionItemDtoList = completeOptionListForQuestion
                                 .convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto(
-                                    QuestionType.Form
+                                    QuestionType.Form,
+                                    updatedOptionList.toList()
                                 )
                         )
                     )
