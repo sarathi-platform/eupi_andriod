@@ -30,6 +30,7 @@ class DataLoadingScreenViewModel @Inject constructor(
     private val _showUserChangedDialog = mutableStateOf<DialogState>(DialogState())
     val showUserChangedDialog: State<DialogState> get() = _showUserChangedDialog
 
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is LoaderEvent.UpdateLoaderState -> {
@@ -79,9 +80,17 @@ class DataLoadingScreenViewModel @Inject constructor(
                     }
                 }
                 fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
-                fetchSurveyForAllLanguages()
-                fetchDataUseCase.fetchSectionStatusFromNetworkUseCase.invoke()
-                fetchDataUseCase.fetchSurveyAnswerFromNetworkUseCase.invoke()
+                CoroutineScope(Dispatchers.IO).launch {
+                    fetchSurveyForAllLanguages()
+                }.invokeOnCompletion {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        fetchDataUseCase.fetchSectionStatusFromNetworkUseCase.invoke()
+                    }
+                    CoroutineScope(Dispatchers.IO).launch {
+                        fetchDataUseCase.fetchSurveyAnswerFromNetworkUseCase.invoke()
+                    }
+                }
+
                 withContext(Dispatchers.Main) {
                     onEvent(LoaderEvent.UpdateLoaderState(false))
                     callBack()
@@ -95,31 +104,32 @@ class DataLoadingScreenViewModel @Inject constructor(
     }
 
     private suspend fun fetchSurveyForAllLanguages() {
-
         val stateId = getStateId()
-
         if (stateId != -1) {
             fetchDataUseCase.fetchSurveyFromNetworkUseCase.getLanguages()
                 ?.forEach { languageEntity ->
-                    val baselineSurveyRequestBodyModel = SurveyRequestBodyModel(
-                        languageId = languageEntity.id,
-                        surveyName = "BASELINE",
-                        referenceId = stateId,
-                        referenceType = "STATE"
-                    )
-                    fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-                        baselineSurveyRequestBodyModel
-                    )
-
-                    val hamletSurveyRequestBodyModel = SurveyRequestBodyModel(
-                        languageId = languageEntity.id,
-                        surveyName = "HAMLET",
-                        referenceId = stateId,
-                        referenceType = "STATE"
-                    )
-                    fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-                        hamletSurveyRequestBodyModel
-                    )
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val baselineSurveyRequestBodyModel = SurveyRequestBodyModel(
+                            languageId = languageEntity.id,
+                            surveyName = "BASELINE",
+                            referenceId = stateId,
+                            referenceType = "STATE"
+                        )
+                        fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+                            baselineSurveyRequestBodyModel
+                        )
+                    }
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val hamletSurveyRequestBodyModel = SurveyRequestBodyModel(
+                            languageId = languageEntity.id,
+                            surveyName = "HAMLET",
+                            referenceId = stateId,
+                            referenceType = "STATE"
+                        )
+                        fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+                            hamletSurveyRequestBodyModel
+                        )
+                    }
                 }
 //            val baselineSurveyRequestBodyModel = SurveyRequestBodyModel(
 //                languageId = 2,
