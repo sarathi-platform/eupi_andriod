@@ -8,26 +8,33 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.toSize
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.DropDownWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.VerticalAnimatedVisibilityComponent
+import com.nrlm.baselinesurvey.utils.showCustomToast
 
 @Composable
 fun TypeDropDownComponent(
     title: String?,
     hintText: String = "Select",
     sources: List<String>?,
+    isEditAllowed: Boolean = true,
+    isContent: Boolean = false,
     showQuestionState: OptionItemEntityState? = OptionItemEntityState.getEmptyStateObject(),
     selectOptionText: String = BLANK_STRING,
-    onAnswerSelection: (selectValue: String) -> Unit,
-
+    onInfoButtonClicked: () -> Unit,
+    onAnswerSelection: (selectValue: String) -> Unit
     ) {
+
     val defaultSourceList = if (sources == null) listOf("Yes", "No") else sources
     var expanded by remember { mutableStateOf(false) }
     var selectedOptionText by remember { mutableStateOf(if (selectOptionText.equals(BLANK_STRING)) hintText else selectOptionText) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
+    val context = LocalContext.current
 
     VerticalAnimatedVisibilityComponent(visible = showQuestionState?.showQuestion ?: true) {
         DropDownWithTitleComponent(
@@ -37,6 +44,7 @@ fun TypeDropDownComponent(
             mTextFieldSize = textFieldSize,
             expanded = expanded,
             selectedItem = selectedOptionText,
+            isContent = isContent,
             onExpandedChange = {
                 expanded = !it
             },
@@ -47,10 +55,20 @@ fun TypeDropDownComponent(
                 textFieldSize = coordinates.size.toSize()
             },
             onItemSelected = {
-                selectedOptionText = defaultSourceList?.get(defaultSourceList.indexOf(it)) ?: ""
-                onAnswerSelection(selectedOptionText)
-                expanded = false
+                if (isEditAllowed) {
+                    selectedOptionText = defaultSourceList?.get(defaultSourceList.indexOf(it)) ?: ""
+                    onAnswerSelection(selectedOptionText)
+                    expanded = false
+                } else {
+                    showCustomToast(
+                        context,
+                        context.getString(R.string.edit_disable_message)
+                    )
+                }
             },
+            onInfoButtonClicked = {
+                onInfoButtonClicked()
+            }
         )
     }
 }

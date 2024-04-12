@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.auth.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.model.request.OtpRequest
@@ -50,6 +51,9 @@ class OtpVerificationViewModel @Inject constructor(
                             validateOtpResponse.data?.let { responseData ->
                                 otpVerificationUseCase.saveAccessTokenUseCase.invoke(responseData.token)
                                 validateApiSuccess.value = true
+                                otpVerificationUseCase.saveAccessTokenUseCase.saveUserType(
+                                    responseData.typeName ?: BLANK_STRING
+                                )
                             }
                         } else {
                             message.value = validateOtpResponse.message

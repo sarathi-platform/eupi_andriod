@@ -379,11 +379,11 @@
     <string name="income_frequency_comparision">Income frequency</string>
     <string name="no_income_comparision">No income</string>
     <string name="total_income_comparision">(E) Total Income</string>
-    <string name="total_unit_comparision">(D) Total units</string>
+    <string name="total_unit_comparision">(D) Total income</string>
     <string name="income_comparision">Income</string>
     <string name="small_business_comparision">What is the household income from small business in the last 12 months?</string>
     <string name="didi_title">"Didi: "</string>
-    <string name="dada_title">"Dada: "</string>
+    <string name="dada_title">"Husband / Father\'s Name: "</string>
     <string name="caste_titile">"Caste: "</string>
     <string name="aadhar_card_titile">Does Didi have aadhar card?</string>
     <string name="voter_card_title">Does didi have voter card?</string>
@@ -400,8 +400,8 @@
     <string name="to_the_nearest_bank_comparsion">To the nearest bank</string>
     <string name="to_the_replacement_string">""</string>
     <string name="average_travel_cost_comparision">"Average travel cost "</string>
-    <string name="questions_data_tab_title">Questions Data</string>
-    <string name="section_information_tab_title">Section Information</string>
+    <string name="questions_data_tab_title">Questions</string>
+    <string name="section_information_tab_title">Sections</string>
     <string name="search_hamlet">Search Hamlet</string>
     <string name="mission_completed_text">Mission Completed</string>
     <string name="aadhar_card_titile_assam">Do you have aadhar card?</string>
@@ -422,5 +422,7 @@
     <string name="data_lost_message">Another user detected if you proceed you will lost previous user\'s data</string>
     <string name="proceed">Proceed</string>
     <string name="fetched_successfully">Data fetched successfully</string>
+    <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
+    <string name="start">"जागायजेन "</string>
 
 </resources>

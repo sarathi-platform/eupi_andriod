@@ -146,57 +146,7 @@ fun NestedLazyList(
     val mQuestionEntity =
         questionScreenViewModel.questionEntityStateList.distinctBy { it.questionId }
             .filter { it.showQuestion } ?: emptyList()
-    /*DisposableEffect(key1 = context) {
 
-        try {
-            coroutineScope.launch(Dispatchers.IO) {
-                mQuestionEntity.forEach { question ->
-                    if (question.questionEntity?.type?.equals(QuestionType.Form.name, true) == true) {
-                        val optionItemEntityList =
-                            questionScreenViewModel.getFormQuestionsOptionsItemEntityList(
-                                sectionDetails.surveyId,
-                                sectionDetails.sectionId,
-                                question.questionId!!
-                            )
-
-                        questionScreenViewModel.optionItemEntityList = optionItemEntityList
-                        questionScreenViewModel.formResponsesForQuestionLive =
-                            questionScreenViewModel.getFormQuestionResponseEntityLive(
-                                sectionDetails.surveyId,
-                                sectionDetails.sectionId,
-                                question.questionId!!,
-                                surveyeeId
-                            )
-                        withContext(Dispatchers.Main) {
-                            questionScreenViewModel.formResponsesForQuestionLive.observe(
-                                lifecycleOwner
-                            ) {
-                                householdMemberDtoList.value.addAll(
-                                    it.mapFormQuestionResponseToFromResponseObjectDto(
-                                        optionItemEntityList,
-                                        question.questionEntity.tag ?: BLANK_STRING
-                                    )
-                                )
-                                if (it.isNotEmpty()) {
-                                    val questionEntityStateList =
-                                        questionScreenViewModel.questionEntityStateList.toList()
-                                    answeredQuestionCountIncreased(
-                                        questionEntityStateList.find { questionEntityState -> questionEntityState.questionId == it.first().questionId }!!,
-                                        false
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (ex: Exception) {
-            Log.e("TAG", "NestedLazyList -> DisposableEffect -> exception: ${ex.message} ", ex)
-        }
-        onDispose {
-            questionScreenViewModel.formResponsesForQuestionLive.removeObservers(lifecycleOwner)
-        }
-    }*/
 
     DisposableEffect(key1 = context) {
         coroutineScope.launch(Dispatchers.IO) {
@@ -271,11 +221,6 @@ fun NestedLazyList(
                 .heightIn(maxHeight)
                 .padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
         ) {
-            item {
-                ComplexSearchComponent {
-                    navigateToSearchScreen(navController, sectionDetails.surveyId, surveyeeId, fromScreen = ARG_FROM_QUESTION_SCREEN)
-                }
-            }
 
             item {
                 Row(
@@ -370,6 +315,13 @@ fun NestedLazyList(
 
                     )*/
             }
+            item {
+                ComplexSearchComponent {
+                    navigateToSearchScreen(navController, sectionDetails.surveyId, surveyeeId, fromScreen = ARG_FROM_QUESTION_SCREEN)
+                }
+            }
+
+
 
             // TODO Commenting this until it is fixed.
             /*item {
@@ -430,11 +382,10 @@ fun NestedLazyList(
                                     maxCustomHeight = maxHeight,
                                     contests = contentData,
                                     optionItemEntityList = optionList!!,
+                                    isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     selectedOptionIndex = optionList.indexOf(optionList.find { it.optionId == selectedOption?.optionId })
                                         ?: -1,
                                     onAnswerSelection = { questionIndex, optionItem ->
-
-                                        answeredQuestionCountIncreased(question, false)
 
                                         questionScreenViewModel.onEvent(
                                             QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(
@@ -487,6 +438,8 @@ fun NestedLazyList(
                                                 )
                                             )
                                         )
+
+                                        answeredQuestionCountIncreased(question, false)
                                     },
                                     questionDetailExpanded = {
                                         scope.launch {
@@ -524,6 +477,7 @@ fun NestedLazyList(
                                         ?: -1*/,
                                     questionIndex = index,
                                     maxCustomHeight = maxHeight,
+                                    isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionIndex, optionItem ->
 
                                         answeredQuestionCountIncreased(question, false)
@@ -622,6 +576,7 @@ fun NestedLazyList(
                                     optionItemEntityList = optionList,
                                     selectedOptionIndices = selectedIndices,
                                     maxCustomHeight = maxHeight,
+                                    isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionIndex, optionItems, selectedIndeciesCount ->
 
                                         answeredQuestionCountIncreased(
@@ -698,7 +653,8 @@ fun NestedLazyList(
                                 )
                             }
 
-                            QuestionType.Form.name -> {
+                            QuestionType.Form.name,
+                            QuestionType.DidiDetails.name -> {
                                 val contentData =
                                     sectionDetails.questionContentMapping[question.questionId]
                                 FormTypeQuestionComponent(
@@ -710,6 +666,7 @@ fun NestedLazyList(
                                         question.questionId
                                     ),
                                     maxCustomHeight = maxHeight,
+                                    isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionIndex ->
                                         //TODO need to be dynamic..
                                         if (question.questionEntity.questionSummary.equals(
@@ -769,6 +726,7 @@ fun NestedLazyList(
                             QuestionType.Input.name,
                             QuestionType.InputText.name,
                             QuestionType.InputNumber.name,
+                            QuestionType.InputNumberEditText.name,
                             QuestionType.SingleSelectDropdown.name,
                             QuestionType.SingleSelectDropDown.name -> {
                                 val selectedOption =
@@ -804,12 +762,16 @@ fun NestedLazyList(
                                     selectedOptionMapForNumericInputTypeQuestions = selectedOptionMapForNumericInputTypeQuestions,
                                     selectedOption = selectedOption,
                                     maxCustomHeight = maxHeight,
+                                    isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionIndex, optionItem, selectedValue ->
 
                                         answeredQuestionCountIncreased(question, false)
 
 
                                         when (optionItem.optionType) {
+                                            QuestionType.Input.name,
+                                            QuestionType.InputText.name,
+                                            QuestionType.InputNumberEditText.name,
                                             QuestionType.SingleSelectDropdown.name,
                                             QuestionType.SingleSelectDropDown.name -> {
                                                 val mOptionItem =
@@ -905,6 +867,7 @@ fun NestedLazyList(
 
                                             QuestionType.Input.name,
                                             QuestionType.InputText.name,
+                                            QuestionType.InputNumberEditText.name,
                                             QuestionType.SingleSelectDropdown.name,
                                             QuestionType.SingleSelectDropDown.name -> {
                                                 questionScreenViewModel.onEvent(
@@ -971,7 +934,7 @@ fun NestedLazyList(
                         }
                     }
 //                    }
-                    if (sectionDetails.sectionName.equals(
+                    if (sectionDetails.sectionName.contains(
                             context.getString(R.string.didi_info),
                             true
                         )
@@ -984,8 +947,9 @@ fun NestedLazyList(
                                     ?.forEach { didiInfoEntity ->
 
                                         DidiInfoCard(
-                                            didiIntoEntity = didiInfoEntity,
+                                            didiInfoEntity = didiInfoEntity,
                                             didiDetails = questionScreenViewModel.didiDetails,
+                                            isEditAllowed = questionScreenViewModel.isEditAllowed,
                                             onUpdate = {
                                                 navigateToBaseLineStartScreen(
                                                     surveyeeId = surveyeeId,

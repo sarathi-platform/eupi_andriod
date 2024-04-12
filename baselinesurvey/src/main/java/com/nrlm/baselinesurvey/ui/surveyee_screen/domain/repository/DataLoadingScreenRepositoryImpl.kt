@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_ID
+import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.PREF_CASTE_LIST
 import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nrlm.baselinesurvey.PREF_KEY_IDENTITY_NUMBER
@@ -43,6 +44,7 @@ import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.Sections
+import com.nrlm.baselinesurvey.model.mappers.DidiInfoEntityMapper.getDidiDidiInfoEntity
 import com.nrlm.baselinesurvey.model.mappers.DidiSectionStatusEntityMapper.getDidiSectionStatusEntity
 import com.nrlm.baselinesurvey.model.mappers.FormQuestionEntityMapper.getFormQuestionEntity
 import com.nrlm.baselinesurvey.model.mappers.InputTypeQuestionAnswerEntityMapper
@@ -65,6 +67,9 @@ import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.core.database.dao.ApiStatusDao
+import com.nudge.core.database.entities.ApiStatusEntity
+import com.nudge.core.toDate
 import javax.inject.Inject
 
 class DataLoadingScreenRepositoryImpl @Inject constructor(
@@ -81,9 +86,11 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     val activityTaskDao: ActivityTaskDao,
     val contentDao: ContentDao,
     val baselineDatabase: NudgeBaselineDatabase,
-    val didiSectionProgressEntityDao: DidiSectionProgressEntityDao
+    val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
+    val apiStatusDao: ApiStatusDao
 ) : DataLoadingScreenRepository {
     override suspend fun fetchLocalLanguageList(): List<LanguageEntity> {
+
         return languageListDao.getAllLanguages()
     }
 
@@ -277,7 +284,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                             values = optionsItem.values,
                             languageId = languageId,
                             conditions = optionsItem.conditions,
-                            optionTag = optionsItem.tag ?: 0
+                            optionTag = optionsItem.tag ?: 0,
+                            contentEntities = optionsItem.contentList
                         )
                         optionItemDao.insertOption(optionItemEntity)
 
@@ -565,6 +573,11 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     }
                 }
 
+            } else if (questionAnswerResponseModel.question?.questionType.equals(QuestionType.DidiDetails.name)) {
+
+                val didiIntoEntity = getDidiDidiInfoEntity(questionAnswerResponseModel)
+                baselineDatabase.didiInfoEntityDao().checkAndUpdateDidiInfo(didiIntoEntity)
+
             } else {
                 val sectionAnswerEntity =
                     getSectionAnswerEntity(questionAnswerResponseModel, question)
@@ -641,5 +654,30 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     override suspend fun getTaskForSubjectId(didiId: Int?): ActivityTaskEntity? {
         return activityTaskDao.getTaskFromSubjectId(didiId ?: 0)
     }
+
+    override fun getAppLanguageId(): Int {
+        return prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
+    }
+
+    override fun updateApiStatus(
+        apiEndPoint: String,
+        status: Int,
+        errorMessage: String,
+        errorCode: Int
+    ) {
+    }
+
+    override fun insertApiStatus(apiEndPoint: String) {
+        val apiStatusEntity = ApiStatusEntity(
+            apiEndpoint = apiEndPoint,
+            status = 0,
+            modifiedDate = System.currentTimeMillis().toDate(),
+            createdDate = System.currentTimeMillis().toDate(),
+            errorCode = 0,
+            errorMessage = ""
+        )
+        apiStatusDao.insert(apiStatusEntity)
+    }
+
 
 }

@@ -21,6 +21,7 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.theme.brownDark
 import com.nrlm.baselinesurvey.ui.theme.yellowBg
+import com.nrlm.baselinesurvey.utils.getImagePathFromString
 import java.io.File
 
 @Composable
@@ -39,7 +40,7 @@ fun CircularImageViewComponent(modifier: Modifier = Modifier, imagePath: String 
                 painter = rememberImagePainter(
                     Uri.fromFile(
                         File(
-                            imagePath
+                            imagePath.getImagePathFromString()
                         )
                     )
                 ),

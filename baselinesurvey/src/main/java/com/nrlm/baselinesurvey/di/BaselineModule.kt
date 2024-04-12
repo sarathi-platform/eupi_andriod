@@ -138,6 +138,7 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.GetSurveyeeLis
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.MoveSurveyeeToThisWeekUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivityStatusUseCase
+import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
 import dagger.Module
@@ -391,6 +392,7 @@ object BaselineModule {
         questionScreenRepository: QuestionScreenRepository,
         formQuestionResponseRepository: FormQuestionResponseRepository,
         startScreenRepository: StartScreenRepository,
+        missionSummaryScreenRepository: MissionSummaryScreenRepository,
         eventsWriterRepository: EventsWriterRepository
     ): QuestionScreenUseCase {
         return QuestionScreenUseCase(
@@ -412,6 +414,9 @@ object BaselineModule {
                 formQuestionResponseRepository
             ),
             getSurveyeeDetailsUserCase = GetSurveyeeDetailsUserCase(startScreenRepository),
+            getPendingTaskCountLiveUseCase = GetPendingTaskCountLiveUseCase(
+                missionSummaryScreenRepository
+            ),
             eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }
@@ -451,7 +456,8 @@ object BaselineModule {
         activityTaskDao: ActivityTaskDao,
         contentDao: ContentDao,
         baselineDatabase: NudgeBaselineDatabase,
-        didiSectionProgressEntityDao: DidiSectionProgressEntityDao
+        didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
+        apiStatusDao: ApiStatusDao
 
     ): DataLoadingScreenRepository {
         return DataLoadingScreenRepositoryImpl(
@@ -468,7 +474,8 @@ object BaselineModule {
             activityTaskDao,
             contentDao,
             baselineDatabase,
-            didiSectionProgressEntityDao
+            didiSectionProgressEntityDao,
+            apiStatusDao
         )
     }
 
@@ -516,7 +523,7 @@ object BaselineModule {
             updateSurveyStateUseCase = UpdateSurveyStateUserCase(surveyStateRepository),
             getCasteListUseCase = GetCasteListUseCase(casteListRepository),
             getSectionUseCase = GetSectionUseCase(questionScreenRepository),
-            eventsWriterUserCase = EventsWriterUserCase(eventsWriterRepository)
+            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }
 
@@ -542,13 +549,15 @@ object BaselineModule {
         questionEntityDao: QuestionEntityDao,
         optionItemDao: OptionItemDao,
         formQuestionResponseDao: FormQuestionResponseDao,
-        prefRepo: PrefRepo
+        prefRepo: PrefRepo,
+        contentDao: ContentDao
     ): FormQuestionResponseRepository {
         return FormQuestionResponseRepositoryImpl(
             questionEntityDao = questionEntityDao,
             optionItemDao = optionItemDao,
             formQuestionResponseDao = formQuestionResponseDao,
-            prefRepo = prefRepo
+            prefRepo = prefRepo,
+            contentDao = contentDao
         )
     }
 

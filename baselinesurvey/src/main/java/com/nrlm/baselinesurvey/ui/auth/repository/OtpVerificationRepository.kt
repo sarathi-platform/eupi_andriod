@@ -14,5 +14,6 @@ interface OtpVerificationRepository {
     fun getMobileNumber(): String
 
     fun saveAccessToken(token: String)
+    fun saveUserType(userType: String)
 
 }

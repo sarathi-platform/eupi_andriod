@@ -73,5 +73,7 @@ interface DataLoadingScreenRepository {
     fun getStateId(): Int
     suspend fun getSectionStatus()
     suspend fun getTaskForSubjectId(didiId: Int?): ActivityTaskEntity?
-
+    fun getAppLanguageId(): Int
+    fun updateApiStatus(apiEndPoint: String, status: Int, errorMessage: String, errorCode: Int)
+    fun insertApiStatus(apiEndPoint: String)
 }

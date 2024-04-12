@@ -2,9 +2,11 @@ package com.nrlm.baselinesurvey.ui.question_type_screen.domain.repository
 
 import androidx.lifecycle.LiveData
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.database.dao.ContentDao
 import com.nrlm.baselinesurvey.database.dao.FormQuestionResponseDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
+import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
@@ -14,7 +16,8 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
     private val questionEntityDao: QuestionEntityDao,
     private val optionItemDao: OptionItemDao,
     private val formQuestionResponseDao: FormQuestionResponseDao,
-    private val prefRepo: PrefRepo
+    private val prefRepo: PrefRepo,
+    private val contentDao: ContentDao
 ) : FormQuestionResponseRepository {
     override suspend fun getFormQuestionOptions(
         surveyId: Int,
@@ -178,6 +181,10 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
 
     override suspend fun getQuestionTag(surveyId: Int, sectionId: Int, questionId: Int): Int {
         return questionEntityDao.getQuestionTag(surveyId, sectionId, questionId)
+    }
+
+    override suspend fun getContentFromDB(contentKey: String): ContentEntity {
+        return contentDao.getContentFromIds(contentKey, languageId = getSelectedLanguage())
     }
 
 }

@@ -388,11 +388,11 @@
     <string name="income_frequency_comparision">আয় ফ্রিকোয়েন্সি</string>
     <string name="no_income_comparision">কোন আয়</string>
     <string name="total_income_comparision">(ঙ) মোট আয়</string>
-    <string name="total_unit_comparision">(D) মোট একক</string>
+    <string name="total_unit_comparision">(D) মোট আয়</string>
     <string name="income_comparision">আয়</string>
     <string name="small_business_comparision">গত 12 মাসে ছোট ব্যবসা থেকে পরিবারের আয় কত?</string>
     <string name="didi_title">"দিদির নাম: "</string>
-    <string name="dada_title">"দাদা নাম: "</string>
+    <string name="dada_title">"স্বামীর / বাবার নাম: "</string>
     <string name="caste_titile">"জাত: "</string>
     <string name="aadhar_card_titile">আপনার কি আধার কার্ড আছে?</string>
     <string name="voter_card_title">আপনার ভোটার কার্ড আছে?</string>
@@ -409,8 +409,8 @@
     <string name="to_the_nearest_bank_comparsion">কাছের ব্যাঙ্কে</string>
     <string name="to_the_replacement_string">""</string>
     <string name="average_travel_cost_comparision">"গড় ভ্রমণ খরচ"</string>
-    <string name="questions_data_tab_title">Questions Data</string>
-    <string name="section_information_tab_title">Section Information</string>
+    <string name="questions_data_tab_title">Questions</string>
+    <string name="section_information_tab_title">Sections</string>
     <string name="search_hamlet">Search Hamlet</string>
     <string name="mission_completed_text">Mission Completed</string>
     <string name="aadhar_card_titile_assam">Do you have aadhar card?</string>
@@ -427,10 +427,13 @@
     <string name="didi_list_empty_state">No Didis assigned. Please contact your administrator.</string>
     <string name="empty_task_message">No task assigned. Please contact your administrator.</string>
 
+    <string name="start">শুরু করুন</string>
     <string name="warning">" সতর্কতা"</string>
     <string name="data_lost_message">অন্য একজন ব্যবহারকারী সনাক্ত করেছেন যদি আপনি এগিয়ে যান তবে আপনি আগের ব্যবহারকারীর ডেটা হারিয়ে ফেলবেন৷</string>
     <string name="proceed">এগিয়ে যান</string>
     <string name="fetched_successfully">" ডেটা সফলভাবে আনা হয়েছে৷"</string>
+    <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
+    <string name="retry">"পুনরায় চেষ্টা করা "</string>
 
 
 </resources>

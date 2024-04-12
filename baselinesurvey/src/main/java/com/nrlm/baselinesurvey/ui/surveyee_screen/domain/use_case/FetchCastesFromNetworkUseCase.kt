@@ -8,15 +8,22 @@ import com.nrlm.baselinesurvey.utils.json
 
 class FetchCastesFromNetworkUseCase(private val repository: DataLoadingScreenRepository) {
 
-    suspend operator fun invoke() {
+    suspend operator fun invoke(loadAllCastes: Boolean) {
 
         try {
-            val localLanguageList = repository.fetchLocalLanguageList()
+            var localLanguageList = repository.fetchLocalLanguageList()
+            val selectedAppLanguageId = repository.getAppLanguageId()
+
+            if (loadAllCastes) {
+                localLanguageList = localLanguageList.filter { it.id == selectedAppLanguageId }
+            }
             val casteList = arrayListOf<CasteModel>()
             if(localLanguageList.isNotEmpty()){
                 localLanguageList.forEach { language ->
-                    val casteApiResponse =  repository.getCasteListFromNetwork(language.id)
-                     if (casteApiResponse.status.equals(SUCCESS, true)) {
+
+                val casteApiResponse =  repository.getCasteListFromNetwork(language.id)
+
+                    if (casteApiResponse.status.equals(SUCCESS, true)) {
                         if(casteApiResponse.data != null) {
                             casteApiResponse.data?.let { remoteCasteList ->
                                 remoteCasteList.forEach { casteEntity ->

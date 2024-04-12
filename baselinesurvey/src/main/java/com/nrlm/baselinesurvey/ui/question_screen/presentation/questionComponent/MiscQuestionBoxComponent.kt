@@ -27,11 +27,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
@@ -56,6 +58,7 @@ import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
+import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
@@ -69,6 +72,7 @@ fun MiscQuestionBoxComponent(
     selectedOptionMapForNumericInputTypeQuestions: Map<Int, InputTypeQuestionAnswerEntity>,
     selectedOption: OptionItemEntity?,
     maxCustomHeight: Dp,
+    isEditAllowed: Boolean = true,
     onAnswerSelection: (questionIndex: Int, optionItemEntity: OptionItemEntity, selectedValue: String) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
@@ -77,6 +81,9 @@ fun MiscQuestionBoxComponent(
 //    var selectedIndex by remember { mutableIntStateOf(selectedOptionIndex) }
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyListState = rememberLazyListState()
+
+    val context = LocalContext.current
+
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
             scope.launch { outerState.scrollToItem(outerState.layoutInfo.totalItemsCount) }
@@ -154,41 +161,63 @@ fun MiscQuestionBoxComponent(
                                     modifier = Modifier
                                         .wrapContentWidth()
                                         .padding(horizontal = dimen_16_dp)
-                                        .heightIn(min = 80.dp, max = maxCustomHeight + manualMaxHeight)
+                                        .heightIn(
+                                            min = 80.dp,
+                                            max = maxCustomHeight + manualMaxHeight
+                                        )
                                 ) {
                                     itemsIndexed(
                                         showQuestionState.optionItemEntityState ?: listOf()
                                     ) { _index: Int, optionsItem: OptionItemEntityState ->
                                         when (optionsItem.optionItemEntity?.optionType) {
                                             QuestionType.Input.name,
-                                            QuestionType.InputText.name -> {
+                                            QuestionType.InputText.name,
+                                            QuestionType.InputNumberEditText.name -> {
                                                 EditTextWithTitleComponent(
                                                     optionsItem.optionItemEntity.display,
                                                     showQuestion = optionsItem,
                                                     defaultValue = selectedOption?.selectedValue
                                                         ?: "",
-                                                    isOnlyNumber = optionsItem?.optionItemEntity?.optionType == QuestionType.InputNumber.name
+                                                    isOnlyNumber = optionsItem?.optionItemEntity.optionType == QuestionType.InputNumberEditText.name,
+                                                    onInfoButtonClicked = {}
                                                 ) { inputValue ->
-                                                    onAnswerSelection(
-                                                        questionIndex,
-                                                        optionsItem.optionItemEntity,
-                                                        inputValue
-                                                    )
+                                                    if (isEditAllowed) {
+                                                        onAnswerSelection(
+                                                            questionIndex,
+                                                            optionsItem.optionItemEntity,
+                                                            inputValue
+                                                        )
+                                                    } else {
+                                                        showCustomToast(
+                                                            context,
+                                                            context.getString(R.string.edit_disable_message)
+                                                        )
+                                                    }
                                                 }
                                                 Spacer(modifier = Modifier.height(dimen_8_dp))
                                             }
 
                                             QuestionType.InputNumber.name -> {
                                                 IncrementDecrementView(
-                                                    title = optionsItem.optionItemEntity.display ?: BLANK_STRING,
+                                                    title = optionsItem.optionItemEntity.display
+                                                        ?: BLANK_STRING,
                                                     showQuestion = optionsItem,
+                                                    isEditAllowed = isEditAllowed,
                                                     currentValue = selectedOptionMapForNumericInputTypeQuestions[optionsItem.optionId]?.inputValue,
+                                                    onInfoButtonClicked = {},
                                                     onAnswerSelection = { inputValue ->
-                                                        onAnswerSelection(
-                                                            questionIndex,
-                                                            optionsItem.optionItemEntity,
-                                                            inputValue
-                                                        )
+                                                        if (isEditAllowed) {
+                                                            onAnswerSelection(
+                                                                questionIndex,
+                                                                optionsItem.optionItemEntity,
+                                                                inputValue
+                                                            )
+                                                        } else {
+                                                            showCustomToast(
+                                                                context,
+                                                                context.getString(R.string.edit_disable_message)
+                                                            )
+                                                        }
                                                     }
                                                 )
                                                 Spacer(modifier = Modifier.height(dimen_8_dp))
@@ -204,13 +233,21 @@ fun MiscQuestionBoxComponent(
                                                     showQuestionState = optionsItem,
                                                     sources = optionsItem.optionItemEntity.values,
                                                     selectOptionText = selectedOption?.selectedValue
-                                                        ?: BLANK_STRING
+                                                        ?: BLANK_STRING,
+                                                    onInfoButtonClicked = {}
                                                 ) {
-                                                    onAnswerSelection(
-                                                        questionIndex,
-                                                        optionsItem.optionItemEntity,
-                                                        it
-                                                    )
+                                                    if (isEditAllowed) {
+                                                        onAnswerSelection(
+                                                            questionIndex,
+                                                            optionsItem.optionItemEntity,
+                                                            it
+                                                        )
+                                                    } else {
+                                                        showCustomToast(
+                                                            context,
+                                                            context.getString(R.string.edit_disable_message)
+                                                        )
+                                                    }
                                                 }
                                                 Spacer(modifier = Modifier.height(dimen_8_dp))
                                             }

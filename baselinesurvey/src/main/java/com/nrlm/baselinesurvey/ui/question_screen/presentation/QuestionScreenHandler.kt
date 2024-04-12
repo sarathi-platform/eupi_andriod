@@ -31,7 +31,7 @@ fun QuestionScreenHandler(
     val selectedSectionId = mutableStateOf(sectionId)
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.initQuestionScreenHandler(surveyId)
+        viewModel.initQuestionScreenHandler(surveyId, didiId)
     }
 
     BackHandler {

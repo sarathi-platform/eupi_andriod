@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.question_screen.presentation
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.absolutePadding
@@ -186,7 +187,7 @@ fun QuestionScreen(
                             containerColor = white,
                             tonalElevation = defaultCardElevation
                         ) {
-                            Column {
+                            Box(modifier = Modifier.padding(horizontal = dimen_16_dp)) {
                                 ExtendedFloatingActionButton(
                                     modifier = Modifier
                                         .fillMaxWidth(),

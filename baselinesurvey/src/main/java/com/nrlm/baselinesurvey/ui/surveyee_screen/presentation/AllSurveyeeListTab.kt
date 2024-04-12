@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material3.LinearProgressIndicator
@@ -29,26 +30,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.DIDI_LIST
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
+import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.MoveSurveyeesUpdateBannerComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.SurveyeeScreenViewModel
-import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_40_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
-import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.progressIndicatorColor
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
@@ -74,6 +76,7 @@ fun AllSurveyeeListTab(
     activityDate: String,
     activityId: Int,
 ) {
+    val context = LocalContext.current
 
     val surveyeeList = viewModel.filteredSurveyeeListState.value
 
@@ -101,23 +104,33 @@ fun AllSurveyeeListTab(
                 .then(modifier)
         ) {
 
-            LoaderComponent(visible = loaderState.isLoaderVisible)
-
             if (!loaderState.isLoaderVisible) {
-                if (surveyeeList.isEmpty()) {
-                    Box(
+                if (viewModel.surveyeeListState.value.isEmpty()) {
+                    Column(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = 16.dp),
-                        contentAlignment = Alignment.Center
+                        verticalArrangement = Arrangement.Center,
                     ) {
                         Text(
                             if (!activityName.equals("Conduct Hamlet Survey")) stringResource(R.string.didi_list_empty_state) else stringResource(
                                 R.string.empty_task_message
                             ),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
                             style = defaultTextStyle,
                             color = textColorDark
                         )
+                        Spacer(modifier = Modifier.padding(vertical = 10.dp))
+                        ButtonPositive(
+                            buttonTitle = stringResource(id = R.string.retry),
+                            isActive = true,
+                            isArrowRequired = false,
+                            onClick = {
+                                viewModel.refreshData()
+                            })
+
+
                     }
                 } else {
                     LazyColumn(
@@ -139,14 +152,15 @@ fun AllSurveyeeListTab(
                                     style = largeTextStyle,
                                     color = blueDark
                                 )
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 10.dp, bottom = 10.dp),
-                                    text = stringResource(id = R.string.due_by_x, activityDate),
-                                    style = newMediumTextStyle,
-                                    color = black100Percent
-                                )
+                                //TODO in future in uncomment whenever get correct data from backend
+//                                Text(
+//                                    modifier = Modifier
+//                                        .fillMaxWidth()
+//                                        .padding(start = 10.dp, bottom = 10.dp),
+//                                    text = stringResource(id = R.string.due_by_x, activityDate),
+//                                    style = newMediumTextStyle,
+//                                    color = black100Percent
+//                                )
                             }
                         }
                         item {
@@ -238,7 +252,9 @@ fun AllSurveyeeListTab(
                                         )
                                     },
                                     //Todo add proper tex
-                                    primaryButtonText = "Start " + activityName.split(" ")[1],
+                                    primaryButtonText = stringResource(R.string.start) + activityName.split(
+                                        " "
+                                    )[1],
                                     buttonClicked = { buttonName, surveyeeId ->
                                         BaselineCore.setCurrentActivityName(activityName)
                                         handleButtonClick(
@@ -310,11 +326,13 @@ fun AllSurveyeeListTab(
             }
         }
 
-//        PullRefreshIndicator(
-//            refreshing = loaderState.isLoaderVisible,
-//            state = pullRefreshState,
-//            modifier = Modifier.align(Alignment.TopCenter),
-//            contentColor = blueDark,
-//        )
+        PullRefreshIndicator(
+            refreshing = loaderState.isLoaderVisible,
+            state = pullRefreshState,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = dimen_40_dp),
+            contentColor = blueDark,
+        )
     }
 }

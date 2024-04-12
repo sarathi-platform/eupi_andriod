@@ -11,7 +11,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -29,7 +28,6 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.Op
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.borderGrey
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
-import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.utils.onlyNumberField
 
@@ -108,7 +106,7 @@ fun CalculationResultComponent(
                 singleLine = true,
                 maxLines = 1,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = placeholderGrey,
+                    focusedBorderColor = borderGrey,
                     unfocusedBorderColor = borderGrey,
                     textColor = textColorDark
                 )

@@ -16,5 +16,6 @@ data class MissionActivityModel(
     val subject: String,
     val tasks: List<MissionTaskModel>,
     val language: String?,
+    @SerializedName("activityStatus")
     val status: String?
 )
