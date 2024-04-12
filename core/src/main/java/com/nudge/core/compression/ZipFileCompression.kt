@@ -15,14 +15,19 @@ import java.io.File
 
 class ZipFileCompression : IFileCompressor {
     private val extension = ".zip"
-    override suspend fun compressBackupFiles(context: Context, mobileNo: String): Uri? {
+    override suspend fun compressBackupFiles(
+        context: Context,
+        extraUris: List<Pair<String, Uri?>>,
+        mobileNo: String
+    ): Uri? {
 
         val zipFileName = "${mobileNo}_sarathi_${System.currentTimeMillis()}_"
 
         return compressData(
             context,
             zipFileName + "file",
-            Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + mobileNo
+            Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + mobileNo,
+            extraUris
         );
     }
 
@@ -36,7 +41,8 @@ class ZipFileCompression : IFileCompressor {
         return compressData(
             context,
             zipFileName + "image",
-            filePath
+            filePath,
+            listOf()
         )
     }
 
@@ -48,7 +54,8 @@ class ZipFileCompression : IFileCompressor {
     private fun compressData(
         context: Context,
         zipFileName: String,
-        filePathToZipped: String
+        filePathToZipped: String,
+        extraUris: List<Pair<String, Uri?>>
     ): Uri? {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val contentValues = ContentValues().apply {
@@ -99,6 +106,7 @@ class ZipFileCompression : IFileCompressor {
 
             val zipFileUri = context.contentResolver.insert(extVolumeUri, contentValues)
 
+            fileUris.addAll(extraUris)
             ZipManager.zip(fileUris, zipFileUri, context)
 
             return zipFileUri;
@@ -117,11 +125,19 @@ class ZipFileCompression : IFileCompressor {
 
 
                 val directoryPathToBeZipped = File(commonFilePath.path + "/" + filePathToZipped)
+
                 val s: List<Pair<String, Uri>>? = directoryPathToBeZipped.listFiles()?.map {
                     Pair(it.name, it.toUri());
                 }
                 if (s != null) {
-                    ZipManager.zip(context = context, files = s, zipFile = zippedFilePath.toUri())
+                    val filesToBeZipped = ArrayList<Pair<String, Uri?>>()
+                    filesToBeZipped.addAll(s)
+                    filesToBeZipped.addAll(extraUris)
+                    ZipManager.zip(
+                        context = context,
+                        files = filesToBeZipped,
+                        zipFile = zippedFilePath.toUri()
+                    )
                 }
                 return zippedFilePath.toUri();
             } catch (e: Exception) {

@@ -6,7 +6,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.patsurvey.nudge.database.NumericAnswerEntity
-import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.utils.NUMERIC_TABLE_NAME
 
 @Dao
@@ -52,9 +51,14 @@ interface NumericAnswerDao {
     fun isNumericQuestionAnswered(questionId: Int, optionId: Int, didiId: Int): Int
 
     @Transaction
-    fun updateNumericAnswersAfterRefresh(forceRefresh: Boolean = false, didiIdList: List<Int>, numericList: List<NumericAnswerEntity>) {
-        if (forceRefresh)
-            deleteAllNumericAnswersForDidis(didiIdList)
-        insertAll(numericList)
+    fun updateNumericAnswersAfterRefresh(
+        forceRefresh: Boolean = false,
+        didiIdList: List<Int>,
+        numericList: List<NumericAnswerEntity>
+    ) {
+        numericList.forEach { numericAnswerEntity ->
+            if (!forceRefresh || getAllAnswersForDidi(numericAnswerEntity.didiId).isEmpty())
+                insertNumericOption(numericAnswer = numericAnswerEntity)
+        }
     }
 }

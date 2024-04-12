@@ -19,4 +19,7 @@ interface EventDependencyDao {
     @Query("SELECT * from $EventDependencyTable ")
     fun getAllEventDependencies(): List<EventDependencyEntity>
 
+    @Query("DELETE FROM event_dependency_table")
+    fun deleteAllDependentEvents()
+
 }

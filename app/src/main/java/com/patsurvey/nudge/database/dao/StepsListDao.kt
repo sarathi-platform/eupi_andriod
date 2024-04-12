@@ -1,14 +1,15 @@
 package com.patsurvey.nudge.database.dao
 
+import android.text.TextUtils
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import androidx.room.Update
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.utils.STEPS_LIST_TABLE
+import com.patsurvey.nudge.utils.StepStatus
 
 @Dao
 interface StepsListDao {
@@ -43,6 +44,9 @@ interface StepsListDao {
 
     @Query("SELECT * FROM $STEPS_LIST_TABLE WHERE villageId = :villageId  ORDER BY orderNumber ASC")
     fun getAllStepsForVillage(villageId: Int): List<StepListEntity>
+
+    @Query("SELECT count(*) FROM $STEPS_LIST_TABLE WHERE villageId = :villageId  and id= :stepId ORDER BY orderNumber ASC")
+    fun getStepEntityCountForVillage(villageId: Int, stepId: Int): Int
 
     @Query("SELECT * FROM $STEPS_LIST_TABLE WHERE orderNumber = :orderNumber ORDER BY orderNumber ASC")
     fun getAllStepsWithOrderNumber(orderNumber: Int): List<StepListEntity>
@@ -91,9 +95,22 @@ interface StepsListDao {
 
     @Transaction
     fun updateStepListForVillage(forceRefresh: Boolean = false, villageId: Int, stepList: List<StepListEntity>) {
-        if (forceRefresh)
-            deleteAllStepsForVillage(villageId)
-        insertAll(stepList)
+        stepList.forEach { step ->
+
+            if (!forceRefresh || getStepEntityCountForVillage(
+                    step.villageId,
+                    stepId = step.id
+                ) == 0
+            ) {
+                var currentStep = step
+                if (TextUtils.isEmpty(step.status)) {
+                    currentStep = currentStep.copy(status = StepStatus.NOT_STARTED.name)
+
+                }
+                insert(currentStep)
+
+            }
+        }
     }
 
 }
