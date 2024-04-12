@@ -113,7 +113,7 @@ class DataLoadingScreenViewModel @Inject constructor(
     }
 
     private suspend fun updateLoaderEvent(callBack: () -> Unit) {
-        if (currentApiCount == 13) {
+        if (currentApiCount == 19) {
             Log.d(
                 "invoke",
                 "Network Transaction end" + System.currentTimeMillis().toTimeDateString()
@@ -133,20 +133,12 @@ class DataLoadingScreenViewModel @Inject constructor(
                     fetchDataUseCase.fetchUserDetailFromNetworkUseCase.invoke()
                 currentApiCount++
                 if (fetchUserDetailFromNetworkUseCaseSuccess) {
-                    fetchCasteData(fetchDataUseCase) {
-                        callBack()
-                    }
-                    fetchMissionData(fetchDataUseCase) {
-                        callBack()
-                    }
-                    fetchSurveyeeData(fetchDataUseCase) {
-                        callBack()
-                    }
-                    fetchContentData(fetchDataUseCase) {
-                        callBack()
-                    }
+                    fetchCasteData(fetchDataUseCase) {}
+                    fetchMissionData(fetchDataUseCase) {}
+                    fetchSurveyeeData(fetchDataUseCase) {}
+                    fetchContentData(fetchDataUseCase) {}
                     CoroutineScope(Dispatchers.IO).launch {
-                        fetchSurveyForAllLanguages() {
+                        fetchSurveyForAllLanguages {
                             callBack()
                         }
                     }.invokeOnCompletion {
@@ -176,7 +168,12 @@ class DataLoadingScreenViewModel @Inject constructor(
         if (stateId != -1) {
             fetchDataUseCase.fetchSurveyFromNetworkUseCase.getLanguages()
                 .forEach { languageEntity ->
-                    callSurveyApi(
+                    callBaselineSurveyApi(
+                        fetchDataUseCase,
+                        languageId = languageEntity.id,
+                        referenceId = stateId
+                    ) {}
+                    callHamletSurveyApi(
                         fetchDataUseCase,
                         languageId = languageEntity.id,
                         referenceId = stateId
@@ -185,7 +182,27 @@ class DataLoadingScreenViewModel @Inject constructor(
         }
     }
 
-    private fun callSurveyApi(
+    private fun callHamletSurveyApi(
+        fetchDataUseCase: FetchDataUseCase,
+        languageId: Int,
+        referenceId: Int, callBack: () -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val hamletSurveyRequestBodyModel = SurveyRequestBodyModel(
+                languageId = languageId,
+                surveyName = "HAMLET",
+                referenceId = referenceId,
+                referenceType = "STATE"
+            )
+            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+                hamletSurveyRequestBodyModel
+            )
+            currentApiCount++
+            updateLoaderEvent(callBack)
+        }
+    }
+
+    private fun callBaselineSurveyApi(
         fetchDataUseCase: FetchDataUseCase,
         languageId: Int,
         referenceId: Int, callBack: () -> Unit
@@ -200,16 +217,6 @@ class DataLoadingScreenViewModel @Inject constructor(
             )
             fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
                 baselineSurveyRequestBodyModel
-            )
-
-            val hamletSurveyRequestBodyModel = SurveyRequestBodyModel(
-                languageId = languageId,
-                surveyName = "HAMLET",
-                referenceId = referenceId,
-                referenceType = "STATE"
-            )
-            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-                hamletSurveyRequestBodyModel
             )
             currentApiCount++
             updateLoaderEvent(callBack)
