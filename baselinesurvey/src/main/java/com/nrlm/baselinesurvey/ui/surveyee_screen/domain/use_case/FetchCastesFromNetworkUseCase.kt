@@ -29,7 +29,7 @@ class FetchCastesFromNetworkUseCase(private val repository: DataLoadingScreenRep
 
                 localLanguageList.forEach { language ->
 
-                val casteApiResponse =  repository.getCasteListFromNetwork(language.id)
+                    val casteApiResponse = repository.getCasteListFromNetwork(language.id)
 
                     if (casteApiResponse.status.equals(SUCCESS, true)) {
                         if(casteApiResponse.data != null) {
