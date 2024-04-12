@@ -230,8 +230,8 @@
     <string name="vo_endorsement">ग्राम संगठन का अनुमोदन</string>
     <string name="close">बंद</string>
     <string name="add_more">अधिक जोड़े</string>
-    <string name="bpc_didi_screen_title">दीदीयों की सूची जिनका PAT सत्यापन के लिए स्वतः  चयन किया गया</string>
-    <string name="bpc_final_pat_submition_message">क्या आप इस ग्राम संगठन को BPM अनुमोदन के लिए जमा करना चाहते है</string>
+    <string name="bpc_didi_screen_title">सत्यापन के लिए उपलब्ध दीदी</string>
+    <string name="bpc_final_pat_submition_message">क्या आप %1$s दीदियों के लिए PAT सत्यापन सबमिट करना चाहते हैं?</string>
     <string name="didi_selected_text_singular">%1$s दीदी चुनी गई</string>
     <string name="didi_selected_text_plural">%1$s दीदियाँ  चुनी गई</string>
     <string name="didi_replace_button">बदलें</string>
@@ -391,6 +391,10 @@
     <string name="logout_confirmation">क्या आप निश्चित रूप से लॉगआउट करेंगे?</string>
     <string name="proceed">आगे बढ़ें</string>
     <string name="fetched_successfully">डेटा सफलतापूर्वक लाया गया</string>
+    <string name="load_server_data">सर्वर डेटा लोड करें</string>
+    <string name="are_you_sure_you_want_to_load_data_from_server">" क्या आप निश्चित रूप से सर्वर से ताज़ा डेटा पुनः लोड करना चाहते हैं जिससे अनसिंक किए गए डेटा की हानि हो सकती है?"</string>
+    <string name="didi_verified_by_bpc">बीपीसी द्वारा सत्यापित दीदियाँ</string>
+    <string name="bpc_verification_in_progress_village_banner_text">बीपीसी सत्यापन प्रगति पर है</string>
 
 
 </resources>

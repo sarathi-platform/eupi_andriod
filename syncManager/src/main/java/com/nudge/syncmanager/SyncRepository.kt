@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class SyncApiRepository @Inject constructor(
     val apiService: SyncApiService,
-    val eventDao: EventsDao
+    private val eventDao: EventsDao
 ) {
     suspend fun syncEventToServer(events: List<Events>): ApiResponseModel<List<SyncEventResponse>> {
         val eventRequest: List<EventRequest> = events.map {

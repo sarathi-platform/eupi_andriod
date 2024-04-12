@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.PoorDidiEntity
 import com.patsurvey.nudge.utils.POOR_DIDI_TABLE
 
@@ -21,6 +20,8 @@ interface PoorDidiListDao {
     @Query("Select * from $POOR_DIDI_TABLE where villageId = :villageId and activeStatus = 1  ORDER BY localCreatedDate DESC")
     fun getAllPoorDidisForVillage(villageId: Int): List<PoorDidiEntity>
 
+    @Query("Select count(*) from $POOR_DIDI_TABLE where id = :id")
+    fun getPoorDidiById(id: Int): Int
     @Query("Delete from $POOR_DIDI_TABLE")
     fun deleteAllDidis()
 
@@ -33,9 +34,9 @@ interface PoorDidiListDao {
 
     @Transaction
     fun updatePoorDidiAfterRefresh(forceRefresh: Boolean = false, didiId: Int, didi: PoorDidiEntity) {
-        if (forceRefresh)
-            deleteDidi(didiId)
+        if (!forceRefresh || getPoorDidiById(didiId) == 0) {
         insertPoorDidi(didi)
+        }
     }
 
 }
