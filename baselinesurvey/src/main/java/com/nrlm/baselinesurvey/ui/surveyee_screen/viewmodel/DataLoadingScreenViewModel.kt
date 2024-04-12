@@ -2,8 +2,10 @@ package com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel
 
 import android.content.Context
 import android.text.TextUtils
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.ui.common_components.common_events.DialogEvents
@@ -12,6 +14,7 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCa
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.states.DialogState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nudge.core.toTimeDateString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +32,7 @@ class DataLoadingScreenViewModel @Inject constructor(
 
     private val _showUserChangedDialog = mutableStateOf<DialogState>(DialogState())
     val showUserChangedDialog: State<DialogState> get() = _showUserChangedDialog
-
+    var currentApiCount = 0
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -61,39 +64,104 @@ class DataLoadingScreenViewModel @Inject constructor(
         }
     }
 
+    private fun fetchMissionData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
+            currentApiCount++
+            updateLoaderEvent(callBack)
+        }
+    }
+
+    private fun fetchSurveyeeData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
+            currentApiCount++
+            updateLoaderEvent(callBack)
+        }
+    }
+
+    private fun fetchContentData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchDataUseCase.fetchContentnDataFromNetworkUseCase.invoke()
+            currentApiCount++
+            updateLoaderEvent(callBack)
+        }
+    }
+
+    private fun fetchCasteData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke(true)
+            currentApiCount++
+            updateLoaderEvent(callBack)
+        }
+    }
+
+    private fun fetchSectionStatusData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchDataUseCase.fetchSectionStatusFromNetworkUseCase.invoke()
+            currentApiCount++
+            updateLoaderEvent(callBack)
+        }
+    }
+
+    private fun fetchSurveyAnswerData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchDataUseCase.fetchSurveyAnswerFromNetworkUseCase.invoke()
+            currentApiCount++
+            updateLoaderEvent(callBack)
+        }
+    }
+
+    private suspend fun updateLoaderEvent(callBack: () -> Unit) {
+        if (currentApiCount == 13) {
+            Log.d(
+                "invoke",
+                "Network Transaction end" + System.currentTimeMillis().toTimeDateString()
+            )
+            withContext(Dispatchers.Main) {
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+                callBack()
+            }
+        }
+    }
     fun fetchAllData(callBack: () -> Unit) {
+        currentApiCount = 0
+        Log.d("invoke", "Network Transaction Start" + System.currentTimeMillis().toTimeDateString())
         try {
-//            BaselineApplication.appScopeLaunch(Dispatchers.IO) {
             CoroutineScope(Dispatchers.IO).launch {
                 val fetchUserDetailFromNetworkUseCaseSuccess =
                     fetchDataUseCase.fetchUserDetailFromNetworkUseCase.invoke()
+                currentApiCount++
                 if (fetchUserDetailFromNetworkUseCaseSuccess) {
-                    fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke(true)
-                    fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
-                    fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
-                    fetchDataUseCase.fetchContentnDataFromNetworkUseCase.invoke()
-
+                    fetchCasteData(fetchDataUseCase) {
+                        callBack()
+                    }
+                    fetchMissionData(fetchDataUseCase) {
+                        callBack()
+                    }
+                    fetchSurveyeeData(fetchDataUseCase) {
+                        callBack()
+                    }
+                    fetchContentData(fetchDataUseCase) {
+                        callBack()
+                    }
+                    CoroutineScope(Dispatchers.IO).launch {
+                        fetchSurveyForAllLanguages() {
+                            callBack()
+                        }
+                    }.invokeOnCompletion {
+                        fetchSectionStatusData(fetchDataUseCase) {
+                            callBack()
+                        }
+                        fetchSurveyAnswerData(fetchDataUseCase) {
+                            callBack()
+                        }
+                    }
                 } else {
                     withContext(Dispatchers.Main) {
                         onEvent(LoaderEvent.UpdateLoaderState(false))
                         callBack()
                     }
-                }
-                fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
-                CoroutineScope(Dispatchers.IO).launch {
-                    fetchSurveyForAllLanguages()
-                }.invokeOnCompletion {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        fetchDataUseCase.fetchSectionStatusFromNetworkUseCase.invoke()
-                    }
-                    CoroutineScope(Dispatchers.IO).launch {
-                        fetchDataUseCase.fetchSurveyAnswerFromNetworkUseCase.invoke()
-                    }
-                }
-
-                withContext(Dispatchers.Main) {
-                    onEvent(LoaderEvent.UpdateLoaderState(false))
-                    callBack()
                 }
             }
         } catch (ex: Exception) {
@@ -103,95 +171,49 @@ class DataLoadingScreenViewModel @Inject constructor(
         }
     }
 
-    private suspend fun fetchSurveyForAllLanguages() {
+    private suspend fun fetchSurveyForAllLanguages(callBack: () -> Unit) {
         val stateId = getStateId()
         if (stateId != -1) {
             fetchDataUseCase.fetchSurveyFromNetworkUseCase.getLanguages()
-                ?.forEach { languageEntity ->
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val baselineSurveyRequestBodyModel = SurveyRequestBodyModel(
-                            languageId = languageEntity.id,
-                            surveyName = "BASELINE",
-                            referenceId = stateId,
-                            referenceType = "STATE"
-                        )
-                        fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-                            baselineSurveyRequestBodyModel
-                        )
-                    }
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val hamletSurveyRequestBodyModel = SurveyRequestBodyModel(
-                            languageId = languageEntity.id,
-                            surveyName = "HAMLET",
-                            referenceId = stateId,
-                            referenceType = "STATE"
-                        )
-                        fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-                            hamletSurveyRequestBodyModel
-                        )
-                    }
+                .forEach { languageEntity ->
+                    callSurveyApi(
+                        fetchDataUseCase,
+                        languageId = languageEntity.id,
+                        referenceId = stateId
+                    ) {}
                 }
-//            val baselineSurveyRequestBodyModel = SurveyRequestBodyModel(
-//                languageId = 2,
-//                surveyName = "BASELINE",
-//                referenceId = stateId,
-//                referenceType = "STATE"
-//            )
-//            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-//                baselineSurveyRequestBodyModel
-//            )
-//
-//            val hamletSurveyRequestBodyModel = SurveyRequestBodyModel(
-//                languageId = 2,
-//                surveyName = "HAMLET",
-//                referenceId = stateId,
-//                referenceType = "STATE"
-//            )
-//            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-//                hamletSurveyRequestBodyModel
-//            )
-//
-//            val baselineSurveyRequestBodyModelForKokBorok = SurveyRequestBodyModel(
-//                languageId = 6,
-//                surveyName = "BASELINE",
-//                referenceId = stateId,
-//                referenceType = "STATE"
-//            )
-//            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-//                baselineSurveyRequestBodyModelForKokBorok
-//            )
-//
-//            val baselineSurveyRequestBodyModelForBangla = SurveyRequestBodyModel(
-//                languageId = 3,
-//                surveyName = "BASELINE",
-//                referenceId = stateId,
-//                referenceType = "STATE"
-//            )
-//            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-//                baselineSurveyRequestBodyModelForBangla
-//            )
-//
-//            val hamletSurveyRequestBodyModelForBangla = SurveyRequestBodyModel(
-//                languageId = 3,
-//                surveyName = "HAMLET",
-//                referenceId = stateId,
-//                referenceType = "STATE"
-//            )
-//            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-//                hamletSurveyRequestBodyModelForBangla
-//            )
-//
-//            val hamletSurveyRequestBodyModelForKokborok = SurveyRequestBodyModel(
-//                languageId = 6,
-//                surveyName = "HAMLET",
-//                referenceId = stateId,
-//                referenceType = "STATE"
-//            )
-//            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-//                hamletSurveyRequestBodyModelForKokborok
-//            )
         }
+    }
 
+    private fun callSurveyApi(
+        fetchDataUseCase: FetchDataUseCase,
+        languageId: Int,
+        referenceId: Int, callBack: () -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+
+            val baselineSurveyRequestBodyModel = SurveyRequestBodyModel(
+                languageId = languageId,
+                surveyName = "BASELINE",
+                referenceId = referenceId,
+                referenceType = "STATE"
+            )
+            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+                baselineSurveyRequestBodyModel
+            )
+
+            val hamletSurveyRequestBodyModel = SurveyRequestBodyModel(
+                languageId = languageId,
+                surveyName = "HAMLET",
+                referenceId = referenceId,
+                referenceType = "STATE"
+            )
+            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+                hamletSurveyRequestBodyModel
+            )
+            currentApiCount++
+            updateLoaderEvent(callBack)
+        }
     }
 
     private fun getStateId(): Int {
