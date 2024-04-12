@@ -79,5 +79,8 @@ data class QuestionEntity(
     @ColumnInfo(name = "tag")
     var tag: Int = 0,
     @TypeConverters(ContentListConverter::class)
-    val contentEntities: List<ContentList> = listOf()
+    val contentEntities: List<ContentList> = listOf(),
+
+    @ColumnInfo(name = "parentQuestionId")
+    val parentQuestionId: Int? = 0
 )

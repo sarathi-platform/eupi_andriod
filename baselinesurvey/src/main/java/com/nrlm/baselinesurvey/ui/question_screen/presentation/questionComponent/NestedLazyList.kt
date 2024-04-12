@@ -895,7 +895,8 @@ fun NestedLazyList(
                                                     saveAnswerEventOptionItemDtoList = inputTypeQuestionAnswerEntityList.value
                                                         .convertInputTypeQuestionToEventOptionItemDto(
                                                             question.questionId ?: 0,
-                                                            QuestionType.InputNumber
+                                                            QuestionType.InputNumber,
+                                                            question.optionItemEntityState
                                                         )
                                                 )
                                             )
@@ -948,7 +949,7 @@ fun NestedLazyList(
 
                                         DidiInfoCard(
                                             didiInfoEntity = didiInfoEntity,
-                                            didiDetails = questionScreenViewModel.didiDetails,
+                                            didiDetails = questionScreenViewModel.didiDetails.value,
                                             isEditAllowed = questionScreenViewModel.isEditAllowed,
                                             onUpdate = {
                                                 navigateToBaseLineStartScreen(
