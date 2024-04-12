@@ -169,7 +169,13 @@ fun SurveySummary(
                 title = stringResource(id = R.string.are_you_sure),
                 list = if(fromScreen == ARG_FROM_PAT_SURVEY) surveySummaryViewModel.didiCountList.value else emptyList(),
                 message = if(surveySummaryViewModel.repository.prefRepo.isUserBPC()){
-                    stringResource(id = R.string.bpc_final_pat_submition_message)
+                    stringResource(
+                        id = R.string.bpc_final_pat_submition_message,
+                        didids.value.filter {
+                            it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal ||
+                                    it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
+                        }.size
+                    )
                 }else{
                     if (fromScreen == ARG_FROM_PAT_SURVEY) {
                         if (count > 1){
@@ -257,9 +263,9 @@ fun SurveySummary(
                             }
                         })
                     } else {
-                        surveySummaryViewModel.writeBpcMatchScoreEvent()
                         surveySummaryViewModel.repository.prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + surveySummaryViewModel.repository.prefRepo.getSelectedVillage().id, false)
                     }
+                    surveySummaryViewModel.writeBpcMatchScoreEvent()
 
                     navController.navigate(
                         "bpc_pat_step_completion_screen/${
