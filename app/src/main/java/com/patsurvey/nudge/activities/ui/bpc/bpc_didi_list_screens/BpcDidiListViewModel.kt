@@ -66,6 +66,7 @@ class BpcDidiListViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = repository.getAllStepsForVillage()
             isStepComplete.value = stepList.sortedBy { it.orderNumber }.last().isComplete == StepStatus.COMPLETED.ordinal
+
         }
     }
 
@@ -76,6 +77,9 @@ class BpcDidiListViewModel @Inject constructor(
             _tolaList.emit(repository.getAllTolasForVillage())
             filterDidiList = selectedDidiList.value
             pendingDidiCount.value = filterDidiList.filter { it.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal || it.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal }.size
+            if (pendingDidiCount.value < selectedDidiList.value.size) {
+                repository.markBPCStepInProgress()
+            }
         }
     }
 
@@ -167,6 +171,7 @@ class BpcDidiListViewModel @Inject constructor(
                 ),
                 EventType.STATEFUL
             )
+            repository.markBPCStepInProgress()
         }
 
     }
@@ -209,6 +214,11 @@ class BpcDidiListViewModel @Inject constructor(
                     callBack(step.id,false)
             }
         }
+    }
+
+    private fun updateStepStatusInVillage() {
+
+
     }
 
 }

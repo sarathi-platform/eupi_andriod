@@ -99,9 +99,12 @@ interface AnswerDao {
 
     @Transaction
     fun updateAnswersAfterRefresh(forceRefresh: Boolean = false, villageId: Int, answersList: List<SectionAnswerEntity>) {
-        if (forceRefresh)
-            deleteAllAnswersForVillage(villageId)
-        insertAll(answersList)
+        answersList.forEach { sectionAnswerEntity ->
+
+            if (!forceRefresh || getAllAnswerForDidi(sectionAnswerEntity.didiId).isEmpty()) {
+                insertAnswer(sectionAnswerEntity)
+            }
+        }
     }
 
 }
