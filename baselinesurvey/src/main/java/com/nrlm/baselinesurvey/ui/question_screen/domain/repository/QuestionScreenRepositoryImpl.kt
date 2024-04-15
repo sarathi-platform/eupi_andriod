@@ -397,6 +397,22 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun deleteInputTypeQuestion(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        didiId: Int,
+        optionId: Int
+    ) {
+        inputTypeQuestionAnswerDao.deleteInputTypeQuestion(
+            surveyId,
+            sectionId,
+            questionId,
+            didiId,
+            optionId
+        )
+    }
+
     override fun getUserId(): String {
         return prefRepo.getMobileNumber() ?: BLANK_STRING
     }

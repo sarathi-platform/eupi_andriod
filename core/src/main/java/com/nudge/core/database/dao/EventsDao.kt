@@ -31,4 +31,9 @@ interface EventsDao {
 
     @Query("UPDATE $EventsTable SET status = :newStatus WHERE id = :eventId")
     fun updateEventStatus(eventId: String, newStatus: EventSyncStatus?)
+
+
+    @Query("DELETE FROM events_table")
+    fun deleteAllEvents()
+
 }

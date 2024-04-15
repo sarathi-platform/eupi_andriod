@@ -4,6 +4,8 @@ import android.app.DownloadManager
 import androidx.lifecycle.LiveData
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.base.BaseRepository
@@ -39,6 +41,7 @@ import com.patsurvey.nudge.utils.ApiResponseFailException
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
+import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
 import com.patsurvey.nudge.utils.COMPLETED_STRING
 import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DOUBLE_ZERO
@@ -63,6 +66,7 @@ import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.USER_BPC
+import com.patsurvey.nudge.utils.VO_ENDORSEMENT_STEP_ORDER
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.findCompleteValue
 import com.patsurvey.nudge.utils.formatRatio
@@ -130,6 +134,10 @@ class BPCProgressScreenRepository @Inject constructor(
 
     fun getQuestion(questionId: Int): QuestionEntity {
         return questionListDao.getQuestion(questionId)
+    }
+
+    fun getPassingScore(): Int {
+        return questionListDao.getPassingScore()
     }
 
     fun updateVOEndorsementDidiStatus(didiId: Int, status: Int) {
@@ -240,18 +248,6 @@ class BPCProgressScreenRepository @Inject constructor(
         repoJob = MyApplication.appScopeLaunch(Dispatchers.IO) {
             val awaitDiff = CoroutineScope(Dispatchers.IO + exceptionHandler).async {
                 try {
-                    val villageList =
-                        villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
-                    val villageIdList: ArrayList<Int> = arrayListOf()
-
-                    val localAnswerList = answerDao.getAllAnswer()
-                    if (localAnswerList.isNotEmpty()) {
-                        answerDao.deleteAnswerTable()
-                    }
-                    val localNumAnswerList = numericAnswerDao.getAllNumericAnswers()
-                    if (localNumAnswerList.isNotEmpty()) {
-                        numericAnswerDao.deleteNumericTable()
-                    }
                     try {
                         NudgeLogger.d(
                             "VillageSelectionScreen",
@@ -339,7 +335,8 @@ class BPCProgressScreenRepository @Inject constructor(
                                         it.stepList.sortedBy { stepEntity -> stepEntity.orderNumber }
                                             .last().id
                                     if (it.stepList[it.stepList.map { it.id }
-                                            .indexOf(bpcStepId)].status != StepStatus.COMPLETED.name)
+                                            .indexOf(bpcStepId)].status == StepStatus.NOT_STARTED.name
+                                    )
                                         stepsListDao.markStepAsCompleteOrInProgress(
                                             bpcStepId,
                                             StepStatus.INPROGRESS.ordinal,
@@ -953,6 +950,7 @@ class BPCProgressScreenRepository @Inject constructor(
                                             }
                                         }
                                     }
+
                                 }
                                 if (answerList.isNotEmpty()) {
 //                                    answerDao.insertAll(answerList)
@@ -1003,6 +1001,8 @@ class BPCProgressScreenRepository @Inject constructor(
                     onCatchError(ex, ApiType.FETCH_ALL_DATA)
                     networkCallbackListener.onFailed()
                 } finally {
+                    checkPendingDidiForVerification(prefRepo.getSelectedVillage().id, prefRepo)
+
                     prefRepo.savePref(LAST_UPDATE_TIME, System.currentTimeMillis())
                     withContext(Dispatchers.Main) {
                         delay(250)
@@ -1018,6 +1018,56 @@ class BPCProgressScreenRepository @Inject constructor(
         }
     }
 
+    private fun checkPendingDidiForVerification(villageId: Int, prefRepo: PrefRepo) {
+        val pendingVerificationDidiCount = didiDao.fetchPendingVerificationDidiCount(villageId)
+        if (pendingVerificationDidiCount > 0) {
+            stepsListDao.markStepAsInProgress(
+                BPC_VERIFICATION_STEP_ORDER,
+                StepStatus.INPROGRESS.ordinal,
+                villageId
+            )
+            stepsListDao.updateNeedToPostByOrderNumber(
+                orderNumber = BPC_VERIFICATION_STEP_ORDER,
+                villageId,
+                true
+            )
+            val bpcStep = stepsListDao.getStepByOrder(BPC_VERIFICATION_STEP_ORDER, villageId)
+            updateWorkflowStatus(stepStatus = StepStatus.INPROGRESS, villageId, bpcStep.id)
+            val voEndorsementStep =
+                stepsListDao.getStepByOrder(VO_ENDORSEMENT_STEP_ORDER, villageId)
+            if (prefRepo.getSelectedVillage().stepId == bpcStep.id && prefRepo.getSelectedVillage().statusId == StepStatus.COMPLETED.ordinal) {
+                villageListDao.updateStepAndStatusId(
+                    villageId,
+                    voEndorsementStep.id,
+                    StepStatus.COMPLETED.ordinal
+                )
+            }
+            prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + villageId, false)
+
+        }
+    }
+
+    private fun updateWorkflowStatus(
+        stepStatus: StepStatus,
+        villageId: Int,
+        stepId: Int
+    ) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
+            val stepEntity =
+                stepsListDao.getStepForVillage(villageId = villageId, stepId = stepId)
+            val updateWorkflowEvent = createWorkflowEvent(
+                eventItem = stepEntity,
+                stepStatus = stepStatus,
+                eventName = EventName.WORKFLOW_STATUS_UPDATE,
+                eventType = EventType.STATEFUL,
+                prefRepo = prefRepo
+            )
+            updateWorkflowEvent?.let { event ->
+                saveEventToMultipleSources(event, listOf())
+            }
+        }
+    }
 
     private fun downloadAuthorizedImageItem(id: Int, image: String, prefRepo: PrefRepo) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {

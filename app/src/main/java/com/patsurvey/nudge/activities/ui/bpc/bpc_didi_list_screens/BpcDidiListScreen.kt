@@ -144,7 +144,8 @@ fun BpcDidiListScreen(
             ConstraintLayout(
                 modifier = Modifier
                     .background(Color.White)
-                    .fillMaxSize().padding(top = 16.dp)
+                    .fillMaxSize()
+                    .padding(top = 16.dp)
                     .border(
                         width = 0.dp,
                         color = Color.Transparent,
@@ -374,7 +375,7 @@ fun BpcDidiListScreen(
                         }
                     }
                 }
-                if (didis.isNotEmpty() && bpcDidiListViewModel.pendingDidiCount.value == 0) {
+                if (didis.isNotEmpty() && bpcDidiListViewModel.pendingDidiCount.value < didis.size) {
                     DoubleButtonBox(
                         modifier = Modifier
                             .constrainAs(bottomActionBox) {

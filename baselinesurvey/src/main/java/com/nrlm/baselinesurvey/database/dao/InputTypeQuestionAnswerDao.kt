@@ -63,4 +63,13 @@ interface InputTypeQuestionAnswerDao {
     @Query("Delete from $INPUT_TYPE_QUESTION_ANSWER_TABLE where userId=:userId")
     fun deleteAllInputTypeAnswers(userId: String)
 
+    @Query("DELETE from $INPUT_TYPE_QUESTION_ANSWER_TABLE where surveyId = :surveyId AND sectionId = :sectionId AND questionId = :questionId AND didiId = :didiId AND optionId = :optionId")
+    fun deleteInputTypeQuestion(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        didiId: Int,
+        optionId: Int
+    )
+
 }
