@@ -405,6 +405,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         optionId: Int
     ) {
         inputTypeQuestionAnswerDao.deleteInputTypeQuestion(
+            userId = getUserId(),
             surveyId,
             sectionId,
             questionId,
