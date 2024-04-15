@@ -590,9 +590,10 @@ object BaselineModule {
     fun provideMissionRepository(
         missionEntityDao: MissionEntityDao,
         missionActivityDao: MissionActivityDao,
-        taskDao: ActivityTaskDao
+        taskDao: ActivityTaskDao,
+        prefRepo: PrefRepo
     ): MissionScreenRepository {
-        return MissionScreenRepositoryImpl(missionEntityDao, missionActivityDao, taskDao)
+        return MissionScreenRepositoryImpl(missionEntityDao, missionActivityDao, taskDao, prefRepo)
     }
 
     @Provides
@@ -601,13 +602,15 @@ object BaselineModule {
         missionActivityDao: MissionActivityDao,
         taskDao: ActivityTaskDao,
         surveyeeEntityDao: SurveyeeEntityDao,
-        missionEntityDao: MissionEntityDao
+        missionEntityDao: MissionEntityDao,
+        prefRepo: PrefRepo
     ): MissionSummaryScreenRepository {
         return MissionSummaryScreenRepositoryImpl(
             missionActivityDao,
             taskDao,
             surveyeeEntityDao,
-            missionEntityDao
+            missionEntityDao,
+            prefRepo
         )
     }
 

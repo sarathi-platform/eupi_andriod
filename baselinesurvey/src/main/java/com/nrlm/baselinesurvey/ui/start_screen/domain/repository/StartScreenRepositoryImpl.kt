@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.start_screen.domain.repository
 
 import androidx.lifecycle.LiveData
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.nrlm.baselinesurvey.PREF_USER_TYPE
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
@@ -20,7 +21,7 @@ class StartScreenRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getDidiInfoDetails(didiId: Int): DidiInfoEntity {
-        return didiInfoDao.getDidiInfo(didiId)
+        return didiInfoDao.getDidiInfo(getUserId(), didiId)
     }
 
     override suspend fun saveImageLocalPathForSurveyee(
@@ -30,13 +31,13 @@ class StartScreenRepositoryImpl @Inject constructor(
         surveyeeEntity.didiId?.let {
             surveyeeEntityDao.saveLocalImagePath(
                 path = finalPathWithCoordinates,
-                didiId = it
+                didiId = it,
             )
         }
     }
 
     override suspend fun getDidiInfoObjectLive(didiId: Int): LiveData<List<DidiInfoEntity>> {
-        return didiInfoDao.getDidiInfoLive(didiId)
+        return didiInfoDao.getDidiInfoLive(didiId, getUserId())
     }
 
     override fun getStateId(): Int {
@@ -47,5 +48,8 @@ class StartScreenRepositoryImpl @Inject constructor(
         return prefRepo.getPref(PREF_USER_TYPE, "")
     }
 
+    override fun getUserId(): String {
+        return prefRepo.getMobileNumber() ?: BLANK_STRING
+    }
 
 }
