@@ -1,7 +1,9 @@
 package com.nrlm.baselinesurvey.ui.question_screen.domain.use_case
 
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
+import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepository
+import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 
 class SaveSectionAnswerUseCase(
     private val repository: QuestionScreenRepository
@@ -74,8 +76,60 @@ class SaveSectionAnswerUseCase(
         )
     }
 
-    suspend fun saveInputTypeQuestionAnswer(surveyId: Int, sectionId: Int, questionId: Int, didiId: Int, optionId: Int, inputValue: String) {
-        repository.saveInputTypeQuestionAnswer(surveyId, sectionId, questionId, didiId, optionId, inputValue)
+    suspend fun saveInputTypeQuestionAnswer(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        didiId: Int,
+        optionId: Int,
+        inputValue: String
+    ) {
+        repository.saveInputTypeQuestionAnswer(
+            surveyId,
+            sectionId,
+            questionId,
+            didiId,
+            optionId,
+            inputValue
+        )
+    }
+
+    suspend fun deleteSectionResponseForQuestion(
+        question: QuestionEntityState?,
+        didiId: Int,
+        optionList: List<OptionItemEntity>
+    ) {
+        when (question?.questionEntity?.type) {
+            QuestionType.InputNumber.name -> {
+                optionList.forEach {
+                    val isQuestionPresentInDb = isInputTypeQuestionAlreadyAnswered(
+                        surveyId = question.questionEntity.surveyId,
+                        sectionId = question.questionEntity.sectionId,
+                        questionId = question.questionId ?: 0,
+                        didiId = didiId,
+                        it.optionId ?: 0
+                    )
+                    if (isQuestionPresentInDb > 0) {
+                        repository.deleteInputTypeQuestion(
+                            surveyId = question.questionEntity.surveyId,
+                            sectionId = question.questionEntity.sectionId,
+                            questionId = question.questionId ?: 0,
+                            didiId = didiId,
+                            it.optionId ?: 0
+                        )
+                    }
+                }
+            }
+
+            else -> {
+                val isQuestionPresentInDb = isQuestionAlreadyAnswered(
+                    didiId,
+                    question?.questionId ?: 0,
+                    question?.questionEntity?.sectionId ?: 0,
+                    surveyId = question?.questionEntity?.surveyId ?: 0
+                )
+            }
+        }
     }
 
     /*suspend fun updateOptionItemValue(

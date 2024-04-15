@@ -41,6 +41,7 @@ import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.CasteModel
+import com.nrlm.baselinesurvey.model.datamodel.ConditionDtoWithParentId
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.Sections
@@ -123,8 +124,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
             )
             surveyEntityDao.insertSurvey(surveyEntity)
             surveyResponseModel.sections.forEach { section ->
-                val subQuestionList = mutableListOf<QuestionList>()
-                val subSubQuestionList = mutableListOf<QuestionList>()
+                val subQuestionList = mutableListOf<ConditionDtoWithParentId>()
+                val subSubQuestionList = mutableListOf<ConditionDtoWithParentId>()
                 val contentLists = mutableListOf<ContentList>()
                 sectionEntityDao.deleteSurveySectionFroLanguage(
                     section.sectionId,
@@ -184,7 +185,14 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                                         }
                                     }
                                 } else {
-                                    subQuestionList.addAll(it?.resultList ?: emptyList())
+                                    val conditionDtoWithParentIdList =
+                                        mutableListOf<ConditionDtoWithParentId>()
+                                    (it?.resultList ?: emptyList()).forEach {
+                                        val conditionDtoWithParentId =
+                                            ConditionDtoWithParentId(it, question.questionId ?: 0)
+                                        conditionDtoWithParentIdList.add(conditionDtoWithParentId)
+                                    }
+                                    subQuestionList.addAll(conditionDtoWithParentIdList)
 
                                 }
                             }
@@ -195,28 +203,44 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                 subQuestionList.forEach { conditionalItem ->
                     Log.d("saveSurveyToDb", "subQuestionList.forEach -> ${conditionalItem}")
                     saveQuestionAndOptionsToDb(
-                        question = conditionalItem,
+                        question = conditionalItem.resultList,
                         section,
                         surveyResponseModel,
                         languageId,
-                        true
+                        true,
+                        parentId = conditionalItem.parentId
                     )
-                    conditionalItem.options?.forEach { subQuestionOption ->
+                    conditionalItem.resultList.options?.forEach { subQuestionOption ->
                         if (subQuestionOption?.conditions != null) {
                             subQuestionOption.conditions.forEach {
-                                if (it?.resultType?.equals(ResultType.Questions.name, true) == true)
-                                    subSubQuestionList.addAll(it.resultList)
+                                if (it?.resultType?.equals(
+                                        ResultType.Questions.name,
+                                        true
+                                    ) == true
+                                ) {
+                                    val conditionDtoWithParentIdList =
+                                        mutableListOf<ConditionDtoWithParentId>()
+                                    it.resultList.forEach {
+                                        val conditionDtoWithParentId = ConditionDtoWithParentId(
+                                            it,
+                                            parentId = conditionalItem.resultList.questionId ?: 0
+                                        )
+                                        conditionDtoWithParentIdList.add(conditionDtoWithParentId)
+                                    }
+                                    subSubQuestionList.addAll(conditionDtoWithParentIdList)
+                                }
                             }
                         }
                     }
                 }
                 subSubQuestionList.forEach { subConditionalItem ->
                     saveQuestionAndOptionsToDb(
-                        question = subConditionalItem,
+                        question = subConditionalItem.resultList,
                         section,
                         surveyResponseModel,
                         languageId,
-                        true
+                        true,
+                        parentId = subConditionalItem.parentId
                     )
                 }
             }
@@ -225,13 +249,22 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
 
     }
 
-    private fun saveQuestionAndOptionsToDb(question: QuestionList?, section: Sections, surveyResponseModel: SurveyResponseModel, languageId: Int, isSubQuestionList: Boolean = false) {
+    private fun saveQuestionAndOptionsToDb(
+        question: QuestionList?,
+        section: Sections,
+        surveyResponseModel: SurveyResponseModel,
+        languageId: Int,
+        isSubQuestionList: Boolean = false,
+        parentId: Int = 0
+    ) {
         try {
             if (question?.questionId != null) {
-                val existingQuestion = questionEntityDao.getQuestionForSurveySectionForLanguage(question.questionId!!,
+                val existingQuestion = questionEntityDao.getQuestionForSurveySectionForLanguage(
+                    question.questionId!!,
                     section.sectionId,
                     surveyResponseModel.surveyId,
-                    languageId)
+                    languageId
+                )
                 if (existingQuestion != null) {
                     questionEntityDao.deleteSurveySectionQuestionFroLanguage(
                         question.questionId!!,
@@ -254,7 +287,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     languageId = languageId,
                     isConditional = isSubQuestionList,
                     tag = question.attributeTag ?: 0,
-                    contentEntities = question.contentList
+                    contentEntities = question.contentList,
+                    parentQuestionId = parentId
                 )
                 questionEntityDao.insertQuestion(questionEntity)
                 question.options?.forEach { optionsItem ->
