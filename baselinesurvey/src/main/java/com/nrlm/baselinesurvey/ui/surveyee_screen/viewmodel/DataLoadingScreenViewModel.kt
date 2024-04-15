@@ -116,7 +116,7 @@ class DataLoadingScreenViewModel @Inject constructor(
         if (currentApiCount == 19) {
             Log.d(
                 "invoke",
-                "Network Transaction end" + System.currentTimeMillis().toTimeDateString()
+                "Network Transaction end " + System.currentTimeMillis().toTimeDateString()
             )
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -126,17 +126,20 @@ class DataLoadingScreenViewModel @Inject constructor(
     }
     fun fetchAllData(callBack: () -> Unit) {
         currentApiCount = 0
-        Log.d("invoke", "Network Transaction Start" + System.currentTimeMillis().toTimeDateString())
+        Log.d(
+            "invoke",
+            "Network Transaction Start " + System.currentTimeMillis().toTimeDateString()
+        )
         try {
             CoroutineScope(Dispatchers.IO).launch {
                 val fetchUserDetailFromNetworkUseCaseSuccess =
                     fetchDataUseCase.fetchUserDetailFromNetworkUseCase.invoke()
                 currentApiCount++
                 if (fetchUserDetailFromNetworkUseCaseSuccess) {
-                    fetchCasteData(fetchDataUseCase) {}
-                    fetchMissionData(fetchDataUseCase) {}
-                    fetchSurveyeeData(fetchDataUseCase) {}
-                    fetchContentData(fetchDataUseCase) {}
+                    fetchCasteData(fetchDataUseCase) { callBack() }
+                    fetchMissionData(fetchDataUseCase) { callBack() }
+                    fetchSurveyeeData(fetchDataUseCase) { callBack() }
+                    fetchContentData(fetchDataUseCase) { callBack() }
                     CoroutineScope(Dispatchers.IO).launch {
                         fetchSurveyForAllLanguages {
                             callBack()
@@ -172,12 +175,12 @@ class DataLoadingScreenViewModel @Inject constructor(
                         fetchDataUseCase,
                         languageId = languageEntity.id,
                         referenceId = stateId
-                    ) {}
+                    ) { callBack() }
                     callHamletSurveyApi(
                         fetchDataUseCase,
                         languageId = languageEntity.id,
                         referenceId = stateId
-                    ) {}
+                    ) { callBack() }
                 }
         }
     }
