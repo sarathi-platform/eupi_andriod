@@ -91,6 +91,7 @@ class SplashScreenRepositoryImpl @Inject constructor(
 //        nudgeBaselineDatabase.surveyEntityDao().deleteAllSurvey()
 //        nudgeBaselineDatabase.didiInfoEntityDao().deleteAllDidiInfo()
         clearSharedPref()
+        clearCoreSharedPref()
     }
 
     override fun clearSharedPref() {
@@ -114,6 +115,10 @@ class SplashScreenRepositoryImpl @Inject constructor(
                 prefRepo.getMobileNumber() ?: ""
             )
         )
+    }
+
+    override fun clearCoreSharedPref() {
+        CoreSharedPrefs.getInstance(BaselineCore.getAppContext()).clearSharedPreferences()
     }
 
 }

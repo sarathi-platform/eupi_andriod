@@ -26,9 +26,9 @@ data class DidiInfoEntity(
         fun getEmptyDidiInfoEntity() = DidiInfoEntity(
             // id = 0,
             didiId = 0,
-            userId = "",
-            adharNumber = "",
-            phoneNumber = "",
+            userId = BLANK_STRING,
+            adharNumber = BLANK_STRING,
+            phoneNumber = BLANK_STRING,
             isAdharCard = -1,
             isVoterCard = -1
         )
