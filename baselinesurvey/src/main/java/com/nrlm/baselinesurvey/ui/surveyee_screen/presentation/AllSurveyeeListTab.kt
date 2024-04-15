@@ -268,13 +268,13 @@ fun AllSurveyeeListTab(
                                                 activityName
                                             )
                                         } else {
-                                            viewModel.onEvent(
+                                            /*viewModel.onEvent(
                                                 SurveyeeListEvents.UpdateSurveyeeStatusForUi(
                                                     surveyeeId = surveyeeId,
                                                     isFilterApplied = viewModel.isFilterAppliedState.value.isFilterApplied,
                                                     state = SurveyState.NOT_AVAILABLE
                                                 )
-                                            )
+                                            )*/
                                             viewModel.onEvent(
                                                 SectionScreenEvent.UpdateSubjectStatus(
                                                     surveyeeId,
