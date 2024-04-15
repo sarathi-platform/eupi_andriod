@@ -125,9 +125,9 @@ fun SectionListScreen(
     DisposableEffect(key1 = Unit) {
         isSettingScreenOpened.value = false
         onDispose {
-            if (isSettingScreenOpened.value) {
-                viewModel.close()
-            }
+//            if (isSettingScreenOpened.value) {
+            viewModel.close()
+//            }
         }
     }
 

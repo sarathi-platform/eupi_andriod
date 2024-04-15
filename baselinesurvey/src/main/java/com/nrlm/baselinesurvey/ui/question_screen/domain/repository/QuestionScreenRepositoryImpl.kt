@@ -53,6 +53,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
     ): SectionListItem {
         val survey = surveyEntityDao.getSurveyDetailForLanguage(surveyId, languageId)
         val sectionEntity = sectionEntityDao.getSurveySectionForLanguage(
+            userId = getUserId(),
             sectionId,
             survey?.surveyId ?: 0,
             languageId
@@ -124,12 +125,18 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         didiId: Int,
         sectionStatus: SectionStatus
     ) {
-        val sectionProgressForDidiLocal = didiSectionProgressEntityDao.getSectionProgressForDidi(surveyId, sectionId, didiId)
+        val sectionProgressForDidiLocal = didiSectionProgressEntityDao.getSectionProgressForDidi(
+            getUserId(),
+            surveyId,
+            sectionId,
+            didiId
+        )
         Log.d("QuestionScreenRepositoryImpl", "updateSectionProgress: $sectionProgressForDidiLocal")
         if (sectionProgressForDidiLocal == null) {
             didiSectionProgressEntityDao.addDidiSectionProgress(
                 DidiSectionProgressEntity(
                     id = 0,
+                    userId = getUserId(),
                     surveyId,
                     sectionId,
                     didiId,
@@ -137,7 +144,13 @@ class QuestionScreenRepositoryImpl @Inject constructor(
                 )
             )
         } else {
-            didiSectionProgressEntityDao.updateSectionStatusForDidi(surveyId, sectionId, didiId, sectionStatus.ordinal)
+            didiSectionProgressEntityDao.updateSectionStatusForDidi(
+                getUserId(),
+                surveyId,
+                sectionId,
+                didiId,
+                sectionStatus.ordinal
+            )
         }
         updateDidiSurveyStatus(surveyId = surveyId, didiId = didiId)
     }
@@ -154,6 +167,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         val villageIdForSurveyee = surveyeeEntityDao.getVillageIdForDidi(didiId)
         val sectionAnswerEntity = SectionAnswerEntity(
             id = 0,
+            userId = getUserId(),
             didiId = didiId,
             sectionId = sectionId,
             surveyId = surveyId,
@@ -175,6 +189,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         questionSummary: String
     ) {
         sectionAnswerEntityDao.updateAnswer(
+            userId = getUserId(),
             didiId = didiId,
             sectionId = sectionId,
             questionId = questionId,
@@ -192,6 +207,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         surveyId: Int
     ): Int {
         return sectionAnswerEntityDao.isQuestionAlreadyAnswered(
+            userId = getUserId(),
             didiId = didiId,
             questionId = questionId,
             sectionId = sectionId,
@@ -206,7 +222,9 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         questionId: Int,
         optionItemId: Int
     ): Int {
-        return inputTypeQuestionAnswerDao.isQuestionAlreadyAnswered(surveyId,
+        return inputTypeQuestionAnswerDao.isQuestionAlreadyAnswered(
+            userId = getUserId(),
+            surveyId,
             sectionId,
             didiId,
             questionId,
@@ -214,11 +232,17 @@ class QuestionScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getAllAnswersForDidi(didiId: Int): List<SectionAnswerEntity> {
-        return sectionAnswerEntityDao.getAllAnswerForDidi(didiId)
+        return sectionAnswerEntityDao.getAllAnswerForDidi(
+            userId = getUserId(),
+            didiId
+        )
     }
 
     override fun getSectionAnswerForDidi(sectionId: Int, didiId: Int): List<SectionAnswerEntity> {
-        return sectionAnswerEntityDao.getSectionAnswerForDidi(sectionId, didiId)
+        return sectionAnswerEntityDao.getSectionAnswerForDidi(
+            userId = getUserId(),
+            sectionId, didiId
+        )
     }
 
     private suspend fun getOptionsFromOptionsItems(answer: SectionAnswerEntity): List<Options> {
@@ -233,7 +257,10 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         val villageId = surveyeeEntityDao.getVillageIdForDidi(didiId)
         val questionEntityList =
             questionEntityDao.getAllQuestionsForLanguage(surveyId, prefRepo.getAppLanguageId() ?: 2)
-        val localSectionAnswersList = sectionAnswerEntityDao.getAllAnswerForDidi(didiId)
+        val localSectionAnswersList = sectionAnswerEntityDao.getAllAnswerForDidi(
+            userId = getUserId(),
+            didiId
+        )
         val answerListDto = mutableListOf<AnswerDetailDTOList>()
 
         localSectionAnswersList.forEach { sectionAnswerEntity ->
@@ -242,18 +269,29 @@ class QuestionScreenRepositoryImpl @Inject constructor(
                 questionName = questionEntityList[questionEntityList.map { it.questionId }.indexOf(sectionAnswerEntity.questionId)].questionDisplay ?: BLANK_STRING,
                 questionType = sectionAnswerEntity.questionType ?: BLANK_STRING,
                 questionSummary = sectionAnswerEntity.questionSummary ?: BLANK_STRING,
-                section = sectionEntityDao.getSurveySectionForLanguage(sectionId = sectionAnswerEntity.sectionId, surveyId = surveyId, languageId = prefRepo.getAppLanguageId() ?: 2).sectionName,
+                section = sectionEntityDao.getSurveySectionForLanguage(
+                    userId = getUserId(),
+                    sectionId = sectionAnswerEntity.sectionId,
+                    surveyId = surveyId,
+                    languageId = prefRepo.getAppLanguageId() ?: 2
+                ).sectionName,
                 options = getOptionsFromOptionsItems(sectionAnswerEntity)
             )
             answerListDto.add(mAnswerListDtoItem)
         }
-        val didiSectionProgressEntityList = didiSectionProgressEntityDao.getAllSectionProgressForDidi(surveyId, didiId)
+        val didiSectionProgressEntityList =
+            didiSectionProgressEntityDao.getAllSectionProgressForDidi(getUserId(), surveyId, didiId)
         val sectionList = mutableListOf<SectionList>()
         didiSectionProgressEntityList.forEach {
             sectionList.add(
                 SectionList(
                     sectionId = it.sectionId,
-                    sectionName = sectionEntityDao.getSurveySectionForLanguage(sectionId = it.sectionId, surveyId = surveyId, languageId = prefRepo.getAppLanguageId() ?: 2).sectionName,
+                    sectionName = sectionEntityDao.getSurveySectionForLanguage(
+                        userId = getUserId(),
+                        sectionId = it.sectionId,
+                        surveyId = surveyId,
+                        languageId = prefRepo.getAppLanguageId() ?: 2
+                    ).sectionName,
                     sectionStatus = it.sectionStatus
                 )
             )
@@ -282,19 +320,29 @@ class QuestionScreenRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateDidiSurveyStatus(didiId: Int, surveyId: Int) {
-        val surveyStatusForDidiFromDb =  didiSectionProgressEntityDao.getAllSectionProgressForDidi(surveyId = surveyId, didiId = didiId)
+        val surveyStatusForDidiFromDb = didiSectionProgressEntityDao.getAllSectionProgressForDidi(
+            userId = getUserId(),
+            surveyId = surveyId,
+            didiId = didiId
+        )
         val notStartedOrInProgressList = surveyStatusForDidiFromDb.filter {
             it.sectionStatus.equals(SectionStatus.INPROGRESS.ordinal) || it.sectionStatus.equals(SectionStatus.NOT_STARTED.ordinal) }
         if (notStartedOrInProgressList.isNotEmpty())
-            surveyeeEntityDao.updateDidiSurveyStatus(SectionStatus.INPROGRESS.ordinal, didiId)
+            surveyeeEntityDao.updateDidiSurveyStatus(
+                SectionStatus.INPROGRESS.ordinal,
+                didiId,
+            )
         else {
 //            surveyeeEntityDao.updateDidiSurveyStatus(SectionStatus.COMPLETED.ordinal, didiId)
-            surveyeeEntityDao.moveSurveyeeToThisWeek(didiId = didiId, moveDidisToNextWeek = false)
+            surveyeeEntityDao.moveSurveyeeToThisWeek(
+                didiId = didiId,
+                moveDidisToNextWeek = false,
+            )
         }
     }
 
     override suspend fun getSectionsList(surveyId: Int, languageId: Int): List<SectionEntity> {
-        return sectionEntityDao.getAllSectionForSurveyInLanguage(surveyId, languageId)
+        return sectionEntityDao.getAllSectionForSurveyInLanguage(getUserId(), surveyId, languageId)
     }
 
     override suspend fun updateInputTypeQuestionAnswer(
@@ -306,6 +354,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         inputValue: String
     ) {
         inputTypeQuestionAnswerDao.updateInputTypeAnswersForQuestion(
+            userId = getUserId(),
             surveyId = surveyId,
             sectionId = sectionId,
             didiId = didiId,
@@ -324,6 +373,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         inputValue: String
     ) {
         val inputTypeQuestionAnswerEntity = InputTypeQuestionAnswerEntity(
+            userId = getUserId(),
             surveyId = surveyId,
             sectionId = sectionId,
             questionId = questionId,
@@ -340,10 +390,32 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         didiId: Int
     ): List<InputTypeQuestionAnswerEntity> {
         return inputTypeQuestionAnswerDao.getInputTypeAnswersForQuestionForDidi(
+            userId = getUserId(),
             surveyId = surveyId,
             sectionId = sectionId,
             didiId = didiId
         )
+    }
+
+    override suspend fun deleteInputTypeQuestion(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        didiId: Int,
+        optionId: Int
+    ) {
+        inputTypeQuestionAnswerDao.deleteInputTypeQuestion(
+            userId = getUserId(),
+            surveyId,
+            sectionId,
+            questionId,
+            didiId,
+            optionId
+        )
+    }
+
+    override fun getUserId(): String {
+        return prefRepo.getMobileNumber() ?: BLANK_STRING
     }
 
 

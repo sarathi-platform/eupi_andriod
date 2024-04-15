@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.ui.bpc.bpc_village_screen
 import android.content.Context
 import android.text.TextUtils
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.progress.VillageSelectionRepository
 import com.patsurvey.nudge.base.BaseViewModel
@@ -49,7 +50,8 @@ class BpcVillageScreenViewModel @Inject constructor(
     val poorDidiListDao: PoorDidiListDao,
     val userDao: UserDao,
     val lastSelectedTolaDao: LastSelectedTolaDao,
-    val villageSelectionRepository: VillageSelectionRepository
+    val villageSelectionRepository: VillageSelectionRepository,
+    private val syncManagerDatabase: SyncManagerDatabase,
 ): BaseViewModel() {
 
     val showLoader = mutableStateOf(false)
@@ -171,6 +173,8 @@ class BpcVillageScreenViewModel @Inject constructor(
             villageListDao.deleteAllVilleges()
             bpcSummaryDao.deleteAllSummary()
             poorDidiListDao.deleteAllDidis()
+            syncManagerDatabase.eventsDao().deleteAllEvents()
+            syncManagerDatabase.eventsDependencyDao().deleteAllDependentEvents()
             clearSharedPreference()
             init()
         }

@@ -68,7 +68,9 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
                             questionTag = tagList.findIdFromTag(item?.questionTag ?: BLANK_STRING),
                             questionType = QuestionType.Form.name,
                             saveAnswerEventOptionItemDtoList = formResponseObjectDtoList.value.filter { it.referenceId != event.referenceId }
-                                .convertFormResponseObjectToSaveAnswerEventOptionDto()
+                                .convertFormResponseObjectToSaveAnswerEventOptionDto(
+                                    getOptionItemListWithConditionals()
+                                )
                         )
                     )
                 }

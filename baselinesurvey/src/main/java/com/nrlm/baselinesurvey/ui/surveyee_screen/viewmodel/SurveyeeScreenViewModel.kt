@@ -12,6 +12,7 @@ import com.nrlm.baselinesurvey.NO_TOLA_TITLE
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
+import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.ui.common_components.common_events.ApiStatusEvent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
@@ -83,6 +84,7 @@ class SurveyeeScreenViewModel @Inject constructor(
     var activityName: String = ""
     var activityId: Int = 0
 
+    var activity: MissionActivityEntity? = null
 
     @SuppressLint("SuspiciousIndentation")
     fun init(missionId: Int, activityName: String, activityId: Int) {
@@ -91,6 +93,7 @@ class SurveyeeScreenViewModel @Inject constructor(
         this.activityId = activityId
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            activity = surveyeeScreenUseCase.getActivityStateFromDBUseCase.getActivity(activityId)
             val surveyeeListFromDb =
                 surveyeeScreenUseCase.getSurveyeeListUseCase.invoke(missionId, activityName)
             if (_surveyeeListState.value.isNotEmpty()) {

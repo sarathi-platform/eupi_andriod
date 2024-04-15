@@ -48,11 +48,37 @@ interface QuestionScreenRepository {
 
     suspend fun getSectionsList(surveyId: Int, languageId: Int): List<SectionEntity>
 
-    suspend fun updateInputTypeQuestionAnswer(surveyId: Int, sectionId: Int, questionId: Int, didiId: Int, optionId: Int, inputValue: String)
+    suspend fun updateInputTypeQuestionAnswer(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        didiId: Int,
+        optionId: Int,
+        inputValue: String
+    )
 
-    suspend fun saveInputTypeQuestionAnswer(surveyId: Int, sectionId: Int, questionId: Int, didiId: Int, optionId: Int, inputValue: String)
+    suspend fun saveInputTypeQuestionAnswer(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        didiId: Int,
+        optionId: Int,
+        inputValue: String
+    )
 
-    suspend fun getAllInputTypeQuestionAnswersForDidi(surveyId: Int, sectionId: Int, didiId: Int): List<InputTypeQuestionAnswerEntity>
+    suspend fun getAllInputTypeQuestionAnswersForDidi(
+        surveyId: Int,
+        sectionId: Int,
+        didiId: Int
+    ): List<InputTypeQuestionAnswerEntity>
+
+    suspend fun deleteInputTypeQuestion(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        didiId: Int,
+        optionId: Int
+    )
 
     /*suspend fun updateOptionItem(
         surveyId: Int,
@@ -68,5 +94,6 @@ interface QuestionScreenRepository {
         optionId: Int,
         selectedValue: String
     )*/
+    fun getUserId(): String
 
 }

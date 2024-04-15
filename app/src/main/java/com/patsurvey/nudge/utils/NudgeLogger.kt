@@ -356,20 +356,27 @@ object LogWriter {
         return@withContext false
     }
 
+    suspend fun getLogFile(): File? {
+        val context = NudgeCore.getAppContext()
+
+        val logDir = NudgeCore.getAppContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+        val logFile = File(logDir, getSupportLogFileName())
+        if (logFile.isFile) logFile.delete()
+
+        if (!getSyslogFile(logFile)) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "No logs to send", Toast.LENGTH_SHORT).show()
+            }
+            return null
+        }
+        return logFile
+    }
+
     suspend fun buildSupportLogAndShare() {
         val context = NudgeCore.getAppContext()
         try {
 
-            val logDir = NudgeCore.getAppContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-            val logFile = File(logDir, getSupportLogFileName())
-            if (logFile.isFile) logFile.delete()
-
-            if (!getSyslogFile(logFile)) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "No logs to send", Toast.LENGTH_SHORT).show()
-                }
-                return
-            }
+            val logFile = getLogFile() ?: return
 
             val sub = AnalyticsHelper.mPrefRepo?.getPref(PREF_MOBILE_NUMBER, "")
             val email = AnalyticsHelper.mPrefRepo?.getPref(PREF_KEY_EMAIL, "")

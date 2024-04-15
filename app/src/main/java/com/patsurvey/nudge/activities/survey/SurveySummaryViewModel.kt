@@ -790,7 +790,7 @@ class SurveySummaryViewModel @Inject constructor(
             val bpcStep =
                 repository.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }.last()
 
-            repository.writeBpcMatchScoreEvent(villageId, passingScore, bpcStep, didiList.value)
+            insertBpcMatchScoreEvent(villageId, passingScore, bpcStep, didiList.value)
         }
     }
     fun sendBpcMatchScore(networkCallbackListener: NetworkCallbackListener) {
@@ -800,16 +800,10 @@ class SurveySummaryViewModel @Inject constructor(
                 val passingScore = repository.getPassingScore()
                 val bpcStep = repository.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }.last()
 
-                insertBpcMatchScoreEvent(villageId, passingScore, bpcStep, didiList.value)
 
 
                 if (isSyncEnabled(prefRepo = repository.prefRepo)) {
-                    repository.writeBpcMatchScoreEvent(
-                        villageId,
-                        passingScore,
-                        bpcStep,
-                        didiList.value
-                    )
+
 
                 val matchPercentage = calculateMatchPercentage(didiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }, passingScore)
                 val saveMatchSummaryRequest = SaveMatchSummaryRequest(
@@ -1017,7 +1011,7 @@ class SurveySummaryViewModel @Inject constructor(
         val eventItem = SaveMatchSummaryRequest.getSaveMatchSummaryRequestForBpc(
             villageId = villageId,
             stepListEntity = bpcStep,
-            didiList = didiList,
+            didiList = didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal },
             questionPassionScore = passingScore
         )
 

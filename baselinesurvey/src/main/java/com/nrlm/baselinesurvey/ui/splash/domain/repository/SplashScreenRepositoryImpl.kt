@@ -10,7 +10,11 @@ import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.model.response.ConfigResponseModel
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.getDefaultLanguage
+import com.nudge.core.getDefaultBackUpFileName
+import com.nudge.core.getDefaultImageBackUpFileName
+import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.base.BaseRepository
 import javax.inject.Inject
 
@@ -72,24 +76,26 @@ class SplashScreenRepositoryImpl @Inject constructor(
     }
 
     override fun clearLocalData() {
-        nudgeBaselineDatabase.contentEntityDao().deleteContent()
-        nudgeBaselineDatabase.didiDao().deleteSurveyees()
-        nudgeBaselineDatabase.activityTaskEntityDao().deleteActivityTask()
-        nudgeBaselineDatabase.missionEntityDao().deleteMissions()
-        nudgeBaselineDatabase.missionActivityEntityDao().deleteActivities()
-        nudgeBaselineDatabase.optionItemDao().deleteOptions()
-        nudgeBaselineDatabase.questionEntityDao().deleteAllQuestions()
-        nudgeBaselineDatabase.sectionAnswerEntityDao().deleteAllSectionAnswer()
-        nudgeBaselineDatabase.inputTypeQuestionAnswerDao().deleteAllInputTypeAnswers()
-        nudgeBaselineDatabase.formQuestionResponseDao().deleteAllFormQuestions()
-        nudgeBaselineDatabase.didiSectionProgressEntityDao().deleteAllSectionProgress()
-        nudgeBaselineDatabase.villageListDao().deleteAllVilleges()
-        nudgeBaselineDatabase.surveyEntityDao().deleteAllSurvey()
-        nudgeBaselineDatabase.didiInfoEntityDao().deleteAllDidiInfo()
+//        nudgeBaselineDatabase.contentEntityDao().deleteContent()
+//        nudgeBaselineDatabase.didiDao().deleteSurveyees()
+//        nudgeBaselineDatabase.activityTaskEntityDao().deleteActivityTask()
+//        nudgeBaselineDatabase.missionEntityDao().deleteMissions()
+//        nudgeBaselineDatabase.missionActivityEntityDao().deleteActivities()
+//        nudgeBaselineDatabase.optionItemDao().deleteOptions()
+//        nudgeBaselineDatabase.questionEntityDao().deleteAllQuestions()
+//        nudgeBaselineDatabase.sectionAnswerEntityDao().deleteAllSectionAnswer()
+//        nudgeBaselineDatabase.inputTypeQuestionAnswerDao().deleteAllInputTypeAnswers()
+//        nudgeBaselineDatabase.formQuestionResponseDao().deleteAllFormQuestions()
+//        nudgeBaselineDatabase.didiSectionProgressEntityDao().deleteAllSectionProgress()
+//        nudgeBaselineDatabase.villageListDao().deleteAllVilleges()
+//        nudgeBaselineDatabase.surveyEntityDao().deleteAllSurvey()
+//        nudgeBaselineDatabase.didiInfoEntityDao().deleteAllDidiInfo()
         clearSharedPref()
+        clearCoreSharedPref()
     }
 
     override fun clearSharedPref() {
+        val coreSharedPrefs = CoreSharedPrefs.getInstance(BaselineCore.getAppContext())
         val languageId = prefRepo.getAppLanguageId()
         val language = prefRepo.getAppLanguage()
         val accessToken = prefRepo.getAccessToken()
@@ -99,6 +105,20 @@ class SplashScreenRepositoryImpl @Inject constructor(
         prefRepo.saveMobileNumber(mobileNumber ?: BLANK_STRING)
         prefRepo.saveAppLanguage(language)
         prefRepo.saveAppLanguageId(languageId)
+        coreSharedPrefs.setBackupFileName(
+            getDefaultBackUpFileName(
+                prefRepo.getMobileNumber() ?: BLANK_STRING
+            )
+        )
+        coreSharedPrefs.setImageBackupFileName(
+            getDefaultImageBackUpFileName(
+                prefRepo.getMobileNumber() ?: ""
+            )
+        )
+    }
+
+    override fun clearCoreSharedPref() {
+        CoreSharedPrefs.getInstance(BaselineCore.getAppContext()).clearSharedPreferences()
     }
 
 }
