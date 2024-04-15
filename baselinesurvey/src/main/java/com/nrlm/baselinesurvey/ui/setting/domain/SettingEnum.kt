@@ -5,5 +5,6 @@ enum class SettingTagEnum {
     PROFILE,
     LANGUAGE,
     SHARE_LOGS,
-    EXPORT_FILE
+    EXPORT_FILE,
+    LOAD_SERVER_DATA
 }

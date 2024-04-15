@@ -4,6 +4,8 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.nrlm.baselinesurvey.BuildConfig
+import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
@@ -15,6 +17,7 @@ import com.nrlm.baselinesurvey.utils.LogWriter
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
+import com.nudge.core.exportOldData
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,6 +36,8 @@ class SettingBSViewModel @Inject constructor(
     val optionList: State<List<SettingOptionModel>> get() = _optionList
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
+    val showLoadConfirmationDialog = mutableStateOf(false)
+
     val loaderState: State<LoaderState> get() = _loaderState
 
 
@@ -104,4 +109,29 @@ class SettingBSViewModel @Inject constructor(
             }
         }
     }
+
+    fun exportDbAndImages(onExportSuccess: () -> Unit) {
+        val userUniqueId = "${prefRepo.getUserId()}_${prefRepo.getMobileNumber()}"
+        exportOldData(
+            appContext = BaselineCore.getAppContext(),
+            applicationID = BuildConfig.APPLICATION_ID,
+            userUniqueId = userUniqueId,
+            databaseName = NUDGE_BASELINE_DATABASE
+        ) {
+            onExportSuccess()
+        }
+    }
+
+    fun clearLocalDatabase(onPageChange:()->Unit){
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val result=settingBSUserCase.clearLocalDBUseCase.invoke()
+            if(result){
+                withContext(Dispatchers.Main){
+                    onPageChange()
+                }
+            }
+        }
+    }
+
+
 }

@@ -1,5 +1,6 @@
 package com.nudge.core
 
+import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
@@ -16,12 +17,19 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import androidx.core.content.FileProvider
 import com.facebook.network.connectionclass.ConnectionQuality
 import com.google.gson.Gson
+import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.utils.CoreLogger
+import com.nudge.core.utils.LogWriter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
@@ -29,6 +37,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import java.util.logging.Level
 
 fun Long.toDate(dateFormat: Long = System.currentTimeMillis(), timeZone: TimeZone = TimeZone.getTimeZone("UTC")): Date {
     val dateTime = Date(this)
@@ -320,4 +329,167 @@ private fun calculateInSampleSize(
     }
     return inSampleSize
 }
+ suspend fun exportDbFile(appContext: Context,applicationID: String,databaseName:String): Uri? {
+    var backupDB: File? = null
+    try {
+        val sd = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+        val currentDBPath =
+            appContext.getDatabasePath(databaseName).path
+        val currentDB = File(currentDBPath)
+        backupDB = File(sd, databaseName)
+        if (currentDB.exists()) {
+            val src = FileInputStream(currentDB)
+                .channel
+            val dst = FileOutputStream(backupDB)
+                .channel
+            dst.transferFrom(src, 0, src.size())
+            src.close()
+            dst.close()
+        }
+    } catch (e: java.lang.Exception) {
+        LogWriter.log(appContext,Level.SEVERE.intValue(), "Exporting Db", e.message ?: "")
 
+        e.printStackTrace()
+    }
+
+    return backupDB?.let { uriFromFile(appContext, it,applicationID) }
+
+}
+
+fun getAllFilesInDirectory(appContext: Context,directoryPath: String?,applicationID: String): MutableList<Pair<String, Uri>> {
+    val fileList: MutableList<Pair<String, Uri>> = ArrayList()
+    val directory = File(directoryPath)
+    if (directory.exists() && directory.isDirectory) {
+        val files = directory.listFiles()
+        if (files != null) {
+            for (file in files) {
+                if (file.isFile) {
+                    fileList.add(
+                        Pair(
+                            first = file.name,
+                            uriFromFile(appContext, file,applicationID)
+                        )
+                    )
+                }
+            }
+        }
+    }
+    return fileList
+}
+
+
+ suspend fun exportAllOldImages(appContext: Context, applicationID: String, userUniqueId: String): Uri? {
+    try {
+
+        val filePath =
+            appContext
+                .getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path
+        val zipFileDirectory = appContext
+            .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path
+
+        val zipFileUri = File(zipFileDirectory, "${userUniqueId}_Export_Image.zip")
+        val fileUris = getAllFilesInDirectory(appContext,filePath, applicationID = applicationID)
+        ZipManager.zip(
+            fileUris,
+            uriFromFile(appContext, zipFileUri,applicationID),
+            appContext
+        )
+        return uriFromFile(appContext, zipFileUri,applicationID)
+
+    } catch (ex: Exception) {
+        LogWriter.log(appContext,Level.SEVERE.intValue(), "Exporting Image", ex.message ?: "")
+        ex.printStackTrace()
+        return null
+
+    }
+}
+fun exportOldData(appContext: Context,applicationID: String,userUniqueId:String,databaseName: String,onExportSuccess:()->Unit) {
+   CoroutineScope(Dispatchers.IO).launch {
+        val dbUri = exportDbFile(appContext,applicationID,databaseName)
+        val imageZipUri = exportAllOldImages(appContext, applicationID,userUniqueId)
+        val zipFileDirectory = appContext
+            .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path
+        val fileUris = ArrayList<Pair<String, Uri>>()
+        dbUri?.let {
+            fileUris.add(Pair(getFileNameFromURL(it.path ?: ""), it))
+
+        }
+        imageZipUri?.let {
+            fileUris.add(Pair(getFileNameFromURL(it.path ?: ""), it))
+
+        }
+        val zipFileUri = File(zipFileDirectory, "${userUniqueId}_Export_old_data.zip")
+        ZipManager.zip(
+            fileUris,
+            uriFromFile(appContext, zipFileUri,applicationID),
+            appContext
+        )
+        val path = zipFileUri.absolutePath
+        Log.d("TAG", "exportOldData: ${path}")
+        onExportSuccess()
+    }
+
+
+}
+
+fun uriFromFile(context:Context, file:File,applicationID:String): Uri {
+    try {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            FileProvider.getUriForFile(context, "$applicationID.provider", file)
+        } else {
+            Uri.fromFile(file)
+        }
+    } catch (ex: Exception) {
+        return Uri.EMPTY
+        Log.e("uriFromFile", "exception", ex)
+    }
+}
+
+fun getFileNameFromURL(url: String): String{
+    return url.substring(url.lastIndexOf('/') + 1, url.length)
+}
+
+@SuppressLint("SuspiciousIndentation")
+fun importDbFile(appContext: Context,importedDbUri: Uri,onImportSuccess:()->Unit) {
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val importedFile =
+                getRealPathFromURI(importedDbUri, appContext)?.let { File(it) }
+
+            val currentDBPath =
+                appContext.getDatabasePath(NUDGE_DATABASE).path
+
+            val isDeleted= appContext.deleteDatabase(NUDGE_DATABASE)
+            if(isDeleted){
+
+                val src = FileInputStream(importedFile).channel
+
+                val currentDB = File(currentDBPath)
+
+                val dst = FileOutputStream(currentDB)
+                    .channel
+                dst?.transferFrom(src, 0, src.size())
+                src?.close()
+                dst.close()
+                Log.d("Import", "Import completed")
+            }
+            onImportSuccess()
+        } catch (exception: Exception) {
+            LogWriter.log(appContext,Level.SEVERE.intValue(), "Exporting Db", exception.message ?: "")
+            exception.printStackTrace()
+        }
+
+    }
+}
+
+fun getRealPathFromURI(contentURI: Uri, activity: Context): String? {
+//    val contentUri = Uri.parse(contentURI)
+    val cursor = activity.contentResolver.query(contentURI, null, null, null, null)
+    return if (cursor == null) {
+        contentURI.path
+    } else {
+        cursor.moveToFirst()
+        val idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+        cursor.getString(idx)
+    }
+}

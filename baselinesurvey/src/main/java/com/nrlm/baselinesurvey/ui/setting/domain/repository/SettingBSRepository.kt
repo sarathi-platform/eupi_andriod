@@ -9,4 +9,7 @@ interface SettingBSRepository {
     fun clearSharedPref()
 
     fun saveLanguageScreenOpenFrom()
+
+    fun clearLocalData()
+
 }

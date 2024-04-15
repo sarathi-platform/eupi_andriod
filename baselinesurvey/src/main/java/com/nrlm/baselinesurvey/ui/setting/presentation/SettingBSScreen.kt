@@ -16,12 +16,14 @@ import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.navigation.AuthScreen
 import com.nrlm.baselinesurvey.navigation.home.SettingBSScreens
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
 import com.nrlm.baselinesurvey.ui.setting.domain.SettingTagEnum
 import com.nrlm.baselinesurvey.ui.setting.viewmodel.SettingBSViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
+import com.nrlm.baselinesurvey.utils.ShowCustomDialog
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nudge.core.model.SettingOptionModel
 import java.text.SimpleDateFormat
@@ -82,7 +84,37 @@ fun SettingBSScreen(
                 SettingTagEnum.EXPORT_FILE.name
             )
         )
+
+        list.add(
+            SettingOptionModel(
+                6,
+                context.getString(R.string.load_server_data),
+                BLANK_STRING,
+                SettingTagEnum.LOAD_SERVER_DATA.name
+            )
+        )
         viewModel._optionList.value = list
+    }
+
+    if(viewModel.showLoadConfirmationDialog.value){
+        ShowCustomDialog(
+            title = stringResource(id = R.string.are_you_sure),
+            message =stringResource(id = R.string.are_you_sure_you_want_to_load_data_from_server),
+            positiveButtonTitle = stringResource(id = R.string.yes_text),
+            negativeButtonTitle = stringResource(id = R.string.option_no),
+            onNegativeButtonClick = {viewModel.showLoadConfirmationDialog.value =false},
+            onPositiveButtonClick = {
+                viewModel.exportDbAndImages{
+                    viewModel.clearLocalDatabase{
+                        navController.navigate(route = Graph.HOME){
+                            launchSingleTop=true
+                            popUpTo(AuthScreen.START_SCREEN.route){
+                                inclusive=true
+                            }
+                        }
+                    }
+                }
+            })
     }
 
     if (loaderState.value.isLoaderVisible) {
@@ -125,6 +157,10 @@ fun SettingBSScreen(
 
                 SettingTagEnum.EXPORT_FILE.name -> {
                     viewModel.compressEventData(context.getString(R.string.share_export_file))
+                }
+
+                SettingTagEnum.LOAD_SERVER_DATA.name -> {
+                    viewModel.showLoadConfirmationDialog.value=true
                 }
             }
        },

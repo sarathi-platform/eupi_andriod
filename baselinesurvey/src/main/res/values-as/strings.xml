@@ -434,5 +434,6 @@
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"আৰম্ভ কৰক "</string>
     <string name="retry">" পুনৰ চেষ্টা কৰক"</string>
+    <string name="load_server_data">চাৰ্ভাৰ ডাটা লোড কৰক</string>
 
 </resources>

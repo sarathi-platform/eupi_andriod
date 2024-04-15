@@ -104,6 +104,7 @@ import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.UpdateSubjectSt
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.UpdateTaskStatusUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepository
 import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepositoryImpl
+import com.nrlm.baselinesurvey.ui.setting.domain.use_case.ClearLocalDBUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.GetSettingOptionListUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.LogoutUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SaveLanguageScreenOpenFromUseCase
@@ -615,9 +616,10 @@ object BaselineModule {
     @Singleton
     fun provideSettingBSScreenRepository(
         prefRepo: PrefRepo,
-        apiService: ApiService
+        apiService: ApiService,
+        nudgeBaselineDatabase: NudgeBaselineDatabase
     ): SettingBSRepository {
-        return SettingBSRepositoryImpl(prefRepo, apiService)
+        return SettingBSRepositoryImpl(prefRepo, apiService,nudgeBaselineDatabase)
     }
 
     @Provides
@@ -628,7 +630,8 @@ object BaselineModule {
         return SettingBSUserCase(
             getSettingOptionListUseCase = GetSettingOptionListUseCase(repository),
             logoutUseCase = LogoutUseCase(repository),
-            saveLanguageScreenOpenFromUseCase = SaveLanguageScreenOpenFromUseCase(repository)
+            saveLanguageScreenOpenFromUseCase = SaveLanguageScreenOpenFromUseCase(repository),
+            clearLocalDBUseCase = ClearLocalDBUseCase(repository)
         )
     }
 

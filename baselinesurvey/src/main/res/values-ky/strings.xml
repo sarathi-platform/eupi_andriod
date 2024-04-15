@@ -467,4 +467,5 @@
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"Start "</string>
     <string name="share_export_image">আৰম্ভ কৰক</string>
+    <string name="load_server_data">Load Server Data</string>
 </resources>
