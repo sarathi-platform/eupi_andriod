@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component
 
-import android.util.Log
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollBy
@@ -35,8 +34,8 @@ import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.CalculationResultComponent
-import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.RadioOptionTypeComponent
+import com.nrlm.baselinesurvey.ui.common_components.TimePickerComponent
 import com.nrlm.baselinesurvey.ui.common_components.TypeMultiSelectedDropDownComponent
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponent.IncrementDecrementView
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
@@ -237,55 +236,55 @@ fun NestedLazyListForFormQuestions(
                                 }
                             }
 
-                            QuestionType.Input.name,
-                            QuestionType.InputText.name,
-                            QuestionType.InputNumberEditText.name -> {
-                                Log.d(
-                                    "TAG",
-                                    "EditTextWithTitleComponent: ${option?.optionItemEntity?.display}, type: ${option.optionItemEntity.optionType}"
-                                )
-
-                                EditTextWithTitleComponent(
-                                    option.optionItemEntity.display,
-                                    showQuestion = option,
-                                    isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
-                                    defaultValue = if (viewModel.tempRefId.value != BLANK_STRING)
-                                        formQuestionResponseEntity.value.getResponseForOptionId(
-                                            option.optionId ?: -1
-                                        )?.selectedValue
-                                            ?: BLANK_STRING
-                                    else
-                                        viewModel.storeCacheForResponse.getResponseForOptionId(
-                                            optionId = option.optionId ?: -1
-                                        )?.selectedValue ?: BLANK_STRING,
-                                    isOnlyNumber = option.optionItemEntity.optionType == QuestionType.InputNumber.name || option.optionItemEntity.optionType == QuestionType.InputNumberEditText.name,
-                                    onInfoButtonClicked = {
-                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
-                                    }
-                                ) { value ->
-                                    questionTypeScreenViewModel.formTypeOption.let { it1 ->
-                                        if (!option.optionItemEntity.conditions.isNullOrEmpty()) {
-                                            questionTypeScreenViewModel.onEvent(
-                                                QuestionTypeEvent.UpdateConditionalOptionState(
-                                                    optionItemEntityState = option,
-                                                    value
-                                                )
-                                            )
-                                        }
-                                        saveCacheFormData(
-                                            saveFormQuestionResponseEntity(
-                                                questionTypeScreenViewModel.formTypeOption,
-                                                option.optionId ?: 0,
-                                                value,
-                                                viewModel.referenceId
-                                            )
-                                        )
-                                        questionTypeScreenViewModel.onEvent(QuestionTypeEvent.UpdateCalculationTypeQuestionValue)
-
-                                    }
-                                    answeredQuestionCountIncreased()
-                                }
-                            }
+//                            QuestionType.Input.name,
+//                            QuestionType.InputText.name,
+//                            QuestionType.InputNumberEditText.name -> {
+//                                Log.d(
+//                                    "TAG",
+//                                    "EditTextWithTitleComponent: ${option?.optionItemEntity?.display}, type: ${option.optionItemEntity.optionType}"
+//                                )
+//
+//                                EditTextWithTitleComponent(
+//                                    option.optionItemEntity.display,
+//                                    showQuestion = option,
+//                                    isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
+//                                    defaultValue = if (viewModel.tempRefId.value != BLANK_STRING)
+//                                        formQuestionResponseEntity.value.getResponseForOptionId(
+//                                            option.optionId ?: -1
+//                                        )?.selectedValue
+//                                            ?: BLANK_STRING
+//                                    else
+//                                        viewModel.storeCacheForResponse.getResponseForOptionId(
+//                                            optionId = option.optionId ?: -1
+//                                        )?.selectedValue ?: BLANK_STRING,
+//                                    isOnlyNumber = option.optionItemEntity.optionType == QuestionType.InputNumber.name || option.optionItemEntity.optionType == QuestionType.InputNumberEditText.name,
+//                                    onInfoButtonClicked = {
+//                                        sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
+//                                    }
+//                                ) { value ->
+//                                    questionTypeScreenViewModel.formTypeOption.let { it1 ->
+//                                        if (!option.optionItemEntity.conditions.isNullOrEmpty()) {
+//                                            questionTypeScreenViewModel.onEvent(
+//                                                QuestionTypeEvent.UpdateConditionalOptionState(
+//                                                    optionItemEntityState = option,
+//                                                    value
+//                                                )
+//                                            )
+//                                        }
+//                                        saveCacheFormData(
+//                                            saveFormQuestionResponseEntity(
+//                                                questionTypeScreenViewModel.formTypeOption,
+//                                                option.optionId ?: 0,
+//                                                value,
+//                                                viewModel.referenceId
+//                                            )
+//                                        )
+//                                        questionTypeScreenViewModel.onEvent(QuestionTypeEvent.UpdateCalculationTypeQuestionValue)
+//
+//                                    }
+//                                    answeredQuestionCountIncreased()
+//                                }
+//                            }
 
                             QuestionType.InputNumber.name -> {
                                 IncrementDecrementView(
@@ -370,6 +369,44 @@ fun NestedLazyListForFormQuestions(
                                     showQuestion = option,
                                     defaultValue = questionTypeScreenViewModel.calculatedResult.value
                                 )
+                            }
+
+                            QuestionType.Input.name,
+                            QuestionType.InputText.name,
+                            QuestionType.InputNumberEditText.name -> {
+                                TimePickerComponent(title = option.optionItemEntity.display
+                                    ?: BLANK_STRING,
+                                    isYrMonths = true,
+                                    defaultValue = if (viewModel.tempRefId.value != BLANK_STRING)
+                                        formQuestionResponseEntity.value.getResponseForOptionId(
+                                            option.optionId ?: -1
+                                        )?.selectedValue
+                                            ?: BLANK_STRING
+                                    else
+                                        viewModel.storeCacheForResponse.getResponseForOptionId(
+                                            optionId = option.optionId ?: -1
+                                        )?.selectedValue ?: BLANK_STRING,
+                                    showQuestion = option,
+                                    onInfoButtonClicked = {}) { value ->
+                                    questionTypeScreenViewModel.onEvent(
+                                        QuestionTypeEvent.UpdateConditionalOptionState(
+                                            option,
+                                            value
+                                        )
+                                    )
+                                    questionTypeScreenViewModel.onEvent(QuestionTypeEvent.UpdateCalculationTypeQuestionValue)
+                                    questionTypeScreenViewModel.formTypeOption?.let { formTypeOption ->
+                                        saveCacheFormData(
+                                            saveFormQuestionResponseEntity(
+                                                formTypeOption,
+                                                option.optionId ?: 0,
+                                                value,
+                                                viewModel.referenceId
+                                            )
+                                        )
+                                    }
+                                    answeredQuestionCountIncreased()
+                                }
                             }
                         }
                     }
