@@ -34,4 +34,6 @@ interface SectionListScreenRepository {
     )
 
     suspend fun getTaskForSubjectId(surveyId: Int): ActivityTaskEntity?
+
+    fun getUserId(): String
 }
