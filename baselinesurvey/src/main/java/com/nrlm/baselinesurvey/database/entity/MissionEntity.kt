@@ -18,7 +18,6 @@ data class MissionEntity(
     @Expose
     @ColumnInfo(name = "id")
     var id: Int = 1,
-    var userId: String? = BLANK_STRING,
     var missionId: Int,
     var missionName: String,
     var startDate: String,
@@ -33,13 +32,8 @@ data class MissionEntity(
     var actualCompletedDate: String = BLANK_STRING
 ) {
     companion object {
-        fun getMissionEntity(
-            userId: String,
-            activityTaskSize: Int,
-            mission: MissionResponseModel
-        ): MissionEntity {
+        fun getMissionEntity(activityTaskSize: Int, mission: MissionResponseModel): MissionEntity {
             return MissionEntity(
-                userId = userId,
                 missionId = mission.missionId,
                 missionName = mission.missionName,
                 startDate = mission.startDate,
