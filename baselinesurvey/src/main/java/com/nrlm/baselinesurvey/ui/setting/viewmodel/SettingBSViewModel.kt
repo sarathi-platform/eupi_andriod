@@ -3,22 +3,16 @@ package com.nrlm.baselinesurvey.ui.setting.viewmodel
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.core.net.toUri
-import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
-import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SettingBSUserCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LogWriter
-import com.nrlm.baselinesurvey.utils.json
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.uriFromFile
 import com.nudge.core.ZIP_MIME_TYPE
@@ -92,22 +86,23 @@ class SettingBSViewModel @Inject constructor(
 
                 val directory = File(zipDBFileDirectory)
 
-                val files = directory.listFiles()
+                val zipFileList= directory.listFiles()
                     ?.filterNot { it.name.contains("Image") }
                     ?.filter { it.isFile && it.name.contains(getUserMobileNumber()) }
 
-                var fileUriList:ArrayList<Uri> = arrayListOf()
-                fileUri?.let {
-                    fileUriList.add(it)
-                }
-                imageUri?.let {
-                    fileUriList.add(it)
-                }
-                files?.let {fList->
-                    fList.forEach { file ->
-                        fileUriList.add(uriFromFile(BaselineCore.getAppContext(),file))
+                val fileUriList: ArrayList<Uri> = arrayListOf()
+                if(fileUri!=Uri.EMPTY)
+                    fileUri?.let { fileUriList.add(it) }
+
+                  if(imageUri!=Uri.EMPTY)
+                      imageUri?.let { fileUriList.add(it) }
+
+                if(zipFileList?.isNotEmpty() == true){
+                    zipFileList.forEach { file ->
+                        fileUriList.add(uriFromFile(BaselineCore.getAppContext(), file))
                     }
                 }
+
 
                 openShareSheet(fileUriList, title)
                 CoreSharedPrefs.getInstance(BaselineCore.getAppContext()).setFileExported(true)
