@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository
 
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.DidiInfoDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
@@ -19,7 +20,12 @@ class SurveyStateRepositoryImpl(
     }
 
     override suspend fun saveDidiInfo(didiInfoEntity: DidiInfoEntity) {
+        didiInfoEntity.userId = getUserId()
         didiInfoDao.insertDidiInfo(didiInfoEntity)
+    }
+
+    override fun getUserId(): String {
+        return prefRepo.getMobileNumber() ?: BLANK_STRING
     }
 
 }
