@@ -76,5 +76,5 @@ interface FormQuestionResponseRepository {
     suspend fun getQuestionTag(surveyId: Int, sectionId: Int, questionId: Int): Int
     suspend fun getContentFromDB(contentKey: String): ContentEntity
 
-    fun getUserId(): String
+    fun getBaseLineUserId(): String
 }

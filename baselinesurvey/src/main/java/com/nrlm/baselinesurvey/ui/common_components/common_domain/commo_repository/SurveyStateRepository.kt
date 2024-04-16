@@ -10,5 +10,4 @@ interface SurveyStateRepository {
     fun getUserId(): String
 
 
-
 }
