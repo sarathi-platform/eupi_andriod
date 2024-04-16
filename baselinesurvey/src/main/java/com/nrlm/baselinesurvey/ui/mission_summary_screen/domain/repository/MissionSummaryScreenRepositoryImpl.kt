@@ -1,8 +1,6 @@
 package com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.repository
 
 import androidx.lifecycle.LiveData
-import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
@@ -17,11 +15,10 @@ class MissionSummaryScreenRepositoryImpl @Inject constructor(
     private val missionActivityDao: MissionActivityDao,
     private val taskDao: ActivityTaskDao,
     private val surveyeeEntityDao: SurveyeeEntityDao,
-    private val missionEntityDao: MissionEntityDao,
-    val prefRepo: PrefRepo,
+    private val missionEntityDao: MissionEntityDao
 ) : MissionSummaryScreenRepository {
     override suspend fun getMissionActivitiesFromDB(missionId: Int): List<MissionActivityEntity>? {
-        return missionActivityDao.getActivities(getUserId(), missionId)
+        return missionActivityDao.getActivities(missionId)
     }
 
     override suspend fun getMissionActivitiesStatusFromDB(
@@ -30,7 +27,6 @@ class MissionSummaryScreenRepositoryImpl @Inject constructor(
     ) {
         var activityPending = 0
         missionEntityDao.updateMissionStatus(
-            getUserId(),
             missionId,
             8,
             activities.size
@@ -41,7 +37,6 @@ class MissionSummaryScreenRepositoryImpl @Inject constructor(
             taskSize += activity.activityTaskSize
         }
         missionEntityDao.updateMissionStatus(
-            getUserId(),
             missionId,
             taskSize - activityPending,
             activityPending
@@ -51,14 +46,12 @@ class MissionSummaryScreenRepositoryImpl @Inject constructor(
     override suspend fun updateMissionStatus(missionId: Int, status: SectionStatus) {
         if (status == SectionStatus.COMPLETED) {
             missionEntityDao.markMissionCompleted(
-                userId = getUserId(),
                 missionId = missionId,
                 status = status.name,
                 actualCompletedDate = System.currentTimeMillis().toDate().toString()
             )
         } else {
             missionEntityDao.markMissionInProgress(
-                userId = getUserId(),
                 missionId = missionId,
                 status = status.name,
                 actualStartDate = System.currentTimeMillis().toDate().toString()
@@ -67,25 +60,17 @@ class MissionSummaryScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getPendingTaskCountLive(activityId: Int): LiveData<Int> {
-        return taskDao.getPendingTaskCountLive(getUserId(), activityId)
+        return taskDao.getPendingTaskCountLive(activityId)
     }
 
     override fun isActivityCompleted(missionId: Int, activityId: Int): Boolean {
         return missionActivityDao.isActivityCompleted(
-            userId = getUserId(),
             missionId,
             activityId
         ).status != SectionStatus.COMPLETED.name
     }
 
     override fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto {
-        return missionActivityDao.getActivityFromSubjectId(
-            userId = getUserId(),
-            subjectId
-        )
-    }
-
-    override fun getUserId(): String {
-        return prefRepo.getMobileNumber() ?: BLANK_STRING
+        return missionActivityDao.getActivityFromSubjectId(subjectId)
     }
 }
