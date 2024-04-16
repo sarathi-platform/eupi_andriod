@@ -31,9 +31,19 @@ fun DataLoadingScreenComponent(
     LaunchedEffect(key1 = true) {
         if (viewModel.isUserLoggedIn()) {
             viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-            viewModel.fetchAllData {
-                viewModel.setAllDataFetched()
-                navController.navigate(HomeScreens.Home_SCREEN.route)
+            viewModel.compareWithPreviousUser(context) { isDataLoadingAllowed ->
+                if (isDataLoadingAllowed) {
+                    if (!viewModel.isAllDataFetched()) {
+                        viewModel.fetchAllData {
+                            viewModel.setAllDataFetched()
+                            navController.navigate(HomeScreens.Home_SCREEN.route)
+                        }
+                    } else {
+                        navController.navigate(HomeScreens.Home_SCREEN.route)
+                    }
+                } else {
+                    viewModel.onEvent(DialogEvents.ShowDialogEvent(true))
+                }
             }
         } else {
             navController.navigate(HomeScreens.Home_SCREEN.route)

@@ -18,6 +18,4 @@ interface MissionSummaryScreenRepository {
     fun isActivityCompleted(missionId: Int, activityId: Int): Boolean
 
     fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto
-    fun getUserId(): String
-
 }
