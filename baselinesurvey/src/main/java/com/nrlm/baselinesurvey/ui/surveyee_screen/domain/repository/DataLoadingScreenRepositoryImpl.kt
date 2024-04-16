@@ -383,6 +383,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         if (isOptionExisting == 0) {
             val optionItemEntity = OptionItemEntity(
                 id = 0,
+                userId = getBaseLineUserId(),
                 optionId = optionsItem.optionId,
                 questionId = question.questionId,
                 sectionId = section.sectionId,
@@ -631,7 +632,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     inputTypeQuestionAnswerEntity.userId = getBaseLineUserId()
                     val isQuestionAlreadyAnswered =
                         baselineDatabase.inputTypeQuestionAnswerDao().isQuestionAlreadyAnswered(
-                            inputTypeQuestionAnswerEntity.userId ?: "",
+                            userId = getBaseLineUserId(),
                             inputTypeQuestionAnswerEntity.surveyId,
                             inputTypeQuestionAnswerEntity.sectionId,
                             inputTypeQuestionAnswerEntity.didiId,

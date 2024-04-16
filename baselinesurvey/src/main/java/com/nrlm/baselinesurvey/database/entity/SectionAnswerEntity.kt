@@ -17,7 +17,7 @@ data class SectionAnswerEntity(
     @Expose
     @ColumnInfo(name = "id")
     var id: Int,
-
+    var userId: String? = BLANK_STRING,
     @SerializedName("questionId")
     @Expose
     @ColumnInfo(name = "questionId")

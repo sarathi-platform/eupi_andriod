@@ -1,7 +1,6 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.domain.repository
 
 import androidx.lifecycle.LiveData
-import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ContentDao
 import com.nrlm.baselinesurvey.database.dao.FormQuestionResponseDao
@@ -159,7 +158,7 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
             selectedValue = formQuestionResponseEntity.selectedValue,
             referenceId = formQuestionResponseEntity.referenceId,
             didiId = formQuestionResponseEntity.didiId,
-            userId = formQuestionResponseEntity.userId ?: ""
+            userId = getBaseLineUserId()
         )
     }
 
@@ -171,7 +170,7 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
             optionId = formQuestionResponseEntity.optionId,
             referenceId = formQuestionResponseEntity.referenceId,
             didiId = formQuestionResponseEntity.didiId,
-            userId = formQuestionResponseEntity.userId ?: ""
+            userId = getBaseLineUserId()
         )
     }
 
