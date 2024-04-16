@@ -71,4 +71,9 @@ class CoreSharedPrefs private constructor(val context: Context) :
         prefs.edit().putBoolean(PREF_IMAGE_FILE_EXPORTED_NAME, isExported).apply()
     }
 
+    override fun clearSharedPreferences() {
+        prefs.edit().clear().apply()
+    }
+
+
 }
