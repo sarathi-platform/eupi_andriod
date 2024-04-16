@@ -17,7 +17,7 @@ class SaveFormQuestionResponseUseCase(private val repository: FormQuestionRespon
         formQuestionResponseEntity: List<FormQuestionResponseEntity>
     ) {
         formQuestionResponseEntity.forEach { formQuestionResponseEntity ->
-            formQuestionResponseEntity.userId = repository.getUserId()
+            formQuestionResponseEntity.userId = repository.getBaseLineUserId()
         }
         repository.saveFormsIntoDB(
             formQuestionResponseEntity

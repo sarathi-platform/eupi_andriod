@@ -53,7 +53,7 @@ class FetchSurveyeeListFromNetworkUseCase(
                             val taskForSubject = repository.getTaskForSubjectId(it.cohortId)
                             val hamletSurveyEntity = SurveyeeEntity(
                                 id = 0,
-                                userId = it.userId,
+                                userId = repository.getBaseLineUserId(),
                                 didiId = it.cohortId ?: -1,
                                 didiName = if (it.cohortName?.equals(
                                         NO_TOLA_TITLE,

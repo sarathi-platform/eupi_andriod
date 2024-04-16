@@ -16,9 +16,6 @@ class FetchMissionDataFromNetworkUseCase(
             val apiResponse = repository.fetchMissionDataFromServer("en", "BASELINE")
             if (apiResponse.status.equals(SUCCESS, true)) {
                 apiResponse.data?.let { missionApiResponse ->
-                    repository.deleteMissionsFromDB()
-                    repository.deleteMissionActivitiesFromDB()
-                    // repository.deleteActivityTasksFromDB()
                     missionApiResponse.forEach { mission ->
                         var activityTaskSize = 0
                         mission.activities.forEach { activity ->

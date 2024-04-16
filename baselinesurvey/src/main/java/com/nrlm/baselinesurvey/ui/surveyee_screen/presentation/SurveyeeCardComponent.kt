@@ -338,7 +338,7 @@ fun SurveyeeCardPreview() {
         villageId = 1,
         villageName = "Sundar Pahar",
         ableBodied = "No",
-        userId = 525,
+        userId = "",
         surveyStatus = SurveyState.COMPLETED.ordinal
     )
     Box(

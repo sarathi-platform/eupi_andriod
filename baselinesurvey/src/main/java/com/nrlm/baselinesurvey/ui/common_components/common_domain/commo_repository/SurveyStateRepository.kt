@@ -7,7 +7,6 @@ interface SurveyStateRepository {
 
     suspend fun updateSurveyState(didiId: Int, surveyState: SurveyState)
     suspend fun saveDidiInfo(didiInfoEntity: DidiInfoEntity)
-    fun getUserId(): String
 
 
 }

@@ -449,15 +449,29 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override suspend fun saveMissionToDB(missions: MissionEntity) {
-        missionEntityDao.insertMission(missions)
+        val missionCount = missionEntityDao.getMissionCount(
+            userId = getBaseLineUserId(),
+            missionId = missions.missionId
+        )
+        if (missionCount == 0) {
+            missionEntityDao.insertMission(missions)
+        }
     }
 
     override suspend fun saveMissionsActivityToDB(activities: MissionActivityEntity) {
-        missionActivityDao.insertMissionActivity(activities)
+        val activityCount =
+            missionActivityDao.getActivityCount(userId = getBaseLineUserId(), activities.activityId)
+        if (activityCount == 0) {
+            missionActivityDao.insertMissionActivity(activities)
+        }
     }
 
     override suspend fun saveActivityTaskToDB(tasks: ActivityTaskEntity) {
-        activityTaskDao.insertActivityTask(tasks)
+        val taskCount =
+            activityTaskDao.getTaskByIdCount(userId = getBaseLineUserId(), taskId = tasks.taskId)
+        if (taskCount == 0) {
+            activityTaskDao.insertActivityTask(tasks)
+        }
     }
 
     override suspend fun deleteMissionsFromDB() {
@@ -580,6 +594,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
             if (questionAnswerResponseModel.question?.questionType.equals(QuestionType.Form.name)) {
                 val formQuestionEntityList = getFormQuestionEntity(questionAnswerResponseModel)
                 formQuestionEntityList.forEach { formQuestionResponseEntity ->
+                    formQuestionResponseEntity.userId = getBaseLineUserId()
                     val isQuestionAnswered =
                         baselineDatabase.formQuestionResponseDao().isQuestionOptionAlreadyAnswered(
                             userId = getBaseLineUserId(),
@@ -613,6 +628,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                         question
                     )
                 inputTypeQuestionAnswerEntity.forEach { inputTypeQuestionAnswerEntity ->
+                    inputTypeQuestionAnswerEntity.userId = getBaseLineUserId()
                     val isQuestionAlreadyAnswered =
                         baselineDatabase.inputTypeQuestionAnswerDao().isQuestionAlreadyAnswered(
                             inputTypeQuestionAnswerEntity.userId ?: "",
@@ -649,6 +665,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
             } else {
                 val sectionAnswerEntity =
                     getSectionAnswerEntity(questionAnswerResponseModel, question)
+                sectionAnswerEntity.userId = getBaseLineUserId()
                 val isQuestionAlreadyAnswer = baselineDatabase.sectionAnswerEntityDao()
                     .isQuestionAlreadyAnswered(
                         userId = getBaseLineUserId(),

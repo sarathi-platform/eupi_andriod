@@ -24,6 +24,9 @@ interface ActivityTaskDao {
     @Query("SELECT * FROM $TASK_TABLE_NAME where  userId=:userId and taskId = :taskId")
     fun getTaskById(userId: String, taskId: Int): ActivityTaskEntity
 
+    @Query("SELECT count(*) FROM $TASK_TABLE_NAME where  userId=:userId and taskId = :taskId")
+    fun getTaskByIdCount(userId: String, taskId: Int): Int
+
     @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId and  missionId=:missionId and activityName like :activityName")
     suspend fun getActivityTask(
         userId: String,
