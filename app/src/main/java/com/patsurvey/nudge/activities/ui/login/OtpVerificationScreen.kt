@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.ui.login
 
 import android.annotation.SuppressLint
 import android.os.CountDownTimer
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -45,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.nudge.core.ui.navigation.CoreGraph
+import com.nudge.core.ui.navigation.LogoutScreens
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
@@ -58,7 +60,6 @@ import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.navigation.AuthScreen
-import com.patsurvey.nudge.navigation.selection.LogoutScreens
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.OTP_LENGTH
 import com.patsurvey.nudge.utils.OTP_RESEND_DURATION
@@ -245,7 +246,19 @@ fun OtpVerificationScreen(
 
                         if (success){
                             if(isUPCMUser){
-                                    navController.navigate(route = CoreGraph.BASE_HOME)
+                                if (navController.graph.route?.equals(CoreGraph.HOME, true) == true){
+                                    navController.navigate(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
+                                        launchSingleTop = true
+                                        popUpTo(AuthScreen.START_SCREEN.route) {
+                                            inclusive = true
+                                        }
+                                    }
+                                    Log.d("TAG", "OtpVerificationScreen: Old HOme")
+                                }else{
+                                    Log.d("TAG", "OtpVerificationScreen: new  HOme")
+//                                    navController.navigate(route = CoreGraph.BASE_HOME)
+                                }
+
                             }else {
                                 if (navController.graph.route?.equals(CoreGraph.HOME, true) == true) {
                                     navController.navigate(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route) {

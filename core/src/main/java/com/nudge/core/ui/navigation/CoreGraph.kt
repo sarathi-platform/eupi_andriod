@@ -145,6 +145,14 @@ sealed class SettingScreens(val route: String) {
     object IMAGE_VIEWER : SettingScreens(route = "$IMAGE_VIEWER_ROUTE_NAME/{${CoreNavigationParams.ARG_IMAGE_PATH.value}}")
 }
 
+sealed class LogoutScreens(val route: String){
+    object LOG_LOGIN_SCREEN : LogoutScreens(route = LOGIN_SCREEN_ROUTE_NAME)
+    object LOG_VILLAGE_SELECTION_SCREEN : LogoutScreens(route = VILLAGE_SELECTION_ROUTE_NAME)
+    object LOG_DATA_LOADING_SCREEN : LogoutScreens(route = DATA_LOADING_SCREEN_ROUTE_NAME)
+
+    object LOG_OTP_VERIFICATION : LogoutScreens(route = "$OTP_VERIFICATION_ROUTE_NAME/{${CoreNavigationParams.ARG_MOBILE_NUMBER.value}}")
+}
+
 
 const val DATA_LOADING_SCREEN_ROUTE_NAME = "data_loading_screen"
 const val SECTION_SCREEN_ROUTE_NAME = "section_screen"
@@ -172,4 +180,8 @@ const val FORM_C_SCREEN_ROUTE_NAME = "form_C_screen"
 const val PDF_VIEWER_ROUTE_NAME = "pdf_viewer"
 const val IMAGE_VIEWER_ROUTE_NAME = "image_viewer"
 const val FORM_QUESTION_SUMMARY_SCREEN_ROUTE_NAME = "form_question_summary_screen"
+const val LOGIN_SCREEN_ROUTE_NAME="login_screen"
+const val VILLAGE_SELECTION_ROUTE_NAME="village_selection_screen"
+const val OTP_VERIFICATION_ROUTE_NAME="otp_verification_screen"
+
 

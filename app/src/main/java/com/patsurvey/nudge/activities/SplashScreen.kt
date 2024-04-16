@@ -69,7 +69,7 @@ fun SplashScreen(
                 delay(SPLASH_SCREEN_DURATION)
                 viewModel.showLoader.value=false
                 if(viewModel.getUserType().equals(UPCM_USER)){
-                    navController.navigate(route = CoreGraph.HOME){
+                    navController.navigate(route = CoreGraph.BASE_HOME){
                         launchSingleTop=true
                         popUpTo(AuthScreen.START_SCREEN.route){
                             inclusive=true

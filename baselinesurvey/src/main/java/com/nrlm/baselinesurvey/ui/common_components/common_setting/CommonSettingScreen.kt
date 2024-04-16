@@ -20,12 +20,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
@@ -59,6 +62,7 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark50
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.ui.theme.black100Percent
+import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nudge.core.model.SettingOptionModel
 
 @Composable
@@ -68,6 +72,7 @@ fun CommonSettingScreen(
     optionList:List<SettingOptionModel>,
     expanded: Boolean,
     onBackClick:()->Unit,
+    isLoaderVisible:Boolean=false,
     onItemClick:(Int,SettingOptionModel)->Unit,
     onParticularFormClick: (Int) -> Unit,
     onLogoutClick:()->Unit
@@ -124,7 +129,7 @@ fun CommonSettingScreen(
                 .padding(top = it.calculateTopPadding())
                 .fillMaxSize()
         ) {
-            val (mainBox, logoutButton, versionBox) = createRefs()
+            val (mainBox, logoutButton, versionBox,circularLoader) = createRefs()
 
             Column(modifier = Modifier
                 .background(Color.White)
@@ -153,6 +158,28 @@ fun CommonSettingScreen(
                     }
                 }
             }
+
+            if (isLoaderVisible) {
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .clickable {
+
+                    }
+                    .constrainAs(circularLoader) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
+                        top.linkTo(parent.top)
+                    }) {
+                    CircularProgressIndicator(
+                        color = blueDark,
+                        modifier = Modifier
+                            .size(28.dp)
+                            .align(Alignment.Center)
+                    )
+                }
+            }
         }
     }
 }
@@ -160,7 +187,7 @@ fun CommonSettingScreen(
 @Preview(showBackground = true)
 @Composable
 fun CommonSettingScreenPreview(){
- val list=   listOf(
+ val list= listOf(
         SettingOptionModel(1,"Sync Now","new Datta",""),
         SettingOptionModel(2,"Forms","",""),
         SettingOptionModel(3,"Language","",""))

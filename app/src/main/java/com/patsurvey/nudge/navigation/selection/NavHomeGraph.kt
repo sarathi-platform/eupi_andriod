@@ -12,7 +12,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
+import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nudge.core.ui.navigation.CoreGraph
+import com.nudge.core.ui.navigation.LogoutScreens
 import com.nudge.core.ui.navigation.SettingScreens
 import com.patsurvey.nudge.ProfileScreen
 import com.patsurvey.nudge.activities.AddDidiScreen
@@ -864,20 +866,12 @@ fun NavGraphBuilder.logoutGraph(navController: NavHostController){
             VillageScreen(navController = navController) {
                 navController.navigate(CoreGraph.SETTING_GRAPH)
             }
-            /*VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()){
-                navController.navigate(CoreGraph.SETTING_GRAPH)
-            }*/
+        }
+        composable(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
+            DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
         }
     }
 }
-
-sealed class LogoutScreens(val route: String) {
-    object LOG_LOGIN_SCREEN : LogoutScreens(route = "login_screen")
-    object LOG_VILLAGE_SELECTION_SCREEN : LogoutScreens(route = "village_selection_screen")
-    object LOG_OTP_VERIFICATION : LogoutScreens(route = "otp_verification_screen/{$ARG_MOBILE_NUMBER}")
-
-}
-
 
 fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
 

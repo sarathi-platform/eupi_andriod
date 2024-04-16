@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nrlm.baselinesurvey.BLANK_STRING
@@ -19,15 +20,18 @@ import com.nrlm.baselinesurvey.utils.LogWriter
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
+import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
+import com.patsurvey.nudge.database.service.csv.ExportHelper
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
+import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.StepStatus
@@ -37,6 +41,7 @@ import com.patsurvey.nudge.utils.WealthRank
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -48,12 +53,16 @@ import javax.inject.Inject
 class SettingBSViewModel @Inject constructor(
     private val settingBSUserCase: SettingBSUserCase,
     private val nudgeBaselineDatabase: NudgeBaselineDatabase,
+    val exportHelper: ExportHelper,
     val prefRepo: PrefRepo
 ):BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
+    var showLogoutDialog = mutableStateOf(false)
+    var showLoader = mutableStateOf(false)
+
     val optionList: State<List<SettingOptionModel>> get() = _optionList
     var userType:String= BLANK_STRING
-    private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
+    private val _loaderState = mutableStateOf<LoaderState>(LoaderState(isLoaderVisible = false))
 
     val formAAvailable = mutableStateOf(false)
     val formBAvailable = mutableStateOf(false)
@@ -123,16 +132,26 @@ class SettingBSViewModel @Inject constructor(
         checkFormsAvailabilityForVillage(context,villageId)
     }
 
-    fun performLogout(onLogout: (Boolean) -> Unit) {
-        CoroutineScope(Dispatchers.IO).launch {
+    fun performLogout(context: Context, onLogout: (Boolean) -> Unit) {
+        CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
             val settingUseCaseResponse = settingBSUserCase.logoutUseCase.invoke()
-
-            clearLocalData()
+            if (userType == UPCM_USER) {
+                clearLocalData()
+            } else {
+                exportLocalData(context)
+                clearAccessToken()
+            }
+            delay(2000)
             withContext(Dispatchers.Main) {
+               showLoader.value=false
                 onLogout(settingUseCaseResponse)
             }
 
         }
+    }
+
+    suspend fun exportLocalData(context: Context) {
+        exportHelper.exportAllData(context)
     }
 
     fun clearLocalData() {//TOdo move this logic to repository
@@ -311,5 +330,23 @@ class SettingBSViewModel @Inject constructor(
             settingBSUserCase.exportHandlerSettingUseCase.exportAllData(context)
             com.patsurvey.nudge.utils.LogWriter.buildSupportLogAndShare()
         }
+    }
+
+    fun clearAccessToken() {
+        prefRepo.saveAccessToken("")
+        CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setBackupFileName(
+            getDefaultBackUpFileName(
+                prefRepo.getMobileNumber() ?: ""
+            )
+        )
+        CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setImageBackupFileName(
+            getDefaultBackUpFileName(
+                prefRepo.getMobileNumber() ?: ""
+            )
+        )
+        CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setFileExported(false)
+        prefRepo.setPreviousUserMobile(mobileNumber = prefRepo.getMobileNumber()?: BLANK_STRING)
+        prefRepo.saveSettingOpenFrom(0)
+
     }
 }

@@ -57,6 +57,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
+import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.AddDidiViewModel
@@ -687,6 +688,16 @@ fun showDidiImageDialog(didi: DidiEntity,onCloseClick:()->Unit){
     }
 }
 
+@Composable
+fun CustomLoaderDialog(isVisible:Boolean){
+    Dialog(onDismissRequest = {  }) {
+        Box(modifier = Modifier.size(50.dp,50.dp).background(Color.White), contentAlignment = Alignment.Center){
+            LoaderComponent(visible =isVisible)
+
+        }
+    }
+
+}
 @Composable
 fun showCustomDialog(
     title:String,
