@@ -82,7 +82,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
                         apiResponse?.data?.didiList.forEach {
                             val surveyeeEntity = SurveyeeEntity(
                                 id = 0,
-                                userId = it.userId,
+                                userId = getBaseLineUserId(),
                                 didiId = it.didiId,
                                 didiName = it.didiName ?: BLANK_STRING,
                                 dadaName = it.dadaName ?: BLANK_STRING,
@@ -135,17 +135,18 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
         missionId: Int,
         activityName: String
     ): List<ActivityTaskEntity> {
-        return activityTaskDao.getActivityTask(getUserId(), missionId, activityName)
+        return activityTaskDao.getActivityTask(getBaseLineUserId(), missionId, activityName)
     }
 
     override suspend fun getMissionActivitiesStatusFromDB(
         activityId: Int,
         surveyeeCardState: List<SurveyeeCardState>
     ) {
-        var activities = activityDao.getActivitiesFormIds(getUserId(), activityId)
-        val tasks = activityTaskDao.getActivityTaskFromIds(getUserId(), activities.activityId)
+        var activities = activityDao.getActivitiesFormIds(getBaseLineUserId(), activityId)
+        val tasks =
+            activityTaskDao.getActivityTaskFromIds(getBaseLineUserId(), activities.activityId)
         activityDao.updateActivityStatus(
-            getUserId(),
+            getBaseLineUserId(),
             activityId,
             SurveyState.INPROGRESS.ordinal,
             activities.activityTaskSize
@@ -163,7 +164,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
         val complete =
             if (activities.activityTaskSize == activityCompleteInc) SurveyState.COMPLETED.ordinal else SurveyState.INPROGRESS.ordinal
         activityDao.updateActivityStatus(
-            getUserId(),
+            getBaseLineUserId(),
             activityId,
             complete,
             activities.activityTaskSize - activityCompleteInc
@@ -175,7 +176,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
         activityId: Int,
         isAllTask: Boolean
     ) {
-        activityDao.updateActivityAllTaskStatus(getUserId(), activityId, isAllTask)
+        activityDao.updateActivityAllTaskStatus(getBaseLineUserId(), activityId, isAllTask)
     }
 
     override suspend fun updateActivityStatus(
@@ -185,7 +186,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
     ) {
         if (status == SectionStatus.COMPLETED) {
             activityDao.markActivityComplete(
-                userId = getUserId(),
+                userId = getBaseLineUserId(),
                 missionId = missionId,
                 activityId = activityId,
                 status = status.name,
@@ -193,7 +194,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
             )
         } else {
             activityDao.markActivityStart(
-                userId = getUserId(),
+                userId = getBaseLineUserId(),
                 missionId = missionId,
                 activityId = activityId,
                 status = status.name,
@@ -203,11 +204,11 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getActivitiyStatusFromDB(activityId: Int): MissionActivityEntity {
-        return activityDao.getActivity(getUserId(), activityId)
+        return activityDao.getActivity(getBaseLineUserId(), activityId)
     }
 
-    override fun getUserId(): String {
-        return prefRepo.getMobileNumber() ?: BLANK_STRING
+    override fun getBaseLineUserId(): String {
+        return prefRepo.getBaseLineUserId()
     }
 
 

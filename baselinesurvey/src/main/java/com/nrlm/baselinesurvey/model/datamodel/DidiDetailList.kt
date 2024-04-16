@@ -6,7 +6,7 @@ data class DidiDetailList(
     @SerializedName("comment")
     var comment: String? = null,
     @SerializedName("userId")
-    var userId: Int? = null,
+    var userId: String? = null,
     @SerializedName("villageId")
     var villageId: Int? = null,
     @SerializedName("didiId")

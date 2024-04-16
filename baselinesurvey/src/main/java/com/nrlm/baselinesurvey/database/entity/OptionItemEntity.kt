@@ -21,7 +21,7 @@ data class OptionItemEntity(
     @Expose
     @ColumnInfo(name = "id")
     var id: Int,
-
+    var userId: String? = BLANK_STRING,
     @SerializedName("sectionId")
     @Expose
     @ColumnInfo(name = "sectionId")

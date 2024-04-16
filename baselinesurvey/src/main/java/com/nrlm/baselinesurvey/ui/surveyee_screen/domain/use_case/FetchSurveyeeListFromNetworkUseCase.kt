@@ -27,7 +27,7 @@ class FetchSurveyeeListFromNetworkUseCase(
                             val taskForSubject = repository.getTaskForSubjectId(it.didiId)
                             val surveyeeEntity = SurveyeeEntity(
                                 id = 0,
-                                userId = it.userId,
+                                userId = repository.getBaseLineUserId(),
                                 didiId = it.didiId,
                                 didiName = it.didiName ?: BLANK_STRING,
                                 dadaName = it.dadaName ?: BLANK_STRING,
