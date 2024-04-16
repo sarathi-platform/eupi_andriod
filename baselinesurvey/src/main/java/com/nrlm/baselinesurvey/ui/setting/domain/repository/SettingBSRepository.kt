@@ -14,4 +14,8 @@ interface SettingBSRepository {
 
     fun setAllDataSynced()
 
+    fun getUserMobileNumber():String
+    fun getUserID():String
+    fun getUserEmail():String
+
 }

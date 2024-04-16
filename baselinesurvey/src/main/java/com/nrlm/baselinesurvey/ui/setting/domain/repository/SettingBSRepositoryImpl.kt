@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.setting.domain.repository
 
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.LANGUAGE_OPEN_FROM_SETTING
+import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
@@ -61,5 +62,17 @@ class SettingBSRepositoryImpl(private val prefRepo: PrefRepo,
 
     override fun setAllDataSynced() {
         prefRepo.setDataSyncStatus(false)
+    }
+
+    override fun getUserMobileNumber(): String {
+        return prefRepo.getMobileNumber()?: BLANK_STRING
+    }
+
+    override fun getUserID(): String {
+       return prefRepo.getUserId()
+    }
+
+    override fun getUserEmail(): String {
+        return prefRepo.getPref(PREF_KEY_EMAIL, BLANK_STRING)?: BLANK_STRING
     }
 }

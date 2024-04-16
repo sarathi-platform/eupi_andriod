@@ -4,5 +4,6 @@ data class SettingBSUserCase (
     val getSettingOptionListUseCase: GetSettingOptionListUseCase,
     val logoutUseCase: LogoutUseCase,
     val saveLanguageScreenOpenFromUseCase: SaveLanguageScreenOpenFromUseCase,
-    val clearLocalDBUseCase: ClearLocalDBUseCase
+    val clearLocalDBUseCase: ClearLocalDBUseCase,
+    val getUserDetailsUseCase: GetUserDetailsUseCase
 )

@@ -358,7 +358,7 @@ object LogWriter {
         return@withContext false
     }
 
-    suspend fun buildSupportLogAndShare(mPrefRepo: PrefRepo) {
+    suspend fun buildSupportLogAndShare(userMobileNo:String,userEmail:String) {
         val context = BaselineCore.getAppContext()
         try {
 
@@ -373,9 +373,8 @@ object LogWriter {
                 return
             }
 
-            val sub = mPrefRepo?.getPref(PREF_MOBILE_NUMBER, "")
-            val email = mPrefRepo?.getPref(PREF_KEY_EMAIL, "")
-            val subject = "Sarathi debug log - Email: $email UserId: $sub"
+
+            val subject = "Sarathi debug log - Email: $userEmail UserId: $userMobileNo"
             val message = "The following individual logs are contained within the attachment:\n\n"
             withContext(Dispatchers.Main) {
                 share(

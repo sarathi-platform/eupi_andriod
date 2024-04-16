@@ -1,5 +1,8 @@
 package com.nrlm.baselinesurvey.ui.setting.presentation
 
+import android.net.Uri
+import android.os.Environment
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -11,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
+import androidx.documentfile.provider.DocumentFile
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
@@ -23,9 +28,12 @@ import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSetting
 import com.nrlm.baselinesurvey.ui.setting.domain.SettingTagEnum
 import com.nrlm.baselinesurvey.ui.setting.viewmodel.SettingBSViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.ShowCustomDialog
+import com.nrlm.baselinesurvey.utils.json
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nudge.core.model.SettingOptionModel
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -165,7 +173,10 @@ fun SettingBSScreen(
                 }
 
                 SettingTagEnum.EXPORT_FILE.name -> {
-                    viewModel.compressEventData(context.getString(R.string.share_export_file))
+
+                    viewModel.exportDbAndImages {
+                        viewModel.compressEventData(context.getString(R.string.share_export_file))
+                    }
                 }
 
                 SettingTagEnum.LOAD_SERVER_DATA.name -> {
