@@ -482,8 +482,6 @@ fun NestedLazyList(
                                     isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionIndex, optionItem ->
 
-                                        answeredQuestionCountIncreased(question, false)
-
                                         questionScreenViewModel.onEvent(
                                             QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(
                                                 question,
@@ -538,7 +536,7 @@ fun NestedLazyList(
                                                 )
                                             )
                                         )
-
+                                        answeredQuestionCountIncreased(question, false)
                                     },
                                     questionDetailExpanded = {
                                         scope.launch {
@@ -582,11 +580,6 @@ fun NestedLazyList(
                                     maxCustomHeight = maxHeight,
                                     isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionIndex, optionItems, selectedIndeciesCount ->
-
-                                        answeredQuestionCountIncreased(
-                                            question,
-                                            optionItems.isEmpty()
-                                        )
 
                                         questionScreenViewModel.onEvent(
                                             QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(
@@ -642,6 +635,12 @@ fun NestedLazyList(
                                                 )
                                             )
                                         )
+
+                                        answeredQuestionCountIncreased(
+                                            question,
+                                            optionItems.isEmpty()
+                                        )
+
                                     },
                                     questionDetailExpanded = {
                                         scope.launch {
@@ -772,8 +771,6 @@ fun NestedLazyList(
                                     maxCustomHeight = maxHeight,
                                     isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionIndex, optionItem, selectedValue ->
-
-                                        answeredQuestionCountIncreased(question, false)
 
 
                                         when (optionItem.optionType) {
@@ -931,6 +928,21 @@ fun NestedLazyList(
                                                     )
                                                 )
                                             )
+                                        }
+
+                                        when (question.questionEntity.type) {
+                                            QuestionType.Input.name,
+                                            QuestionType.InputText.name,
+                                            QuestionType.InputNumberEditText.name -> {
+                                                answeredQuestionCountIncreased(
+                                                    question,
+                                                    selectedValue == BLANK_STRING
+                                                )
+                                            }
+
+                                            else -> {
+                                                answeredQuestionCountIncreased(question, false)
+                                            }
                                         }
 
                                     },

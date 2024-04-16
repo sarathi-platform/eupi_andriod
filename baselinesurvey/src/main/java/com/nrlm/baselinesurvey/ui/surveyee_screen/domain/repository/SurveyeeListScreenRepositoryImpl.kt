@@ -37,18 +37,18 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
 
     override suspend fun getSurveyeeList(
         missionId: Int,
-        activityName: String
+        activityId: Int
     ): List<SurveyeeEntity> {
         val didiList = mutableListOf<SurveyeeEntity>()
         //TODO FIx logic here
-        getActivityTasks(missionId = missionId, activityName = activityName).forEach { task ->
+        getActivityTasks(missionId = missionId, activityId).forEach { task ->
             /*if (task.activityName.equals("Conduct Hamlet Survey", true)){
                 val mDidiList = surveyeeEntityDao.getAllDidis()
                 didiList.addAll(mDidiList.filter { it.cohortId == task.didiId }.distinctBy { it.cohortId })
             } else {*/
-                if (surveyeeEntityDao.isDidiExist(task.didiId)) {
-                    didiList.add(surveyeeEntityDao.getDidi(task.didiId))
-                }
+            if (surveyeeEntityDao.isDidiExist(task.didiId)) {
+                didiList.add(surveyeeEntityDao.getDidi(task.didiId))
+            }
 //            }
         }
         return didiList
@@ -130,9 +130,9 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
 
     override suspend fun getActivityTasks(
         missionId: Int,
-        activityName: String
+        activityId: Int
     ): List<ActivityTaskEntity> {
-        return activityTaskDao.getActivityTask(missionId, activityName)
+        return activityTaskDao.getActivityTask(missionId, activityId)
     }
 
     override suspend fun getMissionActivitiesStatusFromDB(

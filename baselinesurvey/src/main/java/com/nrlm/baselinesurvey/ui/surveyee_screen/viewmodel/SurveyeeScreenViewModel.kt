@@ -96,7 +96,7 @@ class SurveyeeScreenViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             activity = surveyeeScreenUseCase.getActivityStateFromDBUseCase.getActivity(activityId)
             val surveyeeListFromDb =
-                surveyeeScreenUseCase.getSurveyeeListUseCase.invoke(missionId, activityName)
+                surveyeeScreenUseCase.getSurveyeeListUseCase.invoke(missionId, activityId)
             if (_surveyeeListState.value.isNotEmpty()) {
                 _surveyeeListState.value.clear()
             }

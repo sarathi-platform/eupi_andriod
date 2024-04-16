@@ -46,7 +46,7 @@ class SectionListScreenRepositoryImpl(
                 survey?.surveyId ?: 0,
                 languageId
             )
-            val optionItemList = optionItemDao.getSurveySectionQuestionOptionForLanguage(
+            val optionItemList = optionItemDao.getSurveySectionQuestionOptionsForLanguage(
                 sectionEntity.sectionId,
                 survey?.surveyId ?: 0,
                 languageId
@@ -124,7 +124,7 @@ class SectionListScreenRepositoryImpl(
                 survey?.surveyId ?: 0,
                 languageId
             )
-            val optionItemList = optionItemDao.getSurveySectionQuestionOptionForLanguage(
+            val optionItemList = optionItemDao.getSurveySectionQuestionOptionsForLanguage(
                 sectionEntity.sectionId,
                 survey?.surveyId ?: 0,
                 languageId
@@ -212,7 +212,12 @@ class SectionListScreenRepositoryImpl(
         missionId: Int,
         status: String
     ) {
-        taskDao.updateTaskStatus(taskId, activityId, missionId, status)
+        taskDao.updateTaskStatus(
+            taskId = taskId,
+            activityId = activityId,
+            missionId = missionId,
+            status = status
+        )
     }
 
     override suspend fun getTaskForSubjectId(surveyId: Int): ActivityTaskEntity? {
