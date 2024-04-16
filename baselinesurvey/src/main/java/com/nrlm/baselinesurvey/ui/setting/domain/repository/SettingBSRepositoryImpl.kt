@@ -58,4 +58,8 @@ class SettingBSRepositoryImpl(private val prefRepo: PrefRepo,
         nudgeBaselineDatabase.surveyEntityDao().deleteAllSurvey()
         nudgeBaselineDatabase.didiInfoEntityDao().deleteAllDidiInfo()
     }
+
+    override fun setAllDataSynced() {
+        prefRepo.setDataSyncStatus(false)
+    }
 }

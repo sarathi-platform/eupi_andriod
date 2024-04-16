@@ -378,7 +378,7 @@ fun getAllFilesInDirectory(appContext: Context,directoryPath: String?,applicatio
 }
 
 
- suspend fun exportAllOldImages(appContext: Context, applicationID: String, userUniqueId: String): Uri? {
+ suspend fun exportAllOldImages(appContext: Context, applicationID: String, userUniqueId: String,timeInMillSec:String): Uri? {
     try {
 
         val filePath =
@@ -387,7 +387,7 @@ fun getAllFilesInDirectory(appContext: Context,directoryPath: String?,applicatio
         val zipFileDirectory = appContext
             .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path
 
-        val zipFileUri = File(zipFileDirectory, "${userUniqueId}_Export_Image.zip")
+        val zipFileUri = File(zipFileDirectory, "${userUniqueId}_Export_Image_${timeInMillSec}.zip")
         val fileUris = getAllFilesInDirectory(appContext,filePath, applicationID = applicationID)
         ZipManager.zip(
             fileUris,
@@ -405,8 +405,9 @@ fun getAllFilesInDirectory(appContext: Context,directoryPath: String?,applicatio
 }
 fun exportOldData(appContext: Context,applicationID: String,userUniqueId:String,databaseName: String,onExportSuccess:()->Unit) {
    CoroutineScope(Dispatchers.IO).launch {
+        val milliSec=System.currentTimeMillis()
         val dbUri = exportDbFile(appContext,applicationID,databaseName)
-        val imageZipUri = exportAllOldImages(appContext, applicationID,userUniqueId)
+        val imageZipUri = exportAllOldImages(appContext, applicationID,userUniqueId,milliSec.toString())
         val zipFileDirectory = appContext
             .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path
         val fileUris = ArrayList<Pair<String, Uri>>()
@@ -418,7 +419,7 @@ fun exportOldData(appContext: Context,applicationID: String,userUniqueId:String,
             fileUris.add(Pair(getFileNameFromURL(it.path ?: ""), it))
 
         }
-        val zipFileUri = File(zipFileDirectory, "${userUniqueId}_Export_old_data.zip")
+        val zipFileUri = File(zipFileDirectory, "${userUniqueId}_Export_old_data_${milliSec}.zip")
         ZipManager.zip(
             fileUris,
             uriFromFile(appContext, zipFileUri,applicationID),

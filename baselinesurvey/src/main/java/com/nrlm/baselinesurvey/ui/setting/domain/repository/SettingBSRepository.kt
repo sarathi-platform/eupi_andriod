@@ -12,4 +12,6 @@ interface SettingBSRepository {
 
     fun clearLocalData()
 
+    fun setAllDataSynced()
+
 }

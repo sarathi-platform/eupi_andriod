@@ -31,7 +31,7 @@ fun DataLoadingScreenComponent(
     LaunchedEffect(key1 = true) {
         if (viewModel.isUserLoggedIn()) {
             viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-            viewModel.compareWithPreviousUser(context) { isDataLoadingAllowed ->
+            viewModel.compareWithPreviousUser{ isDataLoadingAllowed ->
                 if (isDataLoadingAllowed) {
                     if (!viewModel.isAllDataFetched()) {
                         viewModel.fetchAllData {

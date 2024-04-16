@@ -93,6 +93,15 @@ fun SettingBSScreen(
                 SettingTagEnum.LOAD_SERVER_DATA.name
             )
         )
+
+        list.add(
+            SettingOptionModel(
+                6,
+                context.getString(R.string.import_data),
+                BLANK_STRING,
+                SettingTagEnum.IMPORT_DATA.name
+            )
+        )
         viewModel._optionList.value = list
     }
 
@@ -161,6 +170,10 @@ fun SettingBSScreen(
 
                 SettingTagEnum.LOAD_SERVER_DATA.name -> {
                     viewModel.showLoadConfirmationDialog.value=true
+                }
+
+                SettingTagEnum.IMPORT_DATA.name ->{
+
                 }
             }
        },

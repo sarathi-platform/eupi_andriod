@@ -126,6 +126,7 @@ class SettingBSViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val result=settingBSUserCase.clearLocalDBUseCase.invoke()
             if(result){
+                settingBSUserCase.logoutUseCase.setAllDataSyncStatus()
                 withContext(Dispatchers.Main){
                     onPageChange()
                 }
