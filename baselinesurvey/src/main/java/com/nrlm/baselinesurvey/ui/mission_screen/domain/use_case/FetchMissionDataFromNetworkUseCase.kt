@@ -4,8 +4,11 @@ import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
+import com.nrlm.baselinesurvey.network.ApiException
+import com.nrlm.baselinesurvey.network.SUBPATH_GET_MISSION
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepository
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nudge.core.enums.ApiStatus
 import kotlinx.coroutines.delay
 
 class FetchMissionDataFromNetworkUseCase(
@@ -13,9 +16,23 @@ class FetchMissionDataFromNetworkUseCase(
 ) {
     suspend operator fun invoke(): Boolean {
         try {
+            if (!repository.isNeedToCallApi(SUBPATH_GET_MISSION)) {
+                return false
+            }
+            repository.insertApiStatus(SUBPATH_GET_MISSION)
+
             val apiResponse = repository.fetchMissionDataFromServer("en", "BASELINE")
             if (apiResponse.status.equals(SUCCESS, true)) {
                 apiResponse.data?.let { missionApiResponse ->
+                    repository.updateApiStatus(
+                        SUBPATH_GET_MISSION,
+                        status = ApiStatus.SUCCESS.ordinal,
+                        "",
+                        200
+                    )
+                    repository.deleteMissionsFromDB()
+                    repository.deleteMissionActivitiesFromDB()
+                    repository.deleteActivityTasksFromDB()
                     missionApiResponse.forEach { mission ->
                         var activityTaskSize = 0
                         mission.activities.forEach { activity ->
@@ -57,8 +74,22 @@ class FetchMissionDataFromNetworkUseCase(
             } else {
                 return false
             }
+        } catch (apiException: ApiException) {
+            repository.updateApiStatus(
+                SUBPATH_GET_MISSION,
+                status = ApiStatus.FAILED.ordinal,
+                apiException.message ?: "",
+                apiException.getStatusCode()
+            )
+            return false
         } catch (ex: Exception) {
-            BaselineLogger.e("FetchSurveyFromNetworkUseCase", "invoke", ex)
+            repository.updateApiStatus(
+                SUBPATH_GET_MISSION,
+                status = ApiStatus.FAILED.ordinal,
+                ex.message ?: "",
+                500
+            )
+            BaselineLogger.e("FetchUserDetailFromNetworkUseCase", "invoke", ex)
             return false
         }
     }

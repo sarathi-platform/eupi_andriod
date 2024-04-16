@@ -194,7 +194,6 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
         sectionId: Int,
         didiId: Int
     ): List<FormQuestionResponseEntity> {
-        val userId = prefRepo.getMobileNumber() ?: BLANK_STRING
         return formQuestionResponseDao.getFormQuestionCountForSection(
             surveyId = surveyId,
             sectionId = sectionId,

@@ -148,6 +148,7 @@ class EventWriterHelperImpl @Inject constructor(
         questionId: Int,
         questionType: String,
         questionTag: Int,
+        questionDesc: String,
         showQuestion: Boolean,
         saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     ): Events {
@@ -178,7 +179,8 @@ class EventWriterHelperImpl @Inject constructor(
                 questionType = questionType,
                 tag = questionTag,
                 showQuestion = showQuestion,
-                options = optionList
+                options = optionList,
+                questionDesc = questionDesc
             ),
             referenceId = surveyEntity?.referenceId ?: 0
         )

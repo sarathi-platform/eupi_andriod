@@ -4,14 +4,12 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.nrlm.baselinesurvey.FORM_QUESTION_RESPONSE_TABLE
-import com.nudge.syncmanager.BLANK_STRING
 
 @Entity(tableName = FORM_QUESTION_RESPONSE_TABLE)
 data class FormQuestionResponseEntity(
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    var userId: String? = BLANK_STRING,
 
     @ColumnInfo(name = "didiId")
     val didiId: Int,

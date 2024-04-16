@@ -9,6 +9,7 @@ import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
+import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
@@ -224,7 +225,7 @@ class SectionListScreenRepositoryImpl(
     override suspend fun updateSubjectStatus(didiId: Int, surveyState: SurveyState) {
         surveyeeEntityDao.updateDidiSurveyStatus(
             didiSurveyStatus = surveyState.ordinal,
-            didiId = didiId,
+            didiId = didiId
         )
     }
 
@@ -235,4 +236,9 @@ class SectionListScreenRepositoryImpl(
     override fun getBaseLineUserId(): String {
         return prefRepo.getBaseLineUserId()
     }
+
+    override suspend fun getTaskForSubjectId(surveyId: Int): ActivityTaskEntity? {
+        return taskDao.getTaskFromSubjectId(surveyId)
+    }
+
 }

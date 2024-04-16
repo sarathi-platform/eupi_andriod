@@ -427,6 +427,7 @@ class QuestionScreenViewModel @Inject constructor(
                                 questionId = event.questionId,
                                 questionType = event.questionType,
                                 questionTag = event.questionTag,
+                                questionDesc = event.questionDesc,
                                 saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
                             )
                         questionScreenUseCase.eventsWriterUseCase.invoke(
@@ -880,6 +881,9 @@ class QuestionScreenViewModel @Inject constructor(
                                     questionId = question?.questionEntity?.questionId ?: 0,
                                     questionType = question?.questionEntity?.type ?: BLANK_STRING,
                                     questionTag = question?.questionEntity?.tag ?: 0,
+                                    questionDesc = question?.questionEntity?.questionDisplay
+                                        ?: BLANK_STRING,
+                                    showConditionalQuestion = false,
                                     saveAnswerEventOptionItemDtoList = listOf()
                                 )
                             )

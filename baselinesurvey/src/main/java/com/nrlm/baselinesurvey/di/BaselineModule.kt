@@ -295,6 +295,7 @@ object BaselineModule {
     @Singleton
     fun provideSurveyeeScreenUseCase(
         surveyeeListScreenRepository: SurveyeeListScreenRepository,
+        sectionListScreenRepository: SectionListScreenRepository,
         eventsWriterRepository: EventsWriterRepository
     ): SurveyeeScreenUseCase {
         return SurveyeeScreenUseCase(
@@ -304,7 +305,9 @@ object BaselineModule {
                 surveyeeListScreenRepository
             ),
             updateActivityStatusUseCase = UpdateActivityStatusUseCase(surveyeeListScreenRepository),
-            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)
+            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository),
+            updateSubjectStatusUseCase = UpdateSubjectStatusUseCase(sectionListScreenRepository),
+            updateTaskStatusUseCase = UpdateTaskStatusUseCase(sectionListScreenRepository)
         )
     }
 
@@ -590,10 +593,9 @@ object BaselineModule {
     fun provideMissionRepository(
         missionEntityDao: MissionEntityDao,
         missionActivityDao: MissionActivityDao,
-        taskDao: ActivityTaskDao,
-        prefRepo: PrefRepo
+        taskDao: ActivityTaskDao
     ): MissionScreenRepository {
-        return MissionScreenRepositoryImpl(missionEntityDao, missionActivityDao, taskDao, prefRepo)
+        return MissionScreenRepositoryImpl(missionEntityDao, missionActivityDao, taskDao)
     }
 
     @Provides
@@ -602,15 +604,13 @@ object BaselineModule {
         missionActivityDao: MissionActivityDao,
         taskDao: ActivityTaskDao,
         surveyeeEntityDao: SurveyeeEntityDao,
-        missionEntityDao: MissionEntityDao,
-        prefRepo: PrefRepo
+        missionEntityDao: MissionEntityDao
     ): MissionSummaryScreenRepository {
         return MissionSummaryScreenRepositoryImpl(
             missionActivityDao,
             taskDao,
             surveyeeEntityDao,
-            missionEntityDao,
-            prefRepo
+            missionEntityDao
         )
     }
 
