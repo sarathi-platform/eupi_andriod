@@ -18,13 +18,12 @@ class FetchMissionDataFromNetworkUseCase(
                 apiResponse.data?.let { missionApiResponse ->
                     repository.deleteMissionsFromDB()
                     repository.deleteMissionActivitiesFromDB()
-                    // repository.deleteActivityTasksFromDB()
+                    repository.deleteActivityTasksFromDB()
                     missionApiResponse.forEach { mission ->
                         var activityTaskSize = 0
                         mission.activities.forEach { activity ->
                             repository.saveMissionsActivityToDB(
                                 MissionActivityEntity.getMissionActivityEntity(
-                                    userId = repository.getBaseLineUserId(),
                                     missionId = mission.missionId,
                                     activity = activity,
                                     activityTaskSize = activity.tasks.size
@@ -34,7 +33,6 @@ class FetchMissionDataFromNetworkUseCase(
                                 if (task.id != null) {
                                     repository.saveActivityTaskToDB(
                                         ActivityTaskEntity.getActivityTaskEntity(
-                                            userId = repository.getBaseLineUserId(),
                                             missionId = mission.missionId,
                                             activityId = activity.activityId,
                                             activityName = activity.activityName,
@@ -48,7 +46,6 @@ class FetchMissionDataFromNetworkUseCase(
                         delay(100)
                         repository.saveMissionToDB(
                             MissionEntity.getMissionEntity(
-                                userId = repository.getBaseLineUserId(),
                                 activityTaskSize = activityTaskSize,
                                 mission = mission
                             )

@@ -28,7 +28,5 @@ interface SplashScreenRepository {
 
     fun getMobileNumber(): String
 
-    fun clearCoreSharedPref()
-
 
 }
