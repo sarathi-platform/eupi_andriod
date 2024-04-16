@@ -19,6 +19,11 @@ interface InputTypeQuestionAnswerDao {
         didiId: Int
     ): List<InputTypeQuestionAnswerEntity>
 
+    @Query("SELECT * from $INPUT_TYPE_QUESTION_ANSWER_TABLE where userId=:userId")
+    fun getAllInputTypeAnswersForQuestion(
+        userId: String,
+    ): List<InputTypeQuestionAnswerEntity>
+
     @Query("SELECT * from $INPUT_TYPE_QUESTION_ANSWER_TABLE where userId=:userId and surveyId = :surveyId AND sectionId = :sectionId AND didiId = :didiId")
     fun getInputTypeAnswersForQuestionForDidi(
         userId: String,
