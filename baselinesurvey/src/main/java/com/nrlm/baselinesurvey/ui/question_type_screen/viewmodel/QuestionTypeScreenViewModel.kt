@@ -495,6 +495,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
                             questionId = finalFormQuestionResponseList.first().questionId,
                             questionType = QuestionType.Form.name,
                             questionTag = question?.value?.tag ?: -1,
+                            questionDesc = question.value?.questionDisplay ?: BLANK_STRING,
                             saveAnswerEventOptionItemDtoList = completeOptionListForQuestion
                                 .convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto(
                                     QuestionType.Form,
@@ -531,6 +532,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
                             questionId = event.questionId,
                             questionType = event.questionType,
                             questionTag = event.questionTag,
+                            questionDesc = event.questionDesc,
                             saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
                         )
                     formQuestionScreenUseCase.eventsWriterUserCase.invoke(

@@ -429,6 +429,8 @@ fun NestedLazyList(
                                                 questionType = question.questionEntity?.type
                                                     ?: BLANK_STRING,
                                                 questionTag = question.questionEntity.tag,
+                                                questionDesc = question.questionEntity.questionDisplay
+                                                    ?: BLANK_STRING,
                                                 showConditionalQuestion = !optionItem.conditions.isNullOrEmpty(),
                                                 saveAnswerEventOptionItemDtoList = optionItem.convertToSaveAnswerEventOptionItemDto(
                                                     QuestionType.getQuestionTypeFromName(
@@ -525,6 +527,8 @@ fun NestedLazyList(
                                                 questionType = question.questionEntity.type
                                                     ?: BLANK_STRING,
                                                 questionTag = question.questionEntity.tag,
+                                                questionDesc = question.questionEntity.questionDisplay
+                                                    ?: BLANK_STRING,
                                                 showConditionalQuestion = !optionItem.conditions.isNullOrEmpty(),
                                                 saveAnswerEventOptionItemDtoList = optionItem.convertToSaveAnswerEventOptionItemDto(
                                                     QuestionType.getQuestionTypeFromName(
@@ -627,6 +631,8 @@ fun NestedLazyList(
                                                 questionType = question.questionEntity?.type
                                                     ?: BLANK_STRING,
                                                 questionTag = question.questionEntity.tag,
+                                                questionDesc = question.questionEntity.questionDisplay
+                                                    ?: BLANK_STRING,
                                                 showConditionalQuestion = optionItems.any { it.conditions.isNullOrEmpty() },
                                                 saveAnswerEventOptionItemDtoList = optionItems.convertToSaveAnswerEventOptionItemDto(
                                                     QuestionType.getQuestionTypeFromName(
@@ -657,14 +663,16 @@ fun NestedLazyList(
                             QuestionType.DidiDetails.name -> {
                                 val contentData =
                                     sectionDetails.questionContentMapping[question.questionId]
+                                val itemCount =
+                                    questionScreenViewModel.getFormResponseItemCountForQuestion(
+                                        question.questionId
+                                    )
                                 FormTypeQuestionComponent(
                                     question = question.questionEntity,
                                     showQuestionState = question,
                                     questionIndex = index,
                                     contests = contentData,
-                                    itemCount = questionScreenViewModel.getFormResponseItemCountForQuestion(
-                                        question.questionId
-                                    ),
+                                    itemCount = itemCount,
                                     maxCustomHeight = maxHeight,
                                     isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionIndex ->
@@ -891,6 +899,8 @@ fun NestedLazyList(
                                                     questionType = question.questionEntity.type
                                                         ?: BLANK_STRING,
                                                     questionTag = question.questionEntity.tag,
+                                                    questionDesc = question.questionEntity.questionDisplay
+                                                        ?: BLANK_STRING,
                                                     showConditionalQuestion = !optionItem.conditions.isNullOrEmpty(),
                                                     saveAnswerEventOptionItemDtoList = inputTypeQuestionAnswerEntityList.value
                                                         .convertInputTypeQuestionToEventOptionItemDto(
@@ -910,6 +920,8 @@ fun NestedLazyList(
                                                     questionType = question.questionEntity.type
                                                         ?: BLANK_STRING,
                                                     questionTag = question.questionEntity.tag,
+                                                    questionDesc = question.questionEntity.questionDisplay
+                                                        ?: BLANK_STRING,
                                                     showConditionalQuestion = !optionItem.conditions.isNullOrEmpty(),
                                                     saveAnswerEventOptionItemDtoList = mOptionItem.convertToSaveAnswerEventOptionItemDto(
                                                         QuestionType.getQuestionTypeFromName(

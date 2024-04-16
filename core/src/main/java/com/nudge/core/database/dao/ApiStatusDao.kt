@@ -9,12 +9,18 @@ import com.nudge.core.database.entities.ApiStatusEntity
 
 @Dao
 interface ApiStatusDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(apiStatusEntity: ApiStatusEntity)
 
     @Query("SELECT * from $ApiStatusTable where api_end_point =:apiEndpoint ")
-    fun getAPIStatus(apiEndpoint: String): ApiStatusEntity
+    fun getAPIStatus(apiEndpoint: String): ApiStatusEntity?
 
-    @Query("update $ApiStatusTable set status =:status where api_end_point =:apiEndpoint ")
-    fun updateApiStatus(apiEndpoint: String, status: Int)
+    @Query("SELECT count(*) from $ApiStatusTable where status = 2")
+    fun getFailedAPICount(): Int
+
+    @Query("update $ApiStatusTable set status =:status, error_message =:errorMessage, error_code=:errorCode where api_end_point =:apiEndpoint ")
+    fun updateApiStatus(
+        apiEndpoint: String, status: Int, errorMessage: String,
+        errorCode: Int
+    )
 }

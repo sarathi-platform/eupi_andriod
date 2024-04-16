@@ -156,6 +156,7 @@ class BaseLineStartViewModel @Inject constructor(
                             questionId = event.questionId,
                             questionType = event.questionType,
                             questionTag = event.questionTag,
+                            questionDesc = event.questionDesc,
                             saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
                         )
                     startSurveyScreenUserCase.eventsWriterUseCase.invoke(
@@ -401,8 +402,9 @@ class BaseLineStartViewModel @Inject constructor(
                     ).name
                     else didiInfo.phoneNumber ?: BLANK_STRING,
                     referenceId = didiInfo.didiId.toString(),
-                tag = it.optionTag
-            )
+                    tag = it.optionTag,
+                    optionDesc = it.display ?: BLANK_STRING
+                )
             saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
         }
         onEvent(
@@ -413,11 +415,10 @@ class BaseLineStartViewModel @Inject constructor(
                 questionId = question.questionId ?: 0,
                 questionType = question.type ?: QuestionType.Form.name,
                 questionTag = question.tag,
+                questionDesc = question.questionDisplay ?: BLANK_STRING,
                 saveAnswerEventOptionItemDtoList = saveAnswerEventOptionItemDtoList.toList()
             )
         )
-
-
     }
 
 }
