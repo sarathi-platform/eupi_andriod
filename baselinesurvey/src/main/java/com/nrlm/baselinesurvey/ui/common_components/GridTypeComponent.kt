@@ -53,6 +53,7 @@ import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
@@ -466,12 +467,17 @@ fun GridTypeQuestionPreview() {
         optionValue = 1,
         // optionImage = R.drawable.icon_check,
         optionImage = "",
-        optionType = "",
+        optionType = "Grid",
         surveyId = 1,
         questionId = 1,
         id = 1
     )
 
+    val option1State = OptionItemEntityState(
+        optionId = option1.optionId,
+        optionItemEntity = option1,
+        showQuestion = true
+    )
     val option2 = OptionItemEntity(
         optionId = 2,
         display = "NO",
@@ -480,10 +486,15 @@ fun GridTypeQuestionPreview() {
         optionValue = 0,
         // optionImage = R.drawable.icon_close,
         optionImage = "",
-        optionType = "",
+        optionType = "Grid",
         surveyId = 1,
         questionId = 1,
         id = 1
+    )
+    val option2State = OptionItemEntityState(
+        optionId = option2.optionId,
+        optionItemEntity = option2,
+        showQuestion = true
     )
 
     val option3 = OptionItemEntity(
@@ -494,16 +505,49 @@ fun GridTypeQuestionPreview() {
         optionValue = 1,
         // optionImage = R.drawable.icon_check,
         optionImage = "",
-        optionType = "",
+        optionType = "Grid",
         surveyId = 1,
         questionId = 1,
         id = 1
     )
-    val optionItemEntity = listOf(option1, option2, option3, option1)
+    val option3State = OptionItemEntityState(
+        option3.optionId,
+        option3,
+        true
+    )
+
+    val option4 = OptionItemEntity(
+        optionId = 2,
+        display = "Please Specify",
+        weight = 0,
+        summary = "Please Specify",
+        optionValue = 0,
+        // optionImage = R.drawable.icon_close,
+        optionImage = "",
+        optionType = QuestionType.InputText.name,
+        surveyId = 1,
+        questionId = 1,
+        conditional = true,
+        id = 1
+    )
+    val option4State = OptionItemEntityState(
+        optionId = option2.optionId,
+        optionItemEntity = option2,
+        showQuestion = true
+    )
+
+    val optionItemEntity = listOf(option1, option2, option3, option1, option4)
+    val optionItemEntityStateList = listOf(option1State, option2State, option3State, option4State)
 
     BoxWithConstraints() {
         GridTypeComponent(
-            modifier = Modifier.padding(16.dp),
+            showQuestionState = QuestionEntityState(
+                question.questionId,
+                questionEntity = question,
+                optionItemEntityState = optionItemEntityStateList,
+                answerdOptionList = emptyList(),
+                showQuestion = true
+            ),
             question = question,
             optionItemEntityList = optionItemEntity,
             onAnswerSelection = { questionIndex, optionsItem, selectedIndeciesCount ->
