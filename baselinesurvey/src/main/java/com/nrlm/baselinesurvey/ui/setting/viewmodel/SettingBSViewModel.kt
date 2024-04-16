@@ -6,7 +6,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
-import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
+import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.EventsWriterUserCase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SettingBSUserCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
@@ -27,6 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingBSViewModel @Inject constructor(
     private val settingBSUserCase: SettingBSUserCase,
+    private val eventsWriterUserCase: EventsWriterUserCase,
     val prefRepo: PrefRepo
 ):BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
@@ -102,6 +103,24 @@ class SettingBSViewModel @Inject constructor(
                     isLoaderVisible = event.showLoader
                 )
             }
+        }
+    }
+
+    fun regenerateEvents(title: String) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+
+
+                onEvent(LoaderEvent.UpdateLoaderState(true))
+                eventsWriterUserCase.regenerateAllEvents()
+                compressEventData(title)
+
+            } catch (exception: Exception) {
+                BaselineLogger.e("RegenerateEvent", exception.message ?: "")
+                exception.printStackTrace()
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+            }
+
         }
     }
 }

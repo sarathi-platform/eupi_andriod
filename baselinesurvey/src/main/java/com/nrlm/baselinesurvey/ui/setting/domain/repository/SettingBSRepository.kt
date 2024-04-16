@@ -9,5 +9,4 @@ interface SettingBSRepository {
 
     fun saveLanguageScreenOpenFrom()
 
-    fun regenerateAllBaselineEvent()
 }

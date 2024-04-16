@@ -249,11 +249,13 @@ class BaseLineStartViewModel @Inject constructor(
             )
 
             _didiEntity.emit(startSurveyScreenUserCase.getSurveyeeDetailsUserCase.invoke(didiId))
-            _didiInfo.emit(
-                startSurveyScreenUserCase.getSurveyeeDetailsUserCase.getDidiIndoDetail(
-                    didiId
+            startSurveyScreenUserCase.getSurveyeeDetailsUserCase.getDidiIndoDetail(
+                didiId
+            )?.let {
+                _didiInfo.emit(
+                    it
                 )
-            )
+            }
             if (!_didiEntity.value.crpImageLocalPath.isNullOrEmpty()) {
                 photoUri.value = if (didiEntity.value.crpImageLocalPath.contains("|"))
                     didiEntity.value.crpImageLocalPath.split("|")[0].toUri()

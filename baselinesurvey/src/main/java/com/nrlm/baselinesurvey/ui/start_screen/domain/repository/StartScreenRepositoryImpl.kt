@@ -20,7 +20,7 @@ class StartScreenRepositoryImpl @Inject constructor(
         return surveyeeEntityDao.getDidi(didiId)
     }
 
-    override suspend fun getDidiInfoDetails(didiId: Int): DidiInfoEntity {
+    override suspend fun getDidiInfoDetails(didiId: Int): DidiInfoEntity? {
         return didiInfoDao.getDidiInfo(getUserId(), didiId)
     }
 

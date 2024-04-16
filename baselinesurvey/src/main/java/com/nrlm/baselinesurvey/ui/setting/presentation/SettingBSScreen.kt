@@ -82,6 +82,14 @@ fun SettingBSScreen(
                 SettingTagEnum.EXPORT_FILE.name
             )
         )
+        list.add(
+            SettingOptionModel(
+                6,
+                context.getString(R.string.regenerate_all_events),
+                BLANK_STRING,
+                SettingTagEnum.REGENERATE_EVENTS.name
+            )
+        )
         viewModel._optionList.value = list
     }
 
@@ -125,6 +133,10 @@ fun SettingBSScreen(
 
                 SettingTagEnum.EXPORT_FILE.name -> {
                     viewModel.compressEventData(context.getString(R.string.share_export_file))
+                }
+
+                SettingTagEnum.REGENERATE_EVENTS.name -> {
+                    viewModel.regenerateEvents(context.getString(R.string.share_export_file))
                 }
             }
        },

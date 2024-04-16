@@ -3,7 +3,9 @@ package com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_reposit
 import android.net.Uri
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
+import com.nrlm.baselinesurvey.data.domain.EventWriterHelper
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
@@ -13,9 +15,14 @@ import com.nrlm.baselinesurvey.model.datamodel.SectionStatusUpdateEventDto
 import com.nrlm.baselinesurvey.model.datamodel.UpdateActivityStatusEventDto
 import com.nrlm.baselinesurvey.model.datamodel.UpdateMissionStatusEventDto
 import com.nrlm.baselinesurvey.model.datamodel.UpdateTaskStatusEventDto
+import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nrlm.baselinesurvey.utils.convertInputTypeQuestionToEventOptionItemDto
+import com.nrlm.baselinesurvey.utils.convertToSaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.getParentEntityMapForEvent
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
@@ -28,10 +35,13 @@ import com.nudge.core.enums.EventType
 import com.nudge.core.enums.EventWriterName
 import com.nudge.core.eventswriter.EventWriterFactory
 import com.nudge.core.eventswriter.IEventFormatter
+import com.nudge.core.getDefaultBackUpFileName
+import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.getSizeInLong
 import com.nudge.core.json
 import com.nudge.core.model.MetadataDto
 import com.nudge.core.model.getMetaDataDtoFromString
+import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toDate
 import javax.inject.Inject
 
@@ -41,7 +51,9 @@ class EventsWriterRepositoryImpl @Inject constructor(
     private val missionEntityDao: MissionEntityDao,
     private val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
     private val eventsDao: EventsDao,
-    private val eventDependencyDao: EventDependencyDao
+    private val eventDependencyDao: EventDependencyDao,
+    private val baselineDatabase: NudgeBaselineDatabase,
+    private val eventWriterHelper: EventWriterHelper
 ) : EventsWriterRepository {
 
     override suspend fun <T> createEvent(
@@ -376,6 +388,179 @@ class EventsWriterRepositoryImpl @Inject constructor(
 
     override fun getUserId(): String {
         return prefRepo.getMobileNumber() ?: BLANK_STRING
+    }
+
+    override suspend fun regenerateAllEvent() {
+
+        changeFileName("regenerate_")
+        generateResponseEvent()
+        regenerateMATStatusEvent()
+        changeFileName("")
+
+    }
+
+    private fun changeFileName(prefix: String) {
+        val coreSharedPrefs = CoreSharedPrefs.getInstance(BaselineCore.getAppContext())
+        coreSharedPrefs.setBackupFileName(getDefaultBackUpFileName(prefix + prefRepo.getMobileNumber()))
+        coreSharedPrefs.setImageBackupFileName(getDefaultImageBackUpFileName(prefix + prefRepo.getMobileNumber()))
+    }
+
+    private suspend fun generateResponseEvent() {
+        baselineDatabase.inputTypeQuestionAnswerDao()
+            .getAllInputTypeAnswersForQuestion(prefRepo.getUniqueUserId()).forEach {
+                val tag = baselineDatabase.questionEntityDao()
+                    .getQuestionTag(it.surveyId, it.sectionId, it.questionId)
+                val optionList = baselineDatabase.optionItemDao()
+                    .getSurveySectionQuestionOptions(it.sectionId, it.surveyId, it.questionId, 2)
+                var optionItemEntityState = ArrayList<OptionItemEntityState>()
+                optionList.forEach { optionItemEntity ->
+                    optionItemEntityState.add(
+                        OptionItemEntityState(
+                            optionItemEntity.optionId,
+                            optionItemEntity,
+                            !optionItemEntity.conditional
+                        )
+                    )
+                }
+                saveEventToMultipleSources(
+                    eventWriterHelper.createSaveAnswerEvent(
+                        it.surveyId,
+                        it.sectionId,
+                        it.didiId,
+                        it.questionId,
+                        QuestionType.Input.name,
+                        tag,
+                        true,
+                        listOf(it).convertInputTypeQuestionToEventOptionItemDto(
+                            it.questionId,
+                            QuestionType.Input,
+                            optionItemEntityState
+                        )
+                    ),
+                    listOf(), eventType = EventType.STATEFUL,
+                )
+
+
+            }
+
+        baselineDatabase.sectionAnswerEntityDao().getAllAnswer(prefRepo.getUniqueUserId()).forEach {
+            val tag = baselineDatabase.questionEntityDao()
+                .getQuestionTag(it.surveyId, it.sectionId, it.questionId)
+            val optionList = baselineDatabase.optionItemDao()
+                .getSurveySectionQuestionOptions(it.sectionId, it.surveyId, it.questionId, 2)
+
+
+            saveEventToMultipleSources(
+                eventWriterHelper.createSaveAnswerEvent(
+                    it.surveyId,
+                    it.sectionId,
+                    it.didiId,
+                    it.questionId,
+                    it.questionType,
+                    tag,
+                    true,
+                    optionList.convertToSaveAnswerEventOptionItemDto(QuestionType.valueOf(it.questionType))
+                ), eventType = EventType.STATEFUL, eventDependencies = listOf()
+            )
+        }
+    }
+
+    private suspend fun regenerateFromResponseEvent() {
+        //       val formResponseList= baselineDatabase.formQuestionResponseDao().getAllFormResponses(prefRepo.getUniqueUserId())
+//        val questionIdMap= formResponseList.map {
+//            it.questionId
+//        }.distinct()
+//
+//
+//
+//
+//
+//           formResponseList.groupBy { it.questionId }.forEach{formQuestionResponseEntity->
+//
+//               formQuestionResponseEntity
+//               val tag = baselineDatabase.questionEntityDao().getQuestionTag(formQuestionResponseEntity[formQuestionResponseEntity.key].surveyId, formQuestionResponseEntity.sectionId, formQuestionResponseEntity.questionId)
+//
+//               eventWriterHelper.createSaveAnswerEventForFormTypeQuestion(formQuestionResponseEntity.surveyId,formQuestionResponseEntity.sectionId,formQuestionResponseEntity.didiId,formQuestionResponseEntity.questionId,QuestionType.Form.name,
+//                   tag, )
+//           }
+
+    }
+
+    private suspend fun regenerateDidiInfoResponseEvent() {
+
+    }
+
+    private suspend fun regenerateImageUploadEvent() {
+
+    }
+
+    private suspend fun regenerateMATStatusEvent() {
+        val userID = prefRepo.getUniqueUserId()
+        baselineDatabase.missionEntityDao().getMissions(userID).forEach { missionEntity ->
+
+
+            val event = eventWriterHelper.createMissionStatusUpdateEvent(
+                missionId = missionEntity.missionId,
+                SectionStatus.valueOf(
+                    SectionStatus.getSectionStatusNameFromOrdinal(
+                        missionEntity.missionStatus
+                    )
+                )
+            )
+
+            saveEventToMultipleSources(
+                event,
+                eventDependencies = listOf(),
+                eventType = EventType.STATEFUL
+            )
+        }
+        baselineDatabase.missionActivityEntityDao().getAllActivities(userID).forEach {
+
+            val event = eventWriterHelper.createActivityStatusUpdateEvent(
+                missionId = it.missionId,
+                activityId = it.activityId,
+                status = SectionStatus.valueOf(SectionStatus.getSectionStatusNameFromOrdinal(it.activityStatus))
+
+            )
+            saveEventToMultipleSources(
+                event,
+                eventDependencies = listOf(),
+                eventType = EventType.STATEFUL
+            )
+
+
+        }
+
+        baselineDatabase.activityTaskEntityDao().getAllActivityTask(userID).forEach {
+
+            val event = eventWriterHelper.createTaskStatusUpdateEvent(
+                subjectId = it.subjectId,
+
+                sectionStatus = SectionStatus.valueOf(it.status ?: "")
+
+            )
+            saveEventToMultipleSources(
+                event,
+                eventDependencies = listOf(),
+                eventType = EventType.STATEFUL
+            )
+
+        }
+        baselineDatabase.didiSectionProgressEntityDao()
+            .getAllSectionProgress(prefRepo.getUniqueUserId()).forEach {
+                val event = eventWriterHelper.createUpdateSectionStatusEvent(
+                    it.surveyId,
+                    it.sectionId,
+                    it.didiId,
+                    SectionStatus.valueOf(SectionStatus.getSectionStatusNameFromOrdinal(it.sectionStatus))
+                )
+                saveEventToMultipleSources(
+                    event,
+                    eventDependencies = listOf(),
+                    eventType = EventType.STATEFUL
+                )
+
+            }
     }
 
 }

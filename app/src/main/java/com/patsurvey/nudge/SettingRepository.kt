@@ -43,6 +43,7 @@ import com.patsurvey.nudge.model.request.SaveMatchSummaryRequest
 import com.patsurvey.nudge.model.request.getAddDidiRequestPayloadFromString
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.NudgeCore
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.USER_BPC
@@ -69,26 +70,37 @@ class SettingRepository @Inject constructor(
 ) : BaseRepository() {
 
     suspend fun regenerateAllEvent(coreSharedPrefs: CoreSharedPrefs) {
+        try {
 
-        villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2).forEach {
-            coreSharedPrefs.setBackupFileName(getDefaultBackUpFileName("regenerate_${it.id}_" + prefRepo.getMobileNumber()))
-            coreSharedPrefs.setImageBackupFileName(getDefaultImageBackUpFileName("regenerate_${it.id}_" + prefRepo.getMobileNumber()))
-            if (prefRepo.isUserBPC()) {
-                generatePatEvents(it.id)
-                generateWorkFlowStatusEvent(it.id)
-                generateDidiImageEvent(it.id)
-                generateBPCMismatchScoreEvent(it.id)
-            } else {
-                generateAddTolaEvent(it.id)
-                generateAddDidiEvent(it.id)
-                generateWealthRankingEvent(it.id)
-                generatePatEvents(it.id)
-                generateVOEvents(it.id)
-                generateRankingEditEvent(it.id)
-                generateWorkFlowStatusEvent(it.id)
-                generateDidiImageEvent(it.id)
+
+            villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2).forEach {
+                coreSharedPrefs.setBackupFileName(getDefaultBackUpFileName("regenerate_${it.id}_" + prefRepo.getMobileNumber()))
+                coreSharedPrefs.setImageBackupFileName(getDefaultImageBackUpFileName("regenerate_${it.id}_" + prefRepo.getMobileNumber()))
+                if (prefRepo.isUserBPC()) {
+                    generatePatEvents(it.id)
+                    generateWorkFlowStatusEvent(it.id)
+                    generateDidiImageEvent(it.id)
+                    generateBPCMismatchScoreEvent(it.id)
+                } else {
+                    generateAddTolaEvent(it.id)
+                    generateAddDidiEvent(it.id)
+                    generateWealthRankingEvent(it.id)
+                    generatePatEvents(it.id)
+                    generateVOEvents(it.id)
+                    generateRankingEditEvent(it.id)
+                    generateWorkFlowStatusEvent(it.id)
+                    generateDidiImageEvent(it.id)
+                }
             }
+        } catch (exception: Exception) {
+            NudgeLogger.e("RegenerateEvent", exception.message ?: "")
+        } finally {
+
+            coreSharedPrefs.setBackupFileName(getDefaultBackUpFileName(prefRepo.getMobileNumber()))
+            coreSharedPrefs.setImageBackupFileName(getDefaultImageBackUpFileName(prefRepo.getMobileNumber()))
+
         }
+
     }
 
     private suspend fun generateDidiImageEvent(villageId: Int) {
