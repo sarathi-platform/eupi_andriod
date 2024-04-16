@@ -186,7 +186,7 @@ fun SurveyeeCardComponent(
                                         id = if (!surveyeeState.activityName.equals(
                                                 "Conduct Hamlet Survey"
                                             )
-                                        ) R.drawable.home_icn else R.drawable.ic_hamlet_name_icon
+                                        ) R.drawable.ic_vo_name_icon else R.drawable.ic_hamlet_name_icon
                                     ),
                                     contentDescription = "home icon",
                                     tint = Color.Black,

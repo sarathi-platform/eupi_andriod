@@ -392,9 +392,9 @@ class SurveyeeScreenViewModel @Inject constructor(
 
     private fun getSurveyeeAddress(surveyeeEntity: SurveyeeEntity): String {
         return if (!surveyeeEntity.cohortName.equals(NO_TOLA_TITLE, true))
-            surveyeeEntity.houseNo + ", " + surveyeeEntity.cohortName
+            surveyeeEntity.houseNo + ", " + surveyeeEntity.cohortName + ", " + surveyeeEntity.voName
         else
-            surveyeeEntity.houseNo + ", " + surveyeeEntity.villageName
+            surveyeeEntity.houseNo + ", " + surveyeeEntity.villageName + ", " + surveyeeEntity.voName
     }
 
     fun allTaskDone(): Boolean {
