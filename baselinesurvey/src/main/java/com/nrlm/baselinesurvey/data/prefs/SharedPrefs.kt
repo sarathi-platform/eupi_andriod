@@ -155,12 +155,11 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     }
 
     override fun setDataSyncStatus(status: Boolean) {
-        prefs.edit().putBoolean(PREF_KEY_IS_DATA_SYNC, status).apply()
-
+        prefs.edit().putBoolean(PREF_KEY_IS_DATA_SYNC + getMobileNumber(), status).apply()
     }
 
     override fun getDataSyncStatus(): Boolean {
-        return prefs.getBoolean(PREF_KEY_IS_DATA_SYNC, false)
+        return prefs.getBoolean(PREF_KEY_IS_DATA_SYNC + getMobileNumber(), false)
     }
 
     override fun setPreviousUserMobile(mobileNumber: String) {
