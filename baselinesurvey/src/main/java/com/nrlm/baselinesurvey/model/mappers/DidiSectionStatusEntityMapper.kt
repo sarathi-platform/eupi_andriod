@@ -6,15 +6,11 @@ import com.nrlm.baselinesurvey.utils.states.SectionStatus.Companion.getOrdinalFr
 
 object DidiSectionStatusEntityMapper {
 
-    fun getDidiSectionStatusEntity(
-        sectionStatus: List<SectionStatusResponseModel>,
-        userId: String
-    ): List<DidiSectionProgressEntity> {
+    fun getDidiSectionStatusEntity(sectionStatus: List<SectionStatusResponseModel>): List<DidiSectionProgressEntity> {
 
         return sectionStatus.map {
 
             DidiSectionProgressEntity(
-                userId = userId,
                 surveyId = it.surveyId ?: -1,
                 sectionId = it.sectionId?.toInt() ?: -1,
                 sectionStatus = getOrdinalFromSectionStatus(it.status ?: ""),
