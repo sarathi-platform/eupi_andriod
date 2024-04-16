@@ -183,8 +183,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
 
             EventName.UPDATE_TASK_STATUS_EVENT -> {
                 val requestPayload = (eventItem as UpdateTaskStatusEventDto)
-                val mission =
-                    missionEntityDao.getMission(userId = getUserId(), requestPayload.missionId)
+
+                val mission = missionEntityDao.getMission(requestPayload.missionId)
 
                 var event = Events(
                     name = eventName.name,
@@ -220,7 +220,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
 
             EventName.UPDATE_ACTIVITY_STATUS_EVENT -> {
                 val requestPayload = (eventItem as UpdateActivityStatusEventDto)
-                val mission = missionEntityDao.getMission(getUserId(), requestPayload.missionId)
+
+                val mission = missionEntityDao.getMission(requestPayload.missionId)
 
                 var event = Events(
                     name = eventName.name,
@@ -256,7 +257,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
 
             EventName.UPDATE_MISSION_STATUS_EVENT -> {
                 val requestPayload = (eventItem as UpdateMissionStatusEventDto)
-                val mission = missionEntityDao.getMission(getUserId(), requestPayload.missionId)
+
+                val mission = missionEntityDao.getMission(requestPayload.missionId)
 
                 var event = Events(
                     name = eventName.name,
@@ -347,7 +349,6 @@ class EventsWriterRepositoryImpl @Inject constructor(
         didiId: Int
     ): Boolean {
         return didiSectionProgressEntityDao.getSectionProgressForDidi(
-            userId = getUserId(),
             surveyId,
             sectionId,
             didiId
@@ -372,10 +373,6 @@ class EventsWriterRepositoryImpl @Inject constructor(
             BaselineLogger.e("ImageEventWriter", exception.message ?: "")
         }
 
-    }
-
-    override fun getUserId(): String {
-        return prefRepo.getMobileNumber() ?: BLANK_STRING
     }
 
 }

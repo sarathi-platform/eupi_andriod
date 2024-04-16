@@ -10,7 +10,6 @@ interface MissionScreenRepository {
     fun getTotalTaskCountForMission(missionId: Int): Int
 
     fun getPendingTaskCountLiveForMission(missionId: Int): LiveData<Int>
-    fun getUserId(): String
 
 
 }

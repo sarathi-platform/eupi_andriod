@@ -4,14 +4,12 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.nrlm.baselinesurvey.DIDI_SECTION_PROGRESS_TABLE
-import com.nudge.syncmanager.BLANK_STRING
 
 @Entity(tableName = DIDI_SECTION_PROGRESS_TABLE)
 data class DidiSectionProgressEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     val id: Int,
-    var userId: String? = BLANK_STRING,
 
     @ColumnInfo(name = "surveyId")
     val surveyId: Int,
