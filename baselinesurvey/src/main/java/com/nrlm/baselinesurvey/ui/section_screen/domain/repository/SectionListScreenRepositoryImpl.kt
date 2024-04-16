@@ -35,7 +35,11 @@ class SectionListScreenRepositoryImpl(
         surveyId: Int,
         languageId: Int
     ): List<SectionListItem> {
-        val survey = surveyEntityDao.getSurveyDetailForLanguage(surveyId, languageId)
+        val survey = surveyEntityDao.getSurveyDetailForLanguage(
+            userId = getBaseLineUserId(),
+            surveyId,
+            languageId
+        )
         val sectionEntityList =
             sectionEntityDao.getAllSectionForSurveyInLanguage(
                 userId = getBaseLineUserId(),
@@ -45,7 +49,7 @@ class SectionListScreenRepositoryImpl(
         val sectionList = mutableListOf<SectionListItem>()
         sectionEntityList.forEach { sectionEntity ->
             val questionList = questionEntityDao.getSurveySectionQuestionForLanguage(
-                userid = getBaseLineUserId(),
+                userId = getBaseLineUserId(),
                 sectionEntity.sectionId,
                 survey?.surveyId ?: 0,
                 languageId
@@ -119,7 +123,11 @@ class SectionListScreenRepositoryImpl(
     }
 
     override fun getSectionListForSurvey(surveyId: Int, languageId: Int): List<SectionListItem> {
-        val survey = surveyEntityDao.getSurveyDetailForLanguage(surveyId, languageId)
+        val survey = surveyEntityDao.getSurveyDetailForLanguage(
+            userId = getBaseLineUserId(),
+            surveyId,
+            languageId
+        )
         val sectionEntityList =
             sectionEntityDao.getAllSectionForSurveyInLanguage(
                 userId = getBaseLineUserId(),
@@ -129,7 +137,7 @@ class SectionListScreenRepositoryImpl(
         val sectionList = mutableListOf<SectionListItem>()
         sectionEntityList.forEach { sectionEntity ->
             val questionList = questionEntityDao.getSurveySectionQuestionForLanguage(
-                userid = getBaseLineUserId(),
+                userId = getBaseLineUserId(),
                 sectionEntity.sectionId,
                 survey?.surveyId ?: 0,
                 languageId
@@ -197,7 +205,11 @@ class SectionListScreenRepositoryImpl(
         surveyId: Int,
         languageId: Int
     ): List<DidiSectionProgressEntity> {
-        val survey = surveyEntityDao.getSurveyDetailForLanguage(surveyId, languageId)
+        val survey = surveyEntityDao.getSurveyDetailForLanguage(
+            userId = getBaseLineUserId(),
+            surveyId,
+            languageId
+        )
         return didiSectionProgressEntityDao.getAllSectionProgressForDidi(
             userId = getBaseLineUserId(),
             survey?.surveyId ?: 0,

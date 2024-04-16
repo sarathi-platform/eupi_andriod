@@ -21,9 +21,9 @@ interface QuestionEntityDao {
         languageId: Int
     )
 
-    @Query("Select * from $QUESTION_TABLE where userId=:userid and sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
+    @Query("Select * from $QUESTION_TABLE where userId=:userId and sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
     fun getSurveySectionQuestionForLanguage(
-        userid: String,
+        userId: String,
         sectionId: Int,
         surveyId: Int,
         languageId: Int

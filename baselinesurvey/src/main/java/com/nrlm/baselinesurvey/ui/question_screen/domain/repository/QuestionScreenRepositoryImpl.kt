@@ -51,7 +51,8 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         surveyId: Int,
         languageId: Int
     ): SectionListItem {
-        val survey = surveyEntityDao.getSurveyDetailForLanguage(surveyId, languageId)
+        val survey =
+            surveyEntityDao.getSurveyDetailForLanguage(getBaseLineUserId(), surveyId, languageId)
         val sectionEntity = sectionEntityDao.getSurveySectionForLanguage(
             userId = getBaseLineUserId(),
             sectionId,
@@ -59,7 +60,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
             languageId
         )
         val questionList = questionEntityDao.getSurveySectionQuestionForLanguage(
-            userid = getBaseLineUserId(),
+            userId = getBaseLineUserId(),
             sectionEntity.sectionId,
             survey?.surveyId ?: 0,
             languageId
