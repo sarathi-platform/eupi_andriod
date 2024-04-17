@@ -10,6 +10,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
@@ -43,6 +44,7 @@ import com.nrlm.baselinesurvey.utils.getOptionItemEntityFromInputTypeQuestionAns
 import com.nrlm.baselinesurvey.utils.sortedBySectionOrder
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nrlm.baselinesurvey.utils.toOptionItemStateList
 import com.nrlm.baselinesurvey.utils.updateOptionItemEntityListStateForQuestionByCondition
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -107,6 +109,10 @@ class QuestionScreenViewModel @Inject constructor(
 
     var isEditAllowed: Boolean = true
 
+    private var sectionDetailInDefaultLanguage = SectionListItem(
+        languageId = 2
+    )
+
     fun initQuestionScreenHandler(surveyeeId: Int, subjectId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _sectionsList.value = questionScreenUseCase.getSectionsListUseCase.invoke(surveyeeId)
@@ -170,6 +176,11 @@ class QuestionScreenViewModel @Inject constructor(
                     surveyId,
                     selectedlanguageId
                 )
+            sectionDetailInDefaultLanguage = questionScreenUseCase.getSectionUseCase.invoke(
+                sectionId,
+                surveyId,
+                DEFAULT_LANGUAGE_ID
+            )
             val questionAnswerMap = mutableMapOf<Int, List<OptionItemEntity>>()
             _inputTypeQuestionAnswerEntityList.value =
                 questionScreenUseCase.getSectionUseCase.getInputTypeQuestionAnswers(
@@ -428,6 +439,8 @@ class QuestionScreenViewModel @Inject constructor(
                                 questionType = event.questionType,
                                 questionTag = event.questionTag,
                                 questionDesc = event.questionDesc,
+                                referenceOptionList = sectionDetailInDefaultLanguage.optionsItemMap[event.questionId]?.toOptionItemStateList()
+                                    ?: emptyList(),
                                 saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
                             )
                         questionScreenUseCase.eventsWriterUseCase.invoke(
@@ -738,8 +751,21 @@ class QuestionScreenViewModel @Inject constructor(
                         QuestionType.SingleSelectDropdown.name,
                         QuestionType.SingleSelectDropDown.name -> {
                             // Show conditional question based on selected response
-                            val conditionCheckResult = conditionsDto?.checkCondition(event.optionItemEntity.selectedValue ?: BLANK_STRING)
-                            updateQuestionStateForCondition(conditionResult = conditionCheckResult == true, conditionsDto)
+                            val conditionCheckResult = conditionsDto?.checkCondition(
+                                event.optionItemEntity.selectedValue ?: BLANK_STRING
+                            )
+                            updateQuestionStateForCondition(
+                                conditionResult = conditionCheckResult == true,
+                                conditionsDto
+                            )
+
+                            if (conditionCheckResult == false) {
+                                onEvent(
+                                    QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption(
+                                        conditionsDto
+                                    )
+                                )
+                            }
                         }
                     }
                 }
@@ -906,7 +932,9 @@ class QuestionScreenViewModel @Inject constructor(
                             .find { it.questionId == questionItem.questionId }
 
                         val isQuestionAnswered =
-                            sectionDetail.value.questionAnswerMapping.containsKey(question?.questionId)
+                            if (question?.questionEntity?.type == QuestionType.InputNumber.name) inputTypeQuestionAnswerEntityList.value.map { it.questionId }
+                                .contains(question.questionId) else
+                                sectionDetail.value.questionAnswerMapping.containsKey(question?.questionId)
                         if (isQuestionAnswered) {
 
                             CoroutineScope(Dispatchers.IO).launch {

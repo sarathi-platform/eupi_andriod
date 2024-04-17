@@ -15,6 +15,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BaselineApplication.Companion.appScopeLaunch
+import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
@@ -37,6 +38,7 @@ import com.nrlm.baselinesurvey.utils.LocationUtil
 import com.nrlm.baselinesurvey.utils.findTagForId
 import com.nrlm.baselinesurvey.utils.getFileNameFromURL
 import com.nrlm.baselinesurvey.utils.tagList
+import com.nrlm.baselinesurvey.utils.toOptionItemStateList
 import com.nudge.core.compressImage
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventType
@@ -93,6 +95,10 @@ class BaseLineStartViewModel @Inject constructor(
     val adharCardState = mutableStateOf(OptionItemEntityState.getEmptyStateObject())
 
     var sectionDetails: SectionListItem = SectionListItem(
+        languageId = 2
+    )
+
+    private var sectionDetailInDefaultLanguage = SectionListItem(
         languageId = 2
     )
 
@@ -164,6 +170,8 @@ class BaseLineStartViewModel @Inject constructor(
                             questionType = event.questionType,
                             questionTag = event.questionTag,
                             questionDesc = event.questionDesc,
+                            referenceOptionList = sectionDetails.optionsItemMap[event.questionId]?.toOptionItemStateList()
+                                ?: emptyList(),
                             saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
                         )
                     startSurveyScreenUserCase.eventsWriterUseCase.invoke(
@@ -254,6 +262,12 @@ class BaseLineStartViewModel @Inject constructor(
                 sectionId,
                 surveyId,
                 selectedLanguage
+            )
+
+            sectionDetailInDefaultLanguage = startSurveyScreenUserCase.getSectionUseCase.invoke(
+                sectionId,
+                surveyId,
+                DEFAULT_LANGUAGE_ID
             )
 
             _didiEntity.emit(startSurveyScreenUserCase.getSurveyeeDetailsUserCase.invoke(didiId))

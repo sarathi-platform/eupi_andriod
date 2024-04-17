@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DIDI_LIST
@@ -468,6 +469,10 @@ class SurveyeeScreenViewModel @Inject constructor(
 
     fun refreshData() {
         refreshData(fetchDataUseCase)
+    }
+
+    fun getPendingDidiCountLive(activityId: Int): LiveData<Int> {
+        return surveyeeScreenUseCase.getPendingTaskCountLiveUseCase.invoke(activityId)
     }
 
 

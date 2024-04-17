@@ -4,6 +4,7 @@ import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.ActivityForSubjectDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.database.entities.Events
 
@@ -36,6 +37,7 @@ interface EventWriterHelper {
         questionType: String,
         questionTag: Int,
         questionDesc: String,
+        referenceOptionList: List<OptionItemEntityState>,
         showQuestion: Boolean = true,
         saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     ): Events

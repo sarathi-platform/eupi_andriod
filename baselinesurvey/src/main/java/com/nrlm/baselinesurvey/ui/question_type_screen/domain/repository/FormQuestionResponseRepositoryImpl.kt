@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.domain.repository
 
 import androidx.lifecycle.LiveData
+import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ContentDao
 import com.nrlm.baselinesurvey.database.dao.FormQuestionResponseDao
@@ -22,13 +23,14 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
     override suspend fun getFormQuestionOptions(
         surveyId: Int,
         sectionId: Int,
-        questionId: Int
+        questionId: Int,
+        selectDefaultLanguage: Boolean
     ): List<OptionItemEntity> {
         return optionItemDao.getSurveySectionQuestionOptions(
             surveyId = surveyId,
             sectionId = sectionId,
             questionId = questionId,
-            languageId = getSelectedLanguage()
+            languageId = if (selectDefaultLanguage) DEFAULT_LANGUAGE_ID else getSelectedLanguage()
         )
     }
 

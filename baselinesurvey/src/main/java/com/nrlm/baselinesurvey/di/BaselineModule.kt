@@ -296,6 +296,7 @@ object BaselineModule {
     fun provideSurveyeeScreenUseCase(
         surveyeeListScreenRepository: SurveyeeListScreenRepository,
         sectionListScreenRepository: SectionListScreenRepository,
+        missionSummaryScreenRepository: MissionSummaryScreenRepository,
         eventsWriterRepository: EventsWriterRepository
     ): SurveyeeScreenUseCase {
         return SurveyeeScreenUseCase(
@@ -307,7 +308,10 @@ object BaselineModule {
             updateActivityStatusUseCase = UpdateActivityStatusUseCase(surveyeeListScreenRepository),
             eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository),
             updateSubjectStatusUseCase = UpdateSubjectStatusUseCase(sectionListScreenRepository),
-            updateTaskStatusUseCase = UpdateTaskStatusUseCase(sectionListScreenRepository)
+            updateTaskStatusUseCase = UpdateTaskStatusUseCase(sectionListScreenRepository),
+            getPendingTaskCountLiveUseCase = GetPendingTaskCountLiveUseCase(
+                missionSummaryScreenRepository
+            )
         )
     }
 
