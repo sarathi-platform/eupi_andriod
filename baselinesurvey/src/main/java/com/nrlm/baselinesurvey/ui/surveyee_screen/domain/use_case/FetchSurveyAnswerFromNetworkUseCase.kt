@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case
 
-import com.nrlm.baselinesurvey.network.SUBPATH_SURVEY_ANSWERS
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepository
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 
@@ -9,8 +8,6 @@ class FetchSurveyAnswerFromNetworkUseCase(private val repository: DataLoadingScr
     suspend operator fun invoke() {
 
         try {
-            repository.insertApiStatus(SUBPATH_SURVEY_ANSWERS)
-
             repository.getSurveyAnswers()
 
         } catch (ex: Exception) {

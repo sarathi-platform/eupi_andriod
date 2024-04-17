@@ -23,6 +23,7 @@ interface EventWriterHelper {
         questionId: Int,
         questionType: String,
         questionTag: Int,
+        questionDesc: String,
         showQuestion: Boolean = true,
         saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     ): Events
@@ -34,6 +35,7 @@ interface EventWriterHelper {
         questionId: Int,
         questionType: String,
         questionTag: Int,
+        questionDesc: String,
         showQuestion: Boolean = true,
         saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     ): Events
