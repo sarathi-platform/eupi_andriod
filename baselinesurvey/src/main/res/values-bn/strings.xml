@@ -434,6 +434,7 @@
     <string name="fetched_successfully">" ডেটা সফলভাবে আনা হয়েছে৷"</string>
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="retry">"পুনরায় চেষ্টা করা "</string>
+    <string name="madnatory_question_not_marked_error">সমস্ত বাধ্যতামূলক প্রশ্নের উত্তর দেওয়া হয় না, দয়া করে সমস্ত প্রশ্নের উত্তর দিন!</string>
     <string name="view_label">View</string>
     <string name="task_completed_label">"Task Completed - "</string>
 

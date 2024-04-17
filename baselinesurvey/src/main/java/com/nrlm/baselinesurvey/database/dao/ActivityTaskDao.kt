@@ -24,8 +24,8 @@ interface ActivityTaskDao {
     @Query("SELECT * FROM $TASK_TABLE_NAME where taskId = :taskId")
     fun getTaskById(taskId: Int): ActivityTaskEntity
 
-    @Query("SELECT * FROM $TASK_TABLE_NAME where missionId=:missionId and activityName like :activityName")
-    suspend fun getActivityTask(missionId: Int, activityName: String): List<ActivityTaskEntity>
+    @Query("SELECT * FROM $TASK_TABLE_NAME where missionId=:missionId and activityId = :activityId")
+    suspend fun getActivityTask(missionId: Int, activityId: Int): List<ActivityTaskEntity>
 
     @Query("SELECT * FROM $TASK_TABLE_NAME where activityId=:activityId ")
     suspend fun getActivityTaskFromIds(activityId: Int): List<ActivityTaskEntity>

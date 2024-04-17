@@ -467,6 +467,7 @@
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"Start "</string>
     <string name="share_export_image">আৰম্ভ কৰক</string>
+    <string name="madnatory_question_not_marked_error">All mandatory questions not answered, please answer all questions!</string>
     <string name="view_label">View</string>
     <string name="task_completed_label">"Task Completed - "</string>
 </resources>
