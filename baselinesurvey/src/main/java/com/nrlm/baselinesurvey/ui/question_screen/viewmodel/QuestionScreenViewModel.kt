@@ -50,6 +50,7 @@ import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -213,10 +214,13 @@ class QuestionScreenViewModel @Inject constructor(
             contentMapping.value = getContentData()
             initQuestionEntityStateList()
 
+
+            getFormResponseCountsForSection(surveyId, sectionId, surveyeeId)
+            updateSaveUpdateState()
+            delay(300)
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
-            getFormResponseCountsForSection(surveyId, sectionId, surveyeeId)
         }
 
     }
@@ -598,7 +602,7 @@ class QuestionScreenViewModel @Inject constructor(
                     didiId = event.didiId,
                     inputValue = event.inputValue
                 )
-                answeredQuestionCount.add(event.questionId)
+                //answeredQuestionCount.add(event.questionId)
             }
 
             is QuestionScreenEvents.SaveMiscTypeQuestionAnswers -> {
@@ -862,9 +866,17 @@ class QuestionScreenViewModel @Inject constructor(
                 event.optionItemEntityList.forEach { optionItemEntity ->
                     optionItemEntity.conditions?.let {
                         it.forEach { conditionsDto ->
-                            val conditionCheckResult = conditionsDto?.checkCondition(optionItemEntity.display ?: BLANK_STRING)
+                            val conditionCheckResult =
+                                if (event.questionEntityState?.questionEntity?.type == QuestionType.SingleSelectDropdown.name ||
+                                    event.questionEntityState?.questionEntity?.type == QuestionType.SingleSelectDropdown.name
+                                ) conditionsDto?.checkCondition(
+                                    optionItemEntity.selectedValue ?: BLANK_STRING
+                                ) else conditionsDto?.checkCondition(
+                                    optionItemEntity.display ?: BLANK_STRING
+                                )
                             if (conditionsDto?.resultType?.equals(ResultType.Questions.name, true) == true)
                                 updateQuestionStateForCondition(conditionResult = conditionCheckResult == true, conditionsDto)
+
                             if (conditionsDto?.resultType?.equals(ResultType.Options.name, true) == true)
                                 updateOptionStateForCondition(conditionResult = conditionCheckResult == true, conditionsDto, optionItemEntity)
                         }
