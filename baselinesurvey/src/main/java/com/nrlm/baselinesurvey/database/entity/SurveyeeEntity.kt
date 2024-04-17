@@ -106,30 +106,35 @@ data class SurveyeeEntity(
     @SerializedName("movedToThisWeek")
     @Expose
     @ColumnInfo(name = "movedToThisWeek")
-    var movedToThisWeek: Boolean = false
+    var movedToThisWeek: Boolean = false,
+    @SerializedName("voName")
+    @Expose
+    @ColumnInfo(name = "voName")
+    var voName: String = BLANK_STRING
 
 ) {
     companion object {
         fun getEmptySurveyeeEntity() = SurveyeeEntity(
-        id = 0,
-        userId = 101,
-        didiId = 1011,
-        didiName = "",
-        dadaName = "",
-        cohortId = 1012,
-        cohortName = "",
-        houseNo = "",
-        villageId = 0,
-        villageName = "",
-        comment = "",
-        score = 0.0,
-        crpImageName = "",
-        crpImageLocalPath = "",
-        ableBodied = "",
-        casteId = 0,
-        relationship = "",
-        surveyStatus = 0,
-        movedToThisWeek = false
+            id = 0,
+            userId = 101,
+            didiId = 1011,
+            didiName = "",
+            dadaName = "",
+            cohortId = 1012,
+            cohortName = "",
+            houseNo = "",
+            villageId = 0,
+            villageName = "",
+            comment = "",
+            score = 0.0,
+            crpImageName = "",
+            crpImageLocalPath = "",
+            ableBodied = "",
+            casteId = 0,
+            relationship = "",
+            surveyStatus = 0,
+            movedToThisWeek = false,
+            voName = ""
         )
     }
 }

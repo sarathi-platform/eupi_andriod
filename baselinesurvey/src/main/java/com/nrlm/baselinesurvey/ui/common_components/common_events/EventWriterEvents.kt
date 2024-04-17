@@ -29,6 +29,7 @@ sealed class EventWriterEvents {
         val sectionId: Int,
         val didiId: Int,
         val questionId: Int,
+        val questionDesc: String,
         val saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     )
 

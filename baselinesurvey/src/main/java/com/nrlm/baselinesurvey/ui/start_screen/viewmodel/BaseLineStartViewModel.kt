@@ -120,13 +120,20 @@ class BaseLineStartViewModel @Inject constructor(
                 )
             }
 
+            is StartSurveyScreenEvents.SaveDidiInfoInDbEvent -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    startSurveyScreenUserCase.updateSurveyStateUseCase.saveDidiInfoInDB(event.didiInfoEntity)
+                }
+
+            }
+
             is SurveyStateEvents.UpdateDidiSurveyStatus -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     startSurveyScreenUserCase.updateSurveyStateUseCase.invoke(
                         event.didiId,
                         event.didiSurveyState
                     )
-                    startSurveyScreenUserCase.updateSurveyStateUseCase.saveDidiInfoInDB(event.didiInfo)
+                    _didiInfo.value = event.didiInfo
                 }
             }
 

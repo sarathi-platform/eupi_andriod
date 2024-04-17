@@ -96,7 +96,7 @@ class SurveyeeScreenViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             activity = surveyeeScreenUseCase.getActivityStateFromDBUseCase.getActivity(activityId)
             val surveyeeListFromDb =
-                surveyeeScreenUseCase.getSurveyeeListUseCase.invoke(missionId, activityName)
+                surveyeeScreenUseCase.getSurveyeeListUseCase.invoke(missionId, activityId)
             if (_surveyeeListState.value.isNotEmpty()) {
                 _surveyeeListState.value.clear()
             }
@@ -104,9 +104,10 @@ class SurveyeeScreenViewModel @Inject constructor(
                 var surveyeeState = SurveyeeCardState(
                     surveyeeDetails = surveyeeEntity,
                     imagePath = BLANK_STRING,
-                    subtitle = surveyeeEntity.dadaName,
+                    subtitle = "#${surveyeeEntity.houseNo}, ${surveyeeEntity.dadaName}",
                     address = getSurveyeeAddress(surveyeeEntity),
                     activityName = activityName,
+                    isCohortName = (!surveyeeEntity.cohortName.equals(NO_TOLA_TITLE, true)),
                     surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
                 )
                 if (surveyeeEntity.crpImageLocalPath.isNotEmpty()) {
@@ -452,9 +453,9 @@ class SurveyeeScreenViewModel @Inject constructor(
 
     private fun getSurveyeeAddress(surveyeeEntity: SurveyeeEntity): String {
         return if (!surveyeeEntity.cohortName.equals(NO_TOLA_TITLE, true))
-            surveyeeEntity.houseNo + ", " + surveyeeEntity.cohortName
+            surveyeeEntity.cohortName
         else
-            surveyeeEntity.houseNo + ", " + surveyeeEntity.villageName
+            surveyeeEntity.villageName
     }
 
     fun allTaskDone(): Boolean {

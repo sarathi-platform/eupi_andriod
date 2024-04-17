@@ -6,8 +6,8 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeList
 class GetSurveyeeListUseCase(
     private val repository: SurveyeeListScreenRepository
 ) {
-    suspend operator fun invoke(missionId: Int, activityName: String): List<SurveyeeEntity> {
-        return repository.getSurveyeeList(missionId, activityName)
+    suspend operator fun invoke(missionId: Int, activityId: Int): List<SurveyeeEntity> {
+        return repository.getSurveyeeList(missionId, activityId)
     }
 
     suspend fun getSurveyeeListFromNetwork(): Boolean {

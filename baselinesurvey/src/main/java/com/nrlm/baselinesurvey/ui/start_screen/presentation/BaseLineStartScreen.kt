@@ -129,6 +129,9 @@ fun BaseLineStartScreen(
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
                     baseLineStartViewModel.addDidiInfoEvent(didi.value)
+                    baseLineStartViewModel.onEvent(
+                        StartSurveyScreenEvents.SaveDidiInfoInDbEvent(baseLineStartViewModel.didiInfo.value)
+                    )
                     updateDidiDetails(didi, baseLineStartViewModel)
                     navController.popBackStack()
 //                    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
@@ -209,6 +212,7 @@ fun BaseLineStartScreen(
                 onInfoButtonClicked = {}
             ) {
                 baseLineStartViewModel.phoneNumber.value = it
+                updateDidiDetails(didi, baseLineStartViewModel)
             }
             Spacer(modifier = Modifier.height(10.dp))
 

@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -61,13 +62,13 @@ fun MissonRowScreen_1(
 ) {
 
     val completedProgress =
-        (viewModel.missionTaskCountMap.value[mission.missionId]?.minus(pendingCount)) ?: 0
+        (viewModel.missionActivityCountMap.value[mission.missionId]?.minus(pendingCount)) ?: 0
 
     val curPercentage = animateFloatAsState(
-        targetValue = if (viewModel.missionTaskCountMap.value[mission.missionId] == null || viewModel.missionTaskCountMap.value[mission.missionId] == 0)
+        targetValue = if (viewModel.missionActivityCountMap.value[mission.missionId] == null || viewModel.missionActivityCountMap.value[mission.missionId] == 0)
             0.toFloat()
         else
-            (completedProgress).toFloat() / (viewModel.missionTaskCountMap.value[mission.missionId]
+            (completedProgress).toFloat() / (viewModel.missionActivityCountMap.value[mission.missionId]
                 ?: 0).toFloat(),
         label = "",
         animationSpec = tween()
@@ -82,7 +83,7 @@ fun MissonRowScreen_1(
             .clip(RoundedCornerShape(6.dp))
             .border(
                 width = 1.dp,
-                color = if (pendingCount == 0 && viewModel.missionTaskCountMap.value[mission.missionId] != 0) greenOnline else greyLightColor,
+                color = if (pendingCount == 0 && viewModel.missionActivityCountMap.value[mission.missionId] != 0) greenOnline else greyLightColor,
                 shape = RoundedCornerShape(6.dp)
             )
             .background(Color.Transparent)
@@ -91,23 +92,23 @@ fun MissonRowScreen_1(
         Column(
             modifier = modifier
                 .fillMaxWidth()
-                .background(if (pendingCount == 0 && viewModel.missionTaskCountMap.value[mission.missionId] != 0) greenLight else white)
+                .background(if (pendingCount == 0 && viewModel.missionActivityCountMap.value[mission.missionId] != 0) greenLight else white)
         ) {
             //TODO in future in uncomment whenever get correct data from backend
 //            Box(
 //                Modifier
 //                    .fillMaxWidth()
-//                    .background(if (pendingCount == 0 && viewModel.missionTaskCountMap.value[mission.missionId] != 0) greenOnline else greyLightColor)
+//                    .background(if (pendingCount == 0 && viewModel.missionActivityCountMap.value[mission.missionId] != 0) greenOnline else greyLightColor)
 //                    .padding(horizontal = 16.dp, vertical = 5.dp)
 //            ) {
 //                Text(
-//                    text = if (pendingCount == 0 && viewModel.missionTaskCountMap.value[mission.missionId] != 0) "Completed"
+//                    text = if (pendingCount == 0 && viewModel.missionActivityCountMap.value[mission.missionId] != 0) "Completed"
 //                    else stringResource(
 //                        id = R.string.start_by_x_date,
 //                        missionDueDate
 //                    ),
 //                    style = smallerTextStyle,
-//                    color = if (pendingCount == 0 && viewModel.missionTaskCountMap.value[mission.missionId] != 0) white else black100Percent,
+//                    color = if (pendingCount == 0 && viewModel.missionActivityCountMap.value[mission.missionId] != 0) white else black100Percent,
 //                )
 //            }
 
@@ -134,7 +135,7 @@ fun MissonRowScreen_1(
                 )
             }
             Text(
-                text = "Task Completed - ${completedProgress}/${viewModel.missionTaskCountMap.value[mission.missionId]}",
+                text = stringResource(R.string.task_completed_label) + "${completedProgress}/${viewModel.missionActivityCountMap.value[mission.missionId]}",
                 fontFamily = NotoSans,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
@@ -189,7 +190,9 @@ fun MissonRowScreen_1(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = if (pendingCount == 0 && viewModel.missionTaskCountMap.value[mission.missionId] != 0) "View" else "Start",
+                        text = if (pendingCount == 0 && viewModel.missionActivityCountMap.value[mission.missionId] != 0) stringResource(
+                            R.string.view_label
+                        ) else stringResource(id = R.string.start).trim(),
                         style = smallTextStyleMediumWeight,
                         color = white
                     )

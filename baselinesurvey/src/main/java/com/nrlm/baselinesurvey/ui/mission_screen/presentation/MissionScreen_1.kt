@@ -193,7 +193,7 @@ fun MissionScreen_1(
                         items(filteredMissionList.value) { mission ->
 
                             val pendingTaskCountForMission =
-                                viewModel.getPendingTaskCountForMissionLive(mission.missionId)
+                                viewModel.getPendingActivityCountForMissionLive(mission.missionId)
                                     .observeAsState().value ?: 0
 
                             MissonRowScreen_1(
