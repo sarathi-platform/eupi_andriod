@@ -13,5 +13,6 @@ data class SurveyeeCardState(
     val address: String = BLANK_STRING,
     val surveyState: SurveyState,
     val activityName: String,
+    val isCohortName: Boolean = false,
     var isChecked: MutableState<Boolean> = mutableStateOf(false)
 )

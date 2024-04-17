@@ -411,10 +411,10 @@
     <string name="average_travel_cost_comparision">"গড় ভ্রমণ খরচ"</string>
     <string name="questions_data_tab_title">Questions</string>
     <string name="section_information_tab_title">Sections</string>
-    <string name="search_hamlet">Search Hamlet</string>
-    <string name="mission_completed_text">Mission Completed</string>
-    <string name="aadhar_card_titile_assam">Do you have aadhar card?</string>
-    <string name="voter_card_title_assam">Do you have voter card?</string>
+    <string name="search_hamlet">হ্যামলেট অনুসন্ধান করুন</string>
+    <string name="mission_completed_text">মিশন সম্পন্ন</string>
+    <string name="aadhar_card_titile_assam">আপনার কি আধার কার্ড আছে?</string>
+    <string name="voter_card_title_assam">আপনার ভোটার কার্ড আছে?</string>
     <string name="not_able_to_load">ডেটা লোড করতে অক্ষম অনুগ্রহ করে আবার চেষ্টা করুন..</string>
     <string name="designation_comparision_and_label">Designation</string>
     <string name="didi_info">দিদির তথ্য</string>
@@ -435,6 +435,8 @@
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="retry">"পুনরায় চেষ্টা করা "</string>
     <string name="madnatory_question_not_marked_error">সমস্ত বাধ্যতামূলক প্রশ্নের উত্তর দেওয়া হয় না, দয়া করে সমস্ত প্রশ্নের উত্তর দিন!</string>
+    <string name="view_label">View</string>
+    <string name="task_completed_label">"Task Completed - "</string>
 
 
 </resources>
