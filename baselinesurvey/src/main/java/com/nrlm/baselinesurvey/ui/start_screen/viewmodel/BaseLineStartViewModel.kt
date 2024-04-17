@@ -421,4 +421,12 @@ class BaseLineStartViewModel @Inject constructor(
         )
     }
 
+    fun saveTempFilePath(imagePath: String) {
+        startSurveyScreenUserCase.saveSurveyeeImagePathUseCase.saveTempPath(imagePath)
+    }
+
+    fun getTempFilePath(): String {
+        return startSurveyScreenUserCase.saveSurveyeeImagePathUseCase.getTempPath()
+    }
+
 }

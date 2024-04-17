@@ -76,6 +76,7 @@ import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.uriFromFile
 import kotlinx.coroutines.flow.StateFlow
+import java.io.File
 
 @SuppressLint("StateFlowValueCalledInComposition", "UnrememberedMutableState")
 @Composable
@@ -224,6 +225,14 @@ fun BaseLineStartScreen(
                         "rememberLauncherForActivityResult -> onResult = success: $success"
                     )
                     if (success) {
+                        if (baseLineStartViewModel.photoUri.value == Uri.EMPTY) {
+                            baseLineStartViewModel.imagePath =
+                                baseLineStartViewModel.getTempFilePath()
+                            val uri =
+                                uriFromFile(localContext, File(baseLineStartViewModel.imagePath))
+                            baseLineStartViewModel.tempUri = uri
+                        }
+
                         baseLineStartViewModel.onEvent(
                             StartSurveyScreenEvents.SaveImagePathForSurveyee(
                                 localContext
@@ -288,6 +297,9 @@ fun BaseLineStartScreen(
                                             imageFile.absolutePath
                                         val uri = uriFromFile(localContext, imageFile)
                                         baseLineStartViewModel.tempUri = uri
+                                        baseLineStartViewModel.saveTempFilePath(
+                                            baseLineStartViewModel.imagePath
+                                        )
                                         cameraLauncher.launch(uri)
                                     }
 
@@ -344,6 +356,10 @@ fun BaseLineStartScreen(
                                             imageFile.absolutePath
                                         val uri = uriFromFile(localContext, imageFile)
                                         baseLineStartViewModel.tempUri = uri
+                                        baseLineStartViewModel.saveTempFilePath(
+                                            baseLineStartViewModel.imagePath
+                                        )
+
                                         cameraLauncher.launch(uri)
                                     }
 
@@ -432,6 +448,8 @@ fun BaseLineStartScreen(
                                     "Retake Photo button Clicked: $uri"
                                 )
                                 baseLineStartViewModel.tempUri = uri
+                                baseLineStartViewModel.saveTempFilePath(baseLineStartViewModel.imagePath)
+
 //                                patDidiSummaryViewModel.photoUri = uri
                                 cameraLauncher.launch(uri)
                                 baseLineStartViewModel.shouldShowPhoto.value = false
@@ -490,6 +508,8 @@ fun BaseLineStartScreen(
                                     "Retake Photo button Clicked: $uri"
                                 )
                                 baseLineStartViewModel.tempUri = uri
+                                baseLineStartViewModel.saveTempFilePath(baseLineStartViewModel.imagePath)
+
 //                                patDidiSummaryViewModel.photoUri = uri
                                 cameraLauncher.launch(uri)
                                 baseLineStartViewModel.shouldShowPhoto.value = false
@@ -559,6 +579,8 @@ fun BaseLineStartScreen(
                                 baseLineStartViewModel.imagePath = imageFile.absolutePath
                                 val uri = uriFromFile(localContext, imageFile)
                                 baseLineStartViewModel.tempUri = uri
+                                baseLineStartViewModel.saveTempFilePath(baseLineStartViewModel.imagePath)
+
                                 cameraLauncher.launch(uri)
                             }
 
@@ -611,6 +633,8 @@ fun BaseLineStartScreen(
                                 baseLineStartViewModel.imagePath = imageFile.absolutePath
                                 val uri = uriFromFile(localContext, imageFile)
                                 baseLineStartViewModel.tempUri = uri
+                                baseLineStartViewModel.saveTempFilePath(baseLineStartViewModel.imagePath)
+
                                 cameraLauncher.launch(uri)
                             }
 
