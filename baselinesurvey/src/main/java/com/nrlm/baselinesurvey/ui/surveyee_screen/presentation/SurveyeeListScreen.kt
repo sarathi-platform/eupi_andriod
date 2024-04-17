@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
@@ -29,7 +28,6 @@ import com.nrlm.baselinesurvey.ui.common_components.ToolbarWithMenuComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreenActions.CheckBoxClicked
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.SurveyeeScreenViewModel
-import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.FilterListState
@@ -89,7 +87,7 @@ fun SurveyeeListScreen(
         navController=navController,
         onBackIconClick = { navController.popBackStack() },
         onBottomUI = {
-            if (viewModel.isEnableNextBTn.value && viewModel.filteredSurveyeeListState.value.isNotEmpty()) {
+            if (viewModel.isEnableNextBTn.value && viewModel.filteredSurveyeeListState.value.isNotEmpty() && viewModel.activity?.status == SectionStatus.INPROGRESS.name) {
 
                 DoubleButtonBox(
                     modifier = Modifier
@@ -170,8 +168,6 @@ fun handleButtonClick(
     when (buttonName) {
         is ButtonName.START_BUTTON -> {
             navigateToSectionListScreen(surveyeeId, surveyId, navController)
-            // navigateToBaseLineStartScreen(surveyeeId, surveyId, navController)
-//            navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$surveyeeId")
         }
 
         is ButtonName.CONTINUE_BUTTON -> {

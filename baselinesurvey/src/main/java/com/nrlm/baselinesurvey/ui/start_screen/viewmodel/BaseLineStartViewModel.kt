@@ -156,6 +156,7 @@ class BaseLineStartViewModel @Inject constructor(
                             questionId = event.questionId,
                             questionType = event.questionType,
                             questionTag = event.questionTag,
+                            questionDesc = event.questionDesc,
                             saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
                         )
                     startSurveyScreenUserCase.eventsWriterUseCase.invoke(
@@ -387,19 +388,23 @@ class BaseLineStartViewModel @Inject constructor(
         )
         val question = sectionDetails.questionList.first()
         val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
-        sectionDetails.optionsItemMap[question.questionId]?.forEach {
-            val saveAnswerEventOptionItemDto = SaveAnswerEventOptionItemDto(
-                optionId = it.optionId ?: 0,
-                selectedValue = if (tagList.findTagForId(it.optionTag)
-                        .equals("Aadhar", true)
-                ) SHGFlag.fromInt(didiInfo.isAdharCard ?: 0).name
-                else if (tagList.findTagForId(it.optionTag).equals("Voter", true)) SHGFlag.fromInt(
-                    didiInfo.isVoterCard ?: 0
-                ).name
-                else didiInfo.phoneNumber ?: BLANK_STRING,
-                referenceId = didiInfo.didiId.toString(),
-                tag = it.optionTag
-            )
+        sectionDetails.optionsItemMap[question.questionId]?.filter { it.optionType != QuestionType.Image.name }
+            ?.forEach {
+                val saveAnswerEventOptionItemDto = SaveAnswerEventOptionItemDto(
+                    optionId = it.optionId ?: 0,
+                    selectedValue = if (tagList.findTagForId(it.optionTag)
+                            .equals("Aadhar", true)
+                    ) SHGFlag.fromInt(didiInfo.isAdharCard ?: 0).name
+                    else if (tagList.findTagForId(it.optionTag)
+                            .equals("Voter", true)
+                    ) SHGFlag.fromInt(
+                        didiInfo.isVoterCard ?: 0
+                    ).name
+                    else didiInfo.phoneNumber ?: BLANK_STRING,
+                    referenceId = didiInfo.didiId.toString(),
+                    tag = it.optionTag,
+                    optionDesc = it.display ?: BLANK_STRING
+                )
             saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
         }
         onEvent(
@@ -410,11 +415,10 @@ class BaseLineStartViewModel @Inject constructor(
                 questionId = question.questionId ?: 0,
                 questionType = question.type ?: QuestionType.Form.name,
                 questionTag = question.tag,
+                questionDesc = question.questionDisplay ?: BLANK_STRING,
                 saveAnswerEventOptionItemDtoList = saveAnswerEventOptionItemDtoList.toList()
             )
         )
-
-
     }
 
 }

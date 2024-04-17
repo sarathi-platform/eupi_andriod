@@ -230,8 +230,8 @@
     <string name="vo_endorsement">VO অনুমোদন</string>
     <string name="close">বন্ধ কৰক</string>
     <string name="add_more">আৰু যোগ কৰক</string>
-    <string name="bpc_didi_screen_title">PAT প্ৰমাণীকৰণৰ বাবে বাইদেউসকলৰ  তালিকা</string>
-    <string name="bpc_final_pat_submition_message">আপুনি BPMৰ অনুমোদনৰ বাবে এই VO দাখিল কৰিব বিচাৰে নেকি?</string>
+    <string name="bpc_didi_screen_title">প্ৰমাণীকৰণৰ বাবে ডিডিছ উপলব্ধ</string>
+    <string name="bpc_final_pat_submition_message">আপুনি %1$s didis ৰ বাবে PAT সত্যাপন জমা দিব বিচাৰেনে?</string>
     <string name="didi_selected_text_singular">%1$s বাইদেউৰ নিৰ্বাচিত কৰা হৈছে</string>
     <string name="didi_selected_text_plural">%1$s বাইদেউসকলৰ নিৰ্বাচিত কৰা হৈছে</string>
     <string name="didi_replace_button">প্ৰতিস্থাপন কৰক</string>
@@ -390,6 +390,10 @@
     <string name="data_lost_message">" আন এজন ব্যৱহাৰকাৰী ধৰা পৰিছে যদি আপুনি আগবাঢ়ি যায় আপুনি পূৰ্বৰ ব্যৱহাৰকাৰীৰ তথ্য হেৰুৱাব"</string>
     <string name="proceed">" আগবাঢ়ক"</string>
     <string name="fetched_successfully">" তথ্য সফলতাৰে আহৰণ কৰা হৈছে"</string>
+    <string name="load_server_data">চাৰ্ভাৰ ডাটা লোড কৰক</string>
+    <string name="are_you_sure_you_want_to_load_data_from_server">" আপুনি চাৰ্ভাৰৰ পৰা সতেজ তথ্য পুনৰায় ল'ড কৰাটো নিশ্চিত নেকি যি অচিংক কৰা তথ্য হেৰুৱাব পাৰে?"</string>
+    <string name="didi_verified_by_bpc">বিপিচিৰ দ্বাৰা পৰীক্ষা কৰা ডিডিছ</string>
+    <string name="bpc_verification_in_progress_village_banner_text">BPC যাচাইকরণ প্রক্রিয়াধীন</string>
 
 
 </resources>

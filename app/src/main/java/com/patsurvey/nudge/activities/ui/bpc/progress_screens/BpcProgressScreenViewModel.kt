@@ -25,6 +25,7 @@ import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.calculateMatchPercentage
 import com.patsurvey.nudge.utils.calculateScore
 import com.patsurvey.nudge.utils.toWeightageRatio
 import com.patsurvey.nudge.utils.updateLastSyncTime
@@ -65,6 +66,8 @@ class BpcProgressScreenViewModel @Inject constructor(
 
     val stepListLive: LiveData<List<StepListEntity>> = repository.getStepListForVillageLive()
 
+    val _passPercentage = MutableStateFlow(0)
+    val passPercentage: StateFlow<Int> get() = _passPercentage
     fun isLoggedIn() = (repository.prefRepo.getAccessToken()?.isNotEmpty() == true)
 
     fun init(context: Context) {
@@ -75,14 +78,15 @@ class BpcProgressScreenViewModel @Inject constructor(
 
     private fun fetchDataFromServer(forceRefresh: Boolean = false) {
         appScopeLaunch(Dispatchers.IO) {
-            getBpcSummaryDataForSelectedVillage(forceRefresh)
             fetchBpcDataForVillage(forceRefresh, networkCallbackListener = object : NetworkCallbackListener {
                 override fun onSuccess() {
                     appScopeLaunch(Dispatchers.IO) {
+                        getBpcSummaryDataForSelectedVillage(forceRefresh)
                         delay(100)
                         setBpcVerificationCompleteForVillages()
+                        getBpcCompletedDidiCount()
                         repository.updateVillageDataLoadStatus(getSelectedVillage().id, 1)
-                        delay(200)
+                        delay(300)
                         withContext(Dispatchers.Main) {
                             showLoader.value = false
                         }
@@ -241,14 +245,19 @@ class BpcProgressScreenViewModel @Inject constructor(
     fun getBpcCompletedDidiCount() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val didiList = repository.getAllDidisForVillage()
-//            val passingScore = questionListDao.getPassingScore()
+            val passingScore = repository.getPassingScore()
             val verifiedDidiCount =
-                didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size/*didiList.filter { (it.score?.toInt() ?: 0) >= passingScore && (it.crpScore?.toInt() ?: 0) >= passingScore }.size*/
+                didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }/*didiList.filter { (it.score?.toInt() ?: 0) >= passingScore && (it.crpScore?.toInt() ?: 0) >= passingScore }.size*/
+
+            _passPercentage.value = calculateMatchPercentage(verifiedDidiCount, passingScore)
+
             withContext(Dispatchers.Main) {
-                bpcCompletedDidiCount.value = verifiedDidiCount
+                bpcCompletedDidiCount.value = verifiedDidiCount.size
             }
         }
+
     }
+
 
     fun calculateDidiScore(didiId: Int) {
         var passingMark = 0

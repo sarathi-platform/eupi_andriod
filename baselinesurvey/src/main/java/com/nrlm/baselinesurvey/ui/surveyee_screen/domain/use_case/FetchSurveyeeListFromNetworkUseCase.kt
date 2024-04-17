@@ -4,20 +4,39 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_TOLA_TITLE
 import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
+import com.nrlm.baselinesurvey.network.ApiException
+import com.nrlm.baselinesurvey.network.SUBPATH_GET_DIDI_LIST
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepository
+import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.toCamelCase
+import com.nudge.core.enums.ApiStatus
 
 class FetchSurveyeeListFromNetworkUseCase(
     private val repository: DataLoadingScreenRepository
 ) {
 
     suspend operator fun invoke(): Boolean {
+        try {
+
+
+            if (!repository.isNeedToCallApi(SUBPATH_GET_DIDI_LIST)) {
+                return false
+            }
+            repository.insertApiStatus(SUBPATH_GET_DIDI_LIST)
+
         val userId = repository.getUserId()
         val apiResponse = repository.fetchSurveyeeListFromNetwork(userId)
         val localSurveyeeEntityList = repository.fetchSurveyeeListFromLocalDb()
         if (apiResponse?.status?.equals(SUCCESS, false) == true) {
             if (apiResponse?.data?.didiList != null) {
+                repository.updateApiStatus(
+                    SUBPATH_GET_DIDI_LIST,
+                    status = ApiStatus.SUCCESS.ordinal,
+                    "",
+                    200
+                )
+
 //                repository.deleteSurveyeeList()
                 apiResponse?.data?.didiList.forEach {
                     if (!localSurveyeeEntityList.map { surveyeeEntity -> surveyeeEntity.didiId }.contains(it.didiId)) { //TODO Modify this if to keep backend changes as well
@@ -81,5 +100,23 @@ class FetchSurveyeeListFromNetworkUseCase(
         } else {
             return false
         }
+        } catch (apiException: ApiException) {
+            repository.updateApiStatus(
+                SUBPATH_GET_DIDI_LIST,
+                status = ApiStatus.FAILED.ordinal,
+                apiException.message ?: "",
+                apiException.getStatusCode()
+            )
+            return false
+        } catch (ex: Exception) {
+            repository.updateApiStatus(
+                SUBPATH_GET_DIDI_LIST,
+                status = ApiStatus.FAILED.ordinal,
+                ex.message ?: "",
+                500
+            )
+            BaselineLogger.e("FetchUserDetailFromNetworkUseCase", "invoke", ex)
+            return false
     }
+}
 }

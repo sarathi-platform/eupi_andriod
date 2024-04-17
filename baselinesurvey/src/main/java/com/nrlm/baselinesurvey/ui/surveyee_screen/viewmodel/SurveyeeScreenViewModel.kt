@@ -12,10 +12,12 @@ import com.nrlm.baselinesurvey.NO_TOLA_TITLE
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
+import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.ui.common_components.common_events.ApiStatusEvent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
+import com.nrlm.baselinesurvey.ui.section_screen.presentation.SectionScreenEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
@@ -83,6 +85,7 @@ class SurveyeeScreenViewModel @Inject constructor(
     var activityName: String = ""
     var activityId: Int = 0
 
+    var activity: MissionActivityEntity? = null
 
     @SuppressLint("SuspiciousIndentation")
     fun init(missionId: Int, activityName: String, activityId: Int) {
@@ -91,6 +94,7 @@ class SurveyeeScreenViewModel @Inject constructor(
         this.activityId = activityId
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            activity = surveyeeScreenUseCase.getActivityStateFromDBUseCase.getActivity(activityId)
             val surveyeeListFromDb =
                 surveyeeScreenUseCase.getSurveyeeListUseCase.invoke(missionId, activityName)
             if (_surveyeeListState.value.isNotEmpty()) {
@@ -218,10 +222,33 @@ class SurveyeeScreenViewModel @Inject constructor(
                 }
             }
 
-            is SurveyeeListEvents.UpdateActivityStatus -> {
-                CoroutineScope(Dispatchers.IO).launch {
-
+            is SurveyeeListEvents.UpdateSurveyeeStatusForUi -> {
+                if (event.isFilterApplied) {
+                    val mFilteredTolaMapSurveyeeListState =
+                        filteredTolaMapSurveyeeListState.value.toMutableMap()
+                    val surveyeeList =
+                        filteredTolaMapSurveyeeListState.value[event.key]?.toMutableList()
+                    var surveyee =
+                        surveyeeList?.find { it.surveyeeDetails.didiId == event.surveyeeId }
+                    val index =
+                        surveyeeList?.map { it.surveyeeDetails.didiId }?.indexOf(event.surveyeeId)
+                    surveyee = surveyee?.copy(surveyState = event.state)
+                    surveyeeList?.removeAt(index!!)
+                    surveyeeList?.add(index!!, surveyee!!)
+                    mFilteredTolaMapSurveyeeListState[event.key] = surveyeeList?.toList()!!
+                    _filteredTolaMapSurveyeeListState.value = mFilteredTolaMapSurveyeeListState
+                } else {
+                    val mFilteredSurveyeeList = filteredSurveyeeListState.value.toMutableList()
+                    var surveyee =
+                        mFilteredSurveyeeList?.find { it.surveyeeDetails.didiId == event.surveyeeId }
+                    val index = mFilteredSurveyeeList?.map { it.surveyeeDetails.didiId }
+                        ?.indexOf(event.surveyeeId)
+                    surveyee = surveyee?.copy(surveyState = event.state)
+                    mFilteredSurveyeeList?.removeAt(index!!)
+                    mFilteredSurveyeeList?.add(index!!, surveyee!!)
+                    _filteredSurveyeeListState.value = mFilteredSurveyeeList
                 }
+
             }
 
             is SurveyeeListEvents.UpdateActivityAllTask -> {
@@ -257,11 +284,44 @@ class SurveyeeScreenViewModel @Inject constructor(
                     init(missionId, activityName, activityId)
                     showCustomToast(
                         BaselineCore.getAppContext(), BaselineCore.getAppContext().getString(
-                        R.string.fetched_successfully))
+                            R.string.fetched_successfully
+                        )
+                    )
                 } else {
                     showCustomToast(
                         BaselineCore.getAppContext(),
-                        BaselineCore.getAppContext().getString(R.string.refresh_failed_please_try_again)
+                        BaselineCore.getAppContext()
+                            .getString(R.string.refresh_failed_please_try_again)
+                    )
+                }
+            }
+
+            is SectionScreenEvent.UpdateSubjectStatus -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    surveyeeScreenUseCase.updateSubjectStatusUseCase.invoke(
+                        didiId = event.didiId,
+                        surveyState = event.surveyState
+                    )
+                    // TODO Add Update Subject Status Code
+//                    onEvent(EventWriterEvents.UpdateSubjectSurveyStatus())
+                }
+            }
+
+            is SectionScreenEvent.UpdateTaskStatus -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val task =
+                        surveyeeScreenUseCase.updateTaskStatusUseCase.getTaskForSubjectId(event.didiId)
+                    surveyeeScreenUseCase.updateTaskStatusUseCase.updateTaskStatus(
+                        taskId = task?.taskId!!,
+                        activityId = task?.activityId!!,
+                        missionId = task?.missionId!!,
+                        status = event.surveyState.name
+                    )
+                    onEvent(
+                        EventWriterEvents.UpdateTaskStatusEvent(
+                            event.didiId,
+                            event.surveyState
+                        )
                     )
                 }
             }

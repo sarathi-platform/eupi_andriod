@@ -65,10 +65,13 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
                             sectionId = event.sectionId,
                             didiId = event.surveyeeId,
                             questionId = event.questionId,
-                            questionTag = tagList.findIdFromTag(item?.questionTag ?: BLANK_STRING),
                             questionType = QuestionType.Form.name,
+                            questionTag = tagList.findIdFromTag(item?.questionTag ?: BLANK_STRING),
+                            questionDesc = event.questionDesc,
                             saveAnswerEventOptionItemDtoList = formResponseObjectDtoList.value.filter { it.referenceId != event.referenceId }
-                                .convertFormResponseObjectToSaveAnswerEventOptionDto()
+                                .convertFormResponseObjectToSaveAnswerEventOptionDto(
+                                    getOptionItemListWithConditionals()
+                                )
                         )
                     )
                 }
@@ -84,6 +87,7 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
                             questionId = event.questionId,
                             questionType = event.questionType,
                             questionTag = event.questionTag,
+                            questionDesc = event.questionDesc,
                             saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
                         )
                     formResponseSummaryScreenUseCase.eventsWriterUseCase.invoke(
