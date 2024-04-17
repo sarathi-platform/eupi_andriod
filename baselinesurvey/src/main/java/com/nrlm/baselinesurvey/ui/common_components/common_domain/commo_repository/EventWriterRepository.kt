@@ -58,6 +58,5 @@ interface EventsWriterRepository {
 
     suspend fun saveImageEventToMultipleSources(event: Events, uri: Uri)
     fun getUserId(): String
-    suspend fun regenerateAllEvent()
 
 }

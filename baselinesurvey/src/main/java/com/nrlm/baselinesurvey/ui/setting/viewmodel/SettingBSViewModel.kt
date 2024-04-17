@@ -5,8 +5,8 @@ import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
-import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.EventsWriterUserCase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SettingBSUserCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
@@ -27,7 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingBSViewModel @Inject constructor(
     private val settingBSUserCase: SettingBSUserCase,
-    private val eventsWriterUserCase: EventsWriterUserCase,
+    private val eventWriterHelperImpl: EventWriterHelperImpl,
     val prefRepo: PrefRepo
 ):BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
@@ -110,9 +110,8 @@ class SettingBSViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
 
-
                 onEvent(LoaderEvent.UpdateLoaderState(true))
-                eventsWriterUserCase.regenerateAllEvents()
+                eventWriterHelperImpl.regenerateAllEvent()
                 compressEventData(title)
 
             } catch (exception: Exception) {

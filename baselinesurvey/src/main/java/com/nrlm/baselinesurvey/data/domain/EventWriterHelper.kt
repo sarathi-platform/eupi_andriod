@@ -134,4 +134,5 @@ interface EventWriterHelper {
         subjectType: String
     ): Events?
 
+    suspend fun regenerateAllEvent()
 }
