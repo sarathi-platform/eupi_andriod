@@ -46,4 +46,7 @@ interface QuestionEntityDao {
 
     @Query("Delete from $QUESTION_TABLE")
     fun deleteAllQuestions()
+
+    @Query("SELECT * from $QUESTION_TABLE where type = :type")
+    fun getQuestionForType(type: String): QuestionEntity
 }

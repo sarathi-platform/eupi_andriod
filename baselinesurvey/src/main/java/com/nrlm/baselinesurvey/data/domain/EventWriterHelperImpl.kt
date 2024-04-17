@@ -9,6 +9,9 @@ import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
+import com.nrlm.baselinesurvey.database.entity.QuestionEntity
+import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.ActivityForSubjectDto
 import com.nrlm.baselinesurvey.model.datamodel.ImageUploadRequest
@@ -440,6 +443,53 @@ class EventWriterHelperImpl @Inject constructor(
             userType = userType,
             questionId = questionId,
             referenceId = referenceId,
+            sectionDetails = sectionDetails,
+            subjectType = "Didi"
+        ).json()
+
+        val eventName = EventName.UPLOAD_IMAGE_RESPONSE_EVENT
+
+        return Events(
+            name = eventName.name,
+            type = eventName.topicName,
+            createdBy = prefRepo.getUserId(),
+            mobile_number = prefRepo.getMobileNumber() ?: "",
+            request_payload = payload,
+            status = EventSyncStatus.OPEN.name,
+            modified_date = System.currentTimeMillis().toDate(),
+            result = null,
+            consumer_status = BLANK_STRING,
+            payloadLocalId = UUID.randomUUID().toString(),
+            metadata = MetadataDto(
+                mission = SELECTION_MISSION,
+                depends_on = listOf(),
+                request_payload_size = payload.getSizeInLong(),
+                parentEntity = mapOf()
+            ).json()
+        ) ?: Events.getEmptyEvent()
+    }
+
+    override fun createImageUploadEvent(
+        didi: SurveyeeEntity,
+        location: String,
+        filePath: String,
+        userType: String,
+        questionId: Int,
+        referenceId: String,
+        questionEntity: QuestionEntity?,
+        optionItemEntity: OptionItemEntity?,
+        sectionDetails: SectionEntity,
+        subjectType: String
+    ): Events? {
+        val payload = ImageUploadRequest.getRequestObjectForUploadImage(
+            didi = didi,
+            location = location,
+            filePath = filePath,
+            userType = userType,
+            questionId = questionId,
+            referenceId = referenceId,
+            questionEntity = questionEntity,
+            optionItemEntity = optionItemEntity,
             sectionDetails = sectionDetails,
             subjectType = "Didi"
         ).json()

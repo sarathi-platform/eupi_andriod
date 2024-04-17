@@ -1,5 +1,8 @@
 package com.nrlm.baselinesurvey.data.domain
 
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
+import com.nrlm.baselinesurvey.database.entity.QuestionEntity
+import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.ActivityForSubjectDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventOptionItemDto
@@ -115,6 +118,19 @@ interface EventWriterHelper {
         questionId: Int,
         referenceId: String,
         sectionDetails: SectionListItem,
+        subjectType: String
+    ): Events?
+
+    fun createImageUploadEvent(
+        didi: SurveyeeEntity,
+        location: String,
+        filePath: String,
+        userType: String,
+        questionId: Int,
+        referenceId: String,
+        questionEntity: QuestionEntity?,
+        optionItemEntity: OptionItemEntity?,
+        sectionDetails: SectionEntity,
         subjectType: String
     ): Events?
 
