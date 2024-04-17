@@ -466,6 +466,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
     }
 
     private suspend fun regenerateFromResponseEvent() {
+        //Todo @anupam
+
         //       val formResponseList= baselineDatabase.formQuestionResponseDao().getAllFormResponses(prefRepo.getUniqueUserId())
 //        val questionIdMap= formResponseList.map {
 //            it.questionId
@@ -487,10 +489,11 @@ class EventsWriterRepositoryImpl @Inject constructor(
     }
 
     private suspend fun regenerateDidiInfoResponseEvent() {
-
+//Todo @anupam
     }
 
     private suspend fun regenerateImageUploadEvent() {
+//Todo @anupam
 
     }
 
