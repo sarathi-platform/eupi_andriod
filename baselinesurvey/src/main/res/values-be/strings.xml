@@ -402,8 +402,8 @@
     <string name="average_travel_cost_comparision">"दावबायनायनि सानजेर बेसेन"</string>
     <string name="questions_data_tab_title">Questions</string>
     <string name="section_information_tab_title">Sections</string>
-    <string name="search_hamlet">Search Hamlet</string>
-    <string name="mission_completed_text">Mission Completed</string>
+    <string name="search_hamlet">हेमलेटखौ नागिर</string>
+    <string name="mission_completed_text">मिसना आबुं जाबाय</string>
     <string name="aadhar_card_titile_assam">नोंथांनाव आधार कार्ड दं नामा ?</string>
     <string name="voter_card_title_assam">नोंथांनाव भ\'टार कार्ड दं नामा?</string>
     <string name="not_able_to_load">Not  able to load data please try again..</string>
