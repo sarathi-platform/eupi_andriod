@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -134,7 +135,7 @@ fun MissonRowScreen_1(
                 )
             }
             Text(
-                text = "Task Completed - ${completedProgress}/${viewModel.missionActivityCountMap.value[mission.missionId]}",
+                text = stringResource(R.string.task_completed_label) + "${completedProgress}/${viewModel.missionActivityCountMap.value[mission.missionId]}",
                 fontFamily = NotoSans,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
@@ -189,7 +190,9 @@ fun MissonRowScreen_1(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = if (pendingCount == 0 && viewModel.missionActivityCountMap.value[mission.missionId] != 0) "View" else "Start",
+                        text = if (pendingCount == 0 && viewModel.missionActivityCountMap.value[mission.missionId] != 0) stringResource(
+                            R.string.view_label
+                        ) else stringResource(id = R.string.start).trim(),
                         style = smallTextStyleMediumWeight,
                         color = white
                     )
