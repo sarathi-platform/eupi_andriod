@@ -32,7 +32,7 @@ class DataLoadingScreenViewModel @Inject constructor(
 
     private val _showUserChangedDialog = mutableStateOf<DialogState>(DialogState())
     val showUserChangedDialog: State<DialogState> get() = _showUserChangedDialog
-    var currentApiCount = 0
+    private var baseCurrentApiCount = 0
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -67,7 +67,7 @@ class DataLoadingScreenViewModel @Inject constructor(
     private fun fetchMissionData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
-            currentApiCount++
+            baseCurrentApiCount++
             updateLoaderEvent(callBack)
         }
     }
@@ -75,7 +75,7 @@ class DataLoadingScreenViewModel @Inject constructor(
     private fun fetchSurveyeeData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
-            currentApiCount++
+            baseCurrentApiCount++
             updateLoaderEvent(callBack)
         }
     }
@@ -83,7 +83,7 @@ class DataLoadingScreenViewModel @Inject constructor(
     private fun fetchContentData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             fetchDataUseCase.fetchContentnDataFromNetworkUseCase.invoke()
-            currentApiCount++
+            baseCurrentApiCount++
             updateLoaderEvent(callBack)
         }
     }
@@ -91,7 +91,7 @@ class DataLoadingScreenViewModel @Inject constructor(
     private fun fetchCasteData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke(true)
-            currentApiCount++
+            baseCurrentApiCount++
             updateLoaderEvent(callBack)
         }
     }
@@ -99,7 +99,7 @@ class DataLoadingScreenViewModel @Inject constructor(
     private fun fetchSectionStatusData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             fetchDataUseCase.fetchSectionStatusFromNetworkUseCase.invoke()
-            currentApiCount++
+            baseCurrentApiCount++
             updateLoaderEvent(callBack)
         }
     }
@@ -107,25 +107,25 @@ class DataLoadingScreenViewModel @Inject constructor(
     private fun fetchSurveyAnswerData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             fetchDataUseCase.fetchSurveyAnswerFromNetworkUseCase.invoke()
-            currentApiCount++
+            baseCurrentApiCount++
             updateLoaderEvent(callBack)
         }
     }
 
     private suspend fun updateLoaderEvent(callBack: () -> Unit) {
-        if (currentApiCount == 19) {
-            Log.d(
-                "invoke",
-                "Network Transaction end " + System.currentTimeMillis().toTimeDateString()
-            )
+        if (baseCurrentApiCount == 19) {
             withContext(Dispatchers.Main) {
+                Log.d(
+                    "invoke",
+                    "Network Transaction end " + System.currentTimeMillis().toTimeDateString()
+                )
                 onEvent(LoaderEvent.UpdateLoaderState(false))
                 callBack()
             }
         }
     }
     fun fetchAllData(callBack: () -> Unit) {
-        currentApiCount = 0
+        baseCurrentApiCount = 0
         Log.d(
             "invoke",
             "Network Transaction Start " + System.currentTimeMillis().toTimeDateString()
@@ -134,7 +134,7 @@ class DataLoadingScreenViewModel @Inject constructor(
             CoroutineScope(Dispatchers.IO).launch {
                 val fetchUserDetailFromNetworkUseCaseSuccess =
                     fetchDataUseCase.fetchUserDetailFromNetworkUseCase.invoke()
-                currentApiCount++
+                baseCurrentApiCount++
                 if (fetchUserDetailFromNetworkUseCaseSuccess) {
                     fetchCasteData(fetchDataUseCase) { callBack() }
                     fetchMissionData(fetchDataUseCase) { callBack() }
@@ -200,7 +200,7 @@ class DataLoadingScreenViewModel @Inject constructor(
             fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
                 hamletSurveyRequestBodyModel
             )
-            currentApiCount++
+            baseCurrentApiCount++
             updateLoaderEvent(callBack)
         }
     }
@@ -221,7 +221,7 @@ class DataLoadingScreenViewModel @Inject constructor(
             fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
                 baselineSurveyRequestBodyModel
             )
-            currentApiCount++
+            baseCurrentApiCount++
             updateLoaderEvent(callBack)
         }
     }

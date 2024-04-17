@@ -437,5 +437,6 @@
     <string name="madnatory_question_not_marked_error">সকলো বাধ্যতামূলক প্ৰশ্নৰ উত্তৰ দিয়া হোৱা নাই, অনুগ্ৰহ কৰি সকলো প্ৰশ্নৰ উত্তৰ দিয়ক!</string>
     <string name="view_label">View</string>
     <string name="task_completed_label">"Task Completed - "</string>
+    <string name="data_fetching_and_processing">ডাটা ফেচিং আৰু প্ৰচেছিং…</string>
 
 </resources>
