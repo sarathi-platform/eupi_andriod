@@ -434,6 +434,8 @@
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"शुरू "</string>
     <string name="retry">पुन: प्रयास करें</string>
+    <string name="view_label">View</string>
+    <string name="task_completed_label">"Task Completed - "</string>
 
 
 </resources>

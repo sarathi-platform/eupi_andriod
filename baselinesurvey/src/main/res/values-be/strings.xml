@@ -424,5 +424,7 @@
     <string name="fetched_successfully">Data fetched successfully</string>
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"जागायजेन "</string>
+    <string name="view_label">View</string>
+    <string name="task_completed_label">"Task Completed - "</string>
 
 </resources>
