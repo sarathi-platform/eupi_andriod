@@ -17,6 +17,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -53,9 +54,9 @@ fun EditTextWithTitleComponent(
     onInfoButtonClicked: () -> Unit,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
-    val txt = //remember {
+    val txt = remember {
         mutableStateOf(defaultValue)
-//    }
+   }
 //    if (txt.value.isBlank()) {
 //        txt.value = defaultValue
 //    }
