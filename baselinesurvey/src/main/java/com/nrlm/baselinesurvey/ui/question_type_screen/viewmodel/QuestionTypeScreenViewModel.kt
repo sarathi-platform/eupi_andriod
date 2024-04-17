@@ -371,25 +371,10 @@ class QuestionTypeScreenViewModel @Inject constructor(
                     }
                 } else {
                     event.optionItemEntityState?.optionItemEntity?.conditions?.forEach { conditionsDto ->
-//                        val oldList = updatedOptionList.filter { it.showQuestion }.toList()
                         updateQuestionStateForCondition(false, conditionsDto)
-                        /*conditionsDto?.resultList?.forEach {
-                            if (oldList.map { it.optionId }.contains(it.questionId)) {
-                                if (storeCacheForResponse.map { it.optionId }.contains(it.questionId)) {
-                                    val index = storeCacheForResponse.map { it.optionId }
-                                        .indexOf(it.questionId)
-                                        .coerceIn(0, storeCacheForResponse.size)
-
-                                    _storeCacheForResponse.removeAt(index)
-                                }
-                            }
-                        }*/
                     }
                 }
-                /*totalOptionSize.intValue = updatedOptionList.filter { it.showQuestion }.size
-                if (answeredOptionCount.intValue > totalOptionSize.intValue) {
-                    answeredOptionCount.intValue = totalOptionSize.intValue
-                }*/
+
             }
 
             is QuestionTypeEvent.UpdateCalculationTypeQuestionValue -> {
