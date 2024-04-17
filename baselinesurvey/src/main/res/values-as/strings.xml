@@ -434,5 +434,6 @@
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"আৰম্ভ কৰক "</string>
     <string name="retry">" পুনৰ চেষ্টা কৰক"</string>
+    <string name="madnatory_question_not_marked_error">সকলো বাধ্যতামূলক প্ৰশ্নৰ উত্তৰ দিয়া হোৱা নাই, অনুগ্ৰহ কৰি সকলো প্ৰশ্নৰ উত্তৰ দিয়ক!</string>
 
 </resources>

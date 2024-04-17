@@ -9,6 +9,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
@@ -25,6 +26,7 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.FormQuest
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.calculateResultForFormula
 import com.nrlm.baselinesurvey.utils.checkCondition
@@ -35,6 +37,7 @@ import com.nrlm.baselinesurvey.utils.convertToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.findIndexOfListByOptionId
 import com.nrlm.baselinesurvey.utils.findOptionExist
 import com.nrlm.baselinesurvey.utils.isNumeric
+import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -86,6 +89,8 @@ class QuestionTypeScreenViewModel @Inject constructor(
 
     var tempRefId = mutableStateOf(BLANK_STRING)
 
+    var conditionalQuestionNotMarked = false
+
     fun init(
         sectionId: Int,
         surveyId: Int,
@@ -122,6 +127,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 )
                 _formQuestionResponseEntity.value =
                     getFormResponseForReferenceId(referenceId = referenceId)
+                _storeCacheForResponse.addAll(formQuestionResponseEntity.value.toMutableList())
             }
 
             getOptionItemEntityState(
@@ -139,6 +145,8 @@ class QuestionTypeScreenViewModel @Inject constructor(
                     formQuestionResponseEntity.value.find { it.optionId == updatedOptionList.find { it.optionItemEntity?.optionType == QuestionType.Calculation.name && it.showQuestion }?.optionId }?.selectedValue
                         ?: BLANK_STRING
             }
+
+            updateCachedData()
 
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -363,7 +371,19 @@ class QuestionTypeScreenViewModel @Inject constructor(
                     }
                 } else {
                     event.optionItemEntityState?.optionItemEntity?.conditions?.forEach { conditionsDto ->
+//                        val oldList = updatedOptionList.filter { it.showQuestion }.toList()
                         updateQuestionStateForCondition(false, conditionsDto)
+                        /*conditionsDto?.resultList?.forEach {
+                            if (oldList.map { it.optionId }.contains(it.questionId)) {
+                                if (storeCacheForResponse.map { it.optionId }.contains(it.questionId)) {
+                                    val index = storeCacheForResponse.map { it.optionId }
+                                        .indexOf(it.questionId)
+                                        .coerceIn(0, storeCacheForResponse.size)
+
+                                    _storeCacheForResponse.removeAt(index)
+                                }
+                            }
+                        }*/
                     }
                 }
                 /*totalOptionSize.intValue = updatedOptionList.filter { it.showQuestion }.size
@@ -510,14 +530,38 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 val form = storeCacheForResponse
                     .find { it.optionId == event.formQuestionResponseEntity.optionId }
                 if (form == null) {
-                    _storeCacheForResponse.add(event.formQuestionResponseEntity)
+                    if (event.formQuestionResponseEntity.selectedValue != BLANK_STRING)
+                        _storeCacheForResponse.add(event.formQuestionResponseEntity)
+                    conditionalQuestionNotMarked = false
                 } else {
-                    form.selectedValue = event.formQuestionResponseEntity.selectedValue
-                    val index = storeCacheForResponse.map { it.optionId }.indexOf(form.optionId)
-                        .coerceIn(0, storeCacheForResponse.size)
+                    val tempList = updatedOptionList.toList()
+                    val option =
+                        tempList.find { it.optionId == event.formQuestionResponseEntity.optionId }?.optionItemEntity
+                    if (event.formQuestionResponseEntity.selectedValue == BLANK_STRING) {
+                        if (option?.conditions == null) {
+                            val index =
+                                storeCacheForResponse.map { it.optionId }.indexOf(form.optionId)
+                                    .coerceIn(0, storeCacheForResponse.size)
 
-                    _storeCacheForResponse.removeAt(index)
-                    _storeCacheForResponse.add(index = index, form)
+                            _storeCacheForResponse.removeAt(index)
+                            conditionalQuestionNotMarked = false
+                        } else {
+                            conditionalQuestionNotMarked = true
+                            showCustomToast(
+                                BaselineCore.getAppContext(),
+                                BaselineCore.getAppContext()
+                                    .getString(R.string.madnatory_question_not_marked_error)
+                            )
+                        }
+                    } else {
+                        form.selectedValue = event.formQuestionResponseEntity.selectedValue
+                        val index = storeCacheForResponse.map { it.optionId }.indexOf(form.optionId)
+                            .coerceIn(0, storeCacheForResponse.size)
+
+                        _storeCacheForResponse.removeAt(index)
+                        _storeCacheForResponse.add(index = index, form)
+                        conditionalQuestionNotMarked = false
+                    }
                 }
                 updateCachedData()
             }
@@ -618,8 +662,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
 //        _formQuestionResponseEntity.value = storeCacheForResponse
         val tempList = updatedOptionList.toList()
         totalOptionSize.intValue = tempList.distinctBy { it.optionId }.filter {
-            it
-                .optionItemEntity?.optionType != QuestionType.Form.name && it.optionItemEntity?.optionType != QuestionType.Calculation.name
+            it.optionItemEntity?.optionType != QuestionType.Form.name && it.optionItemEntity?.optionType != QuestionType.Calculation.name
         }.filter { it.showQuestion }.size
         answeredOptionCount.intValue =
             (storeCacheForResponse.size).coerceIn(0, totalOptionSize.intValue)

@@ -434,6 +434,7 @@
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"शुरू "</string>
     <string name="retry">पुन: प्रयास करें</string>
+    <string name="madnatory_question_not_marked_error">सभी अनिवार्य प्रश्नों के उत्तर नहीं दिए गए हैं, कृपया सभी प्रश्नों के उत्तर दें!</string>
 
 
 </resources>
