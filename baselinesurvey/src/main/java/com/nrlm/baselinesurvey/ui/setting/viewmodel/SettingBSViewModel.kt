@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.setting.viewmodel
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
@@ -18,6 +19,7 @@ import com.nrlm.baselinesurvey.utils.uriFromFile
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.exportOldData
+import com.nudge.core.importDbFile
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +29,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
+import kotlin.system.exitProcess
 
 @HiltViewModel
 class SettingBSViewModel @Inject constructor(
@@ -37,6 +40,7 @@ class SettingBSViewModel @Inject constructor(
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
     val showLoadConfirmationDialog = mutableStateOf(false)
+    val showRestartAppDialog = mutableStateOf(false)
 
     val loaderState: State<LoaderState> get() = _loaderState
 
@@ -149,6 +153,14 @@ class SettingBSViewModel @Inject constructor(
         }
     }
 
+    fun importSelectedDB(uri: Uri,onImportSuccess:()->Unit) {
+        importDbFile(appContext = BaselineCore.getAppContext(), importedDbUri = uri, deleteDBName = NUDGE_BASELINE_DATABASE){
+           onImportSuccess()
+        }
+
+
+    }
+
     fun clearLocalDatabase(onPageChange:()->Unit){
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val result=settingBSUserCase.clearLocalDBUseCase.invoke()
@@ -165,5 +177,12 @@ class SettingBSViewModel @Inject constructor(
         return settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
     }
 
+    fun restartApp(context: Context, cls: Class<*>) {
+
+        context.startActivity(
+            Intent(BaselineCore.getAppContext(), cls)
+        )
+        exitProcess(0)
+    }
 
 }

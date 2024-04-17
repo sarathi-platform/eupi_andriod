@@ -1,10 +1,12 @@
 package com.nudge.core
 
 import android.annotation.SuppressLint
+import android.content.ComponentName
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -24,6 +26,7 @@ import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.utils.CoreLogger
+import com.nudge.core.utils.FileUtils
 import com.nudge.core.utils.LogWriter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,6 +41,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import java.util.logging.Level
+import kotlin.system.exitProcess
 
 fun Long.toDate(dateFormat: Long = System.currentTimeMillis(), timeZone: TimeZone = TimeZone.getTimeZone("UTC")): Date {
     val dateTime = Date(this)
@@ -419,7 +423,8 @@ fun exportOldData(appContext: Context,applicationID: String,userUniqueId:String,
             fileUris.add(Pair(getFileNameFromURL(it.path ?: ""), it))
 
         }
-        val zipFileUri = File(zipFileDirectory, "${userUniqueId}_Export_old_data_${milliSec}.zip")
+       val zipDateTime=SimpleDateFormat("dd_MM_yyyy_HH_mm_ss").format(Date())
+        val zipFileUri = File(zipFileDirectory, "${userUniqueId}_Export_old_data_${zipDateTime}.zip")
         ZipManager.zip(
             fileUris,
             uriFromFile(appContext, zipFileUri,applicationID),
@@ -451,16 +456,16 @@ fun getFileNameFromURL(url: String): String{
 }
 
 @SuppressLint("SuspiciousIndentation")
-fun importDbFile(appContext: Context,importedDbUri: Uri,onImportSuccess:()->Unit) {
+fun importDbFile(appContext: Context,deleteDBName:String,importedDbUri: Uri,onImportSuccess:()->Unit) {
     CoroutineScope(Dispatchers.IO).launch {
         try {
             val importedFile =
-                getRealPathFromURI(importedDbUri, appContext)?.let { File(it) }
+                FileUtils.getFile( appContext,importedDbUri)
 
             val currentDBPath =
-                appContext.getDatabasePath(NUDGE_DATABASE).path
+                appContext.getDatabasePath(deleteDBName).path
 
-            val isDeleted= appContext.deleteDatabase(NUDGE_DATABASE)
+            val isDeleted= appContext.deleteDatabase(deleteDBName)
             if(isDeleted){
 
                 val src = FileInputStream(importedFile).channel
@@ -494,3 +499,4 @@ fun getRealPathFromURI(contentURI: Uri, activity: Context): String? {
         cursor.getString(idx)
     }
 }
+

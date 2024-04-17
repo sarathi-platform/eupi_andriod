@@ -1,6 +1,10 @@
 package com.nrlm.baselinesurvey.ui.setting.presentation
 
 
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -17,6 +21,7 @@ import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.navigation.AuthScreen
 import com.nrlm.baselinesurvey.navigation.home.SettingBSScreens
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
@@ -24,6 +29,7 @@ import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSetting
 import com.nrlm.baselinesurvey.ui.setting.domain.SettingTagEnum
 import com.nrlm.baselinesurvey.ui.setting.viewmodel.SettingBSViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.ShowCustomDialog
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nudge.core.model.SettingOptionModel
@@ -38,6 +44,20 @@ fun SettingBSScreen(
     val context = LocalContext.current
 
     val loaderState = viewModel.loaderState
+
+    val filePicker =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) {
+            viewModel.showRestartAppDialog.value=false
+            it?.let { uri->
+                if(uri != Uri.EMPTY){
+                   viewModel.importSelectedDB(uri){
+                        viewModel.showRestartAppDialog.value=false
+                       viewModel.restartApp(context,MainActivity::class.java)
+                   }
+                }
+            }
+
+        }
 
     LaunchedEffect(key1 = true){
         list.add(
@@ -114,6 +134,18 @@ fun SettingBSScreen(
             })
     }
 
+    if(viewModel.showRestartAppDialog.value){
+        ShowCustomDialog(
+            title = stringResource(id = R.string.are_you_sure),
+            message ="After Importing the data from file app needs to be restart.",
+            positiveButtonTitle = "Proceed",
+            negativeButtonTitle = "Cancel",
+            onNegativeButtonClick = {viewModel.showRestartAppDialog.value=false},
+            onPositiveButtonClick = {
+                filePicker.launch("*/*")
+            })
+    }
+
     if (loaderState.value.isLoaderVisible) {
         Box(
             modifier = Modifier
@@ -164,7 +196,7 @@ fun SettingBSScreen(
                 }
 
                 SettingTagEnum.IMPORT_DATA.name ->{
-
+                    viewModel.showRestartAppDialog.value=true
                 }
             }
        },
