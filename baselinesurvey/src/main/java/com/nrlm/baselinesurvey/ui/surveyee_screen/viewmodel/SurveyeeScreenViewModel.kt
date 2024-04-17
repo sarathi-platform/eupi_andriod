@@ -104,9 +104,10 @@ class SurveyeeScreenViewModel @Inject constructor(
                 var surveyeeState = SurveyeeCardState(
                     surveyeeDetails = surveyeeEntity,
                     imagePath = BLANK_STRING,
-                    subtitle = surveyeeEntity.dadaName + ", " + surveyeeEntity.houseNo,
+                    subtitle = "#${surveyeeEntity.houseNo}, ${surveyeeEntity.dadaName}",
                     address = getSurveyeeAddress(surveyeeEntity),
                     activityName = activityName,
+                    isCohortName = (!surveyeeEntity.cohortName.equals(NO_TOLA_TITLE, true)),
                     surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
                 )
                 if (surveyeeEntity.crpImageLocalPath.isNotEmpty()) {
@@ -452,9 +453,9 @@ class SurveyeeScreenViewModel @Inject constructor(
 
     private fun getSurveyeeAddress(surveyeeEntity: SurveyeeEntity): String {
         return if (!surveyeeEntity.cohortName.equals(NO_TOLA_TITLE, true))
-            surveyeeEntity.cohortName + ", " + surveyeeEntity.voName
+            surveyeeEntity.cohortName
         else
-            surveyeeEntity.villageName + ", " + surveyeeEntity.voName
+            surveyeeEntity.villageName
     }
 
     fun allTaskDone(): Boolean {

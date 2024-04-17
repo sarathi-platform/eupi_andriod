@@ -189,10 +189,7 @@ fun SurveyeeCardComponent(
                             ) {
                                 Icon(
                                     painter = painterResource(
-                                        id = if (!surveyeeState.activityName.equals(
-                                                "Conduct Hamlet Survey"
-                                            )
-                                        ) R.drawable.ic_vo_name_icon else R.drawable.ic_hamlet_name_icon
+                                        id = if (surveyeeState.isCohortName) R.drawable.ic_hamlet_name_icon else R.drawable.home_icn
                                     ),
                                     contentDescription = "home icon",
                                     tint = Color.Black,
@@ -206,6 +203,30 @@ fun SurveyeeCardComponent(
                                     ).toCamelCase()
                                     else surveyeeState.surveyeeDetails.villageName.toLowerCase()
                                         .toCamelCase(),
+                                    style = smallTextStyleMediumWeight,
+                                    color = textColorDark
+                                )
+                            }
+                        }
+                        if (!surveyeeState.activityName.equals("Conduct Hamlet Survey") && surveyeeState.surveyeeDetails.voName.isNotBlank()) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                            ) {
+                                Icon(
+                                    painter = painterResource(
+                                        R.drawable.ic_vo_name_icon,
+                                    ),
+                                    contentDescription = "home icon",
+                                    tint = Color.Black,
+                                    modifier = Modifier.height(dimen_20_dp)
+                                )
+                                Spacer(modifier = Modifier.width(dimen_3_dp))
+                                Text(
+
+                                    text = surveyeeState.surveyeeDetails.voName.toLowerCase(
+                                        Locale.current
+                                    ).toCamelCase(),
                                     style = smallTextStyleMediumWeight,
                                     color = textColorDark
                                 )
