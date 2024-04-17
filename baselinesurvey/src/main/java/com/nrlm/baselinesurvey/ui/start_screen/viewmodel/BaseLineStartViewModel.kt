@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
@@ -29,6 +30,7 @@ import com.nrlm.baselinesurvey.ui.common_components.SHGFlag
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SurveyStateEvents
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
+import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.start_screen.domain.use_case.StartSurveyScreenUserCase
 import com.nrlm.baselinesurvey.ui.start_screen.presentation.StartSurveyScreenEvents
 import com.nrlm.baselinesurvey.utils.BaselineCore
@@ -37,6 +39,7 @@ import com.nrlm.baselinesurvey.utils.LocationCoordinates
 import com.nrlm.baselinesurvey.utils.LocationUtil
 import com.nrlm.baselinesurvey.utils.findTagForId
 import com.nrlm.baselinesurvey.utils.getFileNameFromURL
+import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.tagList
 import com.nrlm.baselinesurvey.utils.toOptionItemStateList
 import com.nudge.core.compressImage
@@ -86,6 +89,8 @@ class BaseLineStartViewModel @Inject constructor(
     private val _didiInfo = MutableStateFlow(
         DidiInfoEntity.getEmptyDidiInfoEntity()
     )
+    private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
+    val loaderState: State<LoaderState> get() = _loaderState
     val didiEntity: StateFlow<SurveyeeEntity> get() = _didiEntity
     val didiInfo: StateFlow<DidiInfoEntity> get() = _didiInfo
 
@@ -197,6 +202,12 @@ class BaseLineStartViewModel @Inject constructor(
                 CoroutineScope(Dispatchers.IO).launch {
                     writeImageUploadEvent(event.didiId)
                 }
+            }
+
+            is LoaderEvent.UpdateLoaderState -> {
+                _loaderState.value = _loaderState.value.copy(
+                    isLoaderVisible = event.showLoader
+                )
             }
         }
     }
