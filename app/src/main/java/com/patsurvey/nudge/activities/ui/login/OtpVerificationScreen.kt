@@ -253,10 +253,8 @@ fun OtpVerificationScreen(
                                             inclusive = true
                                         }
                                     }
-                                    Log.d("TAG", "OtpVerificationScreen: Old HOme")
                                 }else{
-                                    Log.d("TAG", "OtpVerificationScreen: new  HOme")
-//                                    navController.navigate(route = CoreGraph.BASE_HOME)
+                                    navController.navigate(route = CoreGraph.BASE_HOME)
                                 }
 
                             }else {
