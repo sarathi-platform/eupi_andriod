@@ -126,7 +126,7 @@ class SurveyeeScreenViewModel @Inject constructor(
                 _surveyeeListState.value
             )
             isEnableNextBTn.value =
-                filteredSurveyeeListState.value.filter { it.surveyState != SurveyState.COMPLETED }
+                filteredSurveyeeListState.value.filter { it.surveyState != SurveyState.COMPLETED && it.surveyState != SurveyState.NOT_AVAILABLE }
                     .isEmpty()
 
             filterList(pageFrom.value)
@@ -239,6 +239,9 @@ class SurveyeeScreenViewModel @Inject constructor(
                     surveyeeList?.add(index!!, surveyee!!)
                     mFilteredTolaMapSurveyeeListState[event.key] = surveyeeList?.toList()!!
                     _filteredTolaMapSurveyeeListState.value = mFilteredTolaMapSurveyeeListState
+
+                    updateFilterSurveyeeListState(event.key, event.surveyeeId, event.state)
+
                 } else {
                     val mFilteredSurveyeeList = filteredSurveyeeListState.value.toMutableList()
                     var surveyee =
@@ -331,7 +334,27 @@ class SurveyeeScreenViewModel @Inject constructor(
         }
     }
 
-    override fun performSearchQuery(queryTerm: String, isFilterApplied: Boolean, fromScreen: String) {
+    private fun updateFilterSurveyeeListState(key: String, surveyeeId: Int, state: SurveyState) {
+        val mFilteredSurveyeeList = filteredSurveyeeListState.value.toMutableList()
+        var surveyee =
+            mFilteredSurveyeeList?.find { it.surveyeeDetails.didiId == surveyeeId }
+        val index = mFilteredSurveyeeList?.map { it.surveyeeDetails.didiId }
+            ?.indexOf(surveyeeId)
+        surveyee = surveyee?.copy(surveyState = state)
+        mFilteredSurveyeeList?.removeAt(index!!)
+        mFilteredSurveyeeList?.add(index!!, surveyee!!)
+        _filteredSurveyeeListState.value = mFilteredSurveyeeList
+
+        isEnableNextBTn.value =
+            filteredSurveyeeListState.value.filter { it.surveyState != SurveyState.COMPLETED && it.surveyState != SurveyState.NOT_AVAILABLE }
+                .isEmpty()
+    }
+
+    override fun performSearchQuery(
+        queryTerm: String,
+        isFilterApplied: Boolean,
+        fromScreen: String
+    ) {
         if (fromScreen == DIDI_LIST) {
             if (!isFilterApplied) {
                 _filteredSurveyeeListState.value = if (queryTerm.isNotEmpty()) {
