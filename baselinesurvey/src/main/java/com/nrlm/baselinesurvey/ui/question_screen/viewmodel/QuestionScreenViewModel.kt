@@ -239,8 +239,10 @@ class QuestionScreenViewModel @Inject constructor(
         val map = formQuestionResponseEntityList.groupBy { it.questionId }
         if (map.isEmpty())
             _formResponseEntityToQuestionMap.value.clear()
-        else
+        else {
+            _formResponseEntityToQuestionMap.value.clear()
             _formResponseEntityToQuestionMap.value.putAll(map)
+        }
         val tempList = questionEntityStateList.toList()
             .filter { it.questionEntity?.type == QuestionType.Form.name }
         map.keys.forEach { questionId ->
@@ -443,6 +445,7 @@ class QuestionScreenViewModel @Inject constructor(
                                 questionType = event.questionType,
                                 questionTag = event.questionTag,
                                 questionDesc = event.questionDesc,
+                                showQuestion = event.showConditionalQuestion,
                                 referenceOptionList = sectionDetailInDefaultLanguage.optionsItemMap[event.questionId]?.toOptionItemStateList()
                                     ?: emptyList(),
                                 saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
