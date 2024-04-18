@@ -48,6 +48,7 @@ import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleMediumWeight
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 
 
 @Composable
@@ -83,7 +84,7 @@ fun MissonRowScreen_1(
             .clip(RoundedCornerShape(6.dp))
             .border(
                 width = 1.dp,
-                color = if (pendingCount == 0 && viewModel.missionActivityCountMap.value[mission.missionId] != 0) greenOnline else greyLightColor,
+                color = if (mission.status == SectionStatus.COMPLETED.name) greenOnline else greyLightColor,
                 shape = RoundedCornerShape(6.dp)
             )
             .background(Color.Transparent)
@@ -92,7 +93,7 @@ fun MissonRowScreen_1(
         Column(
             modifier = modifier
                 .fillMaxWidth()
-                .background(if (pendingCount == 0 && viewModel.missionActivityCountMap.value[mission.missionId] != 0) greenLight else white)
+                .background(if (mission.status == SectionStatus.COMPLETED.name) greenLight else white)
         ) {
             //TODO in future in uncomment whenever get correct data from backend
 //            Box(
@@ -190,7 +191,7 @@ fun MissonRowScreen_1(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = if (pendingCount == 0 && viewModel.missionActivityCountMap.value[mission.missionId] != 0) stringResource(
+                        text = if (mission.status == SectionStatus.COMPLETED.name) stringResource(
                             R.string.view_label
                         ) else stringResource(id = R.string.start).trim(),
                         style = smallTextStyleMediumWeight,
