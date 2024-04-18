@@ -225,7 +225,7 @@ fun BaseLineStartScreen(
                         "rememberLauncherForActivityResult -> onResult = success: $success"
                     )
                     if (success) {
-                        if (baseLineStartViewModel.photoUri.value == Uri.EMPTY) {
+                        if (baseLineStartViewModel.tempUri == Uri.EMPTY) {
                             baseLineStartViewModel.imagePath =
                                 baseLineStartViewModel.getTempFilePath()
                             val uri =
