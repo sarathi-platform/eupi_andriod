@@ -32,7 +32,11 @@ class DataLoadingScreenViewModel @Inject constructor(
 
     private val _showUserChangedDialog = mutableStateOf<DialogState>(DialogState())
     val showUserChangedDialog: State<DialogState> get() = _showUserChangedDialog
-    private var baseCurrentApiCount = 0
+    private var baseCurrentApiCount = 0 // only count api survey count
+    private var surveyApiCount = 0 // count of all apis
+    private var TOTAL_API_CALL = 0
+    private var SURVEY_API_CALL = 0
+
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -96,6 +100,16 @@ class DataLoadingScreenViewModel @Inject constructor(
         }
     }
 
+    private suspend fun fetchUserDetailData(
+        fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit
+    ): Boolean {
+        var isUserDataSuccess = false
+        isUserDataSuccess = fetchDataUseCase.fetchUserDetailFromNetworkUseCase.invoke()
+        baseCurrentApiCount++
+        updateLoaderEvent(callBack)
+        return isUserDataSuccess
+    }
+
     private fun fetchSectionStatusData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             fetchDataUseCase.fetchSectionStatusFromNetworkUseCase.invoke()
@@ -113,7 +127,7 @@ class DataLoadingScreenViewModel @Inject constructor(
     }
 
     private suspend fun updateLoaderEvent(callBack: () -> Unit) {
-        if (baseCurrentApiCount == 19) {
+        if (baseCurrentApiCount == TOTAL_API_CALL) {
             withContext(Dispatchers.Main) {
                 Log.d(
                     "invoke",
@@ -122,36 +136,37 @@ class DataLoadingScreenViewModel @Inject constructor(
                 onEvent(LoaderEvent.UpdateLoaderState(false))
                 callBack()
             }
+        } else if (surveyApiCount == SURVEY_API_CALL) {
+            surveyApiCount = 0
+            fetchSectionStatusData(fetchDataUseCase) { callBack() }
+            fetchSurveyAnswerData(fetchDataUseCase) { callBack() }
+            Log.d(
+                "invoke",
+                "Network Transaction end with   fetchSectionStatusData and fetchSurveyAnswerData " + System.currentTimeMillis()
+                    .toTimeDateString()
+            )
         }
     }
     fun fetchAllData(callBack: () -> Unit) {
         baseCurrentApiCount = 0
+        surveyApiCount = 0
+
         Log.d(
             "invoke",
             "Network Transaction Start " + System.currentTimeMillis().toTimeDateString()
         )
         try {
-            CoroutineScope(Dispatchers.IO).launch {
-                val fetchUserDetailFromNetworkUseCaseSuccess =
-                    fetchDataUseCase.fetchUserDetailFromNetworkUseCase.invoke()
-                baseCurrentApiCount++
-                if (fetchUserDetailFromNetworkUseCaseSuccess) {
-                    fetchCasteData(fetchDataUseCase) { callBack() }
+            viewModelScope.launch(Dispatchers.IO) {
+                val languagesSize =
+                    (fetchDataUseCase.fetchSurveyFromNetworkUseCase.getLanguages().size * 2)
+                SURVEY_API_CALL = languagesSize
+                TOTAL_API_CALL = 7 + languagesSize
+                if (fetchUserDetailData(fetchDataUseCase) {}) {
+                    fetchCasteData(fetchDataUseCase) {}
                     fetchMissionData(fetchDataUseCase) { callBack() }
                     fetchSurveyeeData(fetchDataUseCase) { callBack() }
                     fetchContentData(fetchDataUseCase) { callBack() }
-                    CoroutineScope(Dispatchers.IO).launch {
-                        fetchSurveyForAllLanguages {
-                            callBack()
-                        }
-                    }.invokeOnCompletion {
-                        fetchSectionStatusData(fetchDataUseCase) {
-                            callBack()
-                        }
-                        fetchSurveyAnswerData(fetchDataUseCase) {
-                            callBack()
-                        }
-                    }
+                    fetchSurveyForAllLanguages { callBack() }
                 } else {
                     withContext(Dispatchers.Main) {
                         onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -167,22 +182,25 @@ class DataLoadingScreenViewModel @Inject constructor(
     }
 
     private suspend fun fetchSurveyForAllLanguages(callBack: () -> Unit) {
-        val stateId = getStateId()
-        if (stateId != -1) {
-            fetchDataUseCase.fetchSurveyFromNetworkUseCase.getLanguages()
-                .forEach { languageEntity ->
-                    callBaselineSurveyApi(
-                        fetchDataUseCase,
-                        languageId = languageEntity.id,
-                        referenceId = stateId
-                    ) { callBack() }
-                    callHamletSurveyApi(
-                        fetchDataUseCase,
-                        languageId = languageEntity.id,
-                        referenceId = stateId
-                    ) { callBack() }
-                }
+        viewModelScope.launch(Dispatchers.IO) {
+            val stateId = getStateId()
+            if (stateId != -1) {
+                fetchDataUseCase.fetchSurveyFromNetworkUseCase.getLanguages()
+                    .forEach { languageEntity ->
+                        callBaselineSurveyApi(
+                            fetchDataUseCase,
+                            languageId = languageEntity.id,
+                            referenceId = stateId
+                        ) { callBack() }
+                        callHamletSurveyApi(
+                            fetchDataUseCase,
+                            languageId = languageEntity.id,
+                            referenceId = stateId
+                        ) { callBack() }
+                    }
+            }
         }
+
     }
 
     private fun callHamletSurveyApi(
@@ -200,6 +218,7 @@ class DataLoadingScreenViewModel @Inject constructor(
             fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
                 hamletSurveyRequestBodyModel
             )
+            surveyApiCount++
             baseCurrentApiCount++
             updateLoaderEvent(callBack)
         }
@@ -222,6 +241,7 @@ class DataLoadingScreenViewModel @Inject constructor(
                 baselineSurveyRequestBodyModel
             )
             baseCurrentApiCount++
+            surveyApiCount++
             updateLoaderEvent(callBack)
         }
     }
