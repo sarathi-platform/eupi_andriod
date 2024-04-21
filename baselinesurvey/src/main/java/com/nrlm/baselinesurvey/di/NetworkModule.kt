@@ -79,7 +79,7 @@ object NetworkModule {
         application: Application
     ): Retrofit {
         val cache = Cache(application.cacheDir, 10 * 1024 * 1024) // 10 MB
-        val timeout = 60.toLong()
+        val timeout = 5.toLong()
         val clientBuilder =
             OkHttpClient.Builder()
 //    getOkHttpBuilder()
@@ -88,6 +88,7 @@ object NetworkModule {
                 .readTimeout(timeout, TimeUnit.SECONDS)
 //        .cache(cache)
         clientBuilder.addNetworkInterceptor(getNetworkInterceptor(application.applicationContext))
+        clientBuilder.addInterceptor(ErrorInterceptor())
         clientBuilder.addInterceptor(
             getHeaderInterceptor(
                 sharedPref,

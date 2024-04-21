@@ -7,6 +7,7 @@ import com.nrlm.baselinesurvey.SPLASH_SCREEN_DURATION
 import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
+import com.nrlm.baselinesurvey.model.datamodel.ErrorModel
 import com.nrlm.baselinesurvey.ui.splash.domain.use_case.SplashScreenUseCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
@@ -77,15 +78,22 @@ class SplashScreenViewModel @Inject constructor(
                     }
                 }
             } catch (ex: Exception) {
-                onCatchError(ex)
                 if (ex.message?.contains(ROOM_INTEGRITY_EXCEPTION, true) == false) {
                     splashScreenUseCase.saveLanguageConfigUseCase.addDefaultLanguage()
                 }
                 withContext(Dispatchers.Main) {
                     callBack()
                 }
+                onCatchError(ex)
+
             }
         }
+    }
+
+    override fun onServerError(error: ErrorModel?) {
+        super.onServerError(error)
+
+
     }
 
 }

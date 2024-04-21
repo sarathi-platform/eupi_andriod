@@ -291,7 +291,7 @@ class SurveyeeScreenViewModel @Inject constructor(
                     showCustomToast(
                         BaselineCore.getAppContext(),
                         BaselineCore.getAppContext()
-                            .getString(R.string.refresh_failed_please_try_again)
+                            .getString(R.string.refresh_failed_please_try_again) + " " + event.message
                     )
                 }
             }

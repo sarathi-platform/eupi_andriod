@@ -48,6 +48,12 @@ class FetchContentDataFromNetworkUseCase(private val repository: DataLoadingScre
                 }
                 return false
             } else {
+                repository.updateApiStatus(
+                    SUBPATH_CONTENT_MANAGER,
+                    status = ApiStatus.FAILED.ordinal,
+                    contentResponse.message ?: "",
+                    500
+                )
                 return false
             }
         } catch (apiException: ApiException) {
@@ -57,7 +63,7 @@ class FetchContentDataFromNetworkUseCase(private val repository: DataLoadingScre
                 apiException.message ?: "",
                 apiException.getStatusCode()
             )
-            return false
+            throw apiException
         } catch (ex: Exception) {
             repository.updateApiStatus(
                 SUBPATH_CONTENT_MANAGER,
@@ -66,7 +72,7 @@ class FetchContentDataFromNetworkUseCase(private val repository: DataLoadingScre
                 500
             )
             BaselineLogger.e("FetchUserDetailFromNetworkUseCase", "invoke", ex)
-            return false
+            throw ex
         }
     }
 }

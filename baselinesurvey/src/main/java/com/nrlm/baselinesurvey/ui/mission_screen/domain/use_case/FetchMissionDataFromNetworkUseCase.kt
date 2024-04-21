@@ -69,6 +69,12 @@ class FetchMissionDataFromNetworkUseCase(
                 }
                 return false
             } else {
+                repository.updateApiStatus(
+                    SUBPATH_GET_MISSION,
+                    status = ApiStatus.FAILED.ordinal,
+                    apiResponse.message ?: "",
+                    500
+                )
                 return false
             }
         } catch (apiException: ApiException) {
@@ -78,7 +84,7 @@ class FetchMissionDataFromNetworkUseCase(
                 apiException.message ?: "",
                 apiException.getStatusCode()
             )
-            return false
+            throw apiException
         } catch (ex: Exception) {
             repository.updateApiStatus(
                 SUBPATH_GET_MISSION,
@@ -87,7 +93,7 @@ class FetchMissionDataFromNetworkUseCase(
                 500
             )
             BaselineLogger.e("FetchUserDetailFromNetworkUseCase", "invoke", ex)
-            return false
+            throw ex
         }
     }
 

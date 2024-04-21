@@ -54,54 +54,23 @@ abstract class BaseViewModel() : ViewModel() {
     var networkErrorMessage = mutableStateOf(BLANK_STRING)
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, e ->
         BaselineLogger.e("BaseViewModel", "exceptionHandler: ${e.message}", e)
-        when (e) {
-            is HttpException -> {
-                when (e.response()?.code() ?: 0) {
-                    RESPONSE_CODE_UNAUTHORIZED -> {
-                        onServerError(ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE))
-                    }
+        onCatchError(e)
 
-                    RESPONSE_CODE_CONFLICT -> {
-                        onServerError(ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE))
-                    }
-
-                    RESPONSE_CODE_NOT_FOUND ->
-                        onServerError(ErrorModel(message = UNREACHABLE_ERROR_MSG,
-                            statusCode = e.response()?.code() ?: -1))
-
-                    RESPONSE_CODE_DEACTIVATED,
-                    RESPONSE_CODE_500,
-                    RESPONSE_CODE_BAD_GATEWAY,
-                    RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE ->
-                        onServerError(ErrorModel(statusCode = e.response()?.code() ?: -1, message = e.response()?.message()))
-
-                    else ->
-                        onServerError(ErrorModel(statusCode = e.response()?.code() ?: -1,
-                            message = e.message?: COMMON_ERROR_MSG))
-                }
-            }
-
-            is SocketTimeoutException -> {
-                onServerError(ErrorModel(statusCode = RESPONSE_CODE_TIMEOUT,message = TIMEOUT_ERROR_MSG))
-            }
-
-            is IOException -> {
-                onServerError(ErrorModel(statusCode = RESPONSE_CODE_NETWORK_ERROR))
-            }
-
-            is JsonSyntaxException ->{
-                onServerError(ErrorModel(-1, e.message, statusCode = RESPONSE_CODE_NO_DATA))
-            }
-
-            else -> onServerError(ErrorModel(-1, e.message))
-        }
     }
+
 
     open fun onError(tag: String = "BaseViewModel", message: String) {
         BaselineLogger.e(tag, message)
     }
     open fun onServerError(error: ErrorModel?) {
+        viewModelScope.launch(Dispatchers.Main) {
+            onEvent(LoaderEvent.UpdateLoaderState(false))
+            onEvent(ApiStatusEvent.showApiStatus(RESPONSE_CODE_SERVER_ERROR, error?.message ?: ""))
+        }
     }
+
+
+
 
 //    abstract fun onServerError(errorModel: ErrorModelWithApi?)
 
@@ -109,101 +78,63 @@ abstract class BaseViewModel() : ViewModel() {
         super.onCleared()
         job?.cancel()
     }
-    open fun onCatchError(e:Exception) {
-        BaselineLogger.e("BaseViewModel", "onCatchError: ${e.message}")
+
+    private fun parseException(e: Throwable): ErrorModel {
         when (e) {
             is HttpException -> {
                 BaselineLogger.e("BaseViewModel", "onCatchError code: ${e.response()?.code() ?: 0}")
                 when (e.response()?.code() ?: 0) {
                     RESPONSE_CODE_UNAUTHORIZED -> {
-                        onServerError(ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE))
+                        return ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE)
                     }
                     RESPONSE_CODE_CONFLICT -> {
-                        onServerError(ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE))
+                        return ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE)
                     }
                     RESPONSE_CODE_NOT_FOUND ->
-                        onServerError(ErrorModel(message = UNREACHABLE_ERROR_MSG,
-                            statusCode = e.response()?.code() ?: -1))
+                        return ErrorModel(
+                            message = UNREACHABLE_ERROR_MSG,
+                            statusCode = e.response()?.code() ?: -1
+                        )
 
                     RESPONSE_CODE_DEACTIVATED,
                     RESPONSE_CODE_500,
                     RESPONSE_CODE_BAD_GATEWAY,
                     RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE ->
-                        onServerError(ErrorModel(statusCode = e.response()?.code() ?: -1, message = e.response()?.message()))
+                        return ErrorModel(
+                            statusCode = e.response()?.code() ?: -1,
+                            message = e.response()?.message()
+                        )
 
                     else ->
-                        onServerError(ErrorModel(statusCode = e.response()?.code() ?: -1,
-                            message = e.message?: COMMON_ERROR_MSG))
+                        return ErrorModel(
+                            statusCode = e.response()?.code() ?: -1,
+                            message = e.message ?: COMMON_ERROR_MSG
+                        )
                 }
             }
             is SocketTimeoutException -> {
-                onServerError(ErrorModel(statusCode = RESPONSE_CODE_TIMEOUT,message = TIMEOUT_ERROR_MSG))
+                return ErrorModel(statusCode = RESPONSE_CODE_TIMEOUT, message = TIMEOUT_ERROR_MSG)
             }
             is IOException -> {
-                onServerError(ErrorModel(statusCode = RESPONSE_CODE_NETWORK_ERROR))
+                return ErrorModel(statusCode = RESPONSE_CODE_NETWORK_ERROR)
             }
             is JsonSyntaxException ->{
-                onServerError(ErrorModel(-1, e.message, statusCode = RESPONSE_CODE_NO_DATA))
+                return ErrorModel(-1, e.message, statusCode = RESPONSE_CODE_NO_DATA)
             }
-            else -> onServerError(ErrorModel(-1, e.message))
+
+            else -> return ErrorModel(-1, e.message)
         }
     }
 
-    /*open fun onCatchError(e:Exception, api: ApiType) {
-        NudgeLogger.d("BaseViewModel", "onCatchError: message: ${e.message}, api: ${api.name}")
-        AnalyticsHelper.logServiceFailedEvent(exception = e, apiType = api)
-        when (e) {
-            is HttpException -> {
-                NudgeLogger.d("BaseViewModel", "onCatchError code: ${e.response()?.code() ?: 0}, api: ${api.name}")
-                when (e.response()?.code() ?: 0) {
-                    RESPONSE_CODE_UNAUTHORIZED -> {
-                        if(!RetryHelper.tokenExpired.value && api != ApiType.LOGOUT_API) {
-                            RetryHelper.tokenExpired.value = true
-                        }
-                        onServerError(ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE))
-                    }
-                    RESPONSE_CODE_CONFLICT -> {
-                        if(!RetryHelper.tokenExpired.value && api != ApiType.LOGOUT_API) {
-                            RetryHelper.tokenExpired.value = true
-                        }
-                        onServerError(ErrorModel(e.response()?.code() ?: 0, message = e.response()?.message()))
-                    }
-                    RESPONSE_CODE_NOT_FOUND ->
-                        onServerError(ErrorModelWithApi(apiName = api, message = UNREACHABLE_ERROR_MSG,
-                            statusCode = e.response()?.code() ?: -1))
-
-                    RESPONSE_CODE_DEACTIVATED,
-                    RESPONSE_CODE_500,
-                    RESPONSE_CODE_BAD_GATEWAY,
-                    RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE ->
-                        onServerError(ErrorModelWithApi(apiName = api, statusCode = e.response()?.code() ?: -1, message = e.response()?.message()))
-
-                    else ->
-                        onServerError(ErrorModelWithApi(apiName = api, statusCode = e.response()?.code() ?: -1,
-                            message = e.message?: COMMON_ERROR_MSG))
-                }
-            }
-            is SocketTimeoutException -> {
-                onServerError(ErrorModelWithApi(apiName = api, statusCode = RESPONSE_CODE_TIMEOUT,message = TIMEOUT_ERROR_MSG))
-            }
-            is IOException -> {
-                onServerError(ErrorModelWithApi(apiName = api, statusCode = RESPONSE_CODE_NETWORK_ERROR))
-            }
-            is JsonSyntaxException ->{
-                onServerError(ErrorModelWithApi(-1, apiName = api, e.message, statusCode = RESPONSE_CODE_NO_DATA))
-            }
-            is ApiResponseFailException -> {
-                onServerError(ErrorModelWithApi(code = -1, apiName = api, e.message))
-            }
-            else -> onServerError(ErrorModelWithApi(-1, apiName = api, e.message))
-        }
-    }*/
+    open fun onCatchError(e: Throwable) {
+        BaselineLogger.e("BaseViewModel", "onCatchError: ${e.message}")
+        onServerError(parseException(e))
+    }
 
     fun refreshData(fetchDataUseCase: FetchDataUseCase) {
         currentApiCount = 0
         onEvent(LoaderEvent.UpdateLoaderState(true))
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
                 callSurveyApi(fetchDataUseCase)
                 fetchMissionData(fetchDataUseCase)
                 fetchCastes(fetchDataUseCase)
@@ -211,27 +142,22 @@ abstract class BaseViewModel() : ViewModel() {
                 fetchSurveyeeList(fetchDataUseCase)
                 fetchContentData(fetchDataUseCase)
 
-            } catch (e: Exception) {
-                // Handle the exception here
-                withContext(Dispatchers.Main) {
-                    onEvent(LoaderEvent.UpdateLoaderState(false))
-                    onEvent(ApiStatusEvent.showApiStatus(RESPONSE_CODE_SERVER_ERROR))
-                }
-            }
+
         }
+
     }
 
     private suspend fun updateLoaderEvent() {
         if (currentApiCount == 6) {
             withContext(Dispatchers.Main) {
                 // onEvent(LoaderEvent.UpdateLoaderState(false))
-                onEvent(ApiStatusEvent.showApiStatus(SUCCESS_CODE.toInt()))
+                onEvent(ApiStatusEvent.showApiStatus(SUCCESS_CODE.toInt(), ""))
             }
         }
     }
 
     private fun callSurveyApi(fetchDataUseCase: FetchDataUseCase) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
 
             val baselineSurveyRequestBodyModel = SurveyRequestBodyModel(
                 languageId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getAppLanguageId(),
@@ -258,7 +184,7 @@ abstract class BaseViewModel() : ViewModel() {
     }
 
     private fun fetchUserDetail(fetchDataUseCase: FetchDataUseCase) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             fetchDataUseCase.fetchUserDetailFromNetworkUseCase.invoke()
             currentApiCount++
             updateLoaderEvent()
@@ -266,7 +192,7 @@ abstract class BaseViewModel() : ViewModel() {
     }
 
     private fun fetchCastes(fetchDataUseCase: FetchDataUseCase) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke(false)
             currentApiCount++
             updateLoaderEvent()
@@ -274,7 +200,7 @@ abstract class BaseViewModel() : ViewModel() {
     }
 
     private fun fetchMissionData(fetchDataUseCase: FetchDataUseCase) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
             currentApiCount++
             updateLoaderEvent()
@@ -282,7 +208,7 @@ abstract class BaseViewModel() : ViewModel() {
     }
 
     private fun fetchSurveyeeList(fetchDataUseCase: FetchDataUseCase) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
             currentApiCount++
             updateLoaderEvent()
@@ -291,7 +217,7 @@ abstract class BaseViewModel() : ViewModel() {
     }
 
     private fun fetchContentData(fetchDataUseCase: FetchDataUseCase) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             fetchDataUseCase.fetchContentnDataFromNetworkUseCase.invoke()
             currentApiCount++
             updateLoaderEvent()

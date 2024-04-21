@@ -47,6 +47,13 @@ class FetchCastesFromNetworkUseCase(private val repository: DataLoadingScreenRep
                                 casteList.addAll(casteApiResponse.data)
                             }
                         }
+                    } else {
+                        repository.updateApiStatus(
+                            SUBPATH_GET_CASTE_LIST,
+                            status = ApiStatus.FAILED.ordinal,
+                            casteApiResponse.message ?: "",
+                            500
+                        )
                     }
                     repository.saveCasteList(casteList.json())
                 }
@@ -59,6 +66,7 @@ class FetchCastesFromNetworkUseCase(private val repository: DataLoadingScreenRep
                 apiException.message ?: "",
                 apiException.getStatusCode()
             )
+            throw apiException
         } catch (ex: Exception) {
             repository.updateApiStatus(
                 SUBPATH_GET_CASTE_LIST,
@@ -67,6 +75,7 @@ class FetchCastesFromNetworkUseCase(private val repository: DataLoadingScreenRep
                 500
             )
             BaselineLogger.e("FetchUserDetailFromNetworkUseCase", "invoke", ex)
+            throw ex
         }
     }
 

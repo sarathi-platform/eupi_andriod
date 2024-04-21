@@ -34,6 +34,12 @@ class FetchUserDetailFromNetworkUseCase (
                     false
                 }
             } else {
+                repository.updateApiStatus(
+                    SUBPATH_USER_VIEW,
+                    status = ApiStatus.FAILED.ordinal,
+                    userApiResponse.message ?: "",
+                    500
+                )
                 false
             }
         } catch (apiException: ApiException) {
@@ -43,7 +49,7 @@ class FetchUserDetailFromNetworkUseCase (
                 apiException.message ?: "",
                 apiException.getStatusCode()
             )
-            return false
+            throw apiException
         } catch (ex: Exception) {
             repository.updateApiStatus(
                 SUBPATH_USER_VIEW,
@@ -52,7 +58,7 @@ class FetchUserDetailFromNetworkUseCase (
                 500
             )
             BaselineLogger.e("FetchUserDetailFromNetworkUseCase", "invoke", ex)
-            return false
+            throw ex
         }
     }
 }

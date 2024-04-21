@@ -96,6 +96,12 @@ class FetchSurveyeeListFromNetworkUseCase(
                 return false
             }
         } else {
+            repository.updateApiStatus(
+                SUBPATH_GET_DIDI_LIST,
+                status = ApiStatus.FAILED.ordinal,
+                apiResponse.message ?: "",
+                500
+            )
             return false
         }
         } catch (apiException: ApiException) {
@@ -105,7 +111,7 @@ class FetchSurveyeeListFromNetworkUseCase(
                 apiException.message ?: "",
                 apiException.getStatusCode()
             )
-            return false
+            throw apiException
         } catch (ex: Exception) {
             repository.updateApiStatus(
                 SUBPATH_GET_DIDI_LIST,
@@ -114,7 +120,7 @@ class FetchSurveyeeListFromNetworkUseCase(
                 500
             )
             BaselineLogger.e("FetchUserDetailFromNetworkUseCase", "invoke", ex)
-            return false
-    }
+            throw ex
+        }
 }
 }

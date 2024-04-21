@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.model.datamodel.ErrorModel
 import com.nrlm.baselinesurvey.model.request.OtpRequest
 import com.nrlm.baselinesurvey.ui.auth.presentation.OtpVerificationEvent
 import com.nrlm.baselinesurvey.ui.auth.use_case.OtpVerificationUseCase
@@ -56,12 +57,13 @@ class OtpVerificationViewModel @Inject constructor(
                                 )
                             }
                         } else {
-                            message.value = validateOtpResponse.message
+                            networkErrorMessage.value = validateOtpResponse.message
                             onEvent(LoaderEvent.UpdateLoaderState(false))
+
                         }
                     } catch (ex: Exception) {
                         BaselineLogger.e(TAG, "ValidateOtpEvent -> exception: ${ex.message}", ex)
-                        message.value = ex.message ?: "Something went wrong, please try again later!"
+                        onCatchError(ex)
                         onEvent(LoaderEvent.UpdateLoaderState(false))
                     }
 
@@ -78,11 +80,18 @@ class OtpVerificationViewModel @Inject constructor(
                             resendApiSuccess.value = true
                         }
                     } else {
-                        message.value = resendOtpResponse.message
+                        networkErrorMessage.value = resendOtpResponse.message
                     }
                 }
             }
         }
+    }
+
+
+    override fun onServerError(error: ErrorModel?) {
+        super.onServerError(error)
+        networkErrorMessage.value = error?.message ?: ""
+
     }
 
 }

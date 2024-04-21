@@ -59,6 +59,12 @@ class FetchSurveyFromNetworkUseCase(
                 }
                 return false
             } else {
+                repository.updateApiStatus(
+                    SUBPATH_FETCH_SURVEY_FROM_NETWORK,
+                    status = ApiStatus.FAILED.ordinal,
+                    surveyApiResponse.message ?: "",
+                    500
+                )
                 return false
             }
         } catch (apiException: ApiException) {
@@ -68,7 +74,7 @@ class FetchSurveyFromNetworkUseCase(
                 apiException.message ?: "",
                 apiException.getStatusCode()
             )
-            return false
+            throw apiException
         } catch (ex: Exception) {
             repository.updateApiStatus(
                 SUBPATH_FETCH_SURVEY_FROM_NETWORK,
@@ -77,7 +83,7 @@ class FetchSurveyFromNetworkUseCase(
                 500
             )
             BaselineLogger.e("FetchUserDetailFromNetworkUseCase", "invoke", ex)
-            return false
+            throw ex
         }
     }
 
