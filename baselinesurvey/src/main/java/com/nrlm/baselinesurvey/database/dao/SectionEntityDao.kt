@@ -20,7 +20,7 @@ interface SectionEntityDao {
         languageId: Int
     ): SectionEntity
 
-    @Query("Select * from $SECTION_TABLE where  userId=:userId and surveyId = :surveyId and languageId = :languageId")
+    @Query("Select * from $SECTION_TABLE where userId=:userId and surveyId = :surveyId and languageId = :languageId")
     fun getAllSectionForSurveyInLanguage(
         userId: String,
         surveyId: Int,

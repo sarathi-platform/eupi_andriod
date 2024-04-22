@@ -1,7 +1,7 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.domain.repository
 
 import androidx.lifecycle.LiveData
-import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ContentDao
 import com.nrlm.baselinesurvey.database.dao.FormQuestionResponseDao
@@ -23,13 +23,15 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
     override suspend fun getFormQuestionOptions(
         surveyId: Int,
         sectionId: Int,
-        questionId: Int
+        questionId: Int,
+        selectDefaultLanguage: Boolean
     ): List<OptionItemEntity> {
         return optionItemDao.getSurveySectionQuestionOptions(
+            userId = getBaseLineUserId(),
             surveyId = surveyId,
             sectionId = sectionId,
             questionId = questionId,
-            languageId = getSelectedLanguage()
+            languageId = if (selectDefaultLanguage) DEFAULT_LANGUAGE_ID else getSelectedLanguage()
         )
     }
 
@@ -44,7 +46,7 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
         didiId: Int
     ): List<FormQuestionResponseEntity> {
         return formQuestionResponseDao.getFormResponsesForQuestion(
-            userId = getUserId(),
+            userId = getBaseLineUserId(),
             surveyId = surveyId,
             sectionId = sectionId,
             questionId = questionId,
@@ -59,7 +61,7 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
         didiId: Int
     ): LiveData<List<FormQuestionResponseEntity>> {
         return formQuestionResponseDao.getFormResponsesForQuestionLive(
-            getUserId(),
+            getBaseLineUserId(),
             surveyId,
             sectionId,
             questionId,
@@ -76,7 +78,7 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
         optionId: Int
     ): List<FormQuestionResponseEntity> {
         return formQuestionResponseDao.getFormResponsesForQuestionOption(
-            userId = getUserId(),
+            userId = getBaseLineUserId(),
             surveyId = surveyId,
             sectionId = sectionId,
             questionId = questionId,
@@ -89,7 +91,7 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
     override suspend fun addFormResponseForQuestion(
         formQuestionResponseEntity: FormQuestionResponseEntity
     ) {
-        formQuestionResponseEntity.userId = getUserId()
+        formQuestionResponseEntity.userId = getBaseLineUserId()
         formQuestionResponseDao.addFormResponse(formQuestionResponseEntity)
     }
 
@@ -103,7 +105,7 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
         didiId: Int
     ) {
         return formQuestionResponseDao.updateOptionItemValue(
-            userId = getUserId(),
+            userId = getBaseLineUserId(),
             surveyId = surveyId,
             sectionId = sectionId,
             questionId = questionId,
@@ -115,12 +117,15 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getFormResponseForReferenceId(referenceId: String): List<FormQuestionResponseEntity> {
-        return formQuestionResponseDao.getFormResponseForReferenceId(getUserId(), referenceId)
+        return formQuestionResponseDao.getFormResponseForReferenceId(
+            getBaseLineUserId(),
+            referenceId
+        )
     }
 
     override suspend fun deleteFormQuestionResponseForReferenceId(referenceId: String) {
         formQuestionResponseDao.deleteFormResponseQuestionForReferenceId(
-            userId = getUserId(),
+            userId = getBaseLineUserId(),
             referenceId = referenceId
         )
     }
@@ -137,7 +142,7 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
         surveyeeId: Int
     ) {
         formQuestionResponseDao.deleteFormResponseQuestionForOption(
-            userId = getUserId(),
+            userId = getBaseLineUserId(),
             optionId = optionId,
             questionId = questionId,
             sectionId = sectionId,
@@ -155,7 +160,7 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
             selectedValue = formQuestionResponseEntity.selectedValue,
             referenceId = formQuestionResponseEntity.referenceId,
             didiId = formQuestionResponseEntity.didiId,
-            userId = formQuestionResponseEntity.userId ?: ""
+            userId = getBaseLineUserId()
         )
     }
 
@@ -167,7 +172,7 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
             optionId = formQuestionResponseEntity.optionId,
             referenceId = formQuestionResponseEntity.referenceId,
             didiId = formQuestionResponseEntity.didiId,
-            userId = formQuestionResponseEntity.userId ?: ""
+            userId = getBaseLineUserId()
         )
     }
 
@@ -177,6 +182,7 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
         questionId: Int
     ): QuestionEntity? {
         return questionEntityDao.getFormQuestionForId(
+            userid = getBaseLineUserId(),
             surveyId,
             sectionId,
             questionId,
@@ -189,25 +195,29 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
         sectionId: Int,
         didiId: Int
     ): List<FormQuestionResponseEntity> {
-        val userId = prefRepo.getMobileNumber() ?: BLANK_STRING
         return formQuestionResponseDao.getFormQuestionCountForSection(
             surveyId = surveyId,
             sectionId = sectionId,
             didiId = didiId,
-            userId = getUserId()
+            userId = getBaseLineUserId()
         )
     }
 
     override suspend fun getQuestionTag(surveyId: Int, sectionId: Int, questionId: Int): Int {
-        return questionEntityDao.getQuestionTag(surveyId, sectionId, questionId)
+        return questionEntityDao.getQuestionTag(
+            userid = getBaseLineUserId(),
+            surveyId,
+            sectionId,
+            questionId
+        )
     }
 
     override suspend fun getContentFromDB(contentKey: String): ContentEntity {
         return contentDao.getContentFromIds(contentKey, languageId = getSelectedLanguage())
     }
 
-    override fun getUserId(): String {
-        return prefRepo.getMobileNumber() ?: BLANK_STRING
+    override fun getBaseLineUserId(): String {
+        return prefRepo.getUniqueUserIdentifier()
     }
 
 }

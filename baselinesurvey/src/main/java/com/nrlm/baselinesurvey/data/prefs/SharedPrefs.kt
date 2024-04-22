@@ -16,6 +16,7 @@ import com.nrlm.baselinesurvey.PREF_KEY_SELECTED_VILLAGE
 import com.nrlm.baselinesurvey.PREF_KEY_SETTING_OPEN_FROM
 import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
+import com.nrlm.baselinesurvey.PREF_USER_TYPE
 import com.nrlm.baselinesurvey.data.prefs.StrictModePermitter.permitDiskReads
 import com.nrlm.baselinesurvey.database.entity.VillageEntity
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -155,12 +156,11 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     }
 
     override fun setDataSyncStatus(status: Boolean) {
-        prefs.edit().putBoolean(PREF_KEY_IS_DATA_SYNC, status).apply()
-
+        prefs.edit().putBoolean(PREF_KEY_IS_DATA_SYNC + getMobileNumber(), status).apply()
     }
 
     override fun getDataSyncStatus(): Boolean {
-        return prefs.getBoolean(PREF_KEY_IS_DATA_SYNC, false)
+        return prefs.getBoolean(PREF_KEY_IS_DATA_SYNC + getMobileNumber(), false)
     }
 
     override fun setPreviousUserMobile(mobileNumber: String) {
@@ -171,8 +171,10 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         return prefs.getString(PREF_KEY_PREVIOUS_USER_MOBILE, "") ?: ""
     }
 
-    override fun getUniqueUserId(): String {
-        return getMobileNumber()
+    override fun getUniqueUserIdentifier(): String {
+        val userType = prefs.getString(PREF_USER_TYPE, BLANK_STRING) ?: BLANK_STRING
+        val userMobile = prefs.getString(PREF_MOBILE_NUMBER, BLANK_STRING) ?: BLANK_STRING
+        return "${userType}_${userMobile}"
     }
 
 }

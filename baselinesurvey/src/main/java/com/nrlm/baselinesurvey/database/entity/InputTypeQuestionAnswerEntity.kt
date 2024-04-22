@@ -3,8 +3,8 @@ package com.nrlm.baselinesurvey.database.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.INPUT_TYPE_QUESTION_ANSWER_TABLE
-import com.nudge.syncmanager.BLANK_STRING
 
 @Entity(tableName = INPUT_TYPE_QUESTION_ANSWER_TABLE)
 data class InputTypeQuestionAnswerEntity(
@@ -12,7 +12,6 @@ data class InputTypeQuestionAnswerEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     var userId: String? = BLANK_STRING,
-
     @ColumnInfo(name = "didiId")
     val didiId: Int,
 

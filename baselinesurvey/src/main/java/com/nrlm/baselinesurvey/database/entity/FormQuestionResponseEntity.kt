@@ -3,8 +3,8 @@ package com.nrlm.baselinesurvey.database.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.FORM_QUESTION_RESPONSE_TABLE
-import com.nudge.syncmanager.BLANK_STRING
 
 @Entity(tableName = FORM_QUESTION_RESPONSE_TABLE)
 data class FormQuestionResponseEntity(

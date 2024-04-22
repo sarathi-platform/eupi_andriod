@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.section_screen.domain.repository
 
+import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
@@ -24,5 +25,15 @@ interface SectionListScreenRepository {
     suspend fun updateSubjectStatus(didiId: Int, surveyState: SurveyState)
 
     suspend fun updateTaskStatus(didiId: Int, surveyState: SectionStatus)
-    fun getUserId(): String
+    suspend fun updateTaskStatus(
+        taskId: Int,
+        activityId: Int,
+        missionId: Int,
+        status: String
+    )
+
+    suspend fun getTaskForSubjectId(surveyId: Int): ActivityTaskEntity?
+
+    fun getBaseLineUserId(): String
+
 }

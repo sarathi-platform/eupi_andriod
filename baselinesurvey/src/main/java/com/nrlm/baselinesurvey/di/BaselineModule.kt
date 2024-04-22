@@ -295,6 +295,8 @@ object BaselineModule {
     @Singleton
     fun provideSurveyeeScreenUseCase(
         surveyeeListScreenRepository: SurveyeeListScreenRepository,
+        sectionListScreenRepository: SectionListScreenRepository,
+        missionSummaryScreenRepository: MissionSummaryScreenRepository,
         eventsWriterRepository: EventsWriterRepository
     ): SurveyeeScreenUseCase {
         return SurveyeeScreenUseCase(
@@ -304,7 +306,12 @@ object BaselineModule {
                 surveyeeListScreenRepository
             ),
             updateActivityStatusUseCase = UpdateActivityStatusUseCase(surveyeeListScreenRepository),
-            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)
+            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository),
+            updateSubjectStatusUseCase = UpdateSubjectStatusUseCase(sectionListScreenRepository),
+            updateTaskStatusUseCase = UpdateTaskStatusUseCase(sectionListScreenRepository),
+            getPendingTaskCountLiveUseCase = GetPendingTaskCountLiveUseCase(
+                missionSummaryScreenRepository
+            )
         )
     }
 
@@ -715,6 +722,8 @@ object BaselineModule {
         eventDependencyDao: EventDependencyDao,
         surveyEntityDao: SurveyEntityDao,
         surveyeeEntityDao: SurveyeeEntityDao,
+        questionEntityDao: QuestionEntityDao,
+        optionItemDao: OptionItemDao,
         taskDao: ActivityTaskDao,
         activityDao: MissionActivityDao,
         missionEntityDao: MissionEntityDao,
@@ -728,6 +737,8 @@ object BaselineModule {
             eventDependencyDao = eventDependencyDao,
             surveyEntityDao = surveyEntityDao,
             surveyeeEntityDao = surveyeeEntityDao,
+            questionEntityDao = questionEntityDao,
+            optionItemDao = optionItemDao,
             taskDao = taskDao,
             activityDao = activityDao,
             missionEntityDao = missionEntityDao,

@@ -56,7 +56,7 @@ fun EditTextWithTitleComponent(
 ) {
     val txt = remember {
         mutableStateOf(defaultValue)
-    }
+   }
 //    if (txt.value.isBlank()) {
 //        txt.value = defaultValue
 //    }
@@ -65,7 +65,7 @@ fun EditTextWithTitleComponent(
 
     Log.d(
         "TAG",
-        "EditTextWithTitleComponent: ${showQuestion?.optionItemEntity?.display}, isOnlyNumber: $isOnlyNumber"
+        "EditTextWithTitleComponent: ${defaultValue}, isOnlyNumber: $isOnlyNumber, txt: ${txt.value}"
     )
 
     VerticalAnimatedVisibilityComponent(visible = showQuestion?.showQuestion ?: true) {

@@ -9,12 +9,14 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BaselineApplication.Companion.appScopeLaunch
+import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
@@ -28,6 +30,7 @@ import com.nrlm.baselinesurvey.ui.common_components.SHGFlag
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SurveyStateEvents
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
+import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.start_screen.domain.use_case.StartSurveyScreenUserCase
 import com.nrlm.baselinesurvey.ui.start_screen.presentation.StartSurveyScreenEvents
 import com.nrlm.baselinesurvey.utils.BaselineCore
@@ -36,7 +39,9 @@ import com.nrlm.baselinesurvey.utils.LocationCoordinates
 import com.nrlm.baselinesurvey.utils.LocationUtil
 import com.nrlm.baselinesurvey.utils.findTagForId
 import com.nrlm.baselinesurvey.utils.getFileNameFromURL
+import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.tagList
+import com.nrlm.baselinesurvey.utils.toOptionItemStateList
 import com.nudge.core.compressImage
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventType
@@ -84,6 +89,8 @@ class BaseLineStartViewModel @Inject constructor(
     private val _didiInfo = MutableStateFlow(
         DidiInfoEntity.getEmptyDidiInfoEntity()
     )
+    private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
+    val loaderState: State<LoaderState> get() = _loaderState
     val didiEntity: StateFlow<SurveyeeEntity> get() = _didiEntity
     val didiInfo: StateFlow<DidiInfoEntity> get() = _didiInfo
 
@@ -93,6 +100,10 @@ class BaseLineStartViewModel @Inject constructor(
     val adharCardState = mutableStateOf(OptionItemEntityState.getEmptyStateObject())
 
     var sectionDetails: SectionListItem = SectionListItem(
+        languageId = 2
+    )
+
+    private var sectionDetailInDefaultLanguage = SectionListItem(
         languageId = 2
     )
 
@@ -120,13 +131,20 @@ class BaseLineStartViewModel @Inject constructor(
                 )
             }
 
+            is StartSurveyScreenEvents.SaveDidiInfoInDbEvent -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    startSurveyScreenUserCase.updateSurveyStateUseCase.saveDidiInfoInDB(event.didiInfoEntity)
+                }
+
+            }
+
             is SurveyStateEvents.UpdateDidiSurveyStatus -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     startSurveyScreenUserCase.updateSurveyStateUseCase.invoke(
                         event.didiId,
                         event.didiSurveyState
                     )
-                    startSurveyScreenUserCase.updateSurveyStateUseCase.saveDidiInfoInDB(event.didiInfo)
+                    _didiInfo.value = event.didiInfo
                 }
             }
 
@@ -156,6 +174,9 @@ class BaseLineStartViewModel @Inject constructor(
                             questionId = event.questionId,
                             questionType = event.questionType,
                             questionTag = event.questionTag,
+                            questionDesc = event.questionDesc,
+                            referenceOptionList = sectionDetails.optionsItemMap[event.questionId]?.toOptionItemStateList()
+                                ?: emptyList(),
                             saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
                         )
                     startSurveyScreenUserCase.eventsWriterUseCase.invoke(
@@ -181,6 +202,12 @@ class BaseLineStartViewModel @Inject constructor(
                 CoroutineScope(Dispatchers.IO).launch {
                     writeImageUploadEvent(event.didiId)
                 }
+            }
+
+            is LoaderEvent.UpdateLoaderState -> {
+                _loaderState.value = _loaderState.value.copy(
+                    isLoaderVisible = event.showLoader
+                )
             }
         }
     }
@@ -246,6 +273,12 @@ class BaseLineStartViewModel @Inject constructor(
                 sectionId,
                 surveyId,
                 selectedLanguage
+            )
+
+            sectionDetailInDefaultLanguage = startSurveyScreenUserCase.getSectionUseCase.invoke(
+                sectionId,
+                surveyId,
+                DEFAULT_LANGUAGE_ID
             )
 
             _didiEntity.emit(startSurveyScreenUserCase.getSurveyeeDetailsUserCase.invoke(didiId))
@@ -403,8 +436,9 @@ class BaseLineStartViewModel @Inject constructor(
                     ).name
                     else didiInfo.phoneNumber ?: BLANK_STRING,
                     referenceId = didiInfo.didiId.toString(),
-                tag = it.optionTag
-            )
+                    tag = it.optionTag,
+                    optionDesc = it.display ?: BLANK_STRING
+                )
             saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
         }
         onEvent(
@@ -415,11 +449,10 @@ class BaseLineStartViewModel @Inject constructor(
                 questionId = question.questionId ?: 0,
                 questionType = question.type ?: QuestionType.Form.name,
                 questionTag = question.tag,
+                questionDesc = question.questionDisplay ?: BLANK_STRING,
                 saveAnswerEventOptionItemDtoList = saveAnswerEventOptionItemDtoList.toList()
             )
         )
-
-
     }
 
 }

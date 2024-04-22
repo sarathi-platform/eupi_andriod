@@ -1,7 +1,6 @@
 package com.nrlm.baselinesurvey.ui.mission_screen.domain.repository
 
 import androidx.lifecycle.LiveData
-import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
@@ -16,7 +15,7 @@ class MissionScreenRepositoryImpl @Inject constructor(
     private val prefRepo: PrefRepo
 ) : MissionScreenRepository {
     override suspend fun getMissionsFromDB(): List<MissionEntity> {
-        return missionEntityDao.getMissions(getUserId())
+        return missionEntityDao.getMissions(getBaseLineUserId())
     }
 
     /*override fun getLanguageId(): String {
@@ -24,15 +23,23 @@ class MissionScreenRepositoryImpl @Inject constructor(
     }*/
 
     override fun getTotalTaskCountForMission(missionId: Int): Int {
-        return taskDao.getTaskCountForMission(getUserId(), missionId)
+        return taskDao.getTaskCountForMission(userId = getBaseLineUserId(), missionId)
     }
 
     override fun getPendingTaskCountLiveForMission(missionId: Int): LiveData<Int> {
-        return taskDao.getPendingTaskCountLiveForMission(getUserId(), missionId)
+        return taskDao.getPendingTaskCountLiveForMission(userId = getBaseLineUserId(), missionId)
     }
 
-    override fun getUserId(): String {
-        return prefRepo.getMobileNumber() ?: BLANK_STRING
+    override fun getBaseLineUserId(): String {
+        return prefRepo.getUniqueUserIdentifier()
+    }
+
+    override fun getPendingActivityCountForMissionLive(missionId: Int): LiveData<Int> {
+        return missionActivityDao.getPendingTaskCountLiveForMission(missionId)
+    }
+
+    override fun getTotalActivityCountForMission(missionId: Int): Int {
+        return missionActivityDao.getTotalActivityCountForMission(missionId)
     }
 
 }

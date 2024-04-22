@@ -19,7 +19,7 @@ data class ActivityTaskEntity(
     @Expose
     @ColumnInfo(name = "id")
     var id: Int = 0,
-    var userId: String,
+    var userId: String? = BLANK_STRING,
     var missionId: Int,
     var activityId: Int,
     var taskId: Int,

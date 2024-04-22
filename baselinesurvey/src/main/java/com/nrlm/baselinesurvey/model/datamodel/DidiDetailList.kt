@@ -6,7 +6,7 @@ data class DidiDetailList(
     @SerializedName("comment")
     var comment: String? = null,
     @SerializedName("userId")
-    var userId: Int? = null,
+    var userId: String? = null,
     @SerializedName("villageId")
     var villageId: Int? = null,
     @SerializedName("didiId")
@@ -32,5 +32,7 @@ data class DidiDetailList(
     @SerializedName("casteId")
     var casteId: Int? = null,
     @SerializedName("relationship")
-    var relationship: String? = null
+    var relationship: String? = null,
+    @SerializedName("voName")
+    var voName: String? = null
 )

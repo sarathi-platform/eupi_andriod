@@ -14,7 +14,6 @@ interface StartScreenRepository {
     suspend fun getDidiInfoObjectLive(didiId: Int): LiveData<List<DidiInfoEntity>>
     fun getStateId(): Int
     fun getUserType(): String?
-    fun getUserId(): String
-
+    fun getBaseLineUserId(): String
 
 }

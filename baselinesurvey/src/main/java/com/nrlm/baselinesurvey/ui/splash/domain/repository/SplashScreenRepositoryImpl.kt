@@ -76,22 +76,23 @@ class SplashScreenRepositoryImpl @Inject constructor(
     }
 
     override fun clearLocalData() {
-//        nudgeBaselineDatabase.contentEntityDao().deleteContent()
-//        nudgeBaselineDatabase.didiDao().deleteSurveyees()
-//        nudgeBaselineDatabase.activityTaskEntityDao().deleteActivityTask()
-//        nudgeBaselineDatabase.missionEntityDao().deleteMissions()
-//        nudgeBaselineDatabase.missionActivityEntityDao().deleteActivities()
-//        nudgeBaselineDatabase.optionItemDao().deleteOptions()
-//        nudgeBaselineDatabase.questionEntityDao().deleteAllQuestions()
-//        nudgeBaselineDatabase.sectionAnswerEntityDao().deleteAllSectionAnswer()
-//        nudgeBaselineDatabase.inputTypeQuestionAnswerDao().deleteAllInputTypeAnswers()
-//        nudgeBaselineDatabase.formQuestionResponseDao().deleteAllFormQuestions()
-//        nudgeBaselineDatabase.didiSectionProgressEntityDao().deleteAllSectionProgress()
-//        nudgeBaselineDatabase.villageListDao().deleteAllVilleges()
-//        nudgeBaselineDatabase.surveyEntityDao().deleteAllSurvey()
-//        nudgeBaselineDatabase.didiInfoEntityDao().deleteAllDidiInfo()
+        nudgeBaselineDatabase.contentEntityDao().deleteContent()
+        nudgeBaselineDatabase.didiDao().deleteSurveyees()
+        nudgeBaselineDatabase.activityTaskEntityDao().deleteActivityTask(getBaseLineUserId())
+        nudgeBaselineDatabase.missionEntityDao().deleteMissions(getBaseLineUserId())
+        nudgeBaselineDatabase.missionActivityEntityDao().deleteActivities(getBaseLineUserId())
+        nudgeBaselineDatabase.optionItemDao().deleteOptions(getBaseLineUserId())
+        nudgeBaselineDatabase.questionEntityDao().deleteAllQuestions(getBaseLineUserId())
+        nudgeBaselineDatabase.sectionAnswerEntityDao().deleteAllSectionAnswer(getBaseLineUserId())
+        nudgeBaselineDatabase.inputTypeQuestionAnswerDao()
+            .deleteAllInputTypeAnswers(getBaseLineUserId())
+        nudgeBaselineDatabase.formQuestionResponseDao().deleteAllFormQuestions(getBaseLineUserId())
+        nudgeBaselineDatabase.didiSectionProgressEntityDao()
+            .deleteAllSectionProgress(getBaseLineUserId())
+        nudgeBaselineDatabase.villageListDao().deleteAllVilleges()
+        nudgeBaselineDatabase.surveyEntityDao().deleteAllSurvey(getBaseLineUserId())
+        nudgeBaselineDatabase.didiInfoEntityDao().deleteAllDidiInfo(getBaseLineUserId())
         clearSharedPref()
-        clearCoreSharedPref()
     }
 
     override fun clearSharedPref() {
@@ -117,8 +118,8 @@ class SplashScreenRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun clearCoreSharedPref() {
-        CoreSharedPrefs.getInstance(BaselineCore.getAppContext()).clearSharedPreferences()
+    fun getBaseLineUserId(): String {
+        return this.prefRepo.getUniqueUserIdentifier()
     }
 
 }

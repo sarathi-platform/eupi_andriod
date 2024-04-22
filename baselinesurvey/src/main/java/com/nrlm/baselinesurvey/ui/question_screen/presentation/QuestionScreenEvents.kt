@@ -68,5 +68,8 @@ sealed class QuestionScreenEvents {
 
     data class UpdateInputTypeQuestionAnswerEntityForUi(val inputTypeQuestionAnswerEntity: InputTypeQuestionAnswerEntity)
 
-    data class UpdateAnsweredQuestionCount(val question: QuestionEntityState, val isAllMultipleTypeQuestionUnanswered: Boolean = false)
+    data class UpdateAnsweredQuestionCount(
+        val question: QuestionEntityState,
+        val isQuestionResponseUnanswered: Boolean = false
+    )
 }

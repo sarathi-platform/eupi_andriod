@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.repository
 
 import androidx.lifecycle.LiveData
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
+import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.model.datamodel.ActivityForSubjectDto
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 
@@ -18,6 +19,7 @@ interface MissionSummaryScreenRepository {
     fun isActivityCompleted(missionId: Int, activityId: Int): Boolean
 
     fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto
-    fun getUserId(): String
 
+    suspend fun getMission(missionId: Int): MissionEntity
+    fun getBaseLineUserId(): String
 }

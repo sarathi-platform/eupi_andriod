@@ -26,7 +26,12 @@ fun TypeMultiSelectedDropDownComponent(
     val defaultSourceList = sources ?: listOf("Yes", "No")
     var expanded by remember { mutableStateOf(false) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
-    var selectedItems by remember { mutableStateOf(emptyList<String>()) }
+    var selectedItems by remember {
+        if (selectOptionText.equals(BLANK_STRING, true))
+            mutableStateOf(emptyList<String>())
+        else
+            mutableStateOf(selectOptionText.split(", "))
+    }
 
     VerticalAnimatedVisibilityComponent(visible = showQuestionState?.showQuestion ?: true) {
         MultiSelectDropdown(
@@ -52,7 +57,7 @@ fun TypeMultiSelectedDropDownComponent(
                 } else {
                     selectedItems + selectedItem
                 }
-                onAnswerSelection(if (selectedItems.isNotEmpty()) selectedItems.joinToString(", ") else "Select Items")
+                onAnswerSelection(selectedItems.joinToString(", "))
             },
             onInfoButtonClicked = {
                 onInfoButtonClicked()

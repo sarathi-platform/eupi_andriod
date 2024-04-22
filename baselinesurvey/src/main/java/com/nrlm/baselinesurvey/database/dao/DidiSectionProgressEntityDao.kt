@@ -16,7 +16,7 @@ interface DidiSectionProgressEntityDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addDidiSectionProgress(didiSectionProgressEntity: List<DidiSectionProgressEntity>)
 
-    @Query("Select * from $DIDI_SECTION_PROGRESS_TABLE where  userId=:userId and surveyId = :surveyId and didiId = :didiId")
+    @Query("Select * from $DIDI_SECTION_PROGRESS_TABLE where userId=:userId and surveyId = :surveyId and didiId = :didiId")
     fun getAllSectionProgressForDidi(
         userId: String,
         surveyId: Int,
@@ -27,7 +27,7 @@ interface DidiSectionProgressEntityDao {
     fun getAllSectionProgress(
         userId: String
     ): List<DidiSectionProgressEntity>
-    @Query("Select * from $DIDI_SECTION_PROGRESS_TABLE where  userId=:userId and surveyId = :surveyId and sectionId = :sectionId and didiId = :didiId")
+    @Query("Select * from $DIDI_SECTION_PROGRESS_TABLE where userId=:userId and  surveyId = :surveyId and sectionId = :sectionId and didiId = :didiId")
     fun getSectionProgressForDidi(
         userId: String,
         surveyId: Int,
@@ -35,7 +35,7 @@ interface DidiSectionProgressEntityDao {
         didiId: Int
     ): DidiSectionProgressEntity?
 
-    @Query("Update $DIDI_SECTION_PROGRESS_TABLE set sectionStatus = :sectionStatus where  userId=:userId and surveyId = :surveyId and sectionId = :sectionId and didiId = :didiId")
+    @Query("Update $DIDI_SECTION_PROGRESS_TABLE set sectionStatus = :sectionStatus where userId=:userId and  surveyId = :surveyId and sectionId = :sectionId and didiId = :didiId")
     fun updateSectionStatusForDidi(
         userId: String,
         surveyId: Int,
@@ -44,7 +44,7 @@ interface DidiSectionProgressEntityDao {
         sectionStatus: Int
     )
 
-    @Query("Delete from $DIDI_SECTION_PROGRESS_TABLE where userId=:userId")
+    @Query("Delete from $DIDI_SECTION_PROGRESS_TABLE where userId=:userId ")
     fun deleteAllSectionProgress(userId: String)
 
 

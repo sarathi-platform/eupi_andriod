@@ -27,6 +27,7 @@ import com.nrlm.baselinesurvey.MAXIMUM_RANGE_LENGTH
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.borderGrey
+import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.utils.onlyNumberField
@@ -35,7 +36,7 @@ import com.nrlm.baselinesurvey.utils.onlyNumberField
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CalculationResultComponent(
-    title: String? = "select",
+    title: String? = "Select",
     defaultValue: String = BLANK_STRING,
     showQuestion: OptionItemEntityState? = OptionItemEntityState.getEmptyStateObject(),
     isOnlyNumber: Boolean = true,
@@ -83,7 +84,7 @@ fun CalculationResultComponent(
                 },
                 textStyle = TextStyle(
                     fontFamily = NotoSans,
-                    fontWeight = FontWeight.Normal,
+                    fontWeight = FontWeight.SemiBold,
                     fontSize = 12.sp
                 ),
                 keyboardOptions = if (isOnlyNumber) {
@@ -108,12 +109,11 @@ fun CalculationResultComponent(
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = borderGrey,
                     unfocusedBorderColor = borderGrey,
-                    textColor = textColorDark
+                    textColor = textColorDark,
+                    backgroundColor = borderGreyLight
                 )
             )
 
         }
     }
-
-
 }

@@ -17,7 +17,7 @@ data class MissionEntity(
     @SerializedName("id")
     @Expose
     @ColumnInfo(name = "id")
-    var id: Int = 1,
+    var id: Int = 0,
     var userId: String? = BLANK_STRING,
     var missionId: Int,
     var missionName: String,
@@ -39,6 +39,7 @@ data class MissionEntity(
             mission: MissionResponseModel
         ): MissionEntity {
             return MissionEntity(
+                id = 0,
                 userId = userId,
                 missionId = mission.missionId,
                 missionName = mission.missionName,
