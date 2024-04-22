@@ -104,7 +104,7 @@ import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.UpdateSubjectSt
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.UpdateTaskStatusUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepository
 import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepositoryImpl
-import com.nrlm.baselinesurvey.ui.setting.domain.use_case.GetSettingOptionListUseCase
+import com.nrlm.baselinesurvey.ui.setting.domain.use_case.GetUserDetailsUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.LogoutUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SaveLanguageScreenOpenFromUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SettingBSUserCase
@@ -629,7 +629,7 @@ object BaselineModule {
         repository: SettingBSRepository
     ): SettingBSUserCase {
         return SettingBSUserCase(
-            getSettingOptionListUseCase = GetSettingOptionListUseCase(repository),
+            getUserDetailsUseCase = GetUserDetailsUseCase(repository),
             logoutUseCase = LogoutUseCase(repository),
             saveLanguageScreenOpenFromUseCase = SaveLanguageScreenOpenFromUseCase(repository)
         )

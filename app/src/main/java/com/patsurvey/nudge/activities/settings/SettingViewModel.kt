@@ -58,6 +58,7 @@ import com.patsurvey.nudge.utils.LogWriter.getLogFile
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_
+import com.patsurvey.nudge.utils.PREF_KEY_NAME
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_FORM_C_AND_D_
 import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
@@ -963,12 +964,15 @@ class SettingViewModel @Inject constructor(
                 val fileUri = compression.compressBackupFiles(
                     NudgeCore.getAppContext(),
                     getFormPdfAndLogUri(),
-                    prefRepo.getMobileNumber() ?: ""
+                    prefRepo.getMobileNumber() ?: "",
+                    userName = prefRepo.getPref(PREF_KEY_NAME, "")!!,
+
                 )
 
                 val imageUri = compression.compressBackupImages(
                     NudgeCore.getAppContext(),
-                    prefRepo.getMobileNumber() ?: ""
+                    prefRepo.getMobileNumber() ?: "",
+                    userName = prefRepo.getPref(PREF_KEY_NAME, "")!!,
                 )
 
                 openShareSheet(imageUri, fileUri, title)

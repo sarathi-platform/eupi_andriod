@@ -6,7 +6,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
-import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SettingBSUserCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
@@ -66,13 +65,17 @@ class SettingBSViewModel @Inject constructor(
                 val fileUri = compression.compressBackupFiles(
                     BaselineCore.getAppContext(),
                     listOf(),
-                    prefRepo.getMobileNumber() ?: ""
-                )
+                    settingBSUserCase.getUserDetailsUseCase.getMobileNo(),
+                    userName = settingBSUserCase.getUserDetailsUseCase.getUserName(),
+
+                    )
 
                 val imageUri = compression.compressBackupImages(
                     BaselineCore.getAppContext(),
-                    prefRepo.getMobileNumber() ?: ""
-                )
+                    settingBSUserCase.getUserDetailsUseCase.getMobileNo(),
+                    userName = settingBSUserCase.getUserDetailsUseCase.getUserName(),
+
+                    )
 
                 openShareSheet(imageUri, fileUri, title)
                 CoreSharedPrefs.getInstance(BaselineCore.getAppContext()).setFileExported(true)

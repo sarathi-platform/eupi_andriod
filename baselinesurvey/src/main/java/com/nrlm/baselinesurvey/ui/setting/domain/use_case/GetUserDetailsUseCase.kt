@@ -1,11 +1,15 @@
 package com.nrlm.baselinesurvey.ui.setting.domain.use_case
 
 import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepository
-import com.nudge.core.model.SettingOptionModel
-import javax.inject.Inject
 
-class GetSettingOptionListUseCase(
+class GetUserDetailsUseCase(
     private val repository :SettingBSRepository
 ) {
+    fun getUserName(): String {
+        return repository.getUserName()
+    }
 
+    fun getMobileNo(): String {
+        return repository.getMobileNo()
+    }
 }
