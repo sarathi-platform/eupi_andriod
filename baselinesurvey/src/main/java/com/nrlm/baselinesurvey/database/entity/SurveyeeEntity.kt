@@ -21,7 +21,7 @@ data class SurveyeeEntity(
     @SerializedName("userId")
     @Expose
     @ColumnInfo(name = "userId")
-    var userId: Int?,
+    var userId: String?,
 
     @SerializedName("didiId")
     @Expose
@@ -116,7 +116,7 @@ data class SurveyeeEntity(
     companion object {
         fun getEmptySurveyeeEntity() = SurveyeeEntity(
             id = 0,
-            userId = 101,
+            userId = "",
             didiId = 1011,
             didiName = "",
             dadaName = "",

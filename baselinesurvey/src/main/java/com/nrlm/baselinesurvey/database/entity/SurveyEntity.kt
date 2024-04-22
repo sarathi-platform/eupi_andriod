@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.SURVEY_TABLE
 
 @Entity(tableName = SURVEY_TABLE)
@@ -13,7 +14,7 @@ data class SurveyEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     val id: Int,
-
+    var userId: String? = BLANK_STRING,
     @SerializedName("surveyId")
     @Expose
     @ColumnInfo(name = "surveyId")
