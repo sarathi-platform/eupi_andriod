@@ -19,7 +19,7 @@ class SurveyStateRepositoryImpl(
     }
 
     override suspend fun saveDidiInfo(didiInfoEntity: DidiInfoEntity) {
-        didiInfoEntity.userId = prefRepo.getBaseLineUserId()
+        didiInfoEntity.userId = prefRepo.getUniqueUserIdentifier()
         didiInfoDao.insertDidiInfo(didiInfoEntity)
     }
 

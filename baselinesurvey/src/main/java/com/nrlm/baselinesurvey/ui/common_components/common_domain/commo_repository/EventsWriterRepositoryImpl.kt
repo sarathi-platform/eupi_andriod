@@ -383,7 +383,7 @@ class EventsWriterRepositoryImpl @Inject constructor(
     }
 
     override fun getBaseLineUserId(): String {
-        return prefRepo.getBaseLineUserId()
+        return prefRepo.getUniqueUserIdentifier()
     }
 
 }

@@ -64,5 +64,5 @@ interface PrefRepo {
     fun setPreviousUserMobile(mobileNumber: String)
 
     fun getPreviousUserMobile(): String
-    fun getBaseLineUserId(): String
+    fun getUniqueUserIdentifier(): String
 }

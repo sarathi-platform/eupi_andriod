@@ -773,7 +773,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getBaseLineUserId(): String {
-        return prefRepo.getBaseLineUserId()
+        return prefRepo.getUniqueUserIdentifier()
     }
     override fun isNeedToCallApi(apiEndPoint: String): Boolean {
         return if (apiStatusDao.getFailedAPICount() > 0) {

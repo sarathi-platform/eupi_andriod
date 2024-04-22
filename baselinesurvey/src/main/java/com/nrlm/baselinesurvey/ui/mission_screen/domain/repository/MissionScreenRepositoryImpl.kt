@@ -31,7 +31,7 @@ class MissionScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getBaseLineUserId(): String {
-        return prefRepo.getBaseLineUserId()
+        return prefRepo.getUniqueUserIdentifier()
     }
 
     override fun getPendingActivityCountForMissionLive(missionId: Int): LiveData<Int> {

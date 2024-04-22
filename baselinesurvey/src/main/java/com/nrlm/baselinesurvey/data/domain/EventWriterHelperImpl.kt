@@ -529,7 +529,7 @@ class EventWriterHelperImpl @Inject constructor(
     }
 
     fun getBaseLineUserId(): String {
-        return prefRepo.getBaseLineUserId()
+        return prefRepo.getUniqueUserIdentifier()
     }
 
     suspend fun List<SaveAnswerEventOptionItemDto>.getOptionDescriptionInEnglish(

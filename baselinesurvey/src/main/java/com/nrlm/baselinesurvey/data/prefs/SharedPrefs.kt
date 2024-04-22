@@ -171,7 +171,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         return prefs.getString(PREF_KEY_PREVIOUS_USER_MOBILE, "") ?: ""
     }
 
-    override fun getBaseLineUserId(): String {
+    override fun getUniqueUserIdentifier(): String {
         val userType = prefs.getString(PREF_USER_TYPE, BLANK_STRING) ?: BLANK_STRING
         val userMobile = prefs.getString(PREF_MOBILE_NUMBER, BLANK_STRING) ?: BLANK_STRING
         return "${userType}_${userMobile}"

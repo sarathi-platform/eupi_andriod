@@ -119,7 +119,7 @@ class SplashScreenRepositoryImpl @Inject constructor(
     }
 
     fun getBaseLineUserId(): String {
-        return this.prefRepo.getBaseLineUserId()
+        return this.prefRepo.getUniqueUserIdentifier()
     }
 
 }

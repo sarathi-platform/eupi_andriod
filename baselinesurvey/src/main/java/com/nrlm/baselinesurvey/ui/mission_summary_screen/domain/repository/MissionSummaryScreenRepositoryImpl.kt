@@ -83,7 +83,7 @@ class MissionSummaryScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getBaseLineUserId(): String {
-        return prefRepo.getBaseLineUserId()
+        return prefRepo.getUniqueUserIdentifier()
     }
 
     override suspend fun getMission(missionId: Int): MissionEntity {
