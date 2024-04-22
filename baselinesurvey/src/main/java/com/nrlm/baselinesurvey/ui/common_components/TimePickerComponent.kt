@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.CONDITIONS_TIME
 import com.nrlm.baselinesurvey.CONDITIONS_YEAR
+import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.TypeDropDownComponent
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
@@ -32,21 +33,18 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark
 fun TimePickerComponent(
     isMandatory: Boolean = false,
     title: String? = BLANK_STRING,
-    title_1: String? = "Hour",
-    title_2: String? = "Minute",
     defaultValue: String = BLANK_STRING,
     showQuestionState: OptionItemEntityState? = OptionItemEntityState.getEmptyStateObject(),
     isContent: Boolean = false,
+    typePicker: String,
     onInfoButtonClicked: () -> Unit,
-    isHrsMinutes: Boolean = false,
-    isYrMonths: Boolean = false,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
     val firstInputValue = remember {
-        mutableStateOf(getFirstValue(isHrsMinutes, isHrsMinutes, defaultValue))
+        mutableStateOf(getFirstValue(typePicker, defaultValue))
     }
-    val inputValue_2 = remember {
-        mutableStateOf(getSecondValue(isHrsMinutes, isHrsMinutes, defaultValue))
+    val secondInputValue = remember {
+        mutableStateOf(getSecondValue(typePicker, defaultValue))
     }
     VerticalAnimatedVisibilityComponent(visible = showQuestionState?.showQuestion ?: true) {
         Column(
@@ -91,24 +89,21 @@ fun TimePickerComponent(
                         defaultValue = firstInputValue.value,
                         isOnlyNumber = true,
                         showQuestion = getEmptyStateObject(),
-                        title = title_1,
+                        title = getFirstTitle(typePicker),
                         maxLength = 2,
                         onInfoButtonClicked = { /*TODO*/ },
                     ) { selectValue ->
                         firstInputValue.value = selectValue
-                        val secandValue =
-                            if (inputValue_2.value.equals(
+                        val secondValue =
+                            if (secondInputValue.value.equals(
                                     "select",
                                     true
                                 )
-                            ) "00" else inputValue_2.value
+                            ) "00" else secondInputValue.value
                         onAnswerSelection(
                             "${firstInputValue.value}${
-                                getDelimiter(
-                                    isHrsMinutes,
-                                    isYrMonths
-                                )
-                            }${secandValue}"
+                                getDelimiter(typePicker)
+                            }${secondValue}"
                         )
                     }
                 }
@@ -119,19 +114,16 @@ fun TimePickerComponent(
                 ) {
                     TypeDropDownComponent(
                         showQuestionState = getEmptyStateObject(),
-                        title = title_2,
-                        hintText = inputValue_2.value,
-                        sources = if (isHrsMinutes) getMinutes() else getMonths(),
+                        title = getSecondTitle(typePicker),
+                        hintText = secondInputValue.value,
+                        sources = getSources(typePicker),
                         onInfoButtonClicked = {}
-                    ) { selectedvalue ->
-                        inputValue_2.value = selectedvalue
+                    ) { selectedValue ->
+                        secondInputValue.value = selectedValue
                         onAnswerSelection(
                             "${firstInputValue.value}${
-                                getDelimiter(
-                                    isHrsMinutes,
-                                    isYrMonths
-                                )
-                            }$selectedvalue"
+                                getDelimiter(typePicker)
+                            }$selectedValue"
                         )
 
                     }
@@ -148,6 +140,32 @@ fun getEmptyStateObject(): OptionItemEntityState {
     )
 }
 
+fun getFirstTitle(typePicker: String): String {
+    if (typePicker.equals(QuestionType.HrsMinPicker.name)) {
+        return "Hours"
+    } else if (typePicker.equals(QuestionType.YrsMonthPicker.name)) {
+        return "Years"
+    }
+    return BLANK_STRING
+}
+
+fun getSecondTitle(typePicker: String): String {
+    if (typePicker.equals(QuestionType.HrsMinPicker.name)) {
+        return "Minute"
+    } else if (typePicker.equals(QuestionType.YrsMonthPicker.name)) {
+        return "Month"
+    }
+    return BLANK_STRING
+}
+
+fun getSources(typePicker: String): List<String> {
+    if (typePicker.equals(QuestionType.HrsMinPicker.name)) {
+        return getMinutes()
+    } else if (typePicker.equals(QuestionType.YrsMonthPicker.name)) {
+        return getMonths()
+    }
+    return listOf("")
+}
 fun getMinutes(): List<String> {
     return listOf("15", "30", "45")
 }
@@ -156,18 +174,23 @@ fun getMonths(): List<String> {
     return listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11")
 }
 
-fun getDelimiter(isHrsMinutes: Boolean, isYrMonths: Boolean): String {
-    return if (isHrsMinutes) CONDITIONS_TIME else CONDITIONS_YEAR
+fun getDelimiter(typePicker: String): String {
+    if (typePicker.equals(QuestionType.HrsMinPicker.name)) {
+        return CONDITIONS_TIME
+    } else if (typePicker.equals(QuestionType.YrsMonthPicker.name)) {
+        return CONDITIONS_YEAR
+    }
+    return ""
 }
 
-fun getFirstValue(isHrsMinutes: Boolean, isYrMonths: Boolean, defaultValue: String): String {
-    if (isHrsMinutes) {
+fun getFirstValue(typePicker: String, defaultValue: String): String {
+    if (getTypePicker(typePicker)?.equals(QuestionType.HrsMinPicker.name) == true) {
         return if (defaultValue.contains(CONDITIONS_TIME)) defaultValue.split(
             CONDITIONS_TIME,
             ignoreCase = true
         )
             .first() else "00"
-    } else if (isYrMonths) {
+    } else if (getTypePicker(typePicker)?.equals(QuestionType.YrsMonthPicker.name) == true) {
         return if (defaultValue.contains(CONDITIONS_YEAR)) defaultValue.split(
             CONDITIONS_YEAR,
             ignoreCase = true
@@ -177,30 +200,36 @@ fun getFirstValue(isHrsMinutes: Boolean, isYrMonths: Boolean, defaultValue: Stri
     return BLANK_STRING
 }
 
-fun getSecondValue(isHrsMinutes: Boolean, isYrMonths: Boolean, defaultValue: String): String {
-    if (isHrsMinutes) {
+fun getSecondValue(typePicker: String, defaultValue: String): String {
+    if (getTypePicker(typePicker)?.equals(QuestionType.HrsMinPicker.name) == true) {
         return if (defaultValue.contains(CONDITIONS_TIME)) defaultValue.split(
             CONDITIONS_TIME,
             ignoreCase = true
-        )
-            .first() else "00"
-    } else if (isYrMonths) {
+        )[1] else "00"
+    } else if (getTypePicker(typePicker)?.equals(QuestionType.YrsMonthPicker.name) == true) {
         return if (defaultValue.contains(CONDITIONS_YEAR)) defaultValue.split(
             CONDITIONS_YEAR,
             ignoreCase = true
-        )
-            .first() else "00"
+        )[1] else "00"
     }
     return "Select"
 }
 
+fun getTypePicker(questionType: String): String? {
+    if (questionType.equals(QuestionType.HrsMinPicker.name)) {
+        return QuestionType.HrsMinPicker.name
+    } else if (questionType.equals(QuestionType.YrsMonthPicker.name)) {
+        return QuestionType.YrsMonthPicker.name
+    }
+    return null
+}
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewTimePickerComponent() {
     TimePickerComponent(
-        defaultValue = "4:50",
-        isHrsMinutes = true,
+        defaultValue = "3/10",
+        typePicker = "HrsMinPicker",
         showQuestionState = getEmptyStateObject(),
         onInfoButtonClicked = { /*TODO*/ }) {
     }
