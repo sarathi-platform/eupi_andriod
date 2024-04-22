@@ -35,108 +35,110 @@ fun TimePickerComponent(
     title_1: String? = "Hour",
     title_2: String? = "Minute",
     defaultValue: String = BLANK_STRING,
-    showQuestion: OptionItemEntityState? = OptionItemEntityState.getEmptyStateObject(),
+    showQuestionState: OptionItemEntityState? = OptionItemEntityState.getEmptyStateObject(),
     isContent: Boolean = false,
     onInfoButtonClicked: () -> Unit,
     isHrsMinutes: Boolean = false,
     isYrMonths: Boolean = false,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
-    val inputValue_1 = remember {
+    val firstInputValue = remember {
         mutableStateOf(getFirstValue(isHrsMinutes, isHrsMinutes, defaultValue))
     }
     val inputValue_2 = remember {
         mutableStateOf(getSecondValue(isHrsMinutes, isHrsMinutes, defaultValue))
     }
+    VerticalAnimatedVisibilityComponent(visible = showQuestionState?.showQuestion ?: true) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 2.dp)
+        ) {
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontFamily = NotoSans,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp,
+                            color = textColorDark
+                        )
+                    ) {
+                        append(title)
+                    }
+                    withStyle(
+                        style = SpanStyle(
+                            color = red,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = NotoSans
+                        )
+                    ) {
+                        if (isMandatory) {
+                            append(" *")
+                        }
+                    }
+                },
+            )
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 2.dp)
-    ) {
-        Text(
-            text = buildAnnotatedString {
-                withStyle(
-                    style = SpanStyle(
-                        fontFamily = NotoSans,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                        color = textColorDark
-                    )
-                ) {
-                    append(title)
-                }
-                withStyle(
-                    style = SpanStyle(
-                        color = red,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = NotoSans
-                    )
-                ) {
-                    if (isMandatory) {
-                        append(" *")
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(modifier = Modifier.weight(1f)) {
+                    EditTextWithTitleComponent(
+                        defaultValue = firstInputValue.value,
+                        isOnlyNumber = true,
+                        showQuestion = getEmptyStateObject(),
+                        title = title_1,
+                        maxLength = 2,
+                        onInfoButtonClicked = { /*TODO*/ },
+                    ) { selectValue ->
+                        firstInputValue.value = selectValue
+                        val secandValue =
+                            if (inputValue_2.value.equals(
+                                    "select",
+                                    true
+                                )
+                            ) "00" else inputValue_2.value
+                        onAnswerSelection(
+                            "${firstInputValue.value}${
+                                getDelimiter(
+                                    isHrsMinutes,
+                                    isYrMonths
+                                )
+                            }${secandValue}"
+                        )
                     }
                 }
-            },
-        )
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 10.dp)
+                ) {
+                    TypeDropDownComponent(
+                        showQuestionState = getEmptyStateObject(),
+                        title = title_2,
+                        hintText = inputValue_2.value,
+                        sources = if (isHrsMinutes) getMinutes() else getMonths(),
+                        onInfoButtonClicked = {}
+                    ) { selectedvalue ->
+                        inputValue_2.value = selectedvalue
+                        onAnswerSelection(
+                            "${firstInputValue.value}${
+                                getDelimiter(
+                                    isHrsMinutes,
+                                    isYrMonths
+                                )
+                            }$selectedvalue"
+                        )
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(modifier = Modifier.weight(1f)) {
-                EditTextWithTitleComponent(
-                    defaultValue = inputValue_1.value,
-                    isOnlyNumber = true,
-                    showQuestion = getEmptyStateObject(),
-                    title = title_1,
-                    onInfoButtonClicked = { /*TODO*/ },
-                    isRange = true,
-                    minValue = 0,
-                    maxValue = 24
-                ) { selectValue ->
-                    inputValue_1.value = selectValue
-                    val secandValue =
-                        if (inputValue_2.value.equals("select", true)) "00" else inputValue_2.value
-                    onAnswerSelection(
-                        "${inputValue_1.value}${
-                            getDelimiter(
-                                isHrsMinutes,
-                                isYrMonths
-                            )
-                        }${secandValue}"
-                    )
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 10.dp)
-            ) {
-                TypeDropDownComponent(
-                    showQuestionState = getEmptyStateObject(),
-                    title = title_2,
-                    hintText = inputValue_2.value,
-                    sources = if (isHrsMinutes) getMinutes() else getMonths(),
-                    onInfoButtonClicked = {}
-                ) { selectedvalue ->
-                    inputValue_2.value = selectedvalue
-                    onAnswerSelection(
-                        "${inputValue_1.value}${
-                            getDelimiter(
-                                isHrsMinutes,
-                                isYrMonths
-                            )
-                        }$selectedvalue"
-                    )
-
+                    }
                 }
             }
         }
     }
-
 }
 
 fun getEmptyStateObject(): OptionItemEntityState {
@@ -151,7 +153,7 @@ fun getMinutes(): List<String> {
 }
 
 fun getMonths(): List<String> {
-    return listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12")
+    return listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11")
 }
 
 fun getDelimiter(isHrsMinutes: Boolean, isYrMonths: Boolean): String {
@@ -196,6 +198,10 @@ fun getSecondValue(isHrsMinutes: Boolean, isYrMonths: Boolean, defaultValue: Str
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewTimePickerComponent() {
-    TimePickerComponent(defaultValue = "4:50", onInfoButtonClicked = { /*TODO*/ }) {
+    TimePickerComponent(
+        defaultValue = "4:50",
+        isHrsMinutes = true,
+        showQuestionState = getEmptyStateObject(),
+        onInfoButtonClicked = { /*TODO*/ }) {
     }
 }

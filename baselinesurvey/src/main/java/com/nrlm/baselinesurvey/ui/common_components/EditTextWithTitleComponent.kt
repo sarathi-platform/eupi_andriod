@@ -51,9 +51,6 @@ fun EditTextWithTitleComponent(
     isOnlyNumber: Boolean = false,
     maxLength: Int = 150,
     isContent: Boolean = false,
-    isRange: Boolean = false,
-    minValue: Int = Int.MIN_VALUE,
-    maxValue: Int = Int.MAX_VALUE,
     onInfoButtonClicked: () -> Unit,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
@@ -113,9 +110,7 @@ fun EditTextWithTitleComponent(
                     if (it.length <= maxLength) {
                         if (isOnlyNumber) {
                             if (onlyNumberField(it)) {
-                                if (isRange && (it.toIntOrNull() in minValue..maxValue)) {
-                                    txt.value = it
-                                } else if (!isRange && (it.length <= MAXIMUM_RANGE_LENGTH)) {
+                                if (it.length <= MAXIMUM_RANGE_LENGTH) {
                                     txt.value = it
                                 }
                             }

@@ -386,7 +386,7 @@ fun NestedLazyListForFormQuestions(
                                         viewModel.storeCacheForResponse.getResponseForOptionId(
                                             optionId = option.optionId ?: -1
                                         )?.selectedValue ?: BLANK_STRING,
-                                    showQuestion = option,
+                                    showQuestionState = option,
                                     onInfoButtonClicked = {}) { value ->
                                     questionTypeScreenViewModel.onEvent(
                                         QuestionTypeEvent.UpdateConditionalOptionState(
