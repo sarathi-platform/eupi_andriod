@@ -32,5 +32,7 @@ data class DidiDetailList(
     @SerializedName("casteId")
     var casteId: Int? = null,
     @SerializedName("relationship")
-    var relationship: String? = null
+    var relationship: String? = null,
+    @SerializedName("voName")
+    var voName: String? = null
 )

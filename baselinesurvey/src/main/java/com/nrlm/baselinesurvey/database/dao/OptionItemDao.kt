@@ -30,7 +30,17 @@ interface OptionItemDao {
         languageId: Int
     ): List<OptionItemEntity>
 
-    @Query("Select * from $OPTION_TABLE where  userId=:userId and  sectionId = :sectionId and surveyId = :surveyId and questionId = :questionId and languageId=:languageId")
+    @Query("Select * from $OPTION_TABLE where userId=:userId and sectionId = :sectionId and surveyId = :surveyId and questionId = :questionId and optionId = :optionId and languageId = :languageId")
+    fun getSurveySectionQuestionOptionForLanguage(
+        userId: String,
+        sectionId: Int,
+        surveyId: Int,
+        questionId: Int,
+        optionId: Int,
+        languageId: Int
+    ): OptionItemEntity?
+
+    @Query("Select * from $OPTION_TABLE where  userId=:userId and sectionId = :sectionId and surveyId = :surveyId and questionId = :questionId and languageId=:languageId")
     fun getSurveySectionQuestionOptions(
         userId: String,
         sectionId: Int,
@@ -39,7 +49,7 @@ interface OptionItemDao {
         languageId: Int
     ): List<OptionItemEntity>
 
-    @Query("Update $OPTION_TABLE set isSelected = :isSelected where userId=:userId and  surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND optionId = :optionId")
+    @Query("Update $OPTION_TABLE set isSelected = :isSelected where  userId=:userId and surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND optionId = :optionId")
     fun updateOptionItem(
         userId: String,
         surveyId: Int,

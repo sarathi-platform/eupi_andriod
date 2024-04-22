@@ -55,7 +55,7 @@ class SectionListScreenRepositoryImpl(
                 survey?.surveyId ?: 0,
                 languageId
             )
-            val optionItemList = optionItemDao.getSurveySectionQuestionOptionForLanguage(
+            val optionItemList = optionItemDao.getSurveySectionQuestionOptionsForLanguage(
                 userId = getBaseLineUserId(),
                 sectionEntity.sectionId,
                 survey?.surveyId ?: 0,
@@ -143,7 +143,7 @@ class SectionListScreenRepositoryImpl(
                 survey?.surveyId ?: 0,
                 languageId
             )
-            val optionItemList = optionItemDao.getSurveySectionQuestionOptionForLanguage(
+            val optionItemList = optionItemDao.getSurveySectionQuestionOptionsForLanguage(
                 userId = getBaseLineUserId(),
                 sectionEntity.sectionId,
                 survey?.surveyId ?: 0,

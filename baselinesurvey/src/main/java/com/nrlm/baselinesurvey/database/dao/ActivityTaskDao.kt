@@ -27,12 +27,9 @@ interface ActivityTaskDao {
     @Query("SELECT count(*) FROM $TASK_TABLE_NAME where  userId=:userId and taskId = :taskId")
     fun getTaskByIdCount(userId: String, taskId: Int): Int
 
-    @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId and  missionId=:missionId and activityName like :activityName")
-    suspend fun getActivityTask(
-        userId: String,
-        missionId: Int,
-        activityName: String
-    ): List<ActivityTaskEntity>
+
+    @Query("SELECT * FROM $TASK_TABLE_NAME where missionId=:missionId and activityId = :activityId")
+    suspend fun getActivityTask(missionId: Int, activityId: Int): List<ActivityTaskEntity>
 
     @Query("SELECT * FROM $TASK_TABLE_NAME where  userId=:userId and  activityId=:activityId ")
     suspend fun getActivityTaskFromIds(userId: String, activityId: Int): List<ActivityTaskEntity>
@@ -54,7 +51,6 @@ interface ActivityTaskDao {
         missionId: Int,
         status: String
     )
-
 
     @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId and  activityId=:activityId AND missionId = :missionId and taskId = :taskId")
     fun getTask(userId: String, activityId: Int, missionId: Int, taskId: Int): ActivityTaskEntity

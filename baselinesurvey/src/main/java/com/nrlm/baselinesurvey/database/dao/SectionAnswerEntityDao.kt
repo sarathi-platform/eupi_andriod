@@ -54,5 +54,12 @@ interface SectionAnswerEntityDao {
     @Query("Delete from $ANSWER_TABLE where userId=:userId ")
     fun deleteAllSectionAnswer(userId: String)
 
+    @Query("Delete from $ANSWER_TABLE where didiId = :didiId and surveyId = :surveyId and sectionId = :sectionId and questionId = :questionId")
+    fun deleteAnswerForQuestion(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        didiId: Int
+    )
 
 }

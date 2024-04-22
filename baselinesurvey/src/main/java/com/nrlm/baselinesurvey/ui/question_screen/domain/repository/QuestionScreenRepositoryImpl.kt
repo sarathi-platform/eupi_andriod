@@ -65,7 +65,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
             survey?.surveyId ?: 0,
             languageId
         )
-        val optionList = optionItemDao.getSurveySectionQuestionOptionForLanguage(
+        val optionList = optionItemDao.getSurveySectionQuestionOptionsForLanguage(
             userId = getBaseLineUserId(),
             sectionEntity.sectionId,
             survey?.surveyId ?: 0,
@@ -425,6 +425,20 @@ class QuestionScreenRepositoryImpl @Inject constructor(
 
     override fun getBaseLineUserId(): String {
         return prefRepo.getBaseLineUserId()
+    }
+
+    override suspend fun deleteResponseForQuestion(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        didiId: Int
+    ) {
+        sectionAnswerEntityDao.deleteAnswerForQuestion(
+            questionId = questionId,
+            sectionId = sectionId,
+            surveyId = surveyId,
+            didiId = didiId
+        )
     }
 
 

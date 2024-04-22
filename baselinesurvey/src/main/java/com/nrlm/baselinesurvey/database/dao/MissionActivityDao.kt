@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.database.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -9,6 +10,7 @@ import com.nrlm.baselinesurvey.ACTIVITY_TABLE_NAME
 import com.nrlm.baselinesurvey.TASK_TABLE_NAME
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.model.datamodel.ActivityForSubjectDto
+import com.nrlm.baselinesurvey.utils.states.SurveyState
 
 const val activityForSubject =
     "$ACTIVITY_TABLE_NAME.missionId missionId, $ACTIVITY_TABLE_NAME.activityId, $ACTIVITY_TABLE_NAME.activityName, $ACTIVITY_TABLE_NAME.activityType, " +
@@ -109,5 +111,14 @@ interface MissionActivityDao {
 
     @Query("SELECT * from $ACTIVITY_TABLE_NAME where  userId=:userId and missionId = :missionId and activityId = :activityId")
     fun isActivityCompleted(userId: String, missionId: Int, activityId: Int): MissionActivityEntity
+
+    @Query("SELECT COUNT(*) from $ACTIVITY_TABLE_NAME where missionId = :missionId AND status != :status")
+    fun getPendingTaskCountLiveForMission(
+        missionId: Int,
+        status: String = SurveyState.COMPLETED.name
+    ): LiveData<Int>
+
+    @Query("SELECT COUNT(*) from $ACTIVITY_TABLE_NAME where missionId = :missionId")
+    fun getTotalActivityCountForMission(missionId: Int): Int
 
 }

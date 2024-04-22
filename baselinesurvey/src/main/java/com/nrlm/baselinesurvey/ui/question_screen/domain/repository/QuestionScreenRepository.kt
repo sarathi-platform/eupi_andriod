@@ -80,6 +80,13 @@ interface QuestionScreenRepository {
         optionId: Int
     )
 
+    suspend fun deleteResponseForQuestion(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        didiId: Int
+    )
+
     /*suspend fun updateOptionItem(
         surveyId: Int,
         sectionId: Int,
