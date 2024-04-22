@@ -125,6 +125,7 @@ class EventWriterHelperImpl @Inject constructor(
         val activityForSubjectDto = getActivityFromSubjectId(didiId)
 
         val questionItem = questionEntityDao.getFormQuestionForId(
+            userid = getBaseLineUserId(),
             surveyId,
             sectionId,
             questionId,
@@ -133,6 +134,7 @@ class EventWriterHelperImpl @Inject constructor(
 
         val referenceOptionList = ArrayList<OptionItemEntityState>()
         optionItemDao.getSurveySectionQuestionOptions(
+            userId = getBaseLineUserId(),
             sectionId = sectionId,
             surveyId = surveyId,
             questionId = questionId,
@@ -194,6 +196,7 @@ class EventWriterHelperImpl @Inject constructor(
         val activityForSubjectDto = getActivityFromSubjectId(didiId)
 
         val questionItem = questionEntityDao.getFormQuestionForId(
+            userid = getBaseLineUserId(),
             surveyId,
             sectionId,
             questionId,
