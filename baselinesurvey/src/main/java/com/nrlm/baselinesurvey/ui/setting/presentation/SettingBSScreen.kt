@@ -29,7 +29,7 @@ import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSetting
 import com.nrlm.baselinesurvey.ui.setting.domain.SettingTagEnum
 import com.nrlm.baselinesurvey.ui.setting.viewmodel.SettingBSViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
-import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.ShowCustomDialog
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nudge.core.model.SettingOptionModel
@@ -45,19 +45,19 @@ fun SettingBSScreen(
 
     val loaderState = viewModel.loaderState
 
-    val filePicker =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) {
-            viewModel.showRestartAppDialog.value=false
-            it?.let { uri->
-                if(uri != Uri.EMPTY){
-                   viewModel.importSelectedDB(uri){
-                        viewModel.showRestartAppDialog.value=false
-                       viewModel.restartApp(context,MainActivity::class.java)
-                   }
-                }
-            }
-
-        }
+//    val filePicker =
+//        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) {
+//            viewModel.showRestartAppDialog.value=false
+//            it?.let { uri->
+//                if(uri != Uri.EMPTY){
+//                   viewModel.importSelectedDB(uri){
+//                        viewModel.showRestartAppDialog.value=false
+//                       viewModel.restartApp(context,MainActivity::class.java)
+//                   }
+//                }
+//            }
+//
+//        }
 
     LaunchedEffect(key1 = true){
         list.add(
@@ -84,67 +84,40 @@ fun SettingBSScreen(
                 SettingTagEnum.SHARE_LOGS.name
             )
         )
+
         list.add(
             SettingOptionModel(
                 5,
-                context.getString(R.string.export_file),
+                context.getString(R.string.export_backup_file),
                 BLANK_STRING,
-                SettingTagEnum.EXPORT_FILE.name
+                SettingTagEnum.EXPORT_BACKUP_FILE.name
             )
         )
 
         list.add(
             SettingOptionModel(
                 6,
-                context.getString(R.string.load_server_data),
+                context.getString(R.string.backup_recovery),
                 BLANK_STRING,
-                SettingTagEnum.LOAD_SERVER_DATA.name
+                SettingTagEnum.BACKUP_RECOVERY.name
             )
         )
 
-        list.add(
-            SettingOptionModel(
-                6,
-                context.getString(R.string.import_data),
-                BLANK_STRING,
-                SettingTagEnum.IMPORT_DATA.name
-            )
-        )
         viewModel._optionList.value = list
     }
 
-    if(viewModel.showLoadConfirmationDialog.value){
-        ShowCustomDialog(
-            title = stringResource(id = R.string.are_you_sure),
-            message =stringResource(id = R.string.are_you_sure_you_want_to_load_data_from_server),
-            positiveButtonTitle = stringResource(id = R.string.yes_text),
-            negativeButtonTitle = stringResource(id = R.string.option_no),
-            onNegativeButtonClick = {viewModel.showLoadConfirmationDialog.value =false},
-            onPositiveButtonClick = {
-                viewModel.exportDbAndImages{
-                    viewModel.clearLocalDatabase{
-                        navController.navigate(route = Graph.HOME){
-                            launchSingleTop=true
-                            popUpTo(AuthScreen.START_SCREEN.route){
-                                inclusive=true
-                            }
-                        }
-                    }
-                }
-            })
-    }
 
-    if(viewModel.showRestartAppDialog.value){
-        ShowCustomDialog(
-            title = stringResource(id = R.string.are_you_sure),
-            message ="After Importing the data from file app needs to be restart.",
-            positiveButtonTitle = "Proceed",
-            negativeButtonTitle = "Cancel",
-            onNegativeButtonClick = {viewModel.showRestartAppDialog.value=false},
-            onPositiveButtonClick = {
-                filePicker.launch("*/*")
-            })
-    }
+//    if(viewModel.showRestartAppDialog.value){
+//        ShowCustomDialog(
+//            title = stringResource(id = R.string.are_you_sure),
+//            message ="After Importing the data from file app needs to be restart.",
+//            positiveButtonTitle = "Proceed",
+//            negativeButtonTitle = "Cancel",
+//            onNegativeButtonClick = {viewModel.showRestartAppDialog.value=false},
+//            onPositiveButtonClick = {
+//                filePicker.launch("*/*")
+//            })
+//    }
 
     if (loaderState.value.isLoaderVisible) {
         Box(
@@ -169,6 +142,8 @@ fun SettingBSScreen(
             navController.popBackStack()
         },
         onItemClick = { index, option ->
+
+            BaselineLogger.d("SettingScreen","${option.tag} :: ${option.title} :: Click")
             when (option.tag) {
                 SettingTagEnum.LANGUAGE.name -> {
                     viewModel.saveLanguagePageFrom()
@@ -184,19 +159,13 @@ fun SettingBSScreen(
                     viewModel.buildAndShareLogs()
                 }
 
-                SettingTagEnum.EXPORT_FILE.name -> {
 
-                    viewModel.exportDbAndImages {
-                        viewModel.compressEventData(context.getString(R.string.share_export_file))
-                    }
+
+                SettingTagEnum.EXPORT_BACKUP_FILE.name -> {
+                    viewModel.compressEventData(context.getString(R.string.share_export_file))
                 }
-
-                SettingTagEnum.LOAD_SERVER_DATA.name -> {
-                    viewModel.showLoadConfirmationDialog.value=true
-                }
-
-                SettingTagEnum.IMPORT_DATA.name ->{
-                    viewModel.showRestartAppDialog.value=true
+                SettingTagEnum.BACKUP_RECOVERY.name -> {
+                    navController.navigate(SettingBSScreens.BACKUP_RECOVERY_SCREEN.route)
                 }
             }
        },

@@ -1,12 +1,10 @@
 package com.nudge.core
 
 import android.annotation.SuppressLint
-import android.content.ComponentName
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
-import android.content.Intent
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -19,7 +17,9 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import com.facebook.network.connectionclass.ConnectionQuality
 import com.google.gson.Gson
 import com.nudge.core.compression.ZipManager
@@ -28,9 +28,11 @@ import com.nudge.core.database.entities.Events
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.FileUtils
 import com.nudge.core.utils.LogWriter
+import com.nudge.core.utils.LogWriter.getSupportLogFileName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
@@ -41,7 +43,6 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import java.util.logging.Level
-import kotlin.system.exitProcess
 
 fun Long.toDate(dateFormat: Long = System.currentTimeMillis(), timeZone: TimeZone = TimeZone.getTimeZone("UTC")): Date {
     val dateTime = Date(this)
@@ -339,6 +340,8 @@ private fun calculateInSampleSize(
         val sd = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
         val currentDBPath =
             appContext.getDatabasePath(databaseName).path
+
+        Log.d("TAG", "exportDbFile DatabasePath: $currentDBPath")
         val currentDB = File(currentDBPath)
         backupDB = File(sd, databaseName)
         if (currentDB.exists()) {
@@ -407,11 +410,9 @@ fun getAllFilesInDirectory(appContext: Context,directoryPath: String?,applicatio
 
     }
 }
-fun exportOldData(appContext: Context,applicationID: String,userUniqueId:String,databaseName: String,onExportSuccess:()->Unit) {
+fun exportOldData(appContext: Context,applicationID: String,userUniqueId:String,databaseName: String,onExportSuccess:(zipUri: Uri)->Unit) {
    CoroutineScope(Dispatchers.IO).launch {
-        val milliSec=System.currentTimeMillis()
         val dbUri = exportDbFile(appContext,applicationID,databaseName)
-        val imageZipUri = exportAllOldImages(appContext, applicationID,userUniqueId,milliSec.toString())
         val zipFileDirectory = appContext
             .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path
         val fileUris = ArrayList<Pair<String, Uri>>()
@@ -419,23 +420,41 @@ fun exportOldData(appContext: Context,applicationID: String,userUniqueId:String,
             fileUris.add(Pair(getFileNameFromURL(it.path ?: ""), it))
 
         }
-        imageZipUri?.let {
-            fileUris.add(Pair(getFileNameFromURL(it.path ?: ""), it))
-
-        }
-       val zipDateTime=SimpleDateFormat("dd_MM_yyyy_HH_mm_ss").format(Date())
+       val zipDateTime=System.currentTimeMillis()
         val zipFileUri = File(zipFileDirectory, "${userUniqueId}_Export_old_data_${zipDateTime}.zip")
         ZipManager.zip(
             fileUris,
             uriFromFile(appContext, zipFileUri,applicationID),
             appContext
         )
-        val path = zipFileUri.absolutePath
-        Log.d("TAG", "exportOldData: ${path}")
-        onExportSuccess()
+        onExportSuccess(uriFromFile(appContext, zipFileUri,applicationID))
     }
 
 
+}
+
+
+fun exportLogFile(logFile: File,appContext: Context,applicationID: String): Uri {
+
+    val logDir = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path
+    val logFileUri = uriFromFile(appContext,logFile,applicationID)
+    Log.d("TAG", "exportLogFile: ${logFileUri.path}")
+
+    val fileUris = ArrayList<Pair<String, Uri>>()
+    logFileUri?.let {
+        fileUris.add(Pair(getFileNameFromURL(it.path ?: ""), it))
+
+    }
+    Log.d("TAG", "exportLogFile log: ${fileUris.json()} ")
+    val zipDateTime=System.currentTimeMillis()
+    val zipFileUri =uriFromFile(appContext, File(logDir, "Log_File_${zipDateTime}.zip"),applicationID)
+    Log.d("TAG", "exportLogFile Zip: ${zipFileUri.path} :: ${fileUris.json()}")
+    ZipManager.zip(
+        fileUris,
+         zipFileUri,
+        appContext
+    )
+    return zipFileUri
 }
 
 fun uriFromFile(context:Context, file:File,applicationID:String): Uri {
@@ -464,7 +483,7 @@ fun importDbFile(appContext: Context,deleteDBName:String,importedDbUri: Uri,onIm
 
             val currentDBPath =
                 appContext.getDatabasePath(deleteDBName).path
-
+            Log.d("TAG", "importDbFile DatabasePath: $currentDBPath")
             val isDeleted= appContext.deleteDatabase(deleteDBName)
             if(isDeleted){
 
@@ -498,5 +517,25 @@ fun getRealPathFromURI(contentURI: Uri, activity: Context): String? {
         val idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
         cursor.getString(idx)
     }
+}
+
+private fun getLatestFileFromDir(dirPath: String): File? {
+    val dir = File(dirPath)
+    val files = dir.listFiles()
+    if (files == null || files.size == 0) {
+        return null
+    }
+    var lastModifiedFile = files[0]
+    for (i in 1 until files.size) {
+        if (lastModifiedFile.lastModified() < files[i].lastModified()) {
+            lastModifiedFile = files[i]
+        }
+    }
+    return lastModifiedFile
+}
+
+fun getLogFileUri(appContext: Context,applicationID: String): Uri {
+    val logDir = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+    return uriFromFile( appContext,File(logDir, getSupportLogFileName()),applicationID)
 }
 

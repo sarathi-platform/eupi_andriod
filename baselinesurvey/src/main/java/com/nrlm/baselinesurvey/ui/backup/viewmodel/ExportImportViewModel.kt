@@ -1,0 +1,184 @@
+package com.nrlm.baselinesurvey.ui.backup.viewmodel
+
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Environment
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.core.app.ShareCompat
+import androidx.lifecycle.ViewModel
+import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.BuildConfig
+import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
+import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.ui.backup.domain.use_case.ExportImportUseCase
+import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
+import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nrlm.baselinesurvey.utils.LogWriter
+import com.nrlm.baselinesurvey.utils.uriFromFile
+import com.nudge.core.ZIP_MIME_TYPE
+import com.nudge.core.compression.ZipFileCompression
+import com.nudge.core.exportAllOldImages
+import com.nudge.core.exportLogFile
+import com.nudge.core.exportOldData
+import com.nudge.core.importDbFile
+import com.nudge.core.model.SettingOptionModel
+import com.nudge.core.preference.CoreSharedPrefs
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import javax.inject.Inject
+import kotlin.system.exitProcess
+
+@HiltViewModel
+class ExportImportViewModel @Inject constructor(
+    val exportImportUseCase: ExportImportUseCase
+): BaseViewModel() {
+    val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
+    val optionList: State<List<SettingOptionModel>> get() = _optionList
+
+    val showLoadConfirmationDialog = mutableStateOf(false)
+    val showRestartAppDialog = mutableStateOf(false)
+    val userUniqueKey= mutableStateOf(BLANK_STRING)
+
+    init {
+        _optionList.value=exportImportUseCase.getExportOptionListUseCase.fetchExportOptionList()
+        userUniqueKey.value="${exportImportUseCase.getUserDetailsExportUseCase.getUserID()}_${exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()}"
+    }
+    override fun <T> onEvent(event: T) {
+//        TODO("Not yet implemented")
+    }
+
+    fun clearLocalDatabase(onPageChange:()->Unit){
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val result=exportImportUseCase.clearLocalDBExportUseCase.invoke()
+            if(result){
+                exportImportUseCase.clearLocalDBExportUseCase.setAllDataSyncStatus()
+                withContext(Dispatchers.Main){
+                    onPageChange()
+                }
+            }
+        }
+    }
+
+    fun exportLocalDatabase(isNeedToShare:Boolean,onExportSuccess: (Uri) -> Unit) {
+        BaselineLogger.d("ExportImportViewModel","exportLocalDatabase -----")
+
+        exportOldData(
+            appContext = BaselineCore.getAppContext(),
+            applicationID = BuildConfig.APPLICATION_ID,
+            userUniqueId = userUniqueKey.value,
+            databaseName = NUDGE_BASELINE_DATABASE
+        ) {
+            BaselineLogger.d("ExportImportViewModel","exportLocalDatabase : ${it.path}")
+
+            if(isNeedToShare){
+                openShareSheet(arrayListOf(it) ,"")
+            } else onExportSuccess(it)
+        }
+    }
+
+    fun openShareSheet( fileUriList: ArrayList<Uri>?, title: String) {
+        if(fileUriList?.isNotEmpty() == true){
+            val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
+            shareIntent.setType(ZIP_MIME_TYPE)
+            shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
+            shareIntent.putExtra(Intent.EXTRA_TITLE, title)
+            val chooserIntent = Intent.createChooser(shareIntent, title)
+            BaselineCore.startExternalApp(chooserIntent)
+        }
+
+    }
+
+    fun exportLocalImages(){
+        BaselineLogger.d("ExportImportViewModel","exportLocalImages ----")
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val imageZipUri= exportAllOldImages(
+                appContext = BaselineCore.getAppContext(),
+                applicationID = BuildConfig.APPLICATION_ID,
+                userUniqueId = userUniqueKey.value,
+                timeInMillSec = System.currentTimeMillis().toString()
+            )
+            if(imageZipUri != null){
+                BaselineLogger.d("ExportImportViewModel","exportLocalImages: ${imageZipUri.path} ----")
+
+                openShareSheet(arrayListOf(imageZipUri),"Share All Images")
+            }
+        }
+    }
+fun exportOnlyLogFile(context: Context){
+    BaselineLogger.d("ExportImportViewModel","exportOnlyLogFile: ----")
+
+    CoroutineScope(Dispatchers.IO).launch {
+       val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext(),
+           userMobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
+           userEmail = exportImportUseCase.getUserDetailsExportUseCase.getUserEmail())
+        if (logFile != null) {
+            val logFileUri = exportLogFile(logFile, appContext = BaselineCore.getAppContext(),
+                applicationID = BuildConfig.APPLICATION_ID)
+
+            if(logFileUri != null){
+                BaselineLogger.d("ExportImportViewModel","exportOnlyLogFile: ${logFileUri.path}----")
+                ShareCompat.IntentBuilder(context)
+                    .setType("video/mp4")
+                    .setSubject("Shared Log files")
+                    .addStream(logFileUri)
+                    .setChooserTitle("Shared Log File")
+                    .startChooser()
+//                openShareSheet(arrayListOf(logFileUri),"Share Log FIle")
+            }
+        }
+    }
+}
+    fun compressEventData(title: String) {
+        BaselineLogger.d("ExportImportViewModel","compressEventData ----")
+
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                onEvent(LoaderEvent.UpdateLoaderState(true))
+                val compression = ZipFileCompression()
+                val fileUri = compression.compressBackupFiles(
+                    BaselineCore.getAppContext(),
+                    listOf(),
+                    exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
+                )
+               if(fileUri!=null) {
+                   BaselineLogger.d("ExportImportViewModel","compressEventData ${fileUri.path}----")
+                   openShareSheet(arrayListOf(fileUri), title)
+               }
+                CoreSharedPrefs.getInstance(BaselineCore.getAppContext()).setFileExported(true)
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+            } catch (exception: Exception) {
+                BaselineLogger.e("Compression", exception.message ?: "")
+                exception.printStackTrace()
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+            }
+        }
+    }
+
+    fun restartApp(context: Context, cls: Class<*>) {
+        BaselineLogger.d("ExportImportViewModel","Restarting Application")
+        context.startActivity(
+            Intent(BaselineCore.getAppContext(), cls)
+        )
+        exitProcess(0)
+    }
+
+    fun importSelectedDB(uri: Uri, onImportSuccess: () -> Unit) {
+        BaselineLogger.d("ExportImportViewModel","importSelectedDB ----")
+        importDbFile(
+            appContext = BaselineCore.getAppContext(),
+            importedDbUri = uri,
+            deleteDBName = NUDGE_BASELINE_DATABASE
+        ) {
+            BaselineLogger.d("ExportImportViewModel","importSelectedDB Success ----")
+            onImportSuccess()
+        }
+    }
+}

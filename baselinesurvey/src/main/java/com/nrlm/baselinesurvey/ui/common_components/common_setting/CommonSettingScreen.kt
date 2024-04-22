@@ -48,6 +48,7 @@ fun CommonSettingScreen(
     optionList:List<SettingOptionModel>,
     onBackClick:()->Unit,
     onItemClick:(Int,SettingOptionModel)->Unit,
+    isScreenHaveLogoutButton:Boolean=true,
     onLogoutClick:()->Unit
 ){
     Scaffold(
@@ -63,31 +64,33 @@ fun CommonSettingScreen(
             }
         },
         bottomBar = {
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
-                    .padding(vertical = dimensionResource(id = R.dimen.dp_15))
-            ) {
-                Column {
+            if(isScreenHaveLogoutButton) {
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
+                        .padding(vertical = dimensionResource(id = R.dimen.dp_15))
+                ) {
+                    Column {
 
-                    Text(
-                        text = versionText,
-                        color = textColorDark50,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(0.dp, 0.dp, 0.dp, 10.dp),
-                        textAlign = TextAlign.Center,
-                        style = newMediumTextStyle
-                    )
-                    ButtonPositive(
-                        buttonTitle = stringResource(id = R.string.logout),
-                        isArrowRequired = false,
-                        isActive = true
-                    ) {
-                        onLogoutClick()
+                        Text(
+                            text = versionText,
+                            color = textColorDark50,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(0.dp, 0.dp, 0.dp, 10.dp),
+                            textAlign = TextAlign.Center,
+                            style = newMediumTextStyle
+                        )
+                        ButtonPositive(
+                            buttonTitle = stringResource(id = R.string.logout),
+                            isArrowRequired = false,
+                            isActive = true
+                        ) {
+                            onLogoutClick()
+                        }
                     }
-                }
 
+                }
             }
         }){
         ConstraintLayout(
@@ -130,7 +133,7 @@ fun CommonSettingScreenPreview(){
         SettingOptionModel(1,"Sync Now","new Datta",""),
         SettingOptionModel(2,"Sync Now","",""),
         SettingOptionModel(3,"Sync Now","",""))
-CommonSettingScreen(title = "Setting", versionText = "Version 978", list ,onBackClick = {}, onItemClick = {index,item->}, onLogoutClick = {})
+CommonSettingScreen(title = "Setting", versionText = "Version 978", list ,onBackClick = {}, onItemClick = {index,item->},isScreenHaveLogoutButton = true, onLogoutClick = {})
 }
 
 @Preview(showBackground = true)

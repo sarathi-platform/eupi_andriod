@@ -37,6 +37,12 @@ import com.nrlm.baselinesurvey.ui.auth.use_case.ResendOtpUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.SaveAccessTokenUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.SaveMobileNumberUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.ValidateOtpUseCase
+import com.nrlm.baselinesurvey.ui.backup.domain.repository.ExportImportRepository
+import com.nrlm.baselinesurvey.ui.backup.domain.repository.ExportImportRepositoryImpl
+import com.nrlm.baselinesurvey.ui.backup.domain.use_case.ClearLocalDBExportUseCase
+import com.nrlm.baselinesurvey.ui.backup.domain.use_case.ExportImportUseCase
+import com.nrlm.baselinesurvey.ui.backup.domain.use_case.GetExportOptionListUseCase
+import com.nrlm.baselinesurvey.ui.backup.domain.use_case.GetUserDetailsExportUseCase
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.CasteListRepository
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.CasteListRepositoryImpl
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.EventsWriterRepository
@@ -747,12 +753,22 @@ object BaselineModule {
         )
     }
 
-    /*@Provides
+   @Singleton
+   @Provides
+   fun provideExportImportRepository(
+       prefRepo: PrefRepo,
+       nudgeBaselineDatabase: NudgeBaselineDatabase
+   ): ExportImportRepository {
+       return ExportImportRepositoryImpl(prefRepo, nudgeBaselineDatabase)
+   }
+
     @Singleton
-    fun provideGetCasteListUseCase(
-        casteListRepository: CasteListRepository
-    ): GetCasteListUseCase {
-        return GetCasteListUseCase(casteListRepository)
+    @Provides
+    fun provideExportImportUseCase(repository: ExportImportRepository):ExportImportUseCase{
+        return ExportImportUseCase(
+            getExportOptionListUseCase = GetExportOptionListUseCase(repository),
+            clearLocalDBExportUseCase = ClearLocalDBExportUseCase(repository),
+            getUserDetailsExportUseCase = GetUserDetailsExportUseCase(repository)
+        )
     }
-*/
 }

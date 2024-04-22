@@ -224,9 +224,9 @@ fun SettingScreen(
 
     val filePicker =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) {
-            importDbFile(NudgeCore.getAppContext(),it!!){
-                viewModel.showAppRestartDialog.value=true
-            }
+//            importDbFile(NudgeCore.getAppContext(),it!!){
+//                viewModel.showAppRestartDialog.value=true
+//            }
         }
     LaunchedEffect(key1 = true) {
         val villageId = viewModel.prefRepo.getSelectedVillage().id

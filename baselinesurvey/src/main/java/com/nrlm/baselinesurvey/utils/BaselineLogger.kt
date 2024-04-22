@@ -358,6 +358,28 @@ object LogWriter {
         return@withContext false
     }
 
+    suspend fun buildLogFile(appContext: Context,userMobileNo: String,userEmail: String): File? {
+        try {
+
+            val logDir = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+            val logFile = File(logDir, getSupportLogFileName())
+            if (logFile.isFile) logFile.delete()
+
+            if (!getSyslogFile(logFile)) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(appContext, "No logs to send", Toast.LENGTH_SHORT).show()
+                }
+                return null
+            }
+            return logFile
+        } catch (ex: Exception) {
+            e(TAG, "buildSupportLogAndShare", ex)
+            withContext(Dispatchers.Main) {
+                Toast.makeText(appContext, "Logs unavailable", Toast.LENGTH_SHORT).show()
+            }
+            return null
+        }
+    }
     suspend fun buildSupportLogAndShare(userMobileNo:String,userEmail:String) {
         val context = BaselineCore.getAppContext()
         try {

@@ -19,4 +19,10 @@ interface IFileCompressor {
     ): Uri?
 
     fun getCompressionType(): String
+
+    suspend fun compressBackupFile(
+        context: Context,
+        fileUri: Pair<String, Uri?>,
+        mobileNo: String
+    ): Uri?
 }
