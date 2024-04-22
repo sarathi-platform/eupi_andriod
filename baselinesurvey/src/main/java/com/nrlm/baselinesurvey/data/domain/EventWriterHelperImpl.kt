@@ -33,11 +33,9 @@ import com.nrlm.baselinesurvey.model.datamodel.UpdateMissionStatusEventDto
 import com.nrlm.baselinesurvey.model.datamodel.UpdateTaskStatusEventDto
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.SHGFlag
-import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.EventsWriterRepositoryImpl
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.utils.BaselineCore
-import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.utils.StatusReferenceType
 import com.nrlm.baselinesurvey.utils.convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.convertInputTypeQuestionToEventOptionItemDto
@@ -655,11 +653,17 @@ class EventWriterHelperImpl @Inject constructor(
 
     private suspend fun generateResponseEvent() {
         baselineDatabase.inputTypeQuestionAnswerDao()
-            .getAllInputTypeAnswersForQuestion(prefRepo.getUniqueUserId()).forEach {
+            .getAllInputTypeAnswersForQuestion(prefRepo.getUniqueUserIdentifier()).forEach {
                 val tag = baselineDatabase.questionEntityDao()
-                    .getQuestionTag(it.surveyId, it.sectionId, it.questionId)
+                    .getQuestionTag(getBaseLineUserId(), it.surveyId, it.sectionId, it.questionId)
                 val optionList = baselineDatabase.optionItemDao()
-                    .getSurveySectionQuestionOptions(it.sectionId, it.surveyId, it.questionId, 2)
+                    .getSurveySectionQuestionOptions(
+                        getBaseLineUserId(),
+                        it.sectionId,
+                        it.surveyId,
+                        it.questionId,
+                        2
+                    )
                 var optionItemEntityState = ArrayList<OptionItemEntityState>()
                 optionList.forEach { optionItemEntity ->
                     optionItemEntityState.add(
@@ -678,6 +682,7 @@ class EventWriterHelperImpl @Inject constructor(
                         it.questionId,
                         QuestionType.Input.name,
                         tag,
+                        "",
                         true,
                         listOf(it).convertInputTypeQuestionToEventOptionItemDto(
                             it.questionId,
@@ -691,11 +696,18 @@ class EventWriterHelperImpl @Inject constructor(
 
             }
 
-        baselineDatabase.sectionAnswerEntityDao().getAllAnswer(prefRepo.getUniqueUserId()).forEach {
+        baselineDatabase.sectionAnswerEntityDao().getAllAnswer(prefRepo.getUniqueUserIdentifier())
+            .forEach {
             val tag = baselineDatabase.questionEntityDao()
-                .getQuestionTag(it.surveyId, it.sectionId, it.questionId)
+                .getQuestionTag(getBaseLineUserId(), it.surveyId, it.sectionId, it.questionId)
             val optionList = baselineDatabase.optionItemDao()
-                .getSurveySectionQuestionOptions(it.sectionId, it.surveyId, it.questionId, 2)
+                .getSurveySectionQuestionOptions(
+                    getBaseLineUserId(),
+                    it.sectionId,
+                    it.surveyId,
+                    it.questionId,
+                    2
+                )
 
 
             repositoryImpl.saveEventToMultipleSources(
@@ -706,6 +718,7 @@ class EventWriterHelperImpl @Inject constructor(
                     it.questionId,
                     it.questionType,
                     tag,
+                    it.questionSummary ?: "",
                     true,
                     optionList.convertToSaveAnswerEventOptionItemDto(QuestionType.valueOf(it.questionType))
                 ), eventType = EventType.STATEFUL, eventDependencies = listOf()
@@ -715,23 +728,26 @@ class EventWriterHelperImpl @Inject constructor(
 
     private suspend fun regenerateFromResponseEvent() {
         val formResponseList = baselineDatabase.formQuestionResponseDao()
-            .getAllFormResponses(prefRepo.getUniqueUserId())
+            .getAllFormResponses(prefRepo.getUniqueUserIdentifier())
         val formResponseAndQuestionMap = formResponseList.groupBy { it.questionId }
-
+        val uniqueId = getBaseLineUserId()
         formResponseAndQuestionMap.forEach { mapItem ->
             val tempItem = mapItem.value.first()
             val question = baselineDatabase.questionEntityDao().getFormQuestionForId(
                 surveyId = tempItem.surveyId,
                 sectionId = tempItem.sectionId,
                 questionId = mapItem.key,
-                languageId = DEFAULT_LANGUAGE_ID
+                languageId = DEFAULT_LANGUAGE_ID,
+                userid = uniqueId
             )
             val optionItemEntityStateList = ArrayList<OptionItemEntityState>()
             baselineDatabase.optionItemDao().getSurveySectionQuestionOptions(
                 surveyId = tempItem.surveyId,
                 sectionId = tempItem.sectionId,
                 questionId = mapItem.key,
-                languageId = DEFAULT_LANGUAGE_ID
+                languageId = DEFAULT_LANGUAGE_ID,
+                userId = uniqueId
+
             ).forEach { optionItemEntity ->
                 optionItemEntityStateList.add(
                     OptionItemEntityState(
@@ -754,6 +770,8 @@ class EventWriterHelperImpl @Inject constructor(
                         questionTag = question?.tag ?: 0,
                         questionType = QuestionType.Form.name,
                         showQuestion = true,
+                        questionDesc = question?.questionDisplay ?: "",
+                        referenceOptionList = listOf(),
                         saveAnswerEventOptionItemDtoList = it.value.convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto(
                             QuestionType.Form,
                             optionItemEntityStateList
@@ -768,7 +786,7 @@ class EventWriterHelperImpl @Inject constructor(
     private suspend fun regenerateDidiInfoResponseEvent() {
 
         val didiInfoEntityList =
-            baselineDatabase.didiInfoEntityDao().getAllDidi(prefRepo.getUniqueUserId())
+            baselineDatabase.didiInfoEntityDao().getAllDidi(prefRepo.getUniqueUserIdentifier())
         val didiInfoQuestion =
             baselineDatabase.questionEntityDao().getQuestionForType(QuestionType.DidiDetails.name)
 
@@ -781,6 +799,8 @@ class EventWriterHelperImpl @Inject constructor(
                     questionId = didiInfoQuestion.questionId ?: 0,
                     questionType = didiInfoQuestion.type ?: QuestionType.DidiDetails.name,
                     questionTag = didiInfoQuestion.tag,
+                    questionDesc = didiInfoQuestion.questionDisplay ?: "",
+                    referenceOptionList = listOf(),
                     saveAnswerEventOptionItemDtoList = getSaveAnswerEventOptionItemDtoForDidiInfo(
                         didiInfoEntity,
                         didiInfoQuestion
@@ -801,7 +821,8 @@ class EventWriterHelperImpl @Inject constructor(
             surveyId = questionEntity.surveyId,
             sectionId = questionEntity.sectionId,
             questionId = questionEntity.questionId ?: 0,
-            languageId = DEFAULT_LANGUAGE_ID
+            languageId = DEFAULT_LANGUAGE_ID,
+            userId = getBaseLineUserId()
         )
         optionItemEntityList.filter { it.optionType != QuestionType.Image.name }
             .forEach {
@@ -828,11 +849,11 @@ class EventWriterHelperImpl @Inject constructor(
     private suspend fun regenerateImageUploadEvent() {
 
         val didiInfoEntityList =
-            baselineDatabase.didiInfoEntityDao().getAllDidi(prefRepo.getUniqueUserId())
+            baselineDatabase.didiInfoEntityDao().getAllDidi(prefRepo.getUniqueUserIdentifier())
         val didiInfoQuestion =
             baselineDatabase.questionEntityDao().getQuestionForType(QuestionType.DidiDetails.name)
         val sectionDetails = baselineDatabase.sectionEntityDao().getSurveySectionForLanguage(
-            userId = prefRepo.getUniqueUserId(),
+            userId = prefRepo.getUniqueUserIdentifier(),
             surveyId = didiInfoQuestion.surveyId,
             sectionId = didiInfoQuestion.sectionId,
             languageId = DEFAULT_LANGUAGE_ID
@@ -841,7 +862,8 @@ class EventWriterHelperImpl @Inject constructor(
             surveyId = didiInfoQuestion.surveyId,
             sectionId = didiInfoQuestion.sectionId,
             questionId = didiInfoQuestion.questionId ?: 0,
-            languageId = DEFAULT_LANGUAGE_ID
+            languageId = DEFAULT_LANGUAGE_ID,
+            userId = getBaseLineUserId()
         )
             .find { it.optionType == QuestionType.Image.name }
         didiInfoEntityList.forEach { didiInfoEntity ->
@@ -877,7 +899,7 @@ class EventWriterHelperImpl @Inject constructor(
     }
 
     private suspend fun regenerateMATStatusEvent() {
-        val userID = prefRepo.getUniqueUserId()
+        val userID = prefRepo.getUniqueUserIdentifier()
         baselineDatabase.missionEntityDao().getMissions(userID).forEach { missionEntity ->
 
 
@@ -929,7 +951,7 @@ class EventWriterHelperImpl @Inject constructor(
 
         }
         baselineDatabase.didiSectionProgressEntityDao()
-            .getAllSectionProgress(prefRepo.getUniqueUserId()).forEach {
+            .getAllSectionProgress(prefRepo.getUniqueUserIdentifier()).forEach {
                 val event = createUpdateSectionStatusEvent(
                     it.surveyId,
                     it.sectionId,
