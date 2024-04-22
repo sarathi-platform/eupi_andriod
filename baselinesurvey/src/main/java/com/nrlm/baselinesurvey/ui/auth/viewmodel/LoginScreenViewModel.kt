@@ -68,7 +68,6 @@ class LoginScreenViewModel @Inject constructor(
     }
 
     override fun onServerError(error: ErrorModel?) {
-        super.onServerError(error)
         _mobileNumberState.value = _mobileNumberState.value.copy(
             isMobileNumberValidatedFromServer = false,
             errorMessage = error?.message ?: "Something went wrong, please try again later!"

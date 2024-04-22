@@ -7,10 +7,11 @@ import com.nrlm.baselinesurvey.SPLASH_SCREEN_DURATION
 import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
-import com.nrlm.baselinesurvey.model.datamodel.ErrorModel
+import com.nrlm.baselinesurvey.ui.common_components.common_events.ApiStatusEvent
 import com.nrlm.baselinesurvey.ui.splash.domain.use_case.SplashScreenUseCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -37,6 +38,17 @@ class SplashScreenViewModel @Inject constructor(
                 _loaderState.value = _loaderState.value.copy(
                     isLoaderVisible = event.showLoader
                 )
+            }
+
+            is ApiStatusEvent.showApiStatus -> {
+                if (event.errorCode != 200) {
+                    showCustomToast(
+                        BaselineCore.getAppContext(),
+                        event.message
+                    )
+                }
+
+
             }
         }
     }
@@ -81,19 +93,13 @@ class SplashScreenViewModel @Inject constructor(
                 if (ex.message?.contains(ROOM_INTEGRITY_EXCEPTION, true) == false) {
                     splashScreenUseCase.saveLanguageConfigUseCase.addDefaultLanguage()
                 }
+                onCatchError(ex)
                 withContext(Dispatchers.Main) {
                     callBack()
                 }
-                onCatchError(ex)
-
             }
         }
     }
 
-    override fun onServerError(error: ErrorModel?) {
-        super.onServerError(error)
-
-
-    }
 
 }

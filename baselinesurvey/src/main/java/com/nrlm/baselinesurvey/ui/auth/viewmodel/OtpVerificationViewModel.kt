@@ -89,7 +89,6 @@ class OtpVerificationViewModel @Inject constructor(
 
 
     override fun onServerError(error: ErrorModel?) {
-        super.onServerError(error)
         networkErrorMessage.value = error?.message ?: ""
 
     }

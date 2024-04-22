@@ -4,12 +4,16 @@ import android.content.Context
 import android.text.TextUtils
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
+import com.nrlm.baselinesurvey.ui.common_components.common_events.ApiStatusEvent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.DialogEvents
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.DialogState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +32,7 @@ class DataLoadingScreenViewModel @Inject constructor(
     val loaderState: State<LoaderState> get() = _loaderState
 
     private val _showUserChangedDialog = mutableStateOf<DialogState>(DialogState())
+    private val _showErrorMessage = mutableStateOf<DialogState>(DialogState())
     val showUserChangedDialog: State<DialogState> get() = _showUserChangedDialog
 
     override fun <T> onEvent(event: T) {
@@ -43,6 +48,21 @@ class DataLoadingScreenViewModel @Inject constructor(
                     .copy(
                         isDialogVisible = event.showDialog
                     )
+            }
+
+            is ApiStatusEvent.showApiStatus -> {
+                if (event.errorCode == 200) {
+                    showCustomToast(
+                        BaselineCore.getAppContext(), BaselineCore.getAppContext().getString(
+                            R.string.fetched_successfully
+                        )
+                    )
+                } else {
+                    showCustomToast(
+                        BaselineCore.getAppContext(),
+                        event.message
+                    )
+                }
             }
         }
     }

@@ -79,7 +79,7 @@ object NetworkModule {
         application: Application
     ): Retrofit {
         val cache = Cache(application.cacheDir, 10 * 1024 * 1024) // 10 MB
-        val timeout = 5.toLong()
+        val timeout = 60.toLong()
         val clientBuilder =
             OkHttpClient.Builder()
 //    getOkHttpBuilder()
