@@ -25,6 +25,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,13 +52,16 @@ import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_20_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_3_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_4_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_6_dp
 import com.nrlm.baselinesurvey.ui.theme.greenDark
+import com.nrlm.baselinesurvey.ui.theme.languageItemActiveBg
 import com.nrlm.baselinesurvey.ui.theme.mediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleMediumWeight
+import com.nrlm.baselinesurvey.ui.theme.smallTextStyleNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark80
 import com.nrlm.baselinesurvey.ui.theme.white
@@ -75,7 +80,9 @@ fun SurveyeeCardComponent(
     buttonClicked: (buttonName: ButtonName, surveyeeId: Int) -> Unit,
     moveDidiToThisWeek: (surveyeeCardState: SurveyeeCardState, moveToThisWeek: Boolean) -> Unit
 ) {
-
+    val surveyeeMarkedNotAvailable = remember {
+        mutableStateOf(surveyeeState.surveyeeDetails.surveyStatus == SurveyState.NOT_AVAILABLE.ordinal)
+    }
     Card(
         elevation = CardDefaults.cardElevation(
             defaultElevation = defaultCardElevation
@@ -181,16 +188,45 @@ fun SurveyeeCardComponent(
                                 modifier = Modifier
                             ) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.home_icn),
+                                    painter = painterResource(
+                                        id = if (surveyeeState.isCohortName) R.drawable.ic_hamlet_name_icon else R.drawable.home_icn
+                                    ),
                                     contentDescription = "home icon",
                                     tint = Color.Black,
-                                    modifier = Modifier.height(dimen_18_dp)
+                                    modifier = Modifier.height(dimen_20_dp)
                                 )
                                 Spacer(modifier = Modifier.width(dimen_3_dp))
                                 Text(
 
-                                    text = if (!surveyeeState.activityName.equals("Conduct Hamlet Survey")) surveyeeState.address.toLowerCase(Locale.current).toCamelCase()
-                                    else surveyeeState.surveyeeDetails.villageName.toLowerCase().toCamelCase(),
+                                    text = if (!surveyeeState.activityName.equals("Conduct Hamlet Survey")) surveyeeState.address.toLowerCase(
+                                        Locale.current
+                                    ).toCamelCase()
+                                    else surveyeeState.surveyeeDetails.villageName.toLowerCase()
+                                        .toCamelCase(),
+                                    style = smallTextStyleMediumWeight,
+                                    color = textColorDark
+                                )
+                            }
+                        }
+                        if (!surveyeeState.activityName.equals("Conduct Hamlet Survey") && surveyeeState.surveyeeDetails.voName.isNotBlank()) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                            ) {
+                                Icon(
+                                    painter = painterResource(
+                                        R.drawable.ic_vo_name_icon,
+                                    ),
+                                    contentDescription = "home icon",
+                                    tint = Color.Black,
+                                    modifier = Modifier.height(dimen_20_dp)
+                                )
+                                Spacer(modifier = Modifier.width(dimen_3_dp))
+                                Text(
+
+                                    text = surveyeeState.surveyeeDetails.voName.toLowerCase(
+                                        Locale.current
+                                    ).toCamelCase(),
                                     style = smallTextStyleMediumWeight,
                                     color = textColorDark
                                 )
@@ -199,33 +235,86 @@ fun SurveyeeCardComponent(
                     }
                 }
 
-                if (surveyeeState.surveyState != SurveyState.COMPLETED) {
+                /*didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal ||
+                        didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal ||
+                        didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||
+                        didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal*/
+
+                if (surveyeeState.surveyState == SurveyState.INPROGRESS
+                    || surveyeeState.surveyState == SurveyState.NOT_STARTED
+                    || surveyeeState.surveyState == SurveyState.NOT_AVAILABLE
+                    || surveyeeState.surveyState == SurveyState.NOT_AVAILABLE_WITH_CONTINUE
+                ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = dimen_18_dp),
                         horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
                     ) {
-                        Spacer(modifier = Modifier.weight(1f))
-//                        Button(
-//                            onClick = {
-//                                buttonClicked(
-//                                    ButtonName.NEGATIVE_BUTTON,
-//                                    surveyeeState.surveyeeDetails.didiId ?: 0
-//                                )
-//                            },
-//                            enabled = true,
-//                            shape = RoundedCornerShape(roundedCornerRadiusDefault),
-//                            border = BorderStroke(dimen_1_dp, borderGreyLight),
-//                            colors = ButtonDefaults.buttonColors(
-//                                containerColor = languageItemActiveBg,
-//                                contentColor = blueDark
-//                            ),
-//                            modifier = Modifier.weight(1f)
-//                        ) {
-//                            Text(text = "Not Available", style = smallTextStyleNormalWeight)
-//                        }
-                        if (surveyeeState.surveyState == SurveyState.INPROGRESS) {
+
+                        if (!surveyeeState.activityName.equals("Conduct Hamlet Survey")) {
+
+                            Button(
+                                onClick = {
+                                    surveyeeMarkedNotAvailable.value = true
+                                    buttonClicked(
+                                        ButtonName.NOT_AVAILABLE,
+                                        surveyeeState.surveyeeDetails.didiId ?: 0
+                                    )
+                                },
+                                enabled = true,
+                                shape = RoundedCornerShape(roundedCornerRadiusDefault),
+                                border = BorderStroke(dimen_1_dp, borderGreyLight),
+                                colors = if (surveyeeMarkedNotAvailable.value) ButtonDefaults.buttonColors(
+                                    containerColor = blueDark,
+                                    contentColor = white
+                                ) else ButtonDefaults.buttonColors(
+                                    containerColor = languageItemActiveBg,
+                                    contentColor = blueDark
+                                ),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(text = "Not Available", style = smallTextStyleNormalWeight)
+                            }
+                        } else {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+
+                        Button(
+                            onClick = {
+                                if (surveyeeState.surveyState == SurveyState.INPROGRESS)
+                                    buttonClicked(
+                                        ButtonName.CONTINUE_BUTTON,
+                                        surveyeeState.surveyeeDetails.didiId ?: 0
+                                    )
+                                else if (surveyeeState.surveyState == SurveyState.NOT_STARTED
+                                    || surveyeeState.surveyState == SurveyState.NOT_AVAILABLE
+                                ) {
+                                    buttonClicked(
+                                        ButtonName.START_BUTTON,
+                                        surveyeeState.surveyeeDetails.didiId ?: 0
+                                    )
+                                }
+                            },
+                            enabled = true,
+                            shape = RoundedCornerShape(roundedCornerRadiusDefault),
+                            colors = if (!surveyeeMarkedNotAvailable.value) ButtonDefaults.buttonColors(
+                                containerColor = blueDark,
+                                contentColor = white
+                            ) else ButtonDefaults.buttonColors(
+                                containerColor = languageItemActiveBg,
+                                contentColor = blueDark
+                            ),
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(
+                                text = if (surveyeeState.surveyState == SurveyState.NOT_AVAILABLE
+                                    || surveyeeState.surveyState == SurveyState.NOT_STARTED
+                                ) primaryButtonText else stringResource(id = R.string.continue_text),
+                                style = smallTextStyleMediumWeight
+                            )
+                        }
+                        /*if (surveyeeState.surveyState != SurveyState.NOT_STARTED) {
                             Button(
                                 onClick = {
                                     buttonClicked(
@@ -235,18 +324,22 @@ fun SurveyeeCardComponent(
                                 },
                                 enabled = true,
                                 shape = RoundedCornerShape(roundedCornerRadiusDefault),
-                                colors = ButtonDefaults.buttonColors(
+                                colors = if(surveyeeState.surveyeeDetails.surveyStatus != SurveyState.NOT_AVAILABLE.ordinal) ButtonDefaults.buttonColors(
                                     containerColor = blueDark,
                                     contentColor = white
+                                ) else ButtonDefaults.buttonColors(
+                                    containerColor = languageItemActiveBg,
+                                    contentColor = blueDark
                                 ),
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Text(
-                                    text = stringResource(id = R.string.continue_text),
+                                    text = if (surveyeeState.surveyState == SurveyState.NOT_AVAILABLE
+                                        || surveyeeState.surveyState == SurveyState.NOT_STARTED) primaryButtonText else stringResource(id = R.string.continue_text),
                                     style = smallTextStyleMediumWeight
                                 )
                             }
-                        } else if (surveyeeState.surveyState == SurveyState.NOT_STARTED) {
+                        } else {
                             Button(
                                 onClick = {
                                     buttonClicked(
@@ -256,18 +349,20 @@ fun SurveyeeCardComponent(
                                 },
                                 enabled = true,
                                 shape = RoundedCornerShape(roundedCornerRadiusDefault),
-                                colors = ButtonDefaults.buttonColors(
+                                colors = if(surveyeeState.surveyeeDetails.surveyStatus != SurveyState.NOT_AVAILABLE.ordinal) ButtonDefaults.buttonColors(
                                     containerColor = blueDark,
                                     contentColor = white
+                                ) else ButtonDefaults.buttonColors(
+                                    containerColor = languageItemActiveBg,
+                                    contentColor = blueDark
                                 ),
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Text(text = primaryButtonText, style = smallTextStyleMediumWeight)
                             }
-                        }
+                        }*/
                     }
-                }
-                else {
+                } else {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -375,5 +470,6 @@ sealed class ButtonName {
     object CONTINUE_BUTTON : ButtonName()
     object NEGATIVE_BUTTON : ButtonName()
     object SHOW_BUTTON : ButtonName()
-    object EXPORT_BUTTON: ButtonName()
+    object EXPORT_BUTTON : ButtonName()
+    object NOT_AVAILABLE : ButtonName()
 }

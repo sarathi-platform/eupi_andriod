@@ -12,9 +12,15 @@ class GetFormQuestionResponseUseCase(private val repository: FormQuestionRespons
     suspend operator fun invoke(
         surveyId: Int,
         sectionId: Int,
-        questionId: Int
+        questionId: Int,
+        selectDefaultLanguage: Boolean = false
     ): List<OptionItemEntity> {
-        return repository.getFormQuestionOptions(surveyId = surveyId, sectionId = sectionId, questionId = questionId)
+        return repository.getFormQuestionOptions(
+            surveyId = surveyId,
+            sectionId = sectionId,
+            questionId = questionId,
+            selectDefaultLanguage
+        )
     }
     suspend fun getFormResponsesForQuestion(
         surveyId: Int,

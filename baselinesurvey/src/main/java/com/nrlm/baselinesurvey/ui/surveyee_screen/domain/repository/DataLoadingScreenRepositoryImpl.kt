@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository
 
+import android.text.TextUtils
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -70,6 +71,7 @@ import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.entities.ApiStatusEntity
+import com.nudge.core.enums.ApiStatus
 import com.nudge.core.toDate
 import javax.inject.Inject
 
@@ -401,6 +403,9 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getUserId(): Int {
+        if (TextUtils.isEmpty(prefRepo.getPref(PREF_KEY_USER_NAME, ""))) {
+            return 0
+        }
         return prefRepo.getPref(PREF_KEY_USER_NAME, "")?.toInt() ?: 0
     }
 
@@ -699,18 +704,28 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         errorMessage: String,
         errorCode: Int
     ) {
+        apiStatusDao.updateApiStatus(apiEndPoint, status = status, errorMessage, errorCode)
     }
 
     override fun insertApiStatus(apiEndPoint: String) {
         val apiStatusEntity = ApiStatusEntity(
             apiEndpoint = apiEndPoint,
-            status = 0,
+            status = ApiStatus.INPROGRESS.ordinal,
             modifiedDate = System.currentTimeMillis().toDate(),
             createdDate = System.currentTimeMillis().toDate(),
             errorCode = 0,
             errorMessage = ""
         )
         apiStatusDao.insert(apiStatusEntity)
+    }
+
+    override fun isNeedToCallApi(apiEndPoint: String): Boolean {
+        return if (apiStatusDao.getFailedAPICount() > 0) {
+            val apiStatusEntity = apiStatusDao.getAPIStatus(apiEndPoint)
+            apiStatusEntity?.status != ApiStatus.SUCCESS.ordinal
+        } else {
+            true
+        }
     }
 
 

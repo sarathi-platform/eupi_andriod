@@ -62,7 +62,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
             survey?.surveyId ?: 0,
             languageId
         )
-        val optionList = optionItemDao.getSurveySectionQuestionOptionForLanguage(
+        val optionList = optionItemDao.getSurveySectionQuestionOptionsForLanguage(
             sectionEntity.sectionId,
             survey?.surveyId ?: 0,
             languageId
@@ -206,11 +206,13 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         questionId: Int,
         optionItemId: Int
     ): Int {
-        return inputTypeQuestionAnswerDao.isQuestionAlreadyAnswered(surveyId,
-            sectionId,
-            didiId,
-            questionId,
-            optionItemId)
+        return inputTypeQuestionAnswerDao.isQuestionAlreadyAnswered(
+            surveyId = surveyId,
+            sectionId = sectionId,
+            didiId = didiId,
+            questionId = questionId,
+            optionItemId = optionItemId
+        )
     }
 
     override fun getAllAnswersForDidi(didiId: Int): List<SectionAnswerEntity> {
@@ -359,6 +361,20 @@ class QuestionScreenRepositoryImpl @Inject constructor(
             questionId,
             didiId,
             optionId
+        )
+    }
+
+    override suspend fun deleteResponseForQuestion(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int,
+        didiId: Int
+    ) {
+        sectionAnswerEntityDao.deleteAnswerForQuestion(
+            questionId = questionId,
+            sectionId = sectionId,
+            surveyId = surveyId,
+            didiId = didiId
         )
     }
 

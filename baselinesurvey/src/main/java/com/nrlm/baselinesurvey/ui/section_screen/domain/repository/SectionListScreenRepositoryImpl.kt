@@ -9,6 +9,7 @@ import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
+import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
@@ -45,7 +46,7 @@ class SectionListScreenRepositoryImpl(
                 survey?.surveyId ?: 0,
                 languageId
             )
-            val optionItemList = optionItemDao.getSurveySectionQuestionOptionForLanguage(
+            val optionItemList = optionItemDao.getSurveySectionQuestionOptionsForLanguage(
                 sectionEntity.sectionId,
                 survey?.surveyId ?: 0,
                 languageId
@@ -123,7 +124,7 @@ class SectionListScreenRepositoryImpl(
                 survey?.surveyId ?: 0,
                 languageId
             )
-            val optionItemList = optionItemDao.getSurveySectionQuestionOptionForLanguage(
+            val optionItemList = optionItemDao.getSurveySectionQuestionOptionsForLanguage(
                 sectionEntity.sectionId,
                 survey?.surveyId ?: 0,
                 languageId
@@ -204,4 +205,23 @@ class SectionListScreenRepositoryImpl(
     override suspend fun updateTaskStatus(didiId: Int, surveyState: SectionStatus) {
         taskDao.updateTaskStatus(didiId, surveyState.ordinal)
     }
+
+    override suspend fun updateTaskStatus(
+        taskId: Int,
+        activityId: Int,
+        missionId: Int,
+        status: String
+    ) {
+        taskDao.updateTaskStatus(
+            taskId = taskId,
+            activityId = activityId,
+            missionId = missionId,
+            status = status
+        )
+    }
+
+    override suspend fun getTaskForSubjectId(surveyId: Int): ActivityTaskEntity? {
+        return taskDao.getTaskFromSubjectId(surveyId)
+    }
+
 }

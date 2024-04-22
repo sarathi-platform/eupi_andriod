@@ -24,8 +24,8 @@ interface ActivityTaskDao {
     @Query("SELECT * FROM $TASK_TABLE_NAME where taskId = :taskId")
     fun getTaskById(taskId: Int): ActivityTaskEntity
 
-    @Query("SELECT * FROM $TASK_TABLE_NAME where missionId=:missionId and activityName like :activityName")
-    suspend fun getActivityTask(missionId: Int, activityName: String): List<ActivityTaskEntity>
+    @Query("SELECT * FROM $TASK_TABLE_NAME where missionId=:missionId and activityId = :activityId")
+    suspend fun getActivityTask(missionId: Int, activityId: Int): List<ActivityTaskEntity>
 
     @Query("SELECT * FROM $TASK_TABLE_NAME where activityId=:activityId ")
     suspend fun getActivityTaskFromIds(activityId: Int): List<ActivityTaskEntity>
@@ -76,10 +76,10 @@ interface ActivityTaskDao {
         updateTaskCompletedDate(taskId, actualCompletedDate)
     }
 
-    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where activityId = :activityId AND status != :status")
+    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where activityId = :activityId AND status NOT in (:status)")
     fun getPendingTaskCountLive(
         activityId: Int,
-        status: String = SurveyState.COMPLETED.name
+        status: List<String> = listOf(SurveyState.COMPLETED.name, SurveyState.NOT_AVAILABLE.name)
     ): LiveData<Int>
 
     @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where missionId = :missionId")

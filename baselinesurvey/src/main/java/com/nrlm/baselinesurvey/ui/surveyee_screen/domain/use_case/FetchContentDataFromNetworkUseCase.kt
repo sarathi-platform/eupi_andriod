@@ -4,13 +4,21 @@ import com.nrlm.baselinesurvey.SUCCESS_CODE
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.model.mappers.ContentEntityMapper
 import com.nrlm.baselinesurvey.model.request.ContentMangerRequest
+import com.nrlm.baselinesurvey.network.ApiException
+import com.nrlm.baselinesurvey.network.SUBPATH_CONTENT_MANAGER
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepository
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nudge.core.enums.ApiStatus
 
 class FetchContentDataFromNetworkUseCase(private val repository: DataLoadingScreenRepository) {
     suspend operator fun invoke(): Boolean {
         try {
             //TODO Run a loop on language id later
+            if (!repository.isNeedToCallApi(SUBPATH_CONTENT_MANAGER)) {
+                return false
+            }
+            repository.insertApiStatus(SUBPATH_CONTENT_MANAGER)
+
             val contentKeys =
                 repository.getContentKeyFromDB().filter { it -> it != "" && it != "question" }
             val languageId = repository.getSelectedLanguageId()
@@ -23,6 +31,12 @@ class FetchContentDataFromNetworkUseCase(private val repository: DataLoadingScre
                 ) || contentResponse.status.equals("SUCCESS", true)
             ) {
                 contentResponse.data?.let { content ->
+                    repository.updateApiStatus(
+                        SUBPATH_CONTENT_MANAGER,
+                        status = ApiStatus.SUCCESS.ordinal,
+                        "",
+                        200
+                    )
                     repository.deleteContentFromDB()
                     for (content in contentResponse.data) {
                         if (content != null) {
@@ -36,8 +50,22 @@ class FetchContentDataFromNetworkUseCase(private val repository: DataLoadingScre
             } else {
                 return false
             }
+        } catch (apiException: ApiException) {
+            repository.updateApiStatus(
+                SUBPATH_CONTENT_MANAGER,
+                status = ApiStatus.FAILED.ordinal,
+                apiException.message ?: "",
+                apiException.getStatusCode()
+            )
+            return false
         } catch (ex: Exception) {
-            BaselineLogger.e("FetchSurveyFromNetworkUseCase", "invoke", ex)
+            repository.updateApiStatus(
+                SUBPATH_CONTENT_MANAGER,
+                status = ApiStatus.FAILED.ordinal,
+                ex.message ?: "",
+                500
+            )
+            BaselineLogger.e("FetchUserDetailFromNetworkUseCase", "invoke", ex)
             return false
         }
     }

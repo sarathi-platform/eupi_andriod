@@ -539,6 +539,49 @@ fun ConditionsDto.checkCondition(userInputValue: String): Boolean {
     }
 }
 
+fun ConditionsDto.checkConditionForMultiSelectDropDown(userInputValue: String): Boolean {
+    val condition = this.value.split(CONDITIONS_DELIMITER, ignoreCase = true)
+    try {
+        val result = when (checkStringOperator(this.operator)) {
+            Operator.EQUAL_TO -> {
+                userInputValue.contains(condition.first(), ignoreCase = true)
+            }
+
+            Operator.LESS_THAN -> {
+                userInputValue.toInt() < condition.first().toInt()
+            }
+
+            Operator.IN_BETWEEN -> {
+                userInputValue.toInt() >= condition.first()
+                    .toInt() && userInputValue.toInt() <= condition.last().toInt()
+            }
+
+            Operator.NOT_EQUAL_TO -> {
+                !userInputValue.equals(condition.first(), ignoreCase = true)
+            }
+
+            Operator.LESS_THAN_EQUAL_TO -> {
+                userInputValue.toInt() <= condition.first().toInt()
+            }
+
+            Operator.MORE_THAN -> {
+                userInputValue.toInt() > condition.first().toInt()
+            }
+
+            Operator.MORE_THAN_EQUAL_TO -> {
+                userInputValue.toInt() >= condition.first().toInt()
+            }
+
+            else -> {
+                false
+            }
+        }
+        return result
+    } catch (ex: Exception) {
+        return false
+    }
+}
+
 fun isNumeric(toCheck: String): Boolean {
     val regex = "-?[0-9]+(\\.[0-9]+)?".toRegex()
     return toCheck.matches(regex)
@@ -769,6 +812,20 @@ fun List<FormQuestionResponseEntity>.convertFormQuestionResponseEntityToSaveAnsw
     }
 
     return saveAnswerEventOptionItemDtoList
+}
+
+fun List<OptionItemEntity>.toOptionItemStateList(): List<OptionItemEntityState> {
+    val optionsItemEntityStateList = ArrayList<OptionItemEntityState>()
+    this.forEach { optionItemEntity ->
+        optionsItemEntityStateList.add(
+            OptionItemEntityState(
+                optionItemEntity.optionId,
+                optionItemEntity,
+                !optionItemEntity.conditional
+            )
+        )
+    }
+    return optionsItemEntityStateList
 }
 
 fun List<FormResponseObjectDto>.convertFormResponseObjectToSaveAnswerEventOptionDto(

@@ -21,6 +21,7 @@ import com.nrlm.baselinesurvey.utils.getIndexForReferenceId
 import com.nrlm.baselinesurvey.utils.mapFormQuestionResponseToFromResponseObjectDto
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.tagList
+import com.nrlm.baselinesurvey.utils.toOptionItemStateList
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -38,6 +39,8 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
     val loaderState: State<LoaderState> get() = _loaderState
 
     val optionItemEntityList = mutableListOf<OptionItemEntity>()
+
+    private val optionItemEntityListInDefaultLanguage = mutableListOf<OptionItemEntity>()
 
     private var _formResponseObjectDtoList = mutableStateOf(mutableListOf<FormResponseObjectDto>())
     val formResponseObjectDtoList: State<List<FormResponseObjectDto>> get() = _formResponseObjectDtoList
@@ -65,8 +68,9 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
                             sectionId = event.sectionId,
                             didiId = event.surveyeeId,
                             questionId = event.questionId,
-                            questionTag = tagList.findIdFromTag(item?.questionTag ?: BLANK_STRING),
                             questionType = QuestionType.Form.name,
+                            questionTag = tagList.findIdFromTag(item?.questionTag ?: BLANK_STRING),
+                            questionDesc = event.questionDesc,
                             saveAnswerEventOptionItemDtoList = formResponseObjectDtoList.value.filter { it.referenceId != event.referenceId }
                                 .convertFormResponseObjectToSaveAnswerEventOptionDto(
                                     getOptionItemListWithConditionals()
@@ -86,6 +90,8 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
                             questionId = event.questionId,
                             questionType = event.questionType,
                             questionTag = event.questionTag,
+                            questionDesc = event.questionDesc,
+                            referenceOptionList = optionItemEntityListInDefaultLanguage.toOptionItemStateList(),
                             saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
                         )
                     formResponseSummaryScreenUseCase.eventsWriterUseCase.invoke(
@@ -112,6 +118,17 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
                     sectionId,
                     questionId
                 )
+
+            val mOptionItemEntityListInDefaultLanguage =
+                formResponseSummaryScreenUseCase.getFormQuestionResponseUseCase.invoke(
+                    surveyId,
+                    sectionId,
+                    questionId,
+                    true
+                )
+
+            optionItemEntityListInDefaultLanguage.clear()
+            optionItemEntityListInDefaultLanguage.addAll(mOptionItemEntityListInDefaultLanguage)
 
             optionItemEntityList.clear()
             optionItemEntityList.addAll(mOptionItemEntityList)

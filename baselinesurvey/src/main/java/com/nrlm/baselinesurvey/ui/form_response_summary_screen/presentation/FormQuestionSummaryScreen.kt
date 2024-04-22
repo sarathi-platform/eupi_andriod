@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
 import com.nrlm.baselinesurvey.navigation.home.navigateToFormTypeQuestionScreen
@@ -104,6 +105,8 @@ fun FormQuestionSummaryScreen(
                             sectionId = sectionId,
                             questionId = questionId,
                             surveyeeId = surveyeeId,
+                            questionDesc = formResponseSummaryScreenViewModel.questionEntity?.questionDisplay
+                                ?: BLANK_STRING,
                             referenceId = openAlertDialog.value.second?.referenceId!!
                         )
                     )
