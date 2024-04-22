@@ -50,6 +50,7 @@ abstract class BaseViewModel() : ViewModel() {
     val baseSummarySecond = mutableStateOf(0)
 
     var job: Job? = null
+    var currentApiCount = 0
     var networkErrorMessage = mutableStateOf(BLANK_STRING)
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, e ->
         BaselineLogger.e("BaseViewModel", "exceptionHandler: ${e.message}", e)
@@ -199,42 +200,17 @@ abstract class BaseViewModel() : ViewModel() {
     }*/
 
     fun refreshData(fetchDataUseCase: FetchDataUseCase) {
+        currentApiCount = 0
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val baselineSurveyRequestBodyModel = SurveyRequestBodyModel(
-                    languageId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getAppLanguageId(),
-                    surveyName = "BASELINE",
-                    referenceId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getStateId(),
-                    referenceType = "STATE"
-                )
-                fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-                    baselineSurveyRequestBodyModel
-                )
+                callSurveyApi(fetchDataUseCase)
+                fetchMissionData(fetchDataUseCase)
+                fetchCastes(fetchDataUseCase)
+                fetchUserDetail(fetchDataUseCase)
+                fetchSurveyeeList(fetchDataUseCase)
+                fetchContentData(fetchDataUseCase)
 
-                val hamletSurveyRequestBodyModel = SurveyRequestBodyModel(
-                    languageId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getAppLanguageId(),
-                    surveyName = "HAMLET",
-                    referenceId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getStateId(),
-                    referenceType = "STATE"
-                )
-                fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
-                    hamletSurveyRequestBodyModel
-                )
-
-                val fetchUserDetailFromNetworkUseCaseSuccess =
-                    fetchDataUseCase.fetchUserDetailFromNetworkUseCase.invoke()
-                if (fetchUserDetailFromNetworkUseCaseSuccess) {
-                    fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke(false)
-                    fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
-                    fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
-                    fetchDataUseCase.fetchContentnDataFromNetworkUseCase.invoke()
-                }
-
-                withContext(Dispatchers.Main) {
-                    // onEvent(LoaderEvent.UpdateLoaderState(false))
-                    onEvent(ApiStatusEvent.showApiStatus(SUCCESS_CODE.toInt()))
-                }
             } catch (e: Exception) {
                 // Handle the exception here
                 withContext(Dispatchers.Main) {
@@ -245,7 +221,81 @@ abstract class BaseViewModel() : ViewModel() {
         }
     }
 
+    private suspend fun updateLoaderEvent() {
+        if (currentApiCount == 6) {
+            withContext(Dispatchers.Main) {
+                // onEvent(LoaderEvent.UpdateLoaderState(false))
+                onEvent(ApiStatusEvent.showApiStatus(SUCCESS_CODE.toInt()))
+            }
+        }
+    }
 
+    private fun callSurveyApi(fetchDataUseCase: FetchDataUseCase) {
+        viewModelScope.launch(Dispatchers.IO) {
 
+            val baselineSurveyRequestBodyModel = SurveyRequestBodyModel(
+                languageId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getAppLanguageId(),
+                surveyName = "BASELINE",
+                referenceId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getStateId(),
+                referenceType = "STATE"
+            )
+            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+                baselineSurveyRequestBodyModel
+            )
+
+            val hamletSurveyRequestBodyModel = SurveyRequestBodyModel(
+                languageId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getAppLanguageId(),
+                surveyName = "HAMLET",
+                referenceId = fetchDataUseCase.fetchSurveyFromNetworkUseCase.getStateId(),
+                referenceType = "STATE"
+            )
+            fetchDataUseCase.fetchSurveyFromNetworkUseCase.invoke(
+                hamletSurveyRequestBodyModel
+            )
+            currentApiCount++
+            updateLoaderEvent()
+        }
+    }
+
+    private fun fetchUserDetail(fetchDataUseCase: FetchDataUseCase) {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchDataUseCase.fetchUserDetailFromNetworkUseCase.invoke()
+            currentApiCount++
+            updateLoaderEvent()
+        }
+    }
+
+    private fun fetchCastes(fetchDataUseCase: FetchDataUseCase) {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke(false)
+            currentApiCount++
+            updateLoaderEvent()
+        }
+    }
+
+    private fun fetchMissionData(fetchDataUseCase: FetchDataUseCase) {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
+            currentApiCount++
+            updateLoaderEvent()
+        }
+    }
+
+    private fun fetchSurveyeeList(fetchDataUseCase: FetchDataUseCase) {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
+            currentApiCount++
+            updateLoaderEvent()
+
+        }
+    }
+
+    private fun fetchContentData(fetchDataUseCase: FetchDataUseCase) {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchDataUseCase.fetchContentnDataFromNetworkUseCase.invoke()
+            currentApiCount++
+            updateLoaderEvent()
+        }
+    }
 }
 

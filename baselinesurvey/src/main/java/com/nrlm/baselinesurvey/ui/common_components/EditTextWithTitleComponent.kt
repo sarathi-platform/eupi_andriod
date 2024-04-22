@@ -59,13 +59,16 @@ fun EditTextWithTitleComponent(
 ) {
     val txt = remember {
         mutableStateOf(defaultValue)
-    }
+   }
+//    if (txt.value.isBlank()) {
+//        txt.value = defaultValue
+//    }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Log.d(
         "TAG",
-        "EditTextWithTitleComponent: ${showQuestion?.optionItemEntity?.display}, isOnlyNumber: $isOnlyNumber"
+        "EditTextWithTitleComponent: ${defaultValue}, isOnlyNumber: $isOnlyNumber, txt: ${txt.value}"
     )
 
     VerticalAnimatedVisibilityComponent(visible = showQuestion?.showQuestion ?: true) {

@@ -9,7 +9,7 @@ plugins {
     id 'com.google.firebase.crashlytics'
 }
 
-def version = "1.14"
+def version = "1.16"
 android {
     namespace 'com.nrlm.baselinesurvey'
     compileSdk 34
