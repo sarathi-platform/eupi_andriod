@@ -209,6 +209,10 @@ val COMMON_ERROR_MSG = BaselineApplication.applicationContext().getString(R.stri
 const val COMMON_ERROR_TITLE = "Something Went Wrong"
 const val TIMEOUT_ERROR_MSG = "Your request timed out. Please try again in some time."
 val UNAUTHORISED_MESSAGE = "401 Unauthorized"
+val INTERNAL_SERVER_ERROR_MESSAGE = "We are facing internal server error."
+val BAD_GATEWAY_ERROR_MESSAGE = "We are facing bad gateway issue."
+val TEMP_UNAVAILABLE_ERROR_MESSAGE = "Service are temporarily unavailable now"
+const val JSON_PARSING_EXCEPTION = "Unable to parse JSON"
 
 const val LAST_UPDATE_TIME = "last_updated_time"
 const val LAST_SYNC_TIME = "last_sync_time"

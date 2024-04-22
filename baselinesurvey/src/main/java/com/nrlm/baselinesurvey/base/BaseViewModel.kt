@@ -4,8 +4,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonSyntaxException
+import com.nrlm.baselinesurvey.BAD_GATEWAY_ERROR_MESSAGE
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.COMMON_ERROR_MSG
+import com.nrlm.baselinesurvey.INTERNAL_SERVER_ERROR_MESSAGE
+import com.nrlm.baselinesurvey.JSON_PARSING_EXCEPTION
 import com.nrlm.baselinesurvey.RESPONSE_CODE_500
 import com.nrlm.baselinesurvey.RESPONSE_CODE_BAD_GATEWAY
 import com.nrlm.baselinesurvey.RESPONSE_CODE_CONFLICT
@@ -18,6 +21,7 @@ import com.nrlm.baselinesurvey.RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE
 import com.nrlm.baselinesurvey.RESPONSE_CODE_TIMEOUT
 import com.nrlm.baselinesurvey.RESPONSE_CODE_UNAUTHORIZED
 import com.nrlm.baselinesurvey.SUCCESS_CODE
+import com.nrlm.baselinesurvey.TEMP_UNAVAILABLE_ERROR_MESSAGE
 import com.nrlm.baselinesurvey.TIMEOUT_ERROR_MSG
 import com.nrlm.baselinesurvey.UNAUTHORISED_MESSAGE
 import com.nrlm.baselinesurvey.UNREACHABLE_ERROR_MSG
@@ -96,13 +100,27 @@ abstract class BaseViewModel() : ViewModel() {
                             statusCode = e.response()?.code() ?: -1
                         )
 
-                    RESPONSE_CODE_DEACTIVATED,
-                    RESPONSE_CODE_500,
-                    RESPONSE_CODE_BAD_GATEWAY,
+                    RESPONSE_CODE_DEACTIVATED ->
+                        return ErrorModel(
+                            message = UNREACHABLE_ERROR_MSG,
+                            statusCode = e.response()?.code() ?: -1
+                        )
+
+                    RESPONSE_CODE_500 ->
+                        return ErrorModel(
+                            message = INTERNAL_SERVER_ERROR_MESSAGE,
+                            statusCode = e.response()?.code() ?: -1
+                        )
+
+                    RESPONSE_CODE_BAD_GATEWAY ->
+                        return ErrorModel(
+                            message = BAD_GATEWAY_ERROR_MESSAGE,
+                            statusCode = e.response()?.code() ?: -1
+                        )
                     RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE ->
                         return ErrorModel(
                             statusCode = e.response()?.code() ?: -1,
-                            message = e.response()?.message()
+                            message = TEMP_UNAVAILABLE_ERROR_MESSAGE
                         )
 
                     else ->
@@ -119,7 +137,11 @@ abstract class BaseViewModel() : ViewModel() {
                 return ErrorModel(statusCode = RESPONSE_CODE_NETWORK_ERROR)
             }
             is JsonSyntaxException ->{
-                return ErrorModel(-1, e.message, statusCode = RESPONSE_CODE_NO_DATA)
+                return ErrorModel(
+                    -1,
+                    statusCode = RESPONSE_CODE_NO_DATA,
+                    message = JSON_PARSING_EXCEPTION
+                )
             }
 
             else -> return ErrorModel(-1, e.message)
