@@ -65,7 +65,6 @@ import com.nrlm.baselinesurvey.utils.DescriptionContentType
 import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
@@ -88,10 +87,7 @@ fun QuestionScreen(
         try {
             viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
             viewModel.init(surveyId = surveyId, sectionId = sectionId, surveyeeId = surveyeeId)
-            delay(300)
-            viewModel.updateSaveUpdateState()
-            delay(300)
-            viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+
         } catch (ex: Exception) {
             BaselineLogger.e("QuestionScreen", "LaunchedEffect -> exception: ${ex.message}", ex)
         }

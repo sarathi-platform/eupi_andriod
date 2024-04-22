@@ -59,10 +59,12 @@ import com.nrlm.baselinesurvey.ui.common_components.ButtonOutline
 import com.nrlm.baselinesurvey.ui.common_components.DialogComponent
 import com.nrlm.baselinesurvey.ui.common_components.DoubleButtonBox
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
+import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.YesNoButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SurveyStateEvents
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
+import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.start_screen.viewmodel.BaseLineStartViewModel
 import com.nrlm.baselinesurvey.ui.theme.defaultBottomBarPadding
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
@@ -75,6 +77,7 @@ import com.nrlm.baselinesurvey.utils.openSettings
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.uriFromFile
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 
 @SuppressLint("StateFlowValueCalledInComposition", "UnrememberedMutableState")
@@ -94,11 +97,14 @@ fun BaseLineStartScreen(
 
     val didi = baseLineStartViewModel.didiEntity
     LaunchedEffect(key1 = true) {
+        baseLineStartViewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         baseLineStartViewModel.getDidiDetails(
             didiId = didiId,
             sectionId = sectionId,
             surveyId = surveyId
         )
+        delay(200)
+        baseLineStartViewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
     }
 
 
@@ -114,71 +120,75 @@ fun BaseLineStartScreen(
 
     BackHandler {
         navController.popBackStack()
-//        navigateBackToSurveyeeListScreen(navController)
     }
-
-    Scaffold(modifier = Modifier
-        .fillMaxSize(),
-        bottomBar = {
-            DoubleButtonBox(
-                modifier = Modifier
-                    .shadow(10.dp),
-                positiveButtonText = stringResource(R.string.save),
-                negativeButtonText = stringResource(id = R.string.go_back_text),
-                isPositiveButtonActive = isContinueButtonActive.value,
-                negativeButtonRequired = false,
-                positiveButtonOnClick = {
-                    baseLineStartViewModel.addDidiInfoEvent(didi.value)
-                    baseLineStartViewModel.onEvent(
-                        StartSurveyScreenEvents.SaveDidiInfoInDbEvent(baseLineStartViewModel.didiInfo.value)
-                    )
-                    updateDidiDetails(didi, baseLineStartViewModel)
-                    navController.popBackStack()
+    LoaderComponent(
+        visible = baseLineStartViewModel.loaderState.value.isLoaderVisible,
+    )
+    if (!baseLineStartViewModel.loaderState.value.isLoaderVisible) {
+        Scaffold(modifier = Modifier
+            .fillMaxSize(),
+            bottomBar = {
+                DoubleButtonBox(
+                    modifier = Modifier
+                        .shadow(10.dp),
+                    positiveButtonText = stringResource(R.string.save),
+                    negativeButtonText = stringResource(id = R.string.go_back_text),
+                    isPositiveButtonActive = isContinueButtonActive.value,
+                    negativeButtonRequired = false,
+                    positiveButtonOnClick = {
+                        baseLineStartViewModel.addDidiInfoEvent(didi.value)
+                        baseLineStartViewModel.onEvent(
+                            StartSurveyScreenEvents.SaveDidiInfoInDbEvent(baseLineStartViewModel.didiInfo.value)
+                        )
+                        updateDidiDetails(didi, baseLineStartViewModel)
+                        navController.popBackStack()
 //                    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
-                },
-                negativeButtonOnClick = {
-                    navController.popBackStack()
+                    },
+                    negativeButtonOnClick = {
+                        navController.popBackStack()
 //                    navigateBackToSurveyeeListScreen(navController)
-                }
-            )
-        }
-    ) {
-
-        val scrollState = rememberScrollState()
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(top = it.calculateTopPadding() + 6.dp)
-                .verticalScroll(scrollState),
-            verticalArrangement = Arrangement.spacedBy(2.dp)
-        ) {
-            if (shouldRequestPermission.value) {
-                DialogComponent(
-                    title = stringResource(R.string.permission_required_prompt_title),
-                    message = stringResource(R.string.permission_dialog_prompt_message),
-                    setShowDialog = {
-                        shouldRequestPermission.value = it
                     }
-                ) {
-                    openSettings(localContext)
-                }
-            }
-            TextDetails(title = stringResource(R.string.didi_title), data = didi.value.didiName)
-            TextDetails(title = stringResource(R.string.dada_title), data = didi.value.dadaName)
-            TextDetails(title = stringResource(R.string.caste_titile), data = getCasteName(didi.value.casteId, baseLineStartViewModel))
-            YesNoButtonComponent(
-                defaultValue = baseLineStartViewModel.isAdharCard.value,
-                title = if (baseLineStartViewModel.getStateId() == 4) stringResource(R.string.aadhar_card_titile_assam) else stringResource(
-                    R.string.aadhar_card_titile
                 )
-            ) {
-                baseLineStartViewModel.isAdharCard.value = it
-                baseLineStartViewModel.adharCardState.value =
-                    baseLineStartViewModel.adharCardState.value.copy(showQuestion = baseLineStartViewModel.isAdharTxtVisible.value)
-                updateDidiDetails(didi, baseLineStartViewModel)
-                //  (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (baseLineStartViewModel.isVoterCard.value != -1) && (baseLineStartViewModel.phoneNumber.value.length == 10) && (baseLineStartViewModel.isAdharCard.value != -1)
             }
+        ) {
+            val scrollState = rememberScrollState()
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(top = it.calculateTopPadding() + 6.dp)
+                    .verticalScroll(scrollState),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                if (shouldRequestPermission.value) {
+                    DialogComponent(
+                        title = stringResource(R.string.permission_required_prompt_title),
+                        message = stringResource(R.string.permission_dialog_prompt_message),
+                        setShowDialog = {
+                            shouldRequestPermission.value = it
+                        }
+                    ) {
+                        openSettings(localContext)
+                    }
+                }
+                TextDetails(title = stringResource(R.string.didi_title), data = didi.value.didiName)
+                TextDetails(title = stringResource(R.string.dada_title), data = didi.value.dadaName)
+                TextDetails(
+                    title = stringResource(R.string.caste_titile),
+                    data = getCasteName(didi.value.casteId, baseLineStartViewModel)
+                )
+                YesNoButtonComponent(
+                    defaultValue = baseLineStartViewModel.isAdharCard.value,
+                    title = if (baseLineStartViewModel.getStateId() == 4) stringResource(R.string.aadhar_card_titile_assam) else stringResource(
+                        R.string.aadhar_card_titile
+                    )
+                ) {
+                    baseLineStartViewModel.isAdharCard.value = it
+                    baseLineStartViewModel.adharCardState.value =
+                        baseLineStartViewModel.adharCardState.value.copy(showQuestion = baseLineStartViewModel.isAdharTxtVisible.value)
+                    updateDidiDetails(didi, baseLineStartViewModel)
+                    //  (baseLineStartViewModel.photoUri.value != Uri.EMPTY) && (baseLineStartViewModel.isVoterCard.value != -1) && (baseLineStartViewModel.phoneNumber.value.length == 10) && (baseLineStartViewModel.isAdharCard.value != -1)
+                }
 
                 /*EditTextWithTitleComponent(
                     defaultValue = baseLineStartViewModel.aadharNumber.value,
@@ -191,471 +201,473 @@ fun BaseLineStartScreen(
                 }*/
                 Spacer(modifier = Modifier.height(8.dp))
 
-            Spacer(modifier = Modifier.height(8.dp))
-            YesNoButtonComponent(
-                defaultValue = baseLineStartViewModel.isVoterCard.value,
-                title = if (baseLineStartViewModel.getStateId() == 4) stringResource(R.string.voter_card_title_assam) else stringResource(
-                    R.string.voter_card_title
-                )
-            ) {
-                baseLineStartViewModel.isVoterCard.value = it
-                updateDidiDetails(didi, baseLineStartViewModel)
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            EditTextWithTitleComponent(
-                defaultValue = baseLineStartViewModel.phoneNumber.value,
-                title = stringResource(R.string.phone_number_title),
-                showQuestion = OptionItemEntityState.getEmptyStateObject()
-                    .copy(showQuestion = true),
-                isOnlyNumber = true,
-                maxLength = 10,
-                onInfoButtonClicked = {}
-            ) {
-                baseLineStartViewModel.phoneNumber.value = it
-                updateDidiDetails(didi, baseLineStartViewModel)
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-
-            var hasImage by remember {
-                mutableStateOf(false)
-            }
-            val cameraLauncher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.TakePicture(),
-                onResult = { success ->
-                    hasImage = success
-                    BaselineLogger.d(
-                        "PatDidiSummaryScreen",
-                        "rememberLauncherForActivityResult -> onResult = success: $success"
+                Spacer(modifier = Modifier.height(8.dp))
+                YesNoButtonComponent(
+                    defaultValue = baseLineStartViewModel.isVoterCard.value,
+                    title = if (baseLineStartViewModel.getStateId() == 4) stringResource(R.string.voter_card_title_assam) else stringResource(
+                        R.string.voter_card_title
                     )
-                    if (success) {
-                        baseLineStartViewModel.onEvent(
-                            StartSurveyScreenEvents.SaveImagePathForSurveyee(
-                                localContext
+                ) {
+                    baseLineStartViewModel.isVoterCard.value = it
+                    updateDidiDetails(didi, baseLineStartViewModel)
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                EditTextWithTitleComponent(
+                    defaultValue = baseLineStartViewModel.phoneNumber.value,
+                    title = stringResource(R.string.phone_number_title),
+                    showQuestion = OptionItemEntityState.getEmptyStateObject()
+                        .copy(showQuestion = true),
+                    isOnlyNumber = true,
+                    maxLength = 10,
+                    onInfoButtonClicked = {}
+                ) {
+                    baseLineStartViewModel.phoneNumber.value = it
+                    updateDidiDetails(didi, baseLineStartViewModel)
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+
+                var hasImage by remember {
+                    mutableStateOf(false)
+                }
+                val cameraLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.TakePicture(),
+                    onResult = { success ->
+                        hasImage = success
+                        BaselineLogger.d(
+                            "PatDidiSummaryScreen",
+                            "rememberLauncherForActivityResult -> onResult = success: $success"
+                        )
+                        if (success) {
+                            baseLineStartViewModel.onEvent(
+                                StartSurveyScreenEvents.SaveImagePathForSurveyee(
+                                    localContext
+                                )
                             )
-                        )
-                    } else {
-                        baseLineStartViewModel.shouldShowPhoto.value =
-                            baseLineStartViewModel.photoUri.value != Uri.EMPTY
+                        } else {
+                            baseLineStartViewModel.shouldShowPhoto.value =
+                                baseLineStartViewModel.photoUri.value != Uri.EMPTY
+                        }
                     }
-                }
-            )
-            if (baseLineStartViewModel.shouldShowPhoto.value) {
-                AsyncImage(
-                    model = baseLineStartViewModel.photoUri.value,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .height((screenHeight / 2).dp)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(
-                            languageItemActiveBg,
-                            shape = RoundedCornerShape(6.dp)
-                        ),
-                    contentScale = ContentScale.FillBounds
                 )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .height((screenHeight / 2).dp)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(
-                            languageItemActiveBg,
-                            shape = RoundedCornerShape(6.dp)
-                        )
-                        .clickable {
-                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                                when {
-                                    ContextCompat.checkSelfPermission(
-                                        localContext as Activity,
-                                        Manifest.permission.CAMERA
-                                    ) == PackageManager.PERMISSION_GRANTED
-                                            && ContextCompat.checkSelfPermission(
-                                        localContext as Activity,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                    ) == PackageManager.PERMISSION_GRANTED
-                                            && ContextCompat.checkSelfPermission(
-                                        localContext as Activity,
-                                        Manifest.permission.READ_EXTERNAL_STORAGE
-                                    ) == PackageManager.PERMISSION_GRANTED -> {
-                                        BaselineLogger.d(
-                                            "PatImagePreviewScreen",
-                                            "Permission previously granted"
-                                        )
-
-                                        val imageFile =
-                                            baseLineStartViewModel.getFileName(
-                                                localContext,
-                                                didi.value
-                                            )
-                                        baseLineStartViewModel.imagePath =
-                                            imageFile.absolutePath
-                                        val uri = uriFromFile(localContext, imageFile)
-                                        baseLineStartViewModel.tempUri = uri
-                                        cameraLauncher.launch(uri)
-                                    }
-
-                                    ActivityCompat.shouldShowRequestPermissionRationale(
-                                        localContext as Activity,
-                                        Manifest.permission.CAMERA
-                                    ) || ActivityCompat.shouldShowRequestPermissionRationale(
-                                        localContext as Activity,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                    ) || ActivityCompat.shouldShowRequestPermissionRationale(
-                                        localContext as Activity,
-                                        Manifest.permission.READ_EXTERNAL_STORAGE
-                                    ) -> {
-                                        BaselineLogger.d(
-                                            "PatImagePreviewScreen",
-                                            "Show camera permissions dialog"
-                                        )
-                                        ActivityCompat.requestPermissions(
+                if (baseLineStartViewModel.shouldShowPhoto.value) {
+                    AsyncImage(
+                        model = baseLineStartViewModel.photoUri.value,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .height((screenHeight / 2).dp)
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(
+                                languageItemActiveBg,
+                                shape = RoundedCornerShape(6.dp)
+                            ),
+                        contentScale = ContentScale.FillBounds
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .height((screenHeight / 2).dp)
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(
+                                languageItemActiveBg,
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                            .clickable {
+                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                                    when {
+                                        ContextCompat.checkSelfPermission(
                                             localContext as Activity,
-                                            arrayOf(
-                                                Manifest.permission.CAMERA,
-                                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                                Manifest.permission.READ_EXTERNAL_STORAGE
-                                            ),
-                                            1
-                                        )
-                                    }
-
-                                    else -> {
-                                        BaselineLogger.d(
-                                            "requestCameraPermission: ",
-                                            "permission not granted"
-                                        )
-                                        shouldRequestPermission.value = true
-                                    }
-                                }
-                            } else {
-                                when {
-                                    ContextCompat.checkSelfPermission(
-                                        localContext as Activity,
-                                        Manifest.permission.CAMERA
-                                    ) == PackageManager.PERMISSION_GRANTED -> {
-                                        BaselineLogger.d(
-                                            "PatImagePreviewScreen",
-                                            "Permission previously granted"
-                                        )
-
-                                        val imageFile =
-                                            baseLineStartViewModel.getFileName(
-                                                localContext,
-                                                didi.value
-                                            )
-                                        baseLineStartViewModel.imagePath =
-                                            imageFile.absolutePath
-                                        val uri = uriFromFile(localContext, imageFile)
-                                        baseLineStartViewModel.tempUri = uri
-                                        cameraLauncher.launch(uri)
-                                    }
-
-                                    ActivityCompat.shouldShowRequestPermissionRationale(
-                                        localContext as Activity,
-                                        Manifest.permission.CAMERA
-                                    ) -> {
-                                        BaselineLogger.d(
-                                            "PatImagePreviewScreen",
-                                            "Show camera permissions dialog"
-                                        )
-                                        ActivityCompat.requestPermissions(
+                                            Manifest.permission.CAMERA
+                                        ) == PackageManager.PERMISSION_GRANTED
+                                                && ContextCompat.checkSelfPermission(
                                             localContext as Activity,
-                                            arrayOf(
-                                                Manifest.permission.CAMERA,
-                                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                                Manifest.permission.READ_EXTERNAL_STORAGE
-                                            ),
-                                            1
-                                        )
-                                    }
+                                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                        ) == PackageManager.PERMISSION_GRANTED
+                                                && ContextCompat.checkSelfPermission(
+                                            localContext as Activity,
+                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                        ) == PackageManager.PERMISSION_GRANTED -> {
+                                            BaselineLogger.d(
+                                                "PatImagePreviewScreen",
+                                                "Permission previously granted"
+                                            )
 
-                                    else -> {
-                                        BaselineLogger.d(
-                                            "requestCameraPermission: ",
-                                            "permission not granted"
-                                        )
-                                        shouldRequestPermission.value = true
+                                            val imageFile =
+                                                baseLineStartViewModel.getFileName(
+                                                    localContext,
+                                                    didi.value
+                                                )
+                                            baseLineStartViewModel.imagePath =
+                                                imageFile.absolutePath
+                                            val uri = uriFromFile(localContext, imageFile)
+                                            baseLineStartViewModel.tempUri = uri
+                                            cameraLauncher.launch(uri)
+                                        }
+
+                                        ActivityCompat.shouldShowRequestPermissionRationale(
+                                            localContext as Activity,
+                                            Manifest.permission.CAMERA
+                                        ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                                            localContext as Activity,
+                                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                        ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                                            localContext as Activity,
+                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                        ) -> {
+                                            BaselineLogger.d(
+                                                "PatImagePreviewScreen",
+                                                "Show camera permissions dialog"
+                                            )
+                                            ActivityCompat.requestPermissions(
+                                                localContext as Activity,
+                                                arrayOf(
+                                                    Manifest.permission.CAMERA,
+                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ),
+                                                1
+                                            )
+                                        }
+
+                                        else -> {
+                                            BaselineLogger.d(
+                                                "requestCameraPermission: ",
+                                                "permission not granted"
+                                            )
+                                            shouldRequestPermission.value = true
+                                        }
+                                    }
+                                } else {
+                                    when {
+                                        ContextCompat.checkSelfPermission(
+                                            localContext as Activity,
+                                            Manifest.permission.CAMERA
+                                        ) == PackageManager.PERMISSION_GRANTED -> {
+                                            BaselineLogger.d(
+                                                "PatImagePreviewScreen",
+                                                "Permission previously granted"
+                                            )
+
+                                            val imageFile =
+                                                baseLineStartViewModel.getFileName(
+                                                    localContext,
+                                                    didi.value
+                                                )
+                                            baseLineStartViewModel.imagePath =
+                                                imageFile.absolutePath
+                                            val uri = uriFromFile(localContext, imageFile)
+                                            baseLineStartViewModel.tempUri = uri
+                                            cameraLauncher.launch(uri)
+                                        }
+
+                                        ActivityCompat.shouldShowRequestPermissionRationale(
+                                            localContext as Activity,
+                                            Manifest.permission.CAMERA
+                                        ) -> {
+                                            BaselineLogger.d(
+                                                "PatImagePreviewScreen",
+                                                "Show camera permissions dialog"
+                                            )
+                                            ActivityCompat.requestPermissions(
+                                                localContext as Activity,
+                                                arrayOf(
+                                                    Manifest.permission.CAMERA,
+                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ),
+                                                1
+                                            )
+                                        }
+
+                                        else -> {
+                                            BaselineLogger.d(
+                                                "requestCameraPermission: ",
+                                                "permission not granted"
+                                            )
+                                            shouldRequestPermission.value = true
+                                        }
                                     }
                                 }
                             }
-                        }
-                ) {
-                    Column(
-                        modifier = Modifier.align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.photo_camera_icon),
-                            contentDescription = null,
-                            tint = textColorDark50
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = stringResource(R.string.no_photo_available_text),
-                            style = smallTextStyle,
-                            color = textColorDark50
-                        )
+                        Column(
+                            modifier = Modifier.align(Alignment.Center),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.photo_camera_icon),
+                                contentDescription = null,
+                                tint = textColorDark50
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = stringResource(R.string.no_photo_available_text),
+                                style = smallTextStyle,
+                                color = textColorDark50
+                            )
+                        }
                     }
                 }
-            }
-            Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-            if (baseLineStartViewModel.shouldShowPhoto.value) {
-                ButtonOutline(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(45.dp),
-                    buttonTitle = stringResource(id = R.string.retake_photo_text)
-                ) {
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                        when {
-                            ContextCompat.checkSelfPermission(
-                                localContext as Activity,
-                                Manifest.permission.CAMERA
-                            ) == PackageManager.PERMISSION_GRANTED
-                                    && ContextCompat.checkSelfPermission(
-                                localContext as Activity,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE
-                            ) == PackageManager.PERMISSION_GRANTED
-                                    && ContextCompat.checkSelfPermission(
-                                localContext as Activity,
-                                Manifest.permission.READ_EXTERNAL_STORAGE
-                            ) == PackageManager.PERMISSION_GRANTED -> {
-                                BaselineLogger.d(
-                                    "PatImagePreviewScreen",
-                                    "Permission previously granted"
-                                )
-
-                                val imageFile =
-                                    baseLineStartViewModel.getFileName(localContext, didi.value)
-                                baseLineStartViewModel.imagePath = imageFile.absolutePath
-                                val uri = uriFromFile(localContext, imageFile)
-                                BaselineLogger.d(
-                                    "PatDidiSummaryScreen",
-                                    "Retake Photo button Clicked: $uri"
-                                )
-                                baseLineStartViewModel.tempUri = uri
-//                                patDidiSummaryViewModel.photoUri = uri
-                                cameraLauncher.launch(uri)
-                                baseLineStartViewModel.shouldShowPhoto.value = false
-                            }
-
-                            ActivityCompat.shouldShowRequestPermissionRationale(
-                                localContext as Activity,
-                                Manifest.permission.CAMERA
-                            ) || ActivityCompat.shouldShowRequestPermissionRationale(
-                                localContext as Activity,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE
-                            ) || ActivityCompat.shouldShowRequestPermissionRationale(
-                                localContext as Activity,
-                                Manifest.permission.READ_EXTERNAL_STORAGE
-                            ) -> {
-                                BaselineLogger.d(
-                                    "PatImagePreviewScreen",
-                                    "Show camera permissions dialog"
-                                )
-                                ActivityCompat.requestPermissions(
+                if (baseLineStartViewModel.shouldShowPhoto.value) {
+                    ButtonOutline(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(45.dp),
+                        buttonTitle = stringResource(id = R.string.retake_photo_text)
+                    ) {
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                            when {
+                                ContextCompat.checkSelfPermission(
                                     localContext as Activity,
-                                    arrayOf(
-                                        Manifest.permission.CAMERA,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                        Manifest.permission.READ_EXTERNAL_STORAGE
-                                    ),
-                                    1
-                                )
-                            }
+                                    Manifest.permission.CAMERA
+                                ) == PackageManager.PERMISSION_GRANTED
+                                        && ContextCompat.checkSelfPermission(
+                                    localContext as Activity,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                ) == PackageManager.PERMISSION_GRANTED
+                                        && ContextCompat.checkSelfPermission(
+                                    localContext as Activity,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                ) == PackageManager.PERMISSION_GRANTED -> {
+                                    BaselineLogger.d(
+                                        "PatImagePreviewScreen",
+                                        "Permission previously granted"
+                                    )
 
-                            else -> {
-                                BaselineLogger.d(
-                                    "requestCameraPermission: ",
-                                    "permission not granted"
-                                )
-                                shouldRequestPermission.value = true
+                                    val imageFile =
+                                        baseLineStartViewModel.getFileName(localContext, didi.value)
+                                    baseLineStartViewModel.imagePath = imageFile.absolutePath
+                                    val uri = uriFromFile(localContext, imageFile)
+                                    BaselineLogger.d(
+                                        "PatDidiSummaryScreen",
+                                        "Retake Photo button Clicked: $uri"
+                                    )
+                                    baseLineStartViewModel.tempUri = uri
+//                                patDidiSummaryViewModel.photoUri = uri
+                                    cameraLauncher.launch(uri)
+                                    baseLineStartViewModel.shouldShowPhoto.value = false
+                                }
+
+                                ActivityCompat.shouldShowRequestPermissionRationale(
+                                    localContext as Activity,
+                                    Manifest.permission.CAMERA
+                                ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                                    localContext as Activity,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                                    localContext as Activity,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                ) -> {
+                                    BaselineLogger.d(
+                                        "PatImagePreviewScreen",
+                                        "Show camera permissions dialog"
+                                    )
+                                    ActivityCompat.requestPermissions(
+                                        localContext as Activity,
+                                        arrayOf(
+                                            Manifest.permission.CAMERA,
+                                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                        ),
+                                        1
+                                    )
+                                }
+
+                                else -> {
+                                    BaselineLogger.d(
+                                        "requestCameraPermission: ",
+                                        "permission not granted"
+                                    )
+                                    shouldRequestPermission.value = true
+                                }
+                            }
+                        } else {
+                            when {
+                                ContextCompat.checkSelfPermission(
+                                    localContext as Activity,
+                                    Manifest.permission.CAMERA
+                                ) == PackageManager.PERMISSION_GRANTED -> {
+                                    BaselineLogger.d(
+                                        "PatImagePreviewScreen",
+                                        "Permission previously granted"
+                                    )
+
+                                    val imageFile =
+                                        baseLineStartViewModel.getFileName(localContext, didi.value)
+                                    baseLineStartViewModel.imagePath = imageFile.absolutePath
+                                    val uri = uriFromFile(localContext, imageFile)
+                                    BaselineLogger.d(
+                                        "PatDidiSummaryScreen",
+                                        "Retake Photo button Clicked: $uri"
+                                    )
+                                    baseLineStartViewModel.tempUri = uri
+//                                patDidiSummaryViewModel.photoUri = uri
+                                    cameraLauncher.launch(uri)
+                                    baseLineStartViewModel.shouldShowPhoto.value = false
+                                }
+
+                                ActivityCompat.shouldShowRequestPermissionRationale(
+                                    localContext as Activity,
+                                    Manifest.permission.CAMERA
+                                ) -> {
+                                    BaselineLogger.d(
+                                        "PatImagePreviewScreen",
+                                        "Show camera permissions dialog"
+                                    )
+                                    ActivityCompat.requestPermissions(
+                                        localContext as Activity,
+                                        arrayOf(
+                                            Manifest.permission.CAMERA,
+                                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                        ),
+                                        1
+                                    )
+                                }
+
+                                else -> {
+                                    BaselineLogger.d(
+                                        "requestCameraPermission: ",
+                                        "permission not granted"
+                                    )
+                                    shouldRequestPermission.value = true
+                                }
                             }
                         }
-                    } else {
-                        when {
-                            ContextCompat.checkSelfPermission(
-                                localContext as Activity,
-                                Manifest.permission.CAMERA
-                            ) == PackageManager.PERMISSION_GRANTED -> {
-                                BaselineLogger.d(
-                                    "PatImagePreviewScreen",
-                                    "Permission previously granted"
-                                )
-
-                                val imageFile =
-                                    baseLineStartViewModel.getFileName(localContext, didi.value)
-                                baseLineStartViewModel.imagePath = imageFile.absolutePath
-                                val uri = uriFromFile(localContext, imageFile)
-                                BaselineLogger.d(
-                                    "PatDidiSummaryScreen",
-                                    "Retake Photo button Clicked: $uri"
-                                )
-                                baseLineStartViewModel.tempUri = uri
-//                                patDidiSummaryViewModel.photoUri = uri
-                                cameraLauncher.launch(uri)
-                                baseLineStartViewModel.shouldShowPhoto.value = false
-                            }
-
-                            ActivityCompat.shouldShowRequestPermissionRationale(
-                                localContext as Activity,
-                                Manifest.permission.CAMERA
-                            ) -> {
-                                BaselineLogger.d(
-                                    "PatImagePreviewScreen",
-                                    "Show camera permissions dialog"
-                                )
-                                ActivityCompat.requestPermissions(
-                                    localContext as Activity,
-                                    arrayOf(
-                                        Manifest.permission.CAMERA,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                        Manifest.permission.READ_EXTERNAL_STORAGE
-                                    ),
-                                    1
-                                )
-                            }
-
-                            else -> {
-                                BaselineLogger.d(
-                                    "requestCameraPermission: ",
-                                    "permission not granted"
-                                )
-                                shouldRequestPermission.value = true
-                            }
-                        }
-                    }
 //                                patDidiSummaryViewModel.setCameraExecutor()
 //                                patDidiSummaryViewModel.shouldShowCamera.value = true
-                }
+                    }
 
-            } else {
-                BlueButtonWithIcon(
-                    buttonText = stringResource(id = R.string.take_photo_text),
-                    icon = Icons.Default.Add,
+                } else {
+                    BlueButtonWithIcon(
+                        buttonText = stringResource(id = R.string.take_photo_text),
+                        icon = Icons.Default.Add,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(45.dp)
+                    ) {
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                            when {
+                                ContextCompat.checkSelfPermission(
+                                    localContext as Activity,
+                                    Manifest.permission.CAMERA
+                                ) == PackageManager.PERMISSION_GRANTED
+                                        && ContextCompat.checkSelfPermission(
+                                    localContext as Activity,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                ) == PackageManager.PERMISSION_GRANTED
+                                        && ContextCompat.checkSelfPermission(
+                                    localContext as Activity,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                ) == PackageManager.PERMISSION_GRANTED -> {
+                                    BaselineLogger.d(
+                                        "PatImagePreviewScreen",
+                                        "Permission previously granted"
+                                    )
+
+                                    val imageFile =
+                                        baseLineStartViewModel.getFileName(localContext, didi.value)
+                                    baseLineStartViewModel.imagePath = imageFile.absolutePath
+                                    val uri = uriFromFile(localContext, imageFile)
+                                    baseLineStartViewModel.tempUri = uri
+                                    cameraLauncher.launch(uri)
+                                }
+
+                                ActivityCompat.shouldShowRequestPermissionRationale(
+                                    localContext as Activity,
+                                    Manifest.permission.CAMERA
+                                ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                                    localContext as Activity,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                                    localContext as Activity,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                ) -> {
+                                    BaselineLogger.d(
+                                        "PatImagePreviewScreen",
+                                        "Show camera permissions dialog"
+                                    )
+                                    ActivityCompat.requestPermissions(
+                                        localContext as Activity,
+                                        arrayOf(
+                                            Manifest.permission.CAMERA,
+                                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                        ),
+                                        1
+                                    )
+                                }
+
+                                else -> {
+                                    BaselineLogger.d(
+                                        "requestCameraPermission: ",
+                                        "permission not granted"
+                                    )
+                                    shouldRequestPermission.value = true
+                                }
+                            }
+                        } else {
+                            when {
+                                ContextCompat.checkSelfPermission(
+                                    localContext as Activity,
+                                    Manifest.permission.CAMERA
+                                ) == PackageManager.PERMISSION_GRANTED -> {
+                                    BaselineLogger.d(
+                                        "PatImagePreviewScreen",
+                                        "Permission previously granted"
+                                    )
+
+                                    val imageFile =
+                                        baseLineStartViewModel.getFileName(localContext, didi.value)
+                                    baseLineStartViewModel.imagePath = imageFile.absolutePath
+                                    val uri = uriFromFile(localContext, imageFile)
+                                    baseLineStartViewModel.tempUri = uri
+                                    cameraLauncher.launch(uri)
+                                }
+
+                                ActivityCompat.shouldShowRequestPermissionRationale(
+                                    localContext as Activity,
+                                    Manifest.permission.CAMERA
+                                ) -> {
+                                    BaselineLogger.d(
+                                        "PatImagePreviewScreen",
+                                        "Show camera permissions dialog"
+                                    )
+                                    ActivityCompat.requestPermissions(
+                                        localContext as Activity,
+                                        arrayOf(
+                                            Manifest.permission.CAMERA,
+                                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                        ),
+                                        1
+                                    )
+                                }
+
+                                else -> {
+                                    BaselineLogger.d(
+                                        "requestCameraPermission: ",
+                                        "permission not granted"
+                                    )
+                                    shouldRequestPermission.value = true
+                                }
+                            }
+                        }
+//                                patDidiSummaryViewModel.shouldShowCamera.value = true
+                    }
+                }
+                Spacer(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(45.dp)
-                ) {
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                        when {
-                            ContextCompat.checkSelfPermission(
-                                localContext as Activity,
-                                Manifest.permission.CAMERA
-                            ) == PackageManager.PERMISSION_GRANTED
-                                    && ContextCompat.checkSelfPermission(
-                                localContext as Activity,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE
-                            ) == PackageManager.PERMISSION_GRANTED
-                                    && ContextCompat.checkSelfPermission(
-                                localContext as Activity,
-                                Manifest.permission.READ_EXTERNAL_STORAGE
-                            ) == PackageManager.PERMISSION_GRANTED -> {
-                                BaselineLogger.d(
-                                    "PatImagePreviewScreen",
-                                    "Permission previously granted"
-                                )
-
-                                val imageFile =
-                                    baseLineStartViewModel.getFileName(localContext, didi.value)
-                                baseLineStartViewModel.imagePath = imageFile.absolutePath
-                                val uri = uriFromFile(localContext, imageFile)
-                                baseLineStartViewModel.tempUri = uri
-                                cameraLauncher.launch(uri)
-                            }
-
-                            ActivityCompat.shouldShowRequestPermissionRationale(
-                                localContext as Activity,
-                                Manifest.permission.CAMERA
-                            ) || ActivityCompat.shouldShowRequestPermissionRationale(
-                                localContext as Activity,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE
-                            ) || ActivityCompat.shouldShowRequestPermissionRationale(
-                                localContext as Activity,
-                                Manifest.permission.READ_EXTERNAL_STORAGE
-                            ) -> {
-                                BaselineLogger.d(
-                                    "PatImagePreviewScreen",
-                                    "Show camera permissions dialog"
-                                )
-                                ActivityCompat.requestPermissions(
-                                    localContext as Activity,
-                                    arrayOf(
-                                        Manifest.permission.CAMERA,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                        Manifest.permission.READ_EXTERNAL_STORAGE
-                                    ),
-                                    1
-                                )
-                            }
-
-                            else -> {
-                                BaselineLogger.d(
-                                    "requestCameraPermission: ",
-                                    "permission not granted"
-                                )
-                                shouldRequestPermission.value = true
-                            }
-                        }
-                    } else {
-                        when {
-                            ContextCompat.checkSelfPermission(
-                                localContext as Activity,
-                                Manifest.permission.CAMERA
-                            ) == PackageManager.PERMISSION_GRANTED -> {
-                                BaselineLogger.d(
-                                    "PatImagePreviewScreen",
-                                    "Permission previously granted"
-                                )
-
-                                val imageFile =
-                                    baseLineStartViewModel.getFileName(localContext, didi.value)
-                                baseLineStartViewModel.imagePath = imageFile.absolutePath
-                                val uri = uriFromFile(localContext, imageFile)
-                                baseLineStartViewModel.tempUri = uri
-                                cameraLauncher.launch(uri)
-                            }
-
-                            ActivityCompat.shouldShowRequestPermissionRationale(
-                                localContext as Activity,
-                                Manifest.permission.CAMERA
-                            ) -> {
-                                BaselineLogger.d(
-                                    "PatImagePreviewScreen",
-                                    "Show camera permissions dialog"
-                                )
-                                ActivityCompat.requestPermissions(
-                                    localContext as Activity,
-                                    arrayOf(
-                                        Manifest.permission.CAMERA,
-                                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                        Manifest.permission.READ_EXTERNAL_STORAGE
-                                    ),
-                                    1
-                                )
-                            }
-
-                            else -> {
-                                BaselineLogger.d(
-                                    "requestCameraPermission: ",
-                                    "permission not granted"
-                                )
-                                shouldRequestPermission.value = true
-                            }
-                        }
-                    }
-//                                patDidiSummaryViewModel.shouldShowCamera.value = true
-                }
+                        .padding(bottom = it.calculateBottomPadding() + defaultBottomBarPadding)
+                )
             }
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = it.calculateBottomPadding() + defaultBottomBarPadding)
-            )
         }
     }
+
 }
 
 private fun updateDidiDetails(
