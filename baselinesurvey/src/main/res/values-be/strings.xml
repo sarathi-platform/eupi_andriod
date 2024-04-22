@@ -426,6 +426,6 @@
     <string name="start">"जागायजेन "</string>
     <string name="madnatory_question_not_marked_error">गासैबो गोनांथार सोंलुफोरनि फिन्नाय होआखै, अन्नानै गासैबो सोंलुफोरनि फिन्नाय हो!</string>
     <string name="view_label">View</string>
-    <string name="task_completed_label">"Task Completed - "</string>
+    <string name="task_completed_label">"Activity Completed - "</string>
 
 </resources>

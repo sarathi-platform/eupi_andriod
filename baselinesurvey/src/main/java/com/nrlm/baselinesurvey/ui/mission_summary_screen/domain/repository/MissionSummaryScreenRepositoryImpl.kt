@@ -7,6 +7,7 @@ import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
+import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.model.datamodel.ActivityForSubjectDto
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.toDate
@@ -83,5 +84,9 @@ class MissionSummaryScreenRepositoryImpl @Inject constructor(
 
     override fun getBaseLineUserId(): String {
         return prefRepo.getBaseLineUserId()
+    }
+
+    override suspend fun getMission(missionId: Int): MissionEntity {
+        return missionEntityDao.getMission(missionId)
     }
 }

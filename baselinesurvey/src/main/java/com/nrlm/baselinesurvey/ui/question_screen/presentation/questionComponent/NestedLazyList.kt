@@ -365,7 +365,7 @@ fun NestedLazyList(
 
 //                    if (sectionDetails.sectionName.equals(context.getString(R.string.didi_info), true) && questionScreenViewModel.didiInfoObjectLive.value?.isEmpty() == true) {
                     itemsIndexed(
-                        items = mQuestionEntity
+                        items = mQuestionEntity.sortedBy { it.questionEntity?.order }
                     ) { index, question ->
                         when (question?.questionEntity?.type) {
                             QuestionType.RadioButton.name -> {

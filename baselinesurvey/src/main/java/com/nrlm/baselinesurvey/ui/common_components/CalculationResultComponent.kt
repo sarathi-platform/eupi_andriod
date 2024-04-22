@@ -29,7 +29,6 @@ import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.borderGrey
 import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
-import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.utils.onlyNumberField
 
@@ -110,7 +109,7 @@ fun CalculationResultComponent(
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = borderGrey,
                     unfocusedBorderColor = borderGrey,
-                    textColor = placeholderGrey,
+                    textColor = textColorDark,
                     backgroundColor = borderGreyLight
                 )
             )

@@ -87,11 +87,11 @@ interface ActivityTaskDao {
         updateTaskCompletedDate(userId, taskId, actualCompletedDate)
     }
 
-    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and activityId = :activityId AND status != :status")
+    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where userId=:userId and activityId = :activityId AND status NOT in (:status)")
     fun getPendingTaskCountLive(
         userId: String,
         activityId: Int,
-        status: String = SurveyState.COMPLETED.name
+        status: List<String> = listOf(SurveyState.COMPLETED.name, SurveyState.NOT_AVAILABLE.name)
     ): LiveData<Int>
 
     @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and missionId = :missionId")
