@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel
 
+import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
@@ -30,6 +31,7 @@ import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.calculateResultForFormula
 import com.nrlm.baselinesurvey.utils.checkCondition
+import com.nrlm.baselinesurvey.utils.checkConditionForMultiSelectDropDown
 import com.nrlm.baselinesurvey.utils.convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.convertFormTypeQuestionListToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.convertQuestionListToOptionItemEntity
@@ -77,6 +79,8 @@ class QuestionTypeScreenViewModel @Inject constructor(
 
     private var _updatedOptionList = mutableStateListOf<OptionItemEntityState>()
     val updatedOptionList: SnapshotStateList<OptionItemEntityState> get() = _updatedOptionList
+
+    private val updatedOptionListInDefaultLanguage = mutableListOf<OptionItemEntityState>()
 
     val totalOptionSize = mutableIntStateOf(0)
     val answeredOptionCount = mutableIntStateOf(0)
@@ -148,8 +152,116 @@ class QuestionTypeScreenViewModel @Inject constructor(
 
             updateCachedData()
 
+            getOptionsInDefaultLanguage(surveyId, sectionId, questionId)
+
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
+            }
+        }
+    }
+
+    private suspend fun getOptionsInDefaultLanguage(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int
+    ) {
+        val optionList = formQuestionScreenUseCase.getFormQuestionResponseUseCase.invoke(
+            surveyId,
+            sectionId,
+            questionId,
+            selectDefaultLanguage = true
+        )
+        optionList.forEach { optionItemEntity ->
+            updatedOptionListInDefaultLanguage.add(
+                OptionItemEntityState(
+                    optionId = optionItemEntity.optionId,
+                    optionItemEntity = optionItemEntity,
+                    showQuestion = true
+                )
+            )
+            optionItemEntity.conditions?.forEach { conditionsDto ->
+                when (conditionsDto?.resultType) {
+                    ResultType.Questions.name -> {
+                        conditionsDto?.resultList?.forEach { questionList ->
+                            if (questionList.type?.equals(QuestionType.Form.name, true) == true) {
+                                val mOptionItemEntityList =
+                                    questionList.convertFormTypeQuestionListToOptionItemEntity(
+                                        optionItemEntity.sectionId,
+                                        optionItemEntity.surveyId,
+                                        optionItemEntity.languageId ?: DEFAULT_LANGUAGE_ID
+                                    )
+                                mOptionItemEntityList.forEach { mOptionItemEntity ->
+                                    updatedOptionListInDefaultLanguage.add(
+                                        OptionItemEntityState(
+                                            mOptionItemEntity.optionId,
+                                            mOptionItemEntity,
+                                            false
+                                        )
+                                    )
+                                }
+                            }
+                            val mOptionItemEntity =
+                                questionList.convertQuestionListToOptionItemEntity(
+                                    optionItemEntity.sectionId,
+                                    optionItemEntity.surveyId
+                                )
+                            updatedOptionListInDefaultLanguage.add(
+                                OptionItemEntityState(
+                                    mOptionItemEntity.optionId,
+                                    mOptionItemEntity,
+                                    false
+                                )
+                            )
+
+                            // TODO Handle later correctly
+                            mOptionItemEntity.conditions?.forEach { conditionsDto2 ->
+                                if (conditionsDto2?.resultType.equals(
+                                        ResultType.Questions.name,
+                                        true
+                                    )
+                                ) {
+                                    conditionsDto2?.resultList?.forEach { subQuestionList ->
+                                        val mOptionItemEntity2 =
+                                            subQuestionList.convertQuestionListToOptionItemEntity(
+                                                mOptionItemEntity.sectionId,
+                                                mOptionItemEntity.surveyId
+                                            )
+                                        updatedOptionListInDefaultLanguage.add(
+                                            OptionItemEntityState(
+                                                mOptionItemEntity2.optionId,
+                                                mOptionItemEntity2,
+                                                false
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    ResultType.Options.name -> {
+                        conditionsDto?.resultList?.forEach { questionList ->
+                            val mOptionItemEntity =
+                                questionList.convertToOptionItemEntity(
+                                    sectionId,
+                                    surveyId,
+                                    questionId,
+                                    languageId = optionItemEntity.languageId ?: DEFAULT_LANGUAGE_ID
+                                )
+                            updatedOptionListInDefaultLanguage.add(
+                                OptionItemEntityState(
+                                    mOptionItemEntity.optionId,
+                                    mOptionItemEntity,
+                                    false
+                                )
+                            )
+                        }
+                    }
+
+                    ResultType.Formula.name -> {
+
+                    }
+                }
             }
         }
     }
@@ -366,7 +478,15 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 if (event.userInputValue != BLANK_STRING) {
                     event.optionItemEntityState?.optionItemEntity?.conditions?.forEach { conditionsDto ->
                         val conditionCheckResult =
-                            conditionsDto?.checkCondition(event.userInputValue)
+                            if (TextUtils.equals(
+                                    event.optionItemEntityState.optionItemEntity.optionType?.toLowerCase(),
+                                    QuestionType.MultiSelectDropDown.name.toLowerCase()
+                                )
+                            ) {
+                                conditionsDto?.checkConditionForMultiSelectDropDown(event.userInputValue)
+                            } else {
+                                conditionsDto?.checkCondition(event.userInputValue)
+                            }
                         updateQuestionStateForCondition(conditionCheckResult == true, conditionsDto)
                     }
                 } else {
@@ -562,6 +682,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
                             questionType = event.questionType,
                             questionTag = event.questionTag,
                             questionDesc = event.questionDesc,
+                            referenceOptionList = updatedOptionListInDefaultLanguage.toList(),
                             saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
                         )
                     formQuestionScreenUseCase.eventsWriterUserCase.invoke(

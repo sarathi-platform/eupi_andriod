@@ -436,7 +436,7 @@
     <string name="retry">पुन: प्रयास करें</string>
     <string name="madnatory_question_not_marked_error">सभी अनिवार्य प्रश्नों के उत्तर नहीं दिए गए हैं, कृपया सभी प्रश्नों के उत्तर दें!</string>
     <string name="view_label">View</string>
-    <string name="task_completed_label">"Task Completed - "</string>
+    <string name="task_completed_label">"Activity Completed - "</string>
     <string name="data_fetching_and_processing">डेटा लाने और संसाधित करने…</string>
 
 

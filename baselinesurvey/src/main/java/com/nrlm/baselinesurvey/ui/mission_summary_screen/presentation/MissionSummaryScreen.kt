@@ -54,7 +54,8 @@ fun MissionSummaryScreen(
         navController=navController,
         onBackIconClick = { navController.popBackStack() },
         onBottomUI = {
-            if (activities.filter { it.status != SectionStatus.COMPLETED.name }.isEmpty()) {
+            if (activities.filter { it.status != SectionStatus.COMPLETED.name }
+                    .isEmpty() && viewModel.mission.value?.status != SectionStatus.COMPLETED.name) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()

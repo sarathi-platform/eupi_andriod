@@ -469,6 +469,6 @@
     <string name="share_export_image">আৰম্ভ কৰক</string>
     <string name="madnatory_question_not_marked_error">All mandatory questions not answered, please answer all questions!</string>
     <string name="view_label">View</string>
-    <string name="task_completed_label">"Task Completed - "</string>
+    <string name="task_completed_label">"Activity Completed - "</string>
     <string name="data_fetching_and_processing">Data Fetching and Processing…</string>
 </resources>

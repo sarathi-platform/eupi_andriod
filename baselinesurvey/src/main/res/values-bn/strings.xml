@@ -436,8 +436,7 @@
     <string name="retry">"পুনরায় চেষ্টা করা "</string>
     <string name="madnatory_question_not_marked_error">সমস্ত বাধ্যতামূলক প্রশ্নের উত্তর দেওয়া হয় না, দয়া করে সমস্ত প্রশ্নের উত্তর দিন!</string>
     <string name="view_label">View</string>
-    <string name="task_completed_label">"Task Completed - "</string>
-    <string name="data_fetching_and_processing">তথ্য আনয়ন এবং প্রক্রিয়াকরণ...</string>
-
+    <string name="task_completed_label">"Activity Completed - "</string>
+    <string name="data_fetching_and_processing">Data Fetching आरो Processing (डाटा)…</string>
 
 </resources>
