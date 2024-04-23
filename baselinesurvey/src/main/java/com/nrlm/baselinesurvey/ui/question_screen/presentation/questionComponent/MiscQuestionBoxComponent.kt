@@ -42,6 +42,7 @@ import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.ExpandableDescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.common_components.ListTypeQuestion
+import com.nrlm.baselinesurvey.ui.common_components.RangePickerComponent
 import com.nrlm.baselinesurvey.ui.common_components.VerticalAnimatedVisibilityComponent
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
@@ -236,6 +237,33 @@ fun MiscQuestionBoxComponent(
                                                         ?: BLANK_STRING,
                                                     onInfoButtonClicked = {}
                                                 ) {
+                                                    if (isEditAllowed) {
+                                                        onAnswerSelection(
+                                                            questionIndex,
+                                                            optionsItem.optionItemEntity,
+                                                            it
+                                                        )
+                                                    } else {
+                                                        showCustomToast(
+                                                            context,
+                                                            context.getString(R.string.edit_disable_message)
+                                                        )
+                                                    }
+                                                }
+                                                Spacer(modifier = Modifier.height(dimen_8_dp))
+                                            }
+
+                                            QuestionType.HrsMinPicker.name,
+                                            QuestionType.YrsMonthPicker.name -> {
+                                                RangePickerComponent(
+                                                    title = optionsItem.optionItemEntity.display
+                                                        ?: BLANK_STRING,
+                                                    typePicker = optionsItem.optionItemEntity?.optionType
+                                                        ?: BLANK_STRING,
+                                                    defaultValue = selectedOption?.selectedValue
+                                                        ?: BLANK_STRING,
+                                                    showQuestionState = optionsItem,
+                                                    onInfoButtonClicked = {}) {
                                                     if (isEditAllowed) {
                                                         onAnswerSelection(
                                                             questionIndex,
