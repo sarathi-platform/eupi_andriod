@@ -146,14 +146,6 @@ fun AllSurveyeeListTab(
 
                         item {
                             Column(modifier = Modifier.fillMaxSize()) {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 10.dp),
-                                    text = activityName,
-                                    style = largeTextStyle,
-                                    color = blueDark
-                                )
                                 //TODO in future in uncomment whenever get correct data from backend
 //                                Text(
 //                                    modifier = Modifier
