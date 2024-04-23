@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -20,8 +21,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.CONDITIONS_TIME
-import com.nrlm.baselinesurvey.CONDITIONS_YEAR
+import com.nrlm.baselinesurvey.DELIMITER_TIME
+import com.nrlm.baselinesurvey.DELIMITER_YEAR
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.TypeDropDownComponent
@@ -30,7 +32,7 @@ import com.nrlm.baselinesurvey.ui.theme.red
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 
 @Composable
-fun TimePickerComponent(
+fun RangePickerComponent(
     isMandatory: Boolean = false,
     title: String? = BLANK_STRING,
     defaultValue: String = BLANK_STRING,
@@ -140,20 +142,22 @@ fun getEmptyStateObject(): OptionItemEntityState {
     )
 }
 
+@Composable
 fun getFirstTitle(typePicker: String): String {
     if (typePicker.equals(QuestionType.HrsMinPicker.name)) {
-        return "Hours"
+        return stringResource(R.string.hours)
     } else if (typePicker.equals(QuestionType.YrsMonthPicker.name)) {
-        return "Years"
+        return stringResource(R.string.years)
     }
     return BLANK_STRING
 }
 
+@Composable
 fun getSecondTitle(typePicker: String): String {
     if (typePicker.equals(QuestionType.HrsMinPicker.name)) {
-        return "Minute"
+        return stringResource(R.string.minute)
     } else if (typePicker.equals(QuestionType.YrsMonthPicker.name)) {
-        return "Month"
+        return stringResource(R.string.month)
     }
     return BLANK_STRING
 }
@@ -166,6 +170,7 @@ fun getSources(typePicker: String): List<String> {
     }
     return listOf("")
 }
+
 fun getMinutes(): List<String> {
     return listOf("15", "30", "45")
 }
@@ -176,23 +181,23 @@ fun getMonths(): List<String> {
 
 fun getDelimiter(typePicker: String): String {
     if (typePicker.equals(QuestionType.HrsMinPicker.name)) {
-        return CONDITIONS_TIME
+        return DELIMITER_TIME
     } else if (typePicker.equals(QuestionType.YrsMonthPicker.name)) {
-        return CONDITIONS_YEAR
+        return DELIMITER_YEAR
     }
     return ""
 }
 
 fun getFirstValue(typePicker: String, defaultValue: String): String {
     if (getTypePicker(typePicker)?.equals(QuestionType.HrsMinPicker.name) == true) {
-        return if (defaultValue.contains(CONDITIONS_TIME)) defaultValue.split(
-            CONDITIONS_TIME,
+        return if (defaultValue.contains(DELIMITER_TIME)) defaultValue.split(
+            DELIMITER_TIME,
             ignoreCase = true
         )
             .first() else "00"
     } else if (getTypePicker(typePicker)?.equals(QuestionType.YrsMonthPicker.name) == true) {
-        return if (defaultValue.contains(CONDITIONS_YEAR)) defaultValue.split(
-            CONDITIONS_YEAR,
+        return if (defaultValue.contains(DELIMITER_YEAR)) defaultValue.split(
+            DELIMITER_YEAR,
             ignoreCase = true
         )
             .first() else "0000"
@@ -202,13 +207,13 @@ fun getFirstValue(typePicker: String, defaultValue: String): String {
 
 fun getSecondValue(typePicker: String, defaultValue: String): String {
     if (getTypePicker(typePicker)?.equals(QuestionType.HrsMinPicker.name) == true) {
-        return if (defaultValue.contains(CONDITIONS_TIME)) defaultValue.split(
-            CONDITIONS_TIME,
+        return if (defaultValue.contains(DELIMITER_TIME)) defaultValue.split(
+            DELIMITER_TIME,
             ignoreCase = true
         )[1] else "00"
     } else if (getTypePicker(typePicker)?.equals(QuestionType.YrsMonthPicker.name) == true) {
-        return if (defaultValue.contains(CONDITIONS_YEAR)) defaultValue.split(
-            CONDITIONS_YEAR,
+        return if (defaultValue.contains(DELIMITER_YEAR)) defaultValue.split(
+            DELIMITER_YEAR,
             ignoreCase = true
         )[1] else "00"
     }
@@ -227,7 +232,7 @@ fun getTypePicker(questionType: String): String? {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewTimePickerComponent() {
-    TimePickerComponent(
+    RangePickerComponent(
         defaultValue = "3/10",
         typePicker = "HrsMinPicker",
         showQuestionState = getEmptyStateObject(),

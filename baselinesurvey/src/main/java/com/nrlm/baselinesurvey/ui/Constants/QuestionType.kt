@@ -17,7 +17,6 @@ enum class QuestionType {
     InputNumber,
     InputNumberEditText,
     Calculation,
-    HourMinute,
     SingleValueForm,
     DidiDetails,
     YesNoButton,
@@ -48,7 +47,6 @@ enum class QuestionType {
                 DidiDetails.name -> DidiDetails
                 YesNoButton.name -> YesNoButton
                 PhoneNumber.name -> PhoneNumber
-                HourMinute.name -> HourMinute
                 HrsMinPicker.name -> HrsMinPicker
                 YrsMonthPicker.name -> YrsMonthPicker
                 Image.name -> Image

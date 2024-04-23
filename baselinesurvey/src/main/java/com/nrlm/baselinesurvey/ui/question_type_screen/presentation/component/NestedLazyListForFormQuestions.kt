@@ -37,7 +37,7 @@ import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.CalculationResultComponent
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.RadioOptionTypeComponent
-import com.nrlm.baselinesurvey.ui.common_components.TimePickerComponent
+import com.nrlm.baselinesurvey.ui.common_components.RangePickerComponent
 import com.nrlm.baselinesurvey.ui.common_components.TypeMultiSelectedDropDownComponent
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponent.IncrementDecrementView
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
@@ -375,7 +375,8 @@ fun NestedLazyListForFormQuestions(
 
                             QuestionType.HrsMinPicker.name,
                             QuestionType.YrsMonthPicker.name -> {
-                                TimePickerComponent(title = option.optionItemEntity.display
+                                RangePickerComponent(
+                                    title = option.optionItemEntity.display
                                     ?: BLANK_STRING,
                                     typePicker = option.optionItemEntity?.optionType
                                         ?: BLANK_STRING,
