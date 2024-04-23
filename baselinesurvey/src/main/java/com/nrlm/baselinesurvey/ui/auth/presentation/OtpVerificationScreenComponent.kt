@@ -2,7 +2,6 @@ package com.nrlm.baselinesurvey.ui.auth.presentation
 
 import android.annotation.SuppressLint
 import android.os.CountDownTimer
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -48,6 +47,8 @@ import com.nrlm.baselinesurvey.OTP_LENGTH
 import com.nrlm.baselinesurvey.OTP_RESEND_DURATION
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.SEC_30_STRING
+import com.nrlm.baselinesurvey.navigation.AuthScreen
+import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.auth.viewmodel.OtpVerificationViewModel
 import com.nrlm.baselinesurvey.ui.common_components.CustomSnackBarShow
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
@@ -58,15 +59,12 @@ import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.buttonBgColor
+import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.greenOnline
 import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
-import com.nrlm.baselinesurvey.navigation.AuthScreen
-import com.nrlm.baselinesurvey.navigation.home.LogoutBSScreens
-import com.nrlm.baselinesurvey.navigation.navgraph.Graph
-import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -301,12 +299,6 @@ fun OtpVerificationScreenComponent(
                 viewModel.validateApiSuccess.value
             }
             BaselineCore.autoReadOtp.value = ""
-        } else {
-            /*snackState.addMessage(
-                message = viewModel.message.value,
-                isSuccess = false,
-                isCustomIcon = false
-            )*/
         }
     }
 

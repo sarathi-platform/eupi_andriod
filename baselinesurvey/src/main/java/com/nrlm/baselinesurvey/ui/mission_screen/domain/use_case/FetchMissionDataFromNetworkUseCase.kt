@@ -10,7 +10,9 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingS
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nudge.core.enums.ApiStatus
 import kotlinx.coroutines.delay
-
+import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.DEFAULT_ERROR_CODE
+import com.nrlm.baselinesurvey.DEFAULT_SUCCESS_CODE
 class FetchMissionDataFromNetworkUseCase(
     private val repository: DataLoadingScreenRepository
 ) {
@@ -27,8 +29,8 @@ class FetchMissionDataFromNetworkUseCase(
                     repository.updateApiStatus(
                         SUBPATH_GET_MISSION,
                         status = ApiStatus.SUCCESS.ordinal,
-                        "",
-                        200
+                        BLANK_STRING,
+                        DEFAULT_SUCCESS_CODE
                     )
                     repository.deleteMissionsFromDB()
                     repository.deleteMissionActivitiesFromDB()
@@ -72,25 +74,31 @@ class FetchMissionDataFromNetworkUseCase(
                 }
                 return false
             } else {
+                repository.updateApiStatus(
+                    SUBPATH_GET_MISSION,
+                    status = ApiStatus.FAILED.ordinal,
+                    apiResponse.message ?: BLANK_STRING,
+                    DEFAULT_ERROR_CODE
+                )
                 return false
             }
         } catch (apiException: ApiException) {
             repository.updateApiStatus(
                 SUBPATH_GET_MISSION,
                 status = ApiStatus.FAILED.ordinal,
-                apiException.message ?: "",
+                apiException.message ?: BLANK_STRING,
                 apiException.getStatusCode()
             )
-            return false
+            throw apiException
         } catch (ex: Exception) {
             repository.updateApiStatus(
                 SUBPATH_GET_MISSION,
                 status = ApiStatus.FAILED.ordinal,
-                ex.message ?: "",
-                500
+                ex.message ?: BLANK_STRING,
+                DEFAULT_ERROR_CODE
             )
             BaselineLogger.e("FetchUserDetailFromNetworkUseCase", "invoke", ex)
-            return false
+            throw ex
         }
     }
 

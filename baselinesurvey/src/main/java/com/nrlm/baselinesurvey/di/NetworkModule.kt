@@ -88,6 +88,7 @@ object NetworkModule {
                 .readTimeout(timeout, TimeUnit.SECONDS)
 //        .cache(cache)
         clientBuilder.addNetworkInterceptor(getNetworkInterceptor(application.applicationContext))
+        clientBuilder.addInterceptor(ErrorInterceptor())
         clientBuilder.addInterceptor(
             getHeaderInterceptor(
                 sharedPref,
