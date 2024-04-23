@@ -68,8 +68,15 @@ abstract class BaseViewModel() : ViewModel() {
     }
     open fun onServerError(error: ErrorModel?) {
         viewModelScope.launch(Dispatchers.Main) {
+            BaselineLogger.e("Error", error?.message ?: BLANK_STRING)
+
             onEvent(LoaderEvent.UpdateLoaderState(false))
-            onEvent(ApiStatusEvent.showApiStatus(RESPONSE_CODE_SERVER_ERROR, error?.message ?: ""))
+            onEvent(
+                ApiStatusEvent.showApiStatus(
+                    RESPONSE_CODE_SERVER_ERROR,
+                    error?.message ?: BLANK_STRING
+                )
+            )
         }
     }
 
@@ -173,7 +180,7 @@ abstract class BaseViewModel() : ViewModel() {
         if (currentApiCount == 6) {
             withContext(Dispatchers.Main) {
                 // onEvent(LoaderEvent.UpdateLoaderState(false))
-                onEvent(ApiStatusEvent.showApiStatus(SUCCESS_CODE.toInt(), ""))
+                onEvent(ApiStatusEvent.showApiStatus(SUCCESS_CODE.toInt(), BLANK_STRING))
             }
         }
     }

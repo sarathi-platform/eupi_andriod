@@ -964,15 +964,15 @@ class SettingViewModel @Inject constructor(
                 val fileUri = compression.compressBackupFiles(
                     NudgeCore.getAppContext(),
                     getFormPdfAndLogUri(),
-                    prefRepo.getMobileNumber() ?: "",
-                    userName = prefRepo.getPref(PREF_KEY_NAME, "")!!,
+                    prefRepo.getMobileNumber(),
+                    userName = prefRepo.getPref(PREF_KEY_NAME, BLANK_STRING) ?: BLANK_STRING,
 
                 )
 
                 val imageUri = compression.compressBackupImages(
                     NudgeCore.getAppContext(),
-                    prefRepo.getMobileNumber() ?: "",
-                    userName = prefRepo.getPref(PREF_KEY_NAME, "")!!,
+                    prefRepo.getMobileNumber(),
+                    userName = prefRepo.getPref(PREF_KEY_NAME, BLANK_STRING) ?: BLANK_STRING,
                 )
 
                 openShareSheet(imageUri, fileUri, title)
@@ -981,7 +981,7 @@ class SettingViewModel @Inject constructor(
 
 
             } catch (exception: Exception) {
-                NudgeLogger.e("Compression", exception.message ?: "")
+                NudgeLogger.e("Compression", exception.message ?: BLANK_STRING)
                 exception.printStackTrace()
                 showExportLoader.value = false
 

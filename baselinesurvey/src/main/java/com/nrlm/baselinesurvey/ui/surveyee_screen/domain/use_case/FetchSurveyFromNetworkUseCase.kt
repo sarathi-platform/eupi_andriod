@@ -1,5 +1,8 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case
 
+import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.DEFAULT_ERROR_CODE
+import com.nrlm.baselinesurvey.DEFAULT_SUCCESS_CODE
 import com.nrlm.baselinesurvey.SUCCESS_CODE
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
@@ -46,8 +49,8 @@ class FetchSurveyFromNetworkUseCase(
                     repository.updateApiStatus(
                         SUBPATH_FETCH_SURVEY_FROM_NETWORK,
                         status = ApiStatus.SUCCESS.ordinal,
-                        "",
-                        200
+                        BLANK_STRING,
+                        DEFAULT_SUCCESS_CODE
                     )
 
                     repository.saveSurveyToDb(
@@ -62,8 +65,8 @@ class FetchSurveyFromNetworkUseCase(
                 repository.updateApiStatus(
                     SUBPATH_FETCH_SURVEY_FROM_NETWORK,
                     status = ApiStatus.FAILED.ordinal,
-                    surveyApiResponse.message ?: "",
-                    500
+                    surveyApiResponse.message,
+                    DEFAULT_ERROR_CODE
                 )
                 return false
             }
@@ -71,7 +74,7 @@ class FetchSurveyFromNetworkUseCase(
             repository.updateApiStatus(
                 SUBPATH_FETCH_SURVEY_FROM_NETWORK,
                 status = ApiStatus.FAILED.ordinal,
-                apiException.message ?: "",
+                apiException.message ?: BLANK_STRING,
                 apiException.getStatusCode()
             )
             throw apiException
@@ -79,8 +82,8 @@ class FetchSurveyFromNetworkUseCase(
             repository.updateApiStatus(
                 SUBPATH_FETCH_SURVEY_FROM_NETWORK,
                 status = ApiStatus.FAILED.ordinal,
-                ex.message ?: "",
-                500
+                ex.message ?: BLANK_STRING,
+                DEFAULT_ERROR_CODE
             )
             BaselineLogger.e("FetchUserDetailFromNetworkUseCase", "invoke", ex)
             throw ex

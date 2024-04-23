@@ -27,8 +27,8 @@ class FetchMissionDataFromNetworkUseCase(
                     repository.updateApiStatus(
                         SUBPATH_GET_MISSION,
                         status = ApiStatus.SUCCESS.ordinal,
-                        "",
-                        200
+                        BLANK_STRING,
+                        DEFAULT_SUCCESS_CODE
                     )
                     repository.deleteMissionsFromDB()
                     repository.deleteMissionActivitiesFromDB()
@@ -72,8 +72,8 @@ class FetchMissionDataFromNetworkUseCase(
                 repository.updateApiStatus(
                     SUBPATH_GET_MISSION,
                     status = ApiStatus.FAILED.ordinal,
-                    apiResponse.message ?: "",
-                    500
+                    apiResponse.message ?: BLANK_STRING,
+                    DEFAULT_ERROR_CODE
                 )
                 return false
             }
@@ -81,7 +81,7 @@ class FetchMissionDataFromNetworkUseCase(
             repository.updateApiStatus(
                 SUBPATH_GET_MISSION,
                 status = ApiStatus.FAILED.ordinal,
-                apiException.message ?: "",
+                apiException.message ?: BLANK_STRING,
                 apiException.getStatusCode()
             )
             throw apiException
@@ -89,8 +89,8 @@ class FetchMissionDataFromNetworkUseCase(
             repository.updateApiStatus(
                 SUBPATH_GET_MISSION,
                 status = ApiStatus.FAILED.ordinal,
-                ex.message ?: "",
-                500
+                ex.message ?: BLANK_STRING,
+                DEFAULT_ERROR_CODE
             )
             BaselineLogger.e("FetchUserDetailFromNetworkUseCase", "invoke", ex)
             throw ex
