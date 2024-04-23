@@ -21,6 +21,8 @@ enum class QuestionType {
     DidiDetails,
     YesNoButton,
     PhoneNumber,
+    HrsMinPicker,
+    YrsMonthPicker,
     Image;
 
     companion object {
@@ -45,6 +47,8 @@ enum class QuestionType {
                 DidiDetails.name -> DidiDetails
                 YesNoButton.name -> YesNoButton
                 PhoneNumber.name -> PhoneNumber
+                HrsMinPicker.name -> HrsMinPicker
+                YrsMonthPicker.name -> YrsMonthPicker
                 Image.name -> Image
                 else -> {
                     null

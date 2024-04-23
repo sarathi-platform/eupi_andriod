@@ -296,6 +296,7 @@ object BaselineModule {
     fun provideSurveyeeScreenUseCase(
         surveyeeListScreenRepository: SurveyeeListScreenRepository,
         sectionListScreenRepository: SectionListScreenRepository,
+        missionSummaryScreenRepository: MissionSummaryScreenRepository,
         eventsWriterRepository: EventsWriterRepository
     ): SurveyeeScreenUseCase {
         return SurveyeeScreenUseCase(
@@ -307,7 +308,10 @@ object BaselineModule {
             updateActivityStatusUseCase = UpdateActivityStatusUseCase(surveyeeListScreenRepository),
             eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository),
             updateSubjectStatusUseCase = UpdateSubjectStatusUseCase(sectionListScreenRepository),
-            updateTaskStatusUseCase = UpdateTaskStatusUseCase(sectionListScreenRepository)
+            updateTaskStatusUseCase = UpdateTaskStatusUseCase(sectionListScreenRepository),
+            getPendingTaskCountLiveUseCase = GetPendingTaskCountLiveUseCase(
+                missionSummaryScreenRepository
+            )
         )
     }
 
@@ -593,9 +597,10 @@ object BaselineModule {
     fun provideMissionRepository(
         missionEntityDao: MissionEntityDao,
         missionActivityDao: MissionActivityDao,
-        taskDao: ActivityTaskDao
+        taskDao: ActivityTaskDao,
+        prefRepo: PrefRepo
     ): MissionScreenRepository {
-        return MissionScreenRepositoryImpl(missionEntityDao, missionActivityDao, taskDao)
+        return MissionScreenRepositoryImpl(missionEntityDao, missionActivityDao, taskDao, prefRepo)
     }
 
     @Provides
@@ -604,13 +609,15 @@ object BaselineModule {
         missionActivityDao: MissionActivityDao,
         taskDao: ActivityTaskDao,
         surveyeeEntityDao: SurveyeeEntityDao,
-        missionEntityDao: MissionEntityDao
+        missionEntityDao: MissionEntityDao,
+        prefRepo: PrefRepo
     ): MissionSummaryScreenRepository {
         return MissionSummaryScreenRepositoryImpl(
             missionActivityDao,
             taskDao,
             surveyeeEntityDao,
-            missionEntityDao
+            missionEntityDao,
+            prefRepo
         )
     }
 

@@ -24,7 +24,9 @@ import com.nrlm.baselinesurvey.model.datamodel.SectionStatusUpdateEventDto
 import com.nrlm.baselinesurvey.model.datamodel.UpdateActivityStatusEventDto
 import com.nrlm.baselinesurvey.model.datamodel.UpdateMissionStatusEventDto
 import com.nrlm.baselinesurvey.model.datamodel.UpdateTaskStatusEventDto
+import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.EventsWriterRepositoryImpl
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.utils.StatusReferenceType
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.EventSyncStatus
@@ -65,6 +67,7 @@ class EventWriterHelperImpl @Inject constructor(
     ): Events {
 
         return if (didiSectionProgressEntityDao.getSectionProgressForDidi(
+                userId = getBaseLineUserId(),
                 surveyId,
                 sectionId,
                 didiId
@@ -114,15 +117,31 @@ class EventWriterHelperImpl @Inject constructor(
         saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     ): Events {
         val languageId = prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
-        val surveyEntity = surveyEntityDao.getSurveyDetailForLanguage(surveyId, languageId)
+        val surveyEntity = surveyEntityDao.getSurveyDetailForLanguage(
+            userId = getBaseLineUserId(),
+            surveyId,
+            languageId
+        )
         val activityForSubjectDto = getActivityFromSubjectId(didiId)
 
         val questionItem = questionEntityDao.getFormQuestionForId(
+            userid = getBaseLineUserId(),
             surveyId,
             sectionId,
             questionId,
             DEFAULT_LANGUAGE_ID
         )
+
+        val referenceOptionList = ArrayList<OptionItemEntityState>()
+        optionItemDao.getSurveySectionQuestionOptions(
+            userId = getBaseLineUserId(),
+            sectionId = sectionId,
+            surveyId = surveyId,
+            questionId = questionId,
+            languageId = DEFAULT_LANGUAGE_ID
+        ).forEach {
+            referenceOptionList.add(OptionItemEntityState(it.optionId, it, !it.conditional))
+        }
 
         val mSaveAnswerEventDto = SaveAnswerEventDto(
             surveyId = surveyId,
@@ -140,7 +159,9 @@ class EventWriterHelperImpl @Inject constructor(
                 options = saveAnswerEventOptionItemDtoList.getOptionDescriptionInEnglish(
                     surveyId,
                     sectionId,
-                    questionId
+                    questionId,
+                    questionType,
+                    referenceOptionList
                 )
             ),
             referenceId = surveyEntity?.referenceId ?: 0
@@ -161,14 +182,21 @@ class EventWriterHelperImpl @Inject constructor(
         questionType: String,
         questionTag: Int,
         questionDesc: String,
+
+        referenceOptionList: List<OptionItemEntityState>,
         showQuestion: Boolean,
         saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     ): Events {
         val languageId = prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
-        val surveyEntity = surveyEntityDao.getSurveyDetailForLanguage(surveyId, languageId)
+        val surveyEntity = surveyEntityDao.getSurveyDetailForLanguage(
+            userId = getBaseLineUserId(),
+            surveyId,
+            languageId
+        )
         val activityForSubjectDto = getActivityFromSubjectId(didiId)
 
         val questionItem = questionEntityDao.getFormQuestionForId(
+            userid = getBaseLineUserId(),
             surveyId,
             sectionId,
             questionId,
@@ -179,7 +207,15 @@ class EventWriterHelperImpl @Inject constructor(
             saveAnswerEventOptionItemDtoList.groupBy { it.referenceId }
         val optionList = mutableListOf<List<SaveAnswerEventOptionItemDto>>()
         saveAnswerEventOptionItemDtoListMap.values.forEach {
-            optionList.add(it.getOptionDescriptionInEnglish(surveyId, sectionId, questionId))
+            optionList.add(
+                it.getOptionDescriptionInEnglish(
+                    surveyId,
+                    sectionId,
+                    questionId,
+                    questionType,
+                    referenceOptionList
+                )
+            )
         }
 
         val mSaveAnswerEventDto = SaveAnswerEventForFormQuestionDto(
@@ -212,7 +248,8 @@ class EventWriterHelperImpl @Inject constructor(
         sectionStatus: SectionStatus
     ): Events {
         val languageId = prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
-        val activityForSubjectDto = activityDao.getActivityFromSubjectId(subjectId)
+        val activityForSubjectDto =
+            activityDao.getActivityFromSubjectId(getBaseLineUserId(), subjectId)
 
         val mUpdateTaskStatusEventDto = UpdateTaskStatusEventDto(
             missionId = activityForSubjectDto.missionId,
@@ -239,7 +276,7 @@ class EventWriterHelperImpl @Inject constructor(
         activityId: Int,
         status: SectionStatus
     ): Events {
-        val activity = activityDao.getActivity(activityId)
+        val activity = activityDao.getActivity(getBaseLineUserId(), activityId)
 
         val mUpdateActivityStatusEventDto = UpdateActivityStatusEventDto(
             missionId = activity.missionId,
@@ -264,7 +301,7 @@ class EventWriterHelperImpl @Inject constructor(
         missionId: Int,
         status: SectionStatus
     ): Events {
-        val mission = missionEntityDao.getMission(missionId)
+        val mission = missionEntityDao.getMission(getBaseLineUserId(), missionId)
 
         val mUpdateMissionStatusEventDto = UpdateMissionStatusEventDto(
             missionId = mission.missionId,
@@ -286,6 +323,7 @@ class EventWriterHelperImpl @Inject constructor(
 
     override suspend fun markMissionInProgress(missionId: Int, status: SectionStatus) {
         missionEntityDao.markMissionInProgress(
+            userId = getBaseLineUserId(),
             missionId = missionId,
             status = status.name,
             actualStartDate = System.currentTimeMillis().toDate().toString()
@@ -298,6 +336,7 @@ class EventWriterHelperImpl @Inject constructor(
         status: SectionStatus
     ) {
         activityDao.markActivityStart(
+            userId = getBaseLineUserId(),
             missionId = missionId,
             activityId = activityId,
             status = status.name,
@@ -312,6 +351,7 @@ class EventWriterHelperImpl @Inject constructor(
         status: SectionStatus
     ) {
         taskDao.markTaskInProgress(
+            userId = getBaseLineUserId(),
             taskId = taskId,
             activityId,
             missionId,
@@ -326,9 +366,9 @@ class EventWriterHelperImpl @Inject constructor(
         taskId: Int,
         status: SectionStatus
     ) {
-        val missionEntity = missionEntityDao.getMission(missionId)
-        val activityEntity = activityDao.getActivity(missionId, activityId)
-        val taskEntity = taskDao.getTask(activityId, missionId, taskId)
+        val missionEntity = missionEntityDao.getMission(getBaseLineUserId(), missionId)
+        val activityEntity = activityDao.getActivity(getBaseLineUserId(), missionId, activityId)
+        val taskEntity = taskDao.getTask(getBaseLineUserId(), activityId, missionId, taskId)
 
 //        if (taskEntity.status != SectionStatus.COMPLETED.name && taskEntity.status != SectionStatus.INPROGRESS.name)
         markTaskInProgress(missionId, activityId, taskId, status)
@@ -351,6 +391,7 @@ class EventWriterHelperImpl @Inject constructor(
 
     override suspend fun markMissionCompleted(missionId: Int, status: SectionStatus) {
         missionEntityDao.markMissionCompleted(
+            userId = getBaseLineUserId(),
             missionId = missionId,
             status = status.name,
             actualCompletedDate = System.currentTimeMillis().toDate().toString()
@@ -363,6 +404,7 @@ class EventWriterHelperImpl @Inject constructor(
         status: SectionStatus
     ) {
         activityDao.markActivityComplete(
+            userId = getBaseLineUserId(),
             missionId = missionId,
             activityId = activityId,
             status = status.name,
@@ -377,6 +419,7 @@ class EventWriterHelperImpl @Inject constructor(
         status: SectionStatus
     ) {
         taskDao.markTaskCompleted(
+            userId = getBaseLineUserId(),
             taskId = taskId,
             activityId = activityId,
             missionId = missionId,
@@ -397,7 +440,7 @@ class EventWriterHelperImpl @Inject constructor(
     }
 
     override suspend fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto {
-        return activityDao.getActivityFromSubjectId(subjectId)
+        return activityDao.getActivityFromSubjectId(userId = getBaseLineUserId(), subjectId)
     }
 
     override suspend fun getMissionActivityTaskEventList(
@@ -406,9 +449,9 @@ class EventWriterHelperImpl @Inject constructor(
         taskId: Int,
         status: SectionStatus
     ): List<Events> {
-        val missionEntity = missionEntityDao.getMission(missionId)
-        val activityEntity = activityDao.getActivity(missionId, activityId)
-        val taskEntity = taskDao.getTask(activityId, missionId, taskId)
+        val missionEntity = missionEntityDao.getMission(getBaseLineUserId(), missionId)
+        val activityEntity = activityDao.getActivity(getBaseLineUserId(), missionId, activityId)
+        val taskEntity = taskDao.getTask(getBaseLineUserId(), activityId, missionId, taskId)
 
         val eventList = mutableListOf<Events>()
 
@@ -485,21 +528,35 @@ class EventWriterHelperImpl @Inject constructor(
         ) ?: Events.getEmptyEvent()
     }
 
+    fun getBaseLineUserId(): String {
+        return prefRepo.getUniqueUserIdentifier()
+    }
+
     suspend fun List<SaveAnswerEventOptionItemDto>.getOptionDescriptionInEnglish(
         surveyId: Int,
         sectionId: Int,
-        questionId: Int
+        questionId: Int,
+        questionType: String,
+        referenceOptionList: List<OptionItemEntityState>
     ): List<SaveAnswerEventOptionItemDto> {
         val resultList = mutableListOf<SaveAnswerEventOptionItemDto>()
-        this.forEach {
-            val option = optionItemDao.getSurveySectionQuestionOptionForLanguage(
-                sectionId = sectionId,
-                surveyId = surveyId,
-                questionId = questionId,
-                optionId = it.optionId,
-                languageId = DEFAULT_LANGUAGE_ID
-            )
-            resultList.add(it.copy(optionDesc = option?.display ?: BLANK_STRING))
+        if (questionType == QuestionType.InputNumber.name || questionType == QuestionType.Form.name) {
+            this.forEach {
+                val referenceOption =
+                    referenceOptionList.find { refOption -> refOption.optionId == it.optionId }
+//                val option = optionItemDao.getSurveySectionQuestionOptionForLanguage(
+//                    sectionId = sectionId,
+//                    surveyId = surveyId,
+//                    questionId = questionId,
+//                    optionId = referenceOption?.optionId ?: it.optionId,
+//                    languageId = DEFAULT_LANGUAGE_ID
+//                )
+                resultList.add(
+                    it.copy(
+                        optionDesc = referenceOption?.optionItemEntity?.display ?: BLANK_STRING
+                    )
+                )
+            }
         }
         return if (resultList.isEmpty()) this else resultList
     }
