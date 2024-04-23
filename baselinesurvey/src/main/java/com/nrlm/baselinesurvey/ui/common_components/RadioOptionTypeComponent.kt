@@ -135,13 +135,13 @@ fun RadioOptionTypeComponent(
                     optionItemEntityState.optionItemEntity?.values?.forEach {  optionValueText ->
                         TextButton(
                             onClick = {
-                                selectedValue.value = optionValueText
-                                onOptionSelected(optionValueText)
+                                selectedValue.value = optionValueText.value
+                                onOptionSelected(optionValueText.value)
                             }, modifier = Modifier
                                 .weight(1f)
                                 .background(
                                     if (selectedValue.value.equals(
-                                            optionValueText,
+                                            optionValueText.value,
                                             ignoreCase = true
                                         )
                                     ) blueDark else Color.Transparent,
@@ -156,8 +156,12 @@ fun RadioOptionTypeComponent(
 
                         ) {
                             Text(
-                                text = optionValueText,
-                                color = if (selectedValue.value.equals(optionValueText, ignoreCase = true)) white else textColorDark
+                                text = optionValueText.value,
+                                color = if (selectedValue.value.equals(
+                                        optionValueText.value,
+                                        ignoreCase = true
+                                    )
+                                ) white else textColorDark
                             )
                         }
                         Spacer(modifier = Modifier.width(16.dp))

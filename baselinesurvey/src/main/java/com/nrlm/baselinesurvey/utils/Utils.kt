@@ -40,6 +40,7 @@ import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.model.datamodel.TagMappingDto
+import com.nrlm.baselinesurvey.model.datamodel.ValuesDto
 import com.nrlm.baselinesurvey.ui.Constants.ItemType
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
@@ -288,7 +289,7 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
         contentEntities = this.options?.first()?.contentList ?: listOf(),
         conditional = this.conditional
     )
-    val valuesList = mutableListOf<String>()
+    val valuesList = mutableListOf<ValuesDto>()
     val conditions = mutableListOf<ConditionsDto>()
     this.options?.forEach {
         it?.conditions?.forEach { condition ->
@@ -300,7 +301,7 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
                 it.values.let { it1 -> valuesList.addAll(it1) }
             }
             else -> {
-                valuesList.add(it?.display ?: BLANK_STRING)
+                valuesList.add(ValuesDto(id = 0, it?.display ?: BLANK_STRING))
             }
         }
     }

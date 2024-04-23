@@ -162,15 +162,31 @@ fun NestedLazyListForFormQuestions(
                                     isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
                                     sources = option.optionItemEntity.values,
                                     isEditAllowed = isEditAllowed,
-                                    selectOptionText = if (viewModel.tempRefId.value != BLANK_STRING)
-                                        formQuestionResponseEntity.value.getResponseForOptionId(
-                                            option.optionId ?: -1
-                                        )?.selectedValue
-                                            ?: BLANK_STRING
-                                    else
-                                        viewModel.storeCacheForResponse.getResponseForOptionId(
-                                            optionId = option.optionId ?: -1
-                                        )?.selectedValue ?: BLANK_STRING,
+                                    selectOptionText = if (viewModel.tempRefId.value != BLANK_STRING) {
+                                        option.optionItemEntity.values?.find {
+                                            it.value == (formQuestionResponseEntity.value.getResponseForOptionId(
+                                                option.optionId ?: -1
+                                            )?.selectedValue ?: BLANK_STRING)
+                                        }?.id
+                                            ?: 0 //TODO change from checking text to check only for id
+                                    }
+
+                                    /* formQuestionResponseEntity.value.getResponseForOptionId(
+                                         option.optionId ?: -1
+                                     )?.selectedValue
+                                         ?: BLANK_STRING*/
+                                    else {
+                                        option.optionItemEntity.values?.find {
+                                            it.value == (viewModel.storeCacheForResponse.getResponseForOptionId(
+                                                optionId = option.optionId ?: -1
+                                            )?.selectedValue ?: BLANK_STRING)
+                                        }?.id
+                                            ?: 0 //TODO change from checking text to check only for id
+                                    }
+
+                                    /*viewModel.storeCacheForResponse.getResponseForOptionId(
+                                        optionId = option.optionId ?: -1
+                                    )?.selectedValue ?: BLANK_STRING*/,
                                     onInfoButtonClicked = {
                                         sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
                                     }
@@ -178,7 +194,8 @@ fun NestedLazyListForFormQuestions(
                                     questionTypeScreenViewModel.onEvent(
                                         QuestionTypeEvent.UpdateConditionalOptionState(
                                             option,
-                                            value
+                                            option.optionItemEntity.values?.find { it.id == value }?.value
+                                                ?: BLANK_STRING //TODO change from checking text to check only for id
                                         )
                                     )
                                     questionTypeScreenViewModel.formTypeOption?.let { formTypeOption ->
@@ -186,7 +203,8 @@ fun NestedLazyListForFormQuestions(
                                             saveFormQuestionResponseEntity(
                                                 formTypeOption,
                                                 option.optionId ?: 0,
-                                                value,
+                                                option.optionItemEntity.values?.find { it.id == value }?.value
+                                                    ?: BLANK_STRING,
                                                 viewModel.referenceId
                                             )
                                         )

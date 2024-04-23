@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponent
 
+import android.text.TextUtils
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -770,7 +771,7 @@ fun NestedLazyList(
                                     selectedOption = selectedOption,
                                     maxCustomHeight = maxHeight,
                                     isEditAllowed = questionScreenViewModel.isEditAllowed,
-                                    onAnswerSelection = { questionIndex, optionItem, selectedValue ->
+                                    onAnswerSelection = { questionIndex, optionItem, selectedValue, selectedId ->
 
 
                                         when (optionItem.optionType) {
@@ -780,7 +781,15 @@ fun NestedLazyList(
                                             QuestionType.SingleSelectDropdown.name,
                                             QuestionType.SingleSelectDropDown.name -> {
                                                 val mOptionItem =
-                                                    optionItem.copy(selectedValue = selectedValue)
+                                                    optionItem.copy(
+                                                        selectedValue = selectedValue,
+                                                        selectedValueId = if (TextUtils.equals(
+                                                                optionItem.optionType!!.toLowerCase(),
+                                                                QuestionType.SingleSelectDropdown.name.toLowerCase()
+                                                            )
+                                                        ) selectedId else 0
+                                                    )
+
                                                 questionScreenViewModel.onEvent(
                                                     QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption(
                                                         question,
@@ -812,7 +821,14 @@ fun NestedLazyList(
                                         )
 
                                         val mOptionItem =
-                                            optionItem.copy(selectedValue = selectedValue)
+                                            optionItem.copy(
+                                                selectedValue = selectedValue,
+                                                selectedValueId = if (TextUtils.equals(
+                                                        optionItem.optionType!!.toLowerCase(),
+                                                        QuestionType.SingleSelectDropdown.name.toLowerCase()
+                                                    )
+                                                ) selectedId else 0
+                                            )
                                         questionScreenViewModel.onEvent(
                                             QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(
                                                 question,

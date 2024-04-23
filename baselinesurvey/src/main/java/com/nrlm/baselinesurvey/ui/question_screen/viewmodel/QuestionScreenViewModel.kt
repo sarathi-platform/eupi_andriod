@@ -759,7 +759,9 @@ class QuestionScreenViewModel @Inject constructor(
                         QuestionType.SingleSelectDropDown.name -> {
                             // Show conditional question based on selected response
                             val conditionCheckResult = conditionsDto?.checkCondition(
-                                event.optionItemEntity.selectedValue ?: BLANK_STRING
+                                event.optionItemEntity.values
+                                    ?.find { it.id == event.optionItemEntity.selectedValueId }?.value /*event.optionItemEntity.selectedValue*/
+                                    ?: BLANK_STRING
                             )
                             updateQuestionStateForCondition(
                                 conditionResult = conditionCheckResult == true,
