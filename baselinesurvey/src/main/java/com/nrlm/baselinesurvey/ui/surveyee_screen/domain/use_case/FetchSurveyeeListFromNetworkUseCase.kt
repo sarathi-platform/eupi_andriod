@@ -43,7 +43,7 @@ class FetchSurveyeeListFromNetworkUseCase(
                         val taskForSubject = repository.getTaskForSubjectId(it.didiId)
                         val surveyeeEntity = SurveyeeEntity(
                             id = 0,
-                            userId = it.userId,
+                            userId = repository.getBaseLineUserId(),
                             didiId = it.didiId,
                             didiName = it.didiName ?: BLANK_STRING,
                             dadaName = it.dadaName ?: BLANK_STRING,
@@ -54,6 +54,7 @@ class FetchSurveyeeListFromNetworkUseCase(
                             villageId = it.villageId ?: -1,
                             villageName = it.villageName ?: BLANK_STRING,
                             ableBodied = it.ableBodied ?: BLANK_STRING,
+                            voName = it.voName ?: BLANK_STRING,
                             surveyStatus = SurveyState.toInt(
                                 taskForSubject?.status ?: SurveyState.NOT_STARTED.name
                             )
@@ -68,7 +69,7 @@ class FetchSurveyeeListFromNetworkUseCase(
                         val taskForSubject = repository.getTaskForSubjectId(it.cohortId)
                         val hamletSurveyEntity = SurveyeeEntity(
                             id = 0,
-                            userId = it.userId,
+                            userId = repository.getBaseLineUserId(),
                             didiId = it.cohortId ?: -1,
                             didiName = if (it.cohortName?.equals(
                                     NO_TOLA_TITLE,
@@ -82,6 +83,7 @@ class FetchSurveyeeListFromNetworkUseCase(
                             cohortName = it.villageName ?: BLANK_STRING,
                             houseNo = BLANK_STRING,
                             villageId = it.villageId ?: -1,
+                            voName = it.voName ?: BLANK_STRING,
                             villageName = it.villageName ?: BLANK_STRING,
                             ableBodied = BLANK_STRING,
                             surveyStatus = SurveyState.toInt(

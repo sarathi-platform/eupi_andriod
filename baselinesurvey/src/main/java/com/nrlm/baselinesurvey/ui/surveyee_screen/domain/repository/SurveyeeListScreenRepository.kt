@@ -8,14 +8,14 @@ import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
 
 interface SurveyeeListScreenRepository {
 
-    suspend fun getSurveyeeList(missionId: Int, activityName: String): List<SurveyeeEntity>
+    suspend fun getSurveyeeList(missionId: Int, activityId: Int): List<SurveyeeEntity>
 
     suspend fun getSurveyeeListFromNetwork(): Boolean
 
     suspend fun moveSurveyeesToThisWeek(didiIdList: Set<Int>, moveDidisToNextWeek: Boolean)
 
     suspend fun moveSurveyeeToThisWeek(didiId: Int, moveDidisToNextWeek: Boolean)
-    suspend fun getActivityTasks(missionId: Int, activityName: String): List<ActivityTaskEntity>
+    suspend fun getActivityTasks(missionId: Int, activityId: Int): List<ActivityTaskEntity>
     suspend fun getMissionActivitiesStatusFromDB(
         activityId: Int,
         surveyeeCardState: List<SurveyeeCardState>
@@ -35,5 +35,7 @@ interface SurveyeeListScreenRepository {
     suspend fun getActivitiyStatusFromDB(
         activityId: Int,
     ): MissionActivityEntity
+
+    fun getBaseLineUserId(): String
 
 }

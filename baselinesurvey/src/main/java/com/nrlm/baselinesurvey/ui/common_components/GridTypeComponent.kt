@@ -104,7 +104,16 @@ fun GridTypeComponent(
     selectedIndices.value.clear()
     selectedIndices.value.addAll(selectedOptionIndices)
 
-    val selectedOptionsItem = remember { mutableSetOf<OptionItemEntity>() }
+    var selectedOptionsItem = remember { mutableSetOf<OptionItemEntity>() }
+
+    if (selectedIndices.value.isEmpty())
+        selectedOptionsItem.clear()
+    else {
+        selectedOptionsItem =
+            selectedOptionsItem.filter { selectedIndices.value.contains(it.optionId) }
+                .toMutableSet()
+    }
+
 
     val context = LocalContext.current
 

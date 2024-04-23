@@ -26,17 +26,21 @@ interface MissionEntityDao {
 //    @Insert(onConflict = OnConflictStrategy.REPLACE)
 //    fun insertMission(mission: MissionEntity)
 
-    @Query("DELETE FROM $MISSION_TABLE_NAME")
-    fun deleteMissions()
+    @Query("DELETE FROM $MISSION_TABLE_NAME where userId=:userId")
+    fun deleteMissions(userId: String)
 
-    @Query("SELECT * FROM $MISSION_TABLE_NAME")
-    suspend fun getMissions(): List<MissionEntity>
+    @Query("SELECT * FROM $MISSION_TABLE_NAME where userId=:userId")
+    suspend fun getMissions(userId: String): List<MissionEntity>
 
-    @Query("SELECT * FROM $MISSION_TABLE_NAME where missionId=:missionId ")
-    suspend fun getMission(missionId: Int): MissionEntity
+    @Query("SELECT * FROM $MISSION_TABLE_NAME where  userId=:userId and missionId=:missionId ")
+    suspend fun getMission(userId: String, missionId: Int): MissionEntity
 
-    @Query("Update $MISSION_TABLE_NAME set pendingActivity=:pendingActivity, activityComplete=:activityComplete where missionId = :missionId")
+    @Query("SELECT count(*) FROM $MISSION_TABLE_NAME where  userId=:userId and missionId=:missionId ")
+    suspend fun getMissionCount(userId: String, missionId: Int): Int
+
+    @Query("Update $MISSION_TABLE_NAME set pendingActivity=:pendingActivity, activityComplete=:activityComplete where  userId=:userId and missionId = :missionId")
     fun updateMissionStatus(
+        userId: String,
         missionId: Int,
         activityComplete: Int,
         pendingActivity: Int
@@ -45,25 +49,35 @@ interface MissionEntityDao {
 //    @Query("SELECT $missionActivityTaskDto from $MISSION_TABLE_NAME JOIN $ACTIVITY_TABLE_NAME on $ACTIVITY_TABLE_NAME.missionId = $MISSION_TABLE_NAME.missionId JOIN $TASK_TABLE_NAME on $TASK_TABLE_NAME.missionId = $MISSION_TABLE_NAME.missionId where $TASK_TABLE_NAME.taskId = :taskId AND $TASK_TABLE_NAME.activityId = :activityId AND $TASK_TABLE_NAME.missionId = :missionId")
 //    fun getMissionActivityTaskDto(missionId: Int, activityId: Int, taskId: Int): MissionActivityDao
 
-    @Query("UPDATE $MISSION_TABLE_NAME SET status = :status where missionId = :missionId")
-    fun updateMissionStatus(missionId: Int, status: String)
+    @Query("UPDATE $MISSION_TABLE_NAME SET status = :status where  userId=:userId and missionId = :missionId")
+    fun updateMissionStatus(userId: String, missionId: Int, status: String)
 
-    @Query("UPDATE $MISSION_TABLE_NAME SET actualStartDate = :actualStartDate where missionId = :missionId")
-    fun updateActualStartDate(missionId: Int, actualStartDate: String)
+    @Query("UPDATE $MISSION_TABLE_NAME SET actualStartDate = :actualStartDate where  userId=:userId and missionId = :missionId")
+    fun updateActualStartDate(userId: String, missionId: Int, actualStartDate: String)
 
-    @Query("UPDATE $MISSION_TABLE_NAME SET actualCompletedDate = :actualCompletedDate where missionId = :missionId")
-    fun updateActualCompletedDate(missionId: Int, actualCompletedDate: String)
+    @Query("UPDATE $MISSION_TABLE_NAME SET actualCompletedDate = :actualCompletedDate where  userId=:userId and missionId = :missionId")
+    fun updateActualCompletedDate(userId: String, missionId: Int, actualCompletedDate: String)
 
     @Transaction
-    fun markMissionCompleted(missionId: Int, status: String, actualCompletedDate: String) {
-        updateMissionStatus(missionId, status)
-        updateActualCompletedDate(missionId, actualCompletedDate)
+    fun markMissionCompleted(
+        userId: String,
+        missionId: Int,
+        status: String,
+        actualCompletedDate: String
+    ) {
+        updateMissionStatus(userId, missionId, status)
+        updateActualCompletedDate(userId, missionId, actualCompletedDate)
     }
 
     @Transaction
-    fun markMissionInProgress(missionId: Int, status: String, actualStartDate: String) {
-        updateMissionStatus(missionId, status)
-        updateActualStartDate(missionId, actualStartDate)
+    fun markMissionInProgress(
+        userId: String,
+        missionId: Int,
+        status: String,
+        actualStartDate: String
+    ) {
+        updateMissionStatus(userId, missionId, status)
+        updateActualStartDate(userId, missionId, actualStartDate)
     }
 
 }

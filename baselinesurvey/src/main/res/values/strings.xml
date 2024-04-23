@@ -477,5 +477,13 @@
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"Start "</string>
     <string name="retry">Retry</string>
+    <string name="madnatory_question_not_marked_error">All mandatory questions are not answered, please answer all questions!</string>
+    <string name="view_label">View</string>
+    <string name="task_completed_label">"Activity Completed - "</string>
+    <string name="hours">Hours</string>
+    <string name="years">Years</string>
+    <string name="minute">Minute</string>
+    <string name="month">Month</string>
 
+    <string name="data_fetching_and_processing">Data Fetching and Processing…</string>
 </resources>

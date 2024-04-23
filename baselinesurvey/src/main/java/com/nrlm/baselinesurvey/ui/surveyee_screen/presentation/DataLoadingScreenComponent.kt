@@ -12,7 +12,7 @@ import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
-import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
+import com.nrlm.baselinesurvey.ui.common_components.LoaderComponentWithText
 import com.nrlm.baselinesurvey.ui.common_components.ShowCustomDialog
 import com.nrlm.baselinesurvey.ui.common_components.common_events.DialogEvents
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
@@ -31,19 +31,13 @@ fun DataLoadingScreenComponent(
     LaunchedEffect(key1 = true) {
         if (viewModel.isUserLoggedIn()) {
             viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-            viewModel.compareWithPreviousUser(context) { isDataLoadingAllowed ->
-                if (isDataLoadingAllowed) {
-                    if (!viewModel.isAllDataFetched()) {
-                        viewModel.fetchAllData {
-                            viewModel.setAllDataFetched()
-                            navController.navigate(HomeScreens.Home_SCREEN.route)
-                        }
-                    } else {
-                        navController.navigate(HomeScreens.Home_SCREEN.route)
-                    }
-                } else {
-                    viewModel.onEvent(DialogEvents.ShowDialogEvent(true))
+            if (!viewModel.isAllDataFetched()) {
+                viewModel.fetchAllData {
+                    viewModel.setAllDataFetched()
+                    navController.navigate(HomeScreens.Home_SCREEN.route)
                 }
+            } else {
+                navController.navigate(HomeScreens.Home_SCREEN.route)
             }
         } else {
             navController.navigate(HomeScreens.Home_SCREEN.route)
@@ -52,7 +46,7 @@ fun DataLoadingScreenComponent(
 
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        LoaderComponent(visible = loaderState.isLoaderVisible)
+        LoaderComponentWithText(visible = loaderState.isLoaderVisible)
 
         if (viewModel.showUserChangedDialog.value.isDialogVisible) {
             ShowCustomDialog(

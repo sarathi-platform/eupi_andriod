@@ -21,7 +21,7 @@ data class OptionItemEntity(
     @Expose
     @ColumnInfo(name = "id")
     var id: Int,
-
+    var userId: String? = BLANK_STRING,
     @SerializedName("sectionId")
     @Expose
     @ColumnInfo(name = "sectionId")
@@ -98,4 +98,19 @@ data class OptionItemEntity(
     var selectedValue: String? = BLANK_STRING,
     @TypeConverters(ContentListConverter::class)
     val contentEntities: List<ContentList> = listOf()
-)
+){
+    companion object {
+        fun getEmptyOptionItemEntity(): OptionItemEntity {
+            return OptionItemEntity(
+                id = 0,
+                optionId = 0,
+                sectionId = 0,
+                contentEntities = listOf(),
+                conditional = false,
+                optionTag = 0,
+                order = 0,
+                surveyId = 0
+            )
+        }
+    }
+}

@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel
 
+import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
@@ -9,6 +10,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
@@ -25,9 +27,11 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.FormQuest
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.calculateResultForFormula
 import com.nrlm.baselinesurvey.utils.checkCondition
+import com.nrlm.baselinesurvey.utils.checkConditionForMultiSelectDropDown
 import com.nrlm.baselinesurvey.utils.convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.convertFormTypeQuestionListToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.convertQuestionListToOptionItemEntity
@@ -35,6 +39,7 @@ import com.nrlm.baselinesurvey.utils.convertToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.findIndexOfListByOptionId
 import com.nrlm.baselinesurvey.utils.findOptionExist
 import com.nrlm.baselinesurvey.utils.isNumeric
+import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -75,6 +80,8 @@ class QuestionTypeScreenViewModel @Inject constructor(
     private var _updatedOptionList = mutableStateListOf<OptionItemEntityState>()
     val updatedOptionList: SnapshotStateList<OptionItemEntityState> get() = _updatedOptionList
 
+    private val updatedOptionListInDefaultLanguage = mutableListOf<OptionItemEntityState>()
+
     val totalOptionSize = mutableIntStateOf(0)
     val answeredOptionCount = mutableIntStateOf(0)
 
@@ -85,6 +92,8 @@ class QuestionTypeScreenViewModel @Inject constructor(
     val calculatedResult = mutableStateOf("")
 
     var tempRefId = mutableStateOf(BLANK_STRING)
+
+    var conditionalQuestionNotMarked = false
 
     fun init(
         sectionId: Int,
@@ -122,6 +131,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 )
                 _formQuestionResponseEntity.value =
                     getFormResponseForReferenceId(referenceId = referenceId)
+                _storeCacheForResponse.addAll(formQuestionResponseEntity.value.toMutableList())
             }
 
             getOptionItemEntityState(
@@ -140,8 +150,118 @@ class QuestionTypeScreenViewModel @Inject constructor(
                         ?: BLANK_STRING
             }
 
+            updateCachedData()
+
+            getOptionsInDefaultLanguage(surveyId, sectionId, questionId)
+
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
+            }
+        }
+    }
+
+    private suspend fun getOptionsInDefaultLanguage(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int
+    ) {
+        val optionList = formQuestionScreenUseCase.getFormQuestionResponseUseCase.invoke(
+            surveyId,
+            sectionId,
+            questionId,
+            selectDefaultLanguage = true
+        )
+        optionList.forEach { optionItemEntity ->
+            updatedOptionListInDefaultLanguage.add(
+                OptionItemEntityState(
+                    optionId = optionItemEntity.optionId,
+                    optionItemEntity = optionItemEntity,
+                    showQuestion = true
+                )
+            )
+            optionItemEntity.conditions?.forEach { conditionsDto ->
+                when (conditionsDto?.resultType) {
+                    ResultType.Questions.name -> {
+                        conditionsDto?.resultList?.forEach { questionList ->
+                            if (questionList.type?.equals(QuestionType.Form.name, true) == true) {
+                                val mOptionItemEntityList =
+                                    questionList.convertFormTypeQuestionListToOptionItemEntity(
+                                        optionItemEntity.sectionId,
+                                        optionItemEntity.surveyId,
+                                        optionItemEntity.languageId ?: DEFAULT_LANGUAGE_ID
+                                    )
+                                mOptionItemEntityList.forEach { mOptionItemEntity ->
+                                    updatedOptionListInDefaultLanguage.add(
+                                        OptionItemEntityState(
+                                            mOptionItemEntity.optionId,
+                                            mOptionItemEntity,
+                                            false
+                                        )
+                                    )
+                                }
+                            }
+                            val mOptionItemEntity =
+                                questionList.convertQuestionListToOptionItemEntity(
+                                    optionItemEntity.sectionId,
+                                    optionItemEntity.surveyId
+                                )
+                            updatedOptionListInDefaultLanguage.add(
+                                OptionItemEntityState(
+                                    mOptionItemEntity.optionId,
+                                    mOptionItemEntity,
+                                    false
+                                )
+                            )
+
+                            // TODO Handle later correctly
+                            mOptionItemEntity.conditions?.forEach { conditionsDto2 ->
+                                if (conditionsDto2?.resultType.equals(
+                                        ResultType.Questions.name,
+                                        true
+                                    )
+                                ) {
+                                    conditionsDto2?.resultList?.forEach { subQuestionList ->
+                                        val mOptionItemEntity2 =
+                                            subQuestionList.convertQuestionListToOptionItemEntity(
+                                                mOptionItemEntity.sectionId,
+                                                mOptionItemEntity.surveyId
+                                            )
+                                        updatedOptionListInDefaultLanguage.add(
+                                            OptionItemEntityState(
+                                                mOptionItemEntity2.optionId,
+                                                mOptionItemEntity2,
+                                                false
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    ResultType.Options.name -> {
+                        conditionsDto?.resultList?.forEach { questionList ->
+                            val mOptionItemEntity =
+                                questionList.convertToOptionItemEntity(
+                                    sectionId,
+                                    surveyId,
+                                    questionId,
+                                    languageId = optionItemEntity.languageId ?: DEFAULT_LANGUAGE_ID
+                                )
+                            updatedOptionListInDefaultLanguage.add(
+                                OptionItemEntityState(
+                                    mOptionItemEntity.optionId,
+                                    mOptionItemEntity,
+                                    false
+                                )
+                            )
+                        }
+                    }
+
+                    ResultType.Formula.name -> {
+
+                    }
+                }
             }
         }
     }
@@ -358,7 +478,15 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 if (event.userInputValue != BLANK_STRING) {
                     event.optionItemEntityState?.optionItemEntity?.conditions?.forEach { conditionsDto ->
                         val conditionCheckResult =
-                            conditionsDto?.checkCondition(event.userInputValue)
+                            if (TextUtils.equals(
+                                    event.optionItemEntityState.optionItemEntity.optionType?.toLowerCase(),
+                                    QuestionType.MultiSelectDropDown.name.toLowerCase()
+                                )
+                            ) {
+                                conditionsDto?.checkConditionForMultiSelectDropDown(event.userInputValue)
+                            } else {
+                                conditionsDto?.checkCondition(event.userInputValue)
+                            }
                         updateQuestionStateForCondition(conditionCheckResult == true, conditionsDto)
                     }
                 } else {
@@ -366,10 +494,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
                         updateQuestionStateForCondition(false, conditionsDto)
                     }
                 }
-                /*totalOptionSize.intValue = updatedOptionList.filter { it.showQuestion }.size
-                if (answeredOptionCount.intValue > totalOptionSize.intValue) {
-                    answeredOptionCount.intValue = totalOptionSize.intValue
-                }*/
+
             }
 
             is QuestionTypeEvent.UpdateCalculationTypeQuestionValue -> {
@@ -510,14 +635,38 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 val form = storeCacheForResponse
                     .find { it.optionId == event.formQuestionResponseEntity.optionId }
                 if (form == null) {
-                    _storeCacheForResponse.add(event.formQuestionResponseEntity)
+                    if (event.formQuestionResponseEntity.selectedValue != BLANK_STRING)
+                        _storeCacheForResponse.add(event.formQuestionResponseEntity)
+                    conditionalQuestionNotMarked = false
                 } else {
-                    form.selectedValue = event.formQuestionResponseEntity.selectedValue
-                    val index = storeCacheForResponse.map { it.optionId }.indexOf(form.optionId)
-                        .coerceIn(0, storeCacheForResponse.size)
+                    val tempList = updatedOptionList.toList()
+                    val option =
+                        tempList.find { it.optionId == event.formQuestionResponseEntity.optionId }?.optionItemEntity
+                    if (event.formQuestionResponseEntity.selectedValue == BLANK_STRING) {
+                        if (option?.conditions == null) {
+                            val index =
+                                storeCacheForResponse.map { it.optionId }.indexOf(form.optionId)
+                                    .coerceIn(0, storeCacheForResponse.size)
 
-                    _storeCacheForResponse.removeAt(index)
-                    _storeCacheForResponse.add(index = index, form)
+                            _storeCacheForResponse.removeAt(index)
+                            conditionalQuestionNotMarked = false
+                        } else {
+                            conditionalQuestionNotMarked = true
+                            showCustomToast(
+                                BaselineCore.getAppContext(),
+                                BaselineCore.getAppContext()
+                                    .getString(R.string.madnatory_question_not_marked_error)
+                            )
+                        }
+                    } else {
+                        form.selectedValue = event.formQuestionResponseEntity.selectedValue
+                        val index = storeCacheForResponse.map { it.optionId }.indexOf(form.optionId)
+                            .coerceIn(0, storeCacheForResponse.size)
+
+                        _storeCacheForResponse.removeAt(index)
+                        _storeCacheForResponse.add(index = index, form)
+                        conditionalQuestionNotMarked = false
+                    }
                 }
                 updateCachedData()
             }
@@ -533,6 +682,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
                             questionType = event.questionType,
                             questionTag = event.questionTag,
                             questionDesc = event.questionDesc,
+                            referenceOptionList = updatedOptionListInDefaultLanguage.toList(),
                             saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
                         )
                     formQuestionScreenUseCase.eventsWriterUserCase.invoke(
@@ -618,8 +768,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
 //        _formQuestionResponseEntity.value = storeCacheForResponse
         val tempList = updatedOptionList.toList()
         totalOptionSize.intValue = tempList.distinctBy { it.optionId }.filter {
-            it
-                .optionItemEntity?.optionType != QuestionType.Form.name && it.optionItemEntity?.optionType != QuestionType.Calculation.name
+            it.optionItemEntity?.optionType != QuestionType.Form.name && it.optionItemEntity?.optionType != QuestionType.Calculation.name
         }.filter { it.showQuestion }.size
         answeredOptionCount.intValue =
             (storeCacheForResponse.size).coerceIn(0, totalOptionSize.intValue)

@@ -98,7 +98,7 @@ fun NestedLazyList(
     viewModel: BaseViewModel,
     sectionDetails: SectionListItem,
     sectionInfoButtonClicked: () -> Unit,
-    answeredQuestionCountIncreased: (question: QuestionEntityState, isAllMultipleTypeQuestionUnanswered: Boolean ) -> Unit,
+    answeredQuestionCountIncreased: (question: QuestionEntityState, isQuestionResponseUnanswered: Boolean) -> Unit,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -365,12 +365,12 @@ fun NestedLazyList(
 
 //                    if (sectionDetails.sectionName.equals(context.getString(R.string.didi_info), true) && questionScreenViewModel.didiInfoObjectLive.value?.isEmpty() == true) {
                     itemsIndexed(
-                        items = mQuestionEntity
+                        items = mQuestionEntity.sortedBy { it.questionEntity?.order }
                     ) { index, question ->
                         when (question?.questionEntity?.type) {
                             QuestionType.RadioButton.name -> {
                                 val selectedOption =
-                                    sectionDetails.questionAnswerMapping[question.questionId]?.first()
+                                    if (sectionDetails.questionAnswerMapping[question.questionId].isNullOrEmpty()) OptionItemEntity.getEmptyOptionItemEntity() else sectionDetails.questionAnswerMapping[question.questionId]?.first()
                                 val optionList =
                                     sectionDetails.optionsItemMap[question.questionId]
                                 val contentData =
@@ -462,7 +462,7 @@ fun NestedLazyList(
                             QuestionType.SingleSelect.name,
                             QuestionType.List.name -> {
                                 val selectedOption =
-                                    sectionDetails.questionAnswerMapping[question.questionId]?.first()
+                                    if (sectionDetails.questionAnswerMapping[question.questionId].isNullOrEmpty()) OptionItemEntity.getEmptyOptionItemEntity() else sectionDetails.questionAnswerMapping[question.questionId]?.first()
                                 val optionList =
                                     sectionDetails.optionsItemMap[question.questionId]
                                 val contentData =
@@ -481,8 +481,6 @@ fun NestedLazyList(
                                     maxCustomHeight = maxHeight,
                                     isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionIndex, optionItem ->
-
-                                        answeredQuestionCountIncreased(question, false)
 
                                         questionScreenViewModel.onEvent(
                                             QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(
@@ -538,7 +536,7 @@ fun NestedLazyList(
                                                 )
                                             )
                                         )
-
+                                        answeredQuestionCountIncreased(question, false)
                                     },
                                     questionDetailExpanded = {
                                         scope.launch {
@@ -582,11 +580,6 @@ fun NestedLazyList(
                                     maxCustomHeight = maxHeight,
                                     isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionIndex, optionItems, selectedIndeciesCount ->
-
-                                        answeredQuestionCountIncreased(
-                                            question,
-                                            optionItems.isEmpty()
-                                        )
 
                                         questionScreenViewModel.onEvent(
                                             QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(
@@ -642,6 +635,12 @@ fun NestedLazyList(
                                                 )
                                             )
                                         )
+
+                                        answeredQuestionCountIncreased(
+                                            question,
+                                            optionItems.isEmpty()
+                                        )
+
                                     },
                                     questionDetailExpanded = {
                                         scope.launch {
@@ -736,9 +735,11 @@ fun NestedLazyList(
                             QuestionType.InputNumber.name,
                             QuestionType.InputNumberEditText.name,
                             QuestionType.SingleSelectDropdown.name,
-                            QuestionType.SingleSelectDropDown.name -> {
+                            QuestionType.SingleSelectDropDown.name,
+                            QuestionType.HrsMinPicker.name,
+                            QuestionType.YrsMonthPicker.name -> {
                                 val selectedOption =
-                                    sectionDetails.questionAnswerMapping[question.questionId]?.first()
+                                    if (sectionDetails.questionAnswerMapping[question.questionId].isNullOrEmpty()) OptionItemEntity.getEmptyOptionItemEntity() else sectionDetails.questionAnswerMapping[question.questionId]?.first()
                                 val optionList =
                                     sectionDetails.optionsItemMap[question.questionId]
                                 val selectedOptionMapForNumericInputTypeQuestions =
@@ -773,15 +774,15 @@ fun NestedLazyList(
                                     isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionIndex, optionItem, selectedValue ->
 
-                                        answeredQuestionCountIncreased(question, false)
-
 
                                         when (optionItem.optionType) {
                                             QuestionType.Input.name,
                                             QuestionType.InputText.name,
                                             QuestionType.InputNumberEditText.name,
                                             QuestionType.SingleSelectDropdown.name,
-                                            QuestionType.SingleSelectDropDown.name -> {
+                                            QuestionType.SingleSelectDropDown.name,
+                                            QuestionType.HrsMinPicker.name,
+                                            QuestionType.YrsMonthPicker.name -> {
                                                 val mOptionItem =
                                                     optionItem.copy(selectedValue = selectedValue)
                                                 questionScreenViewModel.onEvent(
@@ -877,7 +878,9 @@ fun NestedLazyList(
                                             QuestionType.InputText.name,
                                             QuestionType.InputNumberEditText.name,
                                             QuestionType.SingleSelectDropdown.name,
-                                            QuestionType.SingleSelectDropDown.name -> {
+                                            QuestionType.SingleSelectDropDown.name,
+                                            QuestionType.HrsMinPicker.name,
+                                            QuestionType.YrsMonthPicker.name -> {
                                                 questionScreenViewModel.onEvent(
                                                     QuestionScreenEvents.SaveMiscTypeQuestionAnswers(
                                                         surveyeeId = surveyeeId,
@@ -931,6 +934,21 @@ fun NestedLazyList(
                                                     )
                                                 )
                                             )
+                                        }
+
+                                        when (question.questionEntity.type) {
+                                            QuestionType.Input.name,
+                                            QuestionType.InputText.name,
+                                            QuestionType.InputNumberEditText.name -> {
+                                                answeredQuestionCountIncreased(
+                                                    question,
+                                                    selectedValue == BLANK_STRING
+                                                )
+                                            }
+
+                                            else -> {
+                                                answeredQuestionCountIncreased(question, false)
+                                            }
                                         }
 
                                     },

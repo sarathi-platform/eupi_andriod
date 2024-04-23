@@ -8,9 +8,11 @@ import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 
 interface FormQuestionResponseRepository {
 
-    suspend fun getFormQuestionOptions(surveyId: Int,
-                                       sectionId: Int,
-                                       questionId: Int): List<OptionItemEntity>
+    suspend fun getFormQuestionOptions(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int, selectDefaultLanguage: Boolean = false
+    ): List<OptionItemEntity>
 
     suspend fun getFormResponsesForQuestion(
         surveyId: Int,
@@ -75,4 +77,6 @@ interface FormQuestionResponseRepository {
 
     suspend fun getQuestionTag(surveyId: Int, sectionId: Int, questionId: Int): Int
     suspend fun getContentFromDB(contentKey: String): ContentEntity
+
+    fun getBaseLineUserId(): String
 }

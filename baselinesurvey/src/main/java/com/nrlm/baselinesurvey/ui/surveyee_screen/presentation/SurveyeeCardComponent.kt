@@ -52,6 +52,7 @@ import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_20_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_3_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_4_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_6_dp
@@ -187,10 +188,12 @@ fun SurveyeeCardComponent(
                                 modifier = Modifier
                             ) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.home_icn),
+                                    painter = painterResource(
+                                        id = if (surveyeeState.isCohortName) R.drawable.ic_hamlet_name_icon else R.drawable.home_icn
+                                    ),
                                     contentDescription = "home icon",
                                     tint = Color.Black,
-                                    modifier = Modifier.height(dimen_18_dp)
+                                    modifier = Modifier.height(dimen_20_dp)
                                 )
                                 Spacer(modifier = Modifier.width(dimen_3_dp))
                                 Text(
@@ -200,6 +203,30 @@ fun SurveyeeCardComponent(
                                     ).toCamelCase()
                                     else surveyeeState.surveyeeDetails.villageName.toLowerCase()
                                         .toCamelCase(),
+                                    style = smallTextStyleMediumWeight,
+                                    color = textColorDark
+                                )
+                            }
+                        }
+                        if (!surveyeeState.activityName.equals("Conduct Hamlet Survey") && surveyeeState.surveyeeDetails.voName.isNotBlank()) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                            ) {
+                                Icon(
+                                    painter = painterResource(
+                                        R.drawable.ic_vo_name_icon,
+                                    ),
+                                    contentDescription = "home icon",
+                                    tint = Color.Black,
+                                    modifier = Modifier.height(dimen_20_dp)
+                                )
+                                Spacer(modifier = Modifier.width(dimen_3_dp))
+                                Text(
+
+                                    text = surveyeeState.surveyeeDetails.voName.toLowerCase(
+                                        Locale.current
+                                    ).toCamelCase(),
                                     style = smallTextStyleMediumWeight,
                                     color = textColorDark
                                 )
@@ -406,7 +433,7 @@ fun SurveyeeCardPreview() {
         villageId = 1,
         villageName = "Sundar Pahar",
         ableBodied = "No",
-        userId = 525,
+        userId = "",
         surveyStatus = SurveyState.COMPLETED.ordinal
     )
     Box(
