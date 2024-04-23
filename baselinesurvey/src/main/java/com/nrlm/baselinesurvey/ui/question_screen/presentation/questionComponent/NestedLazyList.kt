@@ -370,7 +370,7 @@ fun NestedLazyList(
                         when (question?.questionEntity?.type) {
                             QuestionType.RadioButton.name -> {
                                 val selectedOption =
-                                    sectionDetails.questionAnswerMapping[question.questionId]?.first()
+                                    if (sectionDetails.questionAnswerMapping[question.questionId].isNullOrEmpty()) OptionItemEntity.getEmptyOptionItemEntity() else sectionDetails.questionAnswerMapping[question.questionId]?.first()
                                 val optionList =
                                     sectionDetails.optionsItemMap[question.questionId]
                                 val contentData =
@@ -462,7 +462,7 @@ fun NestedLazyList(
                             QuestionType.SingleSelect.name,
                             QuestionType.List.name -> {
                                 val selectedOption =
-                                    sectionDetails.questionAnswerMapping[question.questionId]?.first()
+                                    if (sectionDetails.questionAnswerMapping[question.questionId].isNullOrEmpty()) OptionItemEntity.getEmptyOptionItemEntity() else sectionDetails.questionAnswerMapping[question.questionId]?.first()
                                 val optionList =
                                     sectionDetails.optionsItemMap[question.questionId]
                                 val contentData =
@@ -737,7 +737,7 @@ fun NestedLazyList(
                             QuestionType.SingleSelectDropdown.name,
                             QuestionType.SingleSelectDropDown.name -> {
                                 val selectedOption =
-                                    sectionDetails.questionAnswerMapping[question.questionId]?.first()
+                                    if (sectionDetails.questionAnswerMapping[question.questionId].isNullOrEmpty()) OptionItemEntity.getEmptyOptionItemEntity() else sectionDetails.questionAnswerMapping[question.questionId]?.first()
                                 val optionList =
                                     sectionDetails.optionsItemMap[question.questionId]
                                 val selectedOptionMapForNumericInputTypeQuestions =

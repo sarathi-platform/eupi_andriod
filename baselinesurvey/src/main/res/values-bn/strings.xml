@@ -442,5 +442,6 @@
     <string name="minute">মিনিটের</string>
     <string name="month">মাস</string>
 
+    <string name="data_fetching_and_processing">Data Fetching आरो Processing (डाटा)…</string>
 
 </resources>

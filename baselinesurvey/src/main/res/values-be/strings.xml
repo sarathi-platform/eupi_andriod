@@ -431,5 +431,5 @@
     <string name="years">बोसोरफोर</string>
     <string name="minute">मिनिट</string>
     <string name="month">दान</string>
-
+    <string name="data_fetching_and_processing">Data Fetching आरो Processing (डाटा)…</string>
 </resources>
