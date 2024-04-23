@@ -441,5 +441,6 @@
     <string name="years">বছৰ</string>
     <string name="minute">মিনিট</string>
     <string name="month">মাহ</string>
+    <string name="data_fetching_and_processing">ডাটা ফেচিং আৰু প্ৰচেছিং…</string>
 
 </resources>
