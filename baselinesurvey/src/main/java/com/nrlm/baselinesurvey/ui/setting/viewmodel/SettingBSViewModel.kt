@@ -33,7 +33,7 @@ class SettingBSViewModel @Inject constructor(
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val optionList: State<List<SettingOptionModel>> get() = _optionList
 
-    private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
+    private val _loaderState = mutableStateOf<LoaderState>(LoaderState(false))
     val loaderState: State<LoaderState> get() = _loaderState
 
 
@@ -107,17 +107,23 @@ class SettingBSViewModel @Inject constructor(
     }
 
     fun regenerateEvents(title: String) {
+        onEvent(LoaderEvent.UpdateLoaderState(true))
+
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
 
-                onEvent(LoaderEvent.UpdateLoaderState(true))
+
                 eventWriterHelperImpl.regenerateAllEvent()
                 compressEventData(title)
-
+                withContext(Dispatchers.Main) {
+                    onEvent(LoaderEvent.UpdateLoaderState(false))
+                }
             } catch (exception: Exception) {
                 BaselineLogger.e("RegenerateEvent", exception.message ?: "")
                 exception.printStackTrace()
-                onEvent(LoaderEvent.UpdateLoaderState(false))
+                withContext(Dispatchers.Main) {
+                    onEvent(LoaderEvent.UpdateLoaderState(false))
+                }
             }
 
         }

@@ -93,20 +93,7 @@ fun SettingBSScreen(
         viewModel._optionList.value = list
     }
 
-    if (loaderState.value.isLoaderVisible) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(
-                color = blueDark,
-                modifier = Modifier
-                    .size(28.dp)
-                    .align(Alignment.Center)
-            )
-        }
-    }
+
 
     CommonSettingScreen(
         title = stringResource(id = R.string.settings_screen_title),
@@ -148,4 +135,18 @@ fun SettingBSScreen(
            }
        }
    )
+    if (loaderState.value.isLoaderVisible) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                color = blueDark,
+                modifier = Modifier
+                    .size(28.dp)
+                    .align(Alignment.Center)
+            )
+        }
+    }
 }

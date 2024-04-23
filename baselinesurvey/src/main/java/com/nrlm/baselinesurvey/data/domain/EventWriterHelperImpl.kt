@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.data.domain
 
+import android.util.Log
 import androidx.core.net.toUri
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
@@ -32,14 +33,18 @@ import com.nrlm.baselinesurvey.model.datamodel.UpdateActivityStatusEventDto
 import com.nrlm.baselinesurvey.model.datamodel.UpdateMissionStatusEventDto
 import com.nrlm.baselinesurvey.model.datamodel.UpdateTaskStatusEventDto
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.Constants.ResultType
 import com.nrlm.baselinesurvey.ui.common_components.SHGFlag
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.EventsWriterRepositoryImpl
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.StatusReferenceType
 import com.nrlm.baselinesurvey.utils.convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto
+import com.nrlm.baselinesurvey.utils.convertFormTypeQuestionListToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.convertInputTypeQuestionToEventOptionItemDto
-import com.nrlm.baselinesurvey.utils.convertToSaveAnswerEventOptionItemDto
+import com.nrlm.baselinesurvey.utils.convertQuestionListToOptionItemEntity
+import com.nrlm.baselinesurvey.utils.convertToOptionItemEntity
+import com.nrlm.baselinesurvey.utils.convertToSaveAnswerEventOptionItemsDto
 import com.nrlm.baselinesurvey.utils.findTagForId
 import com.nrlm.baselinesurvey.utils.getFileNameFromURL
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
@@ -654,8 +659,14 @@ class EventWriterHelperImpl @Inject constructor(
     private suspend fun generateResponseEvent() {
         baselineDatabase.inputTypeQuestionAnswerDao()
             .getAllInputTypeAnswersForQuestion(prefRepo.getUniqueUserIdentifier()).forEach {
-                val tag = baselineDatabase.questionEntityDao()
-                    .getQuestionTag(getBaseLineUserId(), it.surveyId, it.sectionId, it.questionId)
+                val questionEntity = baselineDatabase.questionEntityDao()
+                    .getQuestionEntity(
+                        getBaseLineUserId(),
+                        it.surveyId,
+                        it.sectionId,
+                        it.questionId
+                    )
+
                 val optionList = baselineDatabase.optionItemDao()
                     .getSurveySectionQuestionOptions(
                         getBaseLineUserId(),
@@ -674,6 +685,9 @@ class EventWriterHelperImpl @Inject constructor(
                         )
                     )
                 }
+                if (questionEntity?.questionDisplay == "How much does didi get every month through PDS?") {
+                    Log.e("dd", "dd")
+                }
                 repositoryImpl.saveEventToMultipleSources(
                     createSaveAnswerEvent(
                         it.surveyId,
@@ -681,12 +695,12 @@ class EventWriterHelperImpl @Inject constructor(
                         it.didiId,
                         it.questionId,
                         QuestionType.Input.name,
-                        tag,
-                        "",
+                        questionEntity?.tag ?: 0,
+                        questionEntity?.questionDisplay ?: "",
                         true,
                         listOf(it).convertInputTypeQuestionToEventOptionItemDto(
                             it.questionId,
-                            QuestionType.Input,
+                            QuestionType.valueOf(questionEntity?.type ?: ""),
                             optionItemEntityState
                         )
                     ),
@@ -700,14 +714,13 @@ class EventWriterHelperImpl @Inject constructor(
             .forEach {
             val tag = baselineDatabase.questionEntityDao()
                 .getQuestionTag(getBaseLineUserId(), it.surveyId, it.sectionId, it.questionId)
-            val optionList = baselineDatabase.optionItemDao()
-                .getSurveySectionQuestionOptions(
-                    getBaseLineUserId(),
-                    it.sectionId,
-                    it.surveyId,
-                    it.questionId,
-                    2
-                )
+                val questionDisplay = baselineDatabase.questionEntityDao()
+                    .getQuestionDisplayName(
+                        getBaseLineUserId(),
+                        it.surveyId,
+                        it.sectionId,
+                        it.questionId
+                    )
 
 
             repositoryImpl.saveEventToMultipleSources(
@@ -718,9 +731,9 @@ class EventWriterHelperImpl @Inject constructor(
                     it.questionId,
                     it.questionType,
                     tag,
-                    it.questionSummary ?: "",
+                    questionDisplay,
                     true,
-                    optionList.convertToSaveAnswerEventOptionItemDto(QuestionType.valueOf(it.questionType))
+                    it.optionItems.convertToSaveAnswerEventOptionItemsDto(QuestionType.valueOf(it.questionType))
                 ), eventType = EventType.STATEFUL, eventDependencies = listOf()
             )
         }
@@ -771,7 +784,11 @@ class EventWriterHelperImpl @Inject constructor(
                         questionType = QuestionType.Form.name,
                         showQuestion = true,
                         questionDesc = question?.questionDisplay ?: "",
-                        referenceOptionList = listOf(),
+                        referenceOptionList = getOptionsInDefaultLanguage(
+                            didiResponse.surveyId,
+                            didiResponse.sectionId,
+                            didiResponse.questionId ?: 0
+                        ),
                         saveAnswerEventOptionItemDtoList = it.value.convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto(
                             QuestionType.Form,
                             optionItemEntityStateList
@@ -800,7 +817,11 @@ class EventWriterHelperImpl @Inject constructor(
                     questionType = didiInfoQuestion.type ?: QuestionType.DidiDetails.name,
                     questionTag = didiInfoQuestion.tag,
                     questionDesc = didiInfoQuestion.questionDisplay ?: "",
-                    referenceOptionList = listOf(),
+                    referenceOptionList = getOptionsInDefaultLanguage(
+                        didiInfoQuestion.surveyId,
+                        didiInfoQuestion.sectionId,
+                        didiInfoQuestion.questionId ?: 0
+                    ),
                     saveAnswerEventOptionItemDtoList = getSaveAnswerEventOptionItemDtoForDidiInfo(
                         didiInfoEntity,
                         didiInfoQuestion
@@ -838,7 +859,9 @@ class EventWriterHelperImpl @Inject constructor(
                     ).name
                     else didiInfoEntity.phoneNumber ?: BLANK_STRING,
                     referenceId = didiInfoEntity.didiId.toString(),
-                    tag = it.optionTag
+                    tag = it.optionTag,
+                    optionDesc = optionItemEntityList.find { option -> option.optionId == it.optionId }?.display
+                        ?: BLANK_STRING
                 )
                 saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
             }
@@ -966,4 +989,116 @@ class EventWriterHelperImpl @Inject constructor(
 
             }
     }
+
+    suspend fun getOptionsInDefaultLanguage(
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int
+    ): List<OptionItemEntityState> {
+        val updatedOptionListInDefaultLanguage = ArrayList<OptionItemEntityState>()
+        val optionList = baselineDatabase.optionItemDao().getSurveySectionQuestionOptions(
+            getBaseLineUserId(),
+            surveyId,
+            sectionId,
+            questionId,
+            DEFAULT_LANGUAGE_ID
+        )
+        optionList.forEach { optionItemEntity ->
+            updatedOptionListInDefaultLanguage.add(
+                OptionItemEntityState(
+                    optionId = optionItemEntity.optionId,
+                    optionItemEntity = optionItemEntity,
+                    showQuestion = true
+                )
+            )
+            optionItemEntity.conditions?.forEach { conditionsDto ->
+                when (conditionsDto?.resultType) {
+                    ResultType.Questions.name -> {
+                        conditionsDto?.resultList?.forEach { questionList ->
+                            if (questionList.type?.equals(QuestionType.Form.name, true) == true) {
+                                val mOptionItemEntityList =
+                                    questionList.convertFormTypeQuestionListToOptionItemEntity(
+                                        optionItemEntity.sectionId,
+                                        optionItemEntity.surveyId,
+                                        optionItemEntity.languageId ?: DEFAULT_LANGUAGE_ID
+                                    )
+                                mOptionItemEntityList.forEach { mOptionItemEntity ->
+                                    updatedOptionListInDefaultLanguage.add(
+                                        OptionItemEntityState(
+                                            mOptionItemEntity.optionId,
+                                            mOptionItemEntity,
+                                            false
+                                        )
+                                    )
+                                }
+                            }
+                            val mOptionItemEntity =
+                                questionList.convertQuestionListToOptionItemEntity(
+                                    optionItemEntity.sectionId,
+                                    optionItemEntity.surveyId
+                                )
+                            updatedOptionListInDefaultLanguage.add(
+                                OptionItemEntityState(
+                                    mOptionItemEntity.optionId,
+                                    mOptionItemEntity,
+                                    false
+                                )
+                            )
+
+                            // TODO Handle later correctly
+                            mOptionItemEntity.conditions?.forEach { conditionsDto2 ->
+                                if (conditionsDto2?.resultType.equals(
+                                        ResultType.Questions.name,
+                                        true
+                                    )
+                                ) {
+                                    conditionsDto2?.resultList?.forEach { subQuestionList ->
+                                        val mOptionItemEntity2 =
+                                            subQuestionList.convertQuestionListToOptionItemEntity(
+                                                mOptionItemEntity.sectionId,
+                                                mOptionItemEntity.surveyId
+                                            )
+                                        updatedOptionListInDefaultLanguage.add(
+                                            OptionItemEntityState(
+                                                mOptionItemEntity2.optionId,
+                                                mOptionItemEntity2,
+                                                false
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    ResultType.Options.name -> {
+                        conditionsDto?.resultList?.forEach { questionList ->
+                            val mOptionItemEntity =
+                                questionList.convertToOptionItemEntity(
+                                    sectionId,
+                                    surveyId,
+                                    questionId,
+                                    languageId = optionItemEntity.languageId ?: DEFAULT_LANGUAGE_ID
+                                )
+                            updatedOptionListInDefaultLanguage.add(
+                                OptionItemEntityState(
+                                    mOptionItemEntity.optionId,
+                                    mOptionItemEntity,
+                                    false
+                                )
+                            )
+                        }
+                    }
+
+                    ResultType.Formula.name -> {
+
+                    }
+                }
+            }
+        }
+
+        return updatedOptionListInDefaultLanguage
+    }
+
+
 }
