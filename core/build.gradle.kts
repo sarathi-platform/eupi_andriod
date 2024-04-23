@@ -72,4 +72,7 @@ dependencies {
     //Firebase Firestore
     implementation("com.google.firebase:firebase-firestore")
 
+    //CSV Export
+    implementation ("com.opencsv:opencsv:5.3")
+
 }

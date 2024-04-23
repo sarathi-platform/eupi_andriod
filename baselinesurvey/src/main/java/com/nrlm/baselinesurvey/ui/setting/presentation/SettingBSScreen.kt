@@ -82,6 +82,14 @@ fun SettingBSScreen(
                 SettingTagEnum.EXPORT_FILE.name
             )
         )
+        list.add(
+            SettingOptionModel(
+                5,
+                context.getString(R.string.export_baseline_qna),
+                BLANK_STRING,
+                SettingTagEnum.EXPORT_BASELINE_QNA.name
+            )
+        )
         viewModel._optionList.value = list
     }
 
@@ -125,6 +133,9 @@ fun SettingBSScreen(
 
                 SettingTagEnum.EXPORT_FILE.name -> {
                     viewModel.compressEventData(context.getString(R.string.share_export_file))
+                }
+                SettingTagEnum.EXPORT_BASELINE_QNA.name -> {
+                    viewModel.exportBaseLineQnA()
                 }
             }
        },

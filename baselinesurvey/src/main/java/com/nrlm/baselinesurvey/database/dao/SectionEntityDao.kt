@@ -24,5 +24,7 @@ interface SectionEntityDao {
     @Query("Select * from $SECTION_TABLE")
     fun getSections(): List<SectionEntity?>?
 
+    @Query("Select * from $SECTION_TABLE")
+    fun getSectionsT(): List<SectionEntity>
 
 }
