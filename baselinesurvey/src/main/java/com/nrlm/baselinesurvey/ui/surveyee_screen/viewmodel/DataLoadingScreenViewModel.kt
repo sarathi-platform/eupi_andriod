@@ -160,6 +160,7 @@ class DataLoadingScreenViewModel @Inject constructor(
                 val languagesSize =
                     (fetchDataUseCase.fetchSurveyFromNetworkUseCase.getLanguages().size * 2)
                 SURVEY_API_CALL = languagesSize
+                //TODO need to be 7 make it dynamic
                 TOTAL_API_CALL = 7 + languagesSize
                 if (fetchUserDetailData(fetchDataUseCase) {}) {
                     fetchCasteData(fetchDataUseCase) {}
