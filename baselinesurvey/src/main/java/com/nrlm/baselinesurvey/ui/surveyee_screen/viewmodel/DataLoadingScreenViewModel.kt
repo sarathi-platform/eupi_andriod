@@ -5,13 +5,18 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.nrlm.baselinesurvey.DEFAULT_SUCCESS_CODE
+import com.nrlm.baselinesurvey.R
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
+import com.nrlm.baselinesurvey.ui.common_components.common_events.ApiStatusEvent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.DialogEvents
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.DialogState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.toTimeDateString
@@ -51,6 +56,21 @@ class DataLoadingScreenViewModel @Inject constructor(
                     .copy(
                         isDialogVisible = event.showDialog
                     )
+            }
+
+            is ApiStatusEvent.showApiStatus -> {
+                if (event.errorCode == DEFAULT_SUCCESS_CODE) {
+                    showCustomToast(
+                        BaselineCore.getAppContext(), BaselineCore.getAppContext().getString(
+                            R.string.fetched_successfully
+                        )
+                    )
+                } else {
+                    showCustomToast(
+                        BaselineCore.getAppContext(),
+                        event.message
+                    )
+                }
             }
         }
     }

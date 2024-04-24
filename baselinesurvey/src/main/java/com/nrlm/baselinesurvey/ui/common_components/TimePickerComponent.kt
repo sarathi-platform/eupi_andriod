@@ -200,7 +200,7 @@ fun getFirstValue(typePicker: String, defaultValue: String): String {
             DELIMITER_YEAR,
             ignoreCase = true
         )
-            .first() else "0000"
+            .first() else "00"
     }
     return BLANK_STRING
 }

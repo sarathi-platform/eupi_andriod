@@ -5,16 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.model.datamodel.ErrorModel
 import com.nrlm.baselinesurvey.ui.auth.presentation.LoginScreenEvent
 import com.nrlm.baselinesurvey.ui.auth.presentation.MobileNumberState
 import com.nrlm.baselinesurvey.ui.auth.use_case.LoginScreenUseCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
-import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,7 +40,6 @@ class LoginScreenViewModel @Inject constructor(
             is LoginScreenEvent.GenerateOtpEvent -> {
                 onEvent(LoaderEvent.UpdateLoaderState(true))
                 job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-                    try {
                         val loginResponse = loginScreenUseCase.generateOtpUseCase.invoke(event.mobileNumber.text) /*ApiResponseModel<String>(status = SUCCESS, "Otp successfully Send", data = "Otp successfully Send")*/
                         if (loginResponse.status.equals(SUCCESS, true)) {
                             _mobileNumberState.value = _mobileNumberState.value.copy(
@@ -57,14 +55,7 @@ class LoginScreenViewModel @Inject constructor(
                             )
                             onEvent(LoaderEvent.UpdateLoaderState(false))
                         }
-                    } catch (ex: Exception) {
-                        BaselineLogger.e(TAG, "GenerateOtpEvent-> exception: ${ex.message}", ex)
-                        _mobileNumberState.value = _mobileNumberState.value.copy(
-                            isMobileNumberValidatedFromServer = false,
-                            errorMessage = ex.message ?: "Something went wrong, please try again later!"
-                        )
-                        onEvent(LoaderEvent.UpdateLoaderState(false))
-                    }
+
 
                 }
             }
@@ -76,6 +67,13 @@ class LoginScreenViewModel @Inject constructor(
         }
     }
 
+    override fun onServerError(error: ErrorModel?) {
+        _mobileNumberState.value = _mobileNumberState.value.copy(
+            isMobileNumberValidatedFromServer = false,
+            errorMessage = error?.message ?: "Something went wrong, please try again later!"
+        )
+        onEvent(LoaderEvent.UpdateLoaderState(false))
+    }
     fun resetMobileNumberState() {
         _mobileNumberState.value = _mobileNumberState.value.copy(
             isMobileNumberValidatedFromServer = false,
