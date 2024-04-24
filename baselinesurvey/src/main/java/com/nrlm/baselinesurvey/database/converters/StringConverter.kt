@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nrlm.baselinesurvey.BLANK_STRING
 
+//TODO change back to string converter and use different converter for ValuesDto
 class StringConverter {
     @TypeConverter
     fun fromOptionValuesList(optionValues: List<String?>?): String? {

@@ -26,6 +26,13 @@ interface FormQuestionResponseDao {
         didiId: Int
     ): List<FormQuestionResponseEntity>
 
+    @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where surveyId=:surveyId AND sectionId=:sectionId AND didiId = :didiId")
+    fun getFormResponsesForSection(
+        surveyId: Int,
+        sectionId: Int,
+        didiId: Int
+    ): List<FormQuestionResponseEntity>
+
     @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId and didiId = :didiId")
     fun getFormResponsesForQuestionLive(
         surveyId: Int,

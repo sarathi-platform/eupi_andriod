@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository
 
+import android.text.TextUtils
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -148,9 +149,6 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                 contentLists.addAll(section.contentList)
                 sectionEntityDao.insertSection(sectionEntity)
                 section.questionList.forEach { question ->
-                    if (section.sectionId == 8) {
-                        Log.d("invoke", "section.questionList.forEach -> ${question} \n\n\n")
-                    }
                     saveQuestionAndOptionsToDb(
                         question = question,
                         section,
@@ -402,6 +400,9 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getUserId(): Int {
+        if (TextUtils.isEmpty(prefRepo.getPref(PREF_KEY_USER_NAME, ""))) {
+            return 0
+        }
         return prefRepo.getPref(PREF_KEY_USER_NAME, "")?.toInt() ?: 0
     }
 

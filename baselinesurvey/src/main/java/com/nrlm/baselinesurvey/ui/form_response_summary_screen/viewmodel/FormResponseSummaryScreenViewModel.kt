@@ -180,8 +180,32 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
                                 optionItemEntity.surveyId,
                                 optionItemEntity.languageId!!
                             )
-                            if (option != null)
+                            if (option != null) {
                                 optionItemList.add(option)
+                                option.conditions?.forEach { subConditionsDto ->
+                                    if (subConditionsDto?.resultType?.equals(
+                                            ResultType.Questions.name,
+                                            true
+                                        ) == true
+                                    ) {
+                                        subConditionsDto?.resultList?.forEach { subQuestionItem ->
+                                            subQuestionItem.options?.forEach { subSubOption ->
+                                                val subOptionEntity =
+                                                    subSubOption?.convertToOptionItemEntity(
+                                                        optionItemEntity.questionId!!,
+                                                        optionItemEntity.sectionId,
+                                                        optionItemEntity.surveyId,
+                                                        optionItemEntity.languageId!!
+                                                    )
+                                                if (subOptionEntity != null) {
+                                                    optionItemList.add(subOptionEntity)
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                }
+                            }
                         }
                     }
                 }

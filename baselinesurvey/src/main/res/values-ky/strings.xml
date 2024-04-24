@@ -471,4 +471,7 @@
     <string name="madnatory_question_not_marked_error">All mandatory questions not answered, please answer all questions!</string>
     <string name="view_label">View</string>
     <string name="task_completed_label">"Activity Completed - "</string>
+    <string name="purpose_comparision">What is the purpose of your farming?</string>
+    <string name="net_income_label">Net income per year</string>
+    <string name="net_income_comparision">Net income per year</string>
 </resources>
