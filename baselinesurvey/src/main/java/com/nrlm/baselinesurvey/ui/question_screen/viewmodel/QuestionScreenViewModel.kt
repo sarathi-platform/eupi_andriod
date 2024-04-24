@@ -1127,8 +1127,7 @@ class QuestionScreenViewModel @Inject constructor(
                         sectionId = sectionDetail.value.sectionId,
                         questionId = event.questionId,
                         optionId = event.optionId,
-                        selectedValue = question?.optionItemEntityState?.find { it.optionId == event.optionId }?.optionItemEntity?.display
-                            ?: BLANK_STRING,
+                        selectedValue = "Yes",
                         referenceId = UUID.randomUUID().toString()
                     )
 
