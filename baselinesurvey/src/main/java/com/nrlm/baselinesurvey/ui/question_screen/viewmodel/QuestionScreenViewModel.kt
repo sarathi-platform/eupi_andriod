@@ -1508,8 +1508,11 @@ class QuestionScreenViewModel @Inject constructor(
         }
     }
 
-    fun getOptionItemListWithConditionals(): List<OptionItemEntity> {
+    fun getOptionItemListWithConditionals(questionId: Int): List<OptionItemEntity> {
         val optionItemList = mutableListOf<OptionItemEntity>()
+
+        optionItemEntityList = sectionDetail.value.optionsItemMap[questionId] ?: emptyList()
+
         optionItemEntityList.forEach { option ->
             optionItemList.add(option)
         }
@@ -1525,8 +1528,32 @@ class QuestionScreenViewModel @Inject constructor(
                                 optionItemEntity.surveyId,
                                 optionItemEntity.languageId!!
                             )
-                            if (option != null)
+                            if (option != null) {
                                 optionItemList.add(option)
+                                option.conditions?.forEach { subConditionsDto ->
+                                    if (subConditionsDto?.resultType?.equals(
+                                            ResultType.Questions.name,
+                                            true
+                                        ) == true
+                                    ) {
+                                        subConditionsDto?.resultList?.forEach { subQuestionItem ->
+                                            subQuestionItem.options?.forEach { subSubOption ->
+                                                val subOptionEntity =
+                                                    subSubOption?.convertToOptionItemEntity(
+                                                        optionItemEntity.questionId!!,
+                                                        optionItemEntity.sectionId,
+                                                        optionItemEntity.surveyId,
+                                                        optionItemEntity.languageId!!
+                                                    )
+                                                if (subOptionEntity != null) {
+                                                    optionItemList.add(subOptionEntity)
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                }
+                            }
                         }
                     }
                 }
@@ -1563,7 +1590,7 @@ class QuestionScreenViewModel @Inject constructor(
 
         val netIncomeValue = ArrayList<String>()
 
-        val optionsWithNetIncome = getOptionItemListWithConditionals().filter {
+        val optionsWithNetIncome = getOptionItemListWithConditionals(questionId).filter {
             it.display?.contains(
                 context.getString(R.string.net_income_comparision),
                 true
@@ -1578,7 +1605,10 @@ class QuestionScreenViewModel @Inject constructor(
         }
 
         val expression = netIncomeValue.joinToString("+")
-        return CalculatorUtils.calculate(expression)
+        if (expression != BLANK_STRING)
+            return CalculatorUtils.calculate(expression)
+        else
+            return 0.0f
 
     }
 

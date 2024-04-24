@@ -49,7 +49,6 @@ import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
-import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
@@ -670,7 +669,11 @@ fun NestedLazyList(
                                         question.questionId
                                     )
 
-
+                                val summaryValue =
+                                    questionScreenViewModel.getTotalIncomeForLivelihoodQuestion(
+                                        context,
+                                        question.questionId ?: 0
+                                    )
 
                                 FormTypeQuestionComponent(
                                     question = question.questionEntity,
@@ -679,6 +682,7 @@ fun NestedLazyList(
                                     contests = contentData,
                                     itemCount = itemCount,
                                     maxCustomHeight = maxHeight,
+                                    summaryValue = summaryValue.toString(),
                                     isEditAllowed = questionScreenViewModel.isEditAllowed
                                             && !(questionScreenViewModel.isNoneMarkedForFormQuestion.value[question.questionId
                                         ?: 0] ?: false || questionScreenViewModel.isFormQuestionMarkedWithNone(
@@ -1000,8 +1004,8 @@ fun NestedLazyList(
                     ) {
                         item {
                             Column {
-                                val optionItemListWithConditionals: List<OptionItemEntity> =
-                                    questionScreenViewModel.getOptionItemListWithConditionals()
+//                                val optionItemListWithConditionals: List<OptionItemEntity> =
+//                                    questionScreenViewModel.getOptionItemListWithConditionals()
                                 questionScreenViewModel.didiInfoObjectLive.value?.distinctBy { it.didiId }
                                     ?.forEach { didiInfoEntity ->
 
