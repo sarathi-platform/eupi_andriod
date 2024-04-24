@@ -1,6 +1,6 @@
 package com.nrlm.baselinesurvey.ui.setting.viewmodel
 
-import android.app.DownloadManager
+
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
@@ -11,9 +11,8 @@ import androidx.core.content.FileProvider
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
-import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
-import com.nrlm.baselinesurvey.database.entity.SectionEntity
+import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventDto
 import com.nrlm.baselinesurvey.model.datamodel.toCsv
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SettingBSUserCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
@@ -21,6 +20,7 @@ import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LogWriter
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nrlm.baselinesurvey.utils.toDto
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.datamodel.BaseLineQnATableCSV
@@ -28,6 +28,7 @@ import com.nudge.core.exportcsv.CsvConfig
 import com.nudge.core.exportcsv.ExportService
 import com.nudge.core.exportcsv.Exports
 import com.nudge.core.model.SettingOptionModel
+import com.nudge.core.model.request.EventRequest
 import com.nudge.core.preference.CoreSharedPrefs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -107,27 +108,31 @@ class SettingBSViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 onEvent(LoaderEvent.UpdateLoaderState(true))
-                val didiEntity = sectionEntityDao.getSectionsT()
+                val formAnswerString = "{\"created_by\":\"1637\",\"created_date\":\"Tue Apr 23 17:05:46 GMT+05:30 2024\",\"event_name\":\"SAVE_RESPONSE_EVENT\",\"topic_name\":\"SAVE_RESPONSE_EVENT\",\"client_id\":\"2f285705-9860-471c-a174-bde98178b94e\",\"metadata\":\"{\\\"depends_on\\\":[],\\\"mission\\\":\\\"BASELINE\\\",\\\"parentEntity\\\":{},\\\"request_payload_size\\\":553}\",\"mobile_no\":\"6789543210\",\"modified_date\":\"Tue Apr 23 17:05:46 GMT+05:30 2024\",\"payload\":\"{\\\"dateCreated\\\":1713872146014,\\\"languageId\\\":2,\\\"question\\\":{\\\"options\\\":[{\\\"optionDesc\\\":\\\"\\\",\\\"optionId\\\":1,\\\"referenceId\\\":\\\"\\\",\\\"selectedValue\\\":\\\"Fruits\\\",\\\"tag\\\":0},{\\\"optionDesc\\\":\\\"\\\",\\\"optionId\\\":4,\\\"referenceId\\\":\\\"\\\",\\\"selectedValue\\\":\\\"Fish\\\",\\\"tag\\\":0},{\\\"optionDesc\\\":\\\"\\\",\\\"optionId\\\":2,\\\"referenceId\\\":\\\"\\\",\\\"selectedValue\\\":\\\"Egg\\\",\\\"tag\\\":0}],\\\"questionDesc\\\":\\\"Which of the following did didi consume at least once in the last 7 days?\\\",\\\"questionId\\\":5,\\\"questionType\\\":\\\"MultiSelect\\\",\\\"showQuestion\\\":true,\\\"tag\\\":33},\\\"referenceId\\\":31,\\\"sectionId\\\":3,\\\"subjectId\\\":8680,\\\"subjectType\\\":\\\"Didi\\\",\\\"surveyId\\\":1}\"}"
+                val formAnswer = formAnswerString.toDto(EventRequest::class.java)
+                val didiEntity = formAnswer.payload?.toDto(SaveAnswerEventDto::class.java)
 
-                ExportService.export<BaseLineQnATableCSV>(
-                    type = Exports.CSV(CsvConfig(prefix = "SECTION-${prefRepo.getMobileNumber()}", hostPath = BaselineCore.getAppContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath ?:  "")),
-                    content = didiEntity.toCsv()
-                ).catch { error ->
-                    Log.i("PATH", "Error$error")
-                    // handle error here
-//                    BaselineLogger.e(TAG, "exportDidiTableToCsv error", error)
-                }.collect{path ->
-                    Log.i("PATH" , path)
+                if (didiEntity != null) {
+                    ExportService.export<BaseLineQnATableCSV>(
+                        type = Exports.CSV(CsvConfig(prefix = "SECTION-${prefRepo.getMobileNumber()}", hostPath = BaselineCore.getAppContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath ?:  "")),
+                        content = listOf(didiEntity.toCsv())
+                    ).catch { error ->
+                        Log.i("PATH", "Error$error")
+                        // handle error here
+            //                    BaselineLogger.e(TAG, "exportDidiTableToCsv error", error)
+                    }.collect{path ->
+                        Log.i("PATH" , path)
 
-                    // Open CSV file in a reader app
-                    val file = File(path)
-                    val uri = FileProvider.getUriForFile(BaselineCore.getAppContext(), BaselineCore.getAppContext().packageName + ".provider", file)
-                    val intent = Intent(Intent.ACTION_VIEW)
-                    intent.setDataAndType(uri, "text/csv")
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    BaselineCore.startExternalApp(intent)
+                        // Open CSV file in a reader app
+                        val file = File(path)
+                        val uri = FileProvider.getUriForFile(BaselineCore.getAppContext(), BaselineCore.getAppContext().packageName + ".provider", file)
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        intent.setDataAndType(uri, "text/csv")
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        BaselineCore.startExternalApp(intent)
 
+                    }
                 }
 //                val compression = ZipFileCompression()
 //                val fileUri = compression.compressBackupFiles(

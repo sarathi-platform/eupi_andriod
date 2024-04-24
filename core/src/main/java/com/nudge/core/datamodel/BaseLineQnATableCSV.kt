@@ -6,7 +6,7 @@ import com.opencsv.bean.CsvBindByName
 
 data class BaseLineQnATableCSV(
 @CsvBindByName(column = "id")
-var id: Int,
+var id: Int? = 0,
 
 @CsvBindByName(column = "question")
 var question : String? = BLANK_STRING,

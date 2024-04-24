@@ -1048,3 +1048,7 @@ fun <T> String.toDto(): T{
     val type = object : TypeToken<T?>() {}.type
     return Gson().fromJson(this, type)
 }
+
+inline fun <reified T> String.toDto(clazz: Class<T>): T {
+    return Gson().fromJson(this, clazz)
+}

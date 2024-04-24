@@ -6,7 +6,6 @@ enum class SettingTagEnum {
     LANGUAGE,
     SHARE_LOGS,
     EXPORT_FILE,
-    REGENERATE_EVENTS
-    EXPORT_FILE,
+    REGENERATE_EVENTS,
     EXPORT_BASELINE_QNA,
 }
