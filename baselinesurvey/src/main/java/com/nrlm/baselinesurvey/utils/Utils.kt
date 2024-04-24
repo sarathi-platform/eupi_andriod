@@ -738,6 +738,63 @@ fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType?):
     return saveAnswerEventOptionItemDtoList
 }
 
+fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: QuestionType?): List<SaveAnswerEventOptionItemDto> {
+    val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
+
+    if (type == null)
+        return saveAnswerEventOptionItemDtoList
+    this.forEach {
+        when (type) {
+            QuestionType.RadioButton -> {
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+            }
+
+            QuestionType.List,
+            QuestionType.SingleSelect -> {
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+            }
+
+            QuestionType.SingleSelectDropDown,
+            QuestionType.SingleSelectDropdown -> {
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.selectedValue)
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+            }
+
+            QuestionType.Input,
+            QuestionType.InputText,
+            QuestionType.InputNumber,
+            QuestionType.InputNumberEditText -> {
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(
+                        it.optionId ?: 0,
+                        it.selectedValue,
+                        optionDesc = it.display ?: BLANK_STRING
+                    )
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+            }
+
+            QuestionType.MultiSelect,
+            QuestionType.Grid -> {
+
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+
+            }
+
+            else -> {
+
+            }
+
+        }
+    }
+    return saveAnswerEventOptionItemDtoList
+}
 fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemDto(type: QuestionType): List<SaveAnswerEventOptionItemDto> {
     val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
     when (type) {

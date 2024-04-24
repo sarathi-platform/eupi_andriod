@@ -1,6 +1,9 @@
 package com.nrlm.baselinesurvey.model.datamodel
 
 import com.google.gson.annotations.SerializedName
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
+import com.nrlm.baselinesurvey.database.entity.QuestionEntity
+import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 
@@ -66,6 +69,37 @@ data class ImageUploadRequest(
                 optionId = option?.optionId ?: 0,
                 referenceId = referenceId,
                 optionTag = option?.optionTag ?: 0
+            )
+        }
+
+        fun getRequestObjectForUploadImage(
+            didi: SurveyeeEntity,
+            subjectType: String,
+            filePath: String,
+            location: String,
+            userType: String,
+            referenceId: String,
+            questionEntity: QuestionEntity?,
+            optionItemEntity: OptionItemEntity?,
+            sectionDetails: SectionEntity,
+            questionId: Int
+        ): ImageUploadRequest {
+            return ImageUploadRequest(
+                subjectId = didi.didiId.toString(),
+                filePath = filePath,
+                userType = userType,
+                location = location,
+                dateCreated = System.currentTimeMillis(),
+                languageId = sectionDetails.languageId,
+                subjectType = subjectType,
+                surveyId = sectionDetails.surveyId,
+                sectionId = sectionDetails.sectionId,
+                questionId = questionId,
+                questionType = questionEntity?.type ?: QuestionType.Form.name,
+                tag = questionEntity?.tag ?: 0,
+                optionId = optionItemEntity?.optionId ?: 0,
+                referenceId = referenceId,
+                optionTag = optionItemEntity?.optionTag ?: 0
             )
         }
     }

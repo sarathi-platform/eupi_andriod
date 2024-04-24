@@ -190,6 +190,20 @@ fun SettingScreen(
         list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
         list.add(SettingOptionModel(7, stringResource(id = R.string.export_file), BLANK_STRING))
         list.add(SettingOptionModel(8, stringResource(id = R.string.load_server_data), BLANK_STRING))
+        list.add(
+            SettingOptionModel(
+                9,
+                stringResource(id = R.string.regenerate_event_file),
+                BLANK_STRING
+            )
+        )
+        /*if (BuildConfig.DEBUG) *//*list.add(
+            SettingOptionModel(
+                6,
+                stringResource(id = R.string.user_bug_report_text),
+                BLANK_STRING
+            )
+        )*/
     }
     viewModel.createSettingMenu(list)
 
@@ -426,6 +440,9 @@ fun SettingScreen(
                                     }
                                 }
 
+                                9 -> {
+                                    viewModel.regenerateEventFile(context.getString(R.string.share_export_file))
+                                }
                                 else -> {
                                     showCustomToast(
                                         context,

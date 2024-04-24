@@ -9,6 +9,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.FileProvider
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
@@ -41,12 +42,13 @@ import javax.inject.Inject
 class SettingBSViewModel @Inject constructor(
     private val settingBSUserCase: SettingBSUserCase,
     private val sectionEntityDao: SectionEntityDao,
+    private val eventWriterHelperImpl: EventWriterHelperImpl,
     val prefRepo: PrefRepo
 ):BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val optionList: State<List<SettingOptionModel>> get() = _optionList
 
-    private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
+    private val _loaderState = mutableStateOf<LoaderState>(LoaderState(false))
     val loaderState: State<LoaderState> get() = _loaderState
 
 
@@ -167,6 +169,29 @@ class SettingBSViewModel @Inject constructor(
                     isLoaderVisible = event.showLoader
                 )
             }
+        }
+    }
+
+    fun regenerateEvents(title: String) {
+        onEvent(LoaderEvent.UpdateLoaderState(true))
+
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+
+
+                eventWriterHelperImpl.regenerateAllEvent()
+                compressEventData(title)
+                withContext(Dispatchers.Main) {
+                    onEvent(LoaderEvent.UpdateLoaderState(false))
+                }
+            } catch (exception: Exception) {
+                BaselineLogger.e("RegenerateEvent", exception.message ?: "")
+                exception.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    onEvent(LoaderEvent.UpdateLoaderState(false))
+                }
+            }
+
         }
     }
 }

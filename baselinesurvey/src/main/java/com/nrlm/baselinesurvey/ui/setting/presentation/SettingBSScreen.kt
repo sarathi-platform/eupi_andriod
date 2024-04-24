@@ -84,6 +84,14 @@ fun SettingBSScreen(
         )
         list.add(
             SettingOptionModel(
+                6,
+                context.getString(R.string.regenerate_all_events),
+                BLANK_STRING,
+                SettingTagEnum.REGENERATE_EVENTS.name
+            )
+        )
+        list.add(
+            SettingOptionModel(
                 5,
                 context.getString(R.string.export_baseline_qna),
                 BLANK_STRING,
@@ -93,20 +101,7 @@ fun SettingBSScreen(
         viewModel._optionList.value = list
     }
 
-    if (loaderState.value.isLoaderVisible) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(
-                color = blueDark,
-                modifier = Modifier
-                    .size(28.dp)
-                    .align(Alignment.Center)
-            )
-        }
-    }
+
 
     CommonSettingScreen(
         title = stringResource(id = R.string.settings_screen_title),
@@ -134,6 +129,10 @@ fun SettingBSScreen(
                 SettingTagEnum.EXPORT_FILE.name -> {
                     viewModel.compressEventData(context.getString(R.string.share_export_file))
                 }
+
+                SettingTagEnum.REGENERATE_EVENTS.name -> {
+                    viewModel.regenerateEvents(context.getString(R.string.share_export_file))
+                }
                 SettingTagEnum.EXPORT_BASELINE_QNA.name -> {
                     viewModel.exportBaseLineQnA()
                 }
@@ -147,4 +146,18 @@ fun SettingBSScreen(
            }
        }
    )
+    if (loaderState.value.isLoaderVisible) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                color = blueDark,
+                modifier = Modifier
+                    .size(28.dp)
+                    .align(Alignment.Center)
+            )
+        }
+    }
 }

@@ -18,24 +18,32 @@ interface FormQuestionResponseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addFormResponseList(formQuestionResponses: List<FormQuestionResponseEntity>)
 
-    @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId and didiId = :didiId")
+    @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where userId=:userId and surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId and didiId = :didiId")
     fun getFormResponsesForQuestion(
+        userId: String,
         surveyId: Int,
         sectionId: Int,
         questionId: Int,
         didiId: Int
     ): List<FormQuestionResponseEntity>
 
-    @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId and didiId = :didiId")
+    @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where userId=:userId")
+    fun getAllFormResponses(
+        userId: String,
+    ): List<FormQuestionResponseEntity>
+
+    @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where  userId=:userId and surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId and didiId = :didiId")
     fun getFormResponsesForQuestionLive(
+        userId: String,
         surveyId: Int,
         sectionId: Int,
         questionId: Int,
         didiId: Int
     ): LiveData<List<FormQuestionResponseEntity>>
 
-    @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND referenceId = :referenceId AND didiId = :didiId and optionId = :optionId")
+    @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where   userId=:userId and surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND referenceId = :referenceId AND didiId = :didiId and optionId = :optionId")
     fun getFormResponsesForQuestionOption(
+        userId: String,
         surveyId: Int,
         sectionId: Int,
         questionId: Int,
@@ -44,8 +52,9 @@ interface FormQuestionResponseDao {
         optionId: Int
     ): List<FormQuestionResponseEntity>
 
-    @Query("SELECT COUNT(*) from $FORM_QUESTION_RESPONSE_TABLE where surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND referenceId = :referenceId AND didiId = :didiId and optionId = :optionId")
+    @Query("SELECT COUNT(*) from $FORM_QUESTION_RESPONSE_TABLE where  userId=:userId and surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND referenceId = :referenceId AND didiId = :didiId and optionId = :optionId")
     fun isQuestionOptionAlreadyAnswered(
+        userId: String,
         surveyId: Int,
         sectionId: Int,
         questionId: Int,
@@ -54,8 +63,9 @@ interface FormQuestionResponseDao {
         optionId: Int
     ): Int
 
-    @Query("Update $FORM_QUESTION_RESPONSE_TABLE set selectedValue = :selectedValue where didiId = :didiId AND surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND optionId = :optionId AND referenceId = :referenceId")
+    @Query("Update $FORM_QUESTION_RESPONSE_TABLE set selectedValue = :selectedValue where  userId=:userId and  didiId = :didiId AND surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND optionId = :optionId AND referenceId = :referenceId")
     fun updateOptionItemValue(
+        userId: String,
         surveyId: Int,
         sectionId: Int,
         questionId: Int,
@@ -66,22 +76,27 @@ interface FormQuestionResponseDao {
     )
 
 
-    @Query("SELECT COUNT(*) from $FORM_QUESTION_RESPONSE_TABLE where surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND referenceId = :referenceId AND didiId = :didiId and optionId = :optionId")
-    fun getOptionItem(surveyId: Int,
+    @Query("SELECT COUNT(*) from $FORM_QUESTION_RESPONSE_TABLE where userId=:userId and  surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND referenceId = :referenceId AND didiId = :didiId and optionId = :optionId")
+    fun getOptionItem(
+        userId: String, surveyId: Int,
                       sectionId: Int,
                       questionId: Int,
                       optionId: Int,
                       referenceId: String,
                       didiId: Int): Int
 
-    @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where referenceId = :referenceId")
-    fun getFormResponseForReferenceId(referenceId: String): List<FormQuestionResponseEntity>
+    @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where userId=:userId and referenceId = :referenceId")
+    fun getFormResponseForReferenceId(
+        userId: String,
+        referenceId: String
+    ): List<FormQuestionResponseEntity>
 
-    @Query("DELETE from $FORM_QUESTION_RESPONSE_TABLE where referenceId = :referenceId")
-    fun deleteFormResponseQuestionForReferenceId(referenceId: String)
+    @Query("DELETE from $FORM_QUESTION_RESPONSE_TABLE where userId=:userId and referenceId = :referenceId")
+    fun deleteFormResponseQuestionForReferenceId(userId: String, referenceId: String)
 
-    @Query("DELETE from $FORM_QUESTION_RESPONSE_TABLE where optionId = :optionId AND questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId AND didiId = :surveyeeId")
+    @Query("DELETE from $FORM_QUESTION_RESPONSE_TABLE where userId=:userId and optionId = :optionId AND questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId AND didiId = :surveyeeId")
     fun deleteFormResponseQuestionForOption(
+        userId: String,
         optionId: Int,
         questionId: Int,
         sectionId: Int,
@@ -89,15 +104,16 @@ interface FormQuestionResponseDao {
         surveyeeId: Int
     )
 
-    @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where surveyId = :surveyId and sectionId = :sectionId and didiId = :didiId")
+    @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where userId=:userId and surveyId = :surveyId and sectionId = :sectionId and didiId = :didiId")
     fun getFormQuestionCountForSection(
+        userId: String,
         surveyId: Int,
         sectionId: Int,
         didiId: Int
     ): List<FormQuestionResponseEntity>
 
-    @Query("Delete from $FORM_QUESTION_RESPONSE_TABLE")
-    fun deleteAllFormQuestions()
+    @Query("Delete from $FORM_QUESTION_RESPONSE_TABLE where userId=:userId ")
+    fun deleteAllFormQuestions(userId: String)
 
 
 }

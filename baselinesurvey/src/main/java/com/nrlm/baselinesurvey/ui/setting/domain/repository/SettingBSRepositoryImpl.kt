@@ -10,8 +10,10 @@ import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
 
-class SettingBSRepositoryImpl(private val prefRepo: PrefRepo,
-                              private val apiService: ApiService,
+class SettingBSRepositoryImpl(
+    private val prefRepo: PrefRepo,
+    private val apiService: ApiService,
+
     ):SettingBSRepository {
 
     override suspend fun performLogout(): ApiResponseModel<String> {
@@ -39,4 +41,13 @@ class SettingBSRepositoryImpl(private val prefRepo: PrefRepo,
     override fun saveLanguageScreenOpenFrom() {
         prefRepo.savePref(LANGUAGE_OPEN_FROM_SETTING,true)
     }
+
+
+
+
+
+
+
+
+
 }

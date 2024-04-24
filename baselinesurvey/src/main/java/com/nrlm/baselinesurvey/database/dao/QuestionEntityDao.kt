@@ -12,28 +12,45 @@ interface QuestionEntityDao {
     @Insert
     fun insertQuestion(questionEntity: QuestionEntity)
 
-    @Query("Delete from $QUESTION_TABLE where questionId = :questionId and sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
-    fun deleteSurveySectionQuestionFroLanguage(questionId: Int, sectionId: Int, surveyId: Int, languageId: Int)
+    @Query("Delete from $QUESTION_TABLE where userId=:userid and questionId = :questionId and sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
+    fun deleteSurveySectionQuestionFroLanguage(
+        userid: String,
+        questionId: Int,
+        sectionId: Int,
+        surveyId: Int,
+        languageId: Int
+    )
 
-    @Query("Select * from $QUESTION_TABLE where sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
-    fun getSurveySectionQuestionForLanguage(sectionId: Int, surveyId: Int, languageId: Int): List<QuestionEntity>
+    @Query("Select * from $QUESTION_TABLE where userId=:userId and sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
+    fun getSurveySectionQuestionForLanguage(
+        userId: String,
+        sectionId: Int,
+        surveyId: Int,
+        languageId: Int
+    ): List<QuestionEntity>
 
-    @Query("Select * from $QUESTION_TABLE where surveyId = :surveyId and languageId = :languageId")
-    fun getAllQuestionsForLanguage(surveyId: Int, languageId: Int): List<QuestionEntity>
+    @Query("Select * from $QUESTION_TABLE where userId=:userid and surveyId = :surveyId and languageId = :languageId")
+    fun getAllQuestionsForLanguage(
+        userid: String,
+        surveyId: Int,
+        languageId: Int
+    ): List<QuestionEntity>
 
-    @Query("SELECT * from $QUESTION_TABLE where questionId = :questionId and sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
+    @Query("SELECT * from $QUESTION_TABLE where userId=:userid and questionId = :questionId and sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
     fun getQuestionForSurveySectionForLanguage(
+        userid: String,
         questionId: Int,
         sectionId: Int,
         surveyId: Int,
         languageId: Int
     ): QuestionEntity?
 
-    @Query("Select * from $QUESTION_TABLE")
-    fun getQuestions(): List<QuestionEntity?>?
+    @Query("Select * from $QUESTION_TABLE where userId=:userid ")
+    fun getQuestions(userid: String): List<QuestionEntity?>?
 
-    @Query("SELECT * from $QUESTION_TABLE where surveyId = :surveyId and sectionId = :sectionId and questionId = :questionId and languageId = :languageId")
+    @Query("SELECT * from $QUESTION_TABLE where userId=:userid and surveyId = :surveyId and sectionId = :sectionId and questionId = :questionId and languageId = :languageId")
     fun getFormQuestionForId(
+        userid: String,
         surveyId: Int,
         sectionId: Int,
         questionId: Int,
@@ -41,9 +58,28 @@ interface QuestionEntityDao {
     ): QuestionEntity?
 
 
-    @Query("SELECT tag from $QUESTION_TABLE where surveyId = :surveyId and sectionId = :sectionId and questionId = :questionId")
-    fun getQuestionTag(surveyId: Int, sectionId: Int, questionId: Int): Int
+    @Query("SELECT tag from $QUESTION_TABLE where  userId=:userid and surveyId = :surveyId and sectionId = :sectionId and questionId = :questionId")
+    fun getQuestionTag(userid: String, surveyId: Int, sectionId: Int, questionId: Int): Int
 
-    @Query("Delete from $QUESTION_TABLE")
-    fun deleteAllQuestions()
+    @Query("SELECT questionDisplay from $QUESTION_TABLE where  userId=:userid and surveyId = :surveyId and sectionId = :sectionId and questionId = :questionId")
+    fun getQuestionDisplayName(
+        userid: String,
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int
+    ): String
+
+    @Query("SELECT * from $QUESTION_TABLE where  userId=:userid and surveyId = :surveyId and sectionId = :sectionId and questionId = :questionId")
+    fun getQuestionEntity(
+        userid: String,
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int
+    ): QuestionEntity?
+
+    @Query("SELECT * from $QUESTION_TABLE where type = :type")
+    fun getQuestionForType(type: String): QuestionEntity
+
+    @Query("Delete from $QUESTION_TABLE where userId=:userid ")
+    fun deleteAllQuestions(userid: String)
 }

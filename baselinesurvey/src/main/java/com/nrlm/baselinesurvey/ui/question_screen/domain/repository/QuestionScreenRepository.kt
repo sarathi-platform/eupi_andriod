@@ -101,5 +101,6 @@ interface QuestionScreenRepository {
         optionId: Int,
         selectedValue: String
     )*/
+    fun getBaseLineUserId(): String
 
 }
