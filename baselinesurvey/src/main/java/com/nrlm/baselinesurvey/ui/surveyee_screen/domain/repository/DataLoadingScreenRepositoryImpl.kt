@@ -149,9 +149,6 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                 contentLists.addAll(section.contentList)
                 sectionEntityDao.insertSection(sectionEntity)
                 section.questionList.forEach { question ->
-                    if (section.sectionId == 8) {
-                        Log.d("invoke", "section.questionList.forEach -> ${question} \n\n\n")
-                    }
                     saveQuestionAndOptionsToDb(
                         question = question,
                         section,

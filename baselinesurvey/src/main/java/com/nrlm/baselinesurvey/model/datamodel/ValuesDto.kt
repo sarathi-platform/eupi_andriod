@@ -8,7 +8,7 @@ data class ValuesDto(
     @Expose
     val id: Int,
 
-    @SerializedName("values")
+    @SerializedName("value")
     @Expose
     val value: String
 )

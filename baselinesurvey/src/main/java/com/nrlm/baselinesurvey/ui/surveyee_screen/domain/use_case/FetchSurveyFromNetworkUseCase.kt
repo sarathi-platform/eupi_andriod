@@ -1,14 +1,11 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case
 
-import com.google.gson.Gson
-import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.SUCCESS_CODE
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
-import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.network.ApiException
 import com.nrlm.baselinesurvey.network.SUBPATH_FETCH_SURVEY_FROM_NETWORK
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepository
-import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nudge.core.enums.ApiStatus
 
@@ -19,7 +16,7 @@ class FetchSurveyFromNetworkUseCase(
         try {
 
 
-            //TODO Run a loop on language id later
+            /*//TODO Run a loop on language id later
             var surveyResponseModel: SurveyResponseModel? = null
             val testSurvey =
                 BaselineCore.getAppContext().resources.openRawResource(R.raw.survey).use {
@@ -31,18 +28,18 @@ class FetchSurveyFromNetworkUseCase(
                 return true
             } else {
                 return false
+            }*/
+            if (!repository.isNeedToCallApi(SUBPATH_FETCH_SURVEY_FROM_NETWORK)) {
+                return false
             }
-            /* if (!repository.isNeedToCallApi(SUBPATH_FETCH_SURVEY_FROM_NETWORK)) {
-                 return false
-             }
-             repository.insertApiStatus(SUBPATH_FETCH_SURVEY_FROM_NETWORK)
+            repository.insertApiStatus(SUBPATH_FETCH_SURVEY_FROM_NETWORK)
 
-             val surveyApiResponse = repository.fetchSurveyFromNetwork(surveyRequestBodyModel)
-             if (surveyApiResponse.status.equals(
-                     SUCCESS_CODE,
-                     true
-                 )
-             ) {
+            val surveyApiResponse = repository.fetchSurveyFromNetwork(surveyRequestBodyModel)
+            if (surveyApiResponse.status.equals(
+                    SUCCESS_CODE,
+                    true
+                )
+            ) {
                  surveyApiResponse.data?.let { surveyApiResponse ->
  //                    for (survey in surveyApiResponse) {
                      repository.updateApiStatus(
@@ -62,7 +59,7 @@ class FetchSurveyFromNetworkUseCase(
                  return false
              } else {
                  return false
-             }*/
+            }
         } catch (apiException: ApiException) {
             repository.updateApiStatus(
                 SUBPATH_FETCH_SURVEY_FROM_NETWORK,
