@@ -60,6 +60,7 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
         didiId: Int
     ): List<FormQuestionResponseEntity> {
         return formQuestionResponseDao.getFormResponsesForSection(
+            userId = getBaseLineUserId(),
             surveyId = surveyId,
             sectionId = sectionId,
             didiId = didiId

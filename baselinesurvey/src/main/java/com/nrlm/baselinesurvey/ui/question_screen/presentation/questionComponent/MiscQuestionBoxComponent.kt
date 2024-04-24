@@ -273,20 +273,23 @@ fun MiscQuestionBoxComponent(
                                                     defaultValue = selectedOption?.selectedValue
                                                         ?: BLANK_STRING,
                                                     showQuestionState = optionsItem,
-                                                    onInfoButtonClicked = {}) {
-                                                    if (isEditAllowed) {
-                                                        onAnswerSelection(
-                                                            questionIndex,
-                                                            optionsItem.optionItemEntity,
-                                                            it
-                                                        )
-                                                    } else {
-                                                        showCustomToast(
-                                                            context,
-                                                            context.getString(R.string.edit_disable_message)
-                                                        )
+                                                    onInfoButtonClicked = {},
+                                                    onAnswerSelection = { value, id ->
+                                                        if (isEditAllowed) {
+                                                            onAnswerSelection(
+                                                                questionIndex,
+                                                                optionsItem.optionItemEntity,
+                                                                value,
+                                                                id
+                                                            )
+                                                        } else {
+                                                            showCustomToast(
+                                                                context,
+                                                                context.getString(R.string.edit_disable_message)
+                                                            )
+                                                        }
                                                     }
-                                                }
+                                                )
                                                 Spacer(modifier = Modifier.height(dimen_8_dp))
                                             }
                                         }

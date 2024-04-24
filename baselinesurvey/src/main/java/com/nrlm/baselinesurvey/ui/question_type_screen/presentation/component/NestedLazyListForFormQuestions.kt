@@ -411,7 +411,7 @@ fun NestedLazyListForFormQuestions(
                                             optionId = option.optionId ?: -1
                                         )?.selectedValue ?: BLANK_STRING,
                                     showQuestionState = option,
-                                    onInfoButtonClicked = {}) { value ->
+                                    onInfoButtonClicked = {}) { value, id ->
                                     questionTypeScreenViewModel.onEvent(
                                         QuestionTypeEvent.UpdateConditionalOptionState(
                                             option,

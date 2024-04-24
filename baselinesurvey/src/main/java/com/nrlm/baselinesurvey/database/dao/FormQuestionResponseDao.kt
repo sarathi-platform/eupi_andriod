@@ -28,13 +28,21 @@ interface FormQuestionResponseDao {
     ): List<FormQuestionResponseEntity>
 
     @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where  userId=:userId and  surveyId=:surveyId AND sectionId=:sectionId AND didiId = :didiId")
+    fun getFormResponsesForSection(
+        userId: String,
+        surveyId: Int,
+        sectionId: Int,
+        didiId: Int
+    ): List<FormQuestionResponseEntity>
+
+    @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where userId = :userId AND surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId and didiId = :didiId")
     fun getFormResponsesForQuestionLive(
         userId: String,
         surveyId: Int,
         sectionId: Int,
         questionId: Int,
         didiId: Int
-    ): List<FormQuestionResponseEntity>
+    ): LiveData<List<FormQuestionResponseEntity>>
 
     @Query("SELECT * from $FORM_QUESTION_RESPONSE_TABLE where   userId=:userId and surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND referenceId = :referenceId AND didiId = :didiId and optionId = :optionId")
     fun getFormResponsesForQuestionOption(

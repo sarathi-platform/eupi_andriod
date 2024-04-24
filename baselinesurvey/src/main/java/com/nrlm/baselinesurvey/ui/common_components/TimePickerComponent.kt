@@ -24,6 +24,7 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DELIMITER_TIME
 import com.nrlm.baselinesurvey.DELIMITER_YEAR
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.model.datamodel.ValuesDto
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.TypeDropDownComponent
@@ -40,7 +41,7 @@ fun RangePickerComponent(
     isContent: Boolean = false,
     typePicker: String,
     onInfoButtonClicked: () -> Unit,
-    onAnswerSelection: (selectValue: String) -> Unit,
+    onAnswerSelection: (selectValue: String, selectedValueId: Int) -> Unit,
 ) {
     val firstInputValue = remember {
         mutableStateOf(getFirstValue(typePicker, defaultValue))
@@ -105,7 +106,8 @@ fun RangePickerComponent(
                         onAnswerSelection(
                             "${firstInputValue.value}${
                                 getDelimiter(typePicker)
-                            }${secondValue}"
+                            }${secondValue}",
+                            0
                         )
                     }
                 }
@@ -121,11 +123,14 @@ fun RangePickerComponent(
                         sources = getSources(typePicker),
                         onInfoButtonClicked = {}
                     ) { selectedValue ->
-                        secondInputValue.value = selectedValue
+                        secondInputValue.value =
+                            getSources(typePicker).find { it.id == selectedValue }?.value
+                                ?: BLANK_STRING/* selectedValue*/
                         onAnswerSelection(
                             "${firstInputValue.value}${
                                 getDelimiter(typePicker)
-                            }$selectedValue"
+                            }${getSources(typePicker).find { it.id == selectedValue }?.value ?: BLANK_STRING}",
+                            selectedValue
                         )
 
                     }
@@ -162,21 +167,33 @@ fun getSecondTitle(typePicker: String): String {
     return BLANK_STRING
 }
 
-fun getSources(typePicker: String): List<String> {
+fun getSources(typePicker: String): List<ValuesDto> {
     if (typePicker.equals(QuestionType.HrsMinPicker.name)) {
         return getMinutes()
     } else if (typePicker.equals(QuestionType.YrsMonthPicker.name)) {
         return getMonths()
     }
-    return listOf("")
+    return listOf()
 }
 
-fun getMinutes(): List<String> {
-    return listOf("15", "30", "45")
+fun getMinutes(): List<ValuesDto> {
+    return listOf(ValuesDto(id = 1, "15"), ValuesDto(id = 2, "30"), ValuesDto(id = 3, "45"))
 }
 
-fun getMonths(): List<String> {
-    return listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11")
+fun getMonths(): List<ValuesDto> {
+    return listOf(
+        ValuesDto(id = 1, "1"),
+        ValuesDto(2, "2"),
+        ValuesDto(3, "3"),
+        ValuesDto(4, "4"),
+        ValuesDto(5, "5"),
+        ValuesDto(6, "6"),
+        ValuesDto(7, "7"),
+        ValuesDto(8, "8"),
+        ValuesDto(9, "9"),
+        ValuesDto(10, "10"),
+        ValuesDto(11, "11")
+    )
 }
 
 fun getDelimiter(typePicker: String): String {
@@ -236,6 +253,6 @@ fun PreviewTimePickerComponent() {
         defaultValue = "3/10",
         typePicker = "HrsMinPicker",
         showQuestionState = getEmptyStateObject(),
-        onInfoButtonClicked = { /*TODO*/ }) {
+        onInfoButtonClicked = { /*TODO*/ }) { value, id ->
     }
 }
