@@ -362,7 +362,7 @@ object FileUtils {
         return file
     }
 
-    private fun saveFileFromUri(context: Context, uri: Uri, destinationPath: String?) {
+     fun saveFileFromUri(context: Context, uri: Uri, destinationPath: String?) {
         var `is`: InputStream? = null
         var bos: BufferedOutputStream? = null
         try {

@@ -1,10 +1,8 @@
 package com.nrlm.baselinesurvey.ui.setting.viewmodel
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nrlm.baselinesurvey.BuildConfig
@@ -128,9 +126,7 @@ class SettingBSViewModel @Inject constructor(
 
                 // Add Log File
 
-                val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext(),
-                    userMobileNo = settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber(),
-                    userEmail = settingBSUserCase.getUserDetailsUseCase.getUserEmail())
+                val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext())
                 if (logFile != null) {
                     val logFileUri = exportLogFile(logFile, appContext = BaselineCore.getAppContext(),
                         applicationID = BuildConfig.APPLICATION_ID)
@@ -182,65 +178,17 @@ class SettingBSViewModel @Inject constructor(
     }
 
     fun exportLocalDatabase(onExportSuccess: (Uri) -> Unit) {
-        val userUniqueId = "${settingBSUserCase.getUserDetailsUseCase.getUserID()}_${settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()}"
+        val userUniqueId = settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
         exportOldData(
             appContext = BaselineCore.getAppContext(),
             applicationID = BuildConfig.APPLICATION_ID,
-            userUniqueId = userUniqueId,
+            mobileNo = userUniqueId,
             databaseName = NUDGE_BASELINE_DATABASE
         ) {
            onExportSuccess(it)
         }
     }
-
-    fun exportLocalImages(){
-        val userUniqueId = "${settingBSUserCase.getUserDetailsUseCase.getUserID()}_${settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()}"
-        CoroutineScope(Dispatchers.IO).launch {
-            val imageZipUri=exportAllOldImages(
-                appContext = BaselineCore.getAppContext(),
-                applicationID = BuildConfig.APPLICATION_ID,
-                userUniqueId = userUniqueId,
-                timeInMillSec = System.currentTimeMillis().toString()
-            )
-            if(imageZipUri != null){
-                openShareSheet(arrayListOf(imageZipUri),"Share All Images")
-            }
-        }
-    }
-
-    fun importSelectedDB(uri: Uri, onImportSuccess: () -> Unit) {
-        importDbFile(
-            appContext = BaselineCore.getAppContext(),
-            importedDbUri = uri,
-            deleteDBName = NUDGE_BASELINE_DATABASE
-        ) {
-            onImportSuccess()
-        }
-    }
-
-    fun clearLocalDatabase(onPageChange:()->Unit){
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val result=settingBSUserCase.clearLocalDBUseCase.invoke()
-            if(result){
-                settingBSUserCase.logoutUseCase.setAllDataSyncStatus()
-                withContext(Dispatchers.Main){
-                    onPageChange()
-                }
-            }
-        }
-    }
-
-    fun getUserMobileNumber():String{
+   fun getUserMobileNumber():String{
         return settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
     }
-
-    fun restartApp(context: Context, cls: Class<*>) {
-
-        context.startActivity(
-            Intent(BaselineCore.getAppContext(), cls)
-        )
-        exitProcess(0)
-    }
-
-
 }

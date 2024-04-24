@@ -358,7 +358,7 @@ object LogWriter {
         return@withContext false
     }
 
-    suspend fun buildLogFile(appContext: Context,userMobileNo: String,userEmail: String): File? {
+    suspend fun buildLogFile(appContext: Context): File? {
         try {
 
             val logDir = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)

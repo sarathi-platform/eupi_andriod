@@ -48,7 +48,7 @@ class ExportImportViewModel @Inject constructor(
 
     init {
         _optionList.value=exportImportUseCase.getExportOptionListUseCase.fetchExportOptionList()
-        userUniqueKey.value="${exportImportUseCase.getUserDetailsExportUseCase.getUserID()}_${exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()}"
+        userUniqueKey.value=exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
     }
     override fun <T> onEvent(event: T) {
 //        TODO("Not yet implemented")
@@ -72,7 +72,7 @@ class ExportImportViewModel @Inject constructor(
         exportOldData(
             appContext = BaselineCore.getAppContext(),
             applicationID = BuildConfig.APPLICATION_ID,
-            userUniqueId = userUniqueKey.value,
+            mobileNo = userUniqueKey.value,
             databaseName = NUDGE_BASELINE_DATABASE
         ) {
             BaselineLogger.d("ExportImportViewModel","exportLocalDatabase : ${it.path}")
@@ -102,7 +102,7 @@ class ExportImportViewModel @Inject constructor(
             val imageZipUri= exportAllOldImages(
                 appContext = BaselineCore.getAppContext(),
                 applicationID = BuildConfig.APPLICATION_ID,
-                userUniqueId = userUniqueKey.value,
+                mobileNo = userUniqueKey.value,
                 timeInMillSec = System.currentTimeMillis().toString()
             )
             if(imageZipUri != null){
@@ -116,9 +116,7 @@ fun exportOnlyLogFile(context: Context){
     BaselineLogger.d("ExportImportViewModel","exportOnlyLogFile: ----")
 
     CoroutineScope(Dispatchers.IO).launch {
-       val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext(),
-           userMobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
-           userEmail = exportImportUseCase.getUserDetailsExportUseCase.getUserEmail())
+       val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext(),)
         if (logFile != null) {
             val logFileUri = exportLogFile(logFile, appContext = BaselineCore.getAppContext(),
                 applicationID = BuildConfig.APPLICATION_ID)
@@ -175,7 +173,8 @@ fun exportOnlyLogFile(context: Context){
         importDbFile(
             appContext = BaselineCore.getAppContext(),
             importedDbUri = uri,
-            deleteDBName = NUDGE_BASELINE_DATABASE
+            deleteDBName = NUDGE_BASELINE_DATABASE,
+            applicationID = BuildConfig.APPLICATION_ID
         ) {
             BaselineLogger.d("ExportImportViewModel","importSelectedDB Success ----")
             onImportSuccess()
