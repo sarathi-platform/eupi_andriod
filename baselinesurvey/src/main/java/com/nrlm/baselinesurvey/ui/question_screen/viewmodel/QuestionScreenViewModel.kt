@@ -107,6 +107,7 @@ class QuestionScreenViewModel @Inject constructor(
     val formResponseEntityToQuestionMap: State<Map<Int, List<FormQuestionResponseEntity>>> get() = _formResponseEntityToQuestionMap
 
     val didiDetails: MutableState<SurveyeeEntity?> = mutableStateOf(null)
+    val didiInfoState: MutableState<DidiInfoEntity?> = mutableStateOf(null)
 
     var isEditAllowed: Boolean = true
 
@@ -141,6 +142,11 @@ class QuestionScreenViewModel @Inject constructor(
             questionId,
             didiId
         )
+    }
+
+    suspend fun getDidiInfoObject(didiId: Int) {
+        didiInfoState.value =
+            questionScreenUseCase.getSurveyeeDetailsUserCase.getDidiIndoDetail(didiId)
     }
 
     suspend fun getDidiInfoObjectLive(didiId: Int): LiveData<List<DidiInfoEntity>> {
@@ -852,13 +858,37 @@ class QuestionScreenViewModel @Inject constructor(
                             // When All unselected
                             if (event.optionItemEntityList.isEmpty()) {
                                 val conditionCheckResult = conditionsDto?.checkCondition(BLANK_STRING)
-                                if (conditionsDto?.resultType?.equals(ResultType.Questions.name, true) == true)
+                                if (conditionsDto?.resultType?.equals(
+                                        ResultType.Questions.name,
+                                        true
+                                    ) == true
+                                ) {
                                     updateQuestionStateForCondition(conditionResult = conditionCheckResult == true, conditionsDto)
+                                    if (conditionCheckResult == false) {
+                                        onEvent(
+                                            QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption(
+                                                conditionsDto!!
+                                            )
+                                        )
+                                    }
+                                }
                             }
                             event.optionItemEntityList.forEach { optionItemEntity ->
                                 val conditionCheckResult = conditionsDto?.checkCondition(optionItemEntity.display  ?: BLANK_STRING)
-                                if (conditionsDto?.resultType?.equals(ResultType.Questions.name, true) == true)
+                                if (conditionsDto?.resultType?.equals(
+                                        ResultType.Questions.name,
+                                        true
+                                    ) == true
+                                ) {
                                     updateQuestionStateForCondition(conditionResult = conditionCheckResult == true, conditionsDto)
+                                    if (conditionCheckResult == false) {
+                                        onEvent(
+                                            QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption(
+                                                conditionsDto!!
+                                            )
+                                        )
+                                    }
+                                }
                                 /*if (conditionsDto?.resultType?.equals(ResultType.Options.name, true) == true)
                                     updateOptionStateForCondition(conditionResult = conditionCheckResult == true, conditionsDto, unselectedOptionItemEntityState.optionItemEntity)*/
                             }
