@@ -137,8 +137,11 @@ fun NestedLazyListForFormQuestions(
                         Spacer(modifier = Modifier.width(dimen_24_dp))
                     }
                     itemsIndexed(
-                        items = /*formTypeOption?.options*/questionTypeScreenViewModel.updatedOptionList.distinctBy { it.optionId }.filter { it
-                            .optionItemEntity?.optionType != QuestionType.Form.name}.filter { it.showQuestion } ?: emptyList()
+                        items = /*formTypeOption?.options*/questionTypeScreenViewModel.updatedOptionList.distinctBy { it.optionId }
+                            .filter {
+                                it
+                                    .optionItemEntity?.optionType != QuestionType.Form.name && it.optionItemEntity?.optionType != QuestionType.FormWithNone.name
+                            }.filter { it.showQuestion } ?: emptyList()
                     ) { index, option ->
                         when (option.optionItemEntity?.optionType) {
                             QuestionType.SingleSelectDropdown.name,

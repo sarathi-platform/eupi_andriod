@@ -766,6 +766,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
         val tempList = updatedOptionList.toList()
         totalOptionSize.intValue = tempList.distinctBy { it.optionId }.filter {
             it.optionItemEntity?.optionType != QuestionType.Form.name && it.optionItemEntity?.optionType != QuestionType.Calculation.name
+                    && it.optionItemEntity?.optionType != QuestionType.FormWithNone.name
         }.filter { it.showQuestion }.size
         answeredOptionCount.intValue =
             (storeCacheForResponse.size).coerceIn(0, totalOptionSize.intValue)

@@ -433,7 +433,43 @@ fun List<OptionItemEntityState>.updateOptionItemEntityListStateForQuestionByCond
     return updatedOptionItemEntityStateList
 }
 
-fun QuestionList.convertToOptionItemEntity(sectionId: Int, surveyId: Int, questionId: Int, languageId: Int): OptionItemEntity {
+fun List<OptionItemEntityState>.updateOptionsForNoneCondition(
+    conditionResult: Boolean,
+    optionId: Int,
+    noneOptionUnselected: Boolean
+): List<OptionItemEntityState> {
+    val updatedOptionItemEntityStateList = mutableListOf<OptionItemEntityState>()
+    if (noneOptionUnselected) {
+        this.forEach { optionItemEntityStateForQuestion ->
+            val updatedOptionItemEntityState = optionItemEntityStateForQuestion.copy(
+                isOptionEnabled = true
+            )
+            updatedOptionItemEntityStateList.add(updatedOptionItemEntityState)
+        }
+    } else {
+        this.forEach { optionItemEntityStateForQuestion ->
+            if (optionItemEntityStateForQuestion.optionId != optionId) {
+                val updatedOptionItemEntityState = optionItemEntityStateForQuestion.copy(
+                    isOptionEnabled = conditionResult
+                )
+                updatedOptionItemEntityStateList.add(updatedOptionItemEntityState)
+            } else {
+                val updatedOptionItemEntityState = optionItemEntityStateForQuestion.copy(
+                    isOptionEnabled = true
+                )
+                updatedOptionItemEntityStateList.add(updatedOptionItemEntityState)
+            }
+        }
+    }
+    return updatedOptionItemEntityStateList
+}
+
+fun QuestionList.convertToOptionItemEntity(
+    sectionId: Int,
+    surveyId: Int,
+    questionId: Int,
+    languageId: Int
+): OptionItemEntity {
     return OptionItemEntity(
         id = 0,
         questionId = questionId,
