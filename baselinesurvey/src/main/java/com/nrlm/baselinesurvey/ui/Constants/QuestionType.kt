@@ -21,6 +21,8 @@ enum class QuestionType {
     DidiDetails,
     YesNoButton,
     PhoneNumber,
+    HrsMinPicker,
+    YrsMonthPicker,
     Image,
     FormWithNone;
 
@@ -46,7 +48,10 @@ enum class QuestionType {
                 DidiDetails.name -> DidiDetails
                 YesNoButton.name -> YesNoButton
                 PhoneNumber.name -> PhoneNumber
+                HrsMinPicker.name -> HrsMinPicker
+                YrsMonthPicker.name -> YrsMonthPicker
                 Image.name -> Image
+                FormWithNone.name -> FormWithNone
                 else -> {
                     null
                 }

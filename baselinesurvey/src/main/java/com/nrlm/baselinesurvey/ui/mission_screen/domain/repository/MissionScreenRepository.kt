@@ -15,5 +15,6 @@ interface MissionScreenRepository {
 
     fun getTotalActivityCountForMission(missionId: Int): Int //TODO @Ankit Kumar Jain please add userId for this method.
 
+    fun getBaseLineUserId(): String
 
 }

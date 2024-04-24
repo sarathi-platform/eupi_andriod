@@ -20,7 +20,7 @@ class StartScreenRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getDidiInfoDetails(didiId: Int): DidiInfoEntity {
-        return didiInfoDao.getDidiInfo(didiId)
+        return didiInfoDao.getDidiInfo(userId = getBaseLineUserId(), didiId)
     }
 
     override suspend fun saveImageLocalPathForSurveyee(
@@ -36,7 +36,7 @@ class StartScreenRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getDidiInfoObjectLive(didiId: Int): LiveData<List<DidiInfoEntity>> {
-        return didiInfoDao.getDidiInfoLive(didiId)
+        return didiInfoDao.getDidiInfoLive(userId = getBaseLineUserId(), didiId = didiId)
     }
 
     override fun getStateId(): Int {
@@ -45,6 +45,10 @@ class StartScreenRepositoryImpl @Inject constructor(
 
     override fun getUserType(): String? {
         return prefRepo.getPref(PREF_USER_TYPE, "")
+    }
+
+    override fun getBaseLineUserId(): String {
+        return prefRepo.getUniqueUserIdentifier()
     }
 
 

@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.viewmodel
 
+import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
@@ -477,8 +478,10 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 if (event.userInputValue != BLANK_STRING) {
                     event.optionItemEntityState?.optionItemEntity?.conditions?.forEach { conditionsDto ->
                         val conditionCheckResult =
-                            if (event.optionItemEntityState.optionItemEntity.optionType == QuestionType.MultiSelectDropDown.name
-                                || event.optionItemEntityState.optionItemEntity.optionType == QuestionType.MultiSelectDropdown.name
+                            if (TextUtils.equals(
+                                    event.optionItemEntityState.optionItemEntity.optionType?.toLowerCase(),
+                                    QuestionType.MultiSelectDropDown.name.toLowerCase()
+                                )
                             ) {
                                 conditionsDto?.checkConditionForMultiSelectDropDown(event.userInputValue)
                             } else {

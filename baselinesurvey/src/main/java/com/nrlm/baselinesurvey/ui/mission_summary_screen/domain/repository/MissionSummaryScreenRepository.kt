@@ -21,4 +21,5 @@ interface MissionSummaryScreenRepository {
     fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto
 
     suspend fun getMission(missionId: Int): MissionEntity
+    fun getBaseLineUserId(): String
 }

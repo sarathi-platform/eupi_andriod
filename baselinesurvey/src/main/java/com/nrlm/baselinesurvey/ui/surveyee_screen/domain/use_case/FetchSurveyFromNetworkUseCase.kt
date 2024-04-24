@@ -1,5 +1,8 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case
 
+import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.DEFAULT_ERROR_CODE
+import com.nrlm.baselinesurvey.DEFAULT_SUCCESS_CODE
 import com.nrlm.baselinesurvey.SUCCESS_CODE
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
@@ -40,43 +43,49 @@ class FetchSurveyFromNetworkUseCase(
                     true
                 )
             ) {
-                 surveyApiResponse.data?.let { surveyApiResponse ->
- //                    for (survey in surveyApiResponse) {
-                     repository.updateApiStatus(
-                         SUBPATH_FETCH_SURVEY_FROM_NETWORK,
-                         status = ApiStatus.SUCCESS.ordinal,
-                         "",
-                         200
-                     )
+                surveyApiResponse.data?.let { surveyApiResponse ->
+//                    for (survey in surveyApiResponse) {
+                    repository.updateApiStatus(
+                        SUBPATH_FETCH_SURVEY_FROM_NETWORK,
+                        status = ApiStatus.SUCCESS.ordinal,
+                        BLANK_STRING,
+                        DEFAULT_SUCCESS_CODE
+                    )
 
-                     repository.saveSurveyToDb(
-                         surveyApiResponse,
-                         languageId = surveyRequestBodyModel.languageId,
-                     )
- //                    }
-                     return true
-                 }
-                 return false
-             } else {
-                 return false
+                    repository.saveSurveyToDb(
+                        surveyApiResponse,
+                        languageId = surveyRequestBodyModel.languageId,
+                    )
+//                    }
+                    return true
+                }
+                return false
+            } else {
+                repository.updateApiStatus(
+                    SUBPATH_FETCH_SURVEY_FROM_NETWORK,
+                    status = ApiStatus.FAILED.ordinal,
+                    surveyApiResponse.message,
+                    DEFAULT_ERROR_CODE
+                )
+                return false
             }
         } catch (apiException: ApiException) {
             repository.updateApiStatus(
                 SUBPATH_FETCH_SURVEY_FROM_NETWORK,
                 status = ApiStatus.FAILED.ordinal,
-                apiException.message ?: "",
+                apiException.message ?: BLANK_STRING,
                 apiException.getStatusCode()
             )
-            return false
+            throw apiException
         } catch (ex: Exception) {
             repository.updateApiStatus(
                 SUBPATH_FETCH_SURVEY_FROM_NETWORK,
                 status = ApiStatus.FAILED.ordinal,
-                ex.message ?: "",
-                500
+                ex.message ?: BLANK_STRING,
+                DEFAULT_ERROR_CODE
             )
             BaselineLogger.e("FetchUserDetailFromNetworkUseCase", "invoke", ex)
-            return false
+            throw ex
         }
     }
 

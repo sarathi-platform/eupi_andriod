@@ -64,7 +64,7 @@ class MissionViewModel @Inject constructor(
                 } else {
                     showCustomToast(
                         BaselineCore.getAppContext(),
-                        BaselineCore.getAppContext().getString(R.string.refresh_failed_please_try_again)
+                        event.message
                     )
                 }
             }
