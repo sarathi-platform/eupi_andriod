@@ -1,5 +1,5 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponent
-
+/*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
@@ -144,4 +144,4 @@ private fun getOptionList(
         optionItemEntityList.add(optionItemEntity)
     }
     return optionItemEntityList
-}
+}*/

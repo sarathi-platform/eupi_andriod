@@ -1,5 +1,8 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case
 
+import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.DEFAULT_ERROR_CODE
+import com.nrlm.baselinesurvey.DEFAULT_SUCCESS_CODE
 import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.network.ApiException
 import com.nrlm.baselinesurvey.network.SUBPATH_USER_VIEW
@@ -25,8 +28,8 @@ class FetchUserDetailFromNetworkUseCase (
                     repository.updateApiStatus(
                         SUBPATH_USER_VIEW,
                         status = ApiStatus.SUCCESS.ordinal,
-                        "",
-                        200
+                        BLANK_STRING,
+                        DEFAULT_SUCCESS_CODE
                     )
                     repository.saveUserDetails(userApiResponse.data)
                     true
@@ -34,25 +37,31 @@ class FetchUserDetailFromNetworkUseCase (
                     false
                 }
             } else {
+                repository.updateApiStatus(
+                    SUBPATH_USER_VIEW,
+                    status = ApiStatus.FAILED.ordinal,
+                    userApiResponse.message,
+                    DEFAULT_ERROR_CODE
+                )
                 false
             }
         } catch (apiException: ApiException) {
             repository.updateApiStatus(
                 SUBPATH_USER_VIEW,
                 status = ApiStatus.FAILED.ordinal,
-                apiException.message ?: "",
+                apiException.message ?: BLANK_STRING,
                 apiException.getStatusCode()
             )
-            return false
+            throw apiException
         } catch (ex: Exception) {
             repository.updateApiStatus(
                 SUBPATH_USER_VIEW,
                 status = ApiStatus.FAILED.ordinal,
-                ex.message ?: "",
-                500
+                ex.message ?: BLANK_STRING,
+                DEFAULT_ERROR_CODE
             )
             BaselineLogger.e("FetchUserDetailFromNetworkUseCase", "invoke", ex)
-            return false
+            throw ex
         }
     }
 }

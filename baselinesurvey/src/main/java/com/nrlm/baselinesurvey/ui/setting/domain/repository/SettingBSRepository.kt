@@ -8,5 +8,8 @@ interface SettingBSRepository {
     fun clearSharedPref()
 
     fun saveLanguageScreenOpenFrom()
+    fun getUserName(): String
+    fun getMobileNo(): String
+
 
 }

@@ -12,7 +12,7 @@ interface SurveyEntityDao {
     @Insert
     fun insertSurvey(surveyEntity: SurveyEntity)
 
-    @Query("Select surveyId from $SURVEY_TABLE where userId=:userId")
+    @Query("Select DISTINCT surveyId from $SURVEY_TABLE where userId=:userId")
     fun getSurveyIds(userId: String): List<Int>
 
     @Query("Select * from $SURVEY_TABLE where userId=:userId and surveyId = :surveyId and languageId = :languageId")

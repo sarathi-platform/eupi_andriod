@@ -180,6 +180,8 @@ const val RESPONSE_CODE_UNPROCESSABLE_ENTITY = 422 // Unprocessable Entity
 const val RESPONSE_CODE_BAD_REQUEST = 400 // Bad Request
 const val RESPONSE_CODE_CONFLICT = 409 // Conflict
 const val RESPONSE_CODE_500 = 500
+const val DEFAULT_ERROR_CODE = 500
+const val DEFAULT_SUCCESS_CODE = 200
 const val RESPONSE_CODE_BAD_GATEWAY = 502
 const val RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE = 503
 const val RESPONSE_CODE_NO_DATA = 101 // Locally defined : No data
@@ -209,6 +211,10 @@ val COMMON_ERROR_MSG = BaselineApplication.applicationContext().getString(R.stri
 const val COMMON_ERROR_TITLE = "Something Went Wrong"
 const val TIMEOUT_ERROR_MSG = "Your request timed out. Please try again in some time."
 val UNAUTHORISED_MESSAGE = "401 Unauthorized"
+val INTERNAL_SERVER_ERROR_MESSAGE = "We are facing internal server error."
+val BAD_GATEWAY_ERROR_MESSAGE = "We are facing bad gateway issue."
+val TEMP_UNAVAILABLE_ERROR_MESSAGE = "Service are temporarily unavailable now"
+const val JSON_PARSING_EXCEPTION = "Unable to parse JSON"
 
 const val LAST_UPDATE_TIME = "last_updated_time"
 const val LAST_SYNC_TIME = "last_sync_time"
@@ -320,3 +326,7 @@ const val ROOM_INTEGRITY_EXCEPTION = "Room cannot verify the data integrity."
 const val LIVELIHOOD_SOURCE_TAG = "Income Soruces"
 
 const val PREF_USER_TYPE = "pref_user_type"
+const val DELIMITER_TIME = ":"
+const val DELIMITER_YEAR = "/"
+
+

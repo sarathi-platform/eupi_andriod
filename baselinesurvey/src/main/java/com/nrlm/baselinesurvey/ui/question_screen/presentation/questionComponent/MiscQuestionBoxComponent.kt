@@ -42,6 +42,7 @@ import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.ExpandableDescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.common_components.ListTypeQuestion
+import com.nrlm.baselinesurvey.ui.common_components.RangePickerComponent
 import com.nrlm.baselinesurvey.ui.common_components.VerticalAnimatedVisibilityComponent
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
@@ -62,6 +63,8 @@ import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
+const val DEFAULT_SELECTED_ID = 0
+
 @Composable
 fun MiscQuestionBoxComponent(
     modifier: Modifier = Modifier,
@@ -73,7 +76,7 @@ fun MiscQuestionBoxComponent(
     selectedOption: OptionItemEntity?,
     maxCustomHeight: Dp,
     isEditAllowed: Boolean = true,
-    onAnswerSelection: (questionIndex: Int, optionItemEntity: OptionItemEntity, selectedValue: String) -> Unit,
+    onAnswerSelection: (questionIndex: Int, optionItemEntity: OptionItemEntity, selectedValue: String, selectedId: Int) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
 ) {
@@ -185,7 +188,8 @@ fun MiscQuestionBoxComponent(
                                                         onAnswerSelection(
                                                             questionIndex,
                                                             optionsItem.optionItemEntity,
-                                                            inputValue
+                                                            inputValue,
+                                                            DEFAULT_SELECTED_ID
                                                         )
                                                     } else {
                                                         showCustomToast(
@@ -210,7 +214,8 @@ fun MiscQuestionBoxComponent(
                                                             onAnswerSelection(
                                                                 questionIndex,
                                                                 optionsItem.optionItemEntity,
-                                                                inputValue
+                                                                inputValue,
+                                                                DEFAULT_SELECTED_ID
                                                             )
                                                         } else {
                                                             showCustomToast(
@@ -232,15 +237,21 @@ fun MiscQuestionBoxComponent(
                                                         ?: "Select",
                                                     showQuestionState = optionsItem,
                                                     sources = optionsItem.optionItemEntity.values,
-                                                    selectOptionText = selectedOption?.selectedValue
-                                                        ?: BLANK_STRING,
+                                                    selectOptionText = optionsItem.optionItemEntity.values?.find {
+                                                        it.value == (selectedOption?.selectedValue
+                                                            ?: BLANK_STRING)
+                                                    }?.id
+                                                        ?: 0, //TODO change from checking text to check only for id
                                                     onInfoButtonClicked = {}
-                                                ) {
+                                                ) { selectedValue ->
                                                     if (isEditAllowed) {
                                                         onAnswerSelection(
                                                             questionIndex,
                                                             optionsItem.optionItemEntity,
-                                                            it
+                                                            optionsItem.optionItemEntity.values
+                                                                ?.find { it.id == selectedValue }?.value
+                                                                ?: BLANK_STRING,
+                                                            selectedValue
                                                         )
                                                     } else {
                                                         showCustomToast(
@@ -249,6 +260,36 @@ fun MiscQuestionBoxComponent(
                                                         )
                                                     }
                                                 }
+                                                Spacer(modifier = Modifier.height(dimen_8_dp))
+                                            }
+
+                                            QuestionType.HrsMinPicker.name,
+                                            QuestionType.YrsMonthPicker.name -> {
+                                                RangePickerComponent(
+                                                    title = optionsItem.optionItemEntity.display
+                                                        ?: BLANK_STRING,
+                                                    typePicker = optionsItem.optionItemEntity?.optionType
+                                                        ?: BLANK_STRING,
+                                                    defaultValue = selectedOption?.selectedValue
+                                                        ?: BLANK_STRING,
+                                                    showQuestionState = optionsItem,
+                                                    onInfoButtonClicked = {},
+                                                    onAnswerSelection = { value, id ->
+                                                        if (isEditAllowed) {
+                                                            onAnswerSelection(
+                                                                questionIndex,
+                                                                optionsItem.optionItemEntity,
+                                                                value,
+                                                                id
+                                                            )
+                                                        } else {
+                                                            showCustomToast(
+                                                                context,
+                                                                context.getString(R.string.edit_disable_message)
+                                                            )
+                                                        }
+                                                    }
+                                                )
                                                 Spacer(modifier = Modifier.height(dimen_8_dp))
                                             }
                                         }

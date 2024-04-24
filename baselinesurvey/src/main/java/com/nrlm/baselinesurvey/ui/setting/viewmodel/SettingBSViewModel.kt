@@ -83,13 +83,17 @@ class SettingBSViewModel @Inject constructor(
                 val fileUri = compression.compressBackupFiles(
                     BaselineCore.getAppContext(),
                     listOf(),
-                    prefRepo.getMobileNumber() ?: ""
-                )
+                    settingBSUserCase.getUserDetailsUseCase.getMobileNo(),
+                    userName = settingBSUserCase.getUserDetailsUseCase.getUserName(),
+
+                    )
 
                 val imageUri = compression.compressBackupImages(
                     BaselineCore.getAppContext(),
-                    prefRepo.getMobileNumber() ?: ""
-                )
+                    settingBSUserCase.getUserDetailsUseCase.getMobileNo(),
+                    userName = settingBSUserCase.getUserDetailsUseCase.getUserName(),
+
+                    )
 
                 openShareSheet(imageUri, fileUri, title)
                 CoreSharedPrefs.getInstance(BaselineCore.getAppContext()).setFileExported(true)

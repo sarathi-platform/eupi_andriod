@@ -37,6 +37,7 @@ import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.CalculationResultComponent
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.RadioOptionTypeComponent
+import com.nrlm.baselinesurvey.ui.common_components.RangePickerComponent
 import com.nrlm.baselinesurvey.ui.common_components.TypeMultiSelectedDropDownComponent
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponent.IncrementDecrementView
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
@@ -137,8 +138,11 @@ fun NestedLazyListForFormQuestions(
                         Spacer(modifier = Modifier.width(dimen_24_dp))
                     }
                     itemsIndexed(
-                        items = /*formTypeOption?.options*/questionTypeScreenViewModel.updatedOptionList.distinctBy { it.optionId }.filter { it
-                            .optionItemEntity?.optionType != QuestionType.Form.name}.filter { it.showQuestion } ?: emptyList()
+                        items = /*formTypeOption?.options*/questionTypeScreenViewModel.updatedOptionList.distinctBy { it.optionId }
+                            .filter {
+                                it
+                                    .optionItemEntity?.optionType != QuestionType.Form.name && it.optionItemEntity?.optionType != QuestionType.FormWithNone.name
+                            }.filter { it.showQuestion } ?: emptyList()
                     ) { index, option ->
                         when (option.optionItemEntity?.optionType) {
                             QuestionType.SingleSelectDropdown.name,
@@ -162,15 +166,31 @@ fun NestedLazyListForFormQuestions(
                                     isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
                                     sources = option.optionItemEntity.values,
                                     isEditAllowed = isEditAllowed,
-                                    selectOptionText = if (viewModel.tempRefId.value != BLANK_STRING)
-                                        formQuestionResponseEntity.value.getResponseForOptionId(
-                                            option.optionId ?: -1
-                                        )?.selectedValue
-                                            ?: BLANK_STRING
-                                    else
-                                        viewModel.storeCacheForResponse.getResponseForOptionId(
-                                            optionId = option.optionId ?: -1
-                                        )?.selectedValue ?: BLANK_STRING,
+                                    selectOptionText = if (viewModel.tempRefId.value != BLANK_STRING) {
+                                        option.optionItemEntity.values?.find {
+                                            it.value == (formQuestionResponseEntity.value.getResponseForOptionId(
+                                                option.optionId ?: -1
+                                            )?.selectedValue ?: BLANK_STRING)
+                                        }?.id
+                                            ?: 0 //TODO change from checking text to check only for id
+                                    }
+
+                                    /* formQuestionResponseEntity.value.getResponseForOptionId(
+                                         option.optionId ?: -1
+                                     )?.selectedValue
+                                         ?: BLANK_STRING*/
+                                    else {
+                                        option.optionItemEntity.values?.find {
+                                            it.value == (viewModel.storeCacheForResponse.getResponseForOptionId(
+                                                optionId = option.optionId ?: -1
+                                            )?.selectedValue ?: BLANK_STRING)
+                                        }?.id
+                                            ?: 0 //TODO change from checking text to check only for id
+                                    }
+
+                                    /*viewModel.storeCacheForResponse.getResponseForOptionId(
+                                        optionId = option.optionId ?: -1
+                                    )?.selectedValue ?: BLANK_STRING*/,
                                     onInfoButtonClicked = {
                                         sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
                                     }
@@ -178,7 +198,8 @@ fun NestedLazyListForFormQuestions(
                                     questionTypeScreenViewModel.onEvent(
                                         QuestionTypeEvent.UpdateConditionalOptionState(
                                             option,
-                                            value
+                                            option.optionItemEntity.values?.find { it.id == value }?.value
+                                                ?: BLANK_STRING //TODO change from checking text to check only for id
                                         )
                                     )
                                     questionTypeScreenViewModel.formTypeOption?.let { formTypeOption ->
@@ -186,7 +207,8 @@ fun NestedLazyListForFormQuestions(
                                             saveFormQuestionResponseEntity(
                                                 formTypeOption,
                                                 option.optionId ?: 0,
-                                                value,
+                                                option.optionItemEntity.values?.find { it.id == value }?.value
+                                                    ?: BLANK_STRING,
                                                 viewModel.referenceId
                                             )
                                         )
@@ -370,6 +392,45 @@ fun NestedLazyListForFormQuestions(
                                     showQuestion = option,
                                     defaultValue = questionTypeScreenViewModel.calculatedResult.value
                                 )
+                            }
+
+                            QuestionType.HrsMinPicker.name,
+                            QuestionType.YrsMonthPicker.name -> {
+                                RangePickerComponent(
+                                    title = option.optionItemEntity.display
+                                    ?: BLANK_STRING,
+                                    typePicker = option.optionItemEntity?.optionType
+                                        ?: BLANK_STRING,
+                                    defaultValue = if (viewModel.tempRefId.value != BLANK_STRING)
+                                        formQuestionResponseEntity.value.getResponseForOptionId(
+                                            option.optionId ?: -1
+                                        )?.selectedValue
+                                            ?: BLANK_STRING
+                                    else
+                                        viewModel.storeCacheForResponse.getResponseForOptionId(
+                                            optionId = option.optionId ?: -1
+                                        )?.selectedValue ?: BLANK_STRING,
+                                    showQuestionState = option,
+                                    onInfoButtonClicked = {}) { value, id ->
+                                    questionTypeScreenViewModel.onEvent(
+                                        QuestionTypeEvent.UpdateConditionalOptionState(
+                                            option,
+                                            value
+                                        )
+                                    )
+                                    questionTypeScreenViewModel.onEvent(QuestionTypeEvent.UpdateCalculationTypeQuestionValue)
+                                    questionTypeScreenViewModel.formTypeOption?.let { formTypeOption ->
+                                        saveCacheFormData(
+                                            saveFormQuestionResponseEntity(
+                                                formTypeOption,
+                                                option.optionId ?: 0,
+                                                value,
+                                                viewModel.referenceId
+                                            )
+                                        )
+                                    }
+                                    answeredQuestionCountIncreased()
+                                }
                             }
                         }
                     }

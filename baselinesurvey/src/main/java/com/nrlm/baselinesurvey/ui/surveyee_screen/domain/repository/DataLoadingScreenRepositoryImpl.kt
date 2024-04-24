@@ -156,9 +156,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                 contentLists.addAll(section.contentList)
                 sectionEntityDao.insertSection(sectionEntity)
                 section.questionList.forEach { question ->
-                    if (section.sectionId == 8) {
-                        Log.d("invoke", "section.questionList.forEach -> ${question} \n\n\n")
-                    }
+
                     saveQuestionAndOptionsToDb(
                         question = question,
                         section,
@@ -284,6 +282,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                         languageId
                     )
                 }
+                Log.d("TAG", "saveQuestionAndOptionsToDb: question -> ${question.questionDisplay}")
                 val questionEntity = QuestionEntity(
                     id = 0,
                     userId = getBaseLineUserId(),
@@ -302,7 +301,11 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     contentEntities = question.contentList,
                     parentQuestionId = parentId
                 )
-                questionEntityDao.insertQuestion(questionEntity)
+                if (question.questionDisplay == "Does didi have any family member who sends her money regularly?") {
+                    questionEntityDao.insertQuestion(questionEntity)
+                } else {
+                    questionEntityDao.insertQuestion(questionEntity)
+                }
                 question.options?.forEach { optionsItem ->
                     if (optionsItem != null) {
                         optionItemDao.deleteSurveySectionQuestionOptionFroLanguage(

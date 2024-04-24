@@ -10,8 +10,9 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.OPTION_TABLE
 import com.nrlm.baselinesurvey.database.converters.ConditionsDtoConvertor
 import com.nrlm.baselinesurvey.database.converters.ContentListConverter
-import com.nrlm.baselinesurvey.database.converters.StringConverter
+import com.nrlm.baselinesurvey.database.converters.ValuesDtoConverter
 import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
+import com.nrlm.baselinesurvey.model.datamodel.ValuesDto
 import com.nrlm.baselinesurvey.model.response.ContentList
 
 @Entity(tableName = OPTION_TABLE)
@@ -70,13 +71,16 @@ data class OptionItemEntity(
     @SerializedName("conditional")
     @Expose
     val conditional: Boolean = false,
+
     @SerializedName("order")
     @Expose
     val order: Int = 0,
+
     @SerializedName("values")
     @Expose
-    @TypeConverters(StringConverter::class)
-    val values: List<String>? = listOf(),
+    @TypeConverters(ValuesDtoConverter::class)
+    val values: List<ValuesDto>? = listOf(),
+
     @SerializedName("languageId")
     @Expose
     @ColumnInfo(name = "languageId")
@@ -94,8 +98,27 @@ data class OptionItemEntity(
 
     @SerializedName("isSelected")
     var isSelected: Boolean? = false,
+
     @SerializedName("selectedValue")
     var selectedValue: String? = BLANK_STRING,
+
+    var selectedValueId: Int = 0,
+
     @TypeConverters(ContentListConverter::class)
     val contentEntities: List<ContentList> = listOf()
-)
+){
+    companion object {
+        fun getEmptyOptionItemEntity(): OptionItemEntity {
+            return OptionItemEntity(
+                id = 0,
+                optionId = 0,
+                sectionId = 0,
+                contentEntities = listOf(),
+                conditional = false,
+                optionTag = 0,
+                order = 0,
+                surveyId = 0
+            )
+        }
+    }
+}

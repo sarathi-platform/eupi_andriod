@@ -49,7 +49,7 @@ fun MissionSummaryScreen(
         viewModel.init(missionId)
     }
     ToolbarWithMenuComponent(
-        title = BLANK_STRING,
+        title = missionName,
         modifier = Modifier.fillMaxSize(),
         navController=navController,
         onBackIconClick = { navController.popBackStack() },
@@ -82,14 +82,6 @@ fun MissionSummaryScreen(
         onContentUI = {
             if (activities.isNotEmpty()) {
                 Column(modifier = Modifier.padding(top = 55.dp)) {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 10.dp),
-                        text = missionName,
-                        style = largeTextStyle,
-                        color = blueDark
-                    )
                     //TODO in future in uncomment whenever get correct data from backend
 
 //                    Text(

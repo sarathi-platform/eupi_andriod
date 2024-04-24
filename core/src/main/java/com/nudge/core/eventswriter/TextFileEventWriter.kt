@@ -23,7 +23,6 @@ import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.json
 import com.nudge.core.model.request.toEventRequest
 import com.nudge.core.preference.CoreSharedPrefs
-import com.nudge.core.renameFile
 import java.io.File
 import java.io.FileWriter
 
@@ -183,31 +182,12 @@ open class TextFileEventWriter : IEventWriter {
     private fun splitFile(context: Context, mobileNo: String) {
         val coreSharedPrefs = CoreSharedPrefs.getInstance(context)
         if (CoreSharedPrefs.getInstance(context).isFileExported()) {
-            val oldName = coreSharedPrefs
-                .getBackupFileName(mobileNo)
-            val oldImageBackupFileName = coreSharedPrefs
-                .getImageBackupFileName(mobileNo)
-            val isRenamed = renameFile(
-                context,
-                oldName + ".txt",
-                newName = oldName.replace("current", "old") + ".txt",
-                mobileNo
-            )
-            if (isRenamed) {
                 coreSharedPrefs
                     .setBackupFileName(getDefaultBackUpFileName(mobileNo))
-            }
 
-            val isRenamedImageFile = renameFile(
-                context,
-                oldImageBackupFileName + ".txt",
-                newName = oldImageBackupFileName.replace("current", "old") + ".txt",
-                mobileNo
-            )
-            if (isRenamedImageFile) {
                 coreSharedPrefs
                     .setImageBackupFileName(getDefaultImageBackUpFileName(mobileNo))
-            }
+
             coreSharedPrefs.setFileExported(false)
         }
     }
