@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -63,6 +64,7 @@ import com.nrlm.baselinesurvey.ui.theme.lightGray2
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -78,6 +80,7 @@ fun FormTypeQuestionScreen(
     surveyeeId: Int,
     referenceId: String = BLANK_STRING
 ) {
+    val context = LocalContext.current
 
     val scope = rememberCoroutineScope()
     val scaffoldState =
@@ -96,7 +99,7 @@ fun FormTypeQuestionScreen(
 
     val saveButtonActiveState = remember {
         derivedStateOf {
-            referenceId.isNotBlank() || (viewModel.answeredOptionCount.intValue >= viewModel.totalOptionSize.intValue)
+            /*referenceId.isNotBlank() || */(viewModel.answeredOptionCount.intValue >= viewModel.totalOptionSize.intValue)
         }
     }
 
@@ -179,8 +182,8 @@ fun FormTypeQuestionScreen(
                         isActive = saveButtonActiveState.value,
                         isArrowRequired = false
                     ) {
-                        BaselineCore.setReferenceId(BLANK_STRING)
-                        if (viewModel.storeCacheForResponse.isNotEmpty()) {
+                        if (viewModel.storeCacheForResponse.isNotEmpty() && (viewModel.answeredOptionCount.intValue >= viewModel.totalOptionSize.intValue) && !viewModel.conditionalQuestionNotMarked) {
+                            BaselineCore.setReferenceId(BLANK_STRING)
                             viewModel.onEvent(
                                 QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent(
                                     surveyId = surveyID,
@@ -190,8 +193,13 @@ fun FormTypeQuestionScreen(
                                     formQuestionResponseList = viewModel.storeCacheForResponse
                                 )
                             )
+                            navController.popBackStack()
+                        } else {
+                            showCustomToast(
+                                context = context,
+                                context.getString(R.string.madnatory_question_not_marked_error)
+                            )
                         }
-                        navController.popBackStack()
                     }
                 }
             }

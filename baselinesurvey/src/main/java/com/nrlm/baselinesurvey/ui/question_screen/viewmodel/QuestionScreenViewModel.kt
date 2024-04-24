@@ -10,6 +10,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
@@ -43,6 +44,7 @@ import com.nrlm.baselinesurvey.utils.getOptionItemEntityFromInputTypeQuestionAns
 import com.nrlm.baselinesurvey.utils.sortedBySectionOrder
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nrlm.baselinesurvey.utils.toOptionItemStateList
 import com.nrlm.baselinesurvey.utils.updateOptionItemEntityListStateForQuestionByCondition
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -107,6 +109,10 @@ class QuestionScreenViewModel @Inject constructor(
 
     var isEditAllowed: Boolean = true
 
+    private var sectionDetailInDefaultLanguage = SectionListItem(
+        languageId = 2
+    )
+
     fun initQuestionScreenHandler(surveyeeId: Int, subjectId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _sectionsList.value = questionScreenUseCase.getSectionsListUseCase.invoke(surveyeeId)
@@ -170,6 +176,11 @@ class QuestionScreenViewModel @Inject constructor(
                     surveyId,
                     selectedlanguageId
                 )
+            sectionDetailInDefaultLanguage = questionScreenUseCase.getSectionUseCase.invoke(
+                sectionId,
+                surveyId,
+                DEFAULT_LANGUAGE_ID
+            )
             val questionAnswerMap = mutableMapOf<Int, List<OptionItemEntity>>()
             _inputTypeQuestionAnswerEntityList.value =
                 questionScreenUseCase.getSectionUseCase.getInputTypeQuestionAnswers(
@@ -427,6 +438,9 @@ class QuestionScreenViewModel @Inject constructor(
                                 questionId = event.questionId,
                                 questionType = event.questionType,
                                 questionTag = event.questionTag,
+                                questionDesc = event.questionDesc,
+                                referenceOptionList = sectionDetailInDefaultLanguage.optionsItemMap[event.questionId]?.toOptionItemStateList()
+                                    ?: emptyList(),
                                 saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
                             )
                         questionScreenUseCase.eventsWriterUseCase.invoke(
@@ -441,6 +455,7 @@ class QuestionScreenViewModel @Inject constructor(
                             questionId = event.questionId,
                             questionType = event.questionType,
                             questionTag = event.questionTag,
+                            questionDesc = event.questionDesc,
                             saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
                         )
                         questionScreenUseCase.eventsWriterUseCase.invoke(
@@ -452,11 +467,12 @@ class QuestionScreenViewModel @Inject constructor(
                     if (!event.showConditionalQuestion) {
                         onEvent(
                             EventWriterEvents.UpdateConditionalAnswerEvent(
-                                event.surveyId,
-                                event.sectionId,
-                                event.didiId,
-                                event.questionId,
-                                event.saveAnswerEventOptionItemDtoList
+                                surveyId = event.surveyId,
+                                sectionId = event.sectionId,
+                                didiId = event.didiId,
+                                questionId = event.questionId,
+                                questionDesc = event.questionDesc,
+                                saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
                             )
                         )
                     }
@@ -491,6 +507,7 @@ class QuestionScreenViewModel @Inject constructor(
                                 questionId = questionList.questionId ?: 0,
                                 questionType = questionList.type ?: BLANK_STRING,
                                 questionTag = questionList.attributeTag ?: -1,
+                                questionDesc = event.questionDesc,
                                 showQuestion = false,
                                 saveAnswerEventOptionItemDtoList = emptyList()
                             ),
@@ -595,15 +612,66 @@ class QuestionScreenViewModel @Inject constructor(
 
             is QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption ->  {
                 if (event.optionItemEntity.conditions == null) {
-                    if (event.questionEntityState?.questionEntity?.type?.equals(QuestionType.RadioButton.name ,true) == true
-                        || event.questionEntityState?.questionEntity?.type?.equals(QuestionType.List.name ,true) == true) {
-                        val questionToUpdate = questionEntityStateList.find { it.questionId == event.questionEntityState?.questionId }
+                    if (event.questionEntityState?.questionEntity?.type?.equals(
+                            QuestionType.RadioButton.name,
+                            true
+                        ) == true
+                        || event.questionEntityState?.questionEntity?.type?.equals(
+                            QuestionType.List.name,
+                            true
+                        ) == true
+                    ) {
+                        val questionToUpdate =
+                            questionEntityStateList.find { it.questionId == event.questionEntityState?.questionId }
                         questionToUpdate?.optionItemEntityState?.forEach { optionItemEntity ->
                             optionItemEntity.optionItemEntity?.conditions?.forEach { conditionDto ->
                                 updateQuestionStateForCondition(
                                     conditionResult = false,
                                     conditionDto
                                 )
+                            }
+                        }
+
+                        val unselectedOption =
+                            questionToUpdate?.optionItemEntityState?.filter { it.optionId != event.optionItemEntity.optionId }
+                        unselectedOption?.forEach { optionItemEntityState ->
+                            optionItemEntityState.optionItemEntity?.conditions?.forEach { conditionsDto ->
+                                val mConditionCheckResult = conditionsDto?.checkCondition(
+                                    event.optionItemEntity.display ?: BLANK_STRING
+                                )
+                                updateQuestionStateForCondition(
+                                    conditionResult = mConditionCheckResult == true,
+                                    conditionsDto
+                                )
+                                if (mConditionCheckResult == false) {
+                                    onEvent(
+                                        QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption(
+                                            conditionsDto
+                                        )
+                                    )
+                                }
+                                conditionsDto?.resultList?.forEach { subQuestion ->
+                                    subQuestion.options?.forEach { subQuestionOption ->
+                                        subQuestionOption?.conditions?.forEach { subConditionDto ->
+                                            val mSubConditionCheckResult =
+                                                subConditionDto?.checkCondition(
+                                                    event.optionItemEntity.display
+                                                        ?: BLANK_STRING
+                                                )
+                                            updateQuestionStateForCondition(
+                                                conditionResult = mSubConditionCheckResult == true,
+                                                subConditionDto
+                                            )
+                                            if (mConditionCheckResult == false) {
+                                                onEvent(
+                                                    QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption(
+                                                        subConditionDto!!
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -683,8 +751,21 @@ class QuestionScreenViewModel @Inject constructor(
                         QuestionType.SingleSelectDropdown.name,
                         QuestionType.SingleSelectDropDown.name -> {
                             // Show conditional question based on selected response
-                            val conditionCheckResult = conditionsDto?.checkCondition(event.optionItemEntity.selectedValue ?: BLANK_STRING)
-                            updateQuestionStateForCondition(conditionResult = conditionCheckResult == true, conditionsDto)
+                            val conditionCheckResult = conditionsDto?.checkCondition(
+                                event.optionItemEntity.selectedValue ?: BLANK_STRING
+                            )
+                            updateQuestionStateForCondition(
+                                conditionResult = conditionCheckResult == true,
+                                conditionsDto
+                            )
+
+                            if (conditionCheckResult == false) {
+                                onEvent(
+                                    QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption(
+                                        conditionsDto
+                                    )
+                                )
+                            }
                         }
                     }
                 }
@@ -795,7 +876,7 @@ class QuestionScreenViewModel @Inject constructor(
                 try {
                     val tempList = questionEntityStateList.toList()
 //                    viewModelScope.launch(Dispatchers.IO) {
-                    if (event.isAllMultipleTypeQuestionUnanswered) {
+                    if (event.isQuestionResponseUnanswered) {
                         event.question.questionId?.let {
                             if (answeredQuestionCount.contains(it))
                                 answeredQuestionCount.remove(it)
@@ -851,7 +932,9 @@ class QuestionScreenViewModel @Inject constructor(
                             .find { it.questionId == questionItem.questionId }
 
                         val isQuestionAnswered =
-                            sectionDetail.value.questionAnswerMapping.containsKey(question?.questionId)
+                            if (question?.questionEntity?.type == QuestionType.InputNumber.name) inputTypeQuestionAnswerEntityList.value.map { it.questionId }
+                                .contains(question.questionId) else
+                                sectionDetail.value.questionAnswerMapping.containsKey(question?.questionId)
                         if (isQuestionAnswered) {
 
                             CoroutineScope(Dispatchers.IO).launch {
@@ -862,7 +945,14 @@ class QuestionScreenViewModel @Inject constructor(
                                         ?: listOf()
                                 )
                             }
-
+                            if (question?.questionEntity?.type == QuestionType.InputNumber.name) {
+                                val updatedList =
+                                    inputTypeQuestionAnswerEntityList.value.toMutableList()
+                                val index =
+                                    updatedList.map { it.questionId }.indexOf(question.questionId)
+                                updatedList.removeAt(index)
+                                _inputTypeQuestionAnswerEntityList.value = updatedList
+                            }
                             val questionAnswerMapping =
                                 _sectionDetail.value.questionAnswerMapping.toMutableMap()
                             questionAnswerMapping.remove(question?.questionId)
@@ -880,6 +970,9 @@ class QuestionScreenViewModel @Inject constructor(
                                     questionId = question?.questionEntity?.questionId ?: 0,
                                     questionType = question?.questionEntity?.type ?: BLANK_STRING,
                                     questionTag = question?.questionEntity?.tag ?: 0,
+                                    questionDesc = question?.questionEntity?.questionDisplay
+                                        ?: BLANK_STRING,
+                                    showConditionalQuestion = false,
                                     saveAnswerEventOptionItemDtoList = listOf()
                                 )
                             )

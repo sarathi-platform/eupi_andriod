@@ -486,4 +486,8 @@
     <string name="backup_recovery">Backup/Recovery</string>
     <string name="export_event_file">Export Event File</string>
     <string name="export_log_file">Export Only Log File</string>
+    <string name="madnatory_question_not_marked_error">All mandatory questions are not answered, please answer all questions!</string>
+    <string name="view_label">View</string>
+    <string name="task_completed_label">"Activity Completed - "</string>
+
 </resources>

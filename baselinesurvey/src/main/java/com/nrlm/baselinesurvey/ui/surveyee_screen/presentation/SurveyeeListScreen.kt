@@ -168,8 +168,6 @@ fun handleButtonClick(
     when (buttonName) {
         is ButtonName.START_BUTTON -> {
             navigateToSectionListScreen(surveyeeId, surveyId, navController)
-            // navigateToBaseLineStartScreen(surveyeeId, surveyId, navController)
-//            navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$surveyeeId")
         }
 
         is ButtonName.CONTINUE_BUTTON -> {

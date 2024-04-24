@@ -98,7 +98,7 @@ fun NestedLazyList(
     viewModel: BaseViewModel,
     sectionDetails: SectionListItem,
     sectionInfoButtonClicked: () -> Unit,
-    answeredQuestionCountIncreased: (question: QuestionEntityState, isAllMultipleTypeQuestionUnanswered: Boolean ) -> Unit,
+    answeredQuestionCountIncreased: (question: QuestionEntityState, isQuestionResponseUnanswered: Boolean) -> Unit,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -429,6 +429,8 @@ fun NestedLazyList(
                                                 questionType = question.questionEntity?.type
                                                     ?: BLANK_STRING,
                                                 questionTag = question.questionEntity.tag,
+                                                questionDesc = question.questionEntity.questionDisplay
+                                                    ?: BLANK_STRING,
                                                 showConditionalQuestion = !optionItem.conditions.isNullOrEmpty(),
                                                 saveAnswerEventOptionItemDtoList = optionItem.convertToSaveAnswerEventOptionItemDto(
                                                     QuestionType.getQuestionTypeFromName(
@@ -480,8 +482,6 @@ fun NestedLazyList(
                                     isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionIndex, optionItem ->
 
-                                        answeredQuestionCountIncreased(question, false)
-
                                         questionScreenViewModel.onEvent(
                                             QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(
                                                 question,
@@ -525,6 +525,8 @@ fun NestedLazyList(
                                                 questionType = question.questionEntity.type
                                                     ?: BLANK_STRING,
                                                 questionTag = question.questionEntity.tag,
+                                                questionDesc = question.questionEntity.questionDisplay
+                                                    ?: BLANK_STRING,
                                                 showConditionalQuestion = !optionItem.conditions.isNullOrEmpty(),
                                                 saveAnswerEventOptionItemDtoList = optionItem.convertToSaveAnswerEventOptionItemDto(
                                                     QuestionType.getQuestionTypeFromName(
@@ -534,7 +536,7 @@ fun NestedLazyList(
                                                 )
                                             )
                                         )
-
+                                        answeredQuestionCountIncreased(question, false)
                                     },
                                     questionDetailExpanded = {
                                         scope.launch {
@@ -579,11 +581,6 @@ fun NestedLazyList(
                                     isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionIndex, optionItems, selectedIndeciesCount ->
 
-                                        answeredQuestionCountIncreased(
-                                            question,
-                                            optionItems.isEmpty()
-                                        )
-
                                         questionScreenViewModel.onEvent(
                                             QuestionScreenEvents.UpdateQuestionAnswerMappingForUi(
                                                 question,
@@ -627,6 +624,8 @@ fun NestedLazyList(
                                                 questionType = question.questionEntity?.type
                                                     ?: BLANK_STRING,
                                                 questionTag = question.questionEntity.tag,
+                                                questionDesc = question.questionEntity.questionDisplay
+                                                    ?: BLANK_STRING,
                                                 showConditionalQuestion = optionItems.any { it.conditions.isNullOrEmpty() },
                                                 saveAnswerEventOptionItemDtoList = optionItems.convertToSaveAnswerEventOptionItemDto(
                                                     QuestionType.getQuestionTypeFromName(
@@ -636,6 +635,12 @@ fun NestedLazyList(
                                                 )
                                             )
                                         )
+
+                                        answeredQuestionCountIncreased(
+                                            question,
+                                            optionItems.isEmpty()
+                                        )
+
                                     },
                                     questionDetailExpanded = {
                                         scope.launch {
@@ -657,14 +662,16 @@ fun NestedLazyList(
                             QuestionType.DidiDetails.name -> {
                                 val contentData =
                                     sectionDetails.questionContentMapping[question.questionId]
+                                val itemCount =
+                                    questionScreenViewModel.getFormResponseItemCountForQuestion(
+                                        question.questionId
+                                    )
                                 FormTypeQuestionComponent(
                                     question = question.questionEntity,
                                     showQuestionState = question,
                                     questionIndex = index,
                                     contests = contentData,
-                                    itemCount = questionScreenViewModel.getFormResponseItemCountForQuestion(
-                                        question.questionId
-                                    ),
+                                    itemCount = itemCount,
                                     maxCustomHeight = maxHeight,
                                     isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionIndex ->
@@ -764,8 +771,6 @@ fun NestedLazyList(
                                     maxCustomHeight = maxHeight,
                                     isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionIndex, optionItem, selectedValue ->
-
-                                        answeredQuestionCountIncreased(question, false)
 
 
                                         when (optionItem.optionType) {
@@ -891,6 +896,8 @@ fun NestedLazyList(
                                                     questionType = question.questionEntity.type
                                                         ?: BLANK_STRING,
                                                     questionTag = question.questionEntity.tag,
+                                                    questionDesc = question.questionEntity.questionDisplay
+                                                        ?: BLANK_STRING,
                                                     showConditionalQuestion = !optionItem.conditions.isNullOrEmpty(),
                                                     saveAnswerEventOptionItemDtoList = inputTypeQuestionAnswerEntityList.value
                                                         .convertInputTypeQuestionToEventOptionItemDto(
@@ -910,6 +917,8 @@ fun NestedLazyList(
                                                     questionType = question.questionEntity.type
                                                         ?: BLANK_STRING,
                                                     questionTag = question.questionEntity.tag,
+                                                    questionDesc = question.questionEntity.questionDisplay
+                                                        ?: BLANK_STRING,
                                                     showConditionalQuestion = !optionItem.conditions.isNullOrEmpty(),
                                                     saveAnswerEventOptionItemDtoList = mOptionItem.convertToSaveAnswerEventOptionItemDto(
                                                         QuestionType.getQuestionTypeFromName(
@@ -919,6 +928,21 @@ fun NestedLazyList(
                                                     )
                                                 )
                                             )
+                                        }
+
+                                        when (question.questionEntity.type) {
+                                            QuestionType.Input.name,
+                                            QuestionType.InputText.name,
+                                            QuestionType.InputNumberEditText.name -> {
+                                                answeredQuestionCountIncreased(
+                                                    question,
+                                                    selectedValue == BLANK_STRING
+                                                )
+                                            }
+
+                                            else -> {
+                                                answeredQuestionCountIncreased(question, false)
+                                            }
                                         }
 
                                     },

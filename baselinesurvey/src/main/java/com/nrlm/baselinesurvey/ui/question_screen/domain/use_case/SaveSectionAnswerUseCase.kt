@@ -128,6 +128,14 @@ class SaveSectionAnswerUseCase(
                     question?.questionEntity?.sectionId ?: 0,
                     surveyId = question?.questionEntity?.surveyId ?: 0
                 )
+                if (isQuestionPresentInDb > 0) {
+                    repository.deleteResponseForQuestion(
+                        didiId = didiId,
+                        questionId = question?.questionId ?: 0,
+                        sectionId = question?.questionEntity?.sectionId ?: 0,
+                        surveyId = question?.questionEntity?.surveyId ?: 0
+                    )
+                }
             }
         }
     }
