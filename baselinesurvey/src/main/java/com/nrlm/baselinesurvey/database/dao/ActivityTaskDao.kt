@@ -27,6 +27,8 @@ interface ActivityTaskDao {
     @Query("SELECT count(*) FROM $TASK_TABLE_NAME where  userId=:userId and taskId = :taskId")
     fun getTaskByIdCount(userId: String, taskId: Int): Int
 
+    @Query("SELECT localTaskId FROM $TASK_TABLE_NAME where  subjectId=:didiId and userId = :userId")
+    fun getTaskLocalId(userId: String, didiId: Int): String?
 
     @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId and missionId=:missionId and activityId = :activityId")
     suspend fun getActivityTask(

@@ -92,6 +92,7 @@ class EventWriterHelperImpl @Inject constructor(
         didiId: Int,
         sectionStatus: SectionStatus
     ): Events {
+        val taskLocalId = taskDao.getTaskLocalId(getBaseLineUserId(), didiId)
 
         return if (didiSectionProgressEntityDao.getSectionProgressForDidi(
                 userId = getBaseLineUserId(),
@@ -104,7 +105,8 @@ class EventWriterHelperImpl @Inject constructor(
                 surveyId = surveyId,
                 sectionId = sectionId,
                 didiId = didiId,
-                sectionStatus = sectionStatus.name
+                sectionStatus = sectionStatus.name,
+                localTaskId = taskLocalId ?: BLANK_STRING
             )
             repositoryImpl.createEvent(
                 addSectionProgressForDidiEventItem,
@@ -119,7 +121,9 @@ class EventWriterHelperImpl @Inject constructor(
                     surveyId = surveyId,
                     sectionId = sectionId,
                     didiId = didiId,
-                    sectionStatus = sectionStatus.name
+                    sectionStatus = sectionStatus.name,
+                    localTaskId = taskLocalId ?: BLANK_STRING
+
                 )
                 return repositoryImpl.createEvent(
                     updateSectionProgressForDidiEventItem,
@@ -149,6 +153,8 @@ class EventWriterHelperImpl @Inject constructor(
             surveyId,
             languageId
         )
+        val taskLocalId = taskDao.getTaskLocalId(getBaseLineUserId(), didiId)
+
         val activityForSubjectDto = getActivityFromSubjectId(didiId)
 
         val questionItem = questionEntityDao.getFormQuestionForId(
@@ -191,7 +197,8 @@ class EventWriterHelperImpl @Inject constructor(
                     referenceOptionList
                 )
             ),
-            referenceId = surveyEntity?.referenceId ?: 0
+            referenceId = surveyEntity?.referenceId ?: 0,
+            localTaskId = taskLocalId ?: BLANK_STRING
         )
         val mSaveAnswerEventDtoEvent = repositoryImpl.createEvent(
             mSaveAnswerEventDto,
@@ -220,6 +227,7 @@ class EventWriterHelperImpl @Inject constructor(
             languageId
         )
         val activityForSubjectDto = getActivityFromSubjectId(didiId)
+        val taskLocalId = taskDao.getTaskLocalId(getBaseLineUserId(), didiId)
 
         val questionItem = questionEntityDao.getFormQuestionForId(
             userid = getBaseLineUserId(),
@@ -259,7 +267,8 @@ class EventWriterHelperImpl @Inject constructor(
                 options = optionList,
                 questionDesc = questionItem?.questionDisplay ?: BLANK_STRING
             ),
-            referenceId = surveyEntity?.referenceId ?: 0
+            referenceId = surveyEntity?.referenceId ?: 0,
+            localTaskId = taskLocalId ?: BLANK_STRING
         )
         val mSaveAnswerEventDtoEvent = repositoryImpl.createEvent(
             mSaveAnswerEventDto,
@@ -276,6 +285,7 @@ class EventWriterHelperImpl @Inject constructor(
         val languageId = prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
         val activityForSubjectDto =
             activityDao.getActivityFromSubjectId(getBaseLineUserId(), subjectId)
+        val taskLocalId = taskDao.getTaskLocalId(getBaseLineUserId(), subjectId)
 
         val mUpdateTaskStatusEventDto = UpdateTaskStatusEventDto(
             missionId = activityForSubjectDto.missionId,
@@ -286,7 +296,8 @@ class EventWriterHelperImpl @Inject constructor(
             referenceType = StatusReferenceType.TASK.name,
             status = sectionStatus.name,
             actualStartDate = activityForSubjectDto.actualStartDate,
-            actualCompletedDate = activityForSubjectDto.actualCompletedDate
+            actualCompletedDate = activityForSubjectDto.actualCompletedDate,
+            localTaskId = taskLocalId ?: BLANK_STRING
         )
 
         val mUpdateTaskStatusEvent = repositoryImpl.createEvent(
