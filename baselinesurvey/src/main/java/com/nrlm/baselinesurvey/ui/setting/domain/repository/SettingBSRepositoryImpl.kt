@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.setting.domain.repository
 
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.LANGUAGE_OPEN_FROM_SETTING
+import com.nrlm.baselinesurvey.PREF_KEY_NAME
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
@@ -10,10 +11,8 @@ import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
 
-class SettingBSRepositoryImpl(
-    private val prefRepo: PrefRepo,
-    private val apiService: ApiService,
-
+class SettingBSRepositoryImpl(private val prefRepo: PrefRepo,
+                              private val apiService: ApiService,
     ):SettingBSRepository {
 
     override suspend fun performLogout(): ApiResponseModel<String> {
@@ -42,12 +41,12 @@ class SettingBSRepositoryImpl(
         prefRepo.savePref(LANGUAGE_OPEN_FROM_SETTING,true)
     }
 
+    override fun getUserName(): String {
+        return prefRepo.getPref(PREF_KEY_NAME, BLANK_STRING) ?: BLANK_STRING
 
+    }
 
-
-
-
-
-
-
+    override fun getMobileNo(): String {
+        return prefRepo.getMobileNumber() ?: ""
+    }
 }

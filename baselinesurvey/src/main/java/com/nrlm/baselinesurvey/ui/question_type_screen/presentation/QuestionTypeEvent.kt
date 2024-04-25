@@ -72,4 +72,6 @@ sealed class QuestionTypeEvent {
     data class RemoveConditionalQuestionValuesForUnselectedOption(
         val questionConditionsDto: ConditionsDto
     )
+
+    data class FormQuestionMarkedWithNone(val questionId: Int, val optionId: Int)
 }

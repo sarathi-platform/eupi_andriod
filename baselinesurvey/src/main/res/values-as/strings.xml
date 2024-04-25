@@ -442,5 +442,9 @@
     <string name="minute">মিনিট</string>
     <string name="month">মাহ</string>
     <string name="data_fetching_and_processing">ডাটা ফেচিং আৰু প্ৰচেছিং…</string>
+    <string name="purpose_comparision">What is the purpose of your farming?</string>
+    <string name="net_income_label">Net income per year</string>
+    <string name="net_income_comparision">Net income per year</string>
+    <string name="total_annual_income_label">"Total annual income of the household: "</string>
 
 </resources>
