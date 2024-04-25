@@ -492,4 +492,5 @@
 
     <string name="data_fetching_and_processing">Data Fetching and Processing…</string>
     <string name="total_annual_income_label">"Total annual income of the household: "</string>
+    <string name="logout_confirmation">Are you sure to logout?</string>
 </resources>

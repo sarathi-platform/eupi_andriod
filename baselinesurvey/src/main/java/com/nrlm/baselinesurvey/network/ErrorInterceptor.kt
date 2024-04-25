@@ -17,8 +17,7 @@ class ErrorInterceptor @Inject constructor(): Interceptor {
         val request = originalRequest.newBuilder().build()
         val response = chain.proceed(request)
 
-        // Inspect status codes of unsuccessful responses
-
+            // Inspect status codes of unsuccessful responses
             if (response.code >= 300) {
             val apiException = ApiException()
             apiException.setStatusCode(statusCode = response.code)

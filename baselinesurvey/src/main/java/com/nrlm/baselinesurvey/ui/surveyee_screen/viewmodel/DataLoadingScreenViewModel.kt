@@ -5,10 +5,11 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.DEFAULT_SUCCESS_CODE
 import com.nrlm.baselinesurvey.R
-import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.model.datamodel.ErrorModel
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.ui.common_components.common_events.ApiStatusEvent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.DialogEvents
@@ -89,7 +90,7 @@ class DataLoadingScreenViewModel @Inject constructor(
     }
 
     private fun fetchMissionData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
             baseCurrentApiCount++
             updateLoaderEvent(callBack)
@@ -97,7 +98,7 @@ class DataLoadingScreenViewModel @Inject constructor(
     }
 
     private fun fetchSurveyeeData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()
             baseCurrentApiCount++
             updateLoaderEvent(callBack)
@@ -105,7 +106,7 @@ class DataLoadingScreenViewModel @Inject constructor(
     }
 
     private fun fetchContentData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             fetchDataUseCase.fetchContentnDataFromNetworkUseCase.invoke()
             baseCurrentApiCount++
             updateLoaderEvent(callBack)
@@ -113,7 +114,7 @@ class DataLoadingScreenViewModel @Inject constructor(
     }
 
     private fun fetchCasteData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke(true)
             baseCurrentApiCount++
             updateLoaderEvent(callBack)
@@ -131,7 +132,7 @@ class DataLoadingScreenViewModel @Inject constructor(
     }
 
     private fun fetchSectionStatusData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             fetchDataUseCase.fetchSectionStatusFromNetworkUseCase.invoke()
             baseCurrentApiCount++
             updateLoaderEvent(callBack)
@@ -139,7 +140,7 @@ class DataLoadingScreenViewModel @Inject constructor(
     }
 
     private fun fetchSurveyAnswerData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             fetchDataUseCase.fetchSurveyAnswerFromNetworkUseCase.invoke()
             baseCurrentApiCount++
             updateLoaderEvent(callBack)
@@ -176,7 +177,7 @@ class DataLoadingScreenViewModel @Inject constructor(
             "Network Transaction Start " + System.currentTimeMillis().toTimeDateString()
         )
         try {
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
                 val languagesSize =
                     (fetchDataUseCase.fetchSurveyFromNetworkUseCase.getLanguages().size * 2)
                 SURVEY_API_CALL = languagesSize
@@ -203,7 +204,7 @@ class DataLoadingScreenViewModel @Inject constructor(
     }
 
     private suspend fun fetchSurveyForAllLanguages(callBack: () -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             val stateId = getStateId()
             if (stateId != -1) {
                 fetchDataUseCase.fetchSurveyFromNetworkUseCase.getLanguages()
@@ -229,7 +230,7 @@ class DataLoadingScreenViewModel @Inject constructor(
         languageId: Int,
         referenceId: Int, callBack: () -> Unit
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             val hamletSurveyRequestBodyModel = SurveyRequestBodyModel(
                 languageId = languageId,
                 surveyName = "HAMLET",
@@ -250,7 +251,7 @@ class DataLoadingScreenViewModel @Inject constructor(
         languageId: Int,
         referenceId: Int, callBack: () -> Unit
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
 
             val baselineSurveyRequestBodyModel = SurveyRequestBodyModel(
                 languageId = languageId,
@@ -288,9 +289,16 @@ class DataLoadingScreenViewModel @Inject constructor(
     }
 
     fun clearLocalDB(isDataLoadingAllowed: () -> Unit) {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             fetchDataUseCase.loggedInUseCase.performLogout(true)
             isDataLoadingAllowed()
         }
+    }
+
+    override fun onServerError(error: ErrorModel?) {
+        baseCurrentApiCount++
+//        updateLoaderEvent(callBack)
+
+
     }
 }
