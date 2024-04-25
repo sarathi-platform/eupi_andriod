@@ -152,6 +152,7 @@ fun NestedLazyList(
     DisposableEffect(key1 = context) {
         coroutineScope.launch(Dispatchers.IO) {
             try {
+                questionScreenViewModel.getDidiInfoObject(surveyeeId)
                 questionScreenViewModel.didiInfoObjectLive = questionScreenViewModel.getDidiInfoObjectLive(surveyeeId)
                 withContext(Dispatchers.Main) {
                     questionScreenViewModel.didiInfoObjectLive.observe(lifecycleOwner) {
@@ -1011,30 +1012,28 @@ fun NestedLazyList(
                     ) {
                         item {
                             Column {
-//
-                                questionScreenViewModel.didiInfoObjectLive.value?.distinctBy { it.didiId }
-                                    ?.forEach { didiInfoEntity ->
-
-                                        DidiInfoCard(
-                                            didiInfoEntity = didiInfoEntity,
-                                            didiDetails = questionScreenViewModel.didiDetails.value,
-                                            isEditAllowed = questionScreenViewModel.isEditAllowed,
-                                            onUpdate = {
-                                                navigateToBaseLineStartScreen(
-                                                    surveyeeId = surveyeeId,
-                                                    survyId = sectionDetails.surveyId,
-                                                    sectionId = sectionDetails.sectionId,
-                                                    navController = navController
-                                                )
-                                            }
-                                        )
+                                if (questionScreenViewModel.didiInfoState.value != null) {
+                                    DidiInfoCard(
+                                        didiInfoEntity = questionScreenViewModel.didiInfoState.value!!,
+                                        didiDetails = questionScreenViewModel.didiDetails.value,
+                                        isEditAllowed = questionScreenViewModel.isEditAllowed,
+                                        onUpdate = {
+                                            navigateToBaseLineStartScreen(
+                                                surveyeeId = surveyeeId,
+                                                survyId = sectionDetails.surveyId,
+                                                sectionId = sectionDetails.sectionId,
+                                                navController = navController
+                                            )
+                                        }
+                                    )
 
                                         Spacer(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .height(dimen_8_dp)
                                         )
-                                    }
+
+                                }
                             }
                         }
                     }
