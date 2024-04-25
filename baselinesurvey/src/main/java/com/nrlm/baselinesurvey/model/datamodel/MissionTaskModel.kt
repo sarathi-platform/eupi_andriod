@@ -13,5 +13,8 @@ data class MissionTaskModel(
     @SerializedName("taskStatus")
     val status: String?,
     val subjectId: Int?,
-    val completedDate: String?
+    val completedDate: String?,
+    @SerializedName("localTaskId")
+    val localTaskId: String?
+
 )

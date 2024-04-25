@@ -50,6 +50,7 @@ import com.nudge.core.enums.EventName
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.UUID
 
 fun uriFromFile(context: Context, file: File): Uri {
     try {
@@ -132,6 +133,10 @@ fun stringToInt(string: String):Int{
 
 fun setKeyboardToPan(context: MainActivity) {
     context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+}
+
+fun getUniqueIdForEntity(): String {
+    return UUID.randomUUID().toString().replace("-", "") + "|" + System.currentTimeMillis()
 }
 
 fun setKeyboardToReadjust(context: MainActivity) {
