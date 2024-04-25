@@ -38,6 +38,7 @@ data class ImageUploadRequest(
     val referenceId: String = "",
     @SerializedName("optionTag")
     val optionTag: Int = 0,
+    @Transient
     @SerializedName("localTaskId")
     val localTaskId: String?
 ) {

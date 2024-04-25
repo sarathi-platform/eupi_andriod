@@ -28,6 +28,7 @@ data class SaveAnswerEventForFormQuestionDto(
     @SerializedName("surveyId")
     @Expose
     val surveyId: Int,
+    @Transient
     @SerializedName("localTaskId")
     @Expose
     val localTaskId: String,
