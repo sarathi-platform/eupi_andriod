@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.common_components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -153,7 +154,7 @@ fun FormResponseCard(
                             if (income == BLANK_STRING) {
                                 val options = optionItemListWithConditionals.filter {
                                     it.display?.contains(
-                                        stringResource(id = R.string.income_frequency_comparision),
+                                        stringResource(R.string.purpose_comparision),
                                         ignoreCase = true
                                     )!!
                                 }
@@ -167,13 +168,7 @@ fun FormResponseCard(
                                         income = BLANK_STRING
                                     }
                                 }
-                                /*income =
-                                    formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                        it.display?.contains(
-                                            stringResource(id = R.string.income_frequency_comparision),
-                                            ignoreCase = true
-                                        )!!
-                                    }?.optionId] ?: BLANK_STRING*/
+
                             }
 
                             if (income != BLANK_STRING) {
@@ -269,7 +264,10 @@ fun FormResponseCard(
                                 }?.optionId]
                                     ?: BLANK_STRING) != stringResource(id = R.string.no_income_comparision)
                             ) {
-                                append(stringResource(R.string.total_income_lable))
+                                append(/*stringResource(R.string.total_income_lable)*/stringResource(
+                                    R.string.net_income_label
+                                )
+                                )
                                 var income =
                                     formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                         it.display?.contains(
@@ -302,6 +300,27 @@ fun FormResponseCard(
                                         }
                                         return@forEach
                                     }
+
+                                if (income == BLANK_STRING) {
+                                    optionItemListWithConditionals.filter {
+                                        it.display?.contains(
+                                            stringResource(R.string.net_income_comparision),
+                                            true
+                                        )!!
+                                    }.forEach {
+                                        if (income == BLANK_STRING) {
+                                            Log.d(
+                                                "TAG",
+                                                "FormResponseCard: it.optionId -> ${it.optionId}"
+                                            )
+
+                                            income =
+                                                formResponseObjectDto.memberDetailsMap[it.optionId]
+                                                    ?: BLANK_STRING
+                                        }
+                                        return@forEach
+                                    }
+                                }
 
                                 if (income == BLANK_STRING)
                                     income =

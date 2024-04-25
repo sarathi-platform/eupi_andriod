@@ -49,7 +49,7 @@ data class OptionsItem(
 
     @SerializedName("values")
     @Expose
-    val values: List<String> = listOf(),
+    val values: List<ValuesDto> = listOf(),
 
     @SerializedName("conditions")
     @Expose

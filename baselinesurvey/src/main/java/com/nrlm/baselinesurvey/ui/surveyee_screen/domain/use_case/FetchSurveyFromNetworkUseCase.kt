@@ -19,20 +19,19 @@ class FetchSurveyFromNetworkUseCase(
         try {
 
 
-            /*
-            //TODO Run a loop on language id later
+            /*//TODO Run a loop on language id later
             var surveyResponseModel: SurveyResponseModel? = null
-             val testSurvey =
-                 BaselineCore.getAppContext().resources.openRawResource(R.raw.survey).use {
-                     surveyResponseModel =
-                         Gson().fromJson(it.reader(), SurveyResponseModel::class.java)
-                 }
-             if (surveyResponseModel != null) {
-                 repository.saveSurveyToDb(surveyResponseModel!!, surveyRequestBodyModel.languageId)
-                 return true
-             } else {
-                 return false
-             }*/
+            val testSurvey =
+                BaselineCore.getAppContext().resources.openRawResource(R.raw.survey).use {
+                    surveyResponseModel =
+                        Gson().fromJson(it.reader(), SurveyResponseModel::class.java)
+                }
+            if (surveyResponseModel != null) {
+                repository.saveSurveyToDb(surveyResponseModel!!, surveyRequestBodyModel.languageId)
+                return true
+            } else {
+                return false
+            }*/
             if (!repository.isNeedToCallApi(SUBPATH_FETCH_SURVEY_FROM_NETWORK)) {
                 return false
             }

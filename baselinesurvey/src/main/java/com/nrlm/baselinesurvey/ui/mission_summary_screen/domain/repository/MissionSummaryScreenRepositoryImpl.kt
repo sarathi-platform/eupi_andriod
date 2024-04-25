@@ -89,4 +89,5 @@ class MissionSummaryScreenRepositoryImpl @Inject constructor(
     override suspend fun getMission(missionId: Int): MissionEntity {
         return missionEntityDao.getMission(userId = getBaseLineUserId(), missionId)
     }
+
 }
