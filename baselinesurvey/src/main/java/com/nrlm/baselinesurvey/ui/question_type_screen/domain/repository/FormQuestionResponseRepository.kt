@@ -21,6 +21,12 @@ interface FormQuestionResponseRepository {
         didiId: Int
     ): List<FormQuestionResponseEntity>
 
+    suspend fun getFormResponsesForSection(
+        surveyId: Int,
+        sectionId: Int,
+        didiId: Int
+    ): List<FormQuestionResponseEntity>
+
     suspend fun getFormResponsesForQuestionLive(
         surveyId: Int,
         sectionId: Int,

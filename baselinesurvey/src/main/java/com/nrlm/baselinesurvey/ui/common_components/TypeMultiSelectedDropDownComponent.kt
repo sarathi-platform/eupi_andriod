@@ -10,20 +10,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.toSize
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.model.datamodel.ValuesDto
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 
 @Composable
 fun TypeMultiSelectedDropDownComponent(
     title: String? = BLANK_STRING,
     hintText: String = "Select",
-    sources: List<String>?,
+    sources: List<ValuesDto>?,
     isContent: Boolean = false,
     showQuestionState: OptionItemEntityState? = OptionItemEntityState.getEmptyStateObject(),
     selectOptionText: String = BLANK_STRING,
     onInfoButtonClicked: () -> Unit,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
-    val defaultSourceList = sources ?: listOf("Yes", "No")
+    //TODO handle everything using id
+
+    val defaultSourceList = sources ?: listOf(ValuesDto(id = 1, "Yes"), ValuesDto(id = 2, "No"))
     var expanded by remember { mutableStateOf(false) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
     var selectedItems by remember {

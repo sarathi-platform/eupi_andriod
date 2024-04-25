@@ -16,7 +16,7 @@
   "sections": [
     {
       "sectionName": "Didi Information",
-      "imageIcon": "image.webp",
+      "imageIcon": "",
       "order": 1,
       "description": "Didi Information",
       "paraphrase": "",
@@ -32,9 +32,9 @@
           "paraphrase": "Add didi details",
           "status": 1,
           "order": 1,
-          "type": "Form",
+          "tag": 1,
+          "type": "DidiDetails",
           "languageCode": "en",
-          "tag": 0,
           "contents": [
             {
               "contentKey": "question",
@@ -42,20 +42,84 @@
               "contentValue": null
             }
           ],
-          "options": []
+          "options": [
+            {
+              "optionId": 1,
+              "description": "Aadhar Card",
+              "status": 1,
+              "weight": 0,
+              "paraphrase": "Aadhar Card",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "YesNoButton",
+              "order": 1,
+              "tag": 13,
+              "conditional": false,
+              "isMandatory": true
+            },
+            {
+              "optionId": 2,
+              "description": "VoterId Card",
+              "status": 1,
+              "weight": 0,
+              "paraphrase": "VoterId Card",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "YesNoButton",
+              "order": 2,
+              "tag": 14,
+              "conditional": false,
+              "isMandatory": true
+            },
+            {
+              "optionId": 3,
+              "description": "Phone Number",
+              "status": 1,
+              "weight": 0,
+              "paraphrase": "Phone Number",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "PhoneNumber",
+              "order": 3,
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
+            },
+            {
+              "optionId": 4,
+              "description": "",
+              "status": 1,
+              "weight": 0,
+              "paraphrase": "",
+              "optionImage": "",
+              "languageCode": "en",
+              "type": "Image",
+              "order": 4,
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
+            }
+          ],
+          "isMandatory": true
         }
       ]
     },
     {
       "sectionName": "Household Information",
-      "imageIcon": "image.webp",
+      "imageIcon": "baseline_household_information",
       "order": 2,
       "description": "Household Information",
       "paraphrase": "",
       "languageCode": "en",
       "sectionId": 2,
       "status": 1,
-      "contents": [],
+      "contents": [
+        {
+          "contentKey": "B_Household-Info",
+          "contentType": "text",
+          "contentValue": null
+        }
+      ],
       "questions": [
         {
           "questionId": 1,
@@ -64,9 +128,9 @@
           "paraphrase": "Add Household Member",
           "status": 1,
           "order": 1,
+          "tag": 58,
           "type": "Form",
           "languageCode": "en",
-          "tag": 44,
           "contents": [
             {
               "contentKey": "question",
@@ -85,7 +149,9 @@
               "languageCode": "en",
               "type": "InputText",
               "order": 1,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 2,
@@ -97,26 +163,10 @@
               "languageCode": "en",
               "type": "SingleSelectDropdown",
               "order": 2,
+              "tag": 0,
               "conditional": false,
-              "values": [
-                "Spouse",
-                "Son",
-                "Daughter",
-                "Daughter-in-law",
-                "Son-in-law",
-                "Father-in-law",
-                "Mother-in-law",
-                "Brother",
-                "Sister",
-                "Grandson",
-                "Granddaughter",
-                "Nephew",
-                "Niece",
-                "Cousin",
-                "Aunt",
-                "Uncle",
-                "Any other"
-              ]
+              "values": [],
+              "isMandatory": true
             },
             {
               "optionId": 3,
@@ -191,12 +241,7 @@
                           "languageCode": "en",
                           "type": "SingleSelectDropdown",
                           "order": 1,
-                          "values": [
-                            "Yes",
-                            "Partial",
-                            "No",
-                            "No MCP card"
-                          ],
+                          "values": [],
                           "conditional": false
                         }
                       ],
@@ -255,11 +300,7 @@
                                       "type": "SingleSelectDropDown",
                                       "order": 1,
                                       "conditional": false,
-                                      "values": [
-                                        "Regular",
-                                        "Irregular",
-                                        "Drop-out"
-                                      ]
+                                      "values": []
                                     }
                                   ],
                                   "conditional": true
@@ -312,12 +353,7 @@
                           "type": "SingleSelectDropdown",
                           "order": 1,
                           "conditional": false,
-                          "values": [
-                            "Illiterate",
-                            "Less than Class 8th",
-                            "Between Class 8 -12th",
-                            "Graduate & Above"
-                          ]
+                          "values": []
                         }
                       ],
                       "conditional": true
@@ -350,12 +386,7 @@
                           "type": "SingleSelectDropdown",
                           "order": 1,
                           "conditional": false,
-                          "values": [
-                            "Unmarried",
-                            "Married",
-                            "Widow",
-                            "Separated"
-                          ]
+                          "values": []
                         }
                       ],
                       "conditional": true
@@ -369,7 +400,9 @@
               "languageCode": "en",
               "type": "InputNumberEditText",
               "order": 3,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 5,
@@ -381,19 +414,19 @@
               "languageCode": "en",
               "type": "Toggle",
               "order": 5,
+              "tag": 0,
               "conditional": false,
-              "values": [
-                "Yes",
-                "No"
-              ]
+              "values": [],
+              "isMandatory": true
             }
-          ]
+          ],
+          "isMandatory": true
         }
       ]
     },
     {
       "sectionName": "Food Security & Nutritional Diversity",
-      "imageIcon": "image.webp",
+      "imageIcon": "baseline_food_security_sutritional_diversity",
       "order": 3,
       "description": "Food Security & Nutritional Diversity",
       "paraphrase": "",
@@ -415,9 +448,9 @@
           "paraphrase": "2 meals per day",
           "status": 0,
           "order": 1,
+          "tag": 31,
           "type": "RadioButton",
           "languageCode": "en",
-          "tag": 8,
           "contents": [
             {
               "contentKey": "question",
@@ -436,7 +469,9 @@
               "languageCode": "en",
               "type": "RadioButton",
               "order": 1,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 2,
@@ -448,9 +483,12 @@
               "languageCode": "en",
               "type": "RadioButton",
               "order": 2,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             }
-          ]
+          ],
+          "isMandatory": true
         },
         {
           "questionId": 2,
@@ -459,9 +497,9 @@
           "paraphrase": "Goes to anganwadi",
           "status": 0,
           "order": 2,
+          "tag": 32,
           "type": "RadioButton",
           "languageCode": "en",
-          "tag": 9,
           "contents": [
             {
               "contentKey": "question",
@@ -480,7 +518,9 @@
               "languageCode": "en",
               "type": "RadioButton",
               "order": 1,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 2,
@@ -501,7 +541,7 @@
                       "order": 3,
                       "type": "MultiSelect",
                       "languageCode": "en",
-                      "tag": 3,
+                      "tag": 26,
                       "contents": [
                         {
                           "contentKey": "C2.1_Food-Shortage",
@@ -519,7 +559,7 @@
                           "languageCode": "en",
                           "type": "MultiSelect",
                           "order": 1,
-                          "tag": 3,
+                          "tag": 26,
                           "conditional": false
                         },
                         {
@@ -532,7 +572,7 @@
                           "languageCode": "en",
                           "type": "MultiSelect",
                           "order": 2,
-                          "tag": 3,
+                          "tag": 26,
                           "conditional": false
                         },
                         {
@@ -545,7 +585,7 @@
                           "languageCode": "en",
                           "type": "MultiSelect",
                           "order": 3,
-                          "tag": 3,
+                          "tag": 26,
                           "conditional": false
                         },
                         {
@@ -558,7 +598,7 @@
                           "languageCode": "en",
                           "type": "MultiSelect",
                           "order": 4,
-                          "tag": 3,
+                          "tag": 26,
                           "conditional": false
                         },
                         {
@@ -566,7 +606,7 @@
                           "description": "Spring (Feb – Mar)",
                           "status": 1,
                           "weight": 0,
-                          "tag": 3,
+                          "tag": 26,
                           "paraphrase": "Spring (Feb – Mar)",
                           "optionImage": "",
                           "languageCode": "en",
@@ -585,9 +625,12 @@
               "languageCode": "en",
               "type": "RadioButton",
               "order": 2,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             }
-          ]
+          ],
+          "isMandatory": true
         },
         {
           "questionId": 4,
@@ -596,9 +639,9 @@
           "paraphrase": "Owns kitchen garden",
           "status": 0,
           "order": 4,
+          "tag": 27,
           "type": "RadioButton",
           "languageCode": "en",
-          "tag": 4,
           "contents": [
             {
               "contentKey": "C3_Kitchen-garden",
@@ -617,7 +660,9 @@
               "languageCode": "en",
               "type": "RadioButton",
               "order": 1,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 2,
@@ -629,9 +674,12 @@
               "languageCode": "en",
               "type": "RadioButton",
               "order": 2,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             }
-          ]
+          ],
+          "isMandatory": true
         },
         {
           "questionId": 5,
@@ -640,9 +688,9 @@
           "paraphrase": "",
           "status": 0,
           "order": 5,
+          "tag": 33,
           "type": "MultiSelect",
           "languageCode": "en",
-          "tag": 10,
           "contents": [
             {
               "contentKey": "question",
@@ -661,8 +709,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 1,
-              "tag": 10,
-              "conditional": false
+              "tag": 33,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 2,
@@ -674,8 +723,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 2,
-              "tag": 10,
-              "conditional": false
+              "tag": 33,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 3,
@@ -687,8 +737,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 3,
-              "tag": 10,
-              "conditional": false
+              "tag": 33,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 4,
@@ -700,8 +751,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 4,
-              "tag": 10,
-              "conditional": false
+              "tag": 33,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 5,
@@ -713,8 +765,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 5,
-              "tag": 10,
-              "conditional": false
+              "tag": 33,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 6,
@@ -724,17 +777,32 @@
                 {
                   "value": "Others",
                   "operator": "=",
-                  "resultType": "Options",
+                  "resultType": "Questions",
                   "resultList": [
                     {
-                      "optionId": 1,
-                      "description": "",
-                      "status": 0,
-                      "weight": 0,
-                      "type": "Input",
-                      "order": 1,
-                      "tag": 5,
-                      "conditional": false
+                      "questionId": 6,
+                      "imageIcon": "image.webp",
+                      "description": "Which other thing did didi consume at least once in the last 7 days?",
+                      "paraphrase": "Which other thing did didi consume at least once in the last 7 days?",
+                      "status": 1,
+                      "order": 6,
+                      "type": "InputText",
+                      "languageCode": "en",
+                      "tag": 33,
+                      "options": [
+                        {
+                          "optionId": 1,
+                          "description": "",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "InputText",
+                          "order": 1,
+                          "conditional": false
+                        }
+                      ]
                     }
                   ]
                 }
@@ -745,21 +813,23 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 6,
-              "tag": 10,
-              "conditional": false
+              "tag": 33,
+              "conditional": false,
+              "isMandatory": true
             }
-          ]
+          ],
+          "isMandatory": true
         },
         {
-          "questionId": 6,
+          "questionId": 7,
           "imageIcon": "image.webp",
           "description": "Which of the following did didi consume at least thrice in the last 7 days?",
           "paraphrase": "",
           "status": 0,
-          "order": 6,
+          "order": 7,
+          "tag": 34,
           "type": "MultiSelect",
           "languageCode": "en",
-          "tag": 11,
           "contents": [
             {
               "contentKey": "question",
@@ -778,9 +848,10 @@
               "optionImage": "",
               "languageCode": "en",
               "type": "MultiSelect",
-              "tag": 11,
               "order": 1,
-              "conditional": false
+              "tag": 34,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 2,
@@ -791,9 +862,10 @@
               "optionImage": "",
               "languageCode": "en",
               "type": "MultiSelect",
-              "tag": 11,
               "order": 2,
-              "conditional": false
+              "tag": 34,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 3,
@@ -804,9 +876,10 @@
               "optionImage": "",
               "languageCode": "en",
               "type": "MultiSelect",
-              "tag": 11,
               "order": 3,
-              "conditional": false
+              "tag": 34,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 4,
@@ -817,9 +890,10 @@
               "optionImage": "",
               "languageCode": "en",
               "type": "MultiSelect",
-              "tag": 11,
               "order": 4,
-              "conditional": false
+              "tag": 34,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 5,
@@ -829,16 +903,32 @@
                 {
                   "value": "Others",
                   "operator": "=",
-                  "resultType": "Options",
+                  "resultType": "Questions",
                   "resultList": [
                     {
-                      "optionId": 1,
-                      "description": "",
-                      "status": 0,
-                      "weight": 0,
-                      "type": "Input",
-                      "order": 0,
-                      "conditional": false
+                      "questionId": 8,
+                      "imageIcon": "image.webp",
+                      "description": "What other thing did didi consume at least thrice in the last 7 days?",
+                      "paraphrase": "What other thing did didi consume at least thrice in the last 7 days?",
+                      "status": 1,
+                      "order": 8,
+                      "type": "InputText",
+                      "languageCode": "en",
+                      "tag": 34,
+                      "options": [
+                        {
+                          "optionId": 1,
+                          "description": "",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "InputText",
+                          "order": 1,
+                          "conditional": false
+                        }
+                      ]
                     }
                   ]
                 }
@@ -848,22 +938,24 @@
               "optionImage": "",
               "languageCode": "en",
               "type": "MultiSelect",
-              "tag": 11,
               "order": 5,
-              "conditional": false
+              "tag": 34,
+              "conditional": false,
+              "isMandatory": true
             }
-          ]
+          ],
+          "isMandatory": true
         },
         {
-          "questionId": 7,
+          "questionId": 9,
           "imageIcon": "image.webp",
           "description": "Which type of ration card does didi have?",
           "paraphrase": "",
           "status": 0,
-          "order": 7,
+          "order": 9,
+          "tag": 29,
           "type": "SingleSelectDropdown",
           "languageCode": "en",
-          "tag": 6,
           "contents": [
             {
               "contentKey": "question",
@@ -883,15 +975,15 @@
                   "resultType": "Questions",
                   "resultList": [
                     {
-                      "questionId": 8,
+                      "questionId": 11,
                       "imageIcon": "image.webp",
                       "description": "How much does didi get every month through PDS?",
                       "paraphrase": "How much does didi get every month through PDS?",
                       "status": 1,
-                      "order": 8,
+                      "order": 11,
                       "type": "InputNumber",
                       "languageCode": "en",
-                      "tag": 7,
+                      "tag": 30,
                       "options": [
                         {
                           "optionId": 1,
@@ -903,6 +995,7 @@
                           "languageCode": "en",
                           "type": "InputNumber",
                           "order": 1,
+                          "tag": 30,
                           "conditional": false
                         },
                         {
@@ -915,6 +1008,7 @@
                           "languageCode": "en",
                           "type": "InputNumber",
                           "order": 2,
+                          "tag": 30,
                           "conditional": false
                         },
                         {
@@ -927,6 +1021,7 @@
                           "languageCode": "en",
                           "type": "InputNumber",
                           "order": 3,
+                          "tag": 30,
                           "conditional": false
                         },
                         {
@@ -939,6 +1034,7 @@
                           "languageCode": "en",
                           "type": "InputNumber",
                           "order": 4,
+                          "tag": 30,
                           "conditional": false
                         },
                         {
@@ -951,6 +1047,7 @@
                           "languageCode": "en",
                           "type": "InputNumber",
                           "order": 5,
+                          "tag": 30,
                           "conditional": false
                         },
                         {
@@ -963,6 +1060,39 @@
                           "languageCode": "en",
                           "type": "InputNumber",
                           "order": 6,
+                          "tag": 30,
+                          "conditional": false
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "value": "Others",
+                  "operator": "=",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 10,
+                      "imageIcon": "image.webp",
+                      "description": "Which other type of ration card does didi have? (Please specify)",
+                      "paraphrase": "Which other type of ration card does didi have? (Please specify)",
+                      "status": 1,
+                      "order": 10,
+                      "type": "InputText",
+                      "languageCode": "en",
+                      "tag": 0,
+                      "options": [
+                        {
+                          "optionId": 1,
+                          "description": "",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "InputText",
+                          "order": 1,
                           "conditional": false
                         }
                       ]
@@ -976,23 +1106,41 @@
               "languageCode": "en",
               "type": "SingleSelectDropdown",
               "order": 1,
+              "tag": 0,
               "conditional": false,
               "values": [
-                "BPL Adhoc",
-                "BPL",
-                "AAY",
-                "I don’t have ration card",
-                "Others (specify)"
-              ]
+                {
+                  "id": 1,
+                  "values": "BPL Adhoc"
+                },
+                {
+                  "id": 2,
+                  "values": "BPL"
+                },
+                {
+                  "id": 3,
+                  "values": "AAY"
+                },
+                {
+                  "id": 4,
+                  "values": "I don’t have ration card"
+                },
+                {
+                  "id": 5,
+                  "values": "Others (specify)"
+                }
+              ],
+              "isMandatory": true
             }
           ],
-          "conditional": true
+          "conditional": true,
+          "isMandatory": true
         }
       ]
     },
     {
       "sectionName": "Social Inclusion",
-      "imageIcon": "image.webp",
+      "imageIcon": "baseline_social_inclusion",
       "order": 4,
       "description": "Social Inclusion",
       "paraphrase": "",
@@ -1014,9 +1162,9 @@
           "paraphrase": "",
           "status": 1,
           "order": 1,
+          "tag": 35,
           "type": "RadioButton",
           "languageCode": "en",
-          "tag": 13,
           "contents": [
             {
               "contentKey": "question",
@@ -1043,7 +1191,7 @@
                       "order": 2,
                       "type": "InputText",
                       "languageCode": "en",
-                      "tag": 14,
+                      "tag": 36,
                       "contents": [
                         {
                           "contentKey": "question",
@@ -1073,7 +1221,7 @@
                       "order": 3,
                       "type": "InputNumber",
                       "languageCode": "en",
-                      "tag": 15,
+                      "tag": 37,
                       "contents": [
                         {
                           "contentKey": "question",
@@ -1122,11 +1270,7 @@
                           "type": "SingleSelectDropdown",
                           "order": 1,
                           "conditional": false,
-                          "values": [
-                            "Regular",
-                            "Sometimes",
-                            "Never"
-                          ]
+                          "values": []
                         }
                       ]
                     },
@@ -1138,7 +1282,7 @@
                       "order": 5,
                       "type": "RadioButton",
                       "languageCode": "en",
-                      "tag": 16,
+                      "tag": 38,
                       "contents": [
                         {
                           "contentKey": "question",
@@ -1166,12 +1310,12 @@
                                 {
                                   "questionId": 6,
                                   "imageIcon": "image.webp",
-                                  "description": "How much is didi's current savings?",
+                                  "description": "How much is didi's total savings in the SHG until now?",
                                   "paraphrase": "",
                                   "order": 6,
-                                  "type": "InputNumber",
+                                  "type": "InputNumberEditText",
                                   "languageCode": "en",
-                                  "tag": 17,
+                                  "tag": 39,
                                   "contents": [
                                     {
                                       "contentKey": "question",
@@ -1187,7 +1331,7 @@
                                       "paraphrase": "",
                                       "optionImage": "",
                                       "languageCode": "en",
-                                      "type": "InputNumber",
+                                      "type": "InputNumberEditText",
                                       "order": 1,
                                       "conditional": false
                                     }
@@ -1219,7 +1363,7 @@
                       "order": 7,
                       "type": "RadioButton",
                       "languageCode": "en",
-                      "tag": 18,
+                      "tag": 40,
                       "contents": [
                         {
                           "contentKey": "question",
@@ -1250,9 +1394,9 @@
                                   "description": "How much loan has didi taken from SHG? (Rs)",
                                   "paraphrase": "",
                                   "order": 8,
-                                  "type": "InputNumber",
+                                  "type": "InputNumberEditText",
                                   "languageCode": "en",
-                                  "tag": 19,
+                                  "tag": 41,
                                   "contents": [
                                     {
                                       "contentKey": "question",
@@ -1268,7 +1412,7 @@
                                       "paraphrase": "",
                                       "optionImage": "",
                                       "languageCode": "en",
-                                      "type": "InputNumber",
+                                      "type": "InputNumberEditText",
                                       "order": 30,
                                       "conditional": false
                                     }
@@ -1301,7 +1445,9 @@
               "languageCode": "en",
               "type": "RadioButton",
               "order": 1,
-              "conditional": true
+              "tag": 0,
+              "conditional": true,
+              "isMandatory": true
             },
             {
               "optionId": 2,
@@ -1364,15 +1510,18 @@
               "languageCode": "en",
               "type": "RadioButton",
               "order": 2,
-              "conditional": true
+              "tag": 0,
+              "conditional": true,
+              "isMandatory": true
             }
-          ]
+          ],
+          "isMandatory": true
         }
       ]
     },
     {
       "sectionName": "Women Empowerment",
-      "imageIcon": "image.webp",
+      "imageIcon": "",
       "order": 5,
       "description": "Women Empowerment",
       "paraphrase": "",
@@ -1394,9 +1543,9 @@
           "paraphrase": "Role in family decisions",
           "status": 0,
           "order": 1,
+          "tag": 42,
           "type": "SingleSelectDropdown",
           "languageCode": "en",
-          "tag": 21,
           "contents": [
             {
               "contentKey": "E1_Didi-Role",
@@ -1416,14 +1565,13 @@
               "languageCode": "en",
               "type": "SingleSelectDropdown",
               "order": 1,
+              "tag": 0,
               "conditional": false,
-              "values": [
-                "In all the decisions",
-                "Sometimes",
-                "Never"
-              ]
+              "values": [],
+              "isMandatory": true
             }
-          ]
+          ],
+          "isMandatory": true
         },
         {
           "questionId": 2,
@@ -1432,9 +1580,9 @@
           "paraphrase": "Monetary contribution",
           "status": 0,
           "order": 2,
+          "tag": 43,
           "type": "SingleSelectDropdown",
           "languageCode": "en",
-          "tag": 22,
           "contents": [
             {
               "contentKey": "E2_Monetary-Contribution",
@@ -1454,20 +1602,19 @@
               "languageCode": "en",
               "type": "SingleSelectDropdown",
               "order": 1,
+              "tag": 0,
               "conditional": false,
-              "values": [
-                "All the times",
-                "Sometimes",
-                "Never"
-              ]
+              "values": [],
+              "isMandatory": true
             }
-          ]
+          ],
+          "isMandatory": true
         }
       ]
     },
     {
       "sectionName": "Financial Inclusion",
-      "imageIcon": "image.webp",
+      "imageIcon": "baseline_financial_inclusion",
       "order": 6,
       "description": "Financial Inclusion",
       "paraphrase": "",
@@ -1489,9 +1636,9 @@
           "paraphrase": "bank accounts",
           "status": 0,
           "order": 1,
+          "tag": 44,
           "type": "RadioButton",
           "languageCode": "en",
-          "tag": 24,
           "options": [
             {
               "optionId": 1,
@@ -1503,7 +1650,9 @@
               "languageCode": "en",
               "type": "RadioButton",
               "order": 1,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 2,
@@ -1515,9 +1664,12 @@
               "languageCode": "en",
               "type": "RadioButton",
               "order": 2,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             }
-          ]
+          ],
+          "isMandatory": true
         },
         {
           "questionId": 2,
@@ -1526,9 +1678,9 @@
           "paraphrase": "Saving",
           "status": 0,
           "order": 2,
+          "tag": 45,
           "type": "RadioButton",
           "languageCode": "en",
-          "tag": 25,
           "contents": [
             {
               "contentKey": "question",
@@ -1547,7 +1699,9 @@
               "languageCode": "en",
               "type": "RadioButton",
               "order": 1,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 2,
@@ -1559,9 +1713,12 @@
               "languageCode": "en",
               "type": "RadioButton",
               "order": 2,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             }
-          ]
+          ],
+          "isMandatory": true
         },
         {
           "questionId": 3,
@@ -1570,9 +1727,9 @@
           "paraphrase": "Saving",
           "status": 0,
           "order": 3,
+          "tag": 0,
           "type": "MultiSelect",
           "languageCode": "en",
-          "tag": 0,
           "contents": [
             {
               "contentKey": "question",
@@ -1591,7 +1748,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 1,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 2,
@@ -1603,7 +1762,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 2,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 3,
@@ -1615,20 +1776,57 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 3,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "conditions": [
+                {
+                  "value": "Others",
+                  "operator": "=",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 4,
+                      "imageIcon": "image.webp",
+                      "description": "What other place does didi keep her current savings? (Please specify)",
+                      "paraphrase": "What other place does didi keep her current savings? (Please specify)",
+                      "status": 1,
+                      "order": 4,
+                      "type": "InputText",
+                      "languageCode": "en",
+                      "tag": 0,
+                      "options": [
+                        {
+                          "optionId": 1,
+                          "description": "",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "InputText",
+                          "order": 1,
+                          "conditional": false
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "isMandatory": true
             }
-          ]
+          ],
+          "isMandatory": true
         },
         {
-          "questionId": 4,
+          "questionId": 5,
           "imageIcon": "image.webp",
           "description": "Does didi currently owe anyone any money?",
           "paraphrase": "Saving",
           "status": 0,
-          "order": 4,
+          "order": 5,
+          "tag": 46,
           "type": "RadioButton",
           "languageCode": "en",
-          "tag": 26,
           "contents": [
             {
               "contentKey": "question",
@@ -1648,15 +1846,15 @@
                   "resultType": "Questions",
                   "resultList": [
                     {
-                      "questionId": 5,
+                      "questionId": 6,
                       "imageIcon": "image.webp",
                       "description": "Whom does didi owe money?",
                       "paraphrase": "",
                       "status": 1,
-                      "order": 5,
+                      "order": 6,
                       "type": "MultiSelect",
                       "languageCode": "en",
-                      "tag": 27,
+                      "tag": 47,
                       "contents": [
                         {
                           "contentKey": "question",
@@ -1675,7 +1873,7 @@
                           "languageCode": "en",
                           "type": "MultiSelect",
                           "order": 1,
-                          "tag": 27,
+                          "tag": 47,
                           "conditional": false
                         },
                         {
@@ -1688,7 +1886,7 @@
                           "languageCode": "en",
                           "type": "MultiSelect",
                           "order": 2,
-                          "tag": 27,
+                          "tag": 47,
                           "conditional": false
                         },
                         {
@@ -1701,7 +1899,7 @@
                           "languageCode": "en",
                           "type": "MultiSelect",
                           "order": 3,
-                          "tag": 27,
+                          "tag": 47,
                           "conditional": false
                         },
                         {
@@ -1714,7 +1912,7 @@
                           "languageCode": "en",
                           "type": "MultiSelect",
                           "order": 4,
-                          "tag": 27,
+                          "tag": 47,
                           "conditional": false
                         },
                         {
@@ -1725,7 +1923,7 @@
                           "paraphrase": "Banks",
                           "optionImage": "",
                           "languageCode": "en",
-                          "tag": 27,
+                          "tag": 47,
                           "type": "MultiSelect",
                           "order": 5,
                           "conditional": false
@@ -1736,18 +1934,34 @@
                           "status": 0,
                           "conditions": [
                             {
-                              "value": "Others",
+                              "value": "Others (Specify)",
                               "operator": "=",
-                              "resultType": "Options",
+                              "resultType": "Questions",
                               "resultList": [
                                 {
-                                  "optionId": 1,
-                                  "description": "",
-                                  "status": 0,
-                                  "weight": 0,
-                                  "type": "Input",
-                                  "order": 0,
-                                  "conditional": false
+                                  "questionId": 7,
+                                  "imageIcon": "image.webp",
+                                  "description": "Whom other does didi owe money? (Please specify)",
+                                  "paraphrase": "Whom other does didi own money? (Please specify)",
+                                  "status": 1,
+                                  "order": 7,
+                                  "type": "InputText",
+                                  "languageCode": "en",
+                                  "tag": 0,
+                                  "options": [
+                                    {
+                                      "optionId": 1,
+                                      "description": "",
+                                      "status": 1,
+                                      "weight": 0,
+                                      "paraphrase": "",
+                                      "optionImage": "",
+                                      "languageCode": "en",
+                                      "type": "InputText",
+                                      "order": 1,
+                                      "conditional": false
+                                    }
+                                  ]
                                 }
                               ]
                             }
@@ -1757,7 +1971,7 @@
                           "optionImage": "",
                           "languageCode": "en",
                           "type": "MultiSelect",
-                          "tag": 27,
+                          "tag": 47,
                           "order": 5,
                           "conditional": false
                         }
@@ -1772,7 +1986,9 @@
               "languageCode": "en",
               "type": "RadioButton",
               "order": 1,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 2,
@@ -1784,20 +2000,23 @@
               "languageCode": "en",
               "type": "RadioButton",
               "order": 2,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             }
-          ]
+          ],
+          "isMandatory": true
         },
         {
-          "questionId": 6,
+          "questionId": 8,
           "imageIcon": "image.webp",
           "description": "Does didi have any active insurance at present?",
           "paraphrase": "Saving",
           "status": 0,
-          "order": 6,
+          "order": 8,
+          "tag": 48,
           "type": "MultiSelect",
           "languageCode": "en",
-          "tag": 28,
           "contents": [
             {
               "contentKey": "question",
@@ -1815,9 +2034,10 @@
               "optionImage": "",
               "languageCode": "en",
               "type": "MultiSelect",
-              "tag": 28,
               "order": 1,
-              "conditional": false
+              "tag": 48,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 2,
@@ -1828,9 +2048,10 @@
               "optionImage": "",
               "languageCode": "en",
               "type": "MultiSelect",
-              "tag": 28,
               "order": 2,
-              "conditional": false
+              "tag": 48,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 3,
@@ -1841,9 +2062,10 @@
               "optionImage": "",
               "languageCode": "en",
               "type": "MultiSelect",
-              "tag": 28,
               "order": 3,
-              "conditional": false
+              "tag": 48,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 4,
@@ -1854,9 +2076,10 @@
               "optionImage": "",
               "languageCode": "en",
               "type": "MultiSelect",
-              "tag": 28,
               "order": 4,
-              "conditional": false
+              "tag": 48,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 5,
@@ -1867,9 +2090,10 @@
               "optionImage": "",
               "languageCode": "en",
               "type": "MultiSelect",
-              "tag": 28,
               "order": 5,
-              "conditional": false
+              "tag": 48,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 6,
@@ -1880,9 +2104,10 @@
               "optionImage": "",
               "languageCode": "en",
               "type": "MultiSelect",
-              "tag": 28,
               "order": 6,
-              "conditional": false
+              "tag": 48,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 7,
@@ -1893,9 +2118,10 @@
               "optionImage": "",
               "languageCode": "en",
               "type": "MultiSelect",
-              "tag": 28,
               "order": 7,
-              "conditional": false
+              "tag": 48,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 8,
@@ -1905,16 +2131,32 @@
                 {
                   "value": "Others",
                   "operator": "=",
-                  "resultType": "Options",
+                  "resultType": "Questions",
                   "resultList": [
                     {
-                      "optionId": 1,
-                      "description": "",
-                      "status": 0,
-                      "weight": 0,
-                      "type": "Input",
-                      "order": 0,
-                      "conditional": false
+                      "questionId": 9,
+                      "imageIcon": "image.webp",
+                      "description": "Does didi have any active insurance at present? (Please specify)",
+                      "paraphrase": "Does didi have any active insurance at present? (Please specify)",
+                      "status": 1,
+                      "order": 9,
+                      "type": "InputText",
+                      "languageCode": "en",
+                      "tag": 0,
+                      "options": [
+                        {
+                          "optionId": 1,
+                          "description": "",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "InputText",
+                          "order": 1,
+                          "conditional": false
+                        }
+                      ]
                     }
                   ]
                 }
@@ -1924,17 +2166,19 @@
               "optionImage": "",
               "languageCode": "en",
               "type": "MultiSelect",
-              "tag": 28,
               "order": 8,
-              "conditional": false
+              "tag": 48,
+              "conditional": false,
+              "isMandatory": true
             }
-          ]
+          ],
+          "isMandatory": true
         }
       ]
     },
     {
       "sectionName": "Household Entitlements",
-      "imageIcon": "image.webp",
+      "imageIcon": "baseline_household_entitlements",
       "order": 7,
       "description": "Household Entitlements",
       "paraphrase": "",
@@ -1956,9 +2200,9 @@
           "paraphrase": "household schemes",
           "status": 0,
           "order": 1,
+          "tag": 49,
           "type": "Grid",
           "languageCode": "en",
-          "tag": 0,
           "contents": [
             {
               "contentKey": "question",
@@ -1978,7 +2222,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 1,
-              "conditional": false
+              "tag": 49,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 2,
@@ -1991,7 +2237,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 2,
-              "conditional": false
+              "tag": 49,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 3,
@@ -2004,7 +2252,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 3,
-              "conditional": false
+              "tag": 49,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 4,
@@ -2017,7 +2267,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 4,
-              "conditional": false
+              "tag": 49,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 5,
@@ -2030,7 +2282,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 5,
-              "conditional": false
+              "tag": 49,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 6,
@@ -2043,7 +2297,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 6,
-              "conditional": false
+              "tag": 49,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 7,
@@ -2056,7 +2312,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 7,
-              "conditional": false
+              "tag": 49,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 8,
@@ -2069,7 +2327,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 8,
-              "conditional": false
+              "tag": 49,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 9,
@@ -2082,7 +2342,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 9,
-              "conditional": false
+              "tag": 49,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 10,
@@ -2095,7 +2357,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 10,
-              "conditional": false
+              "tag": 49,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 11,
@@ -2108,7 +2372,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 11,
-              "conditional": false
+              "tag": 49,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 12,
@@ -2121,7 +2387,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 12,
-              "conditional": false
+              "tag": 49,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 13,
@@ -2134,7 +2402,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 13,
-              "conditional": false
+              "tag": 49,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 14,
@@ -2147,7 +2417,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 14,
-              "conditional": false
+              "tag": 49,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 15,
@@ -2160,7 +2432,9 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 15,
-              "conditional": false
+              "tag": 49,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 16,
@@ -2172,15 +2446,52 @@
               "languageCode": "en",
               "type": "MultiSelect",
               "order": 16,
-              "conditional": false
+              "tag": 49,
+              "conditional": false,
+              "conditions": [
+                {
+                  "value": "Others",
+                  "operator": "=",
+                  "resultType": "Questions",
+                  "resultList": [
+                    {
+                      "questionId": 2,
+                      "imageIcon": "image.webp",
+                      "description": "(Please specify)",
+                      "paraphrase": "(Please specify)",
+                      "status": 1,
+                      "order": 2,
+                      "type": "InputText",
+                      "languageCode": "en",
+                      "tag": 0,
+                      "options": [
+                        {
+                          "optionId": 1,
+                          "description": "",
+                          "status": 1,
+                          "weight": 0,
+                          "paraphrase": "",
+                          "optionImage": "",
+                          "languageCode": "en",
+                          "type": "InputText",
+                          "order": 1,
+                          "conditional": false
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "isMandatory": true
             }
-          ]
+          ],
+          "isMandatory": true
         }
       ]
     },
     {
       "sectionName": "Livelihood Sources",
-      "imageIcon": "image.webp",
+      "imageIcon": "baseline_livelihood_sources",
       "order": 8,
       "description": "Livelihood Sources",
       "paraphrase": "",
@@ -2200,8 +2511,8 @@
           "description": "Does didi have any family member who sends her money regularly?",
           "status": 1,
           "order": 30,
+          "tag": 50,
           "type": "RadioButton",
-          "tag": 30,
           "options": [
             {
               "optionId": 1,
@@ -2213,7 +2524,9 @@
               "languageCode": "en",
               "type": "RadioButton",
               "order": 1,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 2,
@@ -2225,11 +2538,13 @@
               "languageCode": "en",
               "type": "RadioButton",
               "order": 2,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             }
           ],
-          "values": [],
-          "conditional": false
+          "conditional": false,
+          "isMandatory": true
         },
         {
           "questionId": 1,
@@ -2238,9 +2553,9 @@
           "paraphrase": "Add income sources",
           "status": 0,
           "order": 1,
+          "tag": 8,
           "type": "Form",
           "languageCode": "en",
-          "tag": 29,
           "contents": [
             {
               "contentKey": "G2_Sources-Of-Income",
@@ -2266,20 +2581,14 @@
                       "type": "Form",
                       "status": 1,
                       "order": 4,
-                      "tag": 29,
+                      "tag": 8,
                       "options": [
                         {
                           "optionId": 5,
                           "description": "What is the Income from agriculture in the last 12 months? \n\n(A) Agricultural produce - ",
                           "parapharse": "(A) Agricultural produce - ",
                           "type": "SingleSelectDropdown",
-                          "values": [
-                            "Paddy",
-                            "Maize",
-                            "Vegetables",
-                            "Fruits",
-                            "Others"
-                          ],
+                          "values": [],
                           "conditions": [
                             {
                               "value": "Others",
@@ -2330,6 +2639,7 @@
                           "parapharse": "(E) Total Income",
                           "type": "Calculation",
                           "values": [],
+                          "tag": 53,
                           "conditions": [
                             {
                               "value": "( 7 * 8 ) - 9",
@@ -2359,14 +2669,7 @@
                           "description": "What is the household income from livestock rearing in the last 12 months? \n\n(A) Type of livestock - ",
                           "parapharse": "(A) Type of livestock - ",
                           "type": "SingleSelectDropdown",
-                          "values": [
-                            "Goat",
-                            "Pig",
-                            "Poultry",
-                            "Duck",
-                            "Fisheries",
-                            "Dairy"
-                          ],
+                          "values": [],
                           "conditions": []
                         },
                         {
@@ -2387,10 +2690,11 @@
                         },
                         {
                           "optionId": 16,
-                          "description": "(D) Total units",
-                          "parapharse": "(D) Total units",
+                          "description": "(D) Total income",
+                          "parapharse": "(D) Total income",
                           "type": "Calculation",
                           "values": [],
+                          "tag": 54,
                           "conditions": [
                             {
                               "value": "( 14 * 15 )",
@@ -2421,10 +2725,7 @@
                           "conditional": false,
                           "description": "Income frequency",
                           "type": "SingleSelectDropdown",
-                          "values": [
-                            "Monthly",
-                            "Annually"
-                          ]
+                          "values": []
                         },
                         {
                           "optionId": 19,
@@ -2432,6 +2733,7 @@
                           "conditional": false,
                           "description": "Income",
                           "type": "InputNumberEditText",
+                          "tag": 56,
                           "values": []
                         }
                       ]
@@ -2455,16 +2757,14 @@
                           "conditional": false,
                           "description": "Income frequency",
                           "type": "SingleSelectDropdown",
-                          "values": [
-                            "Monthly",
-                            "Annually"
-                          ]
+                          "values": []
                         },
                         {
                           "optionId": 22,
                           "order": 22,
                           "conditional": false,
                           "description": "Income",
+                          "tag": 0,
                           "type": "InputNumberEditText",
                           "values": []
                         }
@@ -2489,10 +2789,7 @@
                           "conditional": false,
                           "description": "Income frequency",
                           "type": "SingleSelectDropdown",
-                          "values": [
-                            "Monthly",
-                            "Annually"
-                          ]
+                          "values": []
                         },
                         {
                           "optionId": 25,
@@ -2523,10 +2820,7 @@
                           "conditional": false,
                           "description": "Income frequency",
                           "type": "SingleSelectDropdown",
-                          "values": [
-                            "Monthly",
-                            "Annually"
-                          ]
+                          "values": []
                         },
                         {
                           "optionId": 28,
@@ -2554,6 +2848,7 @@
                         {
                           "optionId": 30,
                           "order": 30,
+                          "tag": 55,
                           "conditional": true,
                           "description": "What is the household income from small business in the last 12 months?",
                           "type": "InputNumberEditText",
@@ -2580,10 +2875,7 @@
                           "conditional": false,
                           "description": "Income frequency",
                           "type": "SingleSelectDropdown",
-                          "values": [
-                            "Monthly",
-                            "Annually"
-                          ]
+                          "values": []
                         },
                         {
                           "optionId": 33,
@@ -2614,10 +2906,7 @@
                           "conditional": false,
                           "description": "Income frequency",
                           "type": "SingleSelectDropdown",
-                          "values": [
-                            "Monthly",
-                            "Annually"
-                          ]
+                          "values": []
                         },
                         {
                           "optionId": 36,
@@ -2632,7 +2921,7 @@
                   ]
                 },
                 {
-                  "value": "Other (specify)",
+                  "value": "Other",
                   "operator": "=",
                   "resultType": "Questions",
                   "resultList": [
@@ -2648,10 +2937,7 @@
                           "conditional": false,
                           "description": "Income frequency",
                           "type": "SingleSelectDropdown",
-                          "values": [
-                            "Monthly",
-                            "Annually"
-                          ]
+                          "values": []
                         },
                         {
                           "optionId": 39,
@@ -2669,29 +2955,19 @@
               "weight": 0,
               "type": "SingleSelectDropdown",
               "order": 0,
+              "tag": 52,
               "conditional": false,
-              "tag": 31,
-              "values": [
-                "No income",
-                "Farming",
-                "Livestock rearing",
-                "Casual labour - agri",
-                "Casual labour - manual",
-                "MNREGA",
-                "Remittance from migration",
-                "Self-employment/Small business Private jobs",
-                "Salary",
-                "Pension",
-                "Other (specify)"
-              ]
+              "values": [],
+              "isMandatory": true
             }
-          ]
+          ],
+          "isMandatory": true
         }
       ]
     },
     {
       "sectionName": "Non Market Outcomes",
-      "imageIcon": "image.webp",
+      "imageIcon": "",
       "order": 9,
       "description": "Non Market Outcomes",
       "paraphrase": "",
@@ -2713,9 +2989,9 @@
           "paraphrase": "visits the block office/panchayat",
           "status": 0,
           "order": 1,
+          "tag": 0,
           "type": "RadioButton",
           "languageCode": "en",
-          "tag": 42,
           "options": [
             {
               "optionId": 1,
@@ -2728,7 +3004,9 @@
               "languageCode": "en",
               "type": "RadioButton",
               "order": 1,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 2,
@@ -2741,9 +3019,12 @@
               "languageCode": "en",
               "type": "RadioButton",
               "order": 2,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             }
-          ]
+          ],
+          "isMandatory": true
         },
         {
           "questionId": 2,
@@ -2752,9 +3033,9 @@
           "paraphrase": "votes in elections",
           "status": 0,
           "order": 2,
+          "tag": 0,
           "type": "RadioButton",
           "languageCode": "en",
-          "tag": 43,
           "options": [
             {
               "optionId": 1,
@@ -2767,7 +3048,9 @@
               "languageCode": "en",
               "type": "RadioButton",
               "order": 1,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             },
             {
               "optionId": 2,
@@ -2780,9 +3063,12 @@
               "languageCode": "en",
               "type": "RadioButton",
               "order": 2,
-              "conditional": false
+              "tag": 0,
+              "conditional": false,
+              "isMandatory": true
             }
-          ]
+          ],
+          "isMandatory": true
         }
       ]
     }

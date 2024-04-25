@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.model.datamodel.ValuesDto
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGrey
@@ -190,6 +191,10 @@ fun <T> DropDownWithTitleComponent(
             items.mapIndexed { index, item ->
                 var title = BLANK_STRING
                 when (item) {
+                    is ValuesDto -> {
+                        title = item.value
+                    }
+
                     else -> {
                         title = item.toString()
                     }

@@ -54,6 +54,19 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun getFormResponsesForSection(
+        surveyId: Int,
+        sectionId: Int,
+        didiId: Int
+    ): List<FormQuestionResponseEntity> {
+        return formQuestionResponseDao.getFormResponsesForSection(
+            userId = getBaseLineUserId(),
+            surveyId = surveyId,
+            sectionId = sectionId,
+            didiId = didiId
+        )
+    }
+
     override suspend fun getFormResponsesForQuestionLive(
         surveyId: Int,
         sectionId: Int,

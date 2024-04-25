@@ -5,7 +5,8 @@ import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 data class OptionItemEntityState(
     val optionId: Int? = -1,
     val optionItemEntity: OptionItemEntity?,
-    val showQuestion: Boolean
+    val showQuestion: Boolean,
+    val isOptionEnabled: Boolean = true
 ) {
     companion object {
         fun getEmptyStateObject(): OptionItemEntityState {
