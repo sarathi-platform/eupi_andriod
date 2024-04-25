@@ -429,5 +429,6 @@
     <string name="load_server_data">Load Server Data</string>
     <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
     <string name="didi_verified_by_bpc">Didi verified by BPC</string>
+    <string name="recover_old_data">Recover Old Data</string>
 
 </resources>
