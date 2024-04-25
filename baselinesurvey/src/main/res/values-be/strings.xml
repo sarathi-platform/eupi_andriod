@@ -431,5 +431,15 @@
     <string name="purpose_comparision">What is the purpose of your farming?</string>
     <string name="net_income_label">Net income per year</string>
     <string name="net_income_comparision">Net income per year</string>
+    <string name="task_completed_label">"Activity Completed - "</string>
+    <string name="hours">घन्टाफोर</string>
+    <string name="years">बोसोरफोर</string>
+    <string name="minute">मिनिट</string>
+    <string name="month">दान</string>
+    <string name="data_fetching_and_processing">Data Fetching आरो Processing (डाटा)…</string>
+    <string name="purpose_comparision">What is the purpose of your farming?</string>
+    <string name="net_income_label">Net income per year</string>
+    <string name="net_income_comparision">Net income per year</string>
+    <string name="total_annual_income_label">"Total annual income of the household: "</string>
 
 </resources>

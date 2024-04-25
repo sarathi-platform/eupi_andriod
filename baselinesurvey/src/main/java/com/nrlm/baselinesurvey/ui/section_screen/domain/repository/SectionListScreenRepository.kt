@@ -25,7 +25,6 @@ interface SectionListScreenRepository {
     suspend fun updateSubjectStatus(didiId: Int, surveyState: SurveyState)
 
     suspend fun updateTaskStatus(didiId: Int, surveyState: SectionStatus)
-
     suspend fun updateTaskStatus(
         taskId: Int,
         activityId: Int,
@@ -34,5 +33,7 @@ interface SectionListScreenRepository {
     )
 
     suspend fun getTaskForSubjectId(surveyId: Int): ActivityTaskEntity?
+
+    fun getBaseLineUserId(): String
 
 }

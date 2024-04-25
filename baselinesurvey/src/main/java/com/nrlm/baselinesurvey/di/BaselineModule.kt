@@ -113,6 +113,7 @@ import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepositoryI
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.ClearLocalDBUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.GetSettingOptionListUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.GetUserDetailsUseCase
+import com.nrlm.baselinesurvey.ui.setting.domain.use_case.GetUserDetailsUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.LogoutUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SaveLanguageScreenOpenFromUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SettingBSUserCase
@@ -605,9 +606,10 @@ object BaselineModule {
     fun provideMissionRepository(
         missionEntityDao: MissionEntityDao,
         missionActivityDao: MissionActivityDao,
-        taskDao: ActivityTaskDao
+        taskDao: ActivityTaskDao,
+        prefRepo: PrefRepo
     ): MissionScreenRepository {
-        return MissionScreenRepositoryImpl(missionEntityDao, missionActivityDao, taskDao)
+        return MissionScreenRepositoryImpl(missionEntityDao, missionActivityDao, taskDao, prefRepo)
     }
 
     @Provides
@@ -616,13 +618,15 @@ object BaselineModule {
         missionActivityDao: MissionActivityDao,
         taskDao: ActivityTaskDao,
         surveyeeEntityDao: SurveyeeEntityDao,
-        missionEntityDao: MissionEntityDao
+        missionEntityDao: MissionEntityDao,
+        prefRepo: PrefRepo
     ): MissionSummaryScreenRepository {
         return MissionSummaryScreenRepositoryImpl(
             missionActivityDao,
             taskDao,
             surveyeeEntityDao,
-            missionEntityDao
+            missionEntityDao,
+            prefRepo
         )
     }
 
@@ -642,7 +646,7 @@ object BaselineModule {
         repository: SettingBSRepository
     ): SettingBSUserCase {
         return SettingBSUserCase(
-            getSettingOptionListUseCase = GetSettingOptionListUseCase(repository),
+            getUserDetailsUseCase = GetUserDetailsUseCase(repository),
             logoutUseCase = LogoutUseCase(repository),
             saveLanguageScreenOpenFromUseCase = SaveLanguageScreenOpenFromUseCase(repository),
             clearLocalDBUseCase = ClearLocalDBUseCase(repository),

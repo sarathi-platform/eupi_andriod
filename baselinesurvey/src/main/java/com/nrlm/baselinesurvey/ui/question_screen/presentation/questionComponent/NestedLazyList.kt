@@ -371,7 +371,7 @@ fun NestedLazyList(
                         when (question?.questionEntity?.type) {
                             QuestionType.RadioButton.name -> {
                                 val selectedOption =
-                                    sectionDetails.questionAnswerMapping[question.questionId]?.first()
+                                    if (sectionDetails.questionAnswerMapping[question.questionId].isNullOrEmpty()) OptionItemEntity.getEmptyOptionItemEntity() else sectionDetails.questionAnswerMapping[question.questionId]?.first()
                                 val optionList =
                                     sectionDetails.optionsItemMap[question.questionId]
                                 val contentData =
@@ -463,7 +463,7 @@ fun NestedLazyList(
                             QuestionType.SingleSelect.name,
                             QuestionType.List.name -> {
                                 val selectedOption =
-                                    sectionDetails.questionAnswerMapping[question.questionId]?.first()
+                                    if (sectionDetails.questionAnswerMapping[question.questionId].isNullOrEmpty()) OptionItemEntity.getEmptyOptionItemEntity() else sectionDetails.questionAnswerMapping[question.questionId]?.first()
                                 val optionList =
                                     sectionDetails.optionsItemMap[question.questionId]
                                 val contentData =
@@ -670,7 +670,11 @@ fun NestedLazyList(
                                         question.questionId
                                     )
 
-
+                                val summaryValue =
+                                    questionScreenViewModel.getTotalIncomeForLivelihoodQuestion(
+                                        context,
+                                        question.questionId ?: 0
+                                    )
 
                                 FormTypeQuestionComponent(
                                     question = question.questionEntity,
@@ -679,6 +683,7 @@ fun NestedLazyList(
                                     contests = contentData,
                                     itemCount = itemCount,
                                     maxCustomHeight = maxHeight,
+                                    summaryValue = summaryValue.toString(),
                                     isEditAllowed = questionScreenViewModel.isEditAllowed
                                             && !(questionScreenViewModel.isNoneMarkedForFormQuestion.value[question.questionId
                                         ?: 0] ?: false || questionScreenViewModel.isFormQuestionMarkedWithNone(
@@ -754,9 +759,11 @@ fun NestedLazyList(
                             QuestionType.InputNumber.name,
                             QuestionType.InputNumberEditText.name,
                             QuestionType.SingleSelectDropdown.name,
-                            QuestionType.SingleSelectDropDown.name -> {
+                            QuestionType.SingleSelectDropDown.name,
+                            QuestionType.HrsMinPicker.name,
+                            QuestionType.YrsMonthPicker.name -> {
                                 val selectedOption =
-                                    sectionDetails.questionAnswerMapping[question.questionId]?.first()
+                                    if (sectionDetails.questionAnswerMapping[question.questionId].isNullOrEmpty()) OptionItemEntity.getEmptyOptionItemEntity() else sectionDetails.questionAnswerMapping[question.questionId]?.first()
                                 val optionList =
                                     sectionDetails.optionsItemMap[question.questionId]
                                 val selectedOptionMapForNumericInputTypeQuestions =
@@ -797,7 +804,9 @@ fun NestedLazyList(
                                             QuestionType.InputText.name,
                                             QuestionType.InputNumberEditText.name,
                                             QuestionType.SingleSelectDropdown.name,
-                                            QuestionType.SingleSelectDropDown.name -> {
+                                            QuestionType.SingleSelectDropDown.name,
+                                            QuestionType.HrsMinPicker.name,
+                                            QuestionType.YrsMonthPicker.name -> {
                                                 val mOptionItem =
                                                     optionItem.copy(
                                                         selectedValue = selectedValue,
@@ -908,7 +917,9 @@ fun NestedLazyList(
                                             QuestionType.InputText.name,
                                             QuestionType.InputNumberEditText.name,
                                             QuestionType.SingleSelectDropdown.name,
-                                            QuestionType.SingleSelectDropDown.name -> {
+                                            QuestionType.SingleSelectDropDown.name,
+                                            QuestionType.HrsMinPicker.name,
+                                            QuestionType.YrsMonthPicker.name -> {
                                                 questionScreenViewModel.onEvent(
                                                     QuestionScreenEvents.SaveMiscTypeQuestionAnswers(
                                                         surveyeeId = surveyeeId,
@@ -1000,8 +1011,7 @@ fun NestedLazyList(
                     ) {
                         item {
                             Column {
-                                val optionItemListWithConditionals: List<OptionItemEntity> =
-                                    questionScreenViewModel.getOptionItemListWithConditionals()
+//
                                 questionScreenViewModel.didiInfoObjectLive.value?.distinctBy { it.didiId }
                                     ?.forEach { didiInfoEntity ->
 
@@ -1019,35 +1029,6 @@ fun NestedLazyList(
                                             }
                                         )
 
-                                        /*FormResponseCard(
-                                            householdMemberDto = householdMemberDto,
-                                            optionItemListWithConditionals = optionItemListWithConditionals,
-                                            isPictureRequired = householdMemberDto.questionTag.equals(
-                                                stringResource(R.string.household_information_comparision),
-                                                true
-                                            ),
-                                            viewModel = questionScreenViewModel,
-                                            onDelete = {
-                                                questionScreenViewModel.onEvent(
-                                                    QuestionTypeEvent.DeleteFormQuestionResponseEvent(
-                                                        householdMemberDto.referenceId
-                                                    )
-                                                )
-                                                needToUpdateList.value =
-                                                    Pair(true, householdMemberDto.referenceId)
-                                            },
-                                            onUpdate = {
-                                                sectionDetails.questionList.find { it.questionId == householdMemberDto.questionId }
-                                                    ?.let { it1 ->
-                                                        BaselineCore.setReferenceId(householdMemberDto.referenceId)
-                                                        navigateToFormTypeQuestionScreen(
-                                                            navController = navController,
-                                                            question = it1,
-                                                            sectionDetails = sectionDetails,
-                                                            surveyeeId = surveyeeId
-                                                        )
-                                                    }
-                                            })*/
                                         Spacer(
                                             modifier = Modifier
                                                 .fillMaxWidth()
@@ -1069,26 +1050,5 @@ fun NestedLazyList(
             }
         }
     }
-
-    /*LaunchedEffect(key1 = needToUpdateList.value) {
-        if (needToUpdateList.value.first) {
-            val houseHoldMemberDto = householdMemberDtoList.value.first()
-            householdMemberDtoList.value = householdMemberDtoList.value.apply {
-                this.remove(this.find { it.referenceId == needToUpdateList.value.second })
-            }
-            needToUpdateList.value = NEED_TO_UPDATE_LIST_DEFAULT_VALUE
-            questionScreenViewModel.onEvent(
-                EventWriterEvents.SaveAnswerEvent(
-                    surveyId = sectionDetails.surveyId,
-                    sectionId = sectionDetails.sectionId,
-                    didiId = surveyeeId,
-                    questionId = houseHoldMemberDto.questionId,
-                    questionTag = houseHoldMemberDto.questionTag,
-                    questionType = QuestionType.Form.name,
-                    saveAnswerEventOptionItemDtoList = householdMemberDtoList.value.convertFormResponseObjectToSaveAnswerEventOptionDto()
-                )
-            )
-        }
-    }*/
 
 }

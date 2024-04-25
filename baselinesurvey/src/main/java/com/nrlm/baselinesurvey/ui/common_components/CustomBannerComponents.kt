@@ -85,7 +85,7 @@ fun MoveSurveyeeUpdateBannerComponentPreview() {
         villageId = 1,
         villageName = "Sundar Pahar",
         ableBodied = "No",
-        userId = 525
+        userId = ""
     )
     val showBanner = remember {
         mutableStateOf(true)

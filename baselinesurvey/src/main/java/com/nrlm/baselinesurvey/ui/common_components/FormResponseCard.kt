@@ -154,7 +154,6 @@ fun FormResponseCard(
                             if (income == BLANK_STRING) {
                                 val options = optionItemListWithConditionals.filter {
                                     it.display?.contains(
-                                        /*stringResource(id = R.string.income_frequency_comparision)*/
                                         stringResource(R.string.purpose_comparision),
                                         ignoreCase = true
                                     )!!
@@ -169,13 +168,7 @@ fun FormResponseCard(
                                         income = BLANK_STRING
                                     }
                                 }
-                                /*income =
-                                    formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                        it.display?.contains(
-                                            stringResource(id = R.string.income_frequency_comparision),
-                                            ignoreCase = true
-                                        )!!
-                                    }?.optionId] ?: BLANK_STRING*/
+
                             }
 
                             if (income != BLANK_STRING) {

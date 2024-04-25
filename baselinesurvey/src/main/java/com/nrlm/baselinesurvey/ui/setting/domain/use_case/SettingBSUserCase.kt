@@ -1,9 +1,9 @@
 package com.nrlm.baselinesurvey.ui.setting.domain.use_case
 
 data class SettingBSUserCase (
-    val getSettingOptionListUseCase: GetSettingOptionListUseCase,
+    val getUserDetailsUseCase: GetUserDetailsUseCase,
     val logoutUseCase: LogoutUseCase,
     val saveLanguageScreenOpenFromUseCase: SaveLanguageScreenOpenFromUseCase,
     val clearLocalDBUseCase: ClearLocalDBUseCase,
-    val getUserDetailsUseCase: GetUserDetailsUseCase
+    val getSettingOptionListUseCase: GetSettingOptionListUseCase,
 )

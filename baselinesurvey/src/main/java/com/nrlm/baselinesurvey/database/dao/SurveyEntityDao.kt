@@ -12,19 +12,23 @@ interface SurveyEntityDao {
     @Insert
     fun insertSurvey(surveyEntity: SurveyEntity)
 
-    @Query("Select surveyId from $SURVEY_TABLE")
-    fun getSurveyIds(): List<Int>
+    @Query("Select DISTINCT surveyId from $SURVEY_TABLE where userId=:userId")
+    fun getSurveyIds(userId: String): List<Int>
 
-    @Query("Select * from $SURVEY_TABLE where surveyId = :surveyId and languageId = :languageId")
-    fun getSurveyDetailForLanguage(surveyId: Int, languageId: Int): SurveyEntity?
+    @Query("Select * from $SURVEY_TABLE where userId=:userId and surveyId = :surveyId and languageId = :languageId")
+    fun getSurveyDetailForLanguage(userId: String, surveyId: Int, languageId: Int): SurveyEntity?
 
-    @Query("Select * from $SURVEY_TABLE where surveyName = :surveyName and languageId = :languageId")
-    fun getSurveyDetailForLanguage(surveyName: String, languageId: Int): SurveyEntity?
+    @Query("Select * from $SURVEY_TABLE where userId=:userId and surveyName = :surveyName and languageId = :languageId")
+    fun getSurveyDetailForLanguage(
+        userId: String,
+        surveyName: String,
+        languageId: Int
+    ): SurveyEntity?
 
-    @Query("Delete from $SURVEY_TABLE where surveyId = :surveyId and languageId = :languageId")
-    fun deleteSurveyFroLanguage(surveyId: Int, languageId: Int)
+    @Query("Delete from $SURVEY_TABLE where userId=:userId and surveyId = :surveyId and languageId = :languageId")
+    fun deleteSurveyFroLanguage(userId: String, surveyId: Int, languageId: Int)
 
-    @Query("Delete from $SURVEY_TABLE")
-    fun deleteAllSurvey()
+    @Query("Delete from $SURVEY_TABLE where userId=:userId")
+    fun deleteAllSurvey(userId: String)
 
 }
