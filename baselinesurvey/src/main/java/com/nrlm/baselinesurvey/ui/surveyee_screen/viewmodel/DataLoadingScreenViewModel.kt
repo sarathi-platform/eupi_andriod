@@ -42,6 +42,7 @@ class DataLoadingScreenViewModel @Inject constructor(
     private var surveyApiCount = 0 // count of all apis
     private var TOTAL_API_CALL = 0
     private var SURVEY_API_CALL = 0
+    var errorNavigate = mutableStateOf(false)
 
 
     override fun <T> onEvent(event: T) {
@@ -297,9 +298,9 @@ class DataLoadingScreenViewModel @Inject constructor(
     }
 
     override fun onServerError(error: ErrorModel?) {
-        baseCurrentApiCount++
-//        updateLoaderEvent(callBack)
-
-
+        baseCurrentApiCount = 0
+        surveyApiCount = 0
+        onEvent(LoaderEvent.UpdateLoaderState(false))
+        errorNavigate.value = true
     }
 }
