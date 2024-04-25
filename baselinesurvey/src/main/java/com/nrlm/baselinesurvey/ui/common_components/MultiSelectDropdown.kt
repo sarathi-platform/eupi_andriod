@@ -41,6 +41,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.model.datamodel.ValuesDto
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGrey
@@ -52,9 +53,11 @@ import com.nrlm.baselinesurvey.ui.theme.red
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 
+
+//TODO handle everything using id
 @Composable
 fun MultiSelectDropdown(
-    items: List<String>,
+    items: List<ValuesDto>,
     selectedItems: List<String>,
     onItemSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -189,9 +192,9 @@ fun MultiSelectDropdown(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Checkbox(
-                        checked = selectedItems.contains(item),
+                        checked = selectedItems.contains(item.value),
                         onCheckedChange = {
-                            onItemSelected(item)
+                            onItemSelected(item.value)
                         },
                         colors = CheckboxDefaults.colors(
                             checkedColor = blueDark,
@@ -200,14 +203,14 @@ fun MultiSelectDropdown(
                         ),
                     )
                     Text(
-                        text = item,
+                        text = item.value,
                         style = newMediumTextStyle,
                         textAlign = TextAlign.Start,
-                        color = if (selectedItems.contains(item)) blueDark else Color.Black,
+                        color = if (selectedItems.contains(item.value)) blueDark else Color.Black,
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                onItemSelected(item)
+                                onItemSelected(item.value)
                             }
                     )
                 }

@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -101,13 +102,15 @@ fun OutlinedCTAButtonComponent(
         tittle?.let {
             Text(
                 text = it,
-                color = blueDark,
+                color = blueDark.copy(alpha = if (isActive) 1f else 0.5f),
                 style = /*buttonTextStyle*/TextStyle(
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 14.sp
                 ),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                softWrap = true,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }

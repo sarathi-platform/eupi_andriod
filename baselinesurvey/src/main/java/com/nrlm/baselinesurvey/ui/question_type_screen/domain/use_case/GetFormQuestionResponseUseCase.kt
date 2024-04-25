@@ -36,13 +36,30 @@ class GetFormQuestionResponseUseCase(private val repository: FormQuestionRespons
         )
     }
 
+    suspend fun getFormResponsesForSection(
+        surveyId: Int,
+        sectionId: Int,
+        didiId: Int
+    ): List<FormQuestionResponseEntity> {
+        return repository.getFormResponsesForSection(
+            surveyId = surveyId,
+            sectionId = sectionId,
+            didiId = didiId
+        )
+    }
+
     suspend fun getFormResponsesForQuestionLive(
         surveyId: Int,
         sectionId: Int,
         questionId: Int,
         didiId: Int
     ): LiveData<List<FormQuestionResponseEntity>> {
-        return repository.getFormResponsesForQuestionLive(surveyId = surveyId, sectionId = sectionId, questionId = questionId, didiId = didiId)
+        return repository.getFormResponsesForQuestionLive(
+            surveyId = surveyId,
+            sectionId = sectionId,
+            questionId = questionId,
+            didiId = didiId
+        )
     }
 
     suspend fun getFormResponsesForQuestionOption(

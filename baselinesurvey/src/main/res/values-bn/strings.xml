@@ -441,7 +441,11 @@
     <string name="years">বছর</string>
     <string name="minute">মিনিটের</string>
     <string name="month">মাস</string>
+    <string name="purpose_comparision">What is the purpose of your farming?</string>
+    <string name="net_income_label">Net income per year</string>
+    <string name="net_income_comparision">Net income per year</string>
 
     <string name="data_fetching_and_processing">Data Fetching आरो Processing (डाटा)…</string>
+    <string name="total_annual_income_label">"Total annual income of the household: "</string>
 
 </resources>

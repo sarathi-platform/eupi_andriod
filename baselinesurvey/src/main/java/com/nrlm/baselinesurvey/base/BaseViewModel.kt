@@ -44,7 +44,20 @@ import java.net.SocketTimeoutException
 abstract class BaseViewModel() : ViewModel() {
     abstract fun <T> onEvent(event: T)
 
-    open fun updateQuestionStateForCondition(conditionResult: Boolean, conditionsDto: ConditionsDto?) {}
+    open fun updateQuestionStateForCondition(
+        conditionResult: Boolean,
+        conditionsDto: ConditionsDto?
+    ) {
+    }
+
+    open fun updateQuestionOptionStateForNoneCondition(
+        conditionResult: Boolean,
+        optionId: Int,
+        conditionsDto: ConditionsDto?,
+        questionId: Int,
+        noneOptionUnselected: Boolean = false
+    ) {
+    }
 
     open fun performSearchQuery(queryTerm: String, isFilterApplied: Boolean, fromScreen: String) {}
 
