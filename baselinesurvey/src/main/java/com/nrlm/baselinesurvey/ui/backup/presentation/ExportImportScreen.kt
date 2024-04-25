@@ -43,7 +43,7 @@ fun ExportImportScreen(
         }
 
     CommonSettingScreen(
-        title = "Export/Import Data",
+        title = stringResource(id = R.string.backup_recovery),
         versionText = BLANK_STRING,
         optionList = viewModel.optionList.value,
         onBackClick = {navController.popBackStack()},
@@ -108,9 +108,9 @@ fun ExportImportScreen(
         if(viewModel.showRestartAppDialog.value){
         ShowCustomDialog(
             title = stringResource(id = R.string.are_you_sure),
-            message ="After Importing the data from file app needs to be restart.",
-            positiveButtonTitle = "Proceed",
-            negativeButtonTitle = "Cancel",
+            message = stringResource(id = R.string.import_restart_dialog_message),
+            positiveButtonTitle = stringResource(id = R.string.proceed),
+            negativeButtonTitle = stringResource(id = R.string.cancel_text),
             onNegativeButtonClick = {
                 BaselineLogger.d("ExportImportScreen","Cancel Click")
                 viewModel.showRestartAppDialog.value=false

@@ -421,7 +421,7 @@ sealed class SettingBSScreens(val route: String){
     object SETTING_SCREEN : SettingBSScreens(route = SETTING_ROUTE_NAME)
     object LANGUAGE_SCREEN : SettingBSScreens(route =LANGUAGE_SCREEN_ROUTE_NAME )
     object PROFILE_SCREEN : SettingBSScreens(route =PROFILE_BS_SCREEN_ROUTE_NAME )
-    object BACKUP_RECOVERY_SCREEN : SettingBSScreens(route =PROFILE_BS_SCREEN_ROUTE_NAME )
+    object BACKUP_RECOVERY_SCREEN : SettingBSScreens(route =BACKUP_RECOVERY_SCREEN_ROUTE_NAME )
 }
 
 sealed class HomeScreens(val route: String) {

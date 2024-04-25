@@ -1,10 +1,5 @@
 package com.nrlm.baselinesurvey.ui.setting.presentation
 
-
-import android.net.Uri
-import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -21,8 +16,6 @@ import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.activity.MainActivity
-import com.nrlm.baselinesurvey.navigation.AuthScreen
 import com.nrlm.baselinesurvey.navigation.home.SettingBSScreens
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
@@ -30,7 +23,6 @@ import com.nrlm.baselinesurvey.ui.setting.domain.SettingTagEnum
 import com.nrlm.baselinesurvey.ui.setting.viewmodel.SettingBSViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.utils.BaselineLogger
-import com.nrlm.baselinesurvey.utils.ShowCustomDialog
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nudge.core.model.SettingOptionModel
 import java.util.Locale
@@ -45,24 +37,10 @@ fun SettingBSScreen(
 
     val loaderState = viewModel.loaderState
 
-//    val filePicker =
-//        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) {
-//            viewModel.showRestartAppDialog.value=false
-//            it?.let { uri->
-//                if(uri != Uri.EMPTY){
-//                   viewModel.importSelectedDB(uri){
-//                        viewModel.showRestartAppDialog.value=false
-//                       viewModel.restartApp(context,MainActivity::class.java)
-//                   }
-//                }
-//            }
-//
-//        }
-
     LaunchedEffect(key1 = true){
         list.add(
             SettingOptionModel(
-                2,
+                1,
                 context.getString(R.string.profile),
                 BLANK_STRING,
                 SettingTagEnum.PROFILE.name
@@ -70,24 +48,16 @@ fun SettingBSScreen(
         )
         list.add(
             SettingOptionModel(
-                3,
+                2,
                 context.getString(R.string.language_text),
                 BLANK_STRING,
                 SettingTagEnum.LANGUAGE.name
             )
         )
-        list.add(
-            SettingOptionModel(
-                4,
-                context.getString(R.string.share_logs),
-                BLANK_STRING,
-                SettingTagEnum.SHARE_LOGS.name
-            )
-        )
 
         list.add(
             SettingOptionModel(
-                5,
+                3,
                 context.getString(R.string.export_backup_file),
                 BLANK_STRING,
                 SettingTagEnum.EXPORT_BACKUP_FILE.name
@@ -96,7 +66,7 @@ fun SettingBSScreen(
 
         list.add(
             SettingOptionModel(
-                6,
+                4,
                 context.getString(R.string.backup_recovery),
                 BLANK_STRING,
                 SettingTagEnum.BACKUP_RECOVERY.name
@@ -105,19 +75,6 @@ fun SettingBSScreen(
 
         viewModel._optionList.value = list
     }
-
-
-//    if(viewModel.showRestartAppDialog.value){
-//        ShowCustomDialog(
-//            title = stringResource(id = R.string.are_you_sure),
-//            message ="After Importing the data from file app needs to be restart.",
-//            positiveButtonTitle = "Proceed",
-//            negativeButtonTitle = "Cancel",
-//            onNegativeButtonClick = {viewModel.showRestartAppDialog.value=false},
-//            onPositiveButtonClick = {
-//                filePicker.launch("*/*")
-//            })
-//    }
 
     if (loaderState.value.isLoaderVisible) {
         Box(
@@ -155,21 +112,17 @@ fun SettingBSScreen(
 
                 }
 
-                SettingTagEnum.SHARE_LOGS.name -> {
-                    viewModel.buildAndShareLogs()
-                }
-
-
-
                 SettingTagEnum.EXPORT_BACKUP_FILE.name -> {
                     viewModel.compressEventData(context.getString(R.string.share_export_file))
                 }
+
                 SettingTagEnum.BACKUP_RECOVERY.name -> {
                     navController.navigate(SettingBSScreens.BACKUP_RECOVERY_SCREEN.route)
                 }
             }
        },
        onLogoutClick = {
+           BaselineLogger.d("SettingScreen","Logout Button Click")
            viewModel.performLogout {
                if (it)
                    navController.navigate(Graph.LOGOUT_GRAPH)

@@ -17,9 +17,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.Toast
 import androidx.core.content.FileProvider
-import androidx.core.net.toFile
 import androidx.core.net.toUri
 import com.facebook.network.connectionclass.ConnectionQuality
 import com.google.gson.Gson
@@ -29,14 +27,10 @@ import com.nudge.core.database.entities.Events
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.FileUtils
 import com.nudge.core.utils.LogWriter
-import com.nudge.core.utils.LogWriter.getSupportLogFileName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.BufferedInputStream
-import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
@@ -48,8 +42,6 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import java.util.logging.Level
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
 
 fun Long.toDate(dateFormat: Long = System.currentTimeMillis(), timeZone: TimeZone = TimeZone.getTimeZone("UTC")): Date {
     val dateTime = Date(this)
@@ -543,37 +535,6 @@ fun importDbFile(appContext: Context,deleteDBName:String,importedDbUri: Uri,appl
     }
 }
 
-fun getRealPathFromURI(contentURI: Uri, activity: Context): String? {
-//    val contentUri = Uri.parse(contentURI)
-    val cursor = activity.contentResolver.query(contentURI, null, null, null, null)
-    return if (cursor == null) {
-        contentURI.path
-    } else {
-        cursor.moveToFirst()
-        val idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
-        cursor.getString(idx)
-    }
-}
-
-private fun getLatestFileFromDir(dirPath: String): File? {
-    val dir = File(dirPath)
-    val files = dir.listFiles()
-    if (files == null || files.size == 0) {
-        return null
-    }
-    var lastModifiedFile = files[0]
-    for (i in 1 until files.size) {
-        if (lastModifiedFile.lastModified() < files[i].lastModified()) {
-            lastModifiedFile = files[i]
-        }
-    }
-    return lastModifiedFile
-}
-
-fun getLogFileUri(appContext: Context,applicationID: String): Uri {
-    val logDir = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-    return uriFromFile( appContext,File(logDir, getSupportLogFileName()),applicationID)
-}
 
 fun copyZipFile(appContext: Context,srcFileUri:Uri,zipFileName:String,mobileNo: String){
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

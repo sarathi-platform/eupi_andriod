@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SettingBSUserCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
@@ -18,11 +17,8 @@ import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.uriFromFile
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
-import com.nudge.core.exportAllOldImages
 import com.nudge.core.exportLogFile
 import com.nudge.core.exportOldData
-import com.nudge.core.getLogFileUri
-import com.nudge.core.importDbFile
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,7 +28,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
-import kotlin.system.exitProcess
 
 @HiltViewModel
 class SettingBSViewModel @Inject constructor(
@@ -61,15 +56,6 @@ class SettingBSViewModel @Inject constructor(
         settingBSUserCase.saveLanguageScreenOpenFromUseCase.invoke()
     }
 
-    fun buildAndShareLogs() {
-        BaselineLogger.d("SettingBSViewModel", "buildAndShareLogs---------------")
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            LogWriter.buildSupportLogAndShare(
-                userMobileNo = settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber(),
-                userEmail = settingBSUserCase.getUserDetailsUseCase.getUserEmail())
-        }
-    }
-
     fun compressEventData(title: String) {
         BaselineLogger.d("SettingBSViewModel", "compressEventData---------------")
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -79,14 +65,14 @@ class SettingBSViewModel @Inject constructor(
                 val fileUri = compression.compressBackupFiles(
                     BaselineCore.getAppContext(),
                     listOf(),
-                    settingBSUserCase.getUserDetailsUseCase.getMobileNo(),
+                    settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber(),
                     userName = settingBSUserCase.getUserDetailsUseCase.getUserName(),
 
                     )
 
                 val imageUri = compression.compressBackupImages(
                     BaselineCore.getAppContext(),
-                    settingBSUserCase.getUserDetailsUseCase.getMobileNo(),
+                    settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber(),
                     userName = settingBSUserCase.getUserDetailsUseCase.getUserName(),
 
                     )
@@ -94,9 +80,9 @@ class SettingBSViewModel @Inject constructor(
                 val zipDBFileDirectory = BaselineCore.getAppContext()
                     .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path
 
-                val directory = File(zipDBFileDirectory)
+                val directory = zipDBFileDirectory?.let { File(it) }
 
-                val zipFileList= directory.listFiles()
+                val zipFileList= directory?.listFiles()
                     ?.filterNot { it.name.contains("Image") }
                     ?.filter { it.isFile && it.name.contains(getUserMobileNumber()) }
 
@@ -136,7 +122,7 @@ class SettingBSViewModel @Inject constructor(
                     val logFileUri = exportLogFile(logFile, appContext = BaselineCore.getAppContext(),
                         applicationID = BuildConfig.APPLICATION_ID)
                     if(logFileUri!=Uri.EMPTY) {
-                        logFileUri?.let {
+                        logFileUri.let {
                             fileUriList.add(it)
                             BaselineLogger.d("SettingBSViewModel", "Log File Uri: ${it.path}---------------")
 

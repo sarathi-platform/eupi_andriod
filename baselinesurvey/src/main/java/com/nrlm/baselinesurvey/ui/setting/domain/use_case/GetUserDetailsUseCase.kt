@@ -17,11 +17,9 @@ class GetUserDetailsUseCase(
         return repository.getUserEmail()
     }
 
-    fun getUserName(): String {
+    fun getUserName():String{
         return repository.getUserName()
     }
 
-    fun getMobileNo(): String {
-        return repository.getMobileNo()
-    }
+
 }

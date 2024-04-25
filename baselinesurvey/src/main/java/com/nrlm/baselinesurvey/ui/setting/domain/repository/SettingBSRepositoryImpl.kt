@@ -49,25 +49,21 @@ class SettingBSRepositoryImpl(private val prefRepo: PrefRepo,
 
     }
 
-    override fun getMobileNo(): String {
-        return prefRepo.getMobileNumber() ?: ""
-    }
-
     override fun clearLocalData() {
         nudgeBaselineDatabase.contentEntityDao().deleteContent()
         nudgeBaselineDatabase.didiDao().deleteSurveyees()
-        nudgeBaselineDatabase.activityTaskEntityDao().deleteActivityTask()
-        nudgeBaselineDatabase.missionEntityDao().deleteMissions()
-        nudgeBaselineDatabase.missionActivityEntityDao().deleteActivities()
-        nudgeBaselineDatabase.optionItemDao().deleteOptions()
-        nudgeBaselineDatabase.questionEntityDao().deleteAllQuestions()
-        nudgeBaselineDatabase.sectionAnswerEntityDao().deleteAllSectionAnswer()
-        nudgeBaselineDatabase.inputTypeQuestionAnswerDao().deleteAllInputTypeAnswers()
-        nudgeBaselineDatabase.formQuestionResponseDao().deleteAllFormQuestions()
-        nudgeBaselineDatabase.didiSectionProgressEntityDao().deleteAllSectionProgress()
+        nudgeBaselineDatabase.activityTaskEntityDao().deleteActivityTask(prefRepo.getUserId())
+        nudgeBaselineDatabase.missionEntityDao().deleteMissions(prefRepo.getUserId())
+        nudgeBaselineDatabase.missionActivityEntityDao().deleteActivities(prefRepo.getUserId())
+        nudgeBaselineDatabase.optionItemDao().deleteOptions(prefRepo.getUserId())
+        nudgeBaselineDatabase.questionEntityDao().deleteAllQuestions(prefRepo.getUserId())
+        nudgeBaselineDatabase.sectionAnswerEntityDao().deleteAllSectionAnswer(prefRepo.getUserId())
+        nudgeBaselineDatabase.inputTypeQuestionAnswerDao().deleteAllInputTypeAnswers(prefRepo.getUserId())
+        nudgeBaselineDatabase.formQuestionResponseDao().deleteAllFormQuestions(prefRepo.getUserId())
+        nudgeBaselineDatabase.didiSectionProgressEntityDao().deleteAllSectionProgress(prefRepo.getUserId())
         nudgeBaselineDatabase.villageListDao().deleteAllVilleges()
-        nudgeBaselineDatabase.surveyEntityDao().deleteAllSurvey()
-        nudgeBaselineDatabase.didiInfoEntityDao().deleteAllDidiInfo()
+        nudgeBaselineDatabase.surveyEntityDao().deleteAllSurvey(prefRepo.getUserId())
+        nudgeBaselineDatabase.didiInfoEntityDao().deleteAllDidiInfo(prefRepo.getUserId())
     }
 
     override fun setAllDataSynced() {

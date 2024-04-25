@@ -3,11 +3,9 @@ package com.nrlm.baselinesurvey.ui.backup.viewmodel
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Environment
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.ShareCompat
-import androidx.lifecycle.ViewModel
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
@@ -17,7 +15,6 @@ import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LogWriter
-import com.nrlm.baselinesurvey.utils.uriFromFile
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.exportAllOldImages
@@ -31,20 +28,19 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 import javax.inject.Inject
 import kotlin.system.exitProcess
 
 @HiltViewModel
 class ExportImportViewModel @Inject constructor(
-    val exportImportUseCase: ExportImportUseCase
+    private val exportImportUseCase: ExportImportUseCase
 ): BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val optionList: State<List<SettingOptionModel>> get() = _optionList
 
     val showLoadConfirmationDialog = mutableStateOf(false)
     val showRestartAppDialog = mutableStateOf(false)
-    val userUniqueKey= mutableStateOf(BLANK_STRING)
+    private val userUniqueKey= mutableStateOf(BLANK_STRING)
 
     init {
         _optionList.value=exportImportUseCase.getExportOptionListUseCase.fetchExportOptionList()
@@ -83,7 +79,7 @@ class ExportImportViewModel @Inject constructor(
         }
     }
 
-    fun openShareSheet( fileUriList: ArrayList<Uri>?, title: String) {
+    private fun openShareSheet(fileUriList: ArrayList<Uri>?, title: String) {
         if(fileUriList?.isNotEmpty() == true){
             val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
             shareIntent.setType(ZIP_MIME_TYPE)
@@ -116,21 +112,18 @@ fun exportOnlyLogFile(context: Context){
     BaselineLogger.d("ExportImportViewModel","exportOnlyLogFile: ----")
 
     CoroutineScope(Dispatchers.IO).launch {
-       val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext(),)
+       val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext())
         if (logFile != null) {
             val logFileUri = exportLogFile(logFile, appContext = BaselineCore.getAppContext(),
                 applicationID = BuildConfig.APPLICATION_ID)
 
-            if(logFileUri != null){
-                BaselineLogger.d("ExportImportViewModel","exportOnlyLogFile: ${logFileUri.path}----")
-                ShareCompat.IntentBuilder(context)
-                    .setType("video/mp4")
-                    .setSubject("Shared Log files")
-                    .addStream(logFileUri)
-                    .setChooserTitle("Shared Log File")
-                    .startChooser()
-//                openShareSheet(arrayListOf(logFileUri),"Share Log FIle")
-            }
+            BaselineLogger.d("ExportImportViewModel","exportOnlyLogFile: ${logFileUri.path}----")
+            ShareCompat.IntentBuilder(context)
+                .setType("video/mp4")
+                .setSubject("Shared Log files")
+                .addStream(logFileUri)
+                .setChooserTitle("Shared Log File")
+                .startChooser()
         }
     }
 }
@@ -144,7 +137,8 @@ fun exportOnlyLogFile(context: Context){
                 val fileUri = compression.compressBackupFiles(
                     BaselineCore.getAppContext(),
                     listOf(),
-                    exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
+                    exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
+                    exportImportUseCase.getUserDetailsExportUseCase.getUserID()
                 )
                if(fileUri!=null) {
                    BaselineLogger.d("ExportImportViewModel","compressEventData ${fileUri.path}----")

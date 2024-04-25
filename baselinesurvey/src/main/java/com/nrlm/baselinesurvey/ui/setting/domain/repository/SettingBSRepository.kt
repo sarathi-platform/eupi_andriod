@@ -18,6 +18,5 @@ interface SettingBSRepository {
     fun getUserEmail():String
 
     fun getUserName(): String
-    fun getMobileNo(): String
 
 }
