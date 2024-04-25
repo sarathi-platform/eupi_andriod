@@ -1011,8 +1011,7 @@ fun NestedLazyList(
                     ) {
                         item {
                             Column {
-//                                val optionItemListWithConditionals: List<OptionItemEntity> =
-//                                    questionScreenViewModel.getOptionItemListWithConditionals()
+//
                                 questionScreenViewModel.didiInfoObjectLive.value?.distinctBy { it.didiId }
                                     ?.forEach { didiInfoEntity ->
 
@@ -1030,35 +1029,6 @@ fun NestedLazyList(
                                             }
                                         )
 
-                                        /*FormResponseCard(
-                                            householdMemberDto = householdMemberDto,
-                                            optionItemListWithConditionals = optionItemListWithConditionals,
-                                            isPictureRequired = householdMemberDto.questionTag.equals(
-                                                stringResource(R.string.household_information_comparision),
-                                                true
-                                            ),
-                                            viewModel = questionScreenViewModel,
-                                            onDelete = {
-                                                questionScreenViewModel.onEvent(
-                                                    QuestionTypeEvent.DeleteFormQuestionResponseEvent(
-                                                        householdMemberDto.referenceId
-                                                    )
-                                                )
-                                                needToUpdateList.value =
-                                                    Pair(true, householdMemberDto.referenceId)
-                                            },
-                                            onUpdate = {
-                                                sectionDetails.questionList.find { it.questionId == householdMemberDto.questionId }
-                                                    ?.let { it1 ->
-                                                        BaselineCore.setReferenceId(householdMemberDto.referenceId)
-                                                        navigateToFormTypeQuestionScreen(
-                                                            navController = navController,
-                                                            question = it1,
-                                                            sectionDetails = sectionDetails,
-                                                            surveyeeId = surveyeeId
-                                                        )
-                                                    }
-                                            })*/
                                         Spacer(
                                             modifier = Modifier
                                                 .fillMaxWidth()
@@ -1080,26 +1050,5 @@ fun NestedLazyList(
             }
         }
     }
-
-    /*LaunchedEffect(key1 = needToUpdateList.value) {
-        if (needToUpdateList.value.first) {
-            val houseHoldMemberDto = householdMemberDtoList.value.first()
-            householdMemberDtoList.value = householdMemberDtoList.value.apply {
-                this.remove(this.find { it.referenceId == needToUpdateList.value.second })
-            }
-            needToUpdateList.value = NEED_TO_UPDATE_LIST_DEFAULT_VALUE
-            questionScreenViewModel.onEvent(
-                EventWriterEvents.SaveAnswerEvent(
-                    surveyId = sectionDetails.surveyId,
-                    sectionId = sectionDetails.sectionId,
-                    didiId = surveyeeId,
-                    questionId = houseHoldMemberDto.questionId,
-                    questionTag = houseHoldMemberDto.questionTag,
-                    questionType = QuestionType.Form.name,
-                    saveAnswerEventOptionItemDtoList = householdMemberDtoList.value.convertFormResponseObjectToSaveAnswerEventOptionDto()
-                )
-            )
-        }
-    }*/
 
 }

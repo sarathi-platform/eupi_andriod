@@ -175,10 +175,6 @@ fun NestedLazyListForFormQuestions(
                                             ?: 0 //TODO change from checking text to check only for id
                                     }
 
-                                    /* formQuestionResponseEntity.value.getResponseForOptionId(
-                                         option.optionId ?: -1
-                                     )?.selectedValue
-                                         ?: BLANK_STRING*/
                                     else {
                                         option.optionItemEntity.values?.find {
                                             it.value == (viewModel.storeCacheForResponse.getResponseForOptionId(

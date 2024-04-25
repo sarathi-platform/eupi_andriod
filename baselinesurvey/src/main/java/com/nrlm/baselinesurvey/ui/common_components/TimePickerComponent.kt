@@ -181,19 +181,13 @@ fun getMinutes(): List<ValuesDto> {
 }
 
 fun getMonths(): List<ValuesDto> {
-    return listOf(
-        ValuesDto(id = 1, "1"),
-        ValuesDto(2, "2"),
-        ValuesDto(3, "3"),
-        ValuesDto(4, "4"),
-        ValuesDto(5, "5"),
-        ValuesDto(6, "6"),
-        ValuesDto(7, "7"),
-        ValuesDto(8, "8"),
-        ValuesDto(9, "9"),
-        ValuesDto(10, "10"),
-        ValuesDto(11, "11")
-    )
+
+    val list = ArrayList<ValuesDto>()
+    (1..11).toList().forEach {
+        list.add(ValuesDto(it, it.toString()))
+    }
+
+    return list
 }
 
 fun getDelimiter(typePicker: String): String {

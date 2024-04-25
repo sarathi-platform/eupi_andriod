@@ -446,5 +446,6 @@
     <string name="net_income_comparision">Net income per year</string>
 
     <string name="data_fetching_and_processing">Data Fetching आरो Processing (डाटा)…</string>
+    <string name="total_annual_income_label">"Total annual income of the household: "</string>
 
 </resources>

@@ -301,11 +301,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     contentEntities = question.contentList,
                     parentQuestionId = parentId
                 )
-                if (question.questionDisplay == "Does didi have any family member who sends her money regularly?") {
-                    questionEntityDao.insertQuestion(questionEntity)
-                } else {
-                    questionEntityDao.insertQuestion(questionEntity)
-                }
+
+                questionEntityDao.insertQuestion(questionEntity)
                 question.options?.forEach { optionsItem ->
                     if (optionsItem != null) {
                         optionItemDao.deleteSurveySectionQuestionOptionFroLanguage(
