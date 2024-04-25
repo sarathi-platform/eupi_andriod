@@ -114,6 +114,7 @@ class QuestionScreenViewModel @Inject constructor(
     val formResponseEntityToQuestionMap: State<Map<Int, List<FormQuestionResponseEntity>>> get() = _formResponseEntityToQuestionMap
 
     val didiDetails: MutableState<SurveyeeEntity?> = mutableStateOf(null)
+    val didiInfoState: MutableState<DidiInfoEntity?> = mutableStateOf(null)
 
     var isEditAllowed: Boolean = true
 
@@ -152,6 +153,11 @@ class QuestionScreenViewModel @Inject constructor(
             sectionId = sectionId,
             didiId = didiId
         )
+    }
+
+    suspend fun getDidiInfoObject(didiId: Int) {
+        didiInfoState.value =
+            questionScreenUseCase.getSurveyeeDetailsUserCase.getDidiIndoDetail(didiId)
     }
 
     suspend fun getDidiInfoObjectLive(didiId: Int): LiveData<List<DidiInfoEntity>> {
@@ -848,6 +854,9 @@ class QuestionScreenViewModel @Inject constructor(
             }
 
             is QuestionTypeEvent.UpdateConditionQuestionStateForMultipleOption -> {
+                if (event.questionEntityState?.questionEntity?.type != QuestionType.MultiSelect.name || event.questionEntityState?.questionEntity?.type != QuestionType.Grid.name)
+                    return
+
                 val mOptionItemList = event.questionEntityState?.optionItemEntityState?.toList()
                 val unselectedOptions = mutableListOf<OptionItemEntityState>()
                 // When All unselected
@@ -1064,8 +1073,10 @@ class QuestionScreenViewModel @Inject constructor(
                                     inputTypeQuestionAnswerEntityList.value.toMutableList()
                                 val index =
                                     updatedList.map { it.questionId }.indexOf(question.questionId)
-                                updatedList.removeAt(index)
-                                _inputTypeQuestionAnswerEntityList.value = updatedList
+                                if (index != -1) {
+                                    updatedList.removeAt(index)
+                                    _inputTypeQuestionAnswerEntityList.value = updatedList
+                                }
                             }
                             val questionAnswerMapping =
                                 _sectionDetail.value.questionAnswerMapping.toMutableMap()

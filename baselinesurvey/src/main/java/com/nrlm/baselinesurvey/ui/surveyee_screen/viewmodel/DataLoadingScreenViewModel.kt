@@ -30,7 +30,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DataLoadingScreenViewModel @Inject constructor(
     val fetchDataUseCase: FetchDataUseCase,
-): BaseViewModel() {
+) : BaseViewModel() {
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
     val loaderState: State<LoaderState> get() = _loaderState
@@ -167,6 +167,7 @@ class DataLoadingScreenViewModel @Inject constructor(
             )
         }
     }
+
     fun fetchAllData(callBack: () -> Unit) {
         baseCurrentApiCount = 0
         surveyApiCount = 0
