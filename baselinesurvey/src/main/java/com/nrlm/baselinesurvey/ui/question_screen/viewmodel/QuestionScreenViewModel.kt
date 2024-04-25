@@ -848,6 +848,9 @@ class QuestionScreenViewModel @Inject constructor(
             }
 
             is QuestionTypeEvent.UpdateConditionQuestionStateForMultipleOption -> {
+                if (event.questionEntityState?.questionEntity?.type != QuestionType.MultiSelect.name || event.questionEntityState?.questionEntity?.type != QuestionType.Grid.name)
+                    return
+
                 val mOptionItemList = event.questionEntityState?.optionItemEntityState?.toList()
                 val unselectedOptions = mutableListOf<OptionItemEntityState>()
                 // When All unselected
@@ -1064,8 +1067,10 @@ class QuestionScreenViewModel @Inject constructor(
                                     inputTypeQuestionAnswerEntityList.value.toMutableList()
                                 val index =
                                     updatedList.map { it.questionId }.indexOf(question.questionId)
-                                updatedList.removeAt(index)
-                                _inputTypeQuestionAnswerEntityList.value = updatedList
+                                if (index != -1) {
+                                    updatedList.removeAt(index)
+                                    _inputTypeQuestionAnswerEntityList.value = updatedList
+                                }
                             }
                             val questionAnswerMapping =
                                 _sectionDetail.value.questionAnswerMapping.toMutableMap()
