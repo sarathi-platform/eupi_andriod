@@ -44,7 +44,10 @@ fun DataLoadingScreenComponent(
         }
     }
 
-
+    if (viewModel.errorNavigate.value) {
+        viewModel.setAllDataFetched()
+        navController.navigate(HomeScreens.Home_SCREEN.route)
+    }
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         LoaderComponentWithText(visible = loaderState.isLoaderVisible)
 

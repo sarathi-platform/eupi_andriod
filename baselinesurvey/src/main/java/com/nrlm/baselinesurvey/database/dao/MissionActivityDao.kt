@@ -115,13 +115,14 @@ interface MissionActivityDao {
     @Query("SELECT * from $ACTIVITY_TABLE_NAME where  userId=:userId and missionId = :missionId and activityId = :activityId")
     fun isActivityCompleted(userId: String, missionId: Int, activityId: Int): MissionActivityEntity
 
-    @Query("SELECT COUNT(*) from $ACTIVITY_TABLE_NAME where missionId = :missionId AND status != :status")
+    @Query("SELECT COUNT(*) from $ACTIVITY_TABLE_NAME where userId = :userId AND missionId = :missionId AND status != :status")
     fun getPendingTaskCountLiveForMission(
+        userId: String,
         missionId: Int,
         status: String = SurveyState.COMPLETED.name
     ): LiveData<Int>
 
-    @Query("SELECT COUNT(*) from $ACTIVITY_TABLE_NAME where missionId = :missionId")
-    fun getTotalActivityCountForMission(missionId: Int): Int
+    @Query("SELECT COUNT(*) from $ACTIVITY_TABLE_NAME where userId = :userId AND missionId = :missionId")
+    fun getTotalActivityCountForMission(userId: String, missionId: Int): Int
 
 }
