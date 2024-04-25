@@ -54,6 +54,21 @@ class ZipFileCompression : IFileCompressor {
         return "ZIP"
     }
 
+    override suspend fun compressBackupFile(
+        context: Context,
+        fileUri: Pair<String, Uri?>,
+        mobileNo: String
+    ): Uri? {
+        val zipFileName = "${mobileNo}_sarathi_${System.currentTimeMillis()}_"
+
+        return compressData(
+            context,
+            zipFileName + "Log_file",
+            Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + mobileNo,
+            listOf(fileUri)
+        );
+    }
+
 
     private fun compressData(
         context: Context,
