@@ -405,7 +405,6 @@ class EventWriterHelperImpl @Inject constructor(
     ) {
         val missionEntity = missionEntityDao.getMission(getBaseLineUserId(), missionId)
         val activityEntity = activityDao.getActivity(getBaseLineUserId(), missionId, activityId)
-        val taskEntity = taskDao.getTask(getBaseLineUserId(), activityId, missionId, taskId)
 
 //        if (taskEntity.status != SectionStatus.COMPLETED.name && taskEntity.status != SectionStatus.INPROGRESS.name)
         markTaskInProgress(missionId, activityId, taskId, status)
@@ -531,6 +530,7 @@ class EventWriterHelperImpl @Inject constructor(
         sectionDetails: SectionListItem,
         subjectType: String
     ): Events? {
+        val taskLocalId = taskDao.getTaskLocalId(getBaseLineUserId(), didiId = didi.didiId ?: 0)
 
         val payload = ImageUploadRequest.getRequestObjectForUploadImage(
             didi = didi,
@@ -540,7 +540,8 @@ class EventWriterHelperImpl @Inject constructor(
             questionId = questionId,
             referenceId = referenceId,
             sectionDetails = sectionDetails,
-            subjectType = "Didi"
+            subjectType = "Didi",
+            localTaskId = taskLocalId ?: BLANK_STRING
         ).json()
 
         val eventName = EventName.UPLOAD_IMAGE_RESPONSE_EVENT
@@ -609,6 +610,8 @@ class EventWriterHelperImpl @Inject constructor(
         sectionDetails: SectionEntity,
         subjectType: String
     ): Events? {
+        val taskLocalId = taskDao.getTaskLocalId(getBaseLineUserId(), didiId = didi.didiId ?: 0)
+
         val payload = ImageUploadRequest.getRequestObjectForUploadImage(
             didi = didi,
             location = location,
@@ -619,7 +622,8 @@ class EventWriterHelperImpl @Inject constructor(
             questionEntity = questionEntity,
             optionItemEntity = optionItemEntity,
             sectionDetails = sectionDetails,
-            subjectType = "Didi"
+            subjectType = "Didi",
+            localTaskId = taskLocalId
         ).json()
 
         val eventName = EventName.UPLOAD_IMAGE_RESPONSE_EVENT

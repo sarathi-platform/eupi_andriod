@@ -37,7 +37,9 @@ data class ImageUploadRequest(
     @SerializedName("referenceId")
     val referenceId: String = "",
     @SerializedName("optionTag")
-    val optionTag: Int = 0
+    val optionTag: Int = 0,
+    @SerializedName("localTaskId")
+    val localTaskId: String?
 ) {
     companion object {
         fun getRequestObjectForUploadImage(
@@ -48,7 +50,8 @@ data class ImageUploadRequest(
             userType: String,
             referenceId: String,
             sectionDetails: SectionListItem,
-            questionId: Int
+            questionId: Int,
+            localTaskId: String
         ): ImageUploadRequest {
             val question = sectionDetails.questionList.find { it.questionId == questionId }
             val option =
@@ -68,7 +71,8 @@ data class ImageUploadRequest(
                 tag = question?.tag ?: 0,
                 optionId = option?.optionId ?: 0,
                 referenceId = referenceId,
-                optionTag = option?.optionTag ?: 0
+                optionTag = option?.optionTag ?: 0,
+                localTaskId = localTaskId
             )
         }
 
@@ -82,7 +86,8 @@ data class ImageUploadRequest(
             questionEntity: QuestionEntity?,
             optionItemEntity: OptionItemEntity?,
             sectionDetails: SectionEntity,
-            questionId: Int
+            questionId: Int,
+            localTaskId: String?
         ): ImageUploadRequest {
             return ImageUploadRequest(
                 subjectId = didi.didiId.toString(),
@@ -99,7 +104,8 @@ data class ImageUploadRequest(
                 tag = questionEntity?.tag ?: 0,
                 optionId = optionItemEntity?.optionId ?: 0,
                 referenceId = referenceId,
-                optionTag = optionItemEntity?.optionTag ?: 0
+                optionTag = optionItemEntity?.optionTag ?: 0,
+                localTaskId = localTaskId
             )
         }
     }
