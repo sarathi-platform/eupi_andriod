@@ -1012,8 +1012,6 @@ fun NestedLazyList(
                     ) {
                         item {
                             Column {
-                                val optionItemListWithConditionals: List<OptionItemEntity> =
-                                    questionScreenViewModel.getOptionItemListWithConditionals()
                                 if (questionScreenViewModel.didiInfoState.value != null) {
                                     DidiInfoCard(
                                         didiInfoEntity = questionScreenViewModel.didiInfoState.value!!,
