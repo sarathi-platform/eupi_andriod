@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case
 
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.repository.FormQuestionResponseRepository
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 
 class SaveFormQuestionResponseUseCase(private val repository: FormQuestionResponseRepository) {
 
@@ -32,6 +33,10 @@ class SaveFormQuestionResponseUseCase(private val repository: FormQuestionRespon
 
     suspend fun getOptionItem(formQuestionResponseEntity: FormQuestionResponseEntity): Int {
         return repository.getOptionItem(formQuestionResponseEntity)
+    }
+
+    suspend fun deleteFormResponseForOption(didiId: Int, optionItem: OptionItemEntityState?) {
+
     }
 
 }

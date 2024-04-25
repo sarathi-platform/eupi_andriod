@@ -22,6 +22,7 @@ import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
+import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenEvents
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.FormQuestionScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
@@ -71,7 +72,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
 
     val formQuestionResponseEntity: State<List<FormQuestionResponseEntity>> get() = _formQuestionResponseEntity
 
-    private val _storeCacheForResponse = mutableListOf<FormQuestionResponseEntity>()
+    private var _storeCacheForResponse = mutableListOf<FormQuestionResponseEntity>()
     val storeCacheForResponse: List<FormQuestionResponseEntity> get() = _storeCacheForResponse
 
 
@@ -484,14 +485,27 @@ class QuestionTypeScreenViewModel @Inject constructor(
                                 )
                             ) {
                                 conditionsDto?.checkConditionForMultiSelectDropDown(event.userInputValue)
+
                             } else {
                                 conditionsDto?.checkCondition(event.userInputValue)
                             }
+                        if (conditionCheckResult == false) {
+                            onEvent(
+                                QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption(
+                                    conditionsDto!!
+                                )
+                            )
+                        }
                         updateQuestionStateForCondition(conditionCheckResult == true, conditionsDto)
                     }
                 } else {
                     event.optionItemEntityState?.optionItemEntity?.conditions?.forEach { conditionsDto ->
                         updateQuestionStateForCondition(false, conditionsDto)
+                        onEvent(
+                            QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption(
+                                conditionsDto!!
+                            )
+                        )
                     }
                 }
 
@@ -689,6 +703,61 @@ class QuestionTypeScreenViewModel @Inject constructor(
                         events = saveAnswerEvent,
                         eventType = EventType.STATEFUL
                     )
+                }
+            }
+
+            is QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption -> {
+                if (event.questionConditionsDto.resultList.isNotEmpty()) {
+                    event.questionConditionsDto.resultList.forEach { questionItem ->
+
+                        questionItem.options?.forEach { optItem ->
+
+                            val optionItem = updatedOptionList.toList()
+                                .find { it.optionId == optItem?.optionId }
+
+                            val isResponseCached = storeCacheForResponse.map { it.optionId }
+                                .contains(optionItem?.optionId ?: 0)
+                            val isResponseSavedInDb =
+                                formQuestionResponseEntity.value.map { it.optionId }
+                                    .contains(optionItem?.optionId ?: 0)
+
+                            val isQuestionAnswered = isResponseCached
+                                    || isResponseSavedInDb
+                            if (isQuestionAnswered) {
+                                if (isResponseSavedInDb) {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        formQuestionScreenUseCase.saveFormQuestionResponseUseCase
+                                            .deleteFormResponseForOption(
+                                                didiId,
+                                                optionItem
+                                            )
+                                    }
+                                }
+
+                                if (isResponseCached) {
+                                    val updatedList = storeCacheForResponse.toMutableList()
+                                    val index = updatedList.map { it.optionId }
+                                        .indexOf(optionItem?.optionId ?: 0)
+                                    if (index != -1) {
+                                        updatedList.removeAt(index)
+                                        _storeCacheForResponse = updatedList
+                                    }
+                                }
+                                if (isResponseSavedInDb) {
+                                    val updatedList =
+                                        formQuestionResponseEntity.value.toMutableList()
+                                    val index = updatedList.map { it.optionId }
+                                        .indexOf(optionItem?.optionId ?: 0)
+                                    if (index != -1) {
+                                        updatedList.removeAt(index)
+                                        _formQuestionResponseEntity.value = updatedList
+                                    }
+                                }
+
+                                updateCachedData()
+                            }
+                        }
+                    }
                 }
             }
         }
