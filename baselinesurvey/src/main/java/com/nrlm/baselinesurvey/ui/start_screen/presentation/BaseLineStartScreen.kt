@@ -254,6 +254,10 @@ fun BaseLineStartScreen(
                                     true,
                                     localContext
                                 )
+                                BaselineLogger.e(
+                                    "CameraIssue",
+                                    "ImagePath ${baseLineStartViewModel.imagePath}"
+                                )
                             } else {
                                 baseLineStartViewModel.onEvent(
                                     StartSurveyScreenEvents.SaveImagePathForSurveyee(

@@ -9,7 +9,7 @@ plugins {
     id 'com.google.firebase.crashlytics'
 }
 
-def version = "2.0.0"
+def version = "2.0.0.01_camera"
 android {
     namespace 'com.nrlm.baselinesurvey'
     compileSdk 34
