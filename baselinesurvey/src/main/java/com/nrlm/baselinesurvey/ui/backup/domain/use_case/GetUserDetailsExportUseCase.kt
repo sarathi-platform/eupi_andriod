@@ -18,5 +18,9 @@ class GetUserDetailsExportUseCase(
         return repository.getUserEmail()
     }
 
+    fun getUserName():String{
+        return repository.getUserName()
+    }
+
 
 }
