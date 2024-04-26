@@ -854,7 +854,7 @@ class QuestionScreenViewModel @Inject constructor(
             }
 
             is QuestionTypeEvent.UpdateConditionQuestionStateForMultipleOption -> {
-                if (event.questionEntityState?.questionEntity?.type != QuestionType.MultiSelect.name || event.questionEntityState?.questionEntity?.type != QuestionType.Grid.name)
+                if (event.questionEntityState?.questionEntity?.type != QuestionType.MultiSelect.name && event.questionEntityState?.questionEntity?.type != QuestionType.Grid.name)
                     return
 
                 val mOptionItemList = event.questionEntityState?.optionItemEntityState?.toList()
