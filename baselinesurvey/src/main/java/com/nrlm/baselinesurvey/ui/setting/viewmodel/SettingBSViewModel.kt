@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Environment
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.net.toUri
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.base.BaseViewModel
@@ -15,13 +16,15 @@ import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LogWriter
 import com.nrlm.baselinesurvey.utils.states.LoaderState
-import com.nrlm.baselinesurvey.utils.uriFromFile
+import com.nudge.core.SARATHI_DIRECTORY_NAME
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
-import com.nudge.core.exportLogFile
-import com.nudge.core.exportOldData
+import com.nudge.core.exportDbFile
+import com.nudge.core.getFirstName
+import com.nudge.core.json
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.uriFromFile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +44,7 @@ class SettingBSViewModel @Inject constructor(
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState(false))
     val loaderState: State<LoaderState> get() = _loaderState
+    val showLogoutConfirmationDialog = mutableStateOf(false)
 
 
 
@@ -63,15 +67,11 @@ class SettingBSViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 onEvent(LoaderEvent.UpdateLoaderState(true))
+                val fileUriList: ArrayList<Uri> = arrayListOf()
+                val fileAndDbZipList = ArrayList<Pair<String, Uri?>>()
                 val compression = ZipFileCompression()
-                val fileUri = compression.compressBackupFiles(
-                    BaselineCore.getAppContext(),
-                    listOf(),
-                    settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber(),
-                    userName = settingBSUserCase.getUserDetailsUseCase.getUserName(),
 
-                    )
-
+                // Image Files and Zip
                 val imageUri = compression.compressBackupImages(
                     BaselineCore.getAppContext(),
                     settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber(),
@@ -79,64 +79,75 @@ class SettingBSViewModel @Inject constructor(
 
                     )
 
-                val zipDBFileDirectory = BaselineCore.getAppContext()
-                    .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path
-
-                val directory = zipDBFileDirectory?.let { File(it) }
-
-                val zipFileList= directory?.listFiles()
-                    ?.filterNot { it.name.contains("Image") }
-                    ?.filter { it.isFile && it.name.contains(getUserMobileNumber()) }
-
-                val fileUriList: ArrayList<Uri> = arrayListOf()
-                if(fileUri!=Uri.EMPTY){
-                    fileUri?.let { fileUriList.add(it)
-                        BaselineLogger.d("SettingBSViewModel", "Event File Uri: ${it.path}---------------")
+                if(imageUri!=Uri.EMPTY) {
+                    imageUri?.let { fileUriList.add(it)
+                        BaselineLogger.d("SettingBSViewModel", "Image File Uri: ${it.path}---------------")
                     }
                 }
 
-                  if(imageUri!=Uri.EMPTY) {
-                      imageUri?.let { fileUriList.add(it)
-                          BaselineLogger.d("SettingBSViewModel", "Image File Uri: ${it.path}---------------")
-                      }
-                  }
+                // Database File and URI
+                val dbUri = exportDbFile(
+                    appContext = BaselineCore.getAppContext(),
+                    applicationID = BuildConfig.APPLICATION_ID,
+                    databaseName = NUDGE_BASELINE_DATABASE
+                )
 
-                if(zipFileList?.isNotEmpty() == true){
-                    var lastModifiedFile = zipFileList[0]
-                    for (i in 1 until zipFileList.size) {
-                        if (lastModifiedFile.lastModified() < zipFileList[i].lastModified()) {
-                            lastModifiedFile = zipFileList[i]
+
+                if(dbUri!= Uri.EMPTY){
+                    dbUri?.let {
+                        BaselineLogger.d("SettingBSViewModel", "Database File Uri: ${it.path}---------------")
+                        fileAndDbZipList.add(Pair(NUDGE_BASELINE_DATABASE,it))
+                    }
+                }
+
+                val eventFilePath =
+                    File(Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + getUserMobileNumber())
+
+                if(eventFilePath.exists() && eventFilePath.isDirectory){
+                    val eventFiles= eventFilePath.listFiles()?.filter { it.isFile && it.name.contains("event") }
+                    if (eventFiles != null) {
+                        if(eventFiles.isNotEmpty()){
+                            eventFiles.forEach {
+                                fileAndDbZipList.add(Pair(it.name,it.toUri()))
+                            }
                         }
                     }
-
-
-
-                    BaselineLogger.d("SettingBSViewModel", "DB File Uri: ${lastModifiedFile.path}---------------")
-
-                 fileUriList.add(uriFromFile(BaselineCore.getAppContext(), lastModifiedFile))
-
                 }
 
                 // Add Log File
 
+
+
                 val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext()){}
                 if (logFile != null) {
-                    val logFileUri = exportLogFile(logFile, appContext = BaselineCore.getAppContext(),
-                        applicationID = BuildConfig.APPLICATION_ID)
+                    val logFileUri= uriFromFile(BaselineCore.getAppContext(),logFile,BuildConfig.APPLICATION_ID)
                     if(logFileUri!=Uri.EMPTY) {
                         logFileUri.let {
-                            fileUriList.add(it)
+                            fileAndDbZipList.add(Pair(logFile.name,it))
                             BaselineLogger.d("SettingBSViewModel", "Log File Uri: ${it.path}---------------")
 
                         }
                     }
                 }
+                val zipFileName =
+                    "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_sarathi_${System.currentTimeMillis()}"
 
-                exportLocalDatabase{ dbUri->
-                    fileUriList.add(dbUri)
+                if(fileUriList.isNotEmpty()){
+                   val zipLogDbFileUri= compression.compressData(
+                        BaselineCore.getAppContext(),
+                        zipFileName,
+                        Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + getUserMobileNumber(),
+                        fileAndDbZipList,
+                        getUserMobileNumber()
+                    )
+                    zipLogDbFileUri?.let {
+                        if(it != Uri.EMPTY){
+                            fileUriList.add(it)
+                        }
+                    }
                 }
 
-                BaselineLogger.d("SettingBSViewModel", " Share Dialog Open")
+                BaselineLogger.d("SettingBSViewModel", " Share Dialog Open ${fileUriList.json()}" )
                 openShareSheet(fileUriList, title)
                 CoreSharedPrefs.getInstance(BaselineCore.getAppContext()).setFileExported(true)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -170,17 +181,6 @@ class SettingBSViewModel @Inject constructor(
         }
     }
 
-    fun exportLocalDatabase(onExportSuccess: (Uri) -> Unit) {
-        val userUniqueId = settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
-        exportOldData(
-            appContext = BaselineCore.getAppContext(),
-            applicationID = BuildConfig.APPLICATION_ID,
-            mobileNo = userUniqueId,
-            databaseName = NUDGE_BASELINE_DATABASE
-        ) {
-           onExportSuccess(it)
-        }
-    }
    fun getUserMobileNumber():String{
         return settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
     }

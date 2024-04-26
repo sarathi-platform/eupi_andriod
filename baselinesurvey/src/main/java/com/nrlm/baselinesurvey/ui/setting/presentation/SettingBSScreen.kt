@@ -23,6 +23,7 @@ import com.nrlm.baselinesurvey.ui.setting.domain.SettingTagEnum
 import com.nrlm.baselinesurvey.ui.setting.viewmodel.SettingBSViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nrlm.baselinesurvey.utils.ShowCustomDialog
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nudge.core.model.SettingOptionModel
 import java.util.Locale
@@ -85,6 +86,39 @@ fun SettingBSScreen(
     }
 
 
+    if(viewModel.showLogoutConfirmationDialog.value){
+        ShowCustomDialog(title = stringResource(id = R.string.logout),
+            message = stringResource(id = R.string.logout_confirmation),
+            positiveButtonTitle = stringResource(id = R.string.yes_text),
+            negativeButtonTitle  = stringResource(id = R.string.option_no),
+            onPositiveButtonClick = {
+                BaselineLogger.d("SettingScreen","Logout Button Click")
+                viewModel.performLogout {
+                    viewModel.showLogoutConfirmationDialog.value=false
+                    if (it)
+                        navController.navigate(Graph.LOGOUT_GRAPH)
+                    else showCustomToast(context, context.getString(R.string.something_went_wrong))
+                }
+            }, onNegativeButtonClick = {
+                viewModel.showLogoutConfirmationDialog.value=false
+
+            })
+    }
+
+    if (loaderState.value.isLoaderVisible) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                color = blueDark,
+                modifier = Modifier
+                    .size(28.dp)
+                    .align(Alignment.Center)
+            )
+        }
+    }
 
     CommonSettingScreen(
         title = stringResource(id = R.string.settings_screen_title),
@@ -117,12 +151,7 @@ fun SettingBSScreen(
             }
        },
        onLogoutClick = {
-           BaselineLogger.d("SettingScreen","Logout Button Click")
-           viewModel.performLogout {
-               if (it)
-                   navController.navigate(Graph.LOGOUT_GRAPH)
-               else showCustomToast(context, context.getString(R.string.something_went_wrong))
-           }
+           viewModel.showLogoutConfirmationDialog.value=true
        }
    )
     if (loaderState.value.isLoaderVisible) {
