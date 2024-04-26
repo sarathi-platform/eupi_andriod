@@ -22,7 +22,6 @@ import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
-import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenEvents
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.FormQuestionScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
@@ -489,23 +488,23 @@ class QuestionTypeScreenViewModel @Inject constructor(
                             } else {
                                 conditionsDto?.checkCondition(event.userInputValue)
                             }
-                        if (conditionCheckResult == false) {
+                        /*if (conditionCheckResult == false) {
                             onEvent(
                                 QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption(
                                     conditionsDto!!
                                 )
                             )
-                        }
+                        }*/
                         updateQuestionStateForCondition(conditionCheckResult == true, conditionsDto)
                     }
                 } else {
                     event.optionItemEntityState?.optionItemEntity?.conditions?.forEach { conditionsDto ->
                         updateQuestionStateForCondition(false, conditionsDto)
-                        onEvent(
+                        /*onEvent(
                             QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption(
                                 conditionsDto!!
                             )
-                        )
+                        )*/
                     }
                 }
 
@@ -675,11 +674,13 @@ class QuestionTypeScreenViewModel @Inject constructor(
                     } else {
                         form.selectedValue = event.formQuestionResponseEntity.selectedValue
                         val index = storeCacheForResponse.map { it.optionId }.indexOf(form.optionId)
-                            .coerceIn(0, storeCacheForResponse.size)
+//                            .coerceIn(0, storeCacheForResponse.size)
 
-                        _storeCacheForResponse.removeAt(index)
-                        _storeCacheForResponse.add(index = index, form)
-                        conditionalQuestionNotMarked = false
+                        if (index != -1) {
+                            _storeCacheForResponse.removeAt(index)
+                            _storeCacheForResponse.add(index = index, form)
+                            conditionalQuestionNotMarked = false
+                        }
                     }
                 }
                 updateCachedData()
@@ -842,7 +843,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
         }.filter { it.showQuestion }.size
         answeredOptionCount.intValue =
             (storeCacheForResponse.size).coerceIn(0, totalOptionSize.intValue)
-        Log.d(
+        BaselineLogger.d(
             TAG,
             "updateCachedData: storeCacheForResponse.size: ${storeCacheForResponse.size}, totalOptionSize.intValue: ${totalOptionSize.intValue}, answeredOptionCount.intValue: ${answeredOptionCount.intValue}"
         )

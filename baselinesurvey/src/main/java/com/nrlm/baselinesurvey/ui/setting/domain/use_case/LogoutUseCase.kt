@@ -21,4 +21,8 @@ class LogoutUseCase(
             return false
         }
     }
+
+    fun setAllDataSyncStatus(){
+        repository.setAllDataSynced()
+    }
 }

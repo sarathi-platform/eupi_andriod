@@ -54,7 +54,6 @@ class ZipFileCompression : IFileCompressor {
         return "ZIP"
     }
 
-
     private fun compressData(
         context: Context,
         zipFileName: String,

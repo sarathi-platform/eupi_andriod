@@ -383,5 +383,6 @@
     <string name="fetched_successfully">Data fetched successfully</string>
     <string name="didi_verified_by_bpc">बिपिसिजों फोरमान खालामजानाय दिदि</string>
     <string name="bpc_verification_in_progress_village_banner_text">BPC फोरमान खालामनाया सोलिगासिनो दं</string>
+    <string name="recover_old_data">पुराना डेटा पुनर्प्राप्त करें</string>
 
 </resources>
