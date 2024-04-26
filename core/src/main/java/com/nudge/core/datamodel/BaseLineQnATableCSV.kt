@@ -5,20 +5,69 @@ import com.nudge.core.exportcsv.Exportable
 import com.opencsv.bean.CsvBindByName
 
 data class BaseLineQnATableCSV(
-@CsvBindByName(column = "id")
-var id: Int? = 0,
+var id: String? = BLANK_STRING,
 
-@CsvBindByName(column = "question")
+@CsvBindByName(column = "Didi Name")
+var didiName : String? = BLANK_STRING,
+
+@CsvBindByName(column = "Guardian Name")
+var dadaName : String? = BLANK_STRING,
+
+@CsvBindByName(column = "Didi-House-No")
+var house : String? = BLANK_STRING,
+
+@CsvBindByName(column = "Question")
 var question : String? = BLANK_STRING,
 
-@CsvBindByName(column = "response")
+@CsvBindByName(column = "Question-Sub")
+var subQuestion : String? = BLANK_STRING,
+
+@CsvBindByName(column = "Response")
 var response : String? = BLANK_STRING,
 
-@CsvBindByName(column = "section")
+@CsvBindByName(column = "Section")
 var section : String? = BLANK_STRING,
 
-@CsvBindByName(column = "subjectId")
+@CsvBindByName(column = "Village-Name")
+var villageName : String? = BLANK_STRING,
+
+@CsvBindByName(column = "Tola Name")
+var cohoretName : String? = BLANK_STRING,
+
+var surveyId: Int? = 0,
+
 var subjectId : Int = 0,
 
+
+
 ) : Exportable
+
+data class HamletQnATableCSV(
+    var id: String? = BLANK_STRING,
+
+    @CsvBindByName(column = "Question")
+    var question : String? = BLANK_STRING,
+
+    @CsvBindByName(column = "Question-Sub")
+    var subQuestion : String? = BLANK_STRING,
+
+    @CsvBindByName(column = "Response")
+    var response : String? = BLANK_STRING,
+
+    @CsvBindByName(column = "Section")
+    var section : String? = BLANK_STRING,
+
+    @CsvBindByName(column = "Village-Name")
+    var villageName : String? = BLANK_STRING,
+
+    @CsvBindByName(column = "Tola-Name")
+    var cohoretName : String? = BLANK_STRING,
+
+    var surveyId: Int? = 0,
+
+    var subjectId : Int = 0,
+
+
+
+    ) : Exportable
 

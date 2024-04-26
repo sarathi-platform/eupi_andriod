@@ -15,7 +15,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.core.content.FileProvider
 import androidx.core.text.isDigitsOnly
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.CONDITIONS_DELIMITER
@@ -1079,13 +1078,4 @@ fun List<FormQuestionResponseEntity>.findUnchangedOptions(storeCacheForResponse:
     val unchangedList = this.toMutableList()
     unchangedList.removeAll(storeCacheForResponse)
     return unchangedList
-}
-
-fun <T> String.toDto(): T{
-    val type = object : TypeToken<T?>() {}.type
-    return Gson().fromJson(this, type)
-}
-
-inline fun <reified T> String.toDto(clazz: Class<T>): T {
-    return Gson().fromJson(this, clazz)
 }
