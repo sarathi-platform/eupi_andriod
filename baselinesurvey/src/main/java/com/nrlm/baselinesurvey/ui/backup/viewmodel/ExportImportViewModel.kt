@@ -9,12 +9,15 @@ import androidx.core.app.ShareCompat
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.ui.backup.domain.use_case.ExportImportUseCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LogWriter
+import com.nrlm.baselinesurvey.utils.showCustomToast
+import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.exportAllOldImages
@@ -23,6 +26,7 @@ import com.nudge.core.exportOldData
 import com.nudge.core.importDbFile
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.ui.events.ToastMessageEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,13 +45,26 @@ class ExportImportViewModel @Inject constructor(
     val showLoadConfirmationDialog = mutableStateOf(false)
     val showRestartAppDialog = mutableStateOf(false)
     private val userUniqueKey= mutableStateOf(BLANK_STRING)
+    private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
+
+    val loaderState: State<LoaderState> get() = _loaderState
 
     init {
         _optionList.value=exportImportUseCase.getExportOptionListUseCase.fetchExportOptionList()
         userUniqueKey.value=exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
     }
     override fun <T> onEvent(event: T) {
-//        TODO("Not yet implemented")
+        when(event){
+            is ToastMessageEvent.ShowToastMessage ->{
+              showCustomToast(BaselineCore.getAppContext(),event.message)
+            }
+
+            is LoaderEvent.UpdateLoaderState -> {
+                _loaderState.value = _loaderState.value.copy(
+                    isLoaderVisible = event.showLoader
+                )
+            }
+        }
     }
 
     fun clearLocalDatabase(onPageChange:()->Unit){
@@ -64,7 +81,7 @@ class ExportImportViewModel @Inject constructor(
 
     fun exportLocalDatabase(isNeedToShare:Boolean,onExportSuccess: (Uri) -> Unit) {
         BaselineLogger.d("ExportImportViewModel","exportLocalDatabase -----")
-
+        onEvent(LoaderEvent.UpdateLoaderState(true))
         exportOldData(
             appContext = BaselineCore.getAppContext(),
             applicationID = BuildConfig.APPLICATION_ID,
@@ -95,15 +112,16 @@ class ExportImportViewModel @Inject constructor(
         BaselineLogger.d("ExportImportViewModel","exportLocalImages ----")
 
         CoroutineScope(Dispatchers.IO).launch {
+            onEvent(LoaderEvent.UpdateLoaderState(true))
             val imageZipUri= exportAllOldImages(
                 appContext = BaselineCore.getAppContext(),
                 applicationID = BuildConfig.APPLICATION_ID,
                 mobileNo = userUniqueKey.value,
                 timeInMillSec = System.currentTimeMillis().toString()
             )
+            onEvent(LoaderEvent.UpdateLoaderState(false))
             if(imageZipUri != null){
                 BaselineLogger.d("ExportImportViewModel","exportLocalImages: ${imageZipUri.path} ----")
-
                 openShareSheet(arrayListOf(imageZipUri),"Share All Images")
             }
         }
@@ -111,12 +129,16 @@ class ExportImportViewModel @Inject constructor(
 fun exportOnlyLogFile(context: Context){
     BaselineLogger.d("ExportImportViewModel","exportOnlyLogFile: ----")
 
-    CoroutineScope(Dispatchers.IO).launch {
-       val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext())
+    CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+        onEvent(LoaderEvent.UpdateLoaderState(true))
+       val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext()){
+           onEvent(LoaderEvent.UpdateLoaderState(false))
+               onEvent(ToastMessageEvent.ShowToastMessage(context.getString(R.string.no_logs_available)))
+       }
         if (logFile != null) {
             val logFileUri = exportLogFile(logFile, appContext = BaselineCore.getAppContext(),
                 applicationID = BuildConfig.APPLICATION_ID)
-
+            onEvent(LoaderEvent.UpdateLoaderState(false))
             BaselineLogger.d("ExportImportViewModel","exportOnlyLogFile: ${logFileUri.path}----")
             ShareCompat.IntentBuilder(context)
                 .setType("video/mp4")
@@ -125,6 +147,8 @@ fun exportOnlyLogFile(context: Context){
                 .setChooserTitle("Shared Log File")
                 .startChooser()
         }
+        onEvent(LoaderEvent.UpdateLoaderState(false))
+
     }
 }
     fun compressEventData(title: String) {
