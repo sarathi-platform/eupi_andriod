@@ -58,7 +58,7 @@ class ZipFileCompression : IFileCompressor {
     override fun getCompressionType(): String {
         return "ZIP"
     }
-
+    //TODO: Need to pass Filter data/File Type condition using parameter
     fun compressData(
         context: Context,
         zipFileName: String,
