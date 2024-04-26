@@ -105,7 +105,7 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
 
     fun init(surveyId: Int, sectionId: Int, questionId: Int, surveyeeId: Int) {
         CoroutineScope(Dispatchers.IO).launch {
-            val formResponseEntityList =
+            var formResponseEntityList =
                 formResponseSummaryScreenUseCase.getFormQuestionResponseUseCase.getFormResponsesForQuestion(
                     surveyId = surveyId,
                     sectionId = sectionId,
@@ -146,6 +146,14 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
                     sectionId = sectionId,
                     questionId = questionId
                 )
+
+            if (questionEntity?.type == QuestionType.FormWithNone.name) {
+                val formWithNoneOption =
+                    optionItemEntityList.find { it.optionType == QuestionType.FormWithNone.name }
+                formResponseEntityList =
+                    formResponseEntityList.filter { it.optionId != formWithNoneOption?.optionId }
+            }
+
             _formResponseObjectDtoList.value.clear()
             _formResponseObjectDtoList.value.addAll(formResponseEntityList.mapFormQuestionResponseToFromResponseObjectDto(
                 mOptionItemEntityList,

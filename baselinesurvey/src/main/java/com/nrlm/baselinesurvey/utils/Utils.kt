@@ -913,6 +913,53 @@ fun List<FormQuestionResponseEntity>.convertFormQuestionResponseEntityToSaveAnsw
     return saveAnswerEventOptionItemDtoList
 }
 
+fun OptionItemEntity.convertOptionItemEntityToSaveAnswerEventOptionItemDtoForFormWithNone(
+    userId: String,
+    didiId: Int,
+    referenceId: String
+): List<SaveAnswerEventOptionItemDto> {
+
+    val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
+    val formQuestionResponseEntity =
+        this.convertOptionItemEntityToFormResponseEntityForFormWithNone(
+            userId = userId,
+            didiId = didiId,
+            referenceId = referenceId
+        )
+
+    val saveAnswerEventOptionItemDto = SaveAnswerEventOptionItemDto(
+        optionId = formQuestionResponseEntity.optionId,
+        selectedValue = formQuestionResponseEntity.selectedValue,
+        referenceId = formQuestionResponseEntity.referenceId,
+        optionDesc = this.display
+            ?: BLANK_STRING
+    )
+
+    saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
+
+
+    return saveAnswerEventOptionItemDtoList
+
+}
+
+fun OptionItemEntity.convertOptionItemEntityToFormResponseEntityForFormWithNone(
+    userId: String,
+    didiId: Int,
+    referenceId: String
+): FormQuestionResponseEntity {
+    val formQuestionResponseEntity = FormQuestionResponseEntity(
+        userId = userId,
+        didiId = didiId,
+        surveyId = this.surveyId,
+        sectionId = this.sectionId,
+        questionId = this.questionId ?: 0,
+        optionId = this.optionId ?: 0,
+        selectedValue = this.selectedValue ?: BLANK_STRING,
+        referenceId = referenceId
+    )
+    return formQuestionResponseEntity
+}
+
 fun List<OptionItemEntity>.toOptionItemStateList(): List<OptionItemEntityState> {
     val optionsItemEntityStateList = ArrayList<OptionItemEntityState>()
     this.forEach { optionItemEntity ->
@@ -1122,17 +1169,19 @@ fun List<FormQuestionResponseEntity>.findUnchangedOptions(storeCacheForResponse:
 
 @Composable
 fun ShowCustomDialog(
-    title:String,
-    message:String,
-    positiveButtonTitle : String ?= BLANK_STRING,
-    negativeButtonTitle : String ?= BLANK_STRING,
+    title: String,
+    message: String,
+    positiveButtonTitle: String? = BLANK_STRING,
+    negativeButtonTitle: String? = BLANK_STRING,
     dismissOnBackPress: Boolean? = true,
-    onPositiveButtonClick:()->Unit,
-    onNegativeButtonClick:()->Unit){
-    Dialog(onDismissRequest = {  }, properties = DialogProperties(
-        dismissOnClickOutside = false,
-        dismissOnBackPress = dismissOnBackPress ?: true
-    )
+    onPositiveButtonClick: () -> Unit,
+    onNegativeButtonClick: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = { }, properties = DialogProperties(
+            dismissOnClickOutside = false,
+            dismissOnBackPress = dismissOnBackPress ?: true
+        )
     ) {
         Surface(
             color = Color.Transparent,
@@ -1143,8 +1192,11 @@ fun ShowCustomDialog(
                     modifier = Modifier
                         .background(color = Color.White, shape = RoundedCornerShape(6.dp)),
                 ) {
-                    Column(Modifier.padding(vertical = 16.dp, horizontal = 16.dp),verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        if(!title.isNullOrEmpty()) {
+                    Column(
+                        Modifier.padding(vertical = 16.dp, horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        if (!title.isNullOrEmpty()) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceAround,
@@ -1177,7 +1229,7 @@ fun ShowCustomDialog(
 
                         Row(modifier = Modifier.fillMaxWidth()) {
 
-                            if(!negativeButtonTitle.isNullOrEmpty()) {
+                            if (!negativeButtonTitle.isNullOrEmpty()) {
                                 ButtonNegative(
                                     buttonTitle = negativeButtonTitle
                                         ?: stringResource(id = R.string.cancel_tola_text),
@@ -1187,13 +1239,13 @@ fun ShowCustomDialog(
                                     onNegativeButtonClick()
                                 }
 
-                            }else{
+                            } else {
                                 Spacer(modifier = Modifier.weight(2f))
                             }
 
                             Spacer(modifier = Modifier.width(8.dp))
                             positiveButtonTitle?.let {
-                                if(!it.isNullOrEmpty()) {
+                                if (!it.isNullOrEmpty()) {
                                     ButtonPositive(
                                         buttonTitle = it,
                                         isArrowRequired = false,
@@ -1214,3 +1266,18 @@ fun ShowCustomDialog(
         }
     }
 }
+
+//fun List<ValuesDto>?.toOptionItemEntity(): List<OptionItemEntity> {
+//
+//    val optionsItemEntityList = ArrayList<OptionItemEntity>()
+//
+//    if (this == null)
+//        return emptyList()
+//
+//    this.forEach {
+//        val optItem = OptionItemEntity(
+//            sec
+//        )
+//    }
+//
+//}

@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.core.app.ShareCompat
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
@@ -24,6 +23,7 @@ import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.exportAllOldImages
 import com.nudge.core.exportLogFile
 import com.nudge.core.exportOldData
+import com.nudge.core.getFirstName
 import com.nudge.core.importDbFile
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
@@ -53,7 +53,6 @@ class ExportImportViewModel @Inject constructor(
 
     init {
         _optionList.value=exportImportUseCase.getExportOptionListUseCase.fetchExportOptionList()
-        userUniqueKey.value=exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
     }
     override fun <T> onEvent(event: T) {
         when(event){
@@ -83,19 +82,26 @@ class ExportImportViewModel @Inject constructor(
 
     fun exportLocalDatabase(isNeedToShare:Boolean,onExportSuccess: (Uri) -> Unit) {
         BaselineLogger.d("ExportImportViewModel","exportLocalDatabase -----")
-        onEvent(LoaderEvent.UpdateLoaderState(true))
-        exportOldData(
-            appContext = BaselineCore.getAppContext(),
-            applicationID = BuildConfig.APPLICATION_ID,
-            mobileNo = userUniqueKey.value,
-            databaseName = NUDGE_BASELINE_DATABASE
-        ) {
-            BaselineLogger.d("ExportImportViewModel","exportLocalDatabase : ${it.path}")
+         try {
+             onEvent(LoaderEvent.UpdateLoaderState(true))
+             exportOldData(
+                 appContext = BaselineCore.getAppContext(),
+                 applicationID = BuildConfig.APPLICATION_ID,
+                 mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
+                 databaseName = NUDGE_BASELINE_DATABASE,
+                 userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName())
+             ) {
+                 BaselineLogger.d("ExportImportViewModel","exportLocalDatabase : ${it.path}")
 
-            if(isNeedToShare){
-                openShareSheet(arrayListOf(it) ,"")
-            } else onExportSuccess(it)
-        }
+                 if(isNeedToShare){
+                     openShareSheet(arrayListOf(it) ,"")
+                 } else onExportSuccess(it)
+             }
+         }catch (e:Exception){
+             onEvent(LoaderEvent.UpdateLoaderState(false))
+            BaselineLogger.e("ExportImportViewModel","exportLocalDatabase :${e.message}")
+         }
+
     }
 
     private fun openShareSheet(fileUriList: ArrayList<Uri>?, title: String) {
@@ -112,14 +118,15 @@ class ExportImportViewModel @Inject constructor(
 
     fun exportLocalImages(){
         BaselineLogger.d("ExportImportViewModel","exportLocalImages ----")
-
+        try {
         CoroutineScope(Dispatchers.IO).launch {
             onEvent(LoaderEvent.UpdateLoaderState(true))
             val imageZipUri= exportAllOldImages(
                 appContext = BaselineCore.getAppContext(),
                 applicationID = BuildConfig.APPLICATION_ID,
-                mobileNo = userUniqueKey.value,
-                timeInMillSec = System.currentTimeMillis().toString()
+                mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
+                timeInMillSec = System.currentTimeMillis().toString(),
+                userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName())
             )
             onEvent(LoaderEvent.UpdateLoaderState(false))
             if(imageZipUri != null){
@@ -127,10 +134,14 @@ class ExportImportViewModel @Inject constructor(
                 openShareSheet(arrayListOf(imageZipUri),"Share All Images")
             }
         }
+        }catch (e:Exception){
+            onEvent(LoaderEvent.UpdateLoaderState(false))
+            BaselineLogger.e("ExportImportViewModel","exportLocalImages :${e.message}")
+        }
     }
 fun exportOnlyLogFile(context: Context){
     BaselineLogger.d("ExportImportViewModel","exportOnlyLogFile: ----")
-
+   try {
     CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
         onEvent(LoaderEvent.UpdateLoaderState(true))
        val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext()){
@@ -138,20 +149,24 @@ fun exportOnlyLogFile(context: Context){
                onEvent(ToastMessageEvent.ShowToastMessage(context.getString(R.string.no_logs_available)))
        }
         if (logFile != null) {
-            val logFileUri = exportLogFile(logFile, appContext = BaselineCore.getAppContext(),
-                applicationID = BuildConfig.APPLICATION_ID)
-            onEvent(LoaderEvent.UpdateLoaderState(false))
-            BaselineLogger.d("ExportImportViewModel","exportOnlyLogFile: ${logFileUri.path}----")
-            ShareCompat.IntentBuilder(context)
-                .setType("video/mp4")
-                .setSubject("Shared Log files")
-                .addStream(logFileUri)
-                .setChooserTitle("Shared Log File")
-                .startChooser()
-        }
-        onEvent(LoaderEvent.UpdateLoaderState(false))
+            exportLogFile(
+                logFile,
+                appContext = BaselineCore.getAppContext(),
+                applicationID = BuildConfig.APPLICATION_ID,
+                userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName()),
+                mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
+            ) {
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+                openShareSheet(arrayListOf(it) ,"")
+            }
 
+
+        }
     }
+   }catch (e:Exception){
+       onEvent(LoaderEvent.UpdateLoaderState(false))
+       BaselineLogger.e("ExportImportViewModel","exportOnlyLogFile :${e.message}")
+   }
 }
     fun compressEventData(title: String) {
         BaselineLogger.d("ExportImportViewModel","compressEventData ----")
@@ -190,6 +205,8 @@ fun exportOnlyLogFile(context: Context){
 
     fun importSelectedDB(uri: Uri, onImportSuccess: () -> Unit) {
         BaselineLogger.d("ExportImportViewModel","importSelectedDB ----")
+        try {
+
         importDbFile(
             appContext = BaselineCore.getAppContext(),
             importedDbUri = uri,
@@ -198,6 +215,11 @@ fun exportOnlyLogFile(context: Context){
         ) {
             BaselineLogger.d("ExportImportViewModel","importSelectedDB Success ----")
             onImportSuccess()
+        }
+        } catch (exception: Exception) {
+            BaselineLogger.e("ExportImportViewModel", "importSelectedDB : ${exception.message}")
+            exception.printStackTrace()
+            onEvent(LoaderEvent.UpdateLoaderState(false))
         }
     }
 

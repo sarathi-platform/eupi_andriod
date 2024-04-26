@@ -375,7 +375,8 @@
     <string name="this_week_tab_title">This Week</string>
     <string name="all_tab_title">All</string>
     <string name="search_question_placeholder">অনুসন্ধান প্রশ্ন</string>
-    <string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>-->সেভ করুন</string>
+    <string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>-->
+        সেভ করুন</string>
     <string name="ok_text">ঠিক আছে</string>
     <string name="save">সেভ করুন</string>
 
@@ -383,8 +384,8 @@
     <string name="age_comparision">বয়স</string>
     <string name="relationship_comparision">সম্পর্ক</string>
     <string name="income_source_comparision">আয়ের উৎস</string>
-    <string name="agriculture_produce_comparision">(ক) কৃষিপণ্য- </string>
-    <string name="livestock_comparision">(ক) গবাদি পশুর ধরন - </string>
+    <string name="agriculture_produce_comparision">কৃষিপণ্য</string>
+    <string name="livestock_comparision">গবাদি পশুর ধরন</string>
     <string name="income_frequency_comparision">আয় ফ্রিকোয়েন্সি</string>
     <string name="no_income_comparision">কোন আয়</string>
     <string name="total_income_comparision">(ঙ) মোট আয়</string>
@@ -447,7 +448,7 @@
     <string name="regenerate_all_events">সমস্ত ইভেন্ট পুনর্জন্ম</string>
     <string name="load_server_data">সার্ভার ডেটা লোড করুন</string>
     <string name="purpose_comparision">What is the purpose of your farming?</string>
-    <string name="net_income_label">Net income per year</string>
+    <string name="net_income_label">Net income per year: ₹</string>
     <string name="net_income_comparision">Net income per year</string>
     <string name="hours">ঘন্টার</string>
     <string name="years">বছর</string>
