@@ -63,6 +63,15 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
             )
         )
 
+        list.add(
+            SettingOptionModel(
+                7,
+                context.getString(R.string.regenerate_all_events),
+                BLANK_STRING,
+                SettingTagEnum.REGENERATE_EVENTS.name
+            )
+        )
+
         return list.ifEmpty { arrayListOf() }
     }
 }

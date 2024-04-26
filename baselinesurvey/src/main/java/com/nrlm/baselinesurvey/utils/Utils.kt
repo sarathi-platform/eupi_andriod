@@ -86,6 +86,7 @@ import com.nudge.core.enums.EventName
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.UUID
 
 fun uriFromFile(context: Context, file: File): Uri {
     try {
@@ -168,6 +169,10 @@ fun stringToInt(string: String):Int{
 
 fun setKeyboardToPan(context: MainActivity) {
     context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+}
+
+fun getUniqueIdForEntity(): String {
+    return UUID.randomUUID().toString().replace("-", "") + "|" + System.currentTimeMillis()
 }
 
 fun setKeyboardToReadjust(context: MainActivity) {
@@ -809,6 +814,63 @@ fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType?):
     return saveAnswerEventOptionItemDtoList
 }
 
+fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: QuestionType?): List<SaveAnswerEventOptionItemDto> {
+    val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
+
+    if (type == null)
+        return saveAnswerEventOptionItemDtoList
+    this.forEach {
+        when (type) {
+            QuestionType.RadioButton -> {
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+            }
+
+            QuestionType.List,
+            QuestionType.SingleSelect -> {
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+            }
+
+            QuestionType.SingleSelectDropDown,
+            QuestionType.SingleSelectDropdown -> {
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.selectedValue)
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+            }
+
+            QuestionType.Input,
+            QuestionType.InputText,
+            QuestionType.InputNumber,
+            QuestionType.InputNumberEditText -> {
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(
+                        it.optionId ?: 0,
+                        it.selectedValue,
+                        optionDesc = it.display ?: BLANK_STRING
+                    )
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+            }
+
+            QuestionType.MultiSelect,
+            QuestionType.Grid -> {
+
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+
+            }
+
+            else -> {
+
+            }
+
+        }
+    }
+    return saveAnswerEventOptionItemDtoList
+}
 fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemDto(type: QuestionType): List<SaveAnswerEventOptionItemDto> {
     val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
     when (type) {

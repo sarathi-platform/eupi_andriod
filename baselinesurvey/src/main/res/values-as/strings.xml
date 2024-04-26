@@ -443,6 +443,7 @@
     <string name="export_log_file">কেৱল লগ ফাইল ৰপ্তানি কৰক</string>
     <string name="madnatory_question_not_marked_error">সকলো বাধ্যতামূলক প্ৰশ্নৰ উত্তৰ দিয়া হোৱা নাই, অনুগ্ৰহ কৰি সকলো প্ৰশ্নৰ উত্তৰ দিয়ক!</string>
     <string name="view_label">View</string>
+    <string name="regenerate_all_events">সকলো ইভেন্ট পুনৰুত্পাদন কৰক</string>
     <string name="load_server_data">চাৰ্ভাৰ ডাটা লোড কৰক</string>
     <string name="purpose_comparision">What is the purpose of your farming?</string>
     <string name="net_income_label">Net income per year</string>

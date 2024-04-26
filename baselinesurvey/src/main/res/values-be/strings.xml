@@ -424,6 +424,7 @@
     <string name="fetched_successfully">Data fetched successfully</string>
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"जागायजेन "</string>
+    <string name="regenerate_all_events">गासैबो इभेन्टफोरखौ फिन सोरजिफिन</string>
     <string name="load_server_data">Load Server Data</string>
     <string name="import_data">Import Data</string>
     <string name="export_images">Export Only Images</string>

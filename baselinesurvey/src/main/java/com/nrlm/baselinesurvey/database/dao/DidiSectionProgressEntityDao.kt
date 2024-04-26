@@ -23,6 +23,10 @@ interface DidiSectionProgressEntityDao {
         didiId: Int
     ): List<DidiSectionProgressEntity>
 
+    @Query("Select * from $DIDI_SECTION_PROGRESS_TABLE where  userId=:userId ")
+    fun getAllSectionProgress(
+        userId: String
+    ): List<DidiSectionProgressEntity>
     @Query("Select * from $DIDI_SECTION_PROGRESS_TABLE where userId=:userId and  surveyId = :surveyId and sectionId = :sectionId and didiId = :didiId")
     fun getSectionProgressForDidi(
         userId: String,

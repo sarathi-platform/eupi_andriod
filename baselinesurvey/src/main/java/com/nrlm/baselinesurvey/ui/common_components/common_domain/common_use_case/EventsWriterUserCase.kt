@@ -18,6 +18,7 @@ class EventsWriterUserCase(private val repository: EventsWriterRepository) {
             repository.saveEventToMultipleSources(events, eventDependencies, eventType)
     }
 
+
     open suspend fun writeImageEventIntoLogFile(
         event: Events,
         uri: Uri
