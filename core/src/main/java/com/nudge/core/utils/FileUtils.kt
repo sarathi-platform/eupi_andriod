@@ -385,7 +385,7 @@ object FileUtils {
         }
     }
 
-    private fun getFileName(context: Context, uri: Uri): String? {
+     fun getFileName(context: Context, uri: Uri): String? {
         val mimeType = context.contentResolver.getType(uri)
         var filename: String? = null
         if (mimeType == null) {

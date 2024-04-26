@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.backup.domain.repository
 
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
+import com.nrlm.baselinesurvey.PREF_KEY_NAME
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import javax.inject.Inject
@@ -42,5 +43,10 @@ class ExportImportRepositoryImpl @Inject constructor(
     override fun getUserEmail(): String {
         return prefRepo.getPref(PREF_KEY_EMAIL, BLANK_STRING)?: BLANK_STRING
     }
+
+    override fun getUserName(): String {
+        return prefRepo.getPref(PREF_KEY_NAME, BLANK_STRING) ?: BLANK_STRING
+    }
+
 
 }
