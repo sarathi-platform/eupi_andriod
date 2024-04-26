@@ -36,7 +36,8 @@ var cohoretName : String? = BLANK_STRING,
 
 var surveyId: Int? = 0,
 
-var subjectId : Int = 0,
+@CsvBindByName(column = "Subject Id")
+var subjectId : Int? = 0,
 
 
 
@@ -60,12 +61,13 @@ data class HamletQnATableCSV(
     @CsvBindByName(column = "Village-Name")
     var villageName : String? = BLANK_STRING,
 
-    @CsvBindByName(column = "Tola-Name")
+    @CsvBindByName(column = "Hamlet Name")
     var cohoretName : String? = BLANK_STRING,
 
     var surveyId: Int? = 0,
 
-    var subjectId : Int = 0,
+    @CsvBindByName(column = "Subject Id")
+    var subjectId : Int? = 0,
 
 
 
