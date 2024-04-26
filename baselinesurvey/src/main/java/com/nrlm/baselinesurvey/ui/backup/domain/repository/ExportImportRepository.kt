@@ -7,6 +7,5 @@ interface ExportImportRepository {
     fun getUserMobileNumber():String
     fun getUserID():String
     fun getUserEmail():String
-  fun getUserName(): String
 
 }
