@@ -376,6 +376,7 @@
     <string name="save_next_section_button_text"><string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>-->
         <![CDATA[Save]]></string></string>
     <string name="ok_text">Ok</string>
+    <string name="x_didi_pending">%s %s Pending</string>
     <string name="save">Save</string>
 
 
@@ -458,6 +459,9 @@
     <string name="total_annual_income_label">"Total annual income of the household: "</string>
     <string name="import_restart_dialog_message">फ़ाइल से डेटा आयात करने के बाद ऐप को पुनरारंभ करना होगा और वर्तमान डेटा खो जाएगा।</string>
     <string name="no_logs_available">कोई लॉग उपलब्ध नहीं</string>
+    <string name="hamlets_item_text_plural">Hamlets</string>
+    <string name="hamlets_item_text_singular">Hamlet</string>
+    <string name="activity_completed_message">You have successfully completed the %1$s activity</string>
 
 
 </resources>

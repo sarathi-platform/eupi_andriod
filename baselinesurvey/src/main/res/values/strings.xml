@@ -414,7 +414,7 @@
     <string name="task" translatable="false">Task</string>
     <string name="day_tab" translatable="false">Day</string>
     <string name="search" translatable="false">Search</string>
-    <string name="x_didi_pending" translatable="false">%s %s Pending</string>
+    <string name="x_didi_pending">%s %s Pending</string>
     <string name="due_by_x" translatable="false">Due by %s</string>
     <string name="start_by_x_date" translatable="false">Start by %s</string>
     <string name="export_file" translatable="false">Export File</string>
@@ -503,4 +503,7 @@
     <string name="import_restart_dialog_message">After Importing the data from file app needs to be restart and current data will be lost.</string>
     <string name="logout_confirmation">Are you sure you want to logout?</string>
     <string name="no_logs_available">No Logs Available</string>
+    <string name="hamlets_item_text_plural">Hamlets</string>
+    <string name="hamlets_item_text_singular">Hamlet</string>
+    <string name="activity_completed_message">You have successfully completed the %1$s activity</string>
 </resources>
