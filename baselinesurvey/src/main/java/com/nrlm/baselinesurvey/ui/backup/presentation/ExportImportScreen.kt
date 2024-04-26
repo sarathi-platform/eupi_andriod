@@ -18,6 +18,7 @@ import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.backup.viewmodel.ExportImportViewModel
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
 import com.nrlm.baselinesurvey.ui.setting.domain.SettingTagEnum
+import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.ShowCustomDialog
 
@@ -31,10 +32,11 @@ fun ExportImportScreen(
             viewModel.showRestartAppDialog.value=false
             it?.let { uri->
                 if(uri != Uri.EMPTY){
+                    viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
                     BaselineLogger.d("ExportImportScreen","Selected File :${uri.path}")
                    viewModel.importSelectedDB(uri){
-                       BaselineLogger.d("ExportImportScreen","Restart Dialog Open")
-                        viewModel.showRestartAppDialog.value=false
+                       viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+                       viewModel.showRestartAppDialog.value=false
                        viewModel.restartApp(context, MainActivity::class.java)
                    }
                 }
@@ -64,7 +66,7 @@ fun ExportImportScreen(
                 }
 
                 SettingTagEnum.EXPORT_BACKUP_FILE.name -> {
-                    viewModel.compressEventData("Export Event FIle")
+                    viewModel.compressEventData(context.getString(R.string.export_event_file))
                 }
 
                 SettingTagEnum.IMPORT_DATA.name ->{
@@ -87,13 +89,14 @@ fun ExportImportScreen(
             positiveButtonTitle = stringResource(id = R.string.yes_text),
             negativeButtonTitle = stringResource(id = R.string.option_no),
             onNegativeButtonClick = {
-                BaselineLogger.d("ExportImportScreen","No Click")
+                BaselineLogger.d("ExportImportScreen","Load Server Data Dialog No Click")
                 viewModel.showLoadConfirmationDialog.value =false
                                     },
             onPositiveButtonClick = {
-                BaselineLogger.d("ExportImportScreen","YES Click")
+                BaselineLogger.d("ExportImportScreen","Load Server Data Dialog YES Click")
                 viewModel.exportLocalDatabase(isNeedToShare = false){
                     viewModel.clearLocalDatabase{
+                        viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
                         navController.navigate(route = Graph.HOME){
                             launchSingleTop=true
                             popUpTo(AuthScreen.START_SCREEN.route){
@@ -112,11 +115,11 @@ fun ExportImportScreen(
             positiveButtonTitle = stringResource(id = R.string.proceed),
             negativeButtonTitle = stringResource(id = R.string.cancel_text),
             onNegativeButtonClick = {
-                BaselineLogger.d("ExportImportScreen","Cancel Click")
+                BaselineLogger.d("ExportImportScreen","Restart Dialog Cancel Click")
                 viewModel.showRestartAppDialog.value=false
                                     },
             onPositiveButtonClick = {
-                BaselineLogger.d("ExportImportScreen","Proceed Click")
+                BaselineLogger.d("ExportImportScreen","Restart Dialog Proceed Click")
                 filePicker.launch("*/*")
             })
     }

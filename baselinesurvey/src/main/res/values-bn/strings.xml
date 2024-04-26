@@ -456,5 +456,6 @@
     <string name="total_annual_income_label">"Total annual income of the household: "</string>
     <string name="logout_confirmation">আপনি লগ আউট করতে চান?</string>
     <string name="import_restart_dialog_message">ফাইল অ্যাপ থেকে ডেটা আমদানি করার পরে পুনরায় চালু করতে হবে এবং বর্তমান ডেটা হারিয়ে যাবে।</string>
+    <string name="no_logs_available">কোন লগ উপলব্ধ</string>
 
 </resources>

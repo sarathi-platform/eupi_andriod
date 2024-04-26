@@ -358,7 +358,7 @@ object LogWriter {
         return@withContext false
     }
 
-    suspend fun buildLogFile(appContext: Context): File? {
+    suspend fun buildLogFile(appContext: Context,onFailed:()->Unit): File? {
         try {
 
             val logDir = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
@@ -367,7 +367,7 @@ object LogWriter {
 
             if (!getSyslogFile(logFile)) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(appContext, "No logs to send", Toast.LENGTH_SHORT).show()
+                    onFailed()
                 }
                 return null
             }
@@ -375,7 +375,7 @@ object LogWriter {
         } catch (ex: Exception) {
             e(TAG, "buildSupportLogAndShare", ex)
             withContext(Dispatchers.Main) {
-                Toast.makeText(appContext, "Logs unavailable", Toast.LENGTH_SHORT).show()
+                onFailed()
             }
             return null
         }

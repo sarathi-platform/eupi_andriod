@@ -117,7 +117,7 @@ class SettingBSViewModel @Inject constructor(
 
                 // Add Log File
 
-                val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext())
+                val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext()){}
                 if (logFile != null) {
                     val logFileUri = exportLogFile(logFile, appContext = BaselineCore.getAppContext(),
                         applicationID = BuildConfig.APPLICATION_ID)
@@ -139,7 +139,7 @@ class SettingBSViewModel @Inject constructor(
                 CoreSharedPrefs.getInstance(BaselineCore.getAppContext()).setFileExported(true)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             } catch (exception: Exception) {
-                BaselineLogger.e("Compression", exception.message ?: "")
+                BaselineLogger.e("Compression Exception", exception.message ?: "")
                 exception.printStackTrace()
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
