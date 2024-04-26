@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.data.domain
 
+import android.text.TextUtils
 import android.util.Log
 import androidx.core.net.toUri
 import com.nrlm.baselinesurvey.BLANK_STRING
@@ -669,6 +670,8 @@ class EventWriterHelperImpl @Inject constructor(
         val coreSharedPrefs = CoreSharedPrefs.getInstance(BaselineCore.getAppContext())
         coreSharedPrefs.setBackupFileName(getDefaultBackUpFileName(prefix + prefRepo.getMobileNumber()))
         coreSharedPrefs.setImageBackupFileName(getDefaultImageBackUpFileName(prefix + prefRepo.getMobileNumber()))
+        if (!TextUtils.isEmpty(prefix))
+            coreSharedPrefs.setFileExported(false)
     }
 
     private suspend fun generateResponseEvent() {

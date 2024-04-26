@@ -33,6 +33,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.HOUSEHOLD_INFO_TAG_CONSTANT
+import com.nrlm.baselinesurvey.LIVELIHOOD_SOURCE_TAG_CONSTANT
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
@@ -109,7 +111,7 @@ fun FormResponseCard(
                 Column {
                     Text(text = buildAnnotatedString {
                         if (formResponseObjectDto.questionTag.equals(
-                                "Household information",
+                                HOUSEHOLD_INFO_TAG_CONSTANT,
                                 true
                             )
                         ) {
@@ -120,7 +122,7 @@ fun FormResponseCard(
                                 )!!
                             }?.optionId] ?: BLANK_STRING)
                         } else if (formResponseObjectDto.questionTag.equals(
-                                "Livelihood Sources",
+                                LIVELIHOOD_SOURCE_TAG_CONSTANT,
                                 true
                             )
                         ) {
@@ -223,7 +225,7 @@ fun FormResponseCard(
                     }, style = smallTextStyleWithNormalWeight)
 
                     if (formResponseObjectDto.questionTag.equals(
-                            "Livelihood Sources",
+                            LIVELIHOOD_SOURCE_TAG_CONSTANT,
                             true
                         ) && ((formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                             it.display?.contains(
@@ -234,7 +236,7 @@ fun FormResponseCard(
                     ) {
                         Text(text = buildAnnotatedString {
                             if (formResponseObjectDto.questionTag.equals(
-                                    "Livelihood Sources",
+                                    LIVELIHOOD_SOURCE_TAG_CONSTANT,
                                     true
                                 )
                             ) {
