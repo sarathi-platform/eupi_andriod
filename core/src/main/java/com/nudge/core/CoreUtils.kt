@@ -384,13 +384,7 @@ fun getAllFilesInDirectory(appContext: Context,directoryPath: String?,applicatio
 }
 
 
-suspend fun exportAllOldImages(
-    appContext: Context,
-    applicationID: String,
-    mobileNo: String,
-    userName:String,
-    timeInMillSec: String
-): Uri? {
+ suspend fun exportAllOldImages(appContext: Context, applicationID: String, mobileNo: String,timeInMillSec:String): Uri? {
     try {
 
         val filePath =
@@ -399,11 +393,11 @@ suspend fun exportAllOldImages(
         val zipFileDirectory = appContext
             .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path
 
-        val zipFileName = "${userName}_${mobileNo}_Sarathi_Image_${System.currentTimeMillis()}.zip"
+        val zipFileName = "${mobileNo}_Export_Image_${System.currentTimeMillis()}.zip"
 
-        val zipFileUri = uriFromFile(appContext, File(zipFileDirectory, zipFileName), applicationID)
+        val zipFileUri = uriFromFile(appContext,  File(zipFileDirectory, zipFileName),applicationID)
 
-        val fileUris = getAllFilesInDirectory(appContext, filePath, applicationID = applicationID)
+        val fileUris = getAllFilesInDirectory(appContext,filePath, applicationID = applicationID)
         ZipManager.zip(
             fileUris,
             zipFileUri,
@@ -416,14 +410,13 @@ suspend fun exportAllOldImages(
                 appContext = appContext,
                 srcFileUri = zipFileUri,
                 zipFileName = zipFileName,
-                mobileNo = mobileNo,
-                userName =userName
+                mobileNo = mobileNo
             )
         }
         return zipFileUri
 
     } catch (ex: Exception) {
-        LogWriter.log(appContext, Level.SEVERE.intValue(), "Exporting Image", ex.message ?: "")
+        LogWriter.log(appContext,Level.SEVERE.intValue(), "Exporting Image", ex.message ?: "")
         ex.printStackTrace()
         return null
 
@@ -434,7 +427,6 @@ fun exportOldData(
     applicationID: String,
     mobileNo: String,
     databaseName: String,
-    userName: String,
     onExportSuccess: (zipUri: Uri) -> Unit
 ) {
     CoroutineScope(Dispatchers.IO).launch {
@@ -448,7 +440,7 @@ fun exportOldData(
             dbUri?.let {
                 fileUris.add(Pair(getFileNameFromURL(it.path ?: ""), it))
             }
-            val zipFileName = "${userName}_${mobileNo}_Sarathi_Database_${System.currentTimeMillis()}.zip"
+            val zipFileName = "${mobileNo}_Export_Database_${System.currentTimeMillis()}.zip"
             val zipFileUri =
                 uriFromFile(appContext, File(zipFileDirectory, zipFileName), applicationID)
 
@@ -464,8 +456,7 @@ fun exportOldData(
                     appContext = appContext,
                     srcFileUri = zipFileUri,
                     zipFileName = zipFileName,
-                    mobileNo = mobileNo,
-                    userName = userName
+                    mobileNo = mobileNo
                 )
             }
             onExportSuccess(zipFileUri)
@@ -478,53 +469,27 @@ fun exportOldData(
 
 }
 
-fun exportLogFile(
-    logFile: File,
-    appContext: Context,
-    applicationID: String,
-    mobileNo: String,
-    userName: String,
-    onExportSuccess: (zipUri: Uri) -> Unit
-){
 
-    CoroutineScope(Dispatchers.IO).launch {
-        val logDir = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path
-        val logFileUri = uriFromFile(appContext, logFile, applicationID)
-        CoreLogger.d(appContext, "TAG", "exportLogFile: ${logFileUri.path}")
+fun exportLogFile(logFile: File,appContext: Context,applicationID: String): Uri {
 
-        val fileUris = ArrayList<Pair<String, Uri>>()
-        logFileUri?.let {
-            fileUris.add(Pair(getFileNameFromURL(it.path ?: ""), it))
+    val logDir = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path
+    val logFileUri = uriFromFile(appContext,logFile,applicationID)
+    CoreLogger.d(appContext,"TAG", "exportLogFile: ${logFileUri.path}")
 
-        }
-        val zipFileName =
-            "${userName}_${mobileNo}_Sarathi_Log_File_${System.currentTimeMillis()}.zip"
+    val fileUris = ArrayList<Pair<String, Uri>>()
+    logFileUri?.let {
+        fileUris.add(Pair(getFileNameFromURL(it.path ?: ""), it))
 
-        val zipFileUri =
-            uriFromFile(appContext, File(logDir, zipFileName), applicationID)
-        CoreLogger.d(
-            appContext,
-            "TAG",
-            "exportLogFile Zip: ${zipFileUri.path} :: ${fileUris.json()}"
-        )
-        ZipManager.zip(
-            fileUris,
-            zipFileUri,
-            appContext
-        )
-        delay(100)
-        if (zipFileUri != null) {
-
-            copyZipFile(
-                appContext = appContext,
-                srcFileUri = zipFileUri,
-                zipFileName = zipFileName,
-                mobileNo = mobileNo,
-                userName = userName
-            )
-            onExportSuccess(zipFileUri)
-        }
     }
+    val zipDateTime=System.currentTimeMillis()
+    val zipFileUri =uriFromFile(appContext, File(logDir, "Log_File_${zipDateTime}.zip"),applicationID)
+    CoreLogger.d(appContext,"TAG", "exportLogFile Zip: ${zipFileUri.path} :: ${fileUris.json()}")
+    ZipManager.zip(
+        fileUris,
+         zipFileUri,
+        appContext
+    )
+    return zipFileUri
 }
 
 fun uriFromFile(context:Context, file:File,applicationID:String): Uri {
@@ -570,7 +535,7 @@ fun importDbFile(appContext: Context,deleteDBName:String,importedDbUri: Uri,appl
 }
 
 
-fun copyZipFile(appContext: Context,srcFileUri:Uri,zipFileName:String,mobileNo: String,userName: String){
+fun copyZipFile(appContext: Context,srcFileUri:Uri,zipFileName:String,mobileNo: String){
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 
         // ContentValues for file
@@ -654,7 +619,3 @@ fun copyUriToAnotherLocation(
     return success
 }
 
- fun getFirstName(name: String): String {
-    return name.trim().split(" ").first()
-
-}
