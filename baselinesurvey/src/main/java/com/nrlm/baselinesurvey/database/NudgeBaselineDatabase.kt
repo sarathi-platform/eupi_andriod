@@ -13,6 +13,7 @@ import com.nrlm.baselinesurvey.database.converters.IntConverter
 import com.nrlm.baselinesurvey.database.converters.OptionQuestionConverter
 import com.nrlm.baselinesurvey.database.converters.QuestionsOptionsConverter
 import com.nrlm.baselinesurvey.database.converters.StringConverter
+import com.nrlm.baselinesurvey.database.converters.ValuesDtoConverter
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.ContentDao
 import com.nrlm.baselinesurvey.database.dao.DidiInfoDao
@@ -80,7 +81,8 @@ const val NUDGE_BASELINE_DATABASE_VERSION = 1
     StringConverter::class,
     ConditionsDtoConvertor::class,
     ContentListConverter::class,
-    ContentMapConverter::class
+    ContentMapConverter::class,
+    ValuesDtoConverter::class
 )
 abstract class NudgeBaselineDatabase: RoomDatabase()  {
 

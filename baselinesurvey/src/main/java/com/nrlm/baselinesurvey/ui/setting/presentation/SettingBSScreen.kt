@@ -22,9 +22,9 @@ import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSetting
 import com.nrlm.baselinesurvey.ui.setting.domain.SettingTagEnum
 import com.nrlm.baselinesurvey.ui.setting.viewmodel.SettingBSViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
+import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nudge.core.model.SettingOptionModel
-import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
@@ -38,21 +38,9 @@ fun SettingBSScreen(
     val loaderState = viewModel.loaderState
 
     LaunchedEffect(key1 = true){
-        val lastSyncTimeInMS = System.currentTimeMillis()
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.US)
-        val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
-        /*list.add(
-            SettingOptionModel(
-                1,
-                context.getString(R.string.sync_up),
-                context.getString(R.string.last_syncup_text)
-                    .replace("{LAST_SYNC_TIME}", lastSyncTime.toString()),
-                SettingTagEnum.SYNC_NOW.name
-            )
-        )*/
         list.add(
             SettingOptionModel(
-                2,
+                1,
                 context.getString(R.string.profile),
                 BLANK_STRING,
                 SettingTagEnum.PROFILE.name
@@ -60,31 +48,83 @@ fun SettingBSScreen(
         )
         list.add(
             SettingOptionModel(
-                3,
+                2,
                 context.getString(R.string.language_text),
                 BLANK_STRING,
                 SettingTagEnum.LANGUAGE.name
             )
         )
+
+        list.add(
+            SettingOptionModel(
+                3,
+                context.getString(R.string.export_backup_file),
+                BLANK_STRING,
+                SettingTagEnum.EXPORT_BACKUP_FILE.name
+            )
+        )
+
         list.add(
             SettingOptionModel(
                 4,
-                context.getString(R.string.share_logs),
-                BLANK_STRING,
-                SettingTagEnum.SHARE_LOGS.name
-            )
-        )
-        list.add(
-            SettingOptionModel(
-                5,
                 context.getString(R.string.export_file),
                 BLANK_STRING,
                 SettingTagEnum.EXPORT_FILE.name
             )
         )
+        list.add(
+            SettingOptionModel(
+                5,
+                context.getString(R.string.backup_recovery),
+                BLANK_STRING,
+                SettingTagEnum.BACKUP_RECOVERY.name
+            )
+        )
+
         viewModel._optionList.value = list
     }
 
+
+
+    CommonSettingScreen(
+        title = stringResource(id = R.string.settings_screen_title),
+        versionText = " ${BuildConfig.FLAVOR.uppercase(Locale.getDefault())} v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+        optionList = viewModel.optionList.value ?: emptyList(),
+        onBackClick = {
+            navController.popBackStack()
+        },
+        onItemClick = { index, option ->
+
+            BaselineLogger.d("SettingScreen","${option.tag} :: ${option.title} :: Click")
+            when (option.tag) {
+                SettingTagEnum.LANGUAGE.name -> {
+                    viewModel.saveLanguagePageFrom()
+                    navController.navigate(SettingBSScreens.LANGUAGE_SCREEN.route)
+                }
+
+                SettingTagEnum.PROFILE.name -> {
+                    navController.navigate(SettingBSScreens.PROFILE_SCREEN.route)
+
+                }
+
+                SettingTagEnum.EXPORT_FILE.name -> {
+                    viewModel.compressEventData(context.getString(R.string.share_export_file))
+                }
+                SettingTagEnum.BACKUP_RECOVERY.name -> {
+                    navController.navigate(SettingBSScreens.BACKUP_RECOVERY_SCREEN.route)
+                }
+
+            }
+       },
+       onLogoutClick = {
+           BaselineLogger.d("SettingScreen","Logout Button Click")
+           viewModel.performLogout {
+               if (it)
+                   navController.navigate(Graph.LOGOUT_GRAPH)
+               else showCustomToast(context, context.getString(R.string.something_went_wrong))
+           }
+       }
+   )
     if (loaderState.value.isLoaderVisible) {
         Box(
             modifier = Modifier
@@ -99,41 +139,4 @@ fun SettingBSScreen(
             )
         }
     }
-
-    CommonSettingScreen(
-        title = stringResource(id = R.string.settings_screen_title),
-        versionText = " ${BuildConfig.FLAVOR.uppercase(Locale.getDefault())} v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
-        optionList = viewModel.optionList.value ?: emptyList(),
-        onBackClick = {
-            navController.popBackStack()
-        },
-        onItemClick = { index, option ->
-            when (option.tag) {
-                SettingTagEnum.LANGUAGE.name -> {
-                    viewModel.saveLanguagePageFrom()
-                    navController.navigate(SettingBSScreens.LANGUAGE_SCREEN.route)
-                }
-
-                SettingTagEnum.PROFILE.name -> {
-                    navController.navigate(SettingBSScreens.PROFILE_SCREEN.route)
-
-                }
-
-                SettingTagEnum.SHARE_LOGS.name -> {
-                    viewModel.buildAndShareLogs()
-                }
-
-                SettingTagEnum.EXPORT_FILE.name -> {
-                    viewModel.compressEventData(context.getString(R.string.share_export_file))
-                }
-            }
-       },
-       onLogoutClick = {
-           viewModel.performLogout {
-               if (it)
-                   navController.navigate(Graph.LOGOUT_GRAPH)
-               else showCustomToast(context, context.getString(R.string.something_went_wrong))
-           }
-       }
-   )
 }

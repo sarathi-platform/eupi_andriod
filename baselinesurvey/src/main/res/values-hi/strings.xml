@@ -410,8 +410,8 @@
     <string name="average_travel_cost_comparision">"Average travel cost "</string>
     <string name="questions_data_tab_title">Questions</string>
     <string name="section_information_tab_title">Sections</string>
-    <string name="search_hamlet">Search Hamlet</string>
-    <string name="mission_completed_text">Mission Completed</string>
+    <string name="search_hamlet">हेमलेट खोजें</string>
+    <string name="mission_completed_text">मिशन पूरा किया</string>
     <string name="aadhar_card_titile_assam">Do you have aadhar card?</string>
     <string name="voter_card_title_assam">Do you have voter card?</string>
     <string name="not_able_to_load">Not  able to load data please try again..</string>
@@ -420,7 +420,7 @@
     <string name="default_confirm_button_text">Confirm</string>
     <string name="default_dismiss_button_text">Dismiss</string>
     <string name="delete_text">Delete</string>
-    <string name="cancel_text">Cancel</string>
+    <string name="cancel_text">रद्द करना</string>
     <string name="alert_dialog_title_text">Alert</string>
     <string name="alart_dialog_entry_deleteion_message_text">Do you want to delete this entry?</string>
     <string name="didi_list_empty_state">No Didis assigned. Please contact your administrator.</string>
@@ -428,12 +428,35 @@
 
     <string name="warning">"चेतावनी! "</string>
     <string name="data_lost_message">किसी अन्य उपयोगकर्ता का पता चला यदि आप आगे बढ़ते हैं तो आप पिछले उपयोगकर्ता का डेटा खो देंगे।</string>
-    <string name="logout_confirmation">क्या आप निश्चित रूप से लॉगआउट करेंगे?</string>
+    <string name="regenerate_all_events">सभी घटनाओं को पुनर्जीवित करें</string>
+    <string name="load_server_data">सर्वर डेटा लोड करें</string>
+    <string name="logout_confirmation">क्या आप लॉग आउट करना चाहते हैं?</string>
     <string name="proceed">आगे बढ़ें</string>
     <string name="fetched_successfully">डेटा सफलतापूर्वक लाया गया</string>
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"शुरू "</string>
     <string name="retry">पुन: प्रयास करें</string>
+    <string name="import_data">आयात आंकड़ा</string>
+    <string name="export_images">केवल छवियाँ निर्यात करें</string>
+    <string name="export_backup_file">बैकअप फ़ाइल निर्यात करें</string>
+    <string name="export_database">केवल डेटाबेस निर्यात करें</string>
+    <string name="backup_recovery">बैकअप/पुनर्प्राप्ति</string>
+    <string name="export_event_file">ईवेंट फ़ाइल निर्यात करें</string>
+    <string name="export_log_file">केवल लॉग फ़ाइल निर्यात करें</string>
+    <string name="madnatory_question_not_marked_error">सभी अनिवार्य प्रश्नों के उत्तर नहीं दिए गए हैं, कृपया सभी प्रश्नों के उत्तर दें!</string>
+    <string name="view_label">View</string>
+    <string name="task_completed_label">"Activity Completed - "</string>
+    <string name="purpose_comparision">What is the purpose of your farming?</string>
+    <string name="net_income_label">Net income per year</string>
+    <string name="net_income_comparision">Net income per year</string>
+    <string name="hours">Hours</string>
+    <string name="years">Years</string>
+    <string name="minute">Minute</string>
+    <string name="month">Month</string>
+    <string name="data_fetching_and_processing">डेटा लाने और संसाधित करने…</string>
+    <string name="total_annual_income_label">"Total annual income of the household: "</string>
+    <string name="import_restart_dialog_message">फ़ाइल से डेटा आयात करने के बाद ऐप को पुनरारंभ करना होगा और वर्तमान डेटा खो जाएगा।</string>
+    <string name="no_logs_available">कोई लॉग उपलब्ध नहीं</string>
 
 
 </resources>

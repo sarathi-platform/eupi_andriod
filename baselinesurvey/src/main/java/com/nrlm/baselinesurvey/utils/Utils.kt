@@ -11,7 +11,35 @@ import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.FileProvider
 import androidx.core.text.isDigitsOnly
 import com.google.gson.Gson
@@ -22,6 +50,7 @@ import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_NAME
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ZERO_RESULT
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
@@ -40,16 +69,24 @@ import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.model.datamodel.TagMappingDto
+import com.nrlm.baselinesurvey.model.datamodel.ValuesDto
 import com.nrlm.baselinesurvey.ui.Constants.ItemType
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.common_components.ButtonNegative
+import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
+import com.nrlm.baselinesurvey.ui.common_components.MainTitle
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
+import com.nrlm.baselinesurvey.ui.theme.NotoSans
+import com.nrlm.baselinesurvey.ui.theme.black100Percent
+import com.nrlm.baselinesurvey.ui.theme.greyBorder
 import com.nudge.core.enums.EventName
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.UUID
 
 fun uriFromFile(context: Context, file: File): Uri {
     try {
@@ -132,6 +169,10 @@ fun stringToInt(string: String):Int{
 
 fun setKeyboardToPan(context: MainActivity) {
     context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+}
+
+fun getUniqueIdForEntity(): String {
+    return UUID.randomUUID().toString().replace("-", "") + "|" + System.currentTimeMillis()
 }
 
 fun setKeyboardToReadjust(context: MainActivity) {
@@ -288,7 +329,7 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
         contentEntities = this.options?.first()?.contentList ?: listOf(),
         conditional = this.conditional
     )
-    val valuesList = mutableListOf<String>()
+    val valuesList = mutableListOf<ValuesDto>()
     val conditions = mutableListOf<ConditionsDto>()
     this.options?.forEach {
         it?.conditions?.forEach { condition ->
@@ -300,7 +341,7 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
                 it.values.let { it1 -> valuesList.addAll(it1) }
             }
             else -> {
-                valuesList.add(it?.display ?: BLANK_STRING)
+                valuesList.add(ValuesDto(id = 0, it?.display ?: BLANK_STRING))
             }
         }
     }
@@ -432,7 +473,43 @@ fun List<OptionItemEntityState>.updateOptionItemEntityListStateForQuestionByCond
     return updatedOptionItemEntityStateList
 }
 
-fun QuestionList.convertToOptionItemEntity(sectionId: Int, surveyId: Int, questionId: Int, languageId: Int): OptionItemEntity {
+fun List<OptionItemEntityState>.updateOptionsForNoneCondition(
+    conditionResult: Boolean,
+    optionId: Int,
+    noneOptionUnselected: Boolean
+): List<OptionItemEntityState> {
+    val updatedOptionItemEntityStateList = mutableListOf<OptionItemEntityState>()
+    if (noneOptionUnselected) {
+        this.forEach { optionItemEntityStateForQuestion ->
+            val updatedOptionItemEntityState = optionItemEntityStateForQuestion.copy(
+                isOptionEnabled = true
+            )
+            updatedOptionItemEntityStateList.add(updatedOptionItemEntityState)
+        }
+    } else {
+        this.forEach { optionItemEntityStateForQuestion ->
+            if (optionItemEntityStateForQuestion.optionId != optionId) {
+                val updatedOptionItemEntityState = optionItemEntityStateForQuestion.copy(
+                    isOptionEnabled = conditionResult
+                )
+                updatedOptionItemEntityStateList.add(updatedOptionItemEntityState)
+            } else {
+                val updatedOptionItemEntityState = optionItemEntityStateForQuestion.copy(
+                    isOptionEnabled = true
+                )
+                updatedOptionItemEntityStateList.add(updatedOptionItemEntityState)
+            }
+        }
+    }
+    return updatedOptionItemEntityStateList
+}
+
+fun QuestionList.convertToOptionItemEntity(
+    sectionId: Int,
+    surveyId: Int,
+    questionId: Int,
+    languageId: Int
+): OptionItemEntity {
     return OptionItemEntity(
         id = 0,
         questionId = questionId,
@@ -490,6 +567,49 @@ fun ConditionsDto.checkCondition(userInputValue: String): Boolean {
             Operator.MORE_THAN -> {
                 userInputValue.toInt() > condition.first().toInt()
             }
+            Operator.MORE_THAN_EQUAL_TO -> {
+                userInputValue.toInt() >= condition.first().toInt()
+            }
+
+            else -> {
+                false
+            }
+        }
+        return result
+    } catch (ex: Exception) {
+        return false
+    }
+}
+
+fun ConditionsDto.checkConditionForMultiSelectDropDown(userInputValue: String): Boolean {
+    val condition = this.value.split(CONDITIONS_DELIMITER, ignoreCase = true)
+    try {
+        val result = when (checkStringOperator(this.operator)) {
+            Operator.EQUAL_TO -> {
+                userInputValue.contains(condition.first(), ignoreCase = true)
+            }
+
+            Operator.LESS_THAN -> {
+                userInputValue.toInt() < condition.first().toInt()
+            }
+
+            Operator.IN_BETWEEN -> {
+                userInputValue.toInt() >= condition.first()
+                    .toInt() && userInputValue.toInt() <= condition.last().toInt()
+            }
+
+            Operator.NOT_EQUAL_TO -> {
+                !userInputValue.equals(condition.first(), ignoreCase = true)
+            }
+
+            Operator.LESS_THAN_EQUAL_TO -> {
+                userInputValue.toInt() <= condition.first().toInt()
+            }
+
+            Operator.MORE_THAN -> {
+                userInputValue.toInt() > condition.first().toInt()
+            }
+
             Operator.MORE_THAN_EQUAL_TO -> {
                 userInputValue.toInt() >= condition.first().toInt()
             }
@@ -694,6 +814,63 @@ fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType?):
     return saveAnswerEventOptionItemDtoList
 }
 
+fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: QuestionType?): List<SaveAnswerEventOptionItemDto> {
+    val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
+
+    if (type == null)
+        return saveAnswerEventOptionItemDtoList
+    this.forEach {
+        when (type) {
+            QuestionType.RadioButton -> {
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+            }
+
+            QuestionType.List,
+            QuestionType.SingleSelect -> {
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+            }
+
+            QuestionType.SingleSelectDropDown,
+            QuestionType.SingleSelectDropdown -> {
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.selectedValue)
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+            }
+
+            QuestionType.Input,
+            QuestionType.InputText,
+            QuestionType.InputNumber,
+            QuestionType.InputNumberEditText -> {
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(
+                        it.optionId ?: 0,
+                        it.selectedValue,
+                        optionDesc = it.display ?: BLANK_STRING
+                    )
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+            }
+
+            QuestionType.MultiSelect,
+            QuestionType.Grid -> {
+
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+
+            }
+
+            else -> {
+
+            }
+
+        }
+    }
+    return saveAnswerEventOptionItemDtoList
+}
 fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemDto(type: QuestionType): List<SaveAnswerEventOptionItemDto> {
     val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
     when (type) {
@@ -734,6 +911,20 @@ fun List<FormQuestionResponseEntity>.convertFormQuestionResponseEntityToSaveAnsw
     }
 
     return saveAnswerEventOptionItemDtoList
+}
+
+fun List<OptionItemEntity>.toOptionItemStateList(): List<OptionItemEntityState> {
+    val optionsItemEntityStateList = ArrayList<OptionItemEntityState>()
+    this.forEach { optionItemEntity ->
+        optionsItemEntityStateList.add(
+            OptionItemEntityState(
+                optionItemEntity.optionId,
+                optionItemEntity,
+                !optionItemEntity.conditional
+            )
+        )
+    }
+    return optionsItemEntityStateList
 }
 
 fun List<FormResponseObjectDto>.convertFormResponseObjectToSaveAnswerEventOptionDto(
@@ -927,4 +1118,99 @@ fun List<FormQuestionResponseEntity>.findUnchangedOptions(storeCacheForResponse:
     val unchangedList = this.toMutableList()
     unchangedList.removeAll(storeCacheForResponse)
     return unchangedList
+}
+
+@Composable
+fun ShowCustomDialog(
+    title:String,
+    message:String,
+    positiveButtonTitle : String ?= BLANK_STRING,
+    negativeButtonTitle : String ?= BLANK_STRING,
+    dismissOnBackPress: Boolean? = true,
+    onPositiveButtonClick:()->Unit,
+    onNegativeButtonClick:()->Unit){
+    Dialog(onDismissRequest = {  }, properties = DialogProperties(
+        dismissOnClickOutside = false,
+        dismissOnBackPress = dismissOnBackPress ?: true
+    )
+    ) {
+        Surface(
+            color = Color.Transparent,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Column(
+                    modifier = Modifier
+                        .background(color = Color.White, shape = RoundedCornerShape(6.dp)),
+                ) {
+                    Column(Modifier.padding(vertical = 16.dp, horizontal = 16.dp),verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        if(!title.isNullOrEmpty()) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceAround,
+                                modifier = Modifier
+                            ) {
+                                MainTitle(
+                                    title,
+                                    Modifier
+                                        .weight(1f)
+                                        .fillMaxWidth(),
+                                    align = TextAlign.Center
+                                )
+                            }
+                            Divider(thickness = 1.dp, color = greyBorder)
+                        }
+                        Text(
+                            text = message,
+                            style = TextStyle(
+                                color = black100Percent,
+                                fontSize = 16.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.Normal,
+                            ),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .padding(horizontal = 5.dp)
+                                .wrapContentWidth()
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Row(modifier = Modifier.fillMaxWidth()) {
+
+                            if(!negativeButtonTitle.isNullOrEmpty()) {
+                                ButtonNegative(
+                                    buttonTitle = negativeButtonTitle
+                                        ?: stringResource(id = R.string.cancel_tola_text),
+                                    isArrowRequired = false,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    onNegativeButtonClick()
+                                }
+
+                            }else{
+                                Spacer(modifier = Modifier.weight(2f))
+                            }
+
+                            Spacer(modifier = Modifier.width(8.dp))
+                            positiveButtonTitle?.let {
+                                if(!it.isNullOrEmpty()) {
+                                    ButtonPositive(
+                                        buttonTitle = it,
+                                        isArrowRequired = false,
+                                        isActive = true,
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(vertical = 2.dp)
+                                    ) {
+                                        onPositiveButtonClick()
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

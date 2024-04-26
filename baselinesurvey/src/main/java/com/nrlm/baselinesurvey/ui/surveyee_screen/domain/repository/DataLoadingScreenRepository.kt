@@ -76,4 +76,6 @@ interface DataLoadingScreenRepository {
     fun getAppLanguageId(): Int
     fun updateApiStatus(apiEndPoint: String, status: Int, errorMessage: String, errorCode: Int)
     fun insertApiStatus(apiEndPoint: String)
-    fun isNeedToCallApi(apiEndPoint: String): Boolean }
+    fun isNeedToCallApi(apiEndPoint: String): Boolean
+    fun getBaseLineUserId(): String
+}

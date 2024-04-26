@@ -1,11 +1,13 @@
 package com.nrlm.baselinesurvey.ui.mission_summary_screen.viewModel
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
+import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.MissionSummaryScreenUseCase
 import com.nudge.core.enums.EventType
@@ -22,6 +24,9 @@ class MissionSummaryViewModel @Inject constructor(
 ) : BaseViewModel() {
     private val _activities = mutableStateOf<List<MissionActivityEntity>>(emptyList())
     public val activities: State<List<MissionActivityEntity>> get() = _activities
+
+    val mission: MutableState<MissionEntity?> = mutableStateOf(null)
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is EventWriterEvents.UpdateMissionStatusEvent -> {
@@ -54,6 +59,8 @@ class MissionSummaryViewModel @Inject constructor(
                 missionId,
                 _activities.value
             )
+            mission.value =
+                missionSummaryScreenUseCase.getMissionActivitiesFromDBUseCase.getMission(missionId)
         }
     }
 

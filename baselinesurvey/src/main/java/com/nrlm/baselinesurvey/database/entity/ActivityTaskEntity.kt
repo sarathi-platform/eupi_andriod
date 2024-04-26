@@ -9,6 +9,7 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.TASK_TABLE_NAME
 import com.nrlm.baselinesurvey.model.datamodel.MissionTaskModel
+import com.nrlm.baselinesurvey.utils.getUniqueIdForEntity
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.states.toStringList
 
@@ -19,6 +20,7 @@ data class ActivityTaskEntity(
     @Expose
     @ColumnInfo(name = "id")
     var id: Int = 0,
+    var userId: String? = BLANK_STRING,
     var missionId: Int,
     var activityId: Int,
     var taskId: Int,
@@ -32,17 +34,20 @@ data class ActivityTaskEntity(
     var activityState: Int,
     var subjectId: Int,
     var language: String?,
+    var localTaskId: String
 
 
     ) {
     companion object {
         fun getActivityTaskEntity(
+            userId: String,
             missionId: Int,
             activityId: Int,
             activityName: String,
             task: MissionTaskModel
         ): ActivityTaskEntity {
             return ActivityTaskEntity(
+                userId = userId,
                 missionId = missionId,
                 activityId = activityId,
                 taskId = task.id ?: 0,
@@ -53,7 +58,8 @@ data class ActivityTaskEntity(
                 activityName = activityName,
                 activityState = 0,
                 subjectId = task.subjectId ?: -1,
-                language = task.language ?: DEFAULT_LANGUAGE_CODE
+                language = task.language ?: DEFAULT_LANGUAGE_CODE,
+                localTaskId = task.localTaskId ?: getUniqueIdForEntity()
             )
         }
 

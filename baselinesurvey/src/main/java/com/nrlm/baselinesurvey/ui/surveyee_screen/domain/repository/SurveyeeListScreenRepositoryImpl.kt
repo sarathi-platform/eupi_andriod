@@ -37,18 +37,18 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
 
     override suspend fun getSurveyeeList(
         missionId: Int,
-        activityName: String
+        activityId: Int
     ): List<SurveyeeEntity> {
         val didiList = mutableListOf<SurveyeeEntity>()
         //TODO FIx logic here
-        getActivityTasks(missionId = missionId, activityName = activityName).forEach { task ->
+        getActivityTasks(missionId = missionId, activityId).forEach { task ->
             /*if (task.activityName.equals("Conduct Hamlet Survey", true)){
                 val mDidiList = surveyeeEntityDao.getAllDidis()
                 didiList.addAll(mDidiList.filter { it.cohortId == task.didiId }.distinctBy { it.cohortId })
             } else {*/
-                if (surveyeeEntityDao.isDidiExist(task.didiId)) {
-                    didiList.add(surveyeeEntityDao.getDidi(task.didiId))
-                }
+            if (surveyeeEntityDao.isDidiExist(task.didiId)) {
+                didiList.add(surveyeeEntityDao.getDidi(task.didiId))
+            }
 //            }
         }
         return didiList
@@ -82,7 +82,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
                         apiResponse?.data?.didiList.forEach {
                             val surveyeeEntity = SurveyeeEntity(
                                 id = 0,
-                                userId = it.userId,
+                                userId = getBaseLineUserId(),
                                 didiId = it.didiId,
                                 didiName = it.didiName ?: BLANK_STRING,
                                 dadaName = it.dadaName ?: BLANK_STRING,
@@ -130,18 +130,20 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
 
     override suspend fun getActivityTasks(
         missionId: Int,
-        activityName: String
+        activityId: Int
     ): List<ActivityTaskEntity> {
-        return activityTaskDao.getActivityTask(missionId, activityName)
+        return activityTaskDao.getActivityTask(getBaseLineUserId(), missionId, activityId)
     }
 
     override suspend fun getMissionActivitiesStatusFromDB(
         activityId: Int,
         surveyeeCardState: List<SurveyeeCardState>
     ) {
-        var activities = activityDao.getActivitiesFormIds(activityId)
-        val tasks = activityTaskDao.getActivityTaskFromIds(activities.activityId)
+        var activities = activityDao.getActivitiesFormIds(getBaseLineUserId(), activityId)
+        val tasks =
+            activityTaskDao.getActivityTaskFromIds(getBaseLineUserId(), activities.activityId)
         activityDao.updateActivityStatus(
+            getBaseLineUserId(),
             activityId,
             SurveyState.INPROGRESS.ordinal,
             activities.activityTaskSize
@@ -159,6 +161,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
         val complete =
             if (activities.activityTaskSize == activityCompleteInc) SurveyState.COMPLETED.ordinal else SurveyState.INPROGRESS.ordinal
         activityDao.updateActivityStatus(
+            getBaseLineUserId(),
             activityId,
             complete,
             activities.activityTaskSize - activityCompleteInc
@@ -170,7 +173,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
         activityId: Int,
         isAllTask: Boolean
     ) {
-        activityDao.updateActivityAllTaskStatus(activityId, isAllTask)
+        activityDao.updateActivityAllTaskStatus(getBaseLineUserId(), activityId, isAllTask)
     }
 
     override suspend fun updateActivityStatus(
@@ -180,6 +183,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
     ) {
         if (status == SectionStatus.COMPLETED) {
             activityDao.markActivityComplete(
+                userId = getBaseLineUserId(),
                 missionId = missionId,
                 activityId = activityId,
                 status = status.name,
@@ -187,6 +191,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
             )
         } else {
             activityDao.markActivityStart(
+                userId = getBaseLineUserId(),
                 missionId = missionId,
                 activityId = activityId,
                 status = status.name,
@@ -196,8 +201,13 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getActivitiyStatusFromDB(activityId: Int): MissionActivityEntity {
-        return activityDao.getActivity(activityId)
+        return activityDao.getActivity(getBaseLineUserId(), activityId)
     }
+
+    override fun getBaseLineUserId(): String {
+        return prefRepo.getUniqueUserIdentifier()
+    }
+
 
 
 }

@@ -12,6 +12,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.toSize
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.model.datamodel.ValuesDto
+import com.nrlm.baselinesurvey.model.datamodel.contains
 import com.nrlm.baselinesurvey.ui.common_components.DropDownWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.VerticalAnimatedVisibilityComponent
 import com.nrlm.baselinesurvey.utils.showCustomToast
@@ -20,18 +22,29 @@ import com.nrlm.baselinesurvey.utils.showCustomToast
 fun TypeDropDownComponent(
     title: String?,
     hintText: String = "Select",
-    sources: List<String>?,
+    sources: List<ValuesDto>?,
     isEditAllowed: Boolean = true,
     isContent: Boolean = false,
     showQuestionState: OptionItemEntityState? = OptionItemEntityState.getEmptyStateObject(),
-    selectOptionText: String = BLANK_STRING,
+    selectOptionText: Int = 0,
     onInfoButtonClicked: () -> Unit,
-    onAnswerSelection: (selectValue: String) -> Unit
-    ) {
+    onAnswerSelection: (selectValue: Int) -> Unit
+) {
+//TODO handle everything using id
 
-    val defaultSourceList = if (sources == null) listOf("Yes", "No") else sources
+    val defaultSourceList =
+        if (sources == null) listOf(ValuesDto(id = 1, "Yes"), ValuesDto(id = 2, "No")) else sources
     var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember { mutableStateOf(if (selectOptionText.equals(BLANK_STRING)) hintText else selectOptionText) }
+    var selectedOptionText by remember {
+        mutableStateOf(
+            if (selectOptionText == 0) hintText else defaultSourceList.find { it.id == selectOptionText }?.value
+                ?: hintText
+        )
+    }
+    if(!defaultSourceList.contains(selectedOptionText)){
+        selectedOptionText= BLANK_STRING
+    }
+
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
     val context = LocalContext.current
@@ -56,8 +69,9 @@ fun TypeDropDownComponent(
             },
             onItemSelected = {
                 if (isEditAllowed) {
-                    selectedOptionText = defaultSourceList?.get(defaultSourceList.indexOf(it)) ?: ""
-                    onAnswerSelection(selectedOptionText)
+                    selectedOptionText =
+                        defaultSourceList?.get(defaultSourceList.indexOf(it))?.value ?: ""
+                    onAnswerSelection(it.id)
                     expanded = false
                 } else {
                     showCustomToast(

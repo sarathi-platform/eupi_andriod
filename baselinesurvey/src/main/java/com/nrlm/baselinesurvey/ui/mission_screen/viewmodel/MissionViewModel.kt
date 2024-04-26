@@ -41,6 +41,9 @@ class MissionViewModel @Inject constructor(
     private val _missionTaskCountMap = mutableStateOf(mutableMapOf<Int, Int>())
     val missionTaskCountMap: State<Map<Int, Int>> get() = _missionTaskCountMap
 
+    private val _missionActivityCountMap = mutableStateOf(mutableMapOf<Int, Int>())
+    val missionActivityCountMap: State<Map<Int, Int>> get() = _missionActivityCountMap
+
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -61,7 +64,7 @@ class MissionViewModel @Inject constructor(
                 } else {
                     showCustomToast(
                         BaselineCore.getAppContext(),
-                        BaselineCore.getAppContext().getString(R.string.refresh_failed_please_try_again)
+                        event.message
                     )
                 }
             }
@@ -84,6 +87,11 @@ class MissionViewModel @Inject constructor(
                 val taskCountForMission =
                     missionScreenUseCase.getTaskDetailsFromDbUseCase.getTotalTaskCountForMission(it.missionId)
                 _missionTaskCountMap.value.put(it.missionId, taskCountForMission)
+                val activityCountForMission =
+                    missionScreenUseCase.getMissionListFromDbUseCase.getTotalActivityCountForMission(
+                        it.missionId
+                    )
+                _missionActivityCountMap.value.put(it.missionId, activityCountForMission)
             }
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -109,6 +117,12 @@ class MissionViewModel @Inject constructor(
 
     fun getPendingTaskCountForMissionLive(missionId: Int): LiveData<Int> {
         return missionScreenUseCase.getTaskDetailsFromDbUseCase.getPendingTaskCountForMission(
+            missionId
+        )
+    }
+
+    fun getPendingActivityCountForMissionLive(missionId: Int): LiveData<Int> {
+        return missionScreenUseCase.getMissionListFromDbUseCase.getPendingActivityCountForMissionLive(
             missionId
         )
     }

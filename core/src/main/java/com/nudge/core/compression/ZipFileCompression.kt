@@ -18,10 +18,12 @@ class ZipFileCompression : IFileCompressor {
     override suspend fun compressBackupFiles(
         context: Context,
         extraUris: List<Pair<String, Uri?>>,
-        mobileNo: String
+        mobileNo: String,
+        userName: String
     ): Uri? {
 
-        val zipFileName = "${mobileNo}_sarathi_${System.currentTimeMillis()}_"
+        val zipFileName =
+            "${getFirstName(userName)}_${mobileNo}_sarathi_${System.currentTimeMillis()}_"
 
         return compressData(
             context,
@@ -35,9 +37,11 @@ class ZipFileCompression : IFileCompressor {
     override suspend fun compressBackupImages(
         context: Context,
         mobileNo: String,
-        filePath: String
+        filePath: String,
+        userName: String
     ): Uri? {
-        val zipFileName = "${mobileNo}_sarathi_${System.currentTimeMillis()}_"
+        val zipFileName =
+            "${getFirstName(userName)}_${mobileNo}_sarathi_${System.currentTimeMillis()}_"
         return compressData(
             context,
             zipFileName + "image",
@@ -49,7 +53,6 @@ class ZipFileCompression : IFileCompressor {
     override fun getCompressionType(): String {
         return "ZIP"
     }
-
 
     private fun compressData(
         context: Context,
@@ -149,4 +152,8 @@ class ZipFileCompression : IFileCompressor {
 
     }
 
+    private fun getFirstName(name: String): String {
+        return name.trim().split(" ").first()
+
+    }
 }

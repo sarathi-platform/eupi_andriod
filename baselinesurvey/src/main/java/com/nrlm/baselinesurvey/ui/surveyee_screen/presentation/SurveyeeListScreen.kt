@@ -82,7 +82,7 @@ fun SurveyeeListScreen(
         })
 
     ToolbarWithMenuComponent(
-        title = BLANK_STRING,
+        title = activityName,
         modifier = Modifier.fillMaxSize(),
         navController=navController,
         onBackIconClick = { navController.popBackStack() },

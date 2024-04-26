@@ -411,17 +411,17 @@
     <string name="average_travel_cost_comparision">"গড় ভ্রমণ খরচ"</string>
     <string name="questions_data_tab_title">Questions</string>
     <string name="section_information_tab_title">Sections</string>
-    <string name="search_hamlet">Search Hamlet</string>
-    <string name="mission_completed_text">Mission Completed</string>
-    <string name="aadhar_card_titile_assam">Do you have aadhar card?</string>
-    <string name="voter_card_title_assam">Do you have voter card?</string>
+    <string name="search_hamlet">হ্যামলেট অনুসন্ধান করুন</string>
+    <string name="mission_completed_text">মিশন সম্পন্ন</string>
+    <string name="aadhar_card_titile_assam">আপনার কি আধার কার্ড আছে?</string>
+    <string name="voter_card_title_assam">আপনার ভোটার কার্ড আছে?</string>
     <string name="not_able_to_load">ডেটা লোড করতে অক্ষম অনুগ্রহ করে আবার চেষ্টা করুন..</string>
     <string name="designation_comparision_and_label">Designation</string>
     <string name="didi_info">দিদির তথ্য</string>
     <string name="default_confirm_button_text">Confirm</string>
     <string name="default_dismiss_button_text">Dismiss</string>
     <string name="delete_text">Delete</string>
-    <string name="cancel_text">Cancel</string>
+    <string name="cancel_text">বাতিল করুন</string>
     <string name="alert_dialog_title_text">Alert</string>
     <string name="alart_dialog_entry_deleteion_message_text">Do you want to delete this entry?</string>
     <string name="didi_list_empty_state">No Didis assigned. Please contact your administrator.</string>
@@ -434,6 +434,29 @@
     <string name="fetched_successfully">" ডেটা সফলভাবে আনা হয়েছে৷"</string>
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="retry">"পুনরায় চেষ্টা করা "</string>
-
+    <string name="import_data">তথ্য আমদানি</string>
+    <string name="export_images">শুধুমাত্র ছবি রপ্তানি করুন</string>
+    <string name="export_backup_file">ব্যাকআপ ফাইল রপ্তানি করুন</string>
+    <string name="export_database">শুধুমাত্র ডাটাবেস রপ্তানি করুন</string>
+    <string name="backup_recovery">ব্যাকআপ/পুনরুদ্ধার</string>
+    <string name="export_event_file">ইভেন্ট ফাইল রপ্তানি করুন</string>
+    <string name="export_log_file">শুধুমাত্র লগ ফাইল রপ্তানি করুন</string>
+    <string name="madnatory_question_not_marked_error">সমস্ত বাধ্যতামূলক প্রশ্নের উত্তর দেওয়া হয় না, দয়া করে সমস্ত প্রশ্নের উত্তর দিন!</string>
+    <string name="view_label">View</string>
+    <string name="task_completed_label">"Activity Completed - "</string>
+    <string name="regenerate_all_events">সমস্ত ইভেন্ট পুনর্জন্ম</string>
+    <string name="load_server_data">সার্ভার ডেটা লোড করুন</string>
+    <string name="purpose_comparision">What is the purpose of your farming?</string>
+    <string name="net_income_label">Net income per year</string>
+    <string name="net_income_comparision">Net income per year</string>
+    <string name="hours">ঘন্টার</string>
+    <string name="years">বছর</string>
+    <string name="minute">মিনিটের</string>
+    <string name="month">মাস</string>
+    <string name="data_fetching_and_processing">Data Fetching आरो Processing (डाटा)…</string>
+    <string name="total_annual_income_label">"Total annual income of the household: "</string>
+    <string name="logout_confirmation">আপনি লগ আউট করতে চান?</string>
+    <string name="import_restart_dialog_message">ফাইল অ্যাপ থেকে ডেটা আমদানি করার পরে পুনরায় চালু করতে হবে এবং বর্তমান ডেটা হারিয়ে যাবে।</string>
+    <string name="no_logs_available">কোন লগ উপলব্ধ</string>
 
 </resources>
