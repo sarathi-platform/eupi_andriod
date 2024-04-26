@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Context.BATTERY_SERVICE
 import android.os.BatteryManager
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
@@ -76,6 +78,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.importDbFile
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
@@ -113,6 +116,7 @@ import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
+import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.SYNC_FAILED
@@ -161,6 +165,7 @@ fun SettingScreen(
         list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
         list.add(SettingOptionModel(7, stringResource(id = R.string.export_file), BLANK_STRING))
         list.add(SettingOptionModel(8, stringResource(id = R.string.load_server_data), BLANK_STRING))
+//        list.add(SettingOptionModel(9, stringResource(id = R.string.recover_old_data), BLANK_STRING))
 
         /*if (BuildConfig.DEBUG) *//*list.add(
             SettingOptionModel(
@@ -225,6 +230,13 @@ fun SettingScreen(
             })
     }
 //    }
+
+    val filePicker =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) {
+//            importDbFile(NudgeCore.getAppContext(),it!!){
+//                viewModel.showAppRestartDialog.value=true
+//            }
+        }
     LaunchedEffect(key1 = true) {
         val villageId = viewModel.prefRepo.getSelectedVillage().id
         viewModel.isFormAAvailableForVillage(context = context, villageId = villageId)
@@ -274,41 +286,6 @@ fun SettingScreen(
     val isBPCDataNeedToBeSynced = remember {
         mutableStateOf(false)
     }
-
-//    LaunchedEffect(key1 = Unit) {
-//        if (!viewModel.prefRepo.isUserBPC()) {
-//            viewModel.isFirstStepNeedToBeSync(stepOneStatus)
-//            viewModel.isSecondStepNeedToBeSync(stepTwoStatus)
-//            viewModel.isThirdStepNeedToBeSync(stepThreeStatus)
-//            viewModel.isFourthStepNeedToBeSync(stepFourStatus)
-//            viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
-//            if (stepOneStatus.value == 0
-//                || stepTwoStatus.value == 0
-//                || stepThreeStatus.value == 0
-//                || stepFourStatus.value == 0
-//                || stepFiveStatus.value == 0
-//            )
-//                isDataNeedToBeSynced.value = 1
-//            else if ((stepOneStatus.value == 3 || stepOneStatus.value == 2)
-//                && (stepTwoStatus.value == 3 || stepTwoStatus.value == 2)
-//                && (stepThreeStatus.value == 3 || stepThreeStatus.value == 2)
-//                && (stepFourStatus.value == 3 || stepFourStatus.value == 2)
-//                && (stepFiveStatus.value == 3 || stepFiveStatus.value == 2)
-//            )
-//                isDataNeedToBeSynced.value = 2
-//            else
-//                isDataNeedToBeSynced.value = 0
-//            viewModel.isDataNeedToBeSynced(
-//                stepOneStatus,
-//                stepTwoStatus,
-//                stepThreeStatus,
-//                stepFourStatus,
-//                stepFiveStatus
-//            )
-//        } else {
-//            viewModel.isBPCDataNeedToBeSynced(isBPCDataNeedToBeSynced)
-//        }
-//    }
 
     BackHandler() {
         if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {

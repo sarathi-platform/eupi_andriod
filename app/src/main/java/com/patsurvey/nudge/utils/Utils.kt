@@ -138,6 +138,7 @@ import java.util.Locale
 import java.util.UUID
 import java.util.regex.Pattern
 import kotlin.math.roundToInt
+import kotlin.system.exitProcess
 
 
 fun Modifier.visible(visible: Boolean) = if (visible) this else this.then(Invisible)
@@ -1418,49 +1419,10 @@ fun getPatScoreEventName(didi: DidiEntity, isBpcUserType: Boolean): EventName {
     return result
 }
 
+fun restartApp(context: Context) {
 
-/*
-fun getSampleEvent(): Events {
-    return Events(
-        name = "TEST_EVENT",
-        type = "notification",
-        created_date = System.currentTimeMillis().toDate(),
-        modified_date = System.currentTimeMillis().toDate(),
-        created_by = "123",
-        request_status = EventSyncStatus.OPEN.name,
-        request_payload = AddCohortRequest.getRequestObjectForTola(
-            TolaEntity(
-            id = 0,
-            name = EMPTY_TOLA_NAME,
-            type = CohortType.TOLA.type,
-            latitude = 0.0,
-            longitude = 0.0,
-            villageId = 1000,
-            status = 1,
-            localCreatedDate = System.currentTimeMillis(),
-            localModifiedDate = System.currentTimeMillis(),
-            transactionId = "",
-            localUniqueId = getUniqueIdForEntity()
-        )
-        ).json(),
-        consumer_status = EventSyncStatus.OPEN.name,
-        consumer_response_payload = AddCohortRequest.getRequestObjectForTola(
-            TolaEntity(
-                id = 1,
-                name = EMPTY_TOLA_NAME,
-                type = CohortType.TOLA.type,
-                latitude = 0.0,
-                longitude = 0.0,
-                villageId = 1000,
-                status = 1,
-                localCreatedDate = System.currentTimeMillis(),
-                localModifiedDate = System.currentTimeMillis(),
-                transactionId = "",
-                localUniqueId = getUniqueIdForEntity()
-            )
-        ).json(),
-        retry_count = 0,
-        error_message = null,
-        metadata = Tola(EMPTY_TOLA_NAME, LocationCoordinates(0.0, 0.0)).json()
+    context.startActivity(
+        Intent(NudgeCore.getAppContext().applicationContext, MainActivity::class.java)
     )
-}*/
+    exitProcess(0)
+}

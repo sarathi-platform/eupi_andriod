@@ -479,9 +479,17 @@
     <string name="start">"Start "</string>
     <string name="retry">Retry</string>
     <string name="regenerate_all_events">Regenerate all events</string>
+    <string name="load_server_data">Load Server Data</string>
+    <string name="are_you_sure_you_want_to_load_data_from_server" translatable="false">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
+    <string name="import_data">Import Data</string>
+    <string name="export_images">Export Only Images</string>
+    <string name="export_backup_file">Export BackUp File</string>
+    <string name="export_database">Export Only Database</string>
+    <string name="backup_recovery">Backup/Recovery</string>
+    <string name="export_event_file">Export Event File</string>
+    <string name="export_log_file">Export Only Log File</string>
     <string name="madnatory_question_not_marked_error">All mandatory questions are not answered, please answer all questions!</string>
     <string name="view_label">View</string>
-    <string name="task_completed_label">"Activity Completed - "</string>
     <string name="hours">Hours</string>
     <string name="years">Years</string>
     <string name="minute">Minute</string>
@@ -489,8 +497,9 @@
     <string name="purpose_comparision">What is the purpose of your farming?</string>
     <string name="net_income_label">Net income per year: </string>
     <string name="net_income_comparision">Net income per year</string>
-
+    <string name="task_completed_label">"Activity Completed - "</string>
     <string name="data_fetching_and_processing">Data Fetching and Processing…</string>
     <string name="total_annual_income_label">"Total annual income of the household: "</string>
     <string name="logout_confirmation">Are you sure to logout?</string>
+    <string name="import_restart_dialog_message">After Importing the data from file app needs to be restart and current data will be lost.</string>
 </resources>

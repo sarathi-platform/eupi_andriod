@@ -35,6 +35,7 @@ import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.auth.presentation.LoginScreenComponent
 import com.nrlm.baselinesurvey.ui.auth.presentation.OtpVerificationScreenComponent
+import com.nrlm.baselinesurvey.ui.backup.presentation.ExportImportScreen
 import com.nrlm.baselinesurvey.ui.common_components.FinalStepCompletionScreen
 import com.nrlm.baselinesurvey.ui.common_components.StepCompletionScreen
 import com.nrlm.baselinesurvey.ui.form_response_summary_screen.presentation.FormQuestionSummaryScreen
@@ -409,6 +410,10 @@ fun NavGraphBuilder.settingNavGraph(navHostController: NavHostController){
         ) {
             ProfileBSScreen(navController = navHostController, viewModel = hiltViewModel())
         }
+
+        composable(route = SettingBSScreens.BACKUP_RECOVERY_SCREEN.route){
+            ExportImportScreen(navController = navHostController, viewModel = hiltViewModel())
+        }
     }
 }
 
@@ -416,6 +421,7 @@ sealed class SettingBSScreens(val route: String){
     object SETTING_SCREEN : SettingBSScreens(route = SETTING_ROUTE_NAME)
     object LANGUAGE_SCREEN : SettingBSScreens(route =LANGUAGE_SCREEN_ROUTE_NAME )
     object PROFILE_SCREEN : SettingBSScreens(route =PROFILE_BS_SCREEN_ROUTE_NAME )
+    object BACKUP_RECOVERY_SCREEN : SettingBSScreens(route =BACKUP_RECOVERY_SCREEN_ROUTE_NAME )
 }
 
 sealed class HomeScreens(val route: String) {
@@ -474,6 +480,7 @@ const val Step_Complition_Screen_ROUTE_NAME = "step_complition_screen"
 const val SETTING_ROUTE_NAME = "setting_screen"
 const val LANGUAGE_SCREEN_ROUTE_NAME = "language_screen"
 const val PROFILE_BS_SCREEN_ROUTE_NAME = "profile_bs_screen"
+const val BACKUP_RECOVERY_SCREEN_ROUTE_NAME = "backup_recovery_screen"
 const val FORM_QUESTION_SUMMARY_SCREEN_ROUTE_NAME = "form_question_summary_screen"
 
 

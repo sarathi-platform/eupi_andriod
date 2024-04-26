@@ -37,6 +37,12 @@ import com.nrlm.baselinesurvey.ui.auth.use_case.ResendOtpUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.SaveAccessTokenUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.SaveMobileNumberUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.ValidateOtpUseCase
+import com.nrlm.baselinesurvey.ui.backup.domain.repository.ExportImportRepository
+import com.nrlm.baselinesurvey.ui.backup.domain.repository.ExportImportRepositoryImpl
+import com.nrlm.baselinesurvey.ui.backup.domain.use_case.ClearLocalDBExportUseCase
+import com.nrlm.baselinesurvey.ui.backup.domain.use_case.ExportImportUseCase
+import com.nrlm.baselinesurvey.ui.backup.domain.use_case.GetExportOptionListUseCase
+import com.nrlm.baselinesurvey.ui.backup.domain.use_case.GetUserDetailsExportUseCase
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.CasteListRepository
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.CasteListRepositoryImpl
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.EventsWriterRepository
@@ -104,6 +110,7 @@ import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.UpdateSubjectSt
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.UpdateTaskStatusUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepository
 import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepositoryImpl
+import com.nrlm.baselinesurvey.ui.setting.domain.use_case.ClearLocalDBUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.GetUserDetailsUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.LogoutUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SaveLanguageScreenOpenFromUseCase
@@ -625,9 +632,10 @@ object BaselineModule {
     @Singleton
     fun provideSettingBSScreenRepository(
         prefRepo: PrefRepo,
-        apiService: ApiService
+        apiService: ApiService,
+        nudgeBaselineDatabase: NudgeBaselineDatabase
     ): SettingBSRepository {
-        return SettingBSRepositoryImpl(prefRepo, apiService)
+        return SettingBSRepositoryImpl(prefRepo, apiService,nudgeBaselineDatabase)
     }
 
     @Provides
@@ -638,7 +646,8 @@ object BaselineModule {
         return SettingBSUserCase(
             getUserDetailsUseCase = GetUserDetailsUseCase(repository),
             logoutUseCase = LogoutUseCase(repository),
-            saveLanguageScreenOpenFromUseCase = SaveLanguageScreenOpenFromUseCase(repository)
+            saveLanguageScreenOpenFromUseCase = SaveLanguageScreenOpenFromUseCase(repository),
+            clearLocalDBUseCase = ClearLocalDBUseCase(repository)
         )
     }
 
@@ -760,12 +769,22 @@ object BaselineModule {
         )
     }
 
-    /*@Provides
+   @Singleton
+   @Provides
+   fun provideExportImportRepository(
+       prefRepo: PrefRepo,
+       nudgeBaselineDatabase: NudgeBaselineDatabase
+   ): ExportImportRepository {
+       return ExportImportRepositoryImpl(prefRepo, nudgeBaselineDatabase)
+   }
+
     @Singleton
-    fun provideGetCasteListUseCase(
-        casteListRepository: CasteListRepository
-    ): GetCasteListUseCase {
-        return GetCasteListUseCase(casteListRepository)
+    @Provides
+    fun provideExportImportUseCase(repository: ExportImportRepository):ExportImportUseCase{
+        return ExportImportUseCase(
+            getExportOptionListUseCase = GetExportOptionListUseCase(repository),
+            clearLocalDBExportUseCase = ClearLocalDBExportUseCase(repository),
+            getUserDetailsExportUseCase = GetUserDetailsExportUseCase(repository)
+        )
     }
-*/
 }
