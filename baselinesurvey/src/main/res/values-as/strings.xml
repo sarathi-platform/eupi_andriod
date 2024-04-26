@@ -383,8 +383,8 @@
     <string name="age_comparision">বয়স কিমান</string>
     <string name="relationship_comparision">বাইদেউ’ৰ সৈতে সম্পৰ্ক</string>
     <string name="income_source_comparision">আয়ৰ উৎস কিমান</string>
-    <string name="agriculture_produce_comparision">(ক) কৃষি উৎপাদিত সামগ্ৰী</string>
-    <string name="livestock_comparision">(ক) পশুধনৰ প্ৰকাৰ</string>
+    <string name="agriculture_produce_comparision">কৃষি উৎপাদিত সামগ্ৰী</string>
+    <string name="livestock_comparision">পশুধনৰ প্ৰকাৰ</string>
     <string name="income_frequency_comparision">Income frequency</string>
     <string name="no_income_comparision">কোনো আয় নাই</string>
     <string name="total_income_comparision">(E) Total Income</string>
@@ -445,7 +445,7 @@
     <string name="view_label">View</string>
     <string name="load_server_data">চাৰ্ভাৰ ডাটা লোড কৰক</string>
     <string name="purpose_comparision">What is the purpose of your farming?</string>
-    <string name="net_income_label">Net income per year</string>
+    <string name="net_income_label">Net income per year: ₹</string>
     <string name="net_income_comparision">Net income per year</string>
     <string name="task_completed_label">"Activity Completed - "</string>
     <string name="hours">ঘণ্টা</string>

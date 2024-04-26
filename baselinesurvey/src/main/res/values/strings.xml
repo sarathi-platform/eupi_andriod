@@ -423,8 +423,8 @@
     <string name="age_comparision">Age</string>
     <string name="relationship_comparision">Relationship</string>
     <string name="income_source_comparision">sources of income</string>
-    <string name="agriculture_produce_comparision">(A) Agricultural produce - </string>
-    <string name="livestock_comparision">(A) Type of livestock - </string>
+    <string name="agriculture_produce_comparision">Agricultural produce</string>
+    <string name="livestock_comparision">Type of livestock</string>
     <string name="income_frequency_comparision">Income frequency</string>
     <string name="no_income_comparision">No income</string>
     <string name="total_income_comparision">(E) Total Income</string>
@@ -493,7 +493,7 @@
     <string name="minute">Minute</string>
     <string name="month">Month</string>
     <string name="purpose_comparision">What is the purpose of your farming?</string>
-    <string name="net_income_label">Net income per year: </string>
+    <string name="net_income_label">Net income per year: ₹</string>
     <string name="net_income_comparision">Net income per year</string>
     <string name="task_completed_label">"Activity Completed - "</string>
     <string name="data_fetching_and_processing">Data Fetching and Processing…</string>

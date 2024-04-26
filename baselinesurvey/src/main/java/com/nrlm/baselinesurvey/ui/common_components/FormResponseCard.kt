@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.ui.common_components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -134,22 +133,7 @@ fun FormResponseCard(
                                 }?.optionId] ?: BLANK_STRING
                             )
 
-                            var income =
-                                formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                    it.display?.contains(
-                                        stringResource(id = R.string.agriculture_produce_comparision),
-                                        ignoreCase = true
-                                    )!!
-                                }?.optionId] ?: BLANK_STRING
-
-                            if (income == BLANK_STRING)
-                                income =
-                                    formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                        it.display?.contains(
-                                            stringResource(id = R.string.livestock_comparision),
-                                            ignoreCase = true
-                                        )!!
-                                    }?.optionId] ?: BLANK_STRING
+                            var income = BLANK_STRING
 
                             if (income == BLANK_STRING) {
                                 val options = optionItemListWithConditionals.filter {
@@ -168,8 +152,16 @@ fun FormResponseCard(
                                         income = BLANK_STRING
                                     }
                                 }
-
                             }
+
+                            if (income == BLANK_STRING)
+                                income =
+                                    formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                        it.display?.contains(
+                                            stringResource(id = R.string.livestock_comparision),
+                                            ignoreCase = true
+                                        )!!
+                                    }?.optionId] ?: BLANK_STRING
 
                             if (income != BLANK_STRING) {
                                 append(" | ")
@@ -227,9 +219,41 @@ fun FormResponseCard(
 
                             append("${stringResource(id = R.string.name_comparision)}: $name")
 
-                        }
-                        else append(BLANK_STRING)
+                        } else append(BLANK_STRING)
                     }, style = smallTextStyleWithNormalWeight)
+
+                    if (formResponseObjectDto.questionTag.equals(
+                            "Livelihood Sources",
+                            true
+                        ) && ((formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
+                            it.display?.contains(
+                                stringResource(id = R.string.agriculture_produce_comparision),
+                                ignoreCase = true
+                            )!!
+                        }?.optionId] ?: BLANK_STRING) != BLANK_STRING)
+                    ) {
+                        Text(text = buildAnnotatedString {
+                            if (formResponseObjectDto.questionTag.equals(
+                                    "Livelihood Sources",
+                                    true
+                                )
+                            ) {
+                                append(
+                                    stringResource(id = R.string.agriculture_produce_comparision) + ": "
+                                )
+
+                                var income =
+                                    formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                        it.display?.contains(
+                                            stringResource(id = R.string.agriculture_produce_comparision),
+                                            ignoreCase = true
+                                        )!!
+                                    }?.optionId] ?: BLANK_STRING
+
+                                append(income)
+                            } else append(BLANK_STRING)
+                        }, style = smallTextStyleWithNormalWeight)
+                    }
 
                     Text(text = buildAnnotatedString {
                         if (formResponseObjectDto.questionTag.equals(
@@ -309,17 +333,14 @@ fun FormResponseCard(
                                         )!!
                                     }.forEach {
                                         if (income == BLANK_STRING) {
-                                            Log.d(
-                                                "TAG",
-                                                "FormResponseCard: it.optionId -> ${it.optionId}"
-                                            )
-
                                             income =
                                                 formResponseObjectDto.memberDetailsMap[it.optionId]
                                                     ?: BLANK_STRING
                                         }
                                         return@forEach
                                     }
+                                    if (income == BLANK_STRING)
+                                        append("0")
                                 }
 
                                 if (income == BLANK_STRING)

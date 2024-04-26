@@ -47,6 +47,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_14_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_30_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_64_dp
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.findTagForId
 import com.nrlm.baselinesurvey.utils.getResponseForOptionId
 import com.nrlm.baselinesurvey.utils.saveFormQuestionResponseEntity
@@ -154,7 +155,10 @@ fun NestedLazyListForFormQuestions(
                                         if (questionTypeScreenViewModel.tempRefId.value == BLANK_STRING) {
                                             true
                                         } else {
-                                            false
+                                            (questionTypeScreenViewModel.updatedOptionList.distinctBy { it.optionId }
+                                                .map { it.optionItemEntity?.optionType }
+                                                .contains(QuestionType.FormWithNone.name)
+                                                    && BaselineCore.isEditAllowedForNoneMarkedQuestion())
                                         }
                                     } else {
                                         true
