@@ -265,6 +265,7 @@ class QuestionScreenViewModel @Inject constructor(
                 it.questionEntity?.type == QuestionType.Form.name || it
                     .questionEntity?.type == QuestionType.FormWithNone.name
             }
+        answeredQuestionCount.clear()
         map.keys.forEach { questionId ->
             onEvent(
                 QuestionScreenEvents.UpdateAnsweredQuestionCount(

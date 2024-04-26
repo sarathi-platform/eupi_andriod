@@ -111,6 +111,9 @@ fun FormQuestionSummaryScreen(
                         )
                     )
                     openAlertDialog.value = DEFAULT_OPEN_DIALOG_VALUE
+                    if (formResponseSummaryScreenViewModel.formResponseObjectDtoList.value.isEmpty()) {
+                        navController.popBackStack()
+                    }
                 },
                 dialogTitle = stringResource(R.string.alert_dialog_title_text),
                 dialogText = stringResource(R.string.alart_dialog_entry_deleteion_message_text),
