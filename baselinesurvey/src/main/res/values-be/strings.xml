@@ -366,7 +366,8 @@
     <string name="this_week_tab_title">This Week</string>
     <string name="all_tab_title">All</string>
     <string name="search_question_placeholder">Search Question</string>
-    <string name="save_next_section_button_text"><string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>--><![CDATA[Save]]></string></string>
+    <string name="save_next_section_button_text"><string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>-->
+        <![CDATA[Save]]></string></string>
     <string name="ok_text">Ok</string>
     <string name="save">Save</string>
 
@@ -374,8 +375,8 @@
     <string name="age_comparision">बैसोआ मा ?</string>
     <string name="relationship_comparision">आब’जों सोमोन्दो ?</string>
     <string name="income_source_comparision">नोंनि नख’राव आयनि मोनबेसे फुंखा दं?</string>
-    <string name="agriculture_produce_comparision">(A) आबादारि दिहुनथाय: </string>
-    <string name="livestock_comparision">(A) जिब-जुनारनि रोखोम:  </string>
+    <string name="agriculture_produce_comparision">आबादारि दिहुनथाय</string>
+    <string name="livestock_comparision">जिब-जुनारनि रोखोम</string>
     <string name="income_frequency_comparision">Income frequency</string>
     <string name="no_income_comparision">इंकाम गैया</string>
     <string name="total_income_comparision">(E) Total Income</string>
@@ -437,7 +438,7 @@
     <string name="view_label">View</string>
     <string name="task_completed_label">"Activity Completed - "</string>
     <string name="purpose_comparision">What is the purpose of your farming?</string>
-    <string name="net_income_label">Net income per year</string>
+    <string name="net_income_label">Net income per year: ₹</string>
     <string name="net_income_comparision">Net income per year</string>
     <string name="hours">घन्टाफोर</string>
     <string name="years">बोसोरफोर</string>
