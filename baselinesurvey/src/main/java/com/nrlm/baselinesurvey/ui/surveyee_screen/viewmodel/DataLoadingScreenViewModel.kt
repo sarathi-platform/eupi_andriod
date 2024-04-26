@@ -75,11 +75,10 @@ class DataLoadingScreenViewModel @Inject constructor(
         }
     }
 
-    fun compareWithPreviousUser(context: Context, isDataLoadingAllowed: (Boolean) -> Unit) {
+    fun compareWithPreviousUser(isDataLoadingAllowed: (Boolean) -> Unit) {
         val previousMobileNumber = fetchDataUseCase.loggedInUseCase.getPreviousMobileNumber()
         val mobileNumber = fetchDataUseCase.loggedInUseCase.getMobileNumber()
-        if (TextUtils.isEmpty(previousMobileNumber) || previousMobileNumber
-                .equals(mobileNumber)
+        if (TextUtils.isEmpty(previousMobileNumber) || previousMobileNumber == mobileNumber
         ) {
             isDataLoadingAllowed(true)
         } else {

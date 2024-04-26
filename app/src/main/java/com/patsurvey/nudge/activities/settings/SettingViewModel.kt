@@ -9,14 +9,17 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.facebook.network.connectionclass.DeviceBandwidthSampler
+import com.nudge.core.NUDGE_DATABASE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.enums.NetworkSpeed
+import com.nudge.core.exportOldData
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.json
 import com.nudge.core.preference.CoreSharedPrefs
+import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.SyncBPCDataOnServer
@@ -124,6 +127,7 @@ class SettingViewModel @Inject constructor(
     var bpcSyncStatus = mutableStateOf(0)
     var hitApiStatus = mutableStateOf(0)
     var showLogoutDialog = mutableStateOf(false)
+    var showAppRestartDialog = mutableStateOf(false)
     var syncErrorMessage = mutableStateOf("")
     val showLoadConfimationDialog = mutableStateOf(false)
     private val _optionList = MutableStateFlow(listOf<SettingOptionModel>())
@@ -203,17 +207,7 @@ class SettingViewModel @Inject constructor(
                 }
             }
         }
-        /*val formAFilePath = File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_A_PDF_NAME}_${villageId}.pdf")
-        formAAvailabe.value = formAFilePath.isFile && formAFilePath.exists()*/
-        /*job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val stepList = stepsListDao.getAllStepsForVillage(villageId)
-            val filteredStepList = stepList.filter { it.name.equals("Participatory Wealth Ranking", true) }
-            if (filteredStepList[0] != null) {
-                formAAvailabe.value = filteredStepList[0].isComplete == StepStatus.COMPLETED.ordinal
-            } else {
-                formAAvailabe.value = false
-            }
-        }*/
+
     }
 
     fun isFormBAvailableForVillage(context: Context, villageId: Int) {
@@ -253,17 +247,7 @@ class SettingViewModel @Inject constructor(
             }
         }
 
-        /*val formBFilePath = File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_B_PDF_NAME}_${villageId}.pdf")
-        formBAvailabe.value = formBFilePath.isFile && formBFilePath.exists()*/
-        /*job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val stepList = stepsListDao.getAllStepsForVillage(villageId)
-            val filteredStepList = stepList.filter { it.name.equals("Pat Survey", true) }
-            if (filteredStepList[0] != null) {
-                formBAvailabe.value = filteredStepList[0].isComplete == StepStatus.COMPLETED.ordinal
-            } else {
-                formBAvailabe.value = false
-            }
-        }*/
+
     }
 
     fun isFormCAvailableForVillage(context: Context, villageId: Int) {
@@ -285,16 +269,6 @@ class SettingViewModel @Inject constructor(
                 }
             }
         }
-
-        /*job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val stepList = stepsListDao.getAllStepsForVillage(villageId)
-            val filteredStepList = stepList.filter { it.name.equals("VO Endorsement", true) }
-            if (filteredStepList[0] != null) {
-                formCAvailabe.value = filteredStepList[0].isComplete == StepStatus.COMPLETED.ordinal
-            } else {
-                formCAvailabe.value = false
-            }
-        }*/
     }
 
     fun createSettingMenu(list: ArrayList<SettingOptionModel>) {
@@ -858,7 +832,6 @@ class SettingViewModel @Inject constructor(
 
     fun clearLocalDB(onPageChange:()->Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-//            casteListDao.deleteCasteTable()
             tolaDao.deleteAllTola()
             didiDao.deleteAllDidi()
             lastSelectedTolaDao.deleteAllLastSelectedTola()
@@ -866,15 +839,11 @@ class SettingViewModel @Inject constructor(
             answerDao.deleteAllAnswers()
             questionDao.deleteQuestionTable()
             stepsListDao.deleteAllStepsFromDB()
-//            userDao.deleteAllUserDetail()
             villegeListDao.deleteAllVilleges()
             bpcSummaryDao.deleteAllSummary()
             poorDidiListDao.deleteAllDidis()
             prefRepo.savePref(LAST_UPDATE_TIME, 0L)
             clearEventWriterFileName()
-//            clearSharedPreference()
-            //cleared cache in case of logout
-//            context.cacheDir.deleteRecursively()
             withContext(Dispatchers.Main) {
                 onPageChange()
             }
@@ -1133,5 +1102,17 @@ class SettingViewModel @Inject constructor(
 
     fun clearSettingOpenFrom() {
         //    prefRepo.saveSettingOpenFrom(0)
+    }
+
+    fun exportDbAndImages(onExportSuccess: () -> Unit) {
+        val userUniqueId = "${prefRepo.getUserId()}_${prefRepo.getMobileNumber()}"
+        exportOldData(
+            appContext = NudgeCore.getAppContext(),
+            applicationID = BuildConfig.APPLICATION_ID,
+            mobileNo = userUniqueId,
+            databaseName = NUDGE_DATABASE
+        ) {
+            onExportSuccess()
+        }
     }
 }

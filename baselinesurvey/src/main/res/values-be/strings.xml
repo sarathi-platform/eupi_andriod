@@ -424,17 +424,28 @@
     <string name="fetched_successfully">Data fetched successfully</string>
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"जागायजेन "</string>
+    <string name="load_server_data">Load Server Data</string>
+    <string name="import_data">Import Data</string>
+    <string name="export_images">Export Only Images</string>
+    <string name="export_backup_file">Export BackUp File</string>
+    <string name="export_database">Export Only Database</string>
+    <string name="backup_recovery">Backup/Recovery</string>
+    <string name="export_event_file">Export Event File</string>
+    <string name="export_log_file">Export Only Log File</string>
     <string name="madnatory_question_not_marked_error">गासैबो गोनांथार सोंलुफोरनि फिन्नाय होआखै, अन्नानै गासैबो सोंलुफोरनि फिन्नाय हो!</string>
     <string name="view_label">View</string>
     <string name="task_completed_label">"Activity Completed - "</string>
+    <string name="purpose_comparision">What is the purpose of your farming?</string>
+    <string name="net_income_label">Net income per year</string>
+    <string name="net_income_comparision">Net income per year</string>
     <string name="hours">घन्टाफोर</string>
     <string name="years">बोसोरफोर</string>
     <string name="minute">मिनिट</string>
     <string name="month">दान</string>
     <string name="data_fetching_and_processing">Data Fetching आरो Processing (डाटा)…</string>
-    <string name="purpose_comparision">What is the purpose of your farming?</string>
-    <string name="net_income_label">Net income per year</string>
-    <string name="net_income_comparision">Net income per year</string>
     <string name="total_annual_income_label">"Total annual income of the household: "</string>
+    <string name="logout_confirmation">Are you sure you want to logout?</string>
+    <string name="import_restart_dialog_message">After Importing the data from file app needs to be restart and current data will be lost.</string>
+    <string name="no_logs_available">No Logs Available</string>
 
 </resources>
