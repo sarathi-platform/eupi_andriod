@@ -321,7 +321,7 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
         optionType = this.type,
         summary = this.questionSummary,
         values = emptyList(),
-        contentEntities = this.options?.first()?.contentList ?: listOf(),
+        contentEntities = this.contentList ?: listOf(),
         conditional = this.conditional
     )
     val valuesList = mutableListOf<ValuesDto>()
