@@ -102,7 +102,9 @@ fun BaseLineStartScreen(
         baseLineStartViewModel.getDidiDetails(
             didiId = didiId,
             sectionId = sectionId,
-            surveyId = surveyId
+            surveyId = surveyId,
+            false,
+            localContext
         )
         delay(200)
         baseLineStartViewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -245,12 +247,20 @@ fun BaseLineStartScreen(
                                 val uri =
                                     uriFromFile(localContext, File(baseLineStartViewModel.imagePath))
                                 baseLineStartViewModel.tempUri = uri
-                            }
-                            baseLineStartViewModel.onEvent(
-                                StartSurveyScreenEvents.SaveImagePathForSurveyee(
+                                baseLineStartViewModel.getDidiDetails(
+                                    didiId,
+                                    sectionId = sectionId,
+                                    surveyId,
+                                    true,
                                     localContext
                                 )
-                            )
+                            } else {
+                                baseLineStartViewModel.onEvent(
+                                    StartSurveyScreenEvents.SaveImagePathForSurveyee(
+                                        localContext
+                                    )
+                                )
+                            }
                         } else {
                             baseLineStartViewModel.shouldShowPhoto.value =
                                 baseLineStartViewModel.photoUri.value != Uri.EMPTY
