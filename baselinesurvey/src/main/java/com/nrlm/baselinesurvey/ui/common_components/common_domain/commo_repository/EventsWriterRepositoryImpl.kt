@@ -41,8 +41,9 @@ class EventsWriterRepositoryImpl @Inject constructor(
     private val missionEntityDao: MissionEntityDao,
     private val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
     private val eventsDao: EventsDao,
-    private val eventDependencyDao: EventDependencyDao
-) : EventsWriterRepository {
+    private val eventDependencyDao: EventDependencyDao,
+
+    ) : EventsWriterRepository {
 
     override suspend fun <T> createEvent(
         eventItem: T,

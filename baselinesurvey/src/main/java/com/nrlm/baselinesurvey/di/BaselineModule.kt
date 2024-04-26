@@ -708,7 +708,9 @@ object BaselineModule {
         missionEntityDao: MissionEntityDao,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
         eventsDao: EventsDao,
-        eventDependencyDao: EventDependencyDao
+        eventDependencyDao: EventDependencyDao,
+        nudgeBaselineDatabase: NudgeBaselineDatabase,
+        eventWriterHelper: EventWriterHelperImpl
     ): EventsWriterRepository {
         return EventsWriterRepositoryImpl(
             prefRepo = prefRepo,
@@ -716,7 +718,7 @@ object BaselineModule {
             didiSectionProgressEntityDao = didiSectionProgressEntityDao,
             eventsDao = eventsDao,
             eventDependencyDao = eventDependencyDao,
-            missionEntityDao = missionEntityDao
+            missionEntityDao = missionEntityDao,
         )
     }
 
@@ -734,7 +736,8 @@ object BaselineModule {
         taskDao: ActivityTaskDao,
         activityDao: MissionActivityDao,
         missionEntityDao: MissionEntityDao,
-        didiSectionProgressEntityDao: DidiSectionProgressEntityDao
+        didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
+        baselineDatabase: NudgeBaselineDatabase
     ): EventWriterHelper {
         return EventWriterHelperImpl(
             prefRepo = prefRepo,
@@ -748,7 +751,8 @@ object BaselineModule {
             taskDao = taskDao,
             activityDao = activityDao,
             missionEntityDao = missionEntityDao,
-            didiSectionProgressEntityDao = didiSectionProgressEntityDao
+            didiSectionProgressEntityDao = didiSectionProgressEntityDao,
+            baselineDatabase = baselineDatabase
         )
     }
 

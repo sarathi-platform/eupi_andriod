@@ -17,7 +17,10 @@ interface DidiInfoDao {
     fun insertDidiInfo(didiInfoEntity: DidiInfoEntity)
 
     @Query("SELECT * FROM $DIDI_INFO_TABLE_NAME where userId=:userId and didiId=:didiId ")
-    suspend fun getDidiInfo(userId: String, didiId: Int): DidiInfoEntity
+    suspend fun getDidiInfo(userId: String, didiId: Int): DidiInfoEntity?
+
+    @Query("SELECT * FROM $DIDI_INFO_TABLE_NAME where userId=:userId")
+    suspend fun getAllDidi(userId: String): List<DidiInfoEntity>
 
     @Update
     fun updateDidiInfo(didiInfoEntity: DidiInfoEntity)

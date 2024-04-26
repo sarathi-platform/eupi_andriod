@@ -11,7 +11,7 @@ class GetSurveyeeDetailsUserCase (private val repository: StartScreenRepository)
         return repository.getSurveyeeDetails(didiId)
     }
 
-    suspend fun getDidiIndoDetail(didiId: Int): DidiInfoEntity {
+    suspend fun getDidiIndoDetail(didiId: Int): DidiInfoEntity? {
         return repository.getDidiInfoDetails(didiId)
     }
 

@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name" translatable="false">Baseline Survey</string>
+    <string name="app_name" translatable="false">Sarathi</string>
+    <string name="app_name_uat" translatable="false">Sarathi UAT</string>
 
 
     <string name="common_error_message_text">No network available</string>
@@ -477,6 +478,7 @@
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"Start "</string>
     <string name="retry">Retry</string>
+    <string name="regenerate_all_events">Regenerate all events</string>
     <string name="load_server_data">Load Server Data</string>
     <string name="are_you_sure_you_want_to_load_data_from_server" translatable="false">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
     <string name="import_data">Import Data</string>

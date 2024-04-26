@@ -30,6 +30,9 @@ interface MissionActivityDao {
     @Query("SELECT * FROM $ACTIVITY_TABLE_NAME where userId=:userId and missionId=:missionId ")
     suspend fun getActivities(userId: String, missionId: Int): List<MissionActivityEntity>
 
+    @Query("SELECT * FROM $ACTIVITY_TABLE_NAME where userId=:userId  ")
+    suspend fun getAllActivities(userId: String): List<MissionActivityEntity>
+
     @Query("SELECT * FROM $ACTIVITY_TABLE_NAME where  userId=:userId and activityId=:activityId ")
     suspend fun getActivity(userId: String, activityId: Int): MissionActivityEntity
 

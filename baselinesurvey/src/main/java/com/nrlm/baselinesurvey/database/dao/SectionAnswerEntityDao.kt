@@ -11,8 +11,8 @@ import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
 @Dao
 interface SectionAnswerEntityDao {
 
-    @Query("SELECT * FROM $ANSWER_TABLE")
-    fun getAllAnswer(): List<SectionAnswerEntity>
+    @Query("SELECT * FROM $ANSWER_TABLE where userId =:userId")
+    fun getAllAnswer(userId: String): List<SectionAnswerEntity>
 
     @Query("SELECT * FROM $ANSWER_TABLE where userId=:userId and didiId = :didiId")
     fun getAllAnswerForDidi(userId: String, didiId: Int): List<SectionAnswerEntity>

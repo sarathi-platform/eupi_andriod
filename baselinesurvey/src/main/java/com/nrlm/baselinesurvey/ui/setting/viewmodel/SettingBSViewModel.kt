@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SettingBSUserCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
@@ -31,13 +32,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingBSViewModel @Inject constructor(
-    private val settingBSUserCase: SettingBSUserCase
+    private val settingBSUserCase: SettingBSUserCase,
+    val prefRepo: PrefRepo
 ):BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val optionList: State<List<SettingOptionModel>> get() = _optionList
 
-    private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
 
+    private val _loaderState = mutableStateOf<LoaderState>(LoaderState(false))
     val loaderState: State<LoaderState> get() = _loaderState
 
 
@@ -182,4 +184,6 @@ class SettingBSViewModel @Inject constructor(
    fun getUserMobileNumber():String{
         return settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
     }
-}
+
+
+    }

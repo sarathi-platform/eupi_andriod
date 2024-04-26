@@ -15,4 +15,6 @@ data class SectionStatusUpdateEventDto(
 
     @SerializedName("sectionStatus")
     val sectionStatus: String,
+    @SerializedName("localTaskId")
+    val localTaskId: String,
 )

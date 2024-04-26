@@ -471,6 +471,7 @@
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"Start "</string>
     <string name="share_export_image">আৰম্ভ কৰক</string>
+    <string name="regenerate_all_events">Regenerate all events</string>
     <string name="load_server_data">Load Server Data</string>
     <string name="import_data">Import Data</string>
     <string name="export_images">Export Only Images</string>
