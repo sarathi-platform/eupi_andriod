@@ -493,4 +493,5 @@
     <string name="total_annual_income_label">"Total annual income of the household: "</string>
     <string name="logout_confirmation">Are you sure you want to logout?</string>
     <string name="import_restart_dialog_message">After Importing the data from file app needs to be restart and current data will be lost.</string>
+    <string name="no_logs_available">No Logs Available</string>
 </resources>

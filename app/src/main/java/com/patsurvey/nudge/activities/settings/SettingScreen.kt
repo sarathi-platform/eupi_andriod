@@ -165,7 +165,6 @@ fun SettingScreen(
         list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
         list.add(SettingOptionModel(7, stringResource(id = R.string.export_file), BLANK_STRING))
         list.add(SettingOptionModel(8, stringResource(id = R.string.load_server_data), BLANK_STRING))
-//        list.add(SettingOptionModel(9, stringResource(id = R.string.recover_old_data), BLANK_STRING))
 
         /*if (BuildConfig.DEBUG) *//*list.add(
             SettingOptionModel(
@@ -209,6 +208,7 @@ fun SettingScreen(
                 BLANK_STRING
             )
         )*/
+//        list.add(SettingOptionModel(9, stringResource(id = R.string.recover_old_data), BLANK_STRING))
     }
     viewModel.createSettingMenu(list)
 
@@ -220,11 +220,15 @@ fun SettingScreen(
             negativeButtonTitle = stringResource(id = R.string.option_no),
             onNegativeButtonClick = {viewModel.showLoadConfimationDialog.value =false},
             onPositiveButtonClick = {
-                viewModel.clearLocalDB(){
-                    if (navController.graph.route == Graph.ROOT) {
-                        navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route)
-                    } else {
-                        navController.navigate(Graph.LOGOUT_GRAPH)
+                viewModel.showAPILoader.value=true
+                viewModel.exportDbAndImages{
+                    viewModel.clearLocalDB{
+                        viewModel.showAPILoader.value=false
+                        if (navController.graph.route == Graph.ROOT) {
+                            navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route)
+                        } else {
+                            navController.navigate(Graph.LOGOUT_GRAPH)
+                        }
                     }
                 }
             })
@@ -416,10 +420,10 @@ fun SettingScreen(
                                         )
                                     }
                                 }
-
                                 9 -> {
-                                    viewModel.regenerateEventFile(context.getString(R.string.share_export_file))
+                                    filePicker.launch("*/*")
                                 }
+
                                 else -> {
                                     showCustomToast(
                                         context,

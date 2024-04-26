@@ -474,17 +474,16 @@ fun exportLogFile(logFile: File,appContext: Context,applicationID: String): Uri 
 
     val logDir = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path
     val logFileUri = uriFromFile(appContext,logFile,applicationID)
-    Log.d("TAG", "exportLogFile: ${logFileUri.path}")
+    CoreLogger.d(appContext,"TAG", "exportLogFile: ${logFileUri.path}")
 
     val fileUris = ArrayList<Pair<String, Uri>>()
     logFileUri?.let {
         fileUris.add(Pair(getFileNameFromURL(it.path ?: ""), it))
 
     }
-    Log.d("TAG", "exportLogFile log: ${fileUris.json()} ")
     val zipDateTime=System.currentTimeMillis()
     val zipFileUri =uriFromFile(appContext, File(logDir, "Log_File_${zipDateTime}.zip"),applicationID)
-    Log.d("TAG", "exportLogFile Zip: ${zipFileUri.path} :: ${fileUris.json()}")
+    CoreLogger.d(appContext,"TAG", "exportLogFile Zip: ${zipFileUri.path} :: ${fileUris.json()}")
     ZipManager.zip(
         fileUris,
          zipFileUri,

@@ -455,6 +455,7 @@
     <string name="data_fetching_and_processing">डेटा लाने और संसाधित करने…</string>
     <string name="total_annual_income_label">"Total annual income of the household: "</string>
     <string name="import_restart_dialog_message">फ़ाइल से डेटा आयात करने के बाद ऐप को पुनरारंभ करना होगा और वर्तमान डेटा खो जाएगा।</string>
+    <string name="no_logs_available">कोई लॉग उपलब्ध नहीं</string>
 
 
 </resources>

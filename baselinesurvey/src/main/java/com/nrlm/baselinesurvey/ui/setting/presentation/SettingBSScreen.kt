@@ -67,12 +67,19 @@ fun SettingBSScreen(
         list.add(
             SettingOptionModel(
                 4,
+                context.getString(R.string.export_file),
+                BLANK_STRING,
+                SettingTagEnum.EXPORT_FILE.name
+            )
+        )
+        list.add(
+            SettingOptionModel(
+                5,
                 context.getString(R.string.backup_recovery),
                 BLANK_STRING,
                 SettingTagEnum.BACKUP_RECOVERY.name
             )
         )
-
         list.add(
             SettingOptionModel(
                 6,
@@ -107,10 +114,9 @@ fun SettingBSScreen(
 
                 }
 
-                SettingTagEnum.EXPORT_BACKUP_FILE.name -> {
+                SettingTagEnum.EXPORT_FILE.name -> {
                     viewModel.compressEventData(context.getString(R.string.share_export_file))
                 }
-
                 SettingTagEnum.BACKUP_RECOVERY.name -> {
                     navController.navigate(SettingBSScreens.BACKUP_RECOVERY_SCREEN.route)
                 }

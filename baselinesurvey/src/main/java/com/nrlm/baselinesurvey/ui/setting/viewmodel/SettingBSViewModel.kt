@@ -40,6 +40,7 @@ class SettingBSViewModel @Inject constructor(
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val optionList: State<List<SettingOptionModel>> get() = _optionList
 
+
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState(false))
     val loaderState: State<LoaderState> get() = _loaderState
 
@@ -120,7 +121,7 @@ class SettingBSViewModel @Inject constructor(
 
                 // Add Log File
 
-                val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext())
+                val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext()){}
                 if (logFile != null) {
                     val logFileUri = exportLogFile(logFile, appContext = BaselineCore.getAppContext(),
                         applicationID = BuildConfig.APPLICATION_ID)
@@ -142,7 +143,7 @@ class SettingBSViewModel @Inject constructor(
                 CoreSharedPrefs.getInstance(BaselineCore.getAppContext()).setFileExported(true)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             } catch (exception: Exception) {
-                BaselineLogger.e("Compression", exception.message ?: "")
+                BaselineLogger.e("Compression Exception", exception.message ?: "")
                 exception.printStackTrace()
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
@@ -186,26 +187,26 @@ class SettingBSViewModel @Inject constructor(
         return settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
     }
 
-    fun regenerateEvents(title: String) {
-        onEvent(LoaderEvent.UpdateLoaderState(true))
+        fun regenerateEvents(title: String) {
+            onEvent(LoaderEvent.UpdateLoaderState(true))
 
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            try {
+            CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+                try {
 
 
-                eventWriterHelperImpl.regenerateAllEvent()
-                compressEventData(title)
-                withContext(Dispatchers.Main) {
-                    onEvent(LoaderEvent.UpdateLoaderState(false))
+                    eventWriterHelperImpl.regenerateAllEvent()
+                    compressEventData(title)
+                    withContext(Dispatchers.Main) {
+                        onEvent(LoaderEvent.UpdateLoaderState(false))
+                    }
+                } catch (exception: Exception) {
+                    BaselineLogger.e("RegenerateEvent", exception.message ?: "")
+                    exception.printStackTrace()
+                    withContext(Dispatchers.Main) {
+                        onEvent(LoaderEvent.UpdateLoaderState(false))
+                    }
                 }
-            } catch (exception: Exception) {
-                BaselineLogger.e("RegenerateEvent", exception.message ?: "")
-                exception.printStackTrace()
-                withContext(Dispatchers.Main) {
-                    onEvent(LoaderEvent.UpdateLoaderState(false))
-                }
+
             }
-
         }
     }
-}
