@@ -1012,11 +1012,11 @@ class EventWriterHelperImpl @Inject constructor(
     ): List<OptionItemEntityState> {
         val updatedOptionListInDefaultLanguage = ArrayList<OptionItemEntityState>()
         val optionList = baselineDatabase.optionItemDao().getSurveySectionQuestionOptions(
-            getBaseLineUserId(),
-            surveyId,
-            sectionId,
-            questionId,
-            DEFAULT_LANGUAGE_ID
+            userId = getBaseLineUserId(),
+            surveyId = surveyId,
+            sectionId = sectionId,
+            questionId = questionId,
+            languageId = DEFAULT_LANGUAGE_ID
         )
         optionList.forEach { optionItemEntity ->
             updatedOptionListInDefaultLanguage.add(
