@@ -406,7 +406,7 @@
     <string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>--><![CDATA[Save]]></string>
     <string name="ok_text">Ok</string>
     <string name="home" translatable="false">Home</string>
-    <string name="mission" translatable="false">Missions</string>
+    <string name="mission" translatable="false">Samwng</string>
     <string name="task" translatable="false">Task</string>
     <string name="day_tab" translatable="false">Day</string>
     <string name="search" translatable="false">Search</string>
@@ -498,4 +498,7 @@
     <string name="hamlets_item_text_plural">kami chikon</string>
     <string name="hamlets_item_text_singular">kami chikon</string>
     <string name="activity_completed_message">Nwng kaham kheno "%1$s" pai kha</string>
+    <string name="total_addelabel">"Total added: "</string>
+    <string name="view_summary_label">Summary Khulok di</string>
+    <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
 </resources>
