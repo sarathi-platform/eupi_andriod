@@ -38,7 +38,6 @@ class ExportImportRepositoryImpl @Inject constructor(
     override fun getUserID(): String {
         return prefRepo.getUserId()
     }
-
     override fun getUserEmail(): String {
         return prefRepo.getPref(PREF_KEY_EMAIL, BLANK_STRING)?: BLANK_STRING
     }
