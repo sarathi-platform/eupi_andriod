@@ -80,14 +80,7 @@ fun SettingBSScreen(
                 SettingTagEnum.BACKUP_RECOVERY.name
             )
         )
-        list.add(
-            SettingOptionModel(
-                6,
-                context.getString(R.string.regenerate_all_events),
-                BLANK_STRING,
-                SettingTagEnum.REGENERATE_EVENTS.name
-            )
-        )
+
         viewModel._optionList.value = list
     }
 
@@ -121,9 +114,6 @@ fun SettingBSScreen(
                     navController.navigate(SettingBSScreens.BACKUP_RECOVERY_SCREEN.route)
                 }
 
-                SettingTagEnum.REGENERATE_EVENTS.name -> {
-                    viewModel.regenerateEvents(context.getString(R.string.share_export_file))
-                }
             }
        },
        onLogoutClick = {

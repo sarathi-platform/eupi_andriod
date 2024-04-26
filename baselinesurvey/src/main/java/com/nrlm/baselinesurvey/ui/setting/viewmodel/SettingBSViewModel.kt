@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SettingBSUserCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
@@ -34,7 +33,6 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingBSViewModel @Inject constructor(
     private val settingBSUserCase: SettingBSUserCase,
-    private val eventWriterHelperImpl: EventWriterHelperImpl,
     val prefRepo: PrefRepo
 ):BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
@@ -187,26 +185,5 @@ class SettingBSViewModel @Inject constructor(
         return settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
     }
 
-        fun regenerateEvents(title: String) {
-            onEvent(LoaderEvent.UpdateLoaderState(true))
 
-            CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-                try {
-
-
-                    eventWriterHelperImpl.regenerateAllEvent()
-                    compressEventData(title)
-                    withContext(Dispatchers.Main) {
-                        onEvent(LoaderEvent.UpdateLoaderState(false))
-                    }
-                } catch (exception: Exception) {
-                    BaselineLogger.e("RegenerateEvent", exception.message ?: "")
-                    exception.printStackTrace()
-                    withContext(Dispatchers.Main) {
-                        onEvent(LoaderEvent.UpdateLoaderState(false))
-                    }
-                }
-
-            }
-        }
     }

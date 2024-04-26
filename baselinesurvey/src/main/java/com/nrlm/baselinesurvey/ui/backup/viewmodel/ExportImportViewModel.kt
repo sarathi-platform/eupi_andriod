@@ -11,6 +11,7 @@ import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.ui.backup.domain.use_case.ExportImportUseCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
@@ -37,7 +38,8 @@ import kotlin.system.exitProcess
 
 @HiltViewModel
 class ExportImportViewModel @Inject constructor(
-    private val exportImportUseCase: ExportImportUseCase
+    private val exportImportUseCase: ExportImportUseCase,
+    private val eventWriterHelperImpl: EventWriterHelperImpl
 ): BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val optionList: State<List<SettingOptionModel>> get() = _optionList
@@ -45,7 +47,7 @@ class ExportImportViewModel @Inject constructor(
     val showLoadConfirmationDialog = mutableStateOf(false)
     val showRestartAppDialog = mutableStateOf(false)
     private val userUniqueKey= mutableStateOf(BLANK_STRING)
-    private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
+    private val _loaderState = mutableStateOf<LoaderState>(LoaderState(false))
 
     val loaderState: State<LoaderState> get() = _loaderState
 
@@ -196,6 +198,29 @@ fun exportOnlyLogFile(context: Context){
         ) {
             BaselineLogger.d("ExportImportViewModel","importSelectedDB Success ----")
             onImportSuccess()
+        }
+    }
+
+    fun regenerateEvents(title: String) {
+        onEvent(LoaderEvent.UpdateLoaderState(true))
+
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+
+
+                eventWriterHelperImpl.regenerateAllEvent()
+                compressEventData(title)
+                withContext(Dispatchers.Main) {
+                    onEvent(LoaderEvent.UpdateLoaderState(false))
+                }
+            } catch (exception: Exception) {
+                BaselineLogger.e("RegenerateEvent", exception.message ?: "")
+                exception.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    onEvent(LoaderEvent.UpdateLoaderState(false))
+                }
+            }
+
         }
     }
 }
