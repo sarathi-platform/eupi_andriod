@@ -109,35 +109,5 @@ data class ImageUploadRequest(
             )
         }
 
-        fun getRequestObjectForUploadImage(
-            didi: SurveyeeEntity,
-            subjectType: String,
-            filePath: String,
-            location: String,
-            userType: String,
-            referenceId: String,
-            questionEntity: QuestionEntity?,
-            optionItemEntity: OptionItemEntity?,
-            sectionDetails: SectionEntity,
-            questionId: Int
-        ): ImageUploadRequest {
-            return ImageUploadRequest(
-                subjectId = didi.didiId.toString(),
-                filePath = filePath,
-                userType = userType,
-                location = location,
-                dateCreated = System.currentTimeMillis(),
-                languageId = sectionDetails.languageId,
-                subjectType = subjectType,
-                surveyId = sectionDetails.surveyId,
-                sectionId = sectionDetails.sectionId,
-                questionId = questionId,
-                questionType = questionEntity?.type ?: QuestionType.Form.name,
-                tag = questionEntity?.tag ?: 0,
-                optionId = optionItemEntity?.optionId ?: 0,
-                referenceId = referenceId,
-                optionTag = optionItemEntity?.optionTag ?: 0
-            )
-        }
     }
 }

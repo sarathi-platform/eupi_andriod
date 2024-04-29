@@ -67,7 +67,6 @@ class SettingBSViewModel @Inject constructor(
 
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState(false))
-    private val _loaderState = mutableStateOf<LoaderState>(LoaderState(false))
     val loaderState: State<LoaderState> get() = _loaderState
     val showLogoutConfirmationDialog = mutableStateOf(false)
 
@@ -173,15 +172,7 @@ class SettingBSViewModel @Inject constructor(
                 }
 
                 BaselineLogger.d("SettingBSViewModel", " Share Dialog Open ${fileUriList.json()}" )
-                openShareSheet(fileUriList, title)
-                val listFileUri = listOf(fileUri, imageUri)
-                openShareSheet(
-                    fileUri = null,
-                    listFileUri = listFileUri,
-                    title = title,
-                    type = ZIP_MIME_TYPE,
-                    intentType = Intent.ACTION_SEND_MULTIPLE
-                )
+                openShareSheet(fileUriList, title, ZIP_MIME_TYPE)
                 CoreSharedPrefs.getInstance(BaselineCore.getAppContext()).setFileExported(true)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             } catch (exception: Exception) {
@@ -254,17 +245,10 @@ class SettingBSViewModel @Inject constructor(
                 }-${prefRepo.getMobileNumber()}"
                 val baseLinePath = generateCsv(title = "Baseline - $title", baseLineListQna = baseLineListQna.toCsvR(), hamletListQna = null)
                 val hamletPath = generateCsv(title = "Hamlet - $title", baseLineListQna = null, hamletListQna = hamletListQna.toCsv())
-                val listPath: ArrayList<Uri?> = ArrayList()
-                listPath.add(baseLinePath)
-                listPath.add(hamletPath)
-
-                openShareSheet(
-                    fileUri = null,
-                    listFileUri = listPath,
-                    title = title,
-                    type = EXCEL_TYPE,
-                    intentType = Intent.ACTION_SEND_MULTIPLE
-                )
+                val listPath: ArrayList<Uri>? = ArrayList()
+                baseLinePath?.let { listPath?.add(it) }
+                hamletPath?.let { listPath?.add(it) }
+                openShareSheet(listPath, title, EXCEL_TYPE)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             } catch (exception: Exception) {
                 exception.printStackTrace()
@@ -273,28 +257,10 @@ class SettingBSViewModel @Inject constructor(
         }
     }
 
-    private fun openShareSheet(
-        fileUri: Uri?,
-        listFileUri: List<Uri?>?,
-        title: String,
-        type: String,
-        intentType: String
-    ) {
-        val shareIntent = Intent(intentType)
-        shareIntent.setType(type)
-        if (listFileUri.isNullOrEmpty()) {
-            shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri)
-        } else {
-            shareIntent.putExtra(Intent.EXTRA_STREAM, ArrayList(listFileUri))
-        }
-        shareIntent.putExtra(Intent.EXTRA_TITLE, title)
-        val chooserIntent = Intent.createChooser(shareIntent, title)
-        BaselineCore.startExternalApp(chooserIntent)
-    }
-    private fun openShareSheet( fileUriList: ArrayList<Uri>?, title: String) {
+    private fun openShareSheet( fileUriList: ArrayList<Uri>?, title: String, type: String,) {
         if(fileUriList?.isNotEmpty() == true){
             val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
-            shareIntent.setType(ZIP_MIME_TYPE)
+            shareIntent.setType(type)
             shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
             shareIntent.putExtra(Intent.EXTRA_TITLE, title)
             val chooserIntent = Intent.createChooser(shareIntent, title)
@@ -315,33 +281,6 @@ class SettingBSViewModel @Inject constructor(
 
    fun getUserMobileNumber():String{
         return settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
-    }
-
-
-    }
-
-
-    fun regenerateEvents(title: String) {
-        onEvent(LoaderEvent.UpdateLoaderState(true))
-
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            try {
-
-
-                eventWriterHelperImpl.regenerateAllEvent()
-                compressEventData(title)
-                withContext(Dispatchers.Main) {
-                    onEvent(LoaderEvent.UpdateLoaderState(false))
-                }
-            } catch (exception: Exception) {
-                BaselineLogger.e("RegenerateEvent", exception.message ?: "")
-                exception.printStackTrace()
-                withContext(Dispatchers.Main) {
-                    onEvent(LoaderEvent.UpdateLoaderState(false))
-                }
-            }
-
-        }
     }
 
     suspend fun generateCsv(
