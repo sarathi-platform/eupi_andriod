@@ -466,6 +466,6 @@
     <string name="total_addelabel">"Total added: "</string>
     <string name="view_summary_label">View Summary</string>
     <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
-
+    <string name="export_baseline_qna">बेसलाइन QnA निर्यात करें</string>
 
 </resources>
