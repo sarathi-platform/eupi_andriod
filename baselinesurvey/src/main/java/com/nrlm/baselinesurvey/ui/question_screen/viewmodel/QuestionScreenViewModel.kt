@@ -114,6 +114,7 @@ class QuestionScreenViewModel @Inject constructor(
     val formResponseEntityToQuestionMap: State<Map<Int, List<FormQuestionResponseEntity>>> get() = _formResponseEntityToQuestionMap
 
     val didiDetails: MutableState<SurveyeeEntity?> = mutableStateOf(null)
+    val didiInfoState: MutableState<DidiInfoEntity?> = mutableStateOf(null)
 
     var isEditAllowed: Boolean = true
 
@@ -126,6 +127,10 @@ class QuestionScreenViewModel @Inject constructor(
 
     private var _formResponseObjectDtoList = mutableStateOf(mutableListOf<FormResponseObjectDto>())
     val formResponseObjectDtoList: State<List<FormResponseObjectDto>> get() = _formResponseObjectDtoList
+
+    var referenceIdForFormWithNone: String = BLANK_STRING
+
+    val formWithNoneOptionMarkedSet = mutableSetOf<Int>()
 
     fun initQuestionScreenHandler(surveyeeId: Int, subjectId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -152,6 +157,11 @@ class QuestionScreenViewModel @Inject constructor(
             sectionId = sectionId,
             didiId = didiId
         )
+    }
+
+    suspend fun getDidiInfoObject(didiId: Int) {
+        didiInfoState.value =
+            questionScreenUseCase.getSurveyeeDetailsUserCase.getDidiIndoDetail(didiId)
     }
 
     suspend fun getDidiInfoObjectLive(didiId: Int): LiveData<List<DidiInfoEntity>> {
@@ -259,6 +269,9 @@ class QuestionScreenViewModel @Inject constructor(
                 it.questionEntity?.type == QuestionType.Form.name || it
                     .questionEntity?.type == QuestionType.FormWithNone.name
             }
+
+        answeredQuestionCount.clear()
+
         map.keys.forEach { questionId ->
             onEvent(
                 QuestionScreenEvents.UpdateAnsweredQuestionCount(
@@ -449,7 +462,7 @@ class QuestionScreenViewModel @Inject constructor(
 
             is EventWriterEvents.SaveAnswerEvent -> {
                 CoroutineScope(Dispatchers.IO).launch {
-                    if (event.questionType == QuestionType.Form.name) {
+                    if (event.questionType == QuestionType.Form.name || event.questionType == QuestionType.FormWithNone.name) {
                         val saveAnswerEvent =
                             eventsWriterHelperImpl.createSaveAnswerEventForFormTypeQuestion(
                                 surveyId = event.surveyId,
@@ -848,6 +861,9 @@ class QuestionScreenViewModel @Inject constructor(
             }
 
             is QuestionTypeEvent.UpdateConditionQuestionStateForMultipleOption -> {
+                if (event.questionEntityState?.questionEntity?.type != QuestionType.MultiSelect.name && event.questionEntityState?.questionEntity?.type != QuestionType.Grid.name)
+                    return
+
                 val mOptionItemList = event.questionEntityState?.optionItemEntityState?.toList()
                 val unselectedOptions = mutableListOf<OptionItemEntityState>()
                 // When All unselected
@@ -1064,8 +1080,10 @@ class QuestionScreenViewModel @Inject constructor(
                                     inputTypeQuestionAnswerEntityList.value.toMutableList()
                                 val index =
                                     updatedList.map { it.questionId }.indexOf(question.questionId)
-                                updatedList.removeAt(index)
-                                _inputTypeQuestionAnswerEntityList.value = updatedList
+                                if (index != -1) {
+                                    updatedList.removeAt(index)
+                                    _inputTypeQuestionAnswerEntityList.value = updatedList
+                                }
                             }
                             val questionAnswerMapping =
                                 _sectionDetail.value.questionAnswerMapping.toMutableMap()
@@ -1114,24 +1132,14 @@ class QuestionScreenViewModel @Inject constructor(
                 }
             }*/
 
-            is QuestionTypeEvent.FormQuestionMarkedWithNone -> {
+            is QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     val finalFormQuestionResponseList = mutableListOf<FormQuestionResponseEntity>()
 
                     val question = questionEntityStateList.toList()
                         .find { it.questionId == event.questionId }
 
-                    val formQuestionResponseItem = FormQuestionResponseEntity(
-                        didiId = didiDetails.value?.didiId ?: 0,
-                        surveyId = sectionDetail.value.surveyId,
-                        sectionId = sectionDetail.value.sectionId,
-                        questionId = event.questionId,
-                        optionId = event.optionId,
-                        selectedValue = "Yes",
-                        referenceId = UUID.randomUUID().toString()
-                    )
-
-                    finalFormQuestionResponseList.add(formQuestionResponseItem)
+                    finalFormQuestionResponseList.addAll(event.formQuestionResponseList)
 
                     finalFormQuestionResponseList.distinctBy { it.optionId }.forEach {
                         val existingFormQuestionResponseEntity =
@@ -1148,6 +1156,18 @@ class QuestionScreenViewModel @Inject constructor(
                             )
                         }
                     }
+
+                    event.formQuestionResponseList.find {
+                        it.optionId == question?.optionItemEntityState?.find {
+                            it
+                                .optionItemEntity?.optionType == QuestionType.FormWithNone.name
+                        }?.optionItemEntity?.optionId
+                    }?.optionId?.let {
+                        formWithNoneOptionMarkedSet.add(
+                            it
+                        )
+                    }
+
                     val completeOptionListForQuestion =
                         questionScreenUseCase.getFormQuestionResponseUseCase
                             .getFormResponsesForQuestion(
@@ -1571,7 +1591,16 @@ class QuestionScreenViewModel @Inject constructor(
     }
 
     fun getFormResponseItemCountForQuestion(questionId: Int?): Int {
-        val formResponseItemListForQuestion = formResponseEntityToQuestionMap.value[questionId]
+        val question = questionEntityStateList.find { it.questionId == questionId }
+        val formWithNoneOption =
+            question?.optionItemEntityState?.find { it.optionItemEntity?.optionType == QuestionType.FormWithNone.name }
+        val formResponseItemListForQuestion =
+            formResponseEntityToQuestionMap.value[questionId]?.filter { it.optionId != formWithNoneOption?.optionId }
+//        val map = formResponseItemListForQuestion?.groupBy { it.referenceId }
+//        var size = map?.keys?.size ?: 0
+//        map?.forEach {
+//            if (if)
+//        }
         return formResponseItemListForQuestion?.groupBy { it.referenceId }?.keys?.size ?: 0
     }
 
@@ -1610,5 +1639,19 @@ class QuestionScreenViewModel @Inject constructor(
             return 0.0f
 
     }
+
+    fun getReferenceIdForFormWithNoneQuestion(): String {
+        if (referenceIdForFormWithNone == BLANK_STRING)
+            referenceIdForFormWithNone = UUID.randomUUID().toString()
+
+        return referenceIdForFormWithNone
+    }
+
+    fun setReferenceIdForFormWithNoneQuestion(referenceId: String) {
+        if (referenceIdForFormWithNone == BLANK_STRING)
+            referenceIdForFormWithNone = referenceId
+    }
+
+    fun getUserId(): String = questionScreenUseCase.getSectionUseCase.getUniqueUserIdentifier()
 
 }

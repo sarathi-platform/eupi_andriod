@@ -32,9 +32,9 @@ class FetchMissionDataFromNetworkUseCase(
                         BLANK_STRING,
                         DEFAULT_SUCCESS_CODE
                     )
-                    repository.deleteMissionsFromDB()
+                    /*repository.deleteMissionsFromDB()
                     repository.deleteMissionActivitiesFromDB()
-                    repository.deleteActivityTasksFromDB()
+                    repository.deleteActivityTasksFromDB()*/
                     missionApiResponse.forEach { mission ->
                         var activityTaskSize = 0
                         mission.activities.forEach { activity ->

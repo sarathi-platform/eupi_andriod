@@ -274,7 +274,10 @@ fun SurveyeeCardComponent(
                                 ),
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text(text = "Not Available", style = smallTextStyleNormalWeight)
+                                Text(
+                                    text = stringResource(id = R.string.not_avaliable),
+                                    style = smallTextStyleNormalWeight
+                                )
                             }
                         } else {
                             Spacer(modifier = Modifier.weight(1f))

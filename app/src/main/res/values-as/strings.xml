@@ -394,6 +394,7 @@
     <string name="are_you_sure_you_want_to_load_data_from_server">" আপুনি চাৰ্ভাৰৰ পৰা সতেজ তথ্য পুনৰায় ল'ড কৰাটো নিশ্চিত নেকি যি অচিংক কৰা তথ্য হেৰুৱাব পাৰে?"</string>
     <string name="didi_verified_by_bpc">বিপিচিৰ দ্বাৰা পৰীক্ষা কৰা ডিডিছ</string>
     <string name="bpc_verification_in_progress_village_banner_text">BPC যাচাইকরণ প্রক্রিয়াধীন</string>
+    <string name="recover_old_data">পুৰণি তথ্য পুনৰুদ্ধাৰ কৰক</string>
 
 
 </resources>

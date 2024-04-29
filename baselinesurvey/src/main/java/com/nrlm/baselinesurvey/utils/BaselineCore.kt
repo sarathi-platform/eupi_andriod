@@ -33,6 +33,8 @@ object BaselineCore {
 
     private var referenceId: String = BLANK_STRING
 
+    private var isEditAllowedForNoneMarkedQuestion: Boolean = true
+
     fun getCurrentActivityName() = currentActivityName
 
     fun setCurrentActivityName(activityName: String) {
@@ -43,6 +45,12 @@ object BaselineCore {
 
     fun setReferenceId(mReferenceId: String) {
         referenceId = mReferenceId
+    }
+
+    fun isEditAllowedForNoneMarkedQuestion() = isEditAllowedForNoneMarkedQuestion
+
+    fun setIsEditAllowedForNoneMarkedQuestionFlag(flag: Boolean) {
+        isEditAllowedForNoneMarkedQuestion = flag
     }
 
 

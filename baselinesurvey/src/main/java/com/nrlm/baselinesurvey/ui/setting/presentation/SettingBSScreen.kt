@@ -22,9 +22,10 @@ import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSetting
 import com.nrlm.baselinesurvey.ui.setting.domain.SettingTagEnum
 import com.nrlm.baselinesurvey.ui.setting.viewmodel.SettingBSViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
+import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nrlm.baselinesurvey.utils.ShowCustomDialog
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nudge.core.model.SettingOptionModel
-import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
@@ -38,21 +39,9 @@ fun SettingBSScreen(
     val loaderState = viewModel.loaderState
 
     LaunchedEffect(key1 = true){
-        val lastSyncTimeInMS = System.currentTimeMillis()
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.US)
-        val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
-        /*list.add(
-            SettingOptionModel(
-                1,
-                context.getString(R.string.sync_up),
-                context.getString(R.string.last_syncup_text)
-                    .replace("{LAST_SYNC_TIME}", lastSyncTime.toString()),
-                SettingTagEnum.SYNC_NOW.name
-            )
-        )*/
         list.add(
             SettingOptionModel(
-                2,
+                1,
                 context.getString(R.string.profile),
                 BLANK_STRING,
                 SettingTagEnum.PROFILE.name
@@ -60,48 +49,84 @@ fun SettingBSScreen(
         )
         list.add(
             SettingOptionModel(
-                3,
+                2,
                 context.getString(R.string.language_text),
                 BLANK_STRING,
                 SettingTagEnum.LANGUAGE.name
             )
         )
+
         list.add(
             SettingOptionModel(
-                4,
-                context.getString(R.string.share_logs),
+                3,
+                context.getString(R.string.export_backup_file),
                 BLANK_STRING,
-                SettingTagEnum.SHARE_LOGS.name
+                SettingTagEnum.EXPORT_BACKUP_FILE.name
             )
         )
-        list.add(
+
+        /*list.add(
             SettingOptionModel(
-                5,
+                4,
                 context.getString(R.string.export_file),
                 BLANK_STRING,
                 SettingTagEnum.EXPORT_FILE.name
+            )
+        )*/
+        list.add(
+            SettingOptionModel(
+                5,
+                context.getString(R.string.backup_recovery),
+                BLANK_STRING,
+                SettingTagEnum.BACKUP_RECOVERY.name
             )
         )
         list.add(
             SettingOptionModel(
                 6,
-                context.getString(R.string.regenerate_all_events),
-                BLANK_STRING,
-                SettingTagEnum.REGENERATE_EVENTS.name
-            )
-        )
-        list.add(
-            SettingOptionModel(
-                5,
                 context.getString(R.string.export_baseline_qna),
                 BLANK_STRING,
                 SettingTagEnum.EXPORT_BASELINE_QNA.name
             )
         )
+
         viewModel._optionList.value = list
     }
 
 
+    if(viewModel.showLogoutConfirmationDialog.value){
+        ShowCustomDialog(title = stringResource(id = R.string.logout),
+            message = stringResource(id = R.string.logout_confirmation),
+            positiveButtonTitle = stringResource(id = R.string.yes_text),
+            negativeButtonTitle  = stringResource(id = R.string.option_no),
+            onPositiveButtonClick = {
+                BaselineLogger.d("SettingScreen","Logout Button Click")
+                viewModel.performLogout {
+                    viewModel.showLogoutConfirmationDialog.value=false
+                    if (it)
+                        navController.navigate(Graph.LOGOUT_GRAPH)
+                    else showCustomToast(context, context.getString(R.string.something_went_wrong))
+                }
+            }, onNegativeButtonClick = {
+                viewModel.showLogoutConfirmationDialog.value=false
+
+            })
+    }
+
+    if (loaderState.value.isLoaderVisible) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                color = blueDark,
+                modifier = Modifier
+                    .size(28.dp)
+                    .align(Alignment.Center)
+            )
+        }
+    }
 
     CommonSettingScreen(
         title = stringResource(id = R.string.settings_screen_title),
@@ -111,6 +136,8 @@ fun SettingBSScreen(
             navController.popBackStack()
         },
         onItemClick = { index, option ->
+
+            BaselineLogger.d("SettingScreen","${option.tag} :: ${option.title} :: Click")
             when (option.tag) {
                 SettingTagEnum.LANGUAGE.name -> {
                     viewModel.saveLanguagePageFrom()
@@ -122,28 +149,22 @@ fun SettingBSScreen(
 
                 }
 
-                SettingTagEnum.SHARE_LOGS.name -> {
-                    viewModel.buildAndShareLogs()
-                }
-
-                SettingTagEnum.EXPORT_FILE.name -> {
+                SettingTagEnum.EXPORT_BACKUP_FILE.name -> {
                     viewModel.compressEventData(context.getString(R.string.share_export_file))
                 }
 
-                SettingTagEnum.REGENERATE_EVENTS.name -> {
-                    viewModel.regenerateEvents(context.getString(R.string.share_export_file))
+                SettingTagEnum.BACKUP_RECOVERY.name -> {
+                    navController.navigate(SettingBSScreens.BACKUP_RECOVERY_SCREEN.route)
                 }
+
                 SettingTagEnum.EXPORT_BASELINE_QNA.name -> {
                     viewModel.exportBaseLineQnA()
                 }
+
             }
        },
        onLogoutClick = {
-           viewModel.performLogout {
-               if (it)
-                   navController.navigate(Graph.LOGOUT_GRAPH)
-               else showCustomToast(context, context.getString(R.string.something_went_wrong))
-           }
+           viewModel.showLogoutConfirmationDialog.value=true
        }
    )
     if (loaderState.value.isLoaderVisible) {

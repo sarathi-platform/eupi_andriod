@@ -8,9 +8,12 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import androidx.core.net.toUri
 import com.nudge.core.SARATHI_DIRECTORY_NAME
 import com.nudge.core.ZIP_MIME_TYPE
+import com.nudge.core.getFirstName
+import com.nudge.core.json
 import java.io.File
 
 class ZipFileCompression : IFileCompressor {
@@ -23,14 +26,15 @@ class ZipFileCompression : IFileCompressor {
     ): Uri? {
 
         val zipFileName =
-            "${getFirstName(userName)}_${mobileNo}_sarathi_${System.currentTimeMillis()}_"
+            "${getFirstName(userName)}_${mobileNo}_Sarathi_${System.currentTimeMillis()}_"
 
         return compressData(
             context,
             zipFileName + "file",
             Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + mobileNo,
-            extraUris
-        );
+            extraUris,
+            mobileNo
+        )
     }
 
     //TODO need to be remove mobile Number parameter
@@ -46,20 +50,21 @@ class ZipFileCompression : IFileCompressor {
             context,
             zipFileName + "image",
             filePath,
-            listOf()
+            listOf(),
+            mobileNo
         )
     }
 
     override fun getCompressionType(): String {
         return "ZIP"
     }
-
-
-    private fun compressData(
+    //TODO: Need to pass Filter data/File Type condition using parameter
+    fun compressData(
         context: Context,
         zipFileName: String,
         filePathToZipped: String,
-        extraUris: List<Pair<String, Uri?>>
+        extraUris: List<Pair<String, Uri?>>,
+        folderName:String
     ): Uri? {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val contentValues = ContentValues().apply {
@@ -67,7 +72,7 @@ class ZipFileCompression : IFileCompressor {
                 put(MediaStore.MediaColumns.MIME_TYPE, ZIP_MIME_TYPE)
                 put(
                     MediaStore.MediaColumns.RELATIVE_PATH,
-                    Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME
+                    Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME +"/"+folderName
                 )
             }
 
@@ -94,12 +99,14 @@ class ZipFileCompression : IFileCompressor {
                     if (idIndex > -1) {
                         val id = cursor.getLong(idIndex)
                         val displayName = cursor.getString(displayNameIndex)
-                        fileUris.add(
-                            Pair(
-                                first = displayName,
-                                second = ContentUris.withAppendedId(extVolumeUri, id)
+                        if(!displayName.contains("zip")) {
+                            fileUris.add(
+                                Pair(
+                                    first = displayName,
+                                    second = ContentUris.withAppendedId(extVolumeUri, id)
+                                )
                             )
-                        )
+                        }
                     }
 
 
@@ -110,17 +117,17 @@ class ZipFileCompression : IFileCompressor {
 
             val zipFileUri = context.contentResolver.insert(extVolumeUri, contentValues)
 
-            fileUris.addAll(extraUris)
+            fileUris.addAll(extraUris.filter { !it.first.contains("zip") })
             ZipManager.zip(fileUris, zipFileUri, context)
 
-            return zipFileUri;
+            return zipFileUri
         } else {
             try {
 
                 val commonFilePath: File = Environment.getExternalStoragePublicDirectory("")
 
                 val zippedFileDirectoryPath =
-                    File(commonFilePath.path + "/" + Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME)
+                    File(commonFilePath.path + "/" + Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME+"/"+folderName)
 
                 if (!zippedFileDirectoryPath.exists()) {
                     zippedFileDirectoryPath.mkdirs()
@@ -130,13 +137,13 @@ class ZipFileCompression : IFileCompressor {
 
                 val directoryPathToBeZipped = File(commonFilePath.path + "/" + filePathToZipped)
 
-                val s: List<Pair<String, Uri>>? = directoryPathToBeZipped.listFiles()?.map {
-                    Pair(it.name, it.toUri());
+                val s: List<Pair<String, Uri>>? = directoryPathToBeZipped.listFiles()?.filter { it.isFile && !it.name.contains("zip") }?.map {
+                    Pair(it.name, it.toUri())
                 }
                 if (s != null) {
                     val filesToBeZipped = ArrayList<Pair<String, Uri?>>()
                     filesToBeZipped.addAll(s)
-                    filesToBeZipped.addAll(extraUris)
+                    filesToBeZipped.addAll(extraUris.filter { !it.first.contains("zip") })
                     ZipManager.zip(
                         context = context,
                         files = filesToBeZipped,
@@ -153,8 +160,4 @@ class ZipFileCompression : IFileCompressor {
 
     }
 
-    private fun getFirstName(name: String): String {
-        return name.trim().split(" ").first()
-
-    }
 }

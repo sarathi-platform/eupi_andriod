@@ -181,19 +181,13 @@ fun getMinutes(): List<ValuesDto> {
 }
 
 fun getMonths(): List<ValuesDto> {
-    return listOf(
-        ValuesDto(id = 1, "1"),
-        ValuesDto(2, "2"),
-        ValuesDto(3, "3"),
-        ValuesDto(4, "4"),
-        ValuesDto(5, "5"),
-        ValuesDto(6, "6"),
-        ValuesDto(7, "7"),
-        ValuesDto(8, "8"),
-        ValuesDto(9, "9"),
-        ValuesDto(10, "10"),
-        ValuesDto(11, "11")
-    )
+
+    val list = ArrayList<ValuesDto>()
+    (1..11).toList().forEach {
+        list.add(ValuesDto(it, it.toString()))
+    }
+
+    return list
 }
 
 fun getDelimiter(typePicker: String): String {
@@ -211,13 +205,13 @@ fun getFirstValue(typePicker: String, defaultValue: String): String {
             DELIMITER_TIME,
             ignoreCase = true
         )
-            .first() else "00"
+            .first() else ""
     } else if (getTypePicker(typePicker)?.equals(QuestionType.YrsMonthPicker.name) == true) {
         return if (defaultValue.contains(DELIMITER_YEAR)) defaultValue.split(
             DELIMITER_YEAR,
             ignoreCase = true
         )
-            .first() else "00"
+            .first() else ""
     }
     return BLANK_STRING
 }
@@ -227,14 +221,14 @@ fun getSecondValue(typePicker: String, defaultValue: String): String {
         return if (defaultValue.contains(DELIMITER_TIME)) defaultValue.split(
             DELIMITER_TIME,
             ignoreCase = true
-        )[1] else "00"
+        )[1] else ""
     } else if (getTypePicker(typePicker)?.equals(QuestionType.YrsMonthPicker.name) == true) {
         return if (defaultValue.contains(DELIMITER_YEAR)) defaultValue.split(
             DELIMITER_YEAR,
             ignoreCase = true
-        )[1] else "00"
+        )[1] else ""
     }
-    return "Select"
+    return BLANK_STRING
 }
 
 fun getTypePicker(questionType: String): String? {

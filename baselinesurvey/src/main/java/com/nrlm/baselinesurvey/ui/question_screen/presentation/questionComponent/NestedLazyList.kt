@@ -78,6 +78,7 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.convertInputTypeQuestionToEventOptionItemDto
+import com.nrlm.baselinesurvey.utils.convertOptionItemEntityToFormResponseEntityForFormWithNone
 import com.nrlm.baselinesurvey.utils.convertToSaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.findOptionFromId
 import com.nrlm.baselinesurvey.utils.mapToOptionItem
@@ -152,6 +153,7 @@ fun NestedLazyList(
     DisposableEffect(key1 = context) {
         coroutineScope.launch(Dispatchers.IO) {
             try {
+                questionScreenViewModel.getDidiInfoObject(surveyeeId)
                 questionScreenViewModel.didiInfoObjectLive = questionScreenViewModel.getDidiInfoObjectLive(surveyeeId)
                 withContext(Dispatchers.Main) {
                     questionScreenViewModel.didiInfoObjectLive.observe(lifecycleOwner) {
@@ -661,8 +663,7 @@ fun NestedLazyList(
                             }
 
                             QuestionType.Form.name, //TODO handle customisation for no income type question.
-                            QuestionType.DidiDetails.name,
-                            QuestionType.FormWithNone.name -> {
+                            QuestionType.DidiDetails.name -> {
                                 val contentData =
                                     sectionDetails.questionContentMapping[question.questionId]
                                 val itemCount =
@@ -684,20 +685,7 @@ fun NestedLazyList(
                                     itemCount = itemCount,
                                     maxCustomHeight = maxHeight,
                                     summaryValue = summaryValue.toString(),
-                                    isEditAllowed = questionScreenViewModel.isEditAllowed
-                                            && !(questionScreenViewModel.isNoneMarkedForFormQuestion.value[question.questionId
-                                        ?: 0] ?: false || questionScreenViewModel.isFormQuestionMarkedWithNone(
-                                        question.questionId ?: 0,
-                                        question.optionItemEntityState
-                                            .find { it.optionItemEntity?.optionType == QuestionType.FormWithNone.name }
-                                            ?.optionId ?: 0)),
-                                    isNoneQuestionAvailable = question.questionEntity.type?.toLowerCase() == QuestionType.FormWithNone.name.toLowerCase(),
-                                    isNoneQuestionMarked = (questionScreenViewModel.isNoneMarkedForFormQuestion.value[question.questionId
-                                        ?: 0] ?: false || questionScreenViewModel.isFormQuestionMarkedWithNone(
-                                        question.questionId ?: 0,
-                                        question.optionItemEntityState
-                                            .find { it.optionItemEntity?.optionType == QuestionType.FormWithNone.name }
-                                            ?.optionId ?: 0)),
+                                    isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionIndex ->
                                         //TODO need to be dynamic.
                                         if (question.questionEntity.questionSummary.equals(
@@ -728,19 +716,136 @@ fun NestedLazyList(
                                         }
                                     },
                                     onMediaTypeDescriptionAction = { descriptionContentType, contentLink -> },
-                                    onNoneAnswerMarked = { questionId, optionId ->
-                                        questionScreenViewModel.isNoneMarkedForFormQuestion.value[questionId] =
-                                            true
-                                        questionScreenViewModel.onEvent(
-                                            QuestionTypeEvent.FormQuestionMarkedWithNone(
-                                                questionId,
-                                                optionId
+                                    onViewSummaryClicked = { questionId ->
+                                        navigateToFormQuestionSummaryScreen(
+                                            navController = navController,
+                                            surveyId = sectionDetails.surveyId,
+                                            sectionId = sectionDetails.sectionId,
+                                            questionId = questionId,
+                                            didiId = surveyeeId
+                                        )
+                                    }
+                                )
+                            }
+
+                            QuestionType.FormWithNone.name -> {
+
+                                val contentData =
+                                    sectionDetails.questionContentMapping[question.questionId]
+                                val itemCount =
+                                    questionScreenViewModel.getFormResponseItemCountForQuestion(
+                                        question.questionId
+                                    )
+
+                                val noneOptionItemEntity =
+                                    question.optionItemEntityState.find { it.optionItemEntity?.optionType == QuestionType.FormWithNone.name }
+
+                                val noneOptionResponse = questionScreenViewModel
+                                    .formResponseEntityToQuestionMap.value[question.questionId]?.find { it.optionId == noneOptionItemEntity?.optionId }
+
+                                if (noneOptionResponse?.selectedValue == noneOptionItemEntity?.optionItemEntity?.values?.first()?.value)
+                                    questionScreenViewModel.setReferenceIdForFormWithNoneQuestion(
+                                        noneOptionResponse?.referenceId ?: BLANK_STRING
+                                    )
+
+                                val summaryValue =
+                                    questionScreenViewModel.getTotalIncomeForLivelihoodQuestion(
+                                        context,
+                                        question.questionId ?: 0
+                                    )
+
+                                FormWithNoneTypeQuestionComponent(
+                                    question = question.questionEntity,
+                                    showQuestionState = question,
+                                    noneOptionValue = noneOptionResponse,
+                                    questionIndex = index,
+                                    contests = contentData,
+                                    itemCount = itemCount,
+                                    maxCustomHeight = maxHeight,
+                                    summaryValue = summaryValue.toString(),
+                                    isEditAllowed = questionScreenViewModel.isEditAllowed,
+                                    onAnswerSelection = { questionId, isNoneMarkedForForm, isFormOpened ->
+                                        if (isNoneMarkedForForm && !isFormOpened) {
+
+                                            val mOptionItem = question.optionItemEntityState.find {
+                                                it
+                                                    .optionItemEntity?.optionType == QuestionType.FormWithNone.name
+                                            }?.optionItemEntity!!
+
+                                            questionScreenViewModel.onEvent(
+                                                QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent(
+                                                    surveyId = sectionDetails.surveyId,
+                                                    sectionId = sectionDetails.sectionId,
+                                                    questionId = question.questionId ?: 0,
+                                                    subjectId = surveyeeId,
+                                                    formQuestionResponseList = listOf(
+                                                        mOptionItem.copy(selectedValue = mOptionItem.values?.first()?.value)
+                                                            .convertOptionItemEntityToFormResponseEntityForFormWithNone(
+                                                                userId = questionScreenViewModel.getUserId(),
+                                                                didiId = surveyeeId,
+                                                                referenceId = questionScreenViewModel.getReferenceIdForFormWithNoneQuestion()
+                                                            )
+                                                    )
+                                                )
                                             )
-                                        )
-                                        answeredQuestionCountIncreased(
-                                            question,
-                                            false
-                                        )
+
+                                            answeredQuestionCountIncreased(
+                                                question,
+                                                false
+                                            )
+
+                                        }
+
+                                        if (!isNoneMarkedForForm && !isFormOpened) {
+
+                                            val mOptionItem = question.optionItemEntityState.find {
+                                                it
+                                                    .optionItemEntity?.optionType == QuestionType.FormWithNone.name
+                                            }?.optionItemEntity!!
+
+                                            questionScreenViewModel.onEvent(
+                                                QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent(
+                                                    surveyId = sectionDetails.surveyId,
+                                                    sectionId = sectionDetails.sectionId,
+                                                    questionId = question.questionId ?: 0,
+                                                    subjectId = surveyeeId,
+                                                    formQuestionResponseList = listOf(
+                                                        mOptionItem.copy(selectedValue = mOptionItem.values?.last()?.value)
+                                                            .convertOptionItemEntityToFormResponseEntityForFormWithNone(
+                                                                userId = questionScreenViewModel.getUserId(),
+                                                                didiId = surveyeeId,
+                                                                referenceId = questionScreenViewModel.getReferenceIdForFormWithNoneQuestion()
+                                                            )
+                                                    )
+                                                )
+                                            )
+
+                                            answeredQuestionCountIncreased(
+                                                question,
+                                                questionScreenViewModel.formWithNoneOptionMarkedSet.contains(
+                                                    mOptionItem.optionId
+                                                )
+                                            )
+                                        }
+
+                                        if (!isNoneMarkedForForm && isFormOpened) {
+//                                            BaselineCore.setReferenceId(questionScreenViewModel.getReferenceIdForFormWithNoneQuestion())
+                                            navigateToFormTypeQuestionScreen(
+                                                navController,
+                                                question.questionEntity,
+                                                surveyId = sectionDetails.surveyId,
+                                                sectionId = sectionDetails.sectionId,
+                                                surveyeeId
+                                            )
+                                        }
+                                    },
+
+                                    onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
+                                    },
+                                    questionDetailExpanded = {
+                                        scope.launch {
+                                            queLazyState.animateScrollToItem(it + 3, -10)
+                                        }
                                     },
                                     onViewSummaryClicked = { questionId ->
                                         navigateToFormQuestionSummaryScreen(
@@ -1011,60 +1116,28 @@ fun NestedLazyList(
                     ) {
                         item {
                             Column {
-//                                val optionItemListWithConditionals: List<OptionItemEntity> =
-//                                    questionScreenViewModel.getOptionItemListWithConditionals()
-                                questionScreenViewModel.didiInfoObjectLive.value?.distinctBy { it.didiId }
-                                    ?.forEach { didiInfoEntity ->
+                                if (questionScreenViewModel.didiInfoState.value != null) {
+                                    DidiInfoCard(
+                                        didiInfoEntity = questionScreenViewModel.didiInfoState.value!!,
+                                        didiDetails = questionScreenViewModel.didiDetails.value,
+                                        isEditAllowed = questionScreenViewModel.isEditAllowed,
+                                        onUpdate = {
+                                            navigateToBaseLineStartScreen(
+                                                surveyeeId = surveyeeId,
+                                                survyId = sectionDetails.surveyId,
+                                                sectionId = sectionDetails.sectionId,
+                                                navController = navController
+                                            )
+                                        }
+                                    )
 
-                                        DidiInfoCard(
-                                            didiInfoEntity = didiInfoEntity,
-                                            didiDetails = questionScreenViewModel.didiDetails.value,
-                                            isEditAllowed = questionScreenViewModel.isEditAllowed,
-                                            onUpdate = {
-                                                navigateToBaseLineStartScreen(
-                                                    surveyeeId = surveyeeId,
-                                                    survyId = sectionDetails.surveyId,
-                                                    sectionId = sectionDetails.sectionId,
-                                                    navController = navController
-                                                )
-                                            }
-                                        )
-
-                                        /*FormResponseCard(
-                                            householdMemberDto = householdMemberDto,
-                                            optionItemListWithConditionals = optionItemListWithConditionals,
-                                            isPictureRequired = householdMemberDto.questionTag.equals(
-                                                stringResource(R.string.household_information_comparision),
-                                                true
-                                            ),
-                                            viewModel = questionScreenViewModel,
-                                            onDelete = {
-                                                questionScreenViewModel.onEvent(
-                                                    QuestionTypeEvent.DeleteFormQuestionResponseEvent(
-                                                        householdMemberDto.referenceId
-                                                    )
-                                                )
-                                                needToUpdateList.value =
-                                                    Pair(true, householdMemberDto.referenceId)
-                                            },
-                                            onUpdate = {
-                                                sectionDetails.questionList.find { it.questionId == householdMemberDto.questionId }
-                                                    ?.let { it1 ->
-                                                        BaselineCore.setReferenceId(householdMemberDto.referenceId)
-                                                        navigateToFormTypeQuestionScreen(
-                                                            navController = navController,
-                                                            question = it1,
-                                                            sectionDetails = sectionDetails,
-                                                            surveyeeId = surveyeeId
-                                                        )
-                                                    }
-                                            })*/
                                         Spacer(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .height(dimen_8_dp)
                                         )
-                                    }
+
+                                }
                             }
                         }
                     }
@@ -1080,26 +1153,5 @@ fun NestedLazyList(
             }
         }
     }
-
-    /*LaunchedEffect(key1 = needToUpdateList.value) {
-        if (needToUpdateList.value.first) {
-            val houseHoldMemberDto = householdMemberDtoList.value.first()
-            householdMemberDtoList.value = householdMemberDtoList.value.apply {
-                this.remove(this.find { it.referenceId == needToUpdateList.value.second })
-            }
-            needToUpdateList.value = NEED_TO_UPDATE_LIST_DEFAULT_VALUE
-            questionScreenViewModel.onEvent(
-                EventWriterEvents.SaveAnswerEvent(
-                    surveyId = sectionDetails.surveyId,
-                    sectionId = sectionDetails.sectionId,
-                    didiId = surveyeeId,
-                    questionId = houseHoldMemberDto.questionId,
-                    questionTag = houseHoldMemberDto.questionTag,
-                    questionType = QuestionType.Form.name,
-                    saveAnswerEventOptionItemDtoList = householdMemberDtoList.value.convertFormResponseObjectToSaveAnswerEventOptionDto()
-                )
-            )
-        }
-    }*/
 
 }

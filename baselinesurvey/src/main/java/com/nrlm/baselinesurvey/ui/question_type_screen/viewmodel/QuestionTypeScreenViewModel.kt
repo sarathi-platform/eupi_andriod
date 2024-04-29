@@ -71,7 +71,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
 
     val formQuestionResponseEntity: State<List<FormQuestionResponseEntity>> get() = _formQuestionResponseEntity
 
-    private val _storeCacheForResponse = mutableListOf<FormQuestionResponseEntity>()
+    private var _storeCacheForResponse = mutableListOf<FormQuestionResponseEntity>()
     val storeCacheForResponse: List<FormQuestionResponseEntity> get() = _storeCacheForResponse
 
 
@@ -484,14 +484,27 @@ class QuestionTypeScreenViewModel @Inject constructor(
                                 )
                             ) {
                                 conditionsDto?.checkConditionForMultiSelectDropDown(event.userInputValue)
+
                             } else {
                                 conditionsDto?.checkCondition(event.userInputValue)
                             }
+                        /*if (conditionCheckResult == false) {
+                            onEvent(
+                                QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption(
+                                    conditionsDto!!
+                                )
+                            )
+                        }*/
                         updateQuestionStateForCondition(conditionCheckResult == true, conditionsDto)
                     }
                 } else {
                     event.optionItemEntityState?.optionItemEntity?.conditions?.forEach { conditionsDto ->
                         updateQuestionStateForCondition(false, conditionsDto)
+                        /*onEvent(
+                            QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption(
+                                conditionsDto!!
+                            )
+                        )*/
                     }
                 }
 
@@ -661,11 +674,13 @@ class QuestionTypeScreenViewModel @Inject constructor(
                     } else {
                         form.selectedValue = event.formQuestionResponseEntity.selectedValue
                         val index = storeCacheForResponse.map { it.optionId }.indexOf(form.optionId)
-                            .coerceIn(0, storeCacheForResponse.size)
+//                            .coerceIn(0, storeCacheForResponse.size)
 
-                        _storeCacheForResponse.removeAt(index)
-                        _storeCacheForResponse.add(index = index, form)
-                        conditionalQuestionNotMarked = false
+                        if (index != -1) {
+                            _storeCacheForResponse.removeAt(index)
+                            _storeCacheForResponse.add(index = index, form)
+                            conditionalQuestionNotMarked = false
+                        }
                     }
                 }
                 updateCachedData()
@@ -689,6 +704,61 @@ class QuestionTypeScreenViewModel @Inject constructor(
                         events = saveAnswerEvent,
                         eventType = EventType.STATEFUL
                     )
+                }
+            }
+
+            is QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption -> {
+                if (event.questionConditionsDto.resultList.isNotEmpty()) {
+                    event.questionConditionsDto.resultList.forEach { questionItem ->
+
+                        questionItem.options?.forEach { optItem ->
+
+                            val optionItem = updatedOptionList.toList()
+                                .find { it.optionId == optItem?.optionId }
+
+                            val isResponseCached = storeCacheForResponse.map { it.optionId }
+                                .contains(optionItem?.optionId ?: 0)
+                            val isResponseSavedInDb =
+                                formQuestionResponseEntity.value.map { it.optionId }
+                                    .contains(optionItem?.optionId ?: 0)
+
+                            val isQuestionAnswered = isResponseCached
+                                    || isResponseSavedInDb
+                            if (isQuestionAnswered) {
+                                if (isResponseSavedInDb) {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        formQuestionScreenUseCase.saveFormQuestionResponseUseCase
+                                            .deleteFormResponseForOption(
+                                                didiId,
+                                                optionItem
+                                            )
+                                    }
+                                }
+
+                                if (isResponseCached) {
+                                    val updatedList = storeCacheForResponse.toMutableList()
+                                    val index = updatedList.map { it.optionId }
+                                        .indexOf(optionItem?.optionId ?: 0)
+                                    if (index != -1) {
+                                        updatedList.removeAt(index)
+                                        _storeCacheForResponse = updatedList
+                                    }
+                                }
+                                if (isResponseSavedInDb) {
+                                    val updatedList =
+                                        formQuestionResponseEntity.value.toMutableList()
+                                    val index = updatedList.map { it.optionId }
+                                        .indexOf(optionItem?.optionId ?: 0)
+                                    if (index != -1) {
+                                        updatedList.removeAt(index)
+                                        _formQuestionResponseEntity.value = updatedList
+                                    }
+                                }
+
+                                updateCachedData()
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -773,7 +843,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
         }.filter { it.showQuestion }.size
         answeredOptionCount.intValue =
             (storeCacheForResponse.size).coerceIn(0, totalOptionSize.intValue)
-        Log.d(
+        BaselineLogger.d(
             TAG,
             "updateCachedData: storeCacheForResponse.size: ${storeCacheForResponse.size}, totalOptionSize.intValue: ${totalOptionSize.intValue}, answeredOptionCount.intValue: ${answeredOptionCount.intValue}"
         )

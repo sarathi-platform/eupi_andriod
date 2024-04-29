@@ -105,6 +105,7 @@ fun FormTypeQuestionScreen(
 
     BackHandler {
         BaselineCore.setReferenceId(BLANK_STRING)
+        BaselineCore.setIsEditAllowedForNoneMarkedQuestionFlag(true)
         navController.popBackStack()
     }
     ModelBottomSheetDescriptionContentComponent(
@@ -163,6 +164,7 @@ fun FormTypeQuestionScreen(
                     navigationIcon = {
                         IconButton(onClick = {
                             BaselineCore.setReferenceId(BLANK_STRING)
+                            BaselineCore.setIsEditAllowedForNoneMarkedQuestionFlag(true)
                             navController.popBackStack()
                         }) {
                             Icon(Icons.Filled.ArrowBack, null, tint = textColorDark)
@@ -184,6 +186,7 @@ fun FormTypeQuestionScreen(
                     ) {
                         if (viewModel.storeCacheForResponse.isNotEmpty() && (viewModel.answeredOptionCount.intValue >= viewModel.totalOptionSize.intValue) && !viewModel.conditionalQuestionNotMarked) {
                             BaselineCore.setReferenceId(BLANK_STRING)
+                            BaselineCore.setIsEditAllowedForNoneMarkedQuestionFlag(true)
                             viewModel.onEvent(
                                 QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent(
                                     surveyId = surveyID,

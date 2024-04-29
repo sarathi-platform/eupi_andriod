@@ -11,7 +11,35 @@ import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.FileProvider
 import androidx.core.text.isDigitsOnly
 import com.google.gson.Gson
@@ -22,6 +50,7 @@ import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_NAME
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ZERO_RESULT
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
@@ -43,14 +72,21 @@ import com.nrlm.baselinesurvey.model.datamodel.TagMappingDto
 import com.nrlm.baselinesurvey.model.datamodel.ValuesDto
 import com.nrlm.baselinesurvey.ui.Constants.ItemType
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.common_components.ButtonNegative
+import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
+import com.nrlm.baselinesurvey.ui.common_components.MainTitle
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
+import com.nrlm.baselinesurvey.ui.theme.NotoSans
+import com.nrlm.baselinesurvey.ui.theme.black100Percent
+import com.nrlm.baselinesurvey.ui.theme.greyBorder
 import com.nudge.core.enums.EventName
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.UUID
 
 fun uriFromFile(context: Context, file: File): Uri {
     try {
@@ -133,6 +169,10 @@ fun stringToInt(string: String):Int{
 
 fun setKeyboardToPan(context: MainActivity) {
     context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+}
+
+fun getUniqueIdForEntity(): String {
+    return UUID.randomUUID().toString().replace("-", "") + "|" + System.currentTimeMillis()
 }
 
 fun setKeyboardToReadjust(context: MainActivity) {
@@ -286,7 +326,7 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
         optionType = this.type,
         summary = this.questionSummary,
         values = emptyList(),
-        contentEntities = this.options?.first()?.contentList ?: listOf(),
+        contentEntities = this.contentList ?: listOf(),
         conditional = this.conditional
     )
     val valuesList = mutableListOf<ValuesDto>()
@@ -873,6 +913,53 @@ fun List<FormQuestionResponseEntity>.convertFormQuestionResponseEntityToSaveAnsw
     return saveAnswerEventOptionItemDtoList
 }
 
+fun OptionItemEntity.convertOptionItemEntityToSaveAnswerEventOptionItemDtoForFormWithNone(
+    userId: String,
+    didiId: Int,
+    referenceId: String
+): List<SaveAnswerEventOptionItemDto> {
+
+    val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
+    val formQuestionResponseEntity =
+        this.convertOptionItemEntityToFormResponseEntityForFormWithNone(
+            userId = userId,
+            didiId = didiId,
+            referenceId = referenceId
+        )
+
+    val saveAnswerEventOptionItemDto = SaveAnswerEventOptionItemDto(
+        optionId = formQuestionResponseEntity.optionId,
+        selectedValue = formQuestionResponseEntity.selectedValue,
+        referenceId = formQuestionResponseEntity.referenceId,
+        optionDesc = this.display
+            ?: BLANK_STRING
+    )
+
+    saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
+
+
+    return saveAnswerEventOptionItemDtoList
+
+}
+
+fun OptionItemEntity.convertOptionItemEntityToFormResponseEntityForFormWithNone(
+    userId: String,
+    didiId: Int,
+    referenceId: String
+): FormQuestionResponseEntity {
+    val formQuestionResponseEntity = FormQuestionResponseEntity(
+        userId = userId,
+        didiId = didiId,
+        surveyId = this.surveyId,
+        sectionId = this.sectionId,
+        questionId = this.questionId ?: 0,
+        optionId = this.optionId ?: 0,
+        selectedValue = this.selectedValue ?: BLANK_STRING,
+        referenceId = referenceId
+    )
+    return formQuestionResponseEntity
+}
+
 fun List<OptionItemEntity>.toOptionItemStateList(): List<OptionItemEntityState> {
     val optionsItemEntityStateList = ArrayList<OptionItemEntityState>()
     this.forEach { optionItemEntity ->
@@ -1079,3 +1166,118 @@ fun List<FormQuestionResponseEntity>.findUnchangedOptions(storeCacheForResponse:
     unchangedList.removeAll(storeCacheForResponse)
     return unchangedList
 }
+
+@Composable
+fun ShowCustomDialog(
+    title: String,
+    message: String,
+    positiveButtonTitle: String? = BLANK_STRING,
+    negativeButtonTitle: String? = BLANK_STRING,
+    dismissOnBackPress: Boolean? = true,
+    onPositiveButtonClick: () -> Unit,
+    onNegativeButtonClick: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = { }, properties = DialogProperties(
+            dismissOnClickOutside = false,
+            dismissOnBackPress = dismissOnBackPress ?: true
+        )
+    ) {
+        Surface(
+            color = Color.Transparent,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Column(
+                    modifier = Modifier
+                        .background(color = Color.White, shape = RoundedCornerShape(6.dp)),
+                ) {
+                    Column(
+                        Modifier.padding(vertical = 16.dp, horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        if (!title.isNullOrEmpty()) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceAround,
+                                modifier = Modifier
+                            ) {
+                                MainTitle(
+                                    title,
+                                    Modifier
+                                        .weight(1f)
+                                        .fillMaxWidth(),
+                                    align = TextAlign.Center
+                                )
+                            }
+                            Divider(thickness = 1.dp, color = greyBorder)
+                        }
+                        Text(
+                            text = message,
+                            style = TextStyle(
+                                color = black100Percent,
+                                fontSize = 16.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.Normal,
+                            ),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .padding(horizontal = 5.dp)
+                                .wrapContentWidth()
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Row(modifier = Modifier.fillMaxWidth()) {
+
+                            if (!negativeButtonTitle.isNullOrEmpty()) {
+                                ButtonNegative(
+                                    buttonTitle = negativeButtonTitle
+                                        ?: stringResource(id = R.string.cancel_tola_text),
+                                    isArrowRequired = false,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    onNegativeButtonClick()
+                                }
+
+                            } else {
+                                Spacer(modifier = Modifier.weight(2f))
+                            }
+
+                            Spacer(modifier = Modifier.width(8.dp))
+                            positiveButtonTitle?.let {
+                                if (!it.isNullOrEmpty()) {
+                                    ButtonPositive(
+                                        buttonTitle = it,
+                                        isArrowRequired = false,
+                                        isActive = true,
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(vertical = 2.dp)
+                                    ) {
+                                        onPositiveButtonClick()
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+//fun List<ValuesDto>?.toOptionItemEntity(): List<OptionItemEntity> {
+//
+//    val optionsItemEntityList = ArrayList<OptionItemEntity>()
+//
+//    if (this == null)
+//        return emptyList()
+//
+//    this.forEach {
+//        val optItem = OptionItemEntity(
+//            sec
+//        )
+//    }
+//
+//}

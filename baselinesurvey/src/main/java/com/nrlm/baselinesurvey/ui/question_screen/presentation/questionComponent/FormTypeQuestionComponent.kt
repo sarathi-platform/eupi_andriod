@@ -1,4 +1,3 @@
-
 package com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponent
 
 import androidx.compose.foundation.background
@@ -24,11 +23,10 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -43,7 +41,6 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
-import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.ExpandableDescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.common_components.OutlinedCTAButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.SummaryCardComponent
@@ -82,12 +79,9 @@ fun FormTypeQuestionComponent(
     itemCount: Int = 0,
     summaryValue: String = BLANK_STRING,
     isEditAllowed: Boolean = true,
-    isNoneQuestionAvailable: Boolean = false,
-    isNoneQuestionMarked: Boolean = false,
     onAnswerSelection: (questionIndex: Int) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit,
-    onNoneAnswerMarked: (questionId: Int, optionId: Int) -> Unit,
     onViewSummaryClicked: (questionId: Int) -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -96,9 +90,6 @@ fun FormTypeQuestionComponent(
 
     val context = LocalContext.current
 
-    val mIsNoneQuestionMarked = remember {
-        mutableStateOf(isNoneQuestionMarked)
-    }
 
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
@@ -166,100 +157,42 @@ fun FormTypeQuestionComponent(
                                 )
                             }
                             item {
-                                Column {
-                                    Row(
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(dimen_10_dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Spacer(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(dimen_10_dp),
-                                        horizontalArrangement = Arrangement.SpaceBetween
+                                            .weight(weight_20_percent)
+                                    )
+                                    OutlinedCTAButtonComponent(
+                                        tittle = question?.questionSummary,
+                                        isActive = isEditAllowed,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .weight(weight_60_percent)
                                     ) {
-                                        Spacer(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .weight(weight_20_percent)
-                                        )
-                                        OutlinedCTAButtonComponent(
-                                            tittle = question?.questionSummary,
-                                            isActive = isEditAllowed && !mIsNoneQuestionMarked.value,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .weight(weight_60_percent)
-                                        ) {
-                                            if (isEditAllowed) {
-                                                onAnswerSelection(questionIndex)
-                                            } else {
-                                                showCustomToast(
-                                                    context,
-                                                    context.getString(R.string.edit_disable_message)
-                                                )
-                                            }
-                                        }
-                                        Spacer(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .weight(weight_20_percent)
-                                        )
-                                    }
-                                    if (isNoneQuestionAvailable) {
-                                        Spacer(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(dimen_8_dp)
-                                        )
-                                        Text(
-                                            text = "or",
-                                            modifier = Modifier.fillMaxWidth(),
-                                            textAlign = TextAlign.Center
-                                        )
-                                        Spacer(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(dimen_8_dp)
-                                        )
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(dimen_10_dp),
-                                            horizontalArrangement = Arrangement.SpaceBetween
-                                        ) {
-                                            Spacer(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .weight(weight_20_percent)
-                                            )
-                                            OutlinedCTAButtonComponent(
-                                                tittle = showQuestionState.optionItemEntityState
-                                                    .find { it.optionItemEntity?.optionType == QuestionType.FormWithNone.name }
-                                                    ?.optionItemEntity?.display ?: BLANK_STRING,
-                                                Modifier
-                                                    .fillMaxWidth()
-                                                    .weight(weight_60_percent)
-                                            ) {
-                                                if (isEditAllowed) {
-                                                    mIsNoneQuestionMarked.value = true
-                                                    onNoneAnswerMarked(question?.questionId ?: 0,
-                                                        showQuestionState.optionItemEntityState
-                                                            .find { it.optionItemEntity?.optionType == QuestionType.FormWithNone.name }?.optionId
-                                                            ?: 0
-                                                    )
-                                                } else {
-                                                    showCustomToast(
-                                                        context,
-                                                        context.getString(R.string.edit_disable_message)
-                                                    )
-                                                }
-                                            }
-                                            Spacer(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .weight(weight_20_percent)
+                                        if (isEditAllowed) {
+                                            onAnswerSelection(questionIndex)
+                                        } else {
+                                            showCustomToast(
+                                                context,
+                                                context.getString(R.string.edit_disable_message)
                                             )
                                         }
                                     }
+                                    Spacer(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .weight(weight_20_percent)
+                                    )
                                 }
                             }
                             if (itemCount > 0) {
-                                if (!summaryValue.equals(BLANK_STRING) && !mIsNoneQuestionMarked.value && tagList.findTagForId(
+                                if (!summaryValue.equals(BLANK_STRING) && tagList.findTagForId(
                                         question?.tag ?: 0
                                     ).equals("Livelihood Sources")
                                 ) {
@@ -273,7 +206,7 @@ fun FormTypeQuestionComponent(
                                                         fontSize = 14.sp
                                                     )
                                                 ) {
-                                                    append("Total annual income of the household: ")
+                                                    append(stringResource(R.string.total_annual_income_label))
                                                 }
                                                 withStyle(
                                                     style = SpanStyle(
@@ -292,18 +225,16 @@ fun FormTypeQuestionComponent(
                                                 fontSize = 14.sp
                                             ),
                                             textAlign = TextAlign.Center,
-                                            modifier = Modifier.padding(dimen_10_dp)
+                                            modifier = Modifier.padding(dimen_16_dp)
                                         )
                                     }
                                 }
-                                if (!isNoneQuestionMarked) {
-                                    item {
-                                        SummaryCardComponent(
-                                            itemCount,
-                                            question
-                                        ) {
-                                            onViewSummaryClicked(it)
-                                        }
+                                item {
+                                    SummaryCardComponent(
+                                        itemCount,
+                                        question
+                                    ) {
+                                        onViewSummaryClicked(it)
                                     }
                                 }
                             }

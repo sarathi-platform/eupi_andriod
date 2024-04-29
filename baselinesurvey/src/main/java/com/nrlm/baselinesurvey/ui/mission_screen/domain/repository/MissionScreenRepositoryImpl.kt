@@ -35,11 +35,17 @@ class MissionScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getPendingActivityCountForMissionLive(missionId: Int): LiveData<Int> {
-        return missionActivityDao.getPendingTaskCountLiveForMission(missionId)
+        return missionActivityDao.getPendingTaskCountLiveForMission(
+            userId = getBaseLineUserId(),
+            missionId
+        )
     }
 
     override fun getTotalActivityCountForMission(missionId: Int): Int {
-        return missionActivityDao.getTotalActivityCountForMission(missionId)
+        return missionActivityDao.getTotalActivityCountForMission(
+            userId = getBaseLineUserId(),
+            missionId
+        )
     }
 
 }

@@ -9,16 +9,16 @@ plugins {
     id 'com.google.firebase.crashlytics'
 }
 
-def version = "1.16"
+def version = "2.0.1"
 android {
     namespace 'com.nrlm.baselinesurvey'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.nrlm.baselinesurvey"
+        applicationId "com.nrlm.sarathi"
         minSdk 23
         targetSdk 33
-        versionCode 1
+        versionCode 6
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -58,17 +58,31 @@ android {
     productFlavors{
         uat{
             applicationIdSuffix = ".uat"
-            manifestPlaceholders.app_name= "Baseline UAT"
+            manifestPlaceholders = [
+                    appName     : "@string/app_name_uat",
+                    appIcon     : "@mipmap/ic_launcher_uat",
+                    appIconRound: "@mipmap/ic_launcher_uat_round"
+            ]
             buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
+
         }
         staging{
             applicationIdSuffix = ".stage"
-            manifestPlaceholders.app_name= "Baseline STAGE"
+            manifestPlaceholders = [
+                    appName     : "@string/app_name_uat",
+                    appIcon     : "@mipmap/ic_launcher_uat",
+                    appIconRound: "@mipmap/ic_launcher_uat_round"
+            ]
             buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
+
         }
+
         production{
-            manifestPlaceholders.app_name= "Baseline"
-//            versionName prodVersion
+            manifestPlaceholders = [
+                    appName     : "@string/app_name",
+                    appIcon     : "@mipmap/ic_launcher",
+                    appIconRound: "@mipmap/ic_launcher_round"
+            ]//            versionName prodVersion
             buildConfigField 'String', 'BASE_URL', '"https://sarathi.lokos.in/"'
         }
     }

@@ -377,14 +377,16 @@
     <string name="save_next_section_button_text"><string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>-->
         <![CDATA[Save]]></string></string>
     <string name="ok_text">Ok</string>
+    <string name="mission">মিছনসমূহ</string>
+    <string name="x_didi_pending">%s %s Pending</string>
     <string name="save">চেভ</string>
 
     <string name="name_comparision">নাম</string>
     <string name="age_comparision">বয়স কিমান</string>
     <string name="relationship_comparision">বাইদেউ’ৰ সৈতে সম্পৰ্ক</string>
     <string name="income_source_comparision">আয়ৰ উৎস কিমান</string>
-    <string name="agriculture_produce_comparision">(ক) কৃষি উৎপাদিত সামগ্ৰী</string>
-    <string name="livestock_comparision">(ক) পশুধনৰ প্ৰকাৰ</string>
+    <string name="agriculture_produce_comparision">কৃষি উৎপাদিত সামগ্ৰী</string>
+    <string name="livestock_comparision">পশুধনৰ প্ৰকাৰ</string>
     <string name="income_frequency_comparision">Income frequency</string>
     <string name="no_income_comparision">কোনো আয় নাই</string>
     <string name="total_income_comparision">(E) Total Income</string>
@@ -421,7 +423,7 @@
     <string name="default_confirm_button_text">Confirm</string>
     <string name="default_dismiss_button_text">Dismiss</string>
     <string name="delete_text">Delete</string>
-    <string name="cancel_text">Cancel</string>
+    <string name="cancel_text">বাতিল কৰক</string>
     <string name="alert_dialog_title_text">Alert</string>
     <string name="alart_dialog_entry_deleteion_message_text">Do you want to delete this entry?</string>
     <string name="didi_list_empty_state">No Didis assigned. Please contact your administrator.</string>
@@ -434,16 +436,35 @@
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"আৰম্ভ কৰক "</string>
     <string name="retry">" পুনৰ চেষ্টা কৰক"</string>
+    <string name="import_data">তথ্য আমদানি কৰক</string>
+    <string name="export_images">কেৱল ছবি ৰপ্তানি কৰক</string>
+    <string name="export_backup_file">বেকআপ ফাইল ৰপ্তানি কৰক</string>
+    <string name="export_database">কেৱল ডাটাবেইচ ৰপ্তানি কৰক</string>
+    <string name="backup_recovery">বেকআপ/পুনৰুদ্ধাৰ</string>
+    <string name="export_event_file">ইভেন্ট ফাইল ৰপ্তানি কৰক</string>
+    <string name="export_log_file">কেৱল লগ ফাইল ৰপ্তানি কৰক</string>
     <string name="madnatory_question_not_marked_error">সকলো বাধ্যতামূলক প্ৰশ্নৰ উত্তৰ দিয়া হোৱা নাই, অনুগ্ৰহ কৰি সকলো প্ৰশ্নৰ উত্তৰ দিয়ক!</string>
     <string name="view_label">View</string>
+    <string name="regenerate_all_events">সকলো ইভেন্ট পুনৰুত্পাদন কৰক</string>
+    <string name="load_server_data">চাৰ্ভাৰ ডাটা লোড কৰক</string>
+    <string name="purpose_comparision">What is the purpose of your farming?</string>
+    <string name="net_income_label">Net income per year: ₹</string>
+    <string name="net_income_comparision">Net income per year</string>
     <string name="task_completed_label">"Activity Completed - "</string>
     <string name="hours">ঘণ্টা</string>
     <string name="years">বছৰ</string>
     <string name="minute">মিনিট</string>
     <string name="month">মাহ</string>
     <string name="data_fetching_and_processing">ডাটা ফেচিং আৰু প্ৰচেছিং…</string>
-    <string name="purpose_comparision">What is the purpose of your farming?</string>
-    <string name="net_income_label">Net income per year</string>
-    <string name="net_income_comparision">Net income per year</string>
+    <string name="total_annual_income_label">"Total annual income of the household: "</string>
+    <string name="logout_confirmation">আপুনি নিশ্চিতভাৱে লগআউট কৰিব বিচাৰেনে?</string>
+    <string name="import_restart_dialog_message">ফাইলৰ পৰা ডাটা আমদানি কৰাৰ পিছত এপটো পুনৰ আৰম্ভ কৰিব লাগিব আৰু বৰ্তমানৰ তথ্য হেৰাই যাব।</string>
+    <string name="no_logs_available">কোনো লগ উপলব্ধ নহয়</string>
+    <string name="hamlets_item_text_plural">Hamlets</string>
+    <string name="hamlets_item_text_singular">Hamlet</string>
+    <string name="activity_completed_message">You have successfully completed the %1$s activity</string>
+    <string name="total_addelabel">"Total added: "</string>
+    <string name="view_summary_label">View Summary</string>
+    <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
 
 </resources>

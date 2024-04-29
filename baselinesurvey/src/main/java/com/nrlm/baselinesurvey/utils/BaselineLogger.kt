@@ -358,7 +358,29 @@ object LogWriter {
         return@withContext false
     }
 
-    suspend fun buildSupportLogAndShare(mPrefRepo: PrefRepo) {
+    suspend fun buildLogFile(appContext: Context,onFailed:()->Unit): File? {
+        try {
+
+            val logDir = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+            val logFile = File(logDir, getSupportLogFileName())
+            if (logFile.isFile) logFile.delete()
+
+            if (!getSyslogFile(logFile)) {
+                withContext(Dispatchers.Main) {
+                    onFailed()
+                }
+                return null
+            }
+            return logFile
+        } catch (ex: Exception) {
+            e(TAG, "buildSupportLogAndShare", ex)
+            withContext(Dispatchers.Main) {
+                onFailed()
+            }
+            return null
+        }
+    }
+    suspend fun buildSupportLogAndShare(userMobileNo:String,userEmail:String) {
         val context = BaselineCore.getAppContext()
         try {
 
@@ -373,9 +395,8 @@ object LogWriter {
                 return
             }
 
-            val sub = mPrefRepo?.getPref(PREF_MOBILE_NUMBER, "")
-            val email = mPrefRepo?.getPref(PREF_KEY_EMAIL, "")
-            val subject = "Sarathi debug log - Email: $email UserId: $sub"
+
+            val subject = "Sarathi debug log - Email: $userEmail UserId: $userMobileNo"
             val message = "The following individual logs are contained within the attachment:\n\n"
             withContext(Dispatchers.Main) {
                 share(
