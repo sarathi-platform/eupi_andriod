@@ -980,9 +980,6 @@ class EventWriterHelperImpl @Inject constructor(
                         )
                     )
                 }
-                if (questionEntity?.questionDisplay == "How much does didi get every month through PDS?") {
-                    Log.e("dd", "dd")
-                }
                 events.add(
                     createSaveAnswerEvent(
                         it.surveyId,

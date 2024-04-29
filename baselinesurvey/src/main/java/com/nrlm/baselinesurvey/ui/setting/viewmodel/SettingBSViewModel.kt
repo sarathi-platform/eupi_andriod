@@ -196,7 +196,7 @@ class SettingBSViewModel @Inject constructor(
                         val dto = Gson().fromJson(payload, SaveAnswerEventDto::class.java)
                         dtoList.add(dto)
                     } catch (e: Exception) {
-                        e.printStackTrace()
+                        BaselineLogger.e("SettingBSViewModel", "Exception CSV generate: ${e.message} ---------------")
                     }
                 }
                 val formQuestionEvents = eventWriterHelperImpl.generateFormTypeEventsForCSV()
@@ -208,7 +208,7 @@ class SettingBSViewModel @Inject constructor(
                             Gson().fromJson(payload, SaveAnswerEventForFormQuestionDto::class.java)
                         dtoSaveFormList.add(dto)
                     } catch (e: Exception) {
-                        e.printStackTrace()
+                        BaselineLogger.e("SettingBSViewModel", "Exception CSV generate: ${e.message} ---------------")
                     }
                 }
                 val sectionList = sectionEntityDao.getSectionsT(
@@ -250,6 +250,7 @@ class SettingBSViewModel @Inject constructor(
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             } catch (exception: Exception) {
                 exception.printStackTrace()
+                BaselineLogger.e("SettingBSViewModel", "Exception CSV generate: ${exception.message} ---------------")
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
