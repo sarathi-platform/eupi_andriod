@@ -133,7 +133,7 @@ fun MultiSelectDropdown(
         val txt = if (selectedItems.isNotEmpty()) {
             selectedItems.joinToString(", ")
         } else {
-            "Select"
+            stringResource(id = R.string.select)
         }
         CustomOutlineTextField(
             value = txt,
