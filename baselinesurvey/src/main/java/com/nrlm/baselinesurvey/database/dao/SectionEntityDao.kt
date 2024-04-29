@@ -38,5 +38,8 @@ interface SectionEntityDao {
     @Query("Select * from $SECTION_TABLE where userId=:userId")
     fun getSections(userId: String): List<SectionEntity?>?
 
+    @Query("Select * from $SECTION_TABLE where userId=:userId and languageId = :languageId")
+    fun getSectionsT(userId: String,
+                     languageId: Int,): List<SectionEntity>
 
 }
