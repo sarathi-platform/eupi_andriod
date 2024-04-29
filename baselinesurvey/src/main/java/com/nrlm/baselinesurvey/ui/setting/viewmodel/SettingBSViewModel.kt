@@ -226,8 +226,6 @@ class SettingBSViewModel @Inject constructor(
                 val baseLineListQna = ArrayList<BaseLineQnATableCSV>()
                 baseLineMap.forEach {
                     baseLineListQna.addAll(it.value)
-//                    listQna.add(BaseLineQnATableCSV())
-//                    listQna.add(BaseLineQnATableCSV())
                 }
                 /*Hamlet */
                 val hamletListQnaCSV = baseLineQnATableCSV.filter { it.surveyId == 2}
