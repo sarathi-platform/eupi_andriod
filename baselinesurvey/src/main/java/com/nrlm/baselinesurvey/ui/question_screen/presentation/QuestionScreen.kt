@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -78,6 +79,8 @@ fun QuestionScreen(
     sectionId: Int,
     nextSectionHandler: (sectionId: Int) -> Unit
 ) {
+    val outerState= rememberLazyListState()
+    val innerState= rememberLazyListState()
 
     val sectionDetails = viewModel.filterSectionList.value
     val loaderState = viewModel.loaderState.value
@@ -252,6 +255,8 @@ fun QuestionScreen(
                 NestedLazyList(
                     navController = navController,
                     sectionDetails = sectionDetails,
+                    outerState = outerState,
+                    innerState = innerState,
                     viewModel = viewModel,
                     surveyeeId = surveyeeId,
                     sectionInfoButtonClicked = {
