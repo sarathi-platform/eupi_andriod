@@ -50,6 +50,7 @@ import com.nrlm.baselinesurvey.utils.getFileNameFromURL
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.tagList
 import com.nudge.core.EventSyncStatus
+import com.nudge.core.REGENERATE_PREFIX
 import com.nudge.core.SELECTION_MISSION
 import com.nudge.core.compressImage
 import com.nudge.core.database.dao.EventDependencyDao
@@ -640,11 +641,17 @@ class EventWriterHelperImpl @Inject constructor(
 
     override suspend fun regenerateAllEvent() {
 
-        changeFileName("regenerate_")
-        generateResponseEvent()
-        regenerateDidiInfoResponseEvent()
+        changeFileName(REGENERATE_PREFIX)
+        generateResponseEvent().forEach {
+            repositoryImpl.saveEventToMultipleSources(event = it, eventDependencies =  listOf(), eventType = EventType.STATEFUL)
+        }
+        regenerateDidiInfoResponseEvent().forEach {
+            repositoryImpl.saveEventToMultipleSources(event = it, eventDependencies =  listOf(), eventType = EventType.STATEFUL)
+        }
         regenerateImageUploadEvent()
-        regenerateFromResponseEvent()
+        regenerateFromResponseEvent().forEach {
+            repositoryImpl.saveEventToMultipleSources(event = it, eventDependencies =  listOf(), eventType = EventType.STATEFUL)
+        }
         regenerateMATStatusEvent()
         changeFileName("")
 
@@ -800,7 +807,6 @@ class EventWriterHelperImpl @Inject constructor(
                 )
             }
         }
-
         return events
     }
 

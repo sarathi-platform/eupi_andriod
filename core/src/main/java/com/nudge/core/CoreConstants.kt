@@ -41,6 +41,7 @@ const val LOCAL_BACKUP_EXTENSION = ".txt"
 const val EVENT_DELIMETER = "~@-"
 const val ZIP_MIME_TYPE = "application/zip"
 const val EXCEL_TYPE = "text/csv"
+const val REGENERATE_PREFIX = "regenerate_"
 
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),
