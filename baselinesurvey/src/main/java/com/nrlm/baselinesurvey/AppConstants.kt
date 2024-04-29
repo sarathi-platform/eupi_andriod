@@ -330,4 +330,7 @@ const val PREF_USER_TYPE = "pref_user_type"
 const val DELIMITER_TIME = ":"
 const val DELIMITER_YEAR = "/"
 
+const val LIVELIHOOD_SOURCE_TAG_CONSTANT = "Livelihood Sources"
+const val HOUSEHOLD_INFO_TAG_CONSTANT = "Household information"
+
 

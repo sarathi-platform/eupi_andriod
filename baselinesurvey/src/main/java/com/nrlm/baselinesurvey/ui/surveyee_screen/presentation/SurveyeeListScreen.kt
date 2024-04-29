@@ -111,7 +111,13 @@ fun SurveyeeListScreen(
                                 SectionStatus.COMPLETED
                             )
                         )
-                        navController.navigate("${Step_Complition_Screen_ROUTE_NAME}/${"You have successfully completed the ${activityName} activity"}")
+                        navController.navigate(
+                            "${Step_Complition_Screen_ROUTE_NAME}/${
+                                context.getString(
+                                    R.string.activity_completed_message, activityName
+                                )
+                            }"
+                        )
                         // navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
                     },
                     negativeButtonOnClick = {

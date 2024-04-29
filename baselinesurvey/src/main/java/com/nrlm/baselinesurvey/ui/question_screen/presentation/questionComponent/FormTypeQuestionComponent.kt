@@ -225,7 +225,7 @@ fun FormTypeQuestionComponent(
                                                 fontSize = 14.sp
                                             ),
                                             textAlign = TextAlign.Center,
-                                            modifier = Modifier.padding(dimen_10_dp)
+                                            modifier = Modifier.padding(dimen_16_dp)
                                         )
                                     }
                                 }

@@ -377,6 +377,8 @@
     <string name="save_next_section_button_text"><string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>-->
         <![CDATA[Save]]></string></string>
     <string name="ok_text">Ok</string>
+    <string name="mission">মিছনসমূহ</string>
+    <string name="x_didi_pending">%s %s Pending</string>
     <string name="save">চেভ</string>
 
     <string name="name_comparision">নাম</string>
@@ -458,5 +460,11 @@
     <string name="logout_confirmation">আপুনি নিশ্চিতভাৱে লগআউট কৰিব বিচাৰেনে?</string>
     <string name="import_restart_dialog_message">ফাইলৰ পৰা ডাটা আমদানি কৰাৰ পিছত এপটো পুনৰ আৰম্ভ কৰিব লাগিব আৰু বৰ্তমানৰ তথ্য হেৰাই যাব।</string>
     <string name="no_logs_available">কোনো লগ উপলব্ধ নহয়</string>
+    <string name="hamlets_item_text_plural">Hamlets</string>
+    <string name="hamlets_item_text_singular">Hamlet</string>
+    <string name="activity_completed_message">You have successfully completed the %1$s activity</string>
+    <string name="total_addelabel">"Total added: "</string>
+    <string name="view_summary_label">View Summary</string>
+    <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
 
 </resources>
