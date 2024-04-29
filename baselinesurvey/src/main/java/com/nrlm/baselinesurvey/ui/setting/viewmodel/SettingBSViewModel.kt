@@ -300,7 +300,7 @@ class SettingBSViewModel @Inject constructor(
             content = list,
         ).catch { error ->
             // handle error here
-//             BaselineLogger.e(TAG, "exportDidiTableToCsv error", error)
+             BaselineLogger.e("SettingBSViewModel", "Export CSV error: $error ---------------")
         }.collect { path ->
             val file = File(path)
             uri = FileProvider.getUriForFile(
