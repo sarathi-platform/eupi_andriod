@@ -81,6 +81,14 @@ fun SettingBSScreen(
                 SettingTagEnum.BACKUP_RECOVERY.name
             )
         )
+        list.add(
+            SettingOptionModel(
+                6,
+                context.getString(R.string.export_baseline_qna),
+                BLANK_STRING,
+                SettingTagEnum.EXPORT_BASELINE_QNA.name
+            )
+        )
 
         viewModel._optionList.value = list
     }
@@ -147,6 +155,10 @@ fun SettingBSScreen(
 
                 SettingTagEnum.BACKUP_RECOVERY.name -> {
                     navController.navigate(SettingBSScreens.BACKUP_RECOVERY_SCREEN.route)
+                }
+
+                SettingTagEnum.EXPORT_BASELINE_QNA.name -> {
+                    viewModel.exportBaseLineQnA()
                 }
 
             }

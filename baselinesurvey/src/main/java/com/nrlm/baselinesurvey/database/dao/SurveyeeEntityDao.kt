@@ -59,4 +59,8 @@ interface SurveyeeEntityDao {
         }
     }
 
+    @Query("SELECT * FROM $SURVEYEE_TABLE  where userId=:userId ORDER BY id DESC")
+    suspend fun getAllDidiForQNA(
+        userId: String
+    ): List<SurveyeeEntity>
 }
