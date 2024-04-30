@@ -93,9 +93,12 @@ class ExportImportViewModel @Inject constructor(
              ) {
                  BaselineLogger.d("ExportImportViewModel","exportLocalDatabase : ${it.path}")
 
-                 if(isNeedToShare){
-                     openShareSheet(arrayListOf(it) ,"")
-                 } else onExportSuccess(it)
+                 if (isNeedToShare) {
+                     openShareSheet(arrayListOf(it), "")
+                     onExportSuccess(it)
+                 } else {
+                     onExportSuccess(it)
+                 }
              }
          }catch (e:Exception){
              onEvent(LoaderEvent.UpdateLoaderState(false))

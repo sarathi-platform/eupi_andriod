@@ -1157,8 +1157,11 @@ fun String.getImagePathFromString(): String {
     }
 }
 
-fun numberInEnglishFormat(number: Int): String {
-    return String.format(Locale.ENGLISH,"%s", number)
+fun numberInEnglishFormat(number: Int, range: IntRange? = null): String {
+    if (range != null) {
+        number.coerceIn(range)
+    }
+    return String.format(Locale.ENGLISH, "%s", number)
 }
 
 fun List<FormQuestionResponseEntity>.findUnchangedOptions(storeCacheForResponse: List<FormQuestionResponseEntity>): List<FormQuestionResponseEntity> {
@@ -1267,17 +1270,3 @@ fun ShowCustomDialog(
     }
 }
 
-//fun List<ValuesDto>?.toOptionItemEntity(): List<OptionItemEntity> {
-//
-//    val optionsItemEntityList = ArrayList<OptionItemEntity>()
-//
-//    if (this == null)
-//        return emptyList()
-//
-//    this.forEach {
-//        val optItem = OptionItemEntity(
-//            sec
-//        )
-//    }
-//
-//}

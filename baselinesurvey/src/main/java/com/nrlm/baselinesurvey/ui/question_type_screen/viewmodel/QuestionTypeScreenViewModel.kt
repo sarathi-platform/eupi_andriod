@@ -21,6 +21,7 @@ import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
 import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
+import com.nrlm.baselinesurvey.ui.common_components.common_events.DialogEvents
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.FormQuestionScreenUseCase
@@ -40,6 +41,7 @@ import com.nrlm.baselinesurvey.utils.findIndexOfListByOptionId
 import com.nrlm.baselinesurvey.utils.findOptionExist
 import com.nrlm.baselinesurvey.utils.isNumeric
 import com.nrlm.baselinesurvey.utils.showCustomToast
+import com.nrlm.baselinesurvey.utils.states.DialogState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -61,6 +63,10 @@ class QuestionTypeScreenViewModel @Inject constructor(
 
     private val _loaderState = mutableStateOf(LoaderState())
     val loaderState: State<LoaderState> get() = _loaderState
+
+    private val _showUserChangedDialog = mutableStateOf<DialogState>(DialogState())
+    val showUserChangedDialog: State<DialogState> get() = _showUserChangedDialog
+
     val optionList: State<List<OptionItemEntity>> get() = _optionList
     private val _optionList = mutableStateOf<List<OptionItemEntity>>(emptyList())
 
@@ -423,6 +429,12 @@ class QuestionTypeScreenViewModel @Inject constructor(
                 )
             }
 
+            is DialogEvents.ShowDialogEvent -> {
+                _showUserChangedDialog.value = _showUserChangedDialog.value.copy(
+                    isDialogVisible = event.showDialog
+                )
+            }
+
             is QuestionTypeEvent.SaveFormQuestionResponseEvent -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     val formQuestionResponseForQuestionOption =
@@ -459,7 +471,8 @@ class QuestionTypeScreenViewModel @Inject constructor(
                                 questionId = event.questionId,
                                 sectionId = event.sectionId,
                                 surveyId = event.surveyId,
-                                surveyeeId = event.surveyeeId
+                                surveyeeId = event.surveyeeId,
+                                referenceId = referenceId
                             )
                         } else {
                             throw NullPointerException((event as QuestionTypeEvent.DeleteFormQuestionOptionResponseEvent).toString())
@@ -488,23 +501,34 @@ class QuestionTypeScreenViewModel @Inject constructor(
                             } else {
                                 conditionsDto?.checkCondition(event.userInputValue)
                             }
-                        /*if (conditionCheckResult == false) {
-                            onEvent(
-                                QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption(
-                                    conditionsDto!!
-                                )
-                            )
-                        }*/
                         updateQuestionStateForCondition(conditionCheckResult == true, conditionsDto)
+                        conditionsDto?.resultList?.forEach { subQList ->
+                            subQList.options?.forEach { subOptList ->
+                                subOptList?.conditions?.forEach { subCondtionDto ->
+                                    val subConditionCheckResult =
+                                        if (TextUtils.equals(
+                                                event.optionItemEntityState.optionItemEntity.optionType?.toLowerCase(),
+                                                QuestionType.MultiSelectDropDown.name.toLowerCase()
+                                            )
+                                        ) {
+                                            subCondtionDto?.checkConditionForMultiSelectDropDown(
+                                                event.userInputValue
+                                            )
+
+                                        } else {
+                                            subCondtionDto?.checkCondition(event.userInputValue)
+                                        }
+                                    updateQuestionStateForCondition(
+                                        subConditionCheckResult == true,
+                                        subCondtionDto
+                                    )
+                                }
+                            }
+                        }
                     }
                 } else {
                     event.optionItemEntityState?.optionItemEntity?.conditions?.forEach { conditionsDto ->
                         updateQuestionStateForCondition(false, conditionsDto)
-                        /*onEvent(
-                            QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption(
-                                conditionsDto!!
-                            )
-                        )*/
                     }
                 }
 
@@ -659,10 +683,12 @@ class QuestionTypeScreenViewModel @Inject constructor(
                         if (option?.conditions == null) {
                             val index =
                                 storeCacheForResponse.map { it.optionId }.indexOf(form.optionId)
-                                    .coerceIn(0, storeCacheForResponse.size)
+//                                    .coerceIn(0, storeCacheForResponse.size)
 
-                            _storeCacheForResponse.removeAt(index)
-                            conditionalQuestionNotMarked = false
+                            if (index != -1) {
+                                _storeCacheForResponse.removeAt(index)
+                                conditionalQuestionNotMarked = false
+                            }
                         } else {
                             conditionalQuestionNotMarked = true
                             showCustomToast(
@@ -683,6 +709,8 @@ class QuestionTypeScreenViewModel @Inject constructor(
                         }
                     }
                 }
+                removeAnswersForUnSelectedConditions(event.formQuestionResponseEntity)
+
                 updateCachedData()
             }
 
@@ -706,61 +734,137 @@ class QuestionTypeScreenViewModel @Inject constructor(
                     )
                 }
             }
+        }
+    }
 
-            is QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption -> {
-                if (event.questionConditionsDto.resultList.isNotEmpty()) {
-                    event.questionConditionsDto.resultList.forEach { questionItem ->
+    private fun removeAnswersForUnSelectedConditions(response: FormQuestionResponseEntity) {
+        try {
+            val tempList = updatedOptionList.toList()
+            val optionMarked = tempList.find {
+                it
+                    .optionId == response.optionId
+            }
+            val unSelectedConditionDtoList =
+                optionMarked?.optionItemEntity?.conditions?.filter { it?.checkCondition(response.selectedValue) != true }
+            val updatedFormQuestionResponseEntityList =
+                formQuestionResponseEntity.value.toMutableList()
 
-                        questionItem.options?.forEach { optItem ->
-
-                            val optionItem = updatedOptionList.toList()
-                                .find { it.optionId == optItem?.optionId }
-
-                            val isResponseCached = storeCacheForResponse.map { it.optionId }
-                                .contains(optionItem?.optionId ?: 0)
-                            val isResponseSavedInDb =
-                                formQuestionResponseEntity.value.map { it.optionId }
-                                    .contains(optionItem?.optionId ?: 0)
-
-                            val isQuestionAnswered = isResponseCached
-                                    || isResponseSavedInDb
-                            if (isQuestionAnswered) {
-                                if (isResponseSavedInDb) {
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        formQuestionScreenUseCase.saveFormQuestionResponseUseCase
-                                            .deleteFormResponseForOption(
-                                                didiId,
-                                                optionItem
+            unSelectedConditionDtoList?.forEach { unSelectedConditionDto ->
+                unSelectedConditionDto?.resultList?.forEach { qList ->
+                    if (qList.type == QuestionType.Form.name || qList.type == QuestionType.FormWithNone.name) {
+                        qList.options?.forEach { opt ->
+                            val i1 =
+                                storeCacheForResponse.map { it.optionId }.indexOf(opt?.optionId)
+                            if (i1 != -1) {
+                                _storeCacheForResponse.removeAt(i1)
+                            }
+                            val i2 = formQuestionResponseEntity.value.map { it.optionId }
+                                .indexOf(opt?.optionId)
+                            if (i2 != -1) {
+                                val index2Option = updatedFormQuestionResponseEntityList[i2]
+                                updatedFormQuestionResponseEntityList.removeAt(i2)
+                                onEvent(
+                                    QuestionTypeEvent.DeleteFormQuestionOptionResponseEvent(
+                                        optionId = index2Option.optionId,
+                                        questionId = index2Option.questionId,
+                                        sectionId = index2Option.sectionId,
+                                        surveyId = index2Option.surveyId,
+                                        surveyeeId = didiId,
+                                        referenceId = response.referenceId
+                                    )
+                                )
+                            }
+                            opt?.conditions?.forEach { subConditionDto ->
+                                subConditionDto?.resultList?.forEach { subQList ->
+                                    val subIndex1 = storeCacheForResponse.map { it.optionId }
+                                        .indexOf(subQList.questionId)
+                                    if (subIndex1 != -1) {
+                                        _storeCacheForResponse.removeAt(subIndex1)
+                                    }
+                                    val subIndex2 =
+                                        formQuestionResponseEntity.value.map { it.optionId }
+                                            .indexOf(subQList.questionId)
+                                    if (subIndex2 != -1) {
+                                        val subIndex2Option =
+                                            updatedFormQuestionResponseEntityList[subIndex2]
+                                        updatedFormQuestionResponseEntityList.removeAt(subIndex2)
+                                        onEvent(
+                                            QuestionTypeEvent.DeleteFormQuestionOptionResponseEvent(
+                                                optionId = subIndex2Option.optionId,
+                                                questionId = subIndex2Option.questionId,
+                                                sectionId = subIndex2Option.sectionId,
+                                                surveyId = subIndex2Option.surveyId,
+                                                surveyeeId = didiId,
+                                                referenceId = response.referenceId
                                             )
+                                        )
                                     }
                                 }
-
-                                if (isResponseCached) {
-                                    val updatedList = storeCacheForResponse.toMutableList()
-                                    val index = updatedList.map { it.optionId }
-                                        .indexOf(optionItem?.optionId ?: 0)
-                                    if (index != -1) {
-                                        updatedList.removeAt(index)
-                                        _storeCacheForResponse = updatedList
+                            }
+                        }
+                    } else {
+                        val i1 = storeCacheForResponse.map { it.optionId }.indexOf(qList.questionId)
+                        if (i1 != -1) {
+                            _storeCacheForResponse.removeAt(i1)
+                        }
+                        val i2 = formQuestionResponseEntity.value.map { it.optionId }
+                            .indexOf(qList.questionId)
+                        if (i2 != -1) {
+                            val index2Option = updatedFormQuestionResponseEntityList[i2]
+                            updatedFormQuestionResponseEntityList.removeAt(i2)
+                            onEvent(
+                                QuestionTypeEvent.DeleteFormQuestionOptionResponseEvent(
+                                    optionId = index2Option.optionId,
+                                    questionId = index2Option.questionId,
+                                    sectionId = index2Option.sectionId,
+                                    surveyId = index2Option.surveyId,
+                                    surveyeeId = didiId,
+                                    referenceId = response.referenceId
+                                )
+                            )
+                        }
+                        qList.options?.forEach { optItem ->
+                            optItem?.conditions?.forEach { subConditionDto ->
+                                subConditionDto?.resultList?.forEach { subQList ->
+                                    val subIndex1 = storeCacheForResponse.map { it.optionId }
+                                        .indexOf(subQList.questionId)
+                                    if (subIndex1 != -1) {
+                                        _storeCacheForResponse.removeAt(subIndex1)
+                                    }
+                                    val subIndex2 =
+                                        formQuestionResponseEntity.value.map { it.optionId }
+                                            .indexOf(subQList.questionId)
+                                    if (subIndex2 != -1) {
+                                        val subIndex2Option =
+                                            updatedFormQuestionResponseEntityList[subIndex2]
+                                        updatedFormQuestionResponseEntityList.removeAt(subIndex2)
+                                        onEvent(
+                                            QuestionTypeEvent.DeleteFormQuestionOptionResponseEvent(
+                                                optionId = subIndex2Option.optionId,
+                                                questionId = subIndex2Option.questionId,
+                                                sectionId = subIndex2Option.sectionId,
+                                                surveyId = subIndex2Option.surveyId,
+                                                surveyeeId = didiId,
+                                                referenceId = response.referenceId
+                                            )
+                                        )
                                     }
                                 }
-                                if (isResponseSavedInDb) {
-                                    val updatedList =
-                                        formQuestionResponseEntity.value.toMutableList()
-                                    val index = updatedList.map { it.optionId }
-                                        .indexOf(optionItem?.optionId ?: 0)
-                                    if (index != -1) {
-                                        updatedList.removeAt(index)
-                                        _formQuestionResponseEntity.value = updatedList
-                                    }
-                                }
-
-                                updateCachedData()
                             }
                         }
                     }
                 }
             }
+
+
+            _formQuestionResponseEntity.value = updatedFormQuestionResponseEntityList
+
+        } catch (ex: Exception) {
+            BaselineLogger.e(
+                "QuestionTypeScreenViewModel",
+                "removeAnswersForUnSelectedConditions: exception -> ${ex.message}",
+                ex
+            )
         }
     }
 
@@ -871,5 +975,20 @@ class QuestionTypeScreenViewModel @Inject constructor(
             }
         }
         return null
+    }
+
+    fun areResponsesUpdated(): Boolean {
+        if (storeCacheForResponse.size != formQuestionResponseEntity.value.size)
+            return true
+
+        formQuestionResponseEntity.value.forEach { dbResponse ->
+            val cachedResponse = storeCacheForResponse.find { it.optionId == dbResponse.optionId }
+            cachedResponse?.let { cache ->
+                if (cache.selectedValue != dbResponse.selectedValue)
+                    return true
+            } ?: return true
+        }
+
+        return false
     }
 }

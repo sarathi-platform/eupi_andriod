@@ -52,7 +52,6 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_40_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
-import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.progressIndicatorColor
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
@@ -213,7 +212,12 @@ fun AllSurveyeeListTab(
                                 )
                                 Spacer(modifier = Modifier.width(dimen_8_dp))
                                 Text(
-                                    text = "${numberInEnglishFormat(if (surveyeeList.isNotEmpty()) (surveyeeList.size - pendingTasks) else 0)}/${surveyeeList.size}",
+                                    text = "${
+                                        numberInEnglishFormat(
+                                            if (surveyeeList.isNotEmpty()) (surveyeeList.size - pendingTasks) else 0,
+                                            IntRange(0, surveyeeList.size)
+                                        )
+                                    }/${surveyeeList.size}",
                                     color = textColorDark,
                                     style = smallTextStyle
                                 )
