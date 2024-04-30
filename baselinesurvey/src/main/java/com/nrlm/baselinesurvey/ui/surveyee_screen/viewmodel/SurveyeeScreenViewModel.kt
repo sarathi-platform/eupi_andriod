@@ -329,6 +329,28 @@ class SurveyeeScreenViewModel @Inject constructor(
                 }
             }
 
+            is EventWriterEvents.UpdateTaskStatusEvent -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val activityForSubjectDto =
+                        eventWriterHelperImpl.getActivityFromSubjectId(event.subjectId)
+
+                    eventWriterHelperImpl.markTaskCompleted(
+                        activityForSubjectDto.missionId,
+                        activityForSubjectDto.activityId,
+                        activityForSubjectDto.taskId,
+                        event.status
+                    )
+
+                    val updateTaskStatusEvent = eventWriterHelperImpl.createTaskStatusUpdateEvent(
+                        subjectId = event.subjectId,
+                        sectionStatus = event.status
+                    )
+                    surveyeeScreenUseCase.eventsWriterUseCase.invoke(
+                        updateTaskStatusEvent,
+                        eventType = EventType.STATEFUL
+                    )
+                }
+            }
         }
     }
 

@@ -1176,11 +1176,13 @@ fun String.getImagePathFromString(): String {
     }
 }
 
-fun numberInEnglishFormat(number: Int, range: IntRange? = null): String {
+fun numberInEnglishFormat(number: Int, range: IntRange?): String {
+    var mNumber = number
     if (range != null) {
-        number.coerceIn(range)
+        mNumber = number.coerceIn(range)
     }
-    return String.format(Locale.ENGLISH, "%s", number)
+
+    return String.format(Locale.ENGLISH, "%s", mNumber)
 }
 
 fun List<FormQuestionResponseEntity>.findUnchangedOptions(storeCacheForResponse: List<FormQuestionResponseEntity>): List<FormQuestionResponseEntity> {
