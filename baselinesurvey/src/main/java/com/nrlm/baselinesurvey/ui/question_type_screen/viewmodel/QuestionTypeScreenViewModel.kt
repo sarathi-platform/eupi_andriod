@@ -988,18 +988,9 @@ class QuestionTypeScreenViewModel @Inject constructor(
         return null
     }
 
-    fun areResponsesUpdated(): Boolean {
-        if (storeCacheForResponse.size != formQuestionResponseEntity.value.size)
-            return true
+    fun getResponseChangedFlag() = areResponsesChanged
 
-        formQuestionResponseEntity.value.forEach { dbResponse ->
-            val cachedResponse = storeCacheForResponse.find { it.optionId == dbResponse.optionId }
-            cachedResponse?.let { cache ->
-                if (cache.selectedValue != dbResponse.selectedValue)
-                    return true
-            } ?: return true
-        }
-
-        return false
+    fun setResponseChangedFlag(responseChanged: Boolean) {
+        areResponsesChanged = responseChanged
     }
 }
