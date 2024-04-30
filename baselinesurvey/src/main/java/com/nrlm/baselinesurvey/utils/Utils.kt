@@ -373,6 +373,7 @@ fun QuestionList.convertFormTypeQuestionListToOptionItemEntity(sectionId: Int, s
             order = optionsItem?.order ?: -1,
             values = optionsItem?.values,
             languageId = languageId,
+            optionTag = this.attributeTag ?: 0,
             contentEntities = optionsItem?.contentList ?: listOf(),
             conditions = optionsItem?.conditions
         )
@@ -775,21 +776,25 @@ fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType?):
     when (type) {
         QuestionType.RadioButton -> {
             val mSaveAnswerEventOptionItemDto =
-                SaveAnswerEventOptionItemDto(this.optionId ?: 0, this.display)
+                SaveAnswerEventOptionItemDto(this.optionId ?: 0, this.display, tag = this.optionTag)
             saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
         }
 
         QuestionType.List,
         QuestionType.SingleSelect -> {
             val mSaveAnswerEventOptionItemDto =
-                SaveAnswerEventOptionItemDto(this.optionId ?: 0, this.display)
+                SaveAnswerEventOptionItemDto(this.optionId ?: 0, this.display, tag = this.optionTag)
             saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
         }
 
         QuestionType.SingleSelectDropDown,
         QuestionType.SingleSelectDropdown -> {
             val mSaveAnswerEventOptionItemDto =
-                SaveAnswerEventOptionItemDto(this.optionId ?: 0, this.selectedValue)
+                SaveAnswerEventOptionItemDto(
+                    this.optionId ?: 0,
+                    this.selectedValue,
+                    tag = this.optionTag
+                )
             saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
         }
 
@@ -801,7 +806,8 @@ fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType?):
                 SaveAnswerEventOptionItemDto(
                     this.optionId ?: 0,
                     this.selectedValue,
-                    optionDesc = this.display ?: BLANK_STRING
+                    optionDesc = this.display ?: BLANK_STRING,
+                    tag = this.optionTag
                 )
             saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
         }
@@ -823,21 +829,25 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: Question
         when (type) {
             QuestionType.RadioButton -> {
                 val mSaveAnswerEventOptionItemDto =
-                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display, tag = it.optionTag)
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
             }
 
             QuestionType.List,
             QuestionType.SingleSelect -> {
                 val mSaveAnswerEventOptionItemDto =
-                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display, tag = it.optionTag)
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
             }
 
             QuestionType.SingleSelectDropDown,
             QuestionType.SingleSelectDropdown -> {
                 val mSaveAnswerEventOptionItemDto =
-                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.selectedValue)
+                    SaveAnswerEventOptionItemDto(
+                        it.optionId ?: 0,
+                        it.selectedValue,
+                        tag = it.optionTag
+                    )
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
             }
 
@@ -849,7 +859,8 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: Question
                     SaveAnswerEventOptionItemDto(
                         it.optionId ?: 0,
                         it.selectedValue,
-                        optionDesc = it.display ?: BLANK_STRING
+                        optionDesc = it.display ?: BLANK_STRING,
+                        tag = it.optionTag
                     )
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
             }
@@ -858,7 +869,7 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: Question
             QuestionType.Grid -> {
 
                 val mSaveAnswerEventOptionItemDto =
-                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display, tag = it.optionTag)
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
 
             }
@@ -878,7 +889,7 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemDto(type: QuestionT
         QuestionType.Grid -> {
             this.forEach {
                 val mSaveAnswerEventOptionItemDto =
-                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display, tag = it.optionTag)
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
             }
         }
@@ -904,7 +915,9 @@ fun List<FormQuestionResponseEntity>.convertFormQuestionResponseEntityToSaveAnsw
                 selectedValue = formQuestionResponseEntity.selectedValue,
                 referenceId = formQuestionResponseEntity.referenceId,
                 optionDesc = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }?.optionItemEntity?.display
-                    ?: BLANK_STRING
+                    ?: BLANK_STRING,
+                tag = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }?.optionItemEntity?.optionTag
+                    ?: 0
             )
             saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
         }
@@ -932,7 +945,8 @@ fun OptionItemEntity.convertOptionItemEntityToSaveAnswerEventOptionItemDtoForFor
         selectedValue = formQuestionResponseEntity.selectedValue,
         referenceId = formQuestionResponseEntity.referenceId,
         optionDesc = this.display
-            ?: BLANK_STRING
+            ?: BLANK_STRING,
+        tag = this.optionTag
     )
 
     saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
@@ -986,7 +1000,10 @@ fun List<FormResponseObjectDto>.convertFormResponseObjectToSaveAnswerEventOption
                 selectedValue = memberDetails.value,
                 referenceId = formResponseObjectDto.referenceId,
                 optionDesc = optionsItemEntityList.find { it.optionId == memberDetails.key }?.display
-                    ?: BLANK_STRING
+                    ?: BLANK_STRING,
+                tag = optionsItemEntityList.find { it.optionId == memberDetails.key }?.optionTag
+                    ?: 0
+
             )
             saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
         }
@@ -1014,7 +1031,9 @@ fun List<InputTypeQuestionAnswerEntity>.convertInputTypeQuestionToEventOptionIte
             optionId = inputTypeQuestionAnswerEntity.optionId,
             selectedValue = inputTypeQuestionAnswerEntity.inputValue,
             optionDesc = optionsItemEntity.find { it.optionId == inputTypeQuestionAnswerEntity.optionId }?.optionItemEntity?.display
-                ?: BLANK_STRING
+                ?: BLANK_STRING,
+            tag = optionsItemEntity.find { it.optionId == inputTypeQuestionAnswerEntity.optionId }?.optionItemEntity?.optionTag
+                ?: 0
 
         )
         saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
