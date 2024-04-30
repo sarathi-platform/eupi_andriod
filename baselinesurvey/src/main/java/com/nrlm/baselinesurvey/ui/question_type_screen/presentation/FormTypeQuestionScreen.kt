@@ -116,6 +116,7 @@ fun FormTypeQuestionScreen(
             positiveButtonTitle = stringResource(id = R.string.proceed),
             negativeButtonTitle = stringResource(id = R.string.cancel_text),
             onPositiveButtonClick = {
+                viewModel.areResponsesChanged = false
                 viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
                 navController.popBackStack()
             }, onNegativeButtonClick = {
@@ -201,6 +202,7 @@ fun FormTypeQuestionScreen(
                         if (viewModel.storeCacheForResponse.isNotEmpty() && (viewModel.answeredOptionCount.intValue >= viewModel.totalOptionSize.intValue) && !viewModel.conditionalQuestionNotMarked) {
                             BaselineCore.setReferenceId(BLANK_STRING)
                             BaselineCore.setIsEditAllowedForNoneMarkedQuestionFlag(true)
+                            viewModel.areResponsesChanged = false
                             viewModel.onEvent(
                                 QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent(
                                     surveyId = surveyID,
@@ -258,6 +260,7 @@ fun FormTypeQuestionScreen(
                                 )
                             },
                             saveCacheFormData = { formQuestionResponseEntity ->
+                                viewModel.areResponsesChanged = true
                                 viewModel.onEvent(
                                     QuestionTypeEvent.CacheFormQuestionResponseEvent(
                                         formQuestionResponseEntity
@@ -310,7 +313,7 @@ fun FormTypeQuestionScreen(
 fun handleBackPress(viewModel: QuestionTypeScreenViewModel, navController: NavHostController) {
     BaselineCore.setReferenceId(BLANK_STRING)
     BaselineCore.setIsEditAllowedForNoneMarkedQuestionFlag(true)
-    if (viewModel.storeCacheForResponse.isNotEmpty() && viewModel.areResponsesUpdated()) {
+    if (viewModel.storeCacheForResponse.isNotEmpty() && viewModel.areResponsesChanged) {
         viewModel.onEvent(DialogEvents.ShowDialogEvent(true))
     } else {
         viewModel.onEvent(DialogEvents.ShowDialogEvent(false))

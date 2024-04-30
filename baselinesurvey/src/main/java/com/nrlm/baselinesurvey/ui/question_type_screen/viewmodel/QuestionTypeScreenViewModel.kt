@@ -59,6 +59,8 @@ class QuestionTypeScreenViewModel @Inject constructor(
     private val eventWriterHelperImpl: EventWriterHelperImpl
 ) : BaseViewModel() {
 
+    var areResponsesChanged: Boolean = false
+
     private val TAG = QuestionTypeScreenViewModel::class.java.simpleName
 
     private val _loaderState = mutableStateOf(LoaderState())
