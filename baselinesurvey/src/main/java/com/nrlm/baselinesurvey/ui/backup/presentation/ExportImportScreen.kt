@@ -66,7 +66,9 @@ fun ExportImportScreen(
                 }
 
                 SettingTagEnum.EXPORT_DATABASE.name -> {
-                    viewModel.exportLocalDatabase(true) { }
+                    viewModel.exportLocalDatabase(true) {
+                        viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+                    }
                 }
 
                 SettingTagEnum.EXPORT_IMAGES.name -> {
