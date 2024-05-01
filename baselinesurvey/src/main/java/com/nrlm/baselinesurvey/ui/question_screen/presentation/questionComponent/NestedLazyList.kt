@@ -52,11 +52,6 @@ import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
-import com.nrlm.baselinesurvey.navigation.home.HomeScreens
-import com.nrlm.baselinesurvey.navigation.home.navigateToBaseLineStartScreen
-import com.nrlm.baselinesurvey.navigation.home.navigateToFormQuestionSummaryScreen
-import com.nrlm.baselinesurvey.navigation.home.navigateToFormTypeQuestionScreen
-import com.nrlm.baselinesurvey.navigation.home.navigateToSearchScreen
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.common_components.ComplexSearchComponent
 import com.nrlm.baselinesurvey.ui.common_components.DidiInfoCard
@@ -83,6 +78,7 @@ import com.nrlm.baselinesurvey.utils.convertToSaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.findOptionFromId
 import com.nrlm.baselinesurvey.utils.mapToOptionItem
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.navigationmanager.graphs.BSHomeScreens
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -242,7 +238,7 @@ fun NestedLazyList(
                                 navController.popBackStack()
                             else
                                 navController.popBackStack(
-                                    HomeScreens.SURVEYEE_LIST_SCREEN.route,
+                                    BSHomeScreens.SURVEYEE_LIST_SCREEN.route,
                                     false
                                 )
                         })

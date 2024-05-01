@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 
 import com.nrlm.baselinesurvey.ui.theme.white
-import com.nudge.core.ui.navigation.VIDEO_PLAYER_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.VIDEO_PLAYER_SCREEN_ROUTE_NAME
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)

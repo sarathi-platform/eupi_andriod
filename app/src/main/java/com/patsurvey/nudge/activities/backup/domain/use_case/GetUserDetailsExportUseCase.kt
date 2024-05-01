@@ -1,6 +1,6 @@
-package com.nrlm.baselinesurvey.ui.backup.domain.use_case
+package com.patsurvey.nudge.activities.backup.domain.use_case
 
-import com.nrlm.baselinesurvey.ui.backup.domain.repository.ExportImportRepository
+import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
 
 
 class GetUserDetailsExportUseCase(

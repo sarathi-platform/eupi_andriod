@@ -3,24 +3,24 @@ package com.nrlm.baselinesurvey.ui.splash.domain.repository
 import android.text.TextUtils
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.LANGUAGE_OPEN_FROM_SETTING
+import com.nrlm.baselinesurvey.base.BaseRepository
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.model.response.ConfigResponseModel
-import com.nrlm.baselinesurvey.network.interfaces.ApiService
+import com.nrlm.baselinesurvey.network.interfaces.BaseLineApiService
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.getDefaultLanguage
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
-import com.patsurvey.nudge.base.BaseRepository
 import javax.inject.Inject
 
 class SplashScreenRepositoryImpl @Inject constructor(
     private val prefRepo: PrefRepo,
-    private val apiService: ApiService,
+    private val apiService: BaseLineApiService,
     private val languageListDao: LanguageListDao,
     private val nudgeBaselineDatabase: NudgeBaselineDatabase
 ) : SplashScreenRepository, BaseRepository() {

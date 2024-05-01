@@ -1,16 +1,17 @@
-package com.nrlm.baselinesurvey.ui.backup.domain.repository
+package com.patsurvey.nudge.activities.backup.domain.repository
 
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nrlm.baselinesurvey.PREF_KEY_NAME
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
+import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
 import javax.inject.Inject
 
 class ExportImportRepositoryImpl @Inject constructor(
     val prefRepo: PrefRepo,
     val nudgeBaselineDatabase:NudgeBaselineDatabase
-):ExportImportRepository {
+): ExportImportRepository {
     override fun clearLocalData() {
         nudgeBaselineDatabase.contentEntityDao().deleteContent()
         nudgeBaselineDatabase.didiDao().deleteSurveyees()

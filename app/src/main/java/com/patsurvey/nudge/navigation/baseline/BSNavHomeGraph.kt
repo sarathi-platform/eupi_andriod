@@ -31,7 +31,7 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.ui.auth.presentation.LoginScreenComponent
 import com.nrlm.baselinesurvey.ui.auth.presentation.OtpVerificationScreenComponent
-import com.nrlm.baselinesurvey.ui.backup.presentation.ExportImportScreen
+import com.patsurvey.nudge.activities.backup.presentation.ExportImportScreen
 import com.nrlm.baselinesurvey.ui.common_components.FinalStepCompletionScreen
 import com.nrlm.baselinesurvey.ui.common_components.StepCompletionScreen
 import com.nrlm.baselinesurvey.ui.form_response_summary_screen.presentation.FormQuestionSummaryScreen

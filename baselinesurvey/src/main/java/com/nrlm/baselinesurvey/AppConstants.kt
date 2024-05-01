@@ -161,7 +161,7 @@ const val TYPE_GRID = "Grid"
 
 const val ANSWER_TYPE_YES = "OPTION_A"
 const val ANSWER_TYPE_NO = "OPTION_B"
-
+ val SOMET=R.string.something_went_wrong
 
 const val RESPONSE_CODE_SUCCESS = 200        // Success
 const val CODE_SUCCESS = 0        // Success
@@ -208,9 +208,7 @@ val GENERIC_ERROR_MSG =
     "Oops! An error has occurred on our server. Please check internet connection and try to playback again!"
 const val NETWORK_ERROR_MSG = "Make sure that Wi-Fi or mobile data is turned on, then try again."
 val COMMON_ERROR_MSG =
-    "No network available"//NudgeApp.applicationContext().getString(R.string.common_error_message_text)
-val COMMON_ERROR_MSG =
-    BaselineApplication.applicationContext().getString(R.string.something_went_wrong)
+    "Something Went Wrong"
 const val COMMON_ERROR_TITLE = "Something Went Wrong"
 const val TIMEOUT_ERROR_MSG = "Your request timed out. Please try again in some time."
 val UNAUTHORISED_MESSAGE = "401 Unauthorized"

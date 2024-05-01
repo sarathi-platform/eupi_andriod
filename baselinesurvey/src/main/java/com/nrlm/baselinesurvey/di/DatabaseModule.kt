@@ -5,6 +5,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
+import com.nudge.syncmanager.database.SyncManagerDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -187,6 +187,7 @@ dependencies {
 
     implementation(project(":syncManager"))
     implementation(project(":CommunicationModule"))
+    implementation(project(":navigationManager"))
     implementation "com.airbnb.android:lottie-compose:6.1.0"
     implementation 'nl.dionsegijn:konfetti-compose:2.0.2'
 

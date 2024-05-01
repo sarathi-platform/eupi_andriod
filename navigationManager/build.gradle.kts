@@ -3,11 +3,10 @@ plugins {
     id("org.jetbrains.kotlin.android")
     kotlin("kapt")
     id("dagger.hilt.android.plugin")
-//    id("com.google.devtools.ksp")
 }
 
 android {
-    namespace = "com.nudge.core"
+    namespace = "com.nudge.navigationmanager"
     compileSdk = 34
 
     defaultConfig {

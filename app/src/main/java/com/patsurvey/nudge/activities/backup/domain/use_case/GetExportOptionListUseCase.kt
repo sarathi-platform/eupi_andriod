@@ -1,11 +1,11 @@
-package com.nrlm.baselinesurvey.ui.backup.domain.use_case
+package com.patsurvey.nudge.activities.backup.domain.use_case
 
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.ui.backup.domain.repository.ExportImportRepository
-import com.nrlm.baselinesurvey.ui.setting.domain.SettingTagEnum
+import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nudge.core.model.SettingOptionModel
+import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 
 class GetExportOptionListUseCase(private val repository: ExportImportRepository) {
 

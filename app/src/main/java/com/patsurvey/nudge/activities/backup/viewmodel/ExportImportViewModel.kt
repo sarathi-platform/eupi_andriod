@@ -1,4 +1,4 @@
-package com.nrlm.baselinesurvey.ui.backup.viewmodel
+package com.patsurvey.nudge.activities.backup.viewmodel
 
 import android.content.Context
 import android.content.Intent
@@ -11,7 +11,7 @@ import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
-import com.nrlm.baselinesurvey.ui.backup.domain.use_case.ExportImportUseCase
+import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
