@@ -499,6 +499,7 @@
     <string name="net_income_comparision">Net income per year</string>
     <string name="task_completed_label">"Activity Completed - "</string>
     <string name="data_fetching_and_processing">Data Fetching and Processing…</string>
+
     <string name="total_annual_income_label">"Total annual income of the household: "</string>
     <string name="import_restart_dialog_message">After Importing the data from file app needs to be restart and current data will be lost.</string>
     <string name="logout_confirmation">Are you sure you want to logout?</string>
@@ -508,4 +509,6 @@
     <string name="activity_completed_message">You have successfully completed the %1$s activity</string>
     <string name="total_addelabel">"Total added: "</string>
     <string name="view_summary_label">View Summary</string>
+    <string name="export_baseline_qna">Export Baseline QnA</string>
+    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
 </resources>

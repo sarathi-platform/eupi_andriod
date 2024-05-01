@@ -10,8 +10,20 @@ import androidx.core.net.toFile
 import androidx.core.net.toUri
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
+import androidx.core.content.FileProvider
+import com.google.gson.Gson
+import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
+import com.nrlm.baselinesurvey.PREF_KEY_NAME
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
+import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
+import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventDto
+import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventForFormQuestionDto
+import com.nrlm.baselinesurvey.model.datamodel.toCSVSave
+import com.nrlm.baselinesurvey.model.datamodel.toCsv
+import com.nrlm.baselinesurvey.model.datamodel.toCsvR
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SettingBSUserCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
@@ -19,17 +31,26 @@ import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LogWriter
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.SARATHI_DIRECTORY_NAME
+import com.nudge.core.BLANK_STRING
+import com.nudge.core.EXCEL_TYPE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.exportDbFile
 import com.nudge.core.getFirstName
 import com.nudge.core.json
+import com.nudge.core.datamodel.BaseLineQnATableCSV
+import com.nudge.core.datamodel.HamletQnATableCSV
+import com.nudge.core.exportcsv.CsvConfig
+import com.nudge.core.exportcsv.ExportService
+import com.nudge.core.exportcsv.Exportable
+import com.nudge.core.exportcsv.Exports
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.uriFromFile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -38,8 +59,11 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingBSViewModel @Inject constructor(
     private val settingBSUserCase: SettingBSUserCase,
+    private val sectionEntityDao: SectionEntityDao,
+    private val surveyeeEntityDao: SurveyeeEntityDao,
+    private val eventWriterHelperImpl: EventWriterHelperImpl,
     val prefRepo: PrefRepo
-):BaseViewModel() {
+) : BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val optionList: State<List<SettingOptionModel>> get() = _optionList
 
@@ -160,7 +184,7 @@ class SettingBSViewModel @Inject constructor(
                 }
 
                 BaselineLogger.d("SettingBSViewModel", " Share Dialog Open ${fileUriList.json()}" )
-                openShareSheet(fileUriList, title)
+                openShareSheet(fileUriList, title, ZIP_MIME_TYPE)
                 CoreSharedPrefs.getInstance(BaselineCore.getAppContext()).setFileExported(true)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             } catch (exception: Exception) {
@@ -171,10 +195,83 @@ class SettingBSViewModel @Inject constructor(
         }
     }
 
-    private fun openShareSheet( fileUriList: ArrayList<Uri>?, title: String) {
+
+    fun exportBaseLineQnA() {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                onEvent(LoaderEvent.UpdateLoaderState(true))
+                val eventsList = eventWriterHelperImpl.generateResponseEvent()
+                val payloadList = eventsList.map { it.request_payload }
+                val dtoList = ArrayList<SaveAnswerEventDto>()
+                payloadList.forEach { payload ->
+                    try {
+                        val dto = Gson().fromJson(payload, SaveAnswerEventDto::class.java)
+                        dtoList.add(dto)
+                    } catch (e: Exception) {
+                        BaselineLogger.e("SettingBSViewModel", "Exception CSV generate: ${e.message} ---------------")
+                    }
+                }
+                val formQuestionEvents = eventWriterHelperImpl.generateFormTypeEventsForCSV()
+                val payloadFormQuestionEventsList = formQuestionEvents.map { it.request_payload }
+                val dtoSaveFormList = ArrayList<SaveAnswerEventForFormQuestionDto>()
+                payloadFormQuestionEventsList.forEach { payload ->
+                    try {
+                        val dto =
+                            Gson().fromJson(payload, SaveAnswerEventForFormQuestionDto::class.java)
+                        dtoSaveFormList.add(dto)
+                    } catch (e: Exception) {
+                        BaselineLogger.e("SettingBSViewModel", "Exception CSV generate: ${e.message} ---------------")
+                    }
+                }
+                val sectionList = sectionEntityDao.getSectionsT(
+                    prefRepo.getUniqueUserIdentifier(),
+                    DEFAULT_LANGUAGE_ID
+                )
+                val surveeList =
+                    surveyeeEntityDao.getAllDidiForQNA(prefRepo.getUniqueUserIdentifier())
+                val baseLineQnATableCSV = mutableListOf<BaseLineQnATableCSV>()
+                baseLineQnATableCSV.addAll(dtoList.toCSVSave(sectionList, surveeList))
+                baseLineQnATableCSV.addAll(dtoSaveFormList.toCsv(sectionList, surveeList))
+                /*BaseLine*/
+                val baseLineListQnaCSV = baseLineQnATableCSV.filter { it.surveyId == 1 }
+                val baseLineMap = baseLineListQnaCSV.groupBy { it.subjectId }
+                val baseLineListQna = ArrayList<BaseLineQnATableCSV>()
+                baseLineMap.forEach {
+                    baseLineListQna.addAll(it.value)
+                }
+                /*Hamlet */
+                val hamletListQnaCSV = baseLineQnATableCSV.filter { it.surveyId == 2}
+                val hamletMap = hamletListQnaCSV.groupBy { it.subjectId }
+                val hamletListQna = ArrayList<BaseLineQnATableCSV>()
+                hamletMap.forEach{
+                    hamletListQna.addAll(it.value)
+                }
+
+                val title = "${
+                    prefRepo.getPref(
+                        PREF_KEY_NAME,
+                        BLANK_STRING
+                    ) ?: BLANK_STRING
+                }-${prefRepo.getMobileNumber()}"
+                val baseLinePath = generateCsv(title = "Baseline - $title", baseLineListQna = baseLineListQna.toCsvR(), hamletListQna = null)
+                val hamletPath = generateCsv(title = "Hamlet - $title", baseLineListQna = null, hamletListQna = hamletListQna.toCsv())
+                val listPath: ArrayList<Uri>? = ArrayList()
+                baseLinePath?.let { listPath?.add(it) }
+                hamletPath?.let { listPath?.add(it) }
+                openShareSheet(listPath, title, EXCEL_TYPE)
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+            } catch (exception: Exception) {
+                exception.printStackTrace()
+                BaselineLogger.e("SettingBSViewModel", "Exception CSV generate: ${exception.message} ---------------")
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+            }
+        }
+    }
+
+    private fun openShareSheet( fileUriList: ArrayList<Uri>?, title: String, type: String,) {
         if(fileUriList?.isNotEmpty() == true){
             val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
-            shareIntent.setType(ZIP_MIME_TYPE)
+            shareIntent.setType(type)
             shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
             shareIntent.putExtra(Intent.EXTRA_TITLE, title)
             val chooserIntent = Intent.createChooser(shareIntent, title)
@@ -197,5 +294,44 @@ class SettingBSViewModel @Inject constructor(
         return settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
     }
 
-
+    suspend fun generateCsv(
+        title: String,
+        baseLineListQna: List<BaseLineQnATableCSV>?,
+        hamletListQna: List<HamletQnATableCSV>?,
+    ): Uri? {
+        val list = checkCSVList(hamletListQna, baseLineListQna)
+        var uri: Uri? = null
+        ExportService.export(
+            type = Exports.CSV(
+                CsvConfig(
+                    prefix = title,
+                    hostPath = BaselineCore.getAppContext()
+                        .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath
+                        ?: ""
+                )
+            ),
+            content = list,
+        ).catch { error ->
+            // handle error here
+             BaselineLogger.e("SettingBSViewModel", "Export CSV error: $error ---------------")
+        }.collect { path ->
+            val file = File(path)
+            uri = FileProvider.getUriForFile(
+                BaselineCore.getAppContext(),
+                BaselineCore.getAppContext().packageName + ".provider",
+                file
+            )
+        }
+        return uri
     }
+
+    fun checkCSVList(hamletListQna: List<HamletQnATableCSV>?, baseLineListQna: List<BaseLineQnATableCSV>?): List<Exportable> {
+        val list = if (hamletListQna.isNullOrEmpty()) {
+            baseLineListQna
+        } else {
+            hamletListQna
+        }
+        return list!!
+    }
+
+}

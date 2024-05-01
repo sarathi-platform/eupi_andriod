@@ -665,7 +665,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
             } else if (questionAnswerResponseModel.question?.questionType.equals(QuestionType.DidiDetails.name)) {
 
                 val didiIntoEntity = getDidiDidiInfoEntity(questionAnswerResponseModel)
-                baselineDatabase.didiInfoEntityDao().checkAndUpdateDidiInfo(didiIntoEntity)
+                baselineDatabase.didiInfoEntityDao()
+                    .checkAndUpdateDidiInfo(didiIntoEntity, getBaseLineUserId())
 
             } else {
                 val sectionAnswerEntity =

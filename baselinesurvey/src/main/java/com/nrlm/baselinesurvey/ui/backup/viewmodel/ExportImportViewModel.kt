@@ -212,7 +212,7 @@ fun exportOnlyLogFile(context: Context){
                     BaselineCore.getAppContext(),
                     listOf(),
                     exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
-                    exportImportUseCase.getUserDetailsExportUseCase.getUserID()
+                    exportImportUseCase.getUserDetailsExportUseCase.getUserName()
                 )
                if(fileUri!=null) {
                    BaselineLogger.d("ExportImportViewModel","compressEventData ${fileUri.path}----")
