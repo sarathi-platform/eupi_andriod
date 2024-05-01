@@ -33,5 +33,19 @@ fun Events.toEventRequest() =
     )
 
 
-
+fun List<Events>.toEventRequestList(): List<EventRequest> {
+    return this.map {
+        EventRequest(
+            it.id,
+            it.name,
+            it.type,
+            it.createdBy,
+            it.mobile_number,
+            it.request_payload,
+            it.metadata,
+            it.created_date.toString(),
+            it.modified_date.toString()
+        )
+    }
+}
 

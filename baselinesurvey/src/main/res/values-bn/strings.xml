@@ -467,5 +467,6 @@
     <string name="total_addelabel">"মোট যোগ করা হয়েছে: "</string>
     <string name="view_summary_label">সারাংশ দেখুন</string>
     <string name="are_you_sure_you_want_to_load_data_from_server">আপনি কি সার্ভার থেকে নতুন ডেটা পুনরায় লোড করার বিষয়ে নিশ্চিত যা সিঙ্ক না করা ডেটা হারাতে পারে?</string>
+    <string name="export_baseline_qna">বেসলাইন QnA রপ্তানি করুন</string>
 
 </resources>

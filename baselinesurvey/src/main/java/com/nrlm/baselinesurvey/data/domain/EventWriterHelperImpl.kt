@@ -1,8 +1,8 @@
 package com.nrlm.baselinesurvey.data.domain
 
-import android.text.TextUtils
 import android.util.Log
 import androidx.core.net.toUri
+import android.text.TextUtils
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.PREF_USER_TYPE
@@ -51,6 +51,7 @@ import com.nrlm.baselinesurvey.utils.getFileNameFromURL
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.tagList
 import com.nudge.core.EventSyncStatus
+import com.nudge.core.REGENERATE_PREFIX
 import com.nudge.core.SELECTION_MISSION
 import com.nudge.core.compressImage
 import com.nudge.core.database.dao.EventDependencyDao
@@ -656,11 +657,17 @@ class EventWriterHelperImpl @Inject constructor(
 
     override suspend fun regenerateAllEvent() {
 
-        changeFileName("regenerate_")
-        generateResponseEvent()
-        regenerateDidiInfoResponseEvent()
+        changeFileName(REGENERATE_PREFIX)
+        generateResponseEvent().forEach {
+            repositoryImpl.saveEventToMultipleSources(event = it, eventDependencies =  listOf(), eventType = EventType.STATEFUL)
+        }
+        regenerateDidiInfoResponseEvent().forEach {
+            repositoryImpl.saveEventToMultipleSources(event = it, eventDependencies =  listOf(), eventType = EventType.STATEFUL)
+        }
         regenerateImageUploadEvent()
-        regenerateFromResponseEvent()
+        regenerateFromResponseEvent().forEach {
+            repositoryImpl.saveEventToMultipleSources(event = it, eventDependencies =  listOf(), eventType = EventType.STATEFUL)
+        }
         regenerateMATStatusEvent()
         changeFileName("")
 
@@ -673,183 +680,6 @@ class EventWriterHelperImpl @Inject constructor(
         if (!TextUtils.isEmpty(prefix))
             coreSharedPrefs.setFileExported(false)
     }
-
-    private suspend fun generateResponseEvent() {
-        baselineDatabase.inputTypeQuestionAnswerDao()
-            .getAllInputTypeAnswersForQuestion(prefRepo.getUniqueUserIdentifier()).forEach {
-                val questionEntity = baselineDatabase.questionEntityDao()
-                    .getQuestionEntity(
-                        getBaseLineUserId(),
-                        it.surveyId,
-                        it.sectionId,
-                        it.questionId
-                    )
-
-                val optionList = baselineDatabase.optionItemDao()
-                    .getSurveySectionQuestionOptions(
-                        getBaseLineUserId(),
-                        it.sectionId,
-                        it.surveyId,
-                        it.questionId,
-                        2
-                    )
-                var optionItemEntityState = ArrayList<OptionItemEntityState>()
-                optionList.forEach { optionItemEntity ->
-                    optionItemEntityState.add(
-                        OptionItemEntityState(
-                            optionItemEntity.optionId,
-                            optionItemEntity,
-                            !optionItemEntity.conditional
-                        )
-                    )
-                }
-                if (questionEntity?.questionDisplay == "How much does didi get every month through PDS?") {
-                    Log.e("dd", "dd")
-                }
-                repositoryImpl.saveEventToMultipleSources(
-                    createSaveAnswerEvent(
-                        it.surveyId,
-                        it.sectionId,
-                        it.didiId,
-                        it.questionId,
-                        QuestionType.Input.name,
-                        questionEntity?.tag ?: 0,
-                        questionEntity?.questionDisplay ?: "",
-                        true,
-                        listOf(it).convertInputTypeQuestionToEventOptionItemDto(
-                            it.questionId,
-                            QuestionType.valueOf(questionEntity?.type ?: ""),
-                            optionItemEntityState
-                        )
-                    ),
-                    listOf(), eventType = EventType.STATEFUL,
-                )
-
-
-            }
-
-        baselineDatabase.sectionAnswerEntityDao().getAllAnswer(prefRepo.getUniqueUserIdentifier())
-            .forEach {
-            val tag = baselineDatabase.questionEntityDao()
-                .getQuestionTag(getBaseLineUserId(), it.surveyId, it.sectionId, it.questionId)
-                val questionDisplay = baselineDatabase.questionEntityDao()
-                    .getQuestionDisplayName(
-                        getBaseLineUserId(),
-                        it.surveyId,
-                        it.sectionId,
-                        it.questionId
-                    )
-
-
-            repositoryImpl.saveEventToMultipleSources(
-                createSaveAnswerEvent(
-                    it.surveyId,
-                    it.sectionId,
-                    it.didiId,
-                    it.questionId,
-                    it.questionType,
-                    tag,
-                    questionDisplay,
-                    true,
-                    it.optionItems.convertToSaveAnswerEventOptionItemsDto(QuestionType.valueOf(it.questionType))
-                ), eventType = EventType.STATEFUL, eventDependencies = listOf()
-            )
-        }
-    }
-
-    private suspend fun regenerateFromResponseEvent() {
-        val formResponseList = baselineDatabase.formQuestionResponseDao()
-            .getAllFormResponses(prefRepo.getUniqueUserIdentifier())
-        val formResponseAndQuestionMap = formResponseList.groupBy { it.questionId }
-        val uniqueId = getBaseLineUserId()
-        formResponseAndQuestionMap.forEach { mapItem ->
-            val tempItem = mapItem.value.first()
-            val question = baselineDatabase.questionEntityDao().getFormQuestionForId(
-                surveyId = tempItem.surveyId,
-                sectionId = tempItem.sectionId,
-                questionId = mapItem.key,
-                languageId = DEFAULT_LANGUAGE_ID,
-                userid = uniqueId
-            )
-            val optionItemEntityStateList = ArrayList<OptionItemEntityState>()
-            baselineDatabase.optionItemDao().getSurveySectionQuestionOptions(
-                surveyId = tempItem.surveyId,
-                sectionId = tempItem.sectionId,
-                questionId = mapItem.key,
-                languageId = DEFAULT_LANGUAGE_ID,
-                userId = uniqueId
-
-            ).forEach { optionItemEntity ->
-                optionItemEntityStateList.add(
-                    OptionItemEntityState(
-                        optionItemEntity.optionId,
-                        optionItemEntity,
-                        !optionItemEntity.conditional
-                    )
-                )
-            }
-
-
-            mapItem.value.groupBy { it.referenceId }.forEach {
-                val didiResponse = it.value.first()
-                repositoryImpl.saveEventToMultipleSources(
-                    createSaveAnswerEventForFormTypeQuestion(
-                        surveyId = didiResponse.surveyId,
-                        sectionId = didiResponse.sectionId,
-                        questionId = didiResponse.questionId,
-                        didiId = didiResponse.didiId,
-                        questionTag = question?.tag ?: 0,
-                        questionType = QuestionType.Form.name,
-                        showQuestion = true,
-                        questionDesc = question?.questionDisplay ?: "",
-                        referenceOptionList = getOptionsInDefaultLanguage(
-                            didiResponse.surveyId,
-                            didiResponse.sectionId,
-                            didiResponse.questionId ?: 0
-                        ),
-                        saveAnswerEventOptionItemDtoList = it.value.convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto(
-                            QuestionType.Form,
-                            optionItemEntityStateList
-                        )
-                    ), eventType = EventType.STATEFUL, eventDependencies = listOf()
-                )
-
-            }
-        }
-    }
-
-    private suspend fun regenerateDidiInfoResponseEvent() {
-
-        val didiInfoEntityList =
-            baselineDatabase.didiInfoEntityDao().getAllDidi(prefRepo.getUniqueUserIdentifier())
-        val didiInfoQuestion =
-            baselineDatabase.questionEntityDao().getQuestionForType(QuestionType.DidiDetails.name)
-
-        didiInfoEntityList.forEach { didiInfoEntity ->
-            repositoryImpl.saveEventToMultipleSources(
-                createSaveAnswerEventForFormTypeQuestion(
-                    surveyId = didiInfoQuestion.surveyId,
-                    sectionId = didiInfoQuestion.sectionId,
-                    didiId = didiInfoEntity.didiId ?: 0,
-                    questionId = didiInfoQuestion.questionId ?: 0,
-                    questionType = didiInfoQuestion.type ?: QuestionType.DidiDetails.name,
-                    questionTag = didiInfoQuestion.tag,
-                    questionDesc = didiInfoQuestion.questionDisplay ?: "",
-                    referenceOptionList = getOptionsInDefaultLanguage(
-                        didiInfoQuestion.surveyId,
-                        didiInfoQuestion.sectionId,
-                        didiInfoQuestion.questionId ?: 0
-                    ),
-                    saveAnswerEventOptionItemDtoList = getSaveAnswerEventOptionItemDtoForDidiInfo(
-                        didiInfoEntity,
-                        didiInfoQuestion
-                    )
-                ), eventType = EventType.STATEFUL, eventDependencies = listOf()
-            )
-        }
-
-    }
-
     private fun getSaveAnswerEventOptionItemDtoForDidiInfo(
         didiInfoEntity: DidiInfoEntity,
         questionEntity: QuestionEntity
@@ -1118,5 +948,191 @@ class EventWriterHelperImpl @Inject constructor(
         return updatedOptionListInDefaultLanguage
     }
 
+
+     suspend fun generateResponseEvent(): List<Events> {
+        val events = mutableListOf<Events>()
+
+        baselineDatabase.inputTypeQuestionAnswerDao()
+            .getAllInputTypeAnswersForQuestion(prefRepo.getUniqueUserIdentifier()).forEach {
+                val questionEntity = baselineDatabase.questionEntityDao()
+                    .getQuestionEntity(
+                        getBaseLineUserId(),
+                        it.surveyId,
+                        it.sectionId,
+                        it.questionId
+                    )
+
+                val optionList = baselineDatabase.optionItemDao()
+                    .getSurveySectionQuestionOptions(
+                        getBaseLineUserId(),
+                        it.sectionId,
+                        it.surveyId,
+                        it.questionId,
+                        2
+                    )
+                var optionItemEntityState = ArrayList<OptionItemEntityState>()
+                optionList.forEach { optionItemEntity ->
+                    optionItemEntityState.add(
+                        OptionItemEntityState(
+                            optionItemEntity.optionId,
+                            optionItemEntity,
+                            !optionItemEntity.conditional
+                        )
+                    )
+                }
+                events.add(
+                    createSaveAnswerEvent(
+                        it.surveyId,
+                        it.sectionId,
+                        it.didiId,
+                        it.questionId,
+                        QuestionType.Input.name,
+                        questionEntity?.tag ?: 0,
+                        questionEntity?.questionDisplay ?: "",
+                        true,
+                        listOf(it).convertInputTypeQuestionToEventOptionItemDto(
+                            it.questionId,
+                            QuestionType.valueOf(questionEntity?.type ?: ""),
+                            optionItemEntityState
+                        )
+                    )
+                )
+            }
+
+        baselineDatabase.sectionAnswerEntityDao().getAllAnswer(prefRepo.getUniqueUserIdentifier())
+            .forEach {
+                val tag = baselineDatabase.questionEntityDao()
+                    .getQuestionTag(getBaseLineUserId(), it.surveyId, it.sectionId, it.questionId)
+                val questionDisplay = baselineDatabase.questionEntityDao()
+                    .getQuestionDisplayName(
+                        getBaseLineUserId(),
+                        it.surveyId,
+                        it.sectionId,
+                        it.questionId
+                    )
+
+                events.add(
+                    createSaveAnswerEvent(
+                        it.surveyId,
+                        it.sectionId,
+                        it.didiId,
+                        it.questionId,
+                        it.questionType,
+                        tag,
+                        questionDisplay,
+                        true,
+                        it.optionItems.convertToSaveAnswerEventOptionItemsDto(QuestionType.valueOf(it.questionType))
+                    )
+                )
+            }
+
+        return events
+    }
+
+
+
+    private suspend fun regenerateFromResponseEvent(): List<Events> {
+        val events = mutableListOf<Events>()
+
+        val formResponseList = baselineDatabase.formQuestionResponseDao()
+            .getAllFormResponses(prefRepo.getUniqueUserIdentifier())
+        val formResponseAndQuestionMap = formResponseList.groupBy { it.questionId }
+        val uniqueId = getBaseLineUserId()
+        formResponseAndQuestionMap.forEach { mapItem ->
+            val tempItem = mapItem.value.first()
+            val question = baselineDatabase.questionEntityDao().getFormQuestionForId(
+                surveyId = tempItem.surveyId,
+                sectionId = tempItem.sectionId,
+                questionId = mapItem.key,
+                languageId = DEFAULT_LANGUAGE_ID,
+                userid = uniqueId
+            )
+            val optionItemEntityStateList = ArrayList<OptionItemEntityState>()
+            baselineDatabase.optionItemDao().getSurveySectionQuestionOptions(
+                surveyId = tempItem.surveyId,
+                sectionId = tempItem.sectionId,
+                questionId = mapItem.key,
+                languageId = DEFAULT_LANGUAGE_ID,
+                userId = uniqueId
+
+            ).forEach { optionItemEntity ->
+                optionItemEntityStateList.add(
+                    OptionItemEntityState(
+                        optionItemEntity.optionId,
+                        optionItemEntity,
+                        !optionItemEntity.conditional
+                    )
+                )
+            }
+
+            mapItem.value.groupBy { it.referenceId }.forEach {
+                val didiResponse = it.value.first()
+                events.add(
+                    createSaveAnswerEventForFormTypeQuestion(
+                        surveyId = didiResponse.surveyId,
+                        sectionId = didiResponse.sectionId,
+                        questionId = didiResponse.questionId,
+                        didiId = didiResponse.didiId,
+                        questionTag = question?.tag ?: 0,
+                        questionType = QuestionType.Form.name,
+                        showQuestion = true,
+                        questionDesc = question?.questionDisplay ?: "",
+                        referenceOptionList = getOptionsInDefaultLanguage(
+                            didiResponse.surveyId,
+                            didiResponse.sectionId,
+                            didiResponse.questionId ?: 0
+                        ),
+                        saveAnswerEventOptionItemDtoList = it.value.convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto(
+                            QuestionType.Form,
+                            optionItemEntityStateList
+                        )
+                    )
+                )
+            }
+        }
+        return events
+    }
+
+    private suspend fun regenerateDidiInfoResponseEvent(): List<Events> {
+        val events = mutableListOf<Events>()
+
+        val didiInfoEntityList =
+            baselineDatabase.didiInfoEntityDao().getAllDidi(prefRepo.getUniqueUserIdentifier())
+        val didiInfoQuestion =
+            baselineDatabase.questionEntityDao().getQuestionForType(QuestionType.DidiDetails.name)
+
+        didiInfoEntityList.forEach { didiInfoEntity ->
+            events.add(
+                createSaveAnswerEventForFormTypeQuestion(
+                    surveyId = didiInfoQuestion.surveyId,
+                    sectionId = didiInfoQuestion.sectionId,
+                    didiId = didiInfoEntity.didiId ?: 0,
+                    questionId = didiInfoQuestion.questionId ?: 0,
+                    questionType = didiInfoQuestion.type ?: QuestionType.DidiDetails.name,
+                    questionTag = didiInfoQuestion.tag,
+                    questionDesc = didiInfoQuestion.questionDisplay ?: "",
+                    referenceOptionList = getOptionsInDefaultLanguage(
+                        didiInfoQuestion.surveyId,
+                        didiInfoQuestion.sectionId,
+                        didiInfoQuestion.questionId ?: 0
+                    ),
+                    saveAnswerEventOptionItemDtoList = getSaveAnswerEventOptionItemDtoForDidiInfo(
+                        didiInfoEntity,
+                        didiInfoQuestion
+                    )
+                )
+            )
+        }
+
+        return events
+    }
+
+     suspend fun generateFormTypeEventsForCSV(): List<Events> {
+        val events = mutableListOf<Events>()
+         events.addAll(regenerateDidiInfoResponseEvent())
+        events.addAll(regenerateFromResponseEvent())
+
+        return events
+    }
 
 }

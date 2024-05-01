@@ -35,11 +35,12 @@ interface DidiInfoDao {
     fun isDidiInfoAvailable(userId: String, didiId: Int): Int
 
     @Transaction
-    fun checkAndUpdateDidiInfo(didiInfoEntity: DidiInfoEntity) {
+    fun checkAndUpdateDidiInfo(didiInfoEntity: DidiInfoEntity,userId: String) {
         val isDidiInfoAvailable = isDidiInfoAvailable(
-            userId = didiInfoEntity.userId ?: BLANK_STRING,
+            userId = userId,
             didiInfoEntity.didiId ?: 0
         )
+        didiInfoEntity.userId=userId?: BLANK_STRING
         if (isDidiInfoAvailable > 0) {
             updateDidiInfo(didiInfoEntity)
         } else {
