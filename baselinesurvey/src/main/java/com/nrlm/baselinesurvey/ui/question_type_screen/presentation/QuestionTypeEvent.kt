@@ -33,7 +33,8 @@ sealed class QuestionTypeEvent {
         val questionId: Int?,
         val sectionId: Int?,
         val surveyId: Int?,
-        val surveyeeId: Int?
+        val surveyeeId: Int?,
+        val referenceId: String
     ): QuestionTypeEvent()
 
     data class CacheFormQuestionResponseEvent(

@@ -80,8 +80,10 @@ fun SurveyeeCardComponent(
     buttonClicked: (buttonName: ButtonName, surveyeeId: Int) -> Unit,
     moveDidiToThisWeek: (surveyeeCardState: SurveyeeCardState, moveToThisWeek: Boolean) -> Unit
 ) {
+
+
     val surveyeeMarkedNotAvailable = remember {
-        mutableStateOf(surveyeeState.surveyeeDetails.surveyStatus == SurveyState.NOT_AVAILABLE.ordinal)
+        mutableStateOf(surveyeeState.surveyState == SurveyState.NOT_AVAILABLE)
     }
     Card(
         elevation = CardDefaults.cardElevation(
