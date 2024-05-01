@@ -57,9 +57,6 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingBSViewModel @Inject constructor(
     private val settingBSUserCase: SettingBSUserCase,
-    private val sectionEntityDao: SectionEntityDao,
-    private val surveyeeEntityDao: SurveyeeEntityDao,
-    private val eventWriterHelperImpl: EventWriterHelperImpl,
     val prefRepo: PrefRepo
 ) : BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
@@ -182,80 +179,6 @@ class SettingBSViewModel @Inject constructor(
             }
         }
     }
-
-
-    fun exportBaseLineQnA() {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            try {
-                onEvent(LoaderEvent.UpdateLoaderState(true))
-                val eventsList = eventWriterHelperImpl.generateResponseEvent()
-                val payloadList = eventsList.map { it.request_payload }
-                val dtoList = ArrayList<SaveAnswerEventDto>()
-                payloadList.forEach { payload ->
-                    try {
-                        val dto = Gson().fromJson(payload, SaveAnswerEventDto::class.java)
-                        dtoList.add(dto)
-                    } catch (e: Exception) {
-                        BaselineLogger.e("SettingBSViewModel", "Exception CSV generate: ${e.message} ---------------")
-                    }
-                }
-                val formQuestionEvents = eventWriterHelperImpl.generateFormTypeEventsForCSV()
-                val payloadFormQuestionEventsList = formQuestionEvents.map { it.request_payload }
-                val dtoSaveFormList = ArrayList<SaveAnswerEventForFormQuestionDto>()
-                payloadFormQuestionEventsList.forEach { payload ->
-                    try {
-                        val dto =
-                            Gson().fromJson(payload, SaveAnswerEventForFormQuestionDto::class.java)
-                        dtoSaveFormList.add(dto)
-                    } catch (e: Exception) {
-                        BaselineLogger.e("SettingBSViewModel", "Exception CSV generate: ${e.message} ---------------")
-                    }
-                }
-                val sectionList = sectionEntityDao.getSectionsT(
-                    prefRepo.getUniqueUserIdentifier(),
-                    DEFAULT_LANGUAGE_ID
-                )
-                val surveeList =
-                    surveyeeEntityDao.getAllDidiForQNA(prefRepo.getUniqueUserIdentifier())
-                val baseLineQnATableCSV = mutableListOf<BaseLineQnATableCSV>()
-                baseLineQnATableCSV.addAll(dtoList.toCSVSave(sectionList, surveeList))
-                baseLineQnATableCSV.addAll(dtoSaveFormList.toCsv(sectionList, surveeList))
-                /*BaseLine*/
-                val baseLineListQnaCSV = baseLineQnATableCSV.filter { it.surveyId == 1 }
-                val baseLineMap = baseLineListQnaCSV.groupBy { it.subjectId }
-                val baseLineListQna = ArrayList<BaseLineQnATableCSV>()
-                baseLineMap.forEach {
-                    baseLineListQna.addAll(it.value)
-                }
-                /*Hamlet */
-                val hamletListQnaCSV = baseLineQnATableCSV.filter { it.surveyId == 2}
-                val hamletMap = hamletListQnaCSV.groupBy { it.subjectId }
-                val hamletListQna = ArrayList<BaseLineQnATableCSV>()
-                hamletMap.forEach{
-                    hamletListQna.addAll(it.value)
-                }
-
-                val title = "${
-                    prefRepo.getPref(
-                        PREF_KEY_NAME,
-                        BLANK_STRING
-                    ) ?: BLANK_STRING
-                }-${prefRepo.getMobileNumber()}"
-                val baseLinePath = generateCsv(title = "Baseline - $title", baseLineListQna = baseLineListQna.toCsvR(), hamletListQna = null)
-                val hamletPath = generateCsv(title = "Hamlet - $title", baseLineListQna = null, hamletListQna = hamletListQna.toCsv())
-                val listPath: ArrayList<Uri>? = ArrayList()
-                baseLinePath?.let { listPath?.add(it) }
-                hamletPath?.let { listPath?.add(it) }
-                openShareSheet(listPath, title, EXCEL_TYPE)
-                onEvent(LoaderEvent.UpdateLoaderState(false))
-            } catch (exception: Exception) {
-                exception.printStackTrace()
-                BaselineLogger.e("SettingBSViewModel", "Exception CSV generate: ${exception.message} ---------------")
-                onEvent(LoaderEvent.UpdateLoaderState(false))
-            }
-        }
-    }
-
     private fun openShareSheet( fileUriList: ArrayList<Uri>?, title: String, type: String,) {
         if(fileUriList?.isNotEmpty() == true){
             val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
@@ -281,45 +204,4 @@ class SettingBSViewModel @Inject constructor(
    fun getUserMobileNumber():String{
         return settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
     }
-
-    suspend fun generateCsv(
-        title: String,
-        baseLineListQna: List<BaseLineQnATableCSV>?,
-        hamletListQna: List<HamletQnATableCSV>?,
-    ): Uri? {
-        val list = checkCSVList(hamletListQna, baseLineListQna)
-        var uri: Uri? = null
-        ExportService.export(
-            type = Exports.CSV(
-                CsvConfig(
-                    prefix = title,
-                    hostPath = BaselineCore.getAppContext()
-                        .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath
-                        ?: ""
-                )
-            ),
-            content = list,
-        ).catch { error ->
-            // handle error here
-             BaselineLogger.e("SettingBSViewModel", "Export CSV error: $error ---------------")
-        }.collect { path ->
-            val file = File(path)
-            uri = FileProvider.getUriForFile(
-                BaselineCore.getAppContext(),
-                BaselineCore.getAppContext().packageName + ".provider",
-                file
-            )
-        }
-        return uri
-    }
-
-    fun checkCSVList(hamletListQna: List<HamletQnATableCSV>?, baseLineListQna: List<BaseLineQnATableCSV>?): List<Exportable> {
-        val list = if (hamletListQna.isNullOrEmpty()) {
-            baseLineListQna
-        } else {
-            hamletListQna
-        }
-        return list!!
-    }
-
 }
