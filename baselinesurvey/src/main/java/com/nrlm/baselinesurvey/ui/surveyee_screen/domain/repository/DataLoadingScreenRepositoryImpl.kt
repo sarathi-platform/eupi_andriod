@@ -455,14 +455,29 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         return apiService.getBaseLineMission(missionRequest)
     }
 
-    override suspend fun saveMissionToDB(missions: MissionEntity) {
-        val missionCount = missionEntityDao.getMissionCount(
-            userId = getBaseLineUserId(),
-            missionId = missions.missionId
-        )
-        if (missionCount == 0) {
-            missionEntityDao.insertMission(missions)
+    override suspend fun saveMissionToDB(missions: List<MissionResponseModel>) {
+
+        missionEntityDao.softDeleteMission(getBaseLineUserId())
+        missions.forEach { mission ->
+            val missionCount = missionEntityDao.getMissionCount(
+                userId = getBaseLineUserId(),
+                missionId = mission.missionId
+            )
+            if (missionCount == 0) {
+                missionEntityDao.insertMission(
+                    MissionEntity.getMissionEntity(
+                        userId = getBaseLineUserId(),
+                        activityTaskSize = mission.activities.size,
+                        mission = mission
+                    )
+                )
+            } else {
+                missionEntityDao.updateMissionActiveStatus(mission.missionId, getBaseLineUserId())
+            }
         }
+
+
+
     }
 
     override suspend fun saveMissionsActivityToDB(
