@@ -43,6 +43,8 @@ import com.nrlm.baselinesurvey.database.entity.SurveyEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.model.datamodel.ConditionDtoWithParentId
+import com.nrlm.baselinesurvey.model.datamodel.MissionActivityModel
+import com.nrlm.baselinesurvey.model.datamodel.MissionTaskModel
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.Sections
@@ -463,21 +465,68 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun saveMissionsActivityToDB(activities: MissionActivityEntity) {
-        val activityCount =
-            missionActivityDao.getActivityCount(userId = getBaseLineUserId(), activities.activityId)
-        if (activityCount == 0) {
-            missionActivityDao.insertMissionActivity(activities)
+    override suspend fun saveMissionsActivityToDB(
+        activities: List<MissionActivityModel>,
+        missionId: Int,
+    ) {
+        missionActivityDao.softDeleteActivity(missionId, getBaseLineUserId())
+        activities.forEach { missionActivityModel ->
+            val activityCount = missionActivityDao.getActivityCount(
+                userId = getBaseLineUserId(),
+                missionActivityModel.activityId
+            )
+            if (activityCount == 0) {
+                missionActivityDao.insertMissionActivity(
+                    MissionActivityEntity.getMissionActivityEntity(
+                        getBaseLineUserId(),
+                        missionId,
+                        missionActivityModel.tasks.size,
+                        missionActivityModel
+                    )
+                )
+            } else {
+                missionActivityDao.updateActivityActiveStatus(
+                    missionId,
+                    getBaseLineUserId(),
+                    1,
+                    missionActivityModel.activityId
+                )
+            }
+        }
+
+    }
+
+    override fun saveMissionsActivityTaskToDB(
+        missionId: Int,
+        activityId: Int,
+        activityName: String,
+        activities: List<MissionTaskModel>
+    ) {
+        activityTaskDao.softDeleteActivityTask(getBaseLineUserId(), activityId, missionId)
+        activities.forEach { task ->
+            val taskCount =
+                activityTaskDao.getTaskByIdCount(
+                    userId = getBaseLineUserId(),
+                    taskId = task.id ?: 0
+                )
+            if (taskCount == 0) {
+                activityTaskDao.insertActivityTask(
+                    ActivityTaskEntity.getActivityTaskEntity(
+                        userId = getBaseLineUserId(),
+                        missionId = missionId,
+                        activityId = activityId,
+                        activityName = activityName,
+                        task = task,
+                    )
+                )
+            } else {
+                activityTaskDao.updateActiveTaskStatus(1, task.id ?: 0, getBaseLineUserId())
+            }
+
         }
     }
 
-    override suspend fun saveActivityTaskToDB(tasks: ActivityTaskEntity) {
-        val taskCount =
-            activityTaskDao.getTaskByIdCount(userId = getBaseLineUserId(), taskId = tasks.taskId)
-        if (taskCount == 0) {
-            activityTaskDao.insertActivityTask(tasks)
-        }
-    }
+
 
     override suspend fun deleteMissionsFromDB() {
         missionEntityDao.deleteMissions(

@@ -27,8 +27,11 @@ interface ActivityTaskDao {
     @Query("SELECT count(*) FROM $TASK_TABLE_NAME where  userId=:userId and taskId = :taskId")
     fun getTaskByIdCount(userId: String, taskId: Int): Int
 
-    @Query("SELECT localTaskId FROM $TASK_TABLE_NAME where  subjectId=:didiId and userId = :userId and isActive=1")
+    @Query("SELECT localTaskId FROM $TASK_TABLE_NAME where  subjectId=:didiId and userId = :userId")
     fun getTaskLocalId(userId: String, didiId: Int): String?
+
+    @Query("UPDATE $TASK_TABLE_NAME set isActive = 0 where userId=:userId and activityId=:activityId and missionId = :missionId ")
+    fun softDeleteActivityTask(userId: String, activityId: Int, missionId: Int)
 
     @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId and missionId=:missionId and activityId = :activityId and isActive=1")
     suspend fun getActivityTask(
@@ -43,7 +46,7 @@ interface ActivityTaskDao {
     @Query("Select * FROM $TASK_TABLE_NAME where  userId=:userId and  isActive=1 and missionId in(:missionId) and activityName in(:activityName)")
     fun isTaskExist(userId: String, missionId: Int, activityName: String): Boolean
 
-    @Query("Select * from $TASK_TABLE_NAME where userId=:userId and  didiId = :subjectId")
+    @Query("Select * from $TASK_TABLE_NAME where userId=:userId and  didiId = :subjectId and isActive=1")
     fun getTaskFromSubjectId(userId: String, subjectId: Int): ActivityTaskEntity?
 
     @Query("UPDATE $TASK_TABLE_NAME set activityState = :surveyStatus where userId=:userId and didiId = :subjectId")
@@ -109,5 +112,8 @@ interface ActivityTaskDao {
         missionId: Int,
         status: String = SurveyState.COMPLETED.name
     ): LiveData<Int>
+
+    @Query("UPDATE $TASK_TABLE_NAME SET isActive = :isActive where userId=:userId and  taskId = :taskId")
+    fun updateActiveTaskStatus(isActive: Int, taskId: Int, userId: String)
 
 }
