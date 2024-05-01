@@ -77,7 +77,7 @@ class SplashScreenRepositoryImpl @Inject constructor(
 
     override fun clearLocalData() {
         nudgeBaselineDatabase.contentEntityDao().deleteContent()
-        nudgeBaselineDatabase.didiDao().deleteSurveyees()
+        nudgeBaselineDatabase.didiDao().deleteSurveyees(getBaseLineUserId())
         nudgeBaselineDatabase.activityTaskEntityDao().deleteActivityTask(getBaseLineUserId())
         nudgeBaselineDatabase.missionEntityDao().deleteMissions(getBaseLineUserId())
         nudgeBaselineDatabase.missionActivityEntityDao().deleteActivities(getBaseLineUserId())

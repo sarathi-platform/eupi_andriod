@@ -78,7 +78,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
                     ?.let { apiService.getDidisFromNetwork(userId = it) }
                 if (apiResponse?.status?.equals(SUCCESS, false) == true) {
                     if (apiResponse?.data?.didiList != null) {
-                        surveyeeEntityDao.deleteSurveyees()
+                        surveyeeEntityDao.deleteSurveyees(getBaseLineUserId())
                         apiResponse?.data?.didiList.forEach {
                             val surveyeeEntity = SurveyeeEntity(
                                 id = 0,

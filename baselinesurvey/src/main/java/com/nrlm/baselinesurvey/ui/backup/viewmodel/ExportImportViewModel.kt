@@ -5,8 +5,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.net.Uri
+import android.os.Build
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.net.toFile
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
@@ -30,6 +32,7 @@ import com.nudge.core.importDbFile
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
+import com.nudge.core.uriFromFile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -101,7 +104,7 @@ class ExportImportViewModel @Inject constructor(
                  BaselineLogger.d("ExportImportViewModel","exportLocalDatabase : ${it.path}")
                  onEvent(LoaderEvent.UpdateLoaderState(false))
                  if(isNeedToShare){
-                     openShareSheet(arrayListOf(it) ,"")
+                     openShareSheet(convertURIAccToOS(it) ,"")
                  } else onExportSuccess(it)
              }
          }catch (e:Exception){
@@ -113,24 +116,35 @@ class ExportImportViewModel @Inject constructor(
 
     private fun openShareSheet(fileUriList: ArrayList<Uri>?, title: String) {
         if(fileUriList?.isNotEmpty() == true){
+            try {
+
+
             val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
             shareIntent.setType(ZIP_MIME_TYPE)
-            shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
+
             shareIntent.putExtra(Intent.EXTRA_TITLE, title)
             val chooserIntent = Intent.createChooser(shareIntent, title)
-            val resInfoList: List<ResolveInfo> =
-                BaselineCore.getAppContext().packageManager
-                    .queryIntentActivities(chooserIntent, PackageManager.MATCH_DEFAULT_ONLY)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
+                val resInfoList: List<ResolveInfo> =
+                    BaselineCore.getAppContext().packageManager
+                        .queryIntentActivities(chooserIntent, PackageManager.MATCH_DEFAULT_ONLY)
 
-            for (resolveInfo in resInfoList) {
-                val packageName = resolveInfo.activityInfo.packageName
-                BaselineCore.getAppContext().grantUriPermission(
-                    packageName,
-                    fileUriList[0],
-                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
-                )
+                for (resolveInfo in resInfoList) {
+                    val packageName = resolveInfo.activityInfo.packageName
+                    BaselineCore.getAppContext().grantUriPermission(
+                        packageName,
+                        fileUriList[0],
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                }
+            }else{
+                shareIntent.putExtra(Intent.EXTRA_STREAM,fileUriList)
             }
             BaselineCore.startExternalApp(chooserIntent)
+            }catch (ex:Exception){
+                ex.printStackTrace()
+            }
         }
 
     }
@@ -150,7 +164,7 @@ class ExportImportViewModel @Inject constructor(
             onEvent(LoaderEvent.UpdateLoaderState(false))
             if(imageZipUri != null){
                 BaselineLogger.d("ExportImportViewModel","exportLocalImages: ${imageZipUri.path} ----")
-                openShareSheet(arrayListOf(imageZipUri),"Share All Images")
+                openShareSheet(convertURIAccToOS(imageZipUri),"Share All Images")
             }
         }
         }catch (e:Exception){
@@ -176,7 +190,7 @@ fun exportOnlyLogFile(context: Context){
                 mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
             ) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
-                openShareSheet(arrayListOf(it) ,"")
+                openShareSheet(convertURIAccToOS(it) ,"")
             }
 
 
@@ -202,7 +216,7 @@ fun exportOnlyLogFile(context: Context){
                 )
                if(fileUri!=null) {
                    BaselineLogger.d("ExportImportViewModel","compressEventData ${fileUri.path}----")
-                   openShareSheet(arrayListOf(fileUri), title)
+                   openShareSheet(convertURIAccToOS(fileUri), title)
                }
                 CoreSharedPrefs.getInstance(BaselineCore.getAppContext()).setFileExported(true)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -212,6 +226,12 @@ fun exportOnlyLogFile(context: Context){
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
+    }
+
+    fun convertURIAccToOS(uri: Uri): ArrayList<Uri> {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            return arrayListOf(uri)
+       return arrayListOf(uriFromFile(BaselineCore.getAppContext(),uri.toFile(),BuildConfig.APPLICATION_ID))
     }
 
     fun restartApp(context: Context, cls: Class<*>) {
