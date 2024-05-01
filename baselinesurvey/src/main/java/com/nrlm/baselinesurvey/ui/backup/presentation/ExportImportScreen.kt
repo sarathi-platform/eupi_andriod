@@ -109,6 +109,7 @@ fun ExportImportScreen(
                 viewModel.exportLocalDatabase(isNeedToShare = false){
                     viewModel.clearLocalDatabase{
                         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+                        viewModel.showLoadConfirmationDialog.value =false
                         navController.navigate(route = Graph.HOME){
                             launchSingleTop=true
                             popUpTo(AuthScreen.START_SCREEN.route){

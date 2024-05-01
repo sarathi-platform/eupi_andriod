@@ -2,6 +2,8 @@ package com.nrlm.baselinesurvey.ui.backup.viewmodel
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -70,12 +72,17 @@ class ExportImportViewModel @Inject constructor(
 
     fun clearLocalDatabase(onPageChange:()->Unit){
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val result=exportImportUseCase.clearLocalDBExportUseCase.invoke()
-            if(result){
-                exportImportUseCase.clearLocalDBExportUseCase.setAllDataSyncStatus()
-                withContext(Dispatchers.Main){
-                    onPageChange()
+            try {
+                val result=exportImportUseCase.clearLocalDBExportUseCase.invoke()
+                if(result){
+                    exportImportUseCase.clearLocalDBExportUseCase.setAllDataSyncStatus()
+                    withContext(Dispatchers.Main){
+                        onPageChange()
+                    }
                 }
+            }catch (ex:Exception){
+                ex.printStackTrace()
+                BaselineLogger.d("ExportImportViewModel","clearLocalDatabase : ${ex.message}")
             }
         }
     }
@@ -92,7 +99,7 @@ class ExportImportViewModel @Inject constructor(
                  userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName())
              ) {
                  BaselineLogger.d("ExportImportViewModel","exportLocalDatabase : ${it.path}")
-
+                 onEvent(LoaderEvent.UpdateLoaderState(false))
                  if(isNeedToShare){
                      openShareSheet(arrayListOf(it) ,"")
                  } else onExportSuccess(it)
@@ -111,6 +118,18 @@ class ExportImportViewModel @Inject constructor(
             shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
             shareIntent.putExtra(Intent.EXTRA_TITLE, title)
             val chooserIntent = Intent.createChooser(shareIntent, title)
+            val resInfoList: List<ResolveInfo> =
+                BaselineCore.getAppContext().packageManager
+                    .queryIntentActivities(chooserIntent, PackageManager.MATCH_DEFAULT_ONLY)
+
+            for (resolveInfo in resInfoList) {
+                val packageName = resolveInfo.activityInfo.packageName
+                BaselineCore.getAppContext().grantUriPermission(
+                    packageName,
+                    fileUriList[0],
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+            }
             BaselineCore.startExternalApp(chooserIntent)
         }
 
