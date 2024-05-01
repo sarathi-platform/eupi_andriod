@@ -15,7 +15,7 @@ class GetPendingTaskCountLiveUseCase @Inject constructor(private val repository:
         return repository.isActivityCompleted(missionId, activityId)
     }
 
-    fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto {
+    fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto? {
         return repository.getActivityFromSubjectId(subjectId)
     }
 

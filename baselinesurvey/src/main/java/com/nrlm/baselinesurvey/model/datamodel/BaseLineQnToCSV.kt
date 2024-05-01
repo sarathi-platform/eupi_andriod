@@ -89,7 +89,7 @@ fun List<BaseLineQnATableCSV>.toCsv() : List<HamletQnATableCSV> = map {
         response = it.response,
         subjectId = it.subjectId,
         section = it.section,
-        cohoretName = it.cohoretName,
+        cohoretName = it.didiName, /*CohoretName is Didi Name*/
         villageName = it.villageName,
         surveyId = it.surveyId,
     )

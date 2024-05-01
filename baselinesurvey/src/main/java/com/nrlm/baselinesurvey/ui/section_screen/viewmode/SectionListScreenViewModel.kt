@@ -160,12 +160,14 @@ class SectionListScreenViewModel @Inject constructor(
                     val activityForSubjectDto =
                         eventWriterHelperImpl.getActivityFromSubjectId(event.subjectId)
 
-                    eventWriterHelperImpl.markTaskCompleted(
-                        activityForSubjectDto.missionId,
-                        activityForSubjectDto.activityId,
-                        activityForSubjectDto.taskId,
-                        event.status
-                    )
+                    if (activityForSubjectDto != null) {
+                        eventWriterHelperImpl.markTaskCompleted(
+                            activityForSubjectDto.missionId,
+                            activityForSubjectDto.activityId,
+                            activityForSubjectDto.taskId,
+                            event.status
+                        )
+                    }
 
                     val updateTaskStatusEvent = eventWriterHelperImpl.createTaskStatusUpdateEvent(
                         subjectId = event.subjectId,
