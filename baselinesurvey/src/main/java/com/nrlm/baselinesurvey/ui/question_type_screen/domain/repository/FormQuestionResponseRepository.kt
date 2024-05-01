@@ -62,7 +62,14 @@ interface FormQuestionResponseRepository {
     suspend fun deleteFormQuestionResponseForReferenceId(referenceId: String)
     suspend fun saveFormsIntoDB(form: List<FormQuestionResponseEntity>)
 
-    suspend fun deleteFormQuestionResponseForOption(optionId: Int, questionId: Int, sectionId: Int, surveyId: Int, surveyeeId: Int)
+    suspend fun deleteFormQuestionResponseForOption(
+        optionId: Int,
+        questionId: Int,
+        sectionId: Int,
+        surveyId: Int,
+        surveyeeId: Int,
+        referenceId: String
+    )
 
     suspend fun updateFromListItemIntoDb(
         formQuestionResponseEntity: FormQuestionResponseEntity

@@ -152,7 +152,8 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
         questionId: Int,
         sectionId: Int,
         surveyId: Int,
-        surveyeeId: Int
+        surveyeeId: Int,
+        referenceId: String
     ) {
         formQuestionResponseDao.deleteFormResponseQuestionForOption(
             userId = getBaseLineUserId(),
@@ -160,7 +161,8 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
             questionId = questionId,
             sectionId = sectionId,
             surveyId = surveyId,
-            surveyeeId = surveyeeId
+            surveyeeId = surveyeeId,
+            referenceId = referenceId
         )
     }
 

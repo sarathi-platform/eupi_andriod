@@ -50,6 +50,7 @@ import com.nrlm.baselinesurvey.DELAY_2_MS
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
+import com.nrlm.baselinesurvey.ui.common_components.common_events.DialogEvents
 import com.nrlm.baselinesurvey.ui.description_component.presentation.DescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.NestedLazyListForFormQuestions
@@ -64,6 +65,7 @@ import com.nrlm.baselinesurvey.ui.theme.lightGray2
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.ShowCustomDialog
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
 import kotlinx.coroutines.delay
@@ -104,10 +106,25 @@ fun FormTypeQuestionScreen(
     }
 
     BackHandler {
-        BaselineCore.setReferenceId(BLANK_STRING)
-        BaselineCore.setIsEditAllowedForNoneMarkedQuestionFlag(true)
-        navController.popBackStack()
+        handleBackPress(viewModel = viewModel, navController = navController)
     }
+
+    if (viewModel.showUserChangedDialog.value.isDialogVisible) {
+        ShowCustomDialog(
+            title = stringResource(id = R.string.are_you_sure),
+            message = stringResource(R.string.form_alert_dialog_message),
+            positiveButtonTitle = stringResource(id = R.string.proceed),
+            negativeButtonTitle = stringResource(id = R.string.cancel_text),
+            onPositiveButtonClick = {
+                viewModel.setResponseChangedFlag(false)
+                viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
+                navController.popBackStack()
+            }, onNegativeButtonClick = {
+                viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
+            }
+        )
+    }
+
     ModelBottomSheetDescriptionContentComponent(
         sheetContent = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -163,9 +180,7 @@ fun FormTypeQuestionScreen(
                     },
                     navigationIcon = {
                         IconButton(onClick = {
-                            BaselineCore.setReferenceId(BLANK_STRING)
-                            BaselineCore.setIsEditAllowedForNoneMarkedQuestionFlag(true)
-                            navController.popBackStack()
+                            handleBackPress(viewModel = viewModel, navController = navController)
                         }) {
                             Icon(Icons.Filled.ArrowBack, null, tint = textColorDark)
                         }
@@ -187,6 +202,7 @@ fun FormTypeQuestionScreen(
                         if (viewModel.storeCacheForResponse.isNotEmpty() && (viewModel.answeredOptionCount.intValue >= viewModel.totalOptionSize.intValue) && !viewModel.conditionalQuestionNotMarked) {
                             BaselineCore.setReferenceId(BLANK_STRING)
                             BaselineCore.setIsEditAllowedForNoneMarkedQuestionFlag(true)
+                            viewModel.setResponseChangedFlag(false)
                             viewModel.onEvent(
                                 QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent(
                                     surveyId = surveyID,
@@ -244,6 +260,7 @@ fun FormTypeQuestionScreen(
                                 )
                             },
                             saveCacheFormData = { formQuestionResponseEntity ->
+                                viewModel.setResponseChangedFlag(true)
                                 viewModel.onEvent(
                                     QuestionTypeEvent.CacheFormQuestionResponseEvent(
                                         formQuestionResponseEntity
@@ -290,6 +307,17 @@ fun FormTypeQuestionScreen(
 
             }
         }
+    }
+}
+
+fun handleBackPress(viewModel: QuestionTypeScreenViewModel, navController: NavHostController) {
+    BaselineCore.setReferenceId(BLANK_STRING)
+    BaselineCore.setIsEditAllowedForNoneMarkedQuestionFlag(true)
+    if (viewModel.storeCacheForResponse.isNotEmpty() && viewModel.getResponseChangedFlag()) {
+        viewModel.onEvent(DialogEvents.ShowDialogEvent(true))
+    } else {
+        viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
+        navController.popBackStack()
     }
 }
 
