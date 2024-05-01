@@ -2,10 +2,11 @@ package com.nrlm.baselinesurvey.ui.start_screen.domain.repository
 
 import androidx.lifecycle.LiveData
 import com.nrlm.baselinesurvey.PREF_STATE_ID
+import com.nrlm.baselinesurvey.PREF_USER_TYPE
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.DidiInfoDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
-import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
+import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import javax.inject.Inject
 
@@ -18,8 +19,8 @@ class StartScreenRepositoryImpl @Inject constructor(
         return surveyeeEntityDao.getDidi(didiId)
     }
 
-    override suspend fun getDidiInfoDetails(didiId: Int): DidiIntoEntity {
-        return didiInfoDao.getDidiInfo(didiId)
+    override suspend fun getDidiInfoDetails(didiId: Int): DidiInfoEntity? {
+        return didiInfoDao.getDidiInfo(userId = getBaseLineUserId(), didiId)
     }
 
     override suspend fun saveImageLocalPathForSurveyee(
@@ -34,12 +35,20 @@ class StartScreenRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getDidiInfoObjectLive(didiId: Int): LiveData<List<DidiIntoEntity>> {
-        return didiInfoDao.getDidiInfoLive(didiId)
+    override suspend fun getDidiInfoObjectLive(didiId: Int): LiveData<List<DidiInfoEntity>> {
+        return didiInfoDao.getDidiInfoLive(userId = getBaseLineUserId(), didiId = didiId)
     }
 
     override fun getStateId(): Int {
         return prefRepo.getPref(PREF_STATE_ID, -1)
+    }
+
+    override fun getUserType(): String? {
+        return prefRepo.getPref(PREF_USER_TYPE, "")
+    }
+
+    override fun getBaseLineUserId(): String {
+        return prefRepo.getUniqueUserIdentifier()
     }
 
 

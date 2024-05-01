@@ -19,6 +19,7 @@ sealed class EventWriterEvents {
         val questionId: Int,
         val questionType: String,
         val questionTag: Int,
+        val questionDesc: String,
         val showConditionalQuestion: Boolean = true,
         val saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     )
@@ -28,6 +29,7 @@ sealed class EventWriterEvents {
         val sectionId: Int,
         val didiId: Int,
         val questionId: Int,
+        val questionDesc: String,
         val saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     )
 
@@ -67,6 +69,15 @@ sealed class EventWriterEvents {
         val activityId: Int,
         val taskId: Int,
         val status: SectionStatus
+    )
+
+    data class SaveImageUploadEvent(
+        val surveyId: Int,
+        val sectionId: Int,
+        val didiId: Int,
+        val questionId: Int,
+        val questionType: String,
+        val questionTag: Int,
     )
 
 }

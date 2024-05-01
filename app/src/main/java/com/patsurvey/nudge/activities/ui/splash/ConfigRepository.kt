@@ -46,7 +46,7 @@ class ConfigRepository @Inject constructor(
     }
 
     fun getAccessToken(): String?{
-        return prefRepo.getAccessToken();
+        return prefRepo.getAccessToken()
     }
     fun getUserType(): String?{
         return prefRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING)

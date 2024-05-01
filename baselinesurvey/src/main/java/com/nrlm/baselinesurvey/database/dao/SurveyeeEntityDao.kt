@@ -4,8 +4,10 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.nrlm.baselinesurvey.SURVEYEE_TABLE
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
+import com.nrlm.baselinesurvey.utils.states.SurveyState
 
 @Dao
 interface SurveyeeEntityDao {
@@ -49,4 +51,16 @@ interface SurveyeeEntityDao {
     @Query("UPDATE $SURVEYEE_TABLE SET crpImageLocalPath = :path WHERE didiId = :didiId")
     fun saveLocalImagePath(path: String, didiId: Int)
 
+    @Transaction
+    fun updateDidiSurveyStatusAfterCheck(didiId: Int, didiSurveyStatus: Int) {
+        val didi = getDidi(didiId)
+        if (didi.surveyStatus != SurveyState.COMPLETED.ordinal) {
+            updateDidiSurveyStatus(didiSurveyStatus, didiId)
+        }
+    }
+
+    @Query("SELECT * FROM $SURVEYEE_TABLE  where userId=:userId ORDER BY id DESC")
+    suspend fun getAllDidiForQNA(
+        userId: String
+    ): List<SurveyeeEntity>
 }

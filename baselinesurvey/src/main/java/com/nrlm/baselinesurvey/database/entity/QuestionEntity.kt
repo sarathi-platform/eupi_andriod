@@ -18,7 +18,7 @@ data class QuestionEntity(
     @Expose
     @ColumnInfo(name = "id")
     var id: Int,
-
+    var userId: String? = BLANK_STRING,
     @SerializedName("questionId")
     @Expose
     @ColumnInfo(name = "questionId")
@@ -79,5 +79,8 @@ data class QuestionEntity(
     @ColumnInfo(name = "tag")
     var tag: Int = 0,
     @TypeConverters(ContentListConverter::class)
-    val contentEntities: List<ContentList> = listOf()
+    val contentEntities: List<ContentList> = listOf(),
+
+    @ColumnInfo(name = "parentQuestionId")
+    val parentQuestionId: Int? = 0
 )

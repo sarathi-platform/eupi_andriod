@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name" translatable="false">Baseline Survey</string>
+    <string name="app_name" translatable="false">Sarathi</string>
+    <string name="app_name_uat" translatable="false">Sarathi UAT</string>
 
 
     <string name="common_error_message_text">No network available</string>
@@ -409,11 +410,11 @@
     <string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>--><![CDATA[Save]]></string>
     <string name="ok_text">Ok</string>
     <string name="home" translatable="false">Home</string>
-    <string name="mission" translatable="false">Missions</string>
+    <string name="mission">Missions</string>
     <string name="task" translatable="false">Task</string>
     <string name="day_tab" translatable="false">Day</string>
     <string name="search" translatable="false">Search</string>
-    <string name="x_dii_pending" translatable="false">%d %s Pending</string>
+    <string name="x_didi_pending">%s %s Pending</string>
     <string name="due_by_x" translatable="false">Due by %s</string>
     <string name="start_by_x_date" translatable="false">Start by %s</string>
     <string name="export_file" translatable="false">Export File</string>
@@ -423,25 +424,25 @@
     <string name="age_comparision">Age</string>
     <string name="relationship_comparision">Relationship</string>
     <string name="income_source_comparision">sources of income</string>
-    <string name="agriculture_produce_comparision">(A) Agricultural produce - </string>
-    <string name="livestock_comparision">(A) Type of livestock - </string>
+    <string name="agriculture_produce_comparision">Agricultural produce</string>
+    <string name="livestock_comparision">Type of livestock</string>
     <string name="income_frequency_comparision">Income frequency</string>
     <string name="no_income_comparision">No income</string>
     <string name="total_income_comparision">(E) Total Income</string>
-    <string name="total_unit_comparision">(D) Total units</string>
+    <string name="total_unit_comparision">(D) Total income</string>
     <string name="income_comparision">Income</string>
     <string name="small_business_comparision">What is the household income from small business in the last 12 months?</string>
     <string name="didi_title">"Didi: "</string>
-    <string name="dada_title">"Dada: "</string>
+    <string name="dada_title">"Husband / Father\'s Name: "</string>
     <string name="caste_titile">"Caste: "</string>
     <string name="aadhar_card_titile">Does Didi have aadhar card?</string>
     <string name="voter_card_title">Does didi have voter card?</string>
-    <string name="phone_number_title">Enter didi\'s family phone number</string>
+    <string name="phone_number_title">Enter didi\'s own/family phone number</string>
     <string name="add_didi_details_label">Add didi details</string>
     <string name="household_information_comparision">Household information</string>
     <string name="total_income_lable">Total Income: ₹</string>
     <string name="influence_type_comparision_and_label">Influence type</string>
-    <string name="acess_to_public_transportation_comparision">Acess to public transportation</string>
+    <string name="acess_to_public_transportation_comparision">Access to public transportation</string>
     <string name="to_the_block_office_comparision">To the block office</string>
     <string name="to_the_nearest_primary_health_care_centre_comparision">To the nearest primary health care centre</string>
     <string name="to_the_nearest_government_school_comparision">To the nearest government school</string>
@@ -449,8 +450,8 @@
     <string name="to_the_nearest_bank_comparsion">To the nearest bank</string>
     <string name="to_the_replacement_string">"To the "</string>
     <string name="average_travel_cost_comparision">"Average travel cost "</string>
-    <string name="questions_data_tab_title">Questions Data</string>
-    <string name="section_information_tab_title">Section Information</string>
+    <string name="questions_data_tab_title">Questions</string>
+    <string name="section_information_tab_title">Sections</string>
 
     <string name="share_export_file" translatable="false">Share exported file</string>
     <string name="share_export_image" translatable="false">Share exported image</string>
@@ -470,4 +471,43 @@
     <string name="didi_list_empty_state">No Didis assigned. Please contact your administrator.</string>
     <string name="empty_task_message">No task assigned. Please contact your administrator.</string>
 
+    <string name="warning">Warning!</string>
+    <string name="data_lost_message">Another user detected if you proceed you will lost previous user\'s data</string>
+    <string name="proceed">Proceed</string>
+    <string name="fetched_successfully">Data fetched successfully</string>
+    <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
+    <string name="start">"Start "</string>
+    <string name="retry">Retry</string>
+    <string name="regenerate_all_events">Regenerate all events</string>
+    <string name="load_server_data">Load Server Data</string>
+    <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
+    <string name="import_data">Import Data</string>
+    <string name="export_images">Export Only Images</string>
+    <string name="export_backup_file">Export BackUp File</string>
+    <string name="export_database">Export Only Database</string>
+    <string name="backup_recovery">Backup/Recovery</string>
+    <string name="export_event_file">Export Event File</string>
+    <string name="export_log_file">Export Only Log File</string>
+    <string name="madnatory_question_not_marked_error">All mandatory questions are not answered, please answer all questions!</string>
+    <string name="view_label">View</string>
+    <string name="hours">Hours</string>
+    <string name="years">Years</string>
+    <string name="minute">Minute</string>
+    <string name="month">Month</string>
+    <string name="purpose_comparision">What is the purpose of your farming?</string>
+    <string name="net_income_label">Net income per year: ₹</string>
+    <string name="net_income_comparision">Net income per year</string>
+    <string name="task_completed_label">"Activity Completed - "</string>
+    <string name="data_fetching_and_processing">Data Fetching and Processing…</string>
+
+    <string name="total_annual_income_label">"Total annual income of the household: "</string>
+    <string name="import_restart_dialog_message">After Importing the data from file app needs to be restart and current data will be lost.</string>
+    <string name="logout_confirmation">Are you sure you want to logout?</string>
+    <string name="no_logs_available">No Logs Available</string>
+    <string name="hamlets_item_text_plural">Hamlets</string>
+    <string name="hamlets_item_text_singular">Hamlet</string>
+    <string name="activity_completed_message">You have successfully completed the %1$s activity</string>
+    <string name="total_addelabel">"Total added: "</string>
+    <string name="view_summary_label">View Summary</string>
+    <string name="export_baseline_qna">Export Baseline QnA</string>
 </resources>

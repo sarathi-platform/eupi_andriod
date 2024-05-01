@@ -25,10 +25,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.ui.common_components.ExpandableDescriptionContentComponent
@@ -36,6 +46,8 @@ import com.nrlm.baselinesurvey.ui.common_components.OutlinedCTAButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.SummaryCardComponent
 import com.nrlm.baselinesurvey.ui.common_components.VerticalAnimatedVisibilityComponent
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
+import com.nrlm.baselinesurvey.ui.theme.NotoSans
+import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
@@ -50,6 +62,9 @@ import com.nrlm.baselinesurvey.ui.theme.weight_20_percent
 import com.nrlm.baselinesurvey.ui.theme.weight_60_percent
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
+import com.nrlm.baselinesurvey.utils.findTagForId
+import com.nrlm.baselinesurvey.utils.showCustomToast
+import com.nrlm.baselinesurvey.utils.tagList
 import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
@@ -62,6 +77,8 @@ fun FormTypeQuestionComponent(
     maxCustomHeight: Dp,
     contests: List<ContentEntity?>? = listOf(),
     itemCount: Int = 0,
+    summaryValue: String = BLANK_STRING,
+    isEditAllowed: Boolean = true,
     onAnswerSelection: (questionIndex: Int) -> Unit,
     onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit,
@@ -70,6 +87,10 @@ fun FormTypeQuestionComponent(
     val scope = rememberCoroutineScope()
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyListState = rememberLazyListState()
+
+    val context = LocalContext.current
+
+
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
             scope.launch { outerState.scrollToItem(outerState.layoutInfo.totalItemsCount) }
@@ -149,11 +170,19 @@ fun FormTypeQuestionComponent(
                                     )
                                     OutlinedCTAButtonComponent(
                                         tittle = question?.questionSummary,
-                                        Modifier
+                                        isActive = isEditAllowed,
+                                        modifier = Modifier
                                             .fillMaxWidth()
                                             .weight(weight_60_percent)
                                     ) {
-                                        onAnswerSelection(questionIndex)
+                                        if (isEditAllowed) {
+                                            onAnswerSelection(questionIndex)
+                                        } else {
+                                            showCustomToast(
+                                                context,
+                                                context.getString(R.string.edit_disable_message)
+                                            )
+                                        }
                                     }
                                     Spacer(
                                         modifier = Modifier
@@ -163,6 +192,43 @@ fun FormTypeQuestionComponent(
                                 }
                             }
                             if (itemCount > 0) {
+                                if (!summaryValue.equals(BLANK_STRING) && tagList.findTagForId(
+                                        question?.tag ?: 0
+                                    ).equals("Livelihood Sources")
+                                ) {
+                                    item {
+                                        Text(
+                                            text = buildAnnotatedString {
+                                                withStyle(
+                                                    style = SpanStyle(
+                                                        fontFamily = NotoSans,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        fontSize = 14.sp
+                                                    )
+                                                ) {
+                                                    append(stringResource(R.string.total_annual_income_label))
+                                                }
+                                                withStyle(
+                                                    style = SpanStyle(
+                                                        fontFamily = NotoSans,
+                                                        fontWeight = FontWeight.Bold,
+                                                        fontSize = 14.sp
+                                                    )
+                                                ) {
+                                                    append(summaryValue)
+                                                }
+                                            },
+                                            color = blueDark,
+                                            style = TextStyle(
+                                                fontFamily = NotoSans,
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 14.sp
+                                            ),
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.padding(dimen_16_dp)
+                                        )
+                                    }
+                                }
                                 item {
                                     SummaryCardComponent(
                                         itemCount,

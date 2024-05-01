@@ -7,7 +7,6 @@ import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
-import com.nudge.core.eventswriter.entities.EventV1
 import com.nudge.core.getSizeInLong
 import com.nudge.core.json
 import com.nudge.core.model.MetadataDto
@@ -206,13 +205,16 @@ class SurveySummaryRepository @Inject constructor(
         return "${PREF_FORM_PATH}_${prefRepo.getSelectedVillage().id}_${subPath}"
     }
 
-    fun markBPCStepComplete(stepId: Int, isComplete: Int = 0,villageId:Int){
-        stepsListDao.markStepAsCompleteOrInProgress(
-            stepId = stepId,
-            isComplete = isComplete,
-            villageId = villageId
-        )
-        villageListDao.updateStepAndStatusId(villageId,stepId,StepStatus.COMPLETED.ordinal)
+    fun markBPCStepComplete(stepId: Int, isComplete: Int = 0, villageId: Int) {
+        val pendingVerificationDidiCount = didiDao.fetchPendingVerificationDidiCount(villageId)
+        if (pendingVerificationDidiCount == 0) {
+            stepsListDao.markStepAsCompleteOrInProgress(
+                stepId = stepId,
+                isComplete = isComplete,
+                villageId = villageId
+            )
+            villageListDao.updateStepAndStatusId(villageId, stepId, StepStatus.COMPLETED.ordinal)
+        }
     }
 
     fun updateBeneficiaryProcessStatus(didiId: Int, status: List<BeneficiaryProcessStatusModel>){
@@ -353,25 +355,6 @@ class SurveySummaryRepository @Inject constructor(
         }
     }
 
-    suspend fun writeBpcMatchScoreEvent(
-        villageId: Int,
-        passingScore: Int,
-        bpcStep: StepListEntity,
-        didiList: List<DidiEntity>
-    ) {
-        val event = EventV1(
-            eventTopic = EventName.SAVE_BPC_MATCH_SCORE.topicName,
-            payload = SaveMatchSummaryRequest.getSaveMatchSummaryRequestForBpc(
-                villageId = villageId,
-                stepListEntity = bpcStep,
-                didiList = didiList,
-                questionPassionScore = passingScore
-            ).json(),
-            mobileNumber = prefRepo.getMobileNumber() ?: BLANK_STRING
-        )
 
-        //  saveEventToMultipleSources(event)
-
-    }
 
 }

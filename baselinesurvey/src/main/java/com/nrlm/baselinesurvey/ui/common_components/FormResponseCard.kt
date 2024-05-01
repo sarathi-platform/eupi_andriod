@@ -33,9 +33,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.HOUSEHOLD_INFO_TAG_CONSTANT
+import com.nrlm.baselinesurvey.LIVELIHOOD_SOURCE_TAG_CONSTANT
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
+import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
@@ -109,7 +111,7 @@ fun FormResponseCard(
                 Column {
                     Text(text = buildAnnotatedString {
                         if (formResponseObjectDto.questionTag.equals(
-                                "Household information",
+                                HOUSEHOLD_INFO_TAG_CONSTANT,
                                 true
                             )
                         ) {
@@ -120,7 +122,7 @@ fun FormResponseCard(
                                 )!!
                             }?.optionId] ?: BLANK_STRING)
                         } else if (formResponseObjectDto.questionTag.equals(
-                                "LivelihoodSources",
+                                LIVELIHOOD_SOURCE_TAG_CONSTANT,
                                 true
                             )
                         ) {
@@ -133,29 +135,32 @@ fun FormResponseCard(
                                 }?.optionId] ?: BLANK_STRING
                             )
 
+                            var income = BLANK_STRING
 
-                            var income =
-                                formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
+                            if (income == BLANK_STRING) {
+                                val options = optionItemListWithConditionals.filter {
                                     it.display?.contains(
-                                        stringResource(id = R.string.agriculture_produce_comparision),
+                                        stringResource(R.string.purpose_comparision),
                                         ignoreCase = true
                                     )!!
-                                }?.optionId] ?: BLANK_STRING
+                                }
+                                for (option in options) {
+                                    val value =
+                                        formResponseObjectDto.memberDetailsMap[option.optionId]
+                                    if (value != null) {
+                                        income = value
+                                        break
+                                    } else {
+                                        income = BLANK_STRING
+                                    }
+                                }
+                            }
 
                             if (income == BLANK_STRING)
                                 income =
                                     formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                         it.display?.contains(
                                             stringResource(id = R.string.livestock_comparision),
-                                            ignoreCase = true
-                                        )!!
-                                    }?.optionId] ?: BLANK_STRING
-
-                            if (income == BLANK_STRING)
-                                income =
-                                    formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                        it.display?.contains(
-                                            stringResource(id = R.string.income_frequency_comparision),
                                             ignoreCase = true
                                         )!!
                                     }?.optionId] ?: BLANK_STRING
@@ -216,9 +221,41 @@ fun FormResponseCard(
 
                             append("${stringResource(id = R.string.name_comparision)}: $name")
 
-                        }
-                        else append(BLANK_STRING)
+                        } else append(BLANK_STRING)
                     }, style = smallTextStyleWithNormalWeight)
+
+                    if (formResponseObjectDto.questionTag.equals(
+                            LIVELIHOOD_SOURCE_TAG_CONSTANT,
+                            true
+                        ) && ((formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
+                            it.display?.contains(
+                                stringResource(id = R.string.agriculture_produce_comparision),
+                                ignoreCase = true
+                            )!!
+                        }?.optionId] ?: BLANK_STRING) != BLANK_STRING)
+                    ) {
+                        Text(text = buildAnnotatedString {
+                            if (formResponseObjectDto.questionTag.equals(
+                                    LIVELIHOOD_SOURCE_TAG_CONSTANT,
+                                    true
+                                )
+                            ) {
+                                append(
+                                    stringResource(id = R.string.agriculture_produce_comparision) + ": "
+                                )
+
+                                var income =
+                                    formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                        it.display?.contains(
+                                            stringResource(id = R.string.agriculture_produce_comparision),
+                                            ignoreCase = true
+                                        )!!
+                                    }?.optionId] ?: BLANK_STRING
+
+                                append(income)
+                            } else append(BLANK_STRING)
+                        }, style = smallTextStyleWithNormalWeight)
+                    }
 
                     Text(text = buildAnnotatedString {
                         if (formResponseObjectDto.questionTag.equals(
@@ -241,7 +278,7 @@ fun FormResponseCard(
                             }?.optionId] ?: BLANK_STRING)
                             this.append(" yrs")
                         } else if (formResponseObjectDto.questionTag.equals(
-                                "LivelihoodSources",
+                                "Livelihood Sources",
                                 true
                             )
                         ) { //TODO Handle all tag and static string comparisons through backend Question API Response
@@ -253,7 +290,10 @@ fun FormResponseCard(
                                 }?.optionId]
                                     ?: BLANK_STRING) != stringResource(id = R.string.no_income_comparision)
                             ) {
-                                append(stringResource(R.string.total_income_lable))
+                                append(/*stringResource(R.string.total_income_lable)*/stringResource(
+                                    R.string.net_income_label
+                                )
+                                )
                                 var income =
                                     formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                         it.display?.contains(
@@ -286,6 +326,24 @@ fun FormResponseCard(
                                         }
                                         return@forEach
                                     }
+
+                                if (income == BLANK_STRING) {
+                                    optionItemListWithConditionals.filter {
+                                        it.display?.contains(
+                                            stringResource(R.string.net_income_comparision),
+                                            true
+                                        )!!
+                                    }.forEach {
+                                        if (income == BLANK_STRING) {
+                                            income =
+                                                formResponseObjectDto.memberDetailsMap[it.optionId]
+                                                    ?: BLANK_STRING
+                                        }
+                                        return@forEach
+                                    }
+                                    if (income == BLANK_STRING)
+                                        append("0")
+                                }
 
                                 if (income == BLANK_STRING)
                                     income =
@@ -388,8 +446,9 @@ fun FormResponseCard(
 @Composable
 fun DidiInfoCard(
     modifier: Modifier = Modifier,
-    didiIntoEntity: DidiIntoEntity,
+    didiInfoEntity: DidiInfoEntity,
     didiDetails: SurveyeeEntity?,
+    isEditAllowed: Boolean = true,
     onUpdate: (didiId: Int) -> Unit
 ) {
 
@@ -460,7 +519,7 @@ fun DidiInfoCard(
                         )
                         Text(text = buildAnnotatedString {
                             append("Aadhar Card: ")
-                            append(SHGFlag.fromInt(didiIntoEntity.isAdharCard ?: -1).name)
+                            append(SHGFlag.fromInt(didiInfoEntity.isAdharCard ?: -1).name)
                         }, style = smallTextStyleWithNormalWeight)
                         Spacer(
                             modifier = Modifier
@@ -469,7 +528,7 @@ fun DidiInfoCard(
                         )
                         Text(text = buildAnnotatedString {
                             append("VoterId Card: ")
-                            append(SHGFlag.fromInt(didiIntoEntity.isVoterCard ?: -1).name)
+                            append(SHGFlag.fromInt(didiInfoEntity.isVoterCard ?: -1).name)
                         }, style = smallTextStyleWithNormalWeight)
                         Spacer(
                             modifier = Modifier
@@ -478,48 +537,53 @@ fun DidiInfoCard(
                         )
                         Text(text = buildAnnotatedString {
                             append("Phone Number: ")
-                            append(didiIntoEntity.phoneNumber)
+                            append(didiInfoEntity.phoneNumber)
                         }, style = smallTextStyleWithNormalWeight)
                     }
                 }
                 Spacer(modifier = Modifier.height(dimen_16_dp))
-                Divider(
-                    thickness = dimen_1_dp,
-                    modifier = Modifier.fillMaxWidth(),
-                    color = borderGreyLight
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    TextButton(
-                        onClick = { onUpdate(didiIntoEntity.didiId ?: 0) }, modifier = Modifier
+                if (isEditAllowed) {
+                    Divider(
+                        thickness = dimen_1_dp,
+                        modifier = Modifier.fillMaxWidth(),
+                        color = borderGreyLight
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        TextButton(
+                            onClick = {
+                                onUpdate(didiInfoEntity.didiId ?: 0)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.White,
+                                contentColor = blueDark
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Edit,
+                                contentDescription = "Edit Button",
+                                tint = blueDark
+                            )
+                        }
+                        Divider(
+                            color = borderGreyLight,
+                            modifier = Modifier
+                                .fillMaxHeight()  //fill the max height
+                                .width(1.dp)
+                        )
+                        /*TextButton(onClick = { onDelete(formResponseObjectDto.referenceId) }, modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.White,
-                            contentColor = blueDark
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Edit,
-                            contentDescription = "Edit Button",
-                            tint = blueDark
-                        )
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = blueDark)
+                        ) {
+                            Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete Button", tint = blueDark)
+                        }*/
                     }
-                    Divider(
-                        color = borderGreyLight,
-                        modifier = Modifier
-                            .fillMaxHeight()  //fill the max height
-                            .width(1.dp)
-                    )
-                    /*TextButton(onClick = { onDelete(formResponseObjectDto.referenceId) }, modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = blueDark)
-                    ) {
-                        Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete Button", tint = blueDark)
-                    }*/
                 }
             }
         }

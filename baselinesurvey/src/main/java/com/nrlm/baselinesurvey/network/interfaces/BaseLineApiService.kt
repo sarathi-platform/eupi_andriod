@@ -57,7 +57,7 @@ interface BaseLineApiService {
     suspend fun validateOtp(@Body otpRequest: OtpRequest): ApiResponseModel<OtpVerificationModel>
 
     @GET(SUBPATH_GET_DIDI_LIST)
-    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+//    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getDidisFromNetwork(@Query("userId") userId: Int): ApiResponseModel<BeneficiaryApiResponse>
 
     @GET(SUBPATH_USER_VIEW)
@@ -67,7 +67,7 @@ interface BaseLineApiService {
     ): ApiResponseModel<UserDetailsResponse>
 
     @POST(SUBPATH_FETCH_SURVEY_FROM_NETWORK)
-    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+//    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
 //    suspend fun getSurveyFromNetwork(@Body surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<List<SurveyResponseModel>>
         suspend fun getSurveyFromNetwork(@Body surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<SurveyResponseModel>
 
@@ -88,6 +88,7 @@ interface BaseLineApiService {
     suspend fun getCasteList(@Query("languageId") languageId: Int): ApiResponseModel<List<CasteModel>>
 
     @POST(GET_SECTION_STATUS)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getSectionStatus(@Body sectionStatusRequest: SectionStatusRequest): ApiResponseModel<List<SectionStatusResponseModel>>
 
     @POST(SUBPATH_LOGOUT)
@@ -98,5 +99,6 @@ interface BaseLineApiService {
     suspend fun getAllContent(@Body contentMangerRequest: ContentMangerRequest): ApiResponseModel<List<ContentResponse>>
 
     @POST(SUBPATH_SURVEY_ANSWERS)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getSurveyAnswers(@Body surveyAnswerRequest: GetSurveyAnswerRequest): ApiResponseModel<List<QuestionAnswerResponseModel>>
 }

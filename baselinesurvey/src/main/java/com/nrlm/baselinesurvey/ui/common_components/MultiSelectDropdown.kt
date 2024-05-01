@@ -7,8 +7,10 @@ import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
@@ -29,29 +31,37 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.model.datamodel.ValuesDto
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGrey
+import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.red
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 
+
+//TODO handle everything using id
 @Composable
 fun MultiSelectDropdown(
-    items: List<String>,
+    items: List<ValuesDto>,
     selectedItems: List<String>,
     onItemSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
+    isContent: Boolean = false,
     title: String = stringResource(id = R.string.select),
     hint: String = stringResource(id = R.string.select),
     dropDownBorder: Color = borderGrey,
@@ -62,6 +72,7 @@ fun MultiSelectDropdown(
     onDismissRequest: () -> Unit,
     onGlobalPositioned: (LayoutCoordinates) -> Unit,
     mTextFieldSize: Size,
+    onInfoButtonClicked: () -> Unit,
 ) {
     val icon = if (expanded)
         Icons.Filled.KeyboardArrowUp
@@ -73,37 +84,56 @@ fun MultiSelectDropdown(
         horizontalAlignment = Alignment.Start
     ) {
         if (title.isNotBlank()) {
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            color = textColorDark,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            fontFamily = NotoSans
-                        )
-                    ) {
-                        append(title)
-                    }
-                    if (isRequiredField) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(modifier = Modifier.fillMaxWidth(.9f),
+                    text = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                color = red,
-                                fontSize = 14.sp,
+                                color = textColorDark,
+                                fontSize = 16.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 fontFamily = NotoSans
                             )
                         ) {
-                            append("*")
+                            append(title)
+                        }
+                        if (isRequiredField) {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = red,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontFamily = NotoSans
+                                )
+                            ) {
+                                append("*")
+                            }
                         }
                     }
+                )
+                if (isContent) {
+                    Spacer(modifier = Modifier.size(dimen_8_dp))
+                    Icon(
+                        painter = painterResource(id = R.drawable.info_icon),
+                        contentDescription = "question info button",
+                        Modifier
+                            .size(dimen_18_dp)
+                            .clickable {
+                                onInfoButtonClicked()
+                            },
+
+                        tint = blueDark
+                    )
                 }
-            )
+            }
         }
         val txt = if (selectedItems.isNotEmpty()) {
             selectedItems.joinToString(", ")
         } else {
-            "Select Items"
+            stringResource(id = R.string.select)
         }
         CustomOutlineTextField(
             value = txt,
@@ -162,9 +192,9 @@ fun MultiSelectDropdown(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Checkbox(
-                        checked = selectedItems.contains(item),
+                        checked = selectedItems.contains(item.value),
                         onCheckedChange = {
-                            onItemSelected(item)
+                            onItemSelected(item.value)
                         },
                         colors = CheckboxDefaults.colors(
                             checkedColor = blueDark,
@@ -173,9 +203,15 @@ fun MultiSelectDropdown(
                         ),
                     )
                     Text(
-                        text = item,
+                        text = item.value,
                         style = newMediumTextStyle,
-                        color = if (selectedItems.contains(item)) blueDark else Color.Black
+                        textAlign = TextAlign.Start,
+                        color = if (selectedItems.contains(item.value)) blueDark else Color.Black,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                onItemSelected(item.value)
+                            }
                     )
                 }
 

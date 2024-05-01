@@ -26,6 +26,7 @@ import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
+import com.nrlm.baselinesurvey.navigation.home.navigateToFormTypeQuestionScreen
 import com.nrlm.baselinesurvey.ui.common_components.AlertDialogComponent
 import com.nrlm.baselinesurvey.ui.common_components.FormResponseCard
 import com.nrlm.baselinesurvey.ui.form_response_summary_screen.viewmodel.FormResponseSummaryScreenViewModel
@@ -36,7 +37,6 @@ import com.nrlm.baselinesurvey.ui.theme.h6Bold
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
-import com.nudge.core.ui.navigation.navigateToFormTypeQuestionScreen
 
 val DEFAULT_OPEN_DIALOG_VALUE = Pair<Boolean, FormResponseObjectDto?>(false, null)
 
@@ -105,10 +105,15 @@ fun FormQuestionSummaryScreen(
                             sectionId = sectionId,
                             questionId = questionId,
                             surveyeeId = surveyeeId,
+                            questionDesc = formResponseSummaryScreenViewModel.questionEntity?.questionDisplay
+                                ?: BLANK_STRING,
                             referenceId = openAlertDialog.value.second?.referenceId!!
                         )
                     )
                     openAlertDialog.value = DEFAULT_OPEN_DIALOG_VALUE
+                    if (formResponseSummaryScreenViewModel.formResponseObjectDtoList.value.isEmpty()) {
+                        navController.popBackStack()
+                    }
                 },
                 dialogTitle = stringResource(R.string.alert_dialog_title_text),
                 dialogText = stringResource(R.string.alart_dialog_entry_deleteion_message_text),
@@ -136,6 +141,10 @@ fun FormQuestionSummaryScreen(
                 FormResponseCard(
                     formResponseObjectDto = formResponseObjectDto,
                     optionItemListWithConditionals = optionItemEntityListWithConditions,
+                    isPictureRequired = formResponseObjectDto.questionTag.equals(
+                        stringResource(R.string.household_information_comparision),
+                        true
+                    ),
                     viewModel = formResponseSummaryScreenViewModel,
                     onDelete = {
                         openAlertDialog.value = Pair(true, formResponseObjectDto)
@@ -143,11 +152,13 @@ fun FormQuestionSummaryScreen(
                     onUpdate = {
                         formResponseSummaryScreenViewModel.questionEntity?.let { it1 ->
                             BaselineCore.setReferenceId(formResponseObjectDto.referenceId)
-                            navController.navigateToFormTypeQuestionScreen(questionDisplay = it1.questionDisplay?: BLANK_STRING,
-                                questionId = it1.questionId?:0,
+                            BaselineCore.setIsEditAllowedForNoneMarkedQuestionFlag(false)
+                            navigateToFormTypeQuestionScreen(
+                                navController = navController,
+                                question = it1,
                                 surveyId = surveyId,
                                 sectionId = sectionId,
-                               surveyeeId = surveyeeId
+                                surveyeeId = surveyeeId
                             )
                         }
                     }

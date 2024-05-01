@@ -21,7 +21,11 @@ enum class QuestionType {
     DidiDetails,
     YesNoButton,
     PhoneNumber,
-    Image;
+    HrsMinPicker,
+    YrsMonthPicker,
+    Image,
+    FormWithNone;
+
     companion object {
         fun getQuestionTypeFromName(name: String): QuestionType? {
             return when (name) {
@@ -44,16 +48,22 @@ enum class QuestionType {
                 DidiDetails.name -> DidiDetails
                 YesNoButton.name -> YesNoButton
                 PhoneNumber.name -> PhoneNumber
+                HrsMinPicker.name -> HrsMinPicker
+                YrsMonthPicker.name -> YrsMonthPicker
                 Image.name -> Image
+                FormWithNone.name -> FormWithNone
                 else -> {
                     null
                 }
             }
         }
     }
+
 }
-enum class ResultType {
-    Options,
-    Questions,
-    Formula
-}
+
+ enum class ResultType {
+     Options,
+     Questions,
+     Formula,
+     NoneMarked
+ }

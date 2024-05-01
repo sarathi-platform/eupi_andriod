@@ -9,27 +9,46 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.BaselineApplication.Companion.appScopeLaunch
+import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
+import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
+import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.CasteModel
+import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventOptionItemDto
+import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
+import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.common_components.SHGFlag
+import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SurveyStateEvents
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
+import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.start_screen.domain.use_case.StartSurveyScreenUserCase
 import com.nrlm.baselinesurvey.ui.start_screen.presentation.StartSurveyScreenEvents
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LocationCoordinates
 import com.nrlm.baselinesurvey.utils.LocationUtil
+import com.nrlm.baselinesurvey.utils.findTagForId
+import com.nrlm.baselinesurvey.utils.getFileNameFromURL
+import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nrlm.baselinesurvey.utils.tagList
+import com.nrlm.baselinesurvey.utils.toOptionItemStateList
+import com.nudge.core.compressImage
+import com.nudge.core.database.entities.Events
+import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -39,7 +58,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BaseLineStartViewModel @Inject constructor(
-    private val startSurveyScreenUserCase: StartSurveyScreenUserCase
+    private val startSurveyScreenUserCase: StartSurveyScreenUserCase,
+    private val eventsWriterHelperImpl: EventWriterHelperImpl
 ) : BaseViewModel() {
     var imagePath = ""
 
@@ -67,15 +87,25 @@ class BaseLineStartViewModel @Inject constructor(
         SurveyeeEntity.getEmptySurveyeeEntity()
     )
     private val _didiInfo = MutableStateFlow(
-        DidiIntoEntity.getEmptyDidiIntoEntity()
+        DidiInfoEntity.getEmptyDidiInfoEntity()
     )
+    private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
+    val loaderState: State<LoaderState> get() = _loaderState
     val didiEntity: StateFlow<SurveyeeEntity> get() = _didiEntity
-    val didiInfo: StateFlow<DidiIntoEntity> get() = _didiInfo
+    val didiInfo: StateFlow<DidiInfoEntity> get() = _didiInfo
 
     var isAdharTxtVisible = derivedStateOf {
         isAdharCard.value == 1
     }
     val adharCardState = mutableStateOf(OptionItemEntityState.getEmptyStateObject())
+
+    var sectionDetails: SectionListItem = SectionListItem(
+        languageId = 2
+    )
+
+    private var sectionDetailInDefaultLanguage = SectionListItem(
+        languageId = 2
+    )
 
     fun getFileName(context: Context, didi: SurveyeeEntity): File {
         val directory = getImagePath(context)
@@ -100,16 +130,114 @@ class BaseLineStartViewModel @Inject constructor(
                     didiEntity.value,
                 )
             }
+
+            is StartSurveyScreenEvents.SaveDidiInfoInDbEvent -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    startSurveyScreenUserCase.updateSurveyStateUseCase.saveDidiInfoInDB(event.didiInfoEntity)
+                }
+
+            }
+
             is SurveyStateEvents.UpdateDidiSurveyStatus -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     startSurveyScreenUserCase.updateSurveyStateUseCase.invoke(
                         event.didiId,
                         event.didiSurveyState
                     )
-                    startSurveyScreenUserCase.updateSurveyStateUseCase.saveDidiInfoInDB(event.didiInfo)
+                    _didiInfo.value = event.didiInfo
                 }
             }
+
+            is EventWriterEvents.UpdateSectionStatusEvent -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val updateSectionStatusEvent =
+                        eventsWriterHelperImpl.createUpdateSectionStatusEvent(
+                            event.surveyId,
+                            event.sectionId,
+                            event.didiId,
+                            event.sectionStatus
+                        )
+                    startSurveyScreenUserCase.eventsWriterUseCase.invoke(
+                        events = updateSectionStatusEvent,
+                        eventType = EventType.STATEFUL
+                    )
+                }
+            }
+
+            is EventWriterEvents.SaveAnswerEvent -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val saveAnswerEvent =
+                        eventsWriterHelperImpl.createSaveAnswerEventForFormTypeQuestion(
+                            surveyId = event.surveyId,
+                            sectionId = event.sectionId,
+                            didiId = event.didiId,
+                            questionId = event.questionId,
+                            questionType = event.questionType,
+                            questionTag = event.questionTag,
+                            questionDesc = event.questionDesc,
+                            referenceOptionList = sectionDetails.optionsItemMap[event.questionId]?.toOptionItemStateList()
+                                ?: emptyList(),
+                            saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
+                        )
+                    startSurveyScreenUserCase.eventsWriterUseCase.invoke(
+                        events = saveAnswerEvent,
+                        eventType = EventType.STATEFUL
+                    )
+
+                    onEvent(
+                        EventWriterEvents.SaveImageUploadEvent(
+                            surveyId = event.surveyId,
+                            sectionId = event.sectionId,
+                            didiId = event.didiId,
+                            questionId = event.questionId,
+                            questionType = event.questionType,
+                            questionTag = event.questionTag
+                        )
+                    )
+
+                }
+            }
+
+            is EventWriterEvents.SaveImageUploadEvent -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    writeImageUploadEvent(event.didiId)
+                }
+            }
+
+            is LoaderEvent.UpdateLoaderState -> {
+                _loaderState.value = _loaderState.value.copy(
+                    isLoaderVisible = event.showLoader
+                )
+            }
         }
+    }
+
+    private suspend fun writeImageUploadEvent(didiId: Int) {
+        val question = sectionDetails.questionList.first()
+
+
+        val imageUploadEvent = eventsWriterHelperImpl.createImageUploadEvent(
+            didi = didiEntity.value,
+            location = didiImageLocation.value,
+            filePath = updatedLocalPath.value ?: "",
+            userType = startSurveyScreenUserCase.getSurveyeeDetailsUserCase.getUserType()
+                ?: BLANK_STRING,
+            questionId = question.questionId ?: 0,
+            referenceId = didiId.toString() ?: "0",
+            sectionDetails = sectionDetails,
+            subjectType = "Didi"
+        )
+
+        delay(500)
+        val compressedDidi = compressImage(
+            updatedLocalPath.value,
+            BaselineCore.getAppContext(),
+            getFileNameFromURL(photoUri.value.path ?: "")
+        )
+        photoUri.value = File(compressedDidi).toUri()
+        startSurveyScreenUserCase.eventsWriterUseCase.writeImageEventIntoLogFile(
+            imageUploadEvent ?: Events.getEmptyEvent(), photoUri.value
+        )
     }
 
     private fun saveFilePathInDb(
@@ -138,14 +266,29 @@ class BaseLineStartViewModel @Inject constructor(
         }
     }
 
-    fun getDidiDetails(didiId: Int) {
+    fun getDidiDetails(didiId: Int, sectionId: Int, surveyId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            _didiEntity.emit(startSurveyScreenUserCase.getSurveyeeDetailsUserCase.invoke(didiId))
-            _didiInfo.emit(
-                startSurveyScreenUserCase.getSurveyeeDetailsUserCase.getDidiIndoDetail(
-                    didiId
-                )
+            val selectedLanguage = startSurveyScreenUserCase.getSectionUseCase.getSelectedLanguage()
+            sectionDetails = startSurveyScreenUserCase.getSectionUseCase.invoke(
+                sectionId,
+                surveyId,
+                selectedLanguage
             )
+
+            sectionDetailInDefaultLanguage = startSurveyScreenUserCase.getSectionUseCase.invoke(
+                sectionId,
+                surveyId,
+                DEFAULT_LANGUAGE_ID
+            )
+
+            _didiEntity.emit(startSurveyScreenUserCase.getSurveyeeDetailsUserCase.invoke(didiId))
+            startSurveyScreenUserCase.getSurveyeeDetailsUserCase.getDidiIndoDetail(
+                didiId
+            )?.let {
+                _didiInfo.emit(
+                    it
+                )
+            }
             if (!_didiEntity.value.crpImageLocalPath.isNullOrEmpty()) {
                 photoUri.value = if (didiEntity.value.crpImageLocalPath.contains("|"))
                     didiEntity.value.crpImageLocalPath.split("|")[0].toUri()
@@ -267,6 +410,49 @@ class BaseLineStartViewModel @Inject constructor(
 
     fun getStateId(): Int {
         return startSurveyScreenUserCase.getSurveyeeDetailsUserCase.getStateId()
+    }
+
+    fun addDidiInfoEvent(didi: SurveyeeEntity) {
+        val didiInfo = DidiInfoEntity(
+            didiId = didi.didiId,
+            isAdharCard = isAdharCard.value,
+            isVoterCard = isVoterCard.value,
+            adharNumber = aadharNumber.value,
+            phoneNumber = phoneNumber.value
+        )
+        val question = sectionDetails.questionList.first()
+        val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
+        sectionDetails.optionsItemMap[question.questionId]?.filter { it.optionType != QuestionType.Image.name }
+            ?.forEach {
+                val saveAnswerEventOptionItemDto = SaveAnswerEventOptionItemDto(
+                    optionId = it.optionId ?: 0,
+                    selectedValue = if (tagList.findTagForId(it.optionTag)
+                            .equals("Aadhar", true)
+                    ) SHGFlag.fromInt(didiInfo.isAdharCard ?: 0).name
+                    else if (tagList.findTagForId(it.optionTag)
+                            .equals("Voter", true)
+                    ) SHGFlag.fromInt(
+                        didiInfo.isVoterCard ?: 0
+                    ).name
+                    else didiInfo.phoneNumber ?: BLANK_STRING,
+                    referenceId = didiInfo.didiId.toString(),
+                    tag = it.optionTag,
+                    optionDesc = it.display ?: BLANK_STRING
+                )
+            saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
+        }
+        onEvent(
+            EventWriterEvents.SaveAnswerEvent(
+                surveyId = sectionDetails.surveyId,
+                sectionId = sectionDetails.surveyId,
+                didiId = didiInfo.didiId ?: 0,
+                questionId = question.questionId ?: 0,
+                questionType = question.type ?: QuestionType.Form.name,
+                questionTag = question.tag,
+                questionDesc = question.questionDisplay ?: BLANK_STRING,
+                saveAnswerEventOptionItemDtoList = saveAnswerEventOptionItemDtoList.toList()
+            )
+        )
     }
 
 }

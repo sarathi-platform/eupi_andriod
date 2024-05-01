@@ -22,3 +22,8 @@ data class ConditionsDto(
     val resultList: List<QuestionList>
 
 )
+
+data class ConditionDtoWithParentId(
+    val resultList: QuestionList,
+    val parentId: Int
+)

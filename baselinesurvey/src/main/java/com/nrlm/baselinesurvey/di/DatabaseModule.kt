@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.RoomDatabase
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import dagger.Module
@@ -20,6 +21,7 @@ object DatabaseModule {
     fun provideDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, NudgeBaselineDatabase::class.java, NUDGE_BASELINE_DATABASE)
             // Add Migrations for each migration object created.
+            .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
             /*.addMigrations(NudgeBaselineDatabase.MIGRATION_1_2).addCallback(NudgeBaselineDatabase.NudgeBaselineDatabaseCallback())*/
             .fallbackToDestructiveMigration()
             .build()
@@ -99,7 +101,10 @@ object DatabaseModule {
         db.inputTypeQuestionAnswerDao()
 
 
-    /*@Provides
+
+    @Provides
     @Singleton
-    fun providesEventsDao(syncDb: com.nudge.core.database.SyncManagerDatabase) = syncDb.eventsDao()*/
+    fun providesApiStatusDao(syncDb: SyncManagerDatabase) = syncDb.apiStatusDao()
+
+
 }

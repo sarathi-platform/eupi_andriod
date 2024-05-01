@@ -1,10 +1,10 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.presentation
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
@@ -21,17 +21,17 @@ import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.THIS_WEEK_TAB
+import com.nrlm.baselinesurvey.navigation.home.Step_Complition_Screen_ROUTE_NAME
+import com.nrlm.baselinesurvey.navigation.home.navigateToSectionListScreen
 import com.nrlm.baselinesurvey.ui.common_components.DoubleButtonBox
+import com.nrlm.baselinesurvey.ui.common_components.ToolbarWithMenuComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreenActions.CheckBoxClicked
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.SurveyeeScreenViewModel
-import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
-import com.nudge.core.ui.navigation.Step_Complition_Screen_ROUTE_NAME
-import com.nudge.core.ui.navigation.navigateToSectionListScreen
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -71,11 +71,7 @@ fun SurveyeeListScreen(
         loaderState.isLoaderVisible,
         {
             if (BaselineCore.isOnline.value) {
-//                if (selectedTabIndex.intValue == tabs.indexOf(THIS_WEEK_TAB)) {
-//                    //Handle API Call
-//                } else {
-//                    //Handle API/DB Call
-//                }
+                viewModel.refreshData()
             } else {
                 showCustomToast(
                     context,
@@ -85,10 +81,13 @@ fun SurveyeeListScreen(
 
         })
 
-    Scaffold(
-        bottomBar = {
-
-            if (viewModel.isEnableNextBTn.value) {
+    ToolbarWithMenuComponent(
+        title = activityName,
+        modifier = Modifier.fillMaxSize(),
+        navController=navController,
+        onBackIconClick = { navController.popBackStack() },
+        onBottomUI = {
+            if (viewModel.isEnableNextBTn.value && viewModel.filteredSurveyeeListState.value.isNotEmpty() && viewModel.activity?.status == SectionStatus.INPROGRESS.name) {
 
                 DoubleButtonBox(
                     modifier = Modifier
@@ -112,7 +111,13 @@ fun SurveyeeListScreen(
                                 SectionStatus.COMPLETED
                             )
                         )
-                        navController.navigate("${Step_Complition_Screen_ROUTE_NAME}/${"You have successfully completed the ${activityName} activity"}")
+                        navController.navigate(
+                            "${Step_Complition_Screen_ROUTE_NAME}/${
+                                context.getString(
+                                    R.string.activity_completed_message, activityName
+                                )
+                            }"
+                        )
                         // navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId/$surveyId")
                     },
                     negativeButtonOnClick = {
@@ -121,90 +126,42 @@ fun SurveyeeListScreen(
                 )
             }
         },
-        containerColor = white
-    ) {
-        AllSurveyeeListTab(
-            paddingValues = it,
-            loaderState = loaderState,
-            pullRefreshState = pullRefreshState,
-            viewModel = viewModel,
-            isSelectionEnabled = isSelectionEnabled,
-            navController = navController,
-            activityName = activityName,
-            activityDate = activityDate,
-            activityId = activityId,
-            onActionEvent = { surveyeeListScreenActions ->
-                when (surveyeeListScreenActions) {
-                    is CheckBoxClicked -> {
-                        if (surveyeeListScreenActions.isChecked) {
-                            viewModel.checkedItemsState.value.add(
-                                surveyeeListScreenActions.surveyeeEntity.didiId ?: -1
-                            )
-                        } else {
-                            viewModel.checkedItemsState.value.remove(
-                                surveyeeListScreenActions.surveyeeEntity.didiId
+        onContentUI = {
+            AllSurveyeeListTab(
+                paddingValues = it,
+                loaderState = loaderState,
+                pullRefreshState = pullRefreshState,
+                viewModel = viewModel,
+                isSelectionEnabled = isSelectionEnabled,
+                navController = navController,
+                activityName = activityName,
+                activityDate = activityDate,
+                activityId = activityId,
+                onActionEvent = { surveyeeListScreenActions ->
+                    when (surveyeeListScreenActions) {
+                        is CheckBoxClicked -> {
+                            if (surveyeeListScreenActions.isChecked) {
+                                viewModel.checkedItemsState.value.add(
+                                    surveyeeListScreenActions.surveyeeEntity.didiId ?: -1
+                                )
+                            } else {
+                                viewModel.checkedItemsState.value.remove(
+                                    surveyeeListScreenActions.surveyeeEntity.didiId
+                                )
+                            }
+                        }
+
+                        is SurveyeeListScreenActions.IsFilterApplied -> {
+                            isFilterAppliedState.value = isFilterAppliedState.value.copy(
+                                isFilterApplied = surveyeeListScreenActions.isFilterAppliedState.isFilterApplied
                             )
                         }
-                    }
 
-                    is SurveyeeListScreenActions.IsFilterApplied -> {
-                        isFilterAppliedState.value = isFilterAppliedState.value.copy(
-                            isFilterApplied = surveyeeListScreenActions.isFilterAppliedState.isFilterApplied
-                        )
+                        else -> {}
                     }
-
-                    else -> {}
                 }
-            }
-        )
-
-//        when (selectedTabIndex.intValue) {
-//            0 -> {
-//                ThisWeekSurvyeeListTab(
-//                    paddingValues = it,
-//                    loaderState = loaderState,
-//                    pullRefreshState = pullRefreshState,
-//                    viewModel = viewModel,
-//                    navController = navController,
-//                    onActionEvent = { surveyeeListScreenActions ->
-//
-//                    }
-//                )
-//            }
-//
-//            1 -> {
-//                AllSurveyeeListTab(
-//                    paddingValues = it,
-//                    loaderState = loaderState,
-//                    pullRefreshState = pullRefreshState,
-//                    viewModel = viewModel,
-//                    isSelectionEnabled = isSelectionEnabled,
-//                    navController = navController,
-//                    onActionEvent = { surveyeeListScreenActions ->
-//                        when (surveyeeListScreenActions) {
-//                            is CheckBoxClicked -> {
-//                                if (surveyeeListScreenActions.isChecked) {
-//                                    viewModel.checkedItemsState.value.add(
-//                                        surveyeeListScreenActions.surveyeeEntity.didiId ?: -1
-//                                    )
-//                                } else {
-//                                    viewModel.checkedItemsState.value.remove(
-//                                        surveyeeListScreenActions.surveyeeEntity.didiId
-//                                    )
-//                                }
-//                            }
-//
-//                            is SurveyeeListScreenActions.IsFilterApplied -> {
-//                                isFilterAppliedState.value = isFilterAppliedState.value.copy(
-//                                    isFilterApplied = surveyeeListScreenActions.isFilterAppliedState.isFilterApplied
-//                                )
-//                            }
-//                        }
-//                    }
-//                )
-//            }
-//        }
-    }
+            )
+        })
 }
 
 fun handleButtonClick(
@@ -216,13 +173,11 @@ fun handleButtonClick(
 ) {
     when (buttonName) {
         is ButtonName.START_BUTTON -> {
-            navController.navigateToSectionListScreen(surveyeeId, surveyId)
-            // navigateToBaseLineStartScreen(surveyeeId, surveyId, navController)
-//            navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$surveyeeId")
+            navigateToSectionListScreen(surveyeeId, surveyId, navController)
         }
 
         is ButtonName.CONTINUE_BUTTON -> {
-            navController.navigateToSectionListScreen(surveyeeId, surveyId)
+            navigateToSectionListScreen(surveyeeId, surveyId, navController)
         }
 
         is ButtonName.NEGATIVE_BUTTON -> {
@@ -230,7 +185,7 @@ fun handleButtonClick(
         }
 
         is ButtonName.SHOW_BUTTON -> {
-            navController.navigateToSectionListScreen(surveyeeId, surveyId)
+            navigateToSectionListScreen(surveyeeId, surveyId, navController)
         }
 
         is ButtonName.EXPORT_BUTTON -> {

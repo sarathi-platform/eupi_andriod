@@ -3,6 +3,7 @@ package com.nrlm.baselinesurvey.model.datamodel
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.model.response.ContentList
 
 data class OptionsItem(
 
@@ -48,7 +49,7 @@ data class OptionsItem(
 
     @SerializedName("values")
     @Expose
-    val values: List<String> = listOf(),
+    val values: List<ValuesDto> = listOf(),
 
     @SerializedName("conditions")
     @Expose
@@ -56,7 +57,8 @@ data class OptionsItem(
 
     @SerializedName("tag")
     @Expose
-    val tag: Int? = 0
-
-
+    val tag: Int? = 0,
+    @SerializedName("contents")
+    @Expose
+    val contentList: List<ContentList> = listOf()
 )

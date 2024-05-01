@@ -11,6 +11,7 @@ const val BLANK_STRING = ""
 
 const val EventsTable = "events_table"
 const val EventDependencyTable = "event_dependency_table"
+const val ApiStatusTable = "api_status_table"
 
 // Sync DB Properties
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"
@@ -33,12 +34,14 @@ const val KEY_PARENT_ENTITY_DIDI_NAME = "didiName"
 const val KEY_PARENT_ENTITY_DADA_NAME = "dadaName"
 const val KEY_PARENT_ENTITY_ADDRESS = "didiAddress"
 
-const val LOCAL_BACKUP_FILE_NAME = "Sarathi_event_backup_current"
-const val LOCAL_BACKUP__IMAGE_FILE_NAME = "Sarathi_event_backup_Image_current"
+const val LOCAL_BACKUP_FILE_NAME = "Sarathi_events_"
+const val LOCAL_BACKUP__IMAGE_FILE_NAME = "Sarathi_events_Image"
 const val SARATHI_DIRECTORY_NAME = "/SARATHI"
 const val LOCAL_BACKUP_EXTENSION = ".txt"
 const val EVENT_DELIMETER = "~@-"
 const val ZIP_MIME_TYPE = "application/zip"
+const val EXCEL_TYPE = "text/csv"
+const val REGENERATE_PREFIX = "regenerate_"
 const val PREF_KEY_IS_SETTING_SCREEN_OPEN= "is_setting_open"
 
 val eventWriters = listOf<IEventWriter>(

@@ -1,7 +1,13 @@
 package com.nrlm.baselinesurvey.data.domain
 
+import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
+import com.nrlm.baselinesurvey.database.entity.QuestionEntity
+import com.nrlm.baselinesurvey.database.entity.SectionEntity
+import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.ActivityForSubjectDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventOptionItemDto
+import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.database.entities.Events
 
@@ -21,6 +27,7 @@ interface EventWriterHelper {
         questionId: Int,
         questionType: String,
         questionTag: Int,
+        questionDesc: String,
         showQuestion: Boolean = true,
         saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     ): Events
@@ -32,6 +39,8 @@ interface EventWriterHelper {
         questionId: Int,
         questionType: String,
         questionTag: Int,
+        questionDesc: String,
+        referenceOptionList: List<OptionItemEntityState>,
         showQuestion: Boolean = true,
         saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     ): Events
@@ -105,4 +114,29 @@ interface EventWriterHelper {
         status: SectionStatus
     ): List<Events>
 
+    fun createImageUploadEvent(
+        didi: SurveyeeEntity,
+        location: String,
+        filePath: String,
+        userType: String,
+        questionId: Int,
+        referenceId: String,
+        sectionDetails: SectionListItem,
+        subjectType: String
+    ): Events?
+
+    fun createImageUploadEvent(
+        didi: SurveyeeEntity,
+        location: String,
+        filePath: String,
+        userType: String,
+        questionId: Int,
+        referenceId: String,
+        questionEntity: QuestionEntity?,
+        optionItemEntity: OptionItemEntity?,
+        sectionDetails: SectionEntity,
+        subjectType: String
+    ): Events?
+
+    suspend fun regenerateAllEvent()
 }

@@ -4,7 +4,7 @@ import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.DidiInfoDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
-import com.nrlm.baselinesurvey.database.entity.DidiIntoEntity
+import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 
 class SurveyStateRepositoryImpl(
@@ -18,8 +18,9 @@ class SurveyStateRepositoryImpl(
         surveyeeEntity.updateDidiSurveyStatus(surveyState.ordinal, didiId)
     }
 
-    override suspend fun saveDidiInfo(didiIntoEntity: DidiIntoEntity) {
-        didiInfoDao.insertMission(didiIntoEntity)
+    override suspend fun saveDidiInfo(didiInfoEntity: DidiInfoEntity) {
+        didiInfoEntity.userId = prefRepo.getUniqueUserIdentifier()
+        didiInfoDao.insertDidiInfo(didiInfoEntity)
     }
 
 }

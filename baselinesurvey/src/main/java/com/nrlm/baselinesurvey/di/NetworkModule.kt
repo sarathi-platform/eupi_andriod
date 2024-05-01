@@ -38,16 +38,16 @@ import javax.net.ssl.X509TrustManager
 @Module
 object NetworkModule {
 
-//    @Singleton
-//    @Provides
-//    fun provideInterceptors():ArrayList<Interceptor>{
-//        val interceptors = arrayListOf<Interceptor>()
-//        if(BuildConfig.DEBUG){
-//            val loggingInterceptor= CurlLoggingInterceptor()
-//            interceptors.add(loggingInterceptor)
-//        }
-//        return interceptors
-//    }
+    @Singleton
+    @Provides
+    fun provideInterceptors():ArrayList<Interceptor>{
+        val interceptors = arrayListOf<Interceptor>()
+        if(BuildConfig.DEBUG){
+            val loggingInterceptor= CurlLoggingInterceptor()
+            interceptors.add(loggingInterceptor)
+        }
+        return interceptors
+    }
 
 
     @Provides
@@ -61,48 +61,49 @@ object NetworkModule {
      *
      * @return
      */
-//    @Singleton
-//    @Provides
-//    fun provideRetrofit(
-//        interceptors: ArrayList<Interceptor>,
-//        sharedPref: PrefRepo,
-//        application: Application
-//    ): Retrofit {
-//        val cache = Cache(application.cacheDir, 10 * 1024 * 1024) // 10 MB
-//        val timeout = 60.toLong()
-//        val clientBuilder =
-//            OkHttpClient.Builder()
-////    getOkHttpBuilder()
-//                /*.hostnameVerifier(HostnameVerifier { hostname, session -> true })*/
-//                .connectTimeout(timeout, TimeUnit.SECONDS)
-//                .readTimeout(timeout, TimeUnit.SECONDS)
-////        .cache(cache)
-//        clientBuilder.addNetworkInterceptor(getNetworkInterceptor(application.applicationContext))
-//        clientBuilder.addInterceptor(
-//            getHeaderInterceptor(
-//                sharedPref,
-//                application.applicationContext
-//            )
-//        )
-//        if (interceptors.isNotEmpty()) {
-//            interceptors.forEach { interceptor ->
-//                clientBuilder.addInterceptor(interceptor)
-//            }
-//        }
-//        clientBuilder.addInterceptor { chain ->
-//            val request = chain.request()
-//            val response = chain.proceed(request)
-//            response
-//        }
-//
-//        val gson = GsonBuilder().setLenient().create()
-//
-//        return Retrofit.Builder()
-//            .client(clientBuilder.build())
-//            .addConverterFactory(GsonConverterFactory.create(gson))
-//            .baseUrl(BuildConfig.BASE_URL)
-//            .build()
-//    }
+    @Singleton
+    @Provides
+    fun provideRetrofit(
+        interceptors: ArrayList<Interceptor>,
+        sharedPref: PrefRepo,
+        application: Application
+    ): Retrofit {
+        val cache = Cache(application.cacheDir, 10 * 1024 * 1024) // 10 MB
+        val timeout = 60.toLong()
+        val clientBuilder =
+            OkHttpClient.Builder()
+//    getOkHttpBuilder()
+                /*.hostnameVerifier(HostnameVerifier { hostname, session -> true })*/
+                .connectTimeout(timeout, TimeUnit.SECONDS)
+                .readTimeout(timeout, TimeUnit.SECONDS)
+//        .cache(cache)
+        clientBuilder.addNetworkInterceptor(getNetworkInterceptor(application.applicationContext))
+        clientBuilder.addInterceptor(ErrorInterceptor())
+        clientBuilder.addInterceptor(
+            getHeaderInterceptor(
+                sharedPref,
+                application.applicationContext
+            )
+        )
+        if (interceptors.isNotEmpty()) {
+            interceptors.forEach { interceptor ->
+                clientBuilder.addInterceptor(interceptor)
+            }
+        }
+        clientBuilder.addInterceptor { chain ->
+            val request = chain.request()
+            val response = chain.proceed(request)
+            response
+        }
+
+        val gson = GsonBuilder().setLenient().create()
+
+        return Retrofit.Builder()
+            .client(clientBuilder.build())
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .baseUrl(BuildConfig.BASE_URL)
+            .build()
+    }
 
     private fun getOkHttpBuilder(): OkHttpClient.Builder =
         if (!BuildConfig.DEBUG) {
@@ -146,33 +147,33 @@ object NetworkModule {
         }
     }
 
-//    @Singleton
-//    @Provides
-//    fun provideGson(): Gson {
-//        return GsonBuilder()
-//            .setLenient()
-//            .create()
-//    }
-//
-//    @Singleton
-//    @Provides
-//    fun provideOkHttpClient(): OkHttpClient {
-//        val httpClientBuilder =
-//            OkHttpClient
-//                .Builder()
-//                .connectTimeout(1, TimeUnit.MINUTES)
-//                .writeTimeout(1, TimeUnit.MINUTES)
-//                .readTimeout(1, TimeUnit.MINUTES)
-//                .addInterceptor(ErrorInterceptor())
-//                .connectionPool(ConnectionPool(0, 1, TimeUnit.NANOSECONDS))
-//
-//        if (BuildConfig.DEBUG) {
-//            val logging = HttpLoggingInterceptor()
-//            logging.level = HttpLoggingInterceptor.Level.BODY
-//            httpClientBuilder.addInterceptor(logging)
-//        }
-//        return httpClientBuilder.build()
-//    }
+    @Singleton
+    @Provides
+    fun provideGson(): Gson {
+        return GsonBuilder()
+            .setLenient()
+            .create()
+    }
+
+    @Singleton
+    @Provides
+    fun provideOkHttpClient(): OkHttpClient {
+        val httpClientBuilder =
+            OkHttpClient
+                .Builder()
+                .connectTimeout(1, TimeUnit.MINUTES)
+                .writeTimeout(1, TimeUnit.MINUTES)
+                .readTimeout(1, TimeUnit.MINUTES)
+                .addInterceptor(ErrorInterceptor())
+                .connectionPool(ConnectionPool(0, 1, TimeUnit.NANOSECONDS))
+
+        if (BuildConfig.DEBUG) {
+            val logging = HttpLoggingInterceptor()
+            logging.level = HttpLoggingInterceptor.Level.BODY
+            httpClientBuilder.addInterceptor(logging)
+        }
+        return httpClientBuilder.build()
+    }
 
 
     private fun getNetworkInterceptor(context: Context): Interceptor {

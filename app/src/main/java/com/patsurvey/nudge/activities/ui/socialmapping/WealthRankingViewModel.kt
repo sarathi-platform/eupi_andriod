@@ -75,7 +75,7 @@ class WealthRankingViewModel @Inject constructor(
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
-                _didiList.emit(didiDao.getAllDidisForVillage(villageId))
+                _didiList.emit(didiDao.getAllDidisForVillageTolaIdAscending(villageId))
                 _filterDidiList.value = didiList.value
                 showLoader.value = false
             }

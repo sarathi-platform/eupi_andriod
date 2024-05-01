@@ -1,19 +1,24 @@
 package com.nrlm.baselinesurvey.ui.mission_screen.presentation
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,16 +31,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.activity.MainActivity
-import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
+import com.nrlm.baselinesurvey.navigation.home.MISSION_SUMMARY_SCREEN_ROUTE_NAME
+import com.nrlm.baselinesurvey.navigation.navgraph.Graph
+import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
+import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.mission_screen.viewmodel.MissionViewModel
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
@@ -43,10 +53,12 @@ import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
-import com.nudge.core.ui.navigation.CoreGraph
-import com.nudge.core.ui.navigation.MISSION_SUMMARY_SCREEN_ROUTE_NAME
+import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.showCustomToast
 
+@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Preview(showBackground = true)
 @Composable
 fun MissionScreen_1(
     navController: NavController = rememberNavController(),
@@ -57,6 +69,20 @@ fun MissionScreen_1(
     val filteredMissionList = viewModel.filterMissionList
 
     val loaderState = viewModel.loaderState.value
+    val pullRefreshState = rememberPullRefreshState(
+        viewModel.loaderState.value.isLoaderVisible,
+        {
+            if (BaselineCore.isOnline.value) {
+                viewModel.refreshData()
+            } else {
+                showCustomToast(
+                    context,
+                    context.getString(R.string.refresh_failed_please_try_again)
+                )
+
+            }
+
+        })
 
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -92,9 +118,7 @@ fun MissionScreen_1(
                 },
                 actions = {
                     IconButton(onClick = {
-                            viewModel.saveSettingScreenOpen()
-                            navController.navigate(CoreGraph.SETTING_GRAPH)
-                        Log.d("TAG", "HomeUserScreen: ${navController.graph.route} ")
+                        navController.navigate(Graph.SETTING_GRAPH)
                     }) {
                         Icon(
                             painter = painterResource(id = R.drawable.more_icon),
@@ -121,30 +145,55 @@ fun MissionScreen_1(
                 showFilter = false,
                 onFilterSelected = {},
                 onSearchValueChange = { queryTerm ->
+                    viewModel.onEvent(SearchEvent.PerformSearch(queryTerm, false, ""))
                 })
 
-            LoaderComponent(visible = loaderState.isLoaderVisible)
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .pullRefresh(pullRefreshState))
+            {
+                PullRefreshIndicator(
+                    refreshing = viewModel.loaderState.value.isLoaderVisible,
+                    state = pullRefreshState,
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .zIndex(1f),
+                    contentColor = blueDark,
+                )
+                if (!loaderState.isLoaderVisible) {
 
-            if (!loaderState.isLoaderVisible) {
                 if (filteredMissionList.value.isEmpty()) {
-                    Box(
+                    Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(horizontal = 16.dp),
-                        contentAlignment = Alignment.Center
+                            .padding(horizontal = 16.dp)
+                            .align(Alignment.Center),
+                        verticalArrangement = Arrangement.Center,
                     ) {
                         Text(
                             stringResource(R.string.not_able_to_load),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
                             style = defaultTextStyle,
                             color = textColorDark
                         )
+                        Spacer(modifier = Modifier.padding(vertical = 10.dp))
+                        ButtonPositive(
+                            buttonTitle = stringResource(id = R.string.retry),
+                            isActive = true,
+                            isArrowRequired = false,
+                            onClick = {
+                                viewModel.refreshData()
+                            })
+                            
+
                     }
                 } else {
                     LazyColumn {
                         items(filteredMissionList.value) { mission ->
 
                             val pendingTaskCountForMission =
-                                viewModel.getPendingTaskCountForMissionLive(mission.missionId)
+                                viewModel.getPendingActivityCountForMissionLive(mission.missionId)
                                     .observeAsState().value ?: 0
 
                             MissonRowScreen_1(
@@ -157,8 +206,11 @@ fun MissionScreen_1(
                                     navController.navigate("${MISSION_SUMMARY_SCREEN_ROUTE_NAME}/${mission.missionId}/${mission.missionName}/${mission.endDate}")
                                 })
                         }
+
                     }
                 }
+                }
+
             }
         }
     }

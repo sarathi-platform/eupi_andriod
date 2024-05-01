@@ -35,7 +35,7 @@ object BaselineCore {
 
     private var referenceId: String = BLANK_STRING
 
-
+    private var isEditAllowedForNoneMarkedQuestion: Boolean = true
 
     fun getCurrentActivityName() = currentActivityName
 
@@ -47,6 +47,12 @@ object BaselineCore {
 
     fun setReferenceId(mReferenceId: String) {
         referenceId = mReferenceId
+    }
+
+    fun isEditAllowedForNoneMarkedQuestion() = isEditAllowedForNoneMarkedQuestion
+
+    fun setIsEditAllowedForNoneMarkedQuestionFlag(flag: Boolean) {
+        isEditAllowedForNoneMarkedQuestion = flag
     }
 
 
@@ -125,56 +131,38 @@ object BaselineCore {
 
 
 
-//    fun downloadQuestionImages(questionImageLinks: List<String>) {
-//        val context = mainApplication.applicationContext
-//        mainApplication.appScopeLaunch {
-//            try {
-//                questionImageLinks.forEach { questionImageLink ->
-//                    if (!getImagePath(context, questionImageLink).exists()) {
-//                        val localDownloader = getAndroidDownloader()
-//                        val downloadManager = context.getSystemService(DownloadManager::class.java)
-//                        val downloadId = localDownloader?.downloadImageFile(questionImageLink, FileType.IMAGE)
-//                    }
-//                }
-//            } catch (ex: Exception) {
-//                ex.printStackTrace()
-//                Log.e("VideoListViewModel", "downloadItem exception", ex)
-//            }
-//        }
-//    }
-
-//    fun downloadAuthorizedImageItem(id:Int, image: String, prefRepo: PrefRepo, surveyeeEntityDao: SurveyeeEntityDao) {
-//        MyApplication.appScopeLaunch {
-//            try {
-//                val imageFile = getAuthImagePath(getAppContext(), image)
-//                if (!imageFile.exists()) {
-//                    val localDownloader = downloader
-//                    val downloadManager = getAppContext().getSystemService(DownloadManager::class.java)
-//                    localDownloader?.currentDownloadingId?.value = id
-//                    val downloadId = localDownloader?.downloadAuthorizedImageFile(
-//                        image,
-//                        FileType.IMAGE,
-//                        prefRepo
-//                    )
-//                    if (downloadId != null) {
-//                        localDownloader.checkDownloadStatus(downloadId,
-//                            id,
-//                            downloadManager,
-//                            onDownloadComplete = {
-//                                surveyeeEntityDao.updateImageLocalPath(id,imageFile.absolutePath)
-//                            }, onDownloadFailed = {
-//                                NudgeLogger.d("VillageSelectorViewModel", "downloadAuthorizedImageItem -> onDownloadFailed")
-//                            })
-//                    }
-//                } else {
-//                    surveyeeEntityDao.updateImageLocalPath(id,imageFile.absolutePath)
-//                }
-//            } catch (ex: Exception) {
-//                ex.printStackTrace()
-//                NudgeLogger.e("VillageSelectorViewModel", "downloadAuthorizedImageItem -> downloadItem exception", ex)
-//            }
-//        }
-//    }
+    fun downloadAuthorizedImageItem(id:Int, image: String, prefRepo: PrefRepo, surveyeeEntityDao: SurveyeeEntityDao) {
+        BaselineApplication.appScopeLaunch {
+            try {
+                val imageFile = getAuthImagePath(getAppContext(), image)
+                if (!imageFile.exists()) {
+                    val localDownloader = downloader
+                    val downloadManager = getAppContext().getSystemService(DownloadManager::class.java)
+                    localDownloader?.currentDownloadingId?.value = id
+                    val downloadId = localDownloader?.downloadAuthorizedImageFile(
+                        image,
+                        FileType.IMAGE,
+                        prefRepo
+                    )
+                    if (downloadId != null) {
+                        localDownloader.checkDownloadStatus(downloadId,
+                            id,
+                            downloadManager,
+                            onDownloadComplete = {
+                                surveyeeEntityDao.updateImageLocalPath(id,imageFile.absolutePath)
+                            }, onDownloadFailed = {
+                                BaselineLogger.d("VillageSelectorViewModel", "downloadAuthorizedImageItem -> onDownloadFailed")
+                            })
+                    }
+                } else {
+                    surveyeeEntityDao.updateImageLocalPath(id,imageFile.absolutePath)
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                BaselineLogger.e("VillageSelectorViewModel", "downloadAuthorizedImageItem -> downloadItem exception", ex)
+            }
+        }
+    }
 
     fun cleanUp() {
 

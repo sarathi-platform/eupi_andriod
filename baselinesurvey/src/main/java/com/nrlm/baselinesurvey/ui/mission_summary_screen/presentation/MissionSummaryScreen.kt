@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Text
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -20,18 +18,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.navigation.home.navigateBackToMissionScreen
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.StepsBox
+import com.nrlm.baselinesurvey.ui.common_components.ToolbarWithMenuComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.viewModel.MissionSummaryViewModel
-import com.nrlm.baselinesurvey.ui.theme.black100Percent
-import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.inprogressYellow
-import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
-import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
-import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
-import com.nudge.core.ui.navigation.navigateBackToMissionScreen
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -49,11 +44,14 @@ fun MissionSummaryScreen(
     LaunchedEffect(key1 = true) {
         viewModel.init(missionId)
     }
-    Scaffold(
+    ToolbarWithMenuComponent(
+        title = missionName,
         modifier = Modifier.fillMaxSize(),
-        containerColor = white,
-        bottomBar = {
-            if (activities.filter { it.status != SectionStatus.COMPLETED.name }.isEmpty()) {
+        navController=navController,
+        onBackIconClick = { navController.popBackStack() },
+        onBottomUI = {
+            if (activities.filter { it.status != SectionStatus.COMPLETED.name }
+                    .isEmpty() && viewModel.mission.value?.status != SectionStatus.COMPLETED.name) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -71,65 +69,75 @@ fun MissionSummaryScreen(
                                 status = SectionStatus.COMPLETED
                             )
                         )
-                        navController.navigateBackToMissionScreen()
+                        navigateBackToMissionScreen(navController)
                     }
                 }
             }
 
-    }
-    ) {
-        if (activities.isNotEmpty()) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp),
-                    text = missionName,
-                    style = largeTextStyle,
-                    color = blueDark
-                )
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp),
-                    text = stringResource(id = R.string.due_by_x, missionDate),
-                    style = newMediumTextStyle,
-                    color = black100Percent
+        },
+        onContentUI = {
+            if (activities.isNotEmpty()) {
+                Column(modifier = Modifier.padding(top = 55.dp)) {
+                    //TODO in future in uncomment whenever get correct data from backend
 
-                )
-                LazyColumn(
-                ) {
-                    itemsIndexed(
-                        items = activities
-                    ) { index, activity ->
-                        var subTitle = if (activity.activityId == 1) "Didis" else "Hamlets"
+//                    Text(
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(horizontal = 10.dp),
+//                        text = stringResource(id = R.string.due_by_x, missionDate),
+//                        style = newMediumTextStyle,
+//                        color = black100Percent
+//
+//                    )
+                    LazyColumn(
+                    ) {
+                        itemsIndexed(
+                            items = activities
+                        ) { index, activity ->
 
-                        val pendingTasks = viewModel.getPendingDidiCountLive(activity.activityId)
-                            .observeAsState().value ?: 0
 
-                        StepsBox(
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                            boxTitle = activity.activityName,
-                            subTitle = stringResource(
-                                id = R.string.x_dii_pending,
-                                pendingTasks,
-                                subTitle,
-                            ),
-                            stepNo = index + 1,
-                            index = index,
-                            isCompleted = activity.status == SectionStatus.COMPLETED.name,
-                            iconResourceId = R.drawable.ic_mission_inprogress,
-                            backgroundColor = inprogressYellow,
-                            onclick = {
-                                navController.navigate("mission_summary_graph/${activity.activityName}/${missionId}/${activity.endDate}/${activity.activityId}")
-                            })
+                            val pendingTaskCount =
+                                viewModel.getPendingDidiCountLive(activity.activityId)
+                                    .observeAsState().value ?: 0
+                            val pendingTasks = numberInEnglishFormat(pendingTaskCount)
+
+                            var subTitle = if (activity.activityId == 1) {
+                                if (pendingTaskCount > 1) {
+                                    stringResource(id = R.string.didis_item_text_plural)
+                                } else {
+                                    stringResource(id = R.string.didis_item_text_singular)
+                                }
+                            } else {
+                                if (pendingTaskCount > 1) {
+                                    stringResource(R.string.hamlets_item_text_plural)
+                                } else {
+                                    stringResource(R.string.hamlets_item_text_singular)
+                                }
+
+                            }
+
+                            StepsBox(
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                boxTitle = activity.activityName,
+                                subTitle = stringResource(
+                                    id = R.string.x_didi_pending,
+                                    pendingTasks,
+                                    subTitle,
+                                ),
+                                stepNo = index + 1,
+                                index = index,
+                                isCompleted = activity.status == SectionStatus.COMPLETED.name,
+                                iconResourceId = R.drawable.ic_mission_inprogress,
+                                backgroundColor = inprogressYellow,
+                                onclick = {
+                                    navController.navigate("add_didi_graph/${activity.activityName}/${missionId}/${activity.endDate}/${activity.activityId}")
+                                })
+                        }
+
                     }
-
                 }
-            }
 
+            }
         }
-
-    }
-
+    )
 }

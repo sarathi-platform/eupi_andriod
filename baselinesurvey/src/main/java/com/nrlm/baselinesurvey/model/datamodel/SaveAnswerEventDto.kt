@@ -29,4 +29,7 @@ data class SaveAnswerEventDto(
     @SerializedName("surveyId")
     @Expose
     val surveyId: Int,
+    @SerializedName("localTaskId")
+    @Expose
+    val localTaskId: String,
 )

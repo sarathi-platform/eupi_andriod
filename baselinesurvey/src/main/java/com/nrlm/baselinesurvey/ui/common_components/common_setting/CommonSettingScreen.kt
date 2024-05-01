@@ -74,6 +74,7 @@ fun CommonSettingScreen(
     onBackClick:()->Unit,
     isLoaderVisible:Boolean=false,
     onItemClick:(Int,SettingOptionModel)->Unit,
+    isScreenHaveLogoutButton:Boolean=true,
     onParticularFormClick: (Int) -> Unit,
     onLogoutClick:()->Unit
 ){
@@ -96,31 +97,33 @@ fun CommonSettingScreen(
             }
         },
         bottomBar = {
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
-                    .padding(vertical = dimensionResource(id = R.dimen.dp_15))
-            ) {
-                Column {
+            if(isScreenHaveLogoutButton) {
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
+                        .padding(vertical = dimensionResource(id = R.dimen.dp_15))
+                ) {
+                    Column {
 
-                    Text(
-                        text = versionText,
-                        color = textColorDark50,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(0.dp, 0.dp, 0.dp, 10.dp),
-                        textAlign = TextAlign.Center,
-                        style = newMediumTextStyle
-                    )
-                    ButtonPositive(
-                        buttonTitle = stringResource(id = R.string.logout),
-                        isArrowRequired = false,
-                        isActive = true
-                    ) {
-                        onLogoutClick()
+                        Text(
+                            text = versionText,
+                            color = textColorDark50,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(0.dp, 0.dp, 0.dp, 10.dp),
+                            textAlign = TextAlign.Center,
+                            style = newMediumTextStyle
+                        )
+                        ButtonPositive(
+                            buttonTitle = stringResource(id = R.string.logout),
+                            isArrowRequired = false,
+                            isActive = true
+                        ) {
+                            onLogoutClick()
+                        }
                     }
-                }
 
+                }
             }
         }){
         ConstraintLayout(

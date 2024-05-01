@@ -180,6 +180,8 @@ const val RESPONSE_CODE_UNPROCESSABLE_ENTITY = 422 // Unprocessable Entity
 const val RESPONSE_CODE_BAD_REQUEST = 400 // Bad Request
 const val RESPONSE_CODE_CONFLICT = 409 // Conflict
 const val RESPONSE_CODE_500 = 500
+const val DEFAULT_ERROR_CODE = 500
+const val DEFAULT_SUCCESS_CODE = 200
 const val RESPONSE_CODE_BAD_GATEWAY = 502
 const val RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE = 503
 const val RESPONSE_CODE_NO_DATA = 101 // Locally defined : No data
@@ -207,9 +209,15 @@ val GENERIC_ERROR_MSG =
 const val NETWORK_ERROR_MSG = "Make sure that Wi-Fi or mobile data is turned on, then try again."
 val COMMON_ERROR_MSG =
     "No network available"//NudgeApp.applicationContext().getString(R.string.common_error_message_text)
+val COMMON_ERROR_MSG =
+    BaselineApplication.applicationContext().getString(R.string.something_went_wrong)
 const val COMMON_ERROR_TITLE = "Something Went Wrong"
 const val TIMEOUT_ERROR_MSG = "Your request timed out. Please try again in some time."
 val UNAUTHORISED_MESSAGE = "401 Unauthorized"
+val INTERNAL_SERVER_ERROR_MESSAGE = "We are facing internal server error."
+val BAD_GATEWAY_ERROR_MESSAGE = "We are facing bad gateway issue."
+val TEMP_UNAVAILABLE_ERROR_MESSAGE = "Service are temporarily unavailable now"
+const val JSON_PARSING_EXCEPTION = "Unable to parse JSON"
 
 const val LAST_UPDATE_TIME = "last_updated_time"
 const val LAST_SYNC_TIME = "last_sync_time"
@@ -290,8 +298,8 @@ const val THIS_WEEK_TAB = "This Week"
 const val ALL_TAB = "All"
 const val DIDI_LIST = "DIDI_LIST"
 
-const val QUESTION_DATA_TAB = "Questions Data"
-const val SECTION_INFORMATION_TAB = "Section Information"
+const val QUESTION_DATA_TAB = "Questions"
+const val SECTION_INFORMATION_TAB = "Sections"
 
 const val BASE_LINE = "BASELINE"
 const val HAMLET = "HAMLET"
@@ -317,3 +325,14 @@ const val ARG_FROM_SECTION_SCREEN = "from_section_screen"
 const val ARG_FROM_QUESTION_SCREEN = "from_question_screen"
 
 const val ROOM_INTEGRITY_EXCEPTION = "Room cannot verify the data integrity."
+
+const val LIVELIHOOD_SOURCE_TAG = "Income Soruces"
+
+const val PREF_USER_TYPE = "pref_user_type"
+const val DELIMITER_TIME = ":"
+const val DELIMITER_YEAR = "/"
+
+const val LIVELIHOOD_SOURCE_TAG_CONSTANT = "Livelihood Sources"
+const val HOUSEHOLD_INFO_TAG_CONSTANT = "Household information"
+
+

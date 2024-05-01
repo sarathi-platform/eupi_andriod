@@ -9,7 +9,9 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
 import com.nrlm.baselinesurvey.PREF_STATE_ID
+import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.MyApplication
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.RetryHelper.crpPatQuestionApiLanguageId
 import com.patsurvey.nudge.RetryHelper.retryApiList
@@ -104,6 +106,7 @@ import com.patsurvey.nudge.utils.formatRatio
 import com.patsurvey.nudge.utils.getAuthImagePath
 import com.patsurvey.nudge.utils.getImagePath
 import com.patsurvey.nudge.utils.intToString
+import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import com.patsurvey.nudge.utils.videoList
@@ -137,6 +140,7 @@ class VillageSelectionViewModel @Inject constructor(
     val answerDao: AnswerDao,
     val bpcSummaryDao: BpcSummaryDao,
     val poorDidiListDao: PoorDidiListDao,
+    private val syncManagerDatabase: SyncManagerDatabase,
     val userDao: UserDao,
     val downloader: AndroidDownloader,
     val lastSelectedTolaDao: LastSelectedTolaDao,
@@ -144,6 +148,7 @@ class VillageSelectionViewModel @Inject constructor(
     val villageSelectionRepository: VillageSelectionRepository
 
 ) : BaseViewModel() {
+    private var isNeedToCallVillageApi: Boolean = true
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
     val villageList: StateFlow<List<VillageEntity>> get() = _villagList
 
@@ -184,6 +189,8 @@ class VillageSelectionViewModel @Inject constructor(
             villageListDao.deleteAllVilleges()
             bpcSummaryDao.deleteAllSummary()
             poorDidiListDao.deleteAllDidis()
+            syncManagerDatabase.eventsDao().deleteAllEvents()
+            syncManagerDatabase.eventsDependencyDao().deleteAllDependentEvents()
             clearSharedPreference()
             init(context)
         }
@@ -1745,6 +1752,7 @@ class VillageSelectionViewModel @Inject constructor(
     fun refreshBpcData(context: Context) {
         showLoader.value = true
         villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) {
+            if (it.success) {
             _filterVillageList.value = it.villageList.distinctBy {
                 it.id
             }
@@ -1752,30 +1760,62 @@ class VillageSelectionViewModel @Inject constructor(
                 it.id
 
             }
-            villageSelectionRepository.refreshStepListData(it.villageList) {
+                villageSelectionRepository.refreshStepListData() {
                 showLoader.value = false
 
             }
 
+            } else {
+                showCustomToast(
+                    context,
+                    context.getString(R.string.refresh_failed_please_try_again)
+                )
         }
+
+        }
+
     }
 
     fun refreshCrpData(context: Context) {
         showLoader.value = true
-        villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) {
-            _filterVillageList.value = it.villageList.distinctBy {
+        if (isNeedToCallVillageApi) {
+            villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) { userAndVillageDetailModel ->
+                if (userAndVillageDetailModel.success) {
+                    isNeedToCallVillageApi = false
+                    _filterVillageList.value = userAndVillageDetailModel.villageList.distinctBy {
                 it.id
             }
-            _villagList.value = it.villageList.distinctBy {
+                    _villagList.value = userAndVillageDetailModel.villageList.distinctBy {
                 it.id
-
             }
-            villageSelectionRepository.refreshStepListData(it.villageList) {
+                    refreshStepData(context)
+            } else {
+                    isNeedToCallVillageApi = true
                 showLoader.value = false
-
+                    showCustomToast(
+                        context,
+                        context.getString(R.string.refresh_failed_please_try_again)
+                    )
             }
         }
+        } else {
+            refreshStepData(context = context)
+        }
+    }
 
+    private fun refreshStepData(context: Context) {
+        villageSelectionRepository.refreshStepListData() { stepListStatus ->
+            if (stepListStatus) {
+                showCustomToast(context, context.getString(R.string.fetched_successfully))
+                isNeedToCallVillageApi = true
+            } else {
+                showCustomToast(
+                    context,
+                    context.getString(R.string.refresh_failed_please_try_again)
+                )
+            }
+            showLoader.value = false
+        }
     }
 
 

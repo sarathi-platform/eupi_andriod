@@ -4,11 +4,16 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import com.nrlm.baselinesurvey.DELAY_2_SEC
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
+import com.nrlm.baselinesurvey.ui.common_components.common_events.ApiStatusEvent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.mission_screen.domain.use_case.MissionScreenUseCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
+import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -20,8 +25,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MissionViewModel @Inject constructor(
-    private val missionScreenUseCase: MissionScreenUseCase
-) : BaseViewModel() {
+    private val missionScreenUseCase: MissionScreenUseCase,
+    private val fetchDataUseCase: FetchDataUseCase,
+
+    ) : BaseViewModel() {
     private val _missionList = mutableStateOf<List<MissionEntity>>(emptyList())
     private val missionList: State<List<MissionEntity>> get() = _missionList
     private val _filterMissionList = mutableStateOf<List<MissionEntity>>(emptyList())
@@ -34,6 +41,9 @@ class MissionViewModel @Inject constructor(
     private val _missionTaskCountMap = mutableStateOf(mutableMapOf<Int, Int>())
     val missionTaskCountMap: State<Map<Int, Int>> get() = _missionTaskCountMap
 
+    private val _missionActivityCountMap = mutableStateOf(mutableMapOf<Int, Int>())
+    val missionActivityCountMap: State<Map<Int, Int>> get() = _missionActivityCountMap
+
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -45,6 +55,18 @@ class MissionViewModel @Inject constructor(
                 _loaderState.value = _loaderState.value.copy(
                     isLoaderVisible = event.showLoader
                 )
+            }
+            is ApiStatusEvent.showApiStatus -> {
+                if (event.errorCode == 200) {
+                    showCustomToast(BaselineCore.getAppContext(), BaselineCore.getAppContext().getString(
+                        R.string.fetched_successfully))
+                    init()
+                } else {
+                    showCustomToast(
+                        BaselineCore.getAppContext(),
+                        event.message
+                    )
+                }
             }
         }
     }
@@ -65,6 +87,11 @@ class MissionViewModel @Inject constructor(
                 val taskCountForMission =
                     missionScreenUseCase.getTaskDetailsFromDbUseCase.getTotalTaskCountForMission(it.missionId)
                 _missionTaskCountMap.value.put(it.missionId, taskCountForMission)
+                val activityCountForMission =
+                    missionScreenUseCase.getMissionListFromDbUseCase.getTotalActivityCountForMission(
+                        it.missionId
+                    )
+                _missionActivityCountMap.value.put(it.missionId, activityCountForMission)
             }
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -94,8 +121,14 @@ class MissionViewModel @Inject constructor(
         )
     }
 
-    fun saveSettingScreenOpen(){
-        missionScreenUseCase.fetchMissionDataFromNetworkUseCase.saveSettingScreenOpen()
-
+    fun getPendingActivityCountForMissionLive(missionId: Int): LiveData<Int> {
+        return missionScreenUseCase.getMissionListFromDbUseCase.getPendingActivityCountForMissionLive(
+            missionId
+        )
     }
+
+    fun refreshData() {
+        refreshData(fetchDataUseCase)
+    }
+
 }

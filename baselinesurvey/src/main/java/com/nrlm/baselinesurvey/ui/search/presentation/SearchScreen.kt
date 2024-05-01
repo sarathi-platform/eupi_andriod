@@ -33,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -50,6 +49,7 @@ import com.nrlm.baselinesurvey.ARG_FROM_SECTION_SCREEN
 import com.nrlm.baselinesurvey.QUESTION_DATA_TAB
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.SECTION_INFORMATION_TAB
+import com.nrlm.baselinesurvey.navigation.home.navigateToSelectedSectionFromSearch
 import com.nrlm.baselinesurvey.ui.common_components.CustomOutlineTextField
 import com.nrlm.baselinesurvey.ui.common_components.SearchTab
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
@@ -60,13 +60,12 @@ import com.nrlm.baselinesurvey.ui.theme.borderGrey
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
+import com.nrlm.baselinesurvey.ui.theme.searchSectionTitleColor
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleWithNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.unselectedTabColor
 import com.nrlm.baselinesurvey.ui.theme.white
-import com.nrlm.baselinesurvey.utils.showCustomToast
-import com.nudge.core.ui.navigation.navigateToSelectedSectionFromSearch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -97,7 +96,12 @@ fun SearchScreens(
             CustomOutlineTextField(
                 value = searchText.value,//text showed on SearchBar
                 onValueChange = {
-                    viewModel.onSearchTextChange(it, viewModel.searchTabFilter.value)
+                    viewModel.onEvent(
+                        SearchEvent.PerformComplexSearch(
+                            it,
+                            viewModel.searchTabFilter.value
+                        )
+                    )
                 },
                 placeholder = {
                     Text(
@@ -146,9 +150,11 @@ fun SearchScreens(
                             modifier = Modifier
                                 .absolutePadding(top = 2.dp)
                                 .clickable {
-                                    viewModel.onSearchTextChange(
-                                        "",
-                                        viewModel.searchTabFilter.value
+                                    viewModel.onEvent(
+                                        SearchEvent.PerformComplexSearch(
+                                            "",
+                                            viewModel.searchTabFilter.value
+                                        )
                                     )
                                 }
                         )
@@ -182,13 +188,36 @@ fun SearchScreens(
                             onClick = {
                                 selectedTabIndex.intValue = tabIndex
 
-                                if (selectedTabIndex.intValue == tabs.indexOf(SECTION_INFORMATION_TAB))
-                                    viewModel.onSearchTextChange(searchText.value, SearchTab.SECTION_INFORMATION_TAB)
-                                if (selectedTabIndex.intValue == tabs.indexOf(QUESTION_DATA_TAB))
-                                    viewModel.onSearchTextChange(searchText.value, SearchTab.QUESTION_DATA_TAB)
-                                if (selectedTabIndex.intValue == tabs.indexOf(ALL_TAB))
-                                    viewModel.onSearchTextChange(searchText.value, SearchTab.ALL_TAB)
-                                viewModel.onEvent(SearchEvent.SearchTabChanged)
+                                if (selectedTabIndex.intValue == tabs.indexOf(
+                                        SECTION_INFORMATION_TAB
+                                    )
+                                ) {
+                                    viewModel.onEvent(
+                                        SearchEvent.PerformComplexSearch(
+                                            searchText.value,
+                                            SearchTab.SECTION_INFORMATION_TAB
+                                        )
+                                    )
+                                    viewModel.onEvent(SearchEvent.SearchTabChanged(SearchTab.SECTION_INFORMATION_TAB))
+                                }
+                                if (selectedTabIndex.intValue == tabs.indexOf(QUESTION_DATA_TAB)) {
+                                    viewModel.onEvent(SearchEvent.SearchTabChanged(SearchTab.QUESTION_DATA_TAB))
+                                    viewModel.onEvent(
+                                        SearchEvent.PerformComplexSearch(
+                                            searchText.value,
+                                            SearchTab.QUESTION_DATA_TAB
+                                        )
+                                    )
+                                }
+                                if (selectedTabIndex.intValue == tabs.indexOf(ALL_TAB)) {
+                                    viewModel.onEvent(
+                                        SearchEvent.PerformComplexSearch(
+                                            searchText.value,
+                                            SearchTab.ALL_TAB
+                                        )
+                                    )
+                                    viewModel.onEvent(SearchEvent.SearchTabChanged(SearchTab.ALL_TAB))
+                                }
                             },
                             text = {
                                 Text(
@@ -220,7 +249,7 @@ fun SearchScreens(
                         Text(text = buildAnnotatedString {
                             withStyle(
                                 style = SpanStyle(
-                                    Color(0xFF7D7572),
+                                    color = searchSectionTitleColor,
                                     fontFamily = NotoSans,
                                     fontWeight = FontWeight.Medium,
                                     fontSize = 14.sp

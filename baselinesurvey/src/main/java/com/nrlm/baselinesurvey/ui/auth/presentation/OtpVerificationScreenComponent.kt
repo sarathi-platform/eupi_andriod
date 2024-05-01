@@ -47,6 +47,8 @@ import com.nrlm.baselinesurvey.OTP_LENGTH
 import com.nrlm.baselinesurvey.OTP_RESEND_DURATION
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.SEC_30_STRING
+import com.nrlm.baselinesurvey.navigation.AuthScreen
+import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.auth.viewmodel.OtpVerificationViewModel
 import com.nrlm.baselinesurvey.ui.common_components.CustomSnackBarShow
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
@@ -57,11 +59,11 @@ import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.buttonBgColor
+import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.greenOnline
 import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
-import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -275,35 +277,29 @@ fun OtpVerificationScreenComponent(
 
     LaunchedEffect(key1 = viewModel.validateApiSuccess.value) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
-        /*if (viewModel.validateApiSuccess.value) {
-            if(navController.graph.route?.equals(Graph.BASE_HOME,true) == true){
+        if (viewModel.validateApiSuccess.value) {
+            if(navController.graph.route?.equals(Graph.HOME,true) == true){
                 //Commented for now
 
-                navController.navigate(route = Graph.BASE_HOME){
+                navController.navigate(route = Graph.HOME){
                     launchSingleTop=true
-                    popUpTo(BaseAuthScreen.START_SCREEN.route){
+                    popUpTo(AuthScreen.START_SCREEN.route){
                         inclusive=true
                     }
                 }
 
                 viewModel.validateApiSuccess.value
             }else{
-                navController.navigate(route = Graph.BASE_HOME){
+                navController.navigate(route = Graph.HOME){
                     launchSingleTop=true
-                    popUpTo(BaseAuthScreen.START_SCREEN.route){
+                    popUpTo(AuthScreen.START_SCREEN.route){
                         inclusive=true
                     }
                 }
                 viewModel.validateApiSuccess.value
             }
             BaselineCore.autoReadOtp.value = ""
-        } else {
-            *//*snackState.addMessage(
-                message = viewModel.message.value,
-                isSuccess = false,
-                isCustomIcon = false
-            )*//*
-        }*/
+        }
     }
 
     LaunchedEffect(key1 = viewModel.resendApiSuccess.value) {

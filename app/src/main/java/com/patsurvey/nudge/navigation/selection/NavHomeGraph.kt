@@ -41,6 +41,7 @@ import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormCScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.FormImageViewerScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.PdfViewer
 import com.patsurvey.nudge.activities.ui.home.HomeUserScreen
+import com.patsurvey.nudge.activities.ui.home.HomeVillageScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
@@ -139,7 +140,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         patNavGraph(navController = navController)
         settingNavGraph(navController = navController)
         voEndorsmentNavGraph(navController = navController)
-        logoutGraph(navController =navController)
+        logoutGraph(navController =navController,prefRepo)
         bpcDidiListNavGraph(navController = navController)
     }
 }
@@ -841,6 +842,13 @@ fun NavGraphBuilder.logoutGraph(navController: NavHostController){
     navigation(route = CoreGraph.LOGOUT_GRAPH,
         startDestination = LogoutScreens.LOG_LOGIN_SCREEN.route,
     ) {
+
+        composable(route = LogoutScreens.LOG_HOME_SCREEN.route) {
+            HomeVillageScreen(
+                navController,
+                prefRepo = prefRepo
+            )
+        }
         composable(route = LogoutScreens.LOG_LOGIN_SCREEN.route) {
             LoginScreen(
                 navController,

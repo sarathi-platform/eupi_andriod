@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
@@ -30,6 +32,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
+import com.nrlm.baselinesurvey.ui.theme.summaryCardViewBlue
 import com.nrlm.baselinesurvey.ui.theme.white
 
 @Composable
@@ -94,7 +97,7 @@ fun SummaryCardComponent(
                                 fontSize = 14.sp
                             )
                         ) {
-                            append("Items Added: ")
+                            append(stringResource(R.string.total_addelabel))
                         }
                         withStyle(
                             style = SpanStyle(
@@ -120,7 +123,9 @@ fun SummaryCardComponent(
                         .height(dimen_10_dp)
                 )
                 LinkTextButtonWithIcon(
-                    title = "View Summary"
+                    title = stringResource(R.string.view_summary_label),
+                    textColor = summaryCardViewBlue,
+                    iconTint = summaryCardViewBlue
                 ) {
                     onViewSummaryClicked(question?.questionId!!)
                 }

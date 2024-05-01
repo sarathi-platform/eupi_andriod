@@ -69,11 +69,9 @@ import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.dropDownBg
-import com.patsurvey.nudge.activities.ui.theme.greenLight
-import com.patsurvey.nudge.activities.ui.theme.greenOnline
+import com.patsurvey.nudge.activities.ui.theme.greyLightBgColor
 import com.patsurvey.nudge.activities.ui.theme.greyRadioButton
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
-import com.patsurvey.nudge.activities.ui.theme.stepBoxActiveColor
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
@@ -166,7 +164,9 @@ fun BpcVillageSelectionScreen(
     val pullRefreshState = rememberPullRefreshState(
         viewModel.showLoader.value,
         {
-            viewModel.refreshVillageData()
+            if ((context as MainActivity).isOnline.value) {
+                viewModel.refreshVillageData(context)
+            }
         })
 
     if (viewModel.showLoader.value) {
@@ -436,9 +436,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
             .fillMaxWidth()
             .border(
                 width = 1.dp,
-                color = if (bpcVillageStatus == BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal) greenOnline else {
-                    if (index == selectedIndex) blueDark else greyRadioButton
-                },
+                color = if (index == selectedIndex) blueDark else greyRadioButton,
                 shape = RoundedCornerShape(6.dp)
             )
             .clip(RoundedCornerShape(6.dp))
@@ -467,9 +465,9 @@ fun BpcVillageAndVoBoxForBottomSheet(
                 modifier = Modifier
                     .background(
                         when (bpcVillageStatus) {
-                            BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal, BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal -> white
-                            BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal, BPCVillageStatus.BPC_VERIFICATION_NOT_STARTED.ordinal, BPCVillageStatus.BPC_VERIFICATION_IN_PROGRESS.ordinal -> stepBoxActiveColor
-                            BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal -> greenLight
+                            BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal, BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal -> greyLightBgColor
+                            BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal, BPCVillageStatus.BPC_VERIFICATION_NOT_STARTED.ordinal, BPCVillageStatus.BPC_VERIFICATION_IN_PROGRESS.ordinal -> white
+                            BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal -> white
                             else -> white
                         }
                     )
@@ -491,7 +489,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                     Icon(
                         painter = painterResource(id = R.drawable.home_icn),
                         contentDescription = null,
-                        tint = if (bpcVillageStatus == BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal) greenOnline else textColorDark,
+                        tint = textColorDark,
                         modifier = Modifier.constrainAs(iconRef) {
                             top.linkTo(parent.top)
                             start.linkTo(parent.start)
@@ -499,7 +497,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                     )
                     Text(
                         text = " ${villageEntity.name}",
-                        color = if (bpcVillageStatus == BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal) greenOnline else textColorDark,
+                        color = textColorDark,
                         fontSize = 14.sp,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.SemiBold,
@@ -542,7 +540,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                     Text(
                         text = "VO: ",
                         modifier = Modifier,
-                        color = if (bpcVillageStatus == BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal) greenOnline else textColorDark,
+                        color = textColorDark,
                         fontSize = 14.sp,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.Medium
@@ -551,7 +549,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                         text = villageEntity.federationName,
                         modifier = Modifier
                             .fillMaxWidth(),
-                        color = if (bpcVillageStatus == BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal) greenOnline else textColorDark,
+                        color = textColorDark,
                         fontSize = 14.sp,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.Medium
@@ -563,9 +561,9 @@ fun BpcVillageAndVoBoxForBottomSheet(
                     Modifier
                         .background(
                             when (bpcVillageStatus) {
-                                BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal, BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal -> white
-                                BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal, BPCVillageStatus.BPC_VERIFICATION_NOT_STARTED.ordinal, BPCVillageStatus.BPC_VERIFICATION_IN_PROGRESS.ordinal -> stepBoxActiveColor
-                                BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal -> greenLight
+                                BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal, BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal -> greyLightBgColor
+                                BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal, BPCVillageStatus.BPC_VERIFICATION_NOT_STARTED.ordinal, BPCVillageStatus.BPC_VERIFICATION_IN_PROGRESS.ordinal -> white
+                                BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal -> white
                                 else -> white
                             },
                             shape = RoundedCornerShape(bottomStart = 6.dp, bottomEnd = 6.dp)
@@ -581,8 +579,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                         Icon(
                             painter = painterResource(id = R.drawable.icon_feather_check_circle_white),
                             contentDescription = null,
-                            tint = if (bpcVillageStatus == 5
-                            ) greenOnline else blueDark
+                            tint = blueDark
                         )
                     }
                     if (bpcVillageStatus < BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal) {
@@ -597,11 +594,12 @@ fun BpcVillageAndVoBoxForBottomSheet(
                         Text(
                             text = stringResource(
                                 if (villageEntity.stepId == 44) R.string.vo_endorsement_completed_village_banner_text else {
-                                    if (villageEntity.statusId == StepStatus.COMPLETED.ordinal) R.string.bpc_verification_completed_village_banner_text else R.string.vo_endorsement_completed_village_banner_text
+                                    if (villageEntity.statusId == StepStatus.COMPLETED.ordinal) R.string.bpc_verification_completed_village_banner_text
+                                    else if (villageEntity.statusId == StepStatus.INPROGRESS.ordinal) R.string.bpc_verification_in_progress_village_banner_text
+                                    else R.string.vo_endorsement_completed_village_banner_text
                                 }
                             ),
-                            color = if (bpcVillageStatus == BPCVillageStatus.BPC_VERIFICATION_COMPLETED.ordinal
-                            ) greenOnline else textColorDark,
+                            color = textColorDark,
                             style = smallerTextStyle,
                             modifier = Modifier.absolutePadding(bottom = 3.dp)
                         )

@@ -21,6 +21,7 @@ import com.nrlm.baselinesurvey.utils.getIndexForReferenceId
 import com.nrlm.baselinesurvey.utils.mapFormQuestionResponseToFromResponseObjectDto
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.tagList
+import com.nrlm.baselinesurvey.utils.toOptionItemStateList
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -38,6 +39,8 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
     val loaderState: State<LoaderState> get() = _loaderState
 
     val optionItemEntityList = mutableListOf<OptionItemEntity>()
+
+    private val optionItemEntityListInDefaultLanguage = mutableListOf<OptionItemEntity>()
 
     private var _formResponseObjectDtoList = mutableStateOf(mutableListOf<FormResponseObjectDto>())
     val formResponseObjectDtoList: State<List<FormResponseObjectDto>> get() = _formResponseObjectDtoList
@@ -64,10 +67,14 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
                             surveyId = event.surveyId,
                             sectionId = event.sectionId,
                             didiId = event.surveyeeId,
-                            questionId = item?.questionId ?: 0,
-                            questionTag = tagList.findIdFromTag(item?.questionTag ?: BLANK_STRING),
+                            questionId = event.questionId,
                             questionType = QuestionType.Form.name,
-                            saveAnswerEventOptionItemDtoList = formResponseObjectDtoList.value.convertFormResponseObjectToSaveAnswerEventOptionDto()
+                            questionTag = tagList.findIdFromTag(item?.questionTag ?: BLANK_STRING),
+                            questionDesc = event.questionDesc,
+                            saveAnswerEventOptionItemDtoList = formResponseObjectDtoList.value.filter { it.referenceId != event.referenceId }
+                                .convertFormResponseObjectToSaveAnswerEventOptionDto(
+                                    getOptionItemListWithConditionals()
+                                )
                         )
                     )
                 }
@@ -83,6 +90,8 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
                             questionId = event.questionId,
                             questionType = event.questionType,
                             questionTag = event.questionTag,
+                            questionDesc = event.questionDesc,
+                            referenceOptionList = optionItemEntityListInDefaultLanguage.toOptionItemStateList(),
                             saveAnswerEventOptionItemDtoList = event.saveAnswerEventOptionItemDtoList
                         )
                     formResponseSummaryScreenUseCase.eventsWriterUseCase.invoke(
@@ -96,7 +105,7 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
 
     fun init(surveyId: Int, sectionId: Int, questionId: Int, surveyeeId: Int) {
         CoroutineScope(Dispatchers.IO).launch {
-            val formResponseEntityList =
+            var formResponseEntityList =
                 formResponseSummaryScreenUseCase.getFormQuestionResponseUseCase.getFormResponsesForQuestion(
                     surveyId = surveyId,
                     sectionId = sectionId,
@@ -109,6 +118,17 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
                     sectionId,
                     questionId
                 )
+
+            val mOptionItemEntityListInDefaultLanguage =
+                formResponseSummaryScreenUseCase.getFormQuestionResponseUseCase.invoke(
+                    surveyId,
+                    sectionId,
+                    questionId,
+                    true
+                )
+
+            optionItemEntityListInDefaultLanguage.clear()
+            optionItemEntityListInDefaultLanguage.addAll(mOptionItemEntityListInDefaultLanguage)
 
             optionItemEntityList.clear()
             optionItemEntityList.addAll(mOptionItemEntityList)
@@ -126,6 +146,14 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
                     sectionId = sectionId,
                     questionId = questionId
                 )
+
+            if (questionEntity?.type == QuestionType.FormWithNone.name) {
+                val formWithNoneOption =
+                    optionItemEntityList.find { it.optionType == QuestionType.FormWithNone.name }
+                formResponseEntityList =
+                    formResponseEntityList.filter { it.optionId != formWithNoneOption?.optionId }
+            }
+
             _formResponseObjectDtoList.value.clear()
             _formResponseObjectDtoList.value.addAll(formResponseEntityList.mapFormQuestionResponseToFromResponseObjectDto(
                 mOptionItemEntityList,
@@ -160,8 +188,32 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
                                 optionItemEntity.surveyId,
                                 optionItemEntity.languageId!!
                             )
-                            if (option != null)
+                            if (option != null) {
                                 optionItemList.add(option)
+                                option.conditions?.forEach { subConditionsDto ->
+                                    if (subConditionsDto?.resultType?.equals(
+                                            ResultType.Questions.name,
+                                            true
+                                        ) == true
+                                    ) {
+                                        subConditionsDto?.resultList?.forEach { subQuestionItem ->
+                                            subQuestionItem.options?.forEach { subSubOption ->
+                                                val subOptionEntity =
+                                                    subSubOption?.convertToOptionItemEntity(
+                                                        optionItemEntity.questionId!!,
+                                                        optionItemEntity.sectionId,
+                                                        optionItemEntity.surveyId,
+                                                        optionItemEntity.languageId!!
+                                                    )
+                                                if (subOptionEntity != null) {
+                                                    optionItemList.add(subOptionEntity)
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                }
+                            }
                         }
                     }
                 }

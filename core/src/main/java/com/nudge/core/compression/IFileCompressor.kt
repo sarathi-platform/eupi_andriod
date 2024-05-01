@@ -7,11 +7,17 @@ import com.nudge.core.SARATHI_DIRECTORY_NAME
 
 interface IFileCompressor {
 
-    suspend fun compressBackupFiles(context: Context, mobileNo: String): Uri?
+    suspend fun compressBackupFiles(
+        context: Context,
+        extraUris: List<Pair<String, Uri?>>,
+        mobileNo: String,
+        userName: String
+    ): Uri?
     suspend fun compressBackupImages(
         context: Context,
         mobileNo: String,
-        filePath: String = Environment.DIRECTORY_PICTURES + SARATHI_DIRECTORY_NAME + "/" + mobileNo
+        filePath: String = Environment.DIRECTORY_PICTURES + SARATHI_DIRECTORY_NAME + "/" + mobileNo,
+        userName: String
     ): Uri?
 
     fun getCompressionType(): String

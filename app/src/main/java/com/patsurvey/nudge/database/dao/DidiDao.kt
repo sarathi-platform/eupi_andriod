@@ -20,8 +20,17 @@ interface DidiDao {
     @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId and activeStatus = 1 ORDER BY localCreatedDate DESC")
     fun getAllDidisForVillage(villageId: Int): List<DidiEntity>
 
+    @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId and activeStatus = 1 ORDER BY  cohortId ASC")
+    fun getAllDidisForVillageTolaIdAscending(villageId: Int): List<DidiEntity>
+
+    @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId and activeStatus = 1 order by localCreatedDate asc")
+    fun getAllDidisForVillageAscending(villageId: Int): List<DidiEntity>
+
     @Query("Select * FROM $DIDI_TABLE where id = :id and activeStatus = 1")
     fun getDidi(id: Int): DidiEntity
+
+    @Query("Select count(*) FROM $DIDI_TABLE where id = :id and activeStatus = 1")
+    fun getDidiCount(id: Int): Int
 
     @Query("Select COUNT(*) FROM $DIDI_TABLE where name = :name AND address=:address AND guardianName=:guardianName AND cohortId=:tolaId AND villageId= :villageId and activeStatus = 1")
     fun getDidiExist(name:String,address:String,guardianName:String,tolaId:Int,villageId:Int):Int
@@ -62,6 +71,12 @@ interface DidiDao {
 
     @Query("SELECT COUNT(id) from $DIDI_TABLE where wealth_ranking = :unRankedStatus and villageId = :villageId and activeStatus = 1")
     fun getUnrankedDidiCount(villageId: Int, unRankedStatus: String = WealthRank.NOT_RANKED.rank): Int
+
+    @Query("SELECT * from $DIDI_TABLE where wealth_ranking != :unRankedStatus and villageId = :villageId and activeStatus = 1")
+    fun getRankedDidi(
+        villageId: Int,
+        unRankedStatus: String = WealthRank.NOT_RANKED.rank
+    ): List<DidiEntity>
 
     @Query("SELECT * FROM $DIDI_TABLE where wealth_ranking = :rank and villageId = :villageId and activeStatus = 1")
     fun getAllPoorDidisForVillage(villageId: Int, rank: String = WealthRank.POOR.rank): List<DidiEntity>
@@ -204,6 +219,9 @@ interface DidiDao {
     @Query("SELECT COUNT(*) from $DIDI_TABLE where patSurveyStatus>2 AND villageId =:villageId AND activeStatus = 1")
     fun fetchNotAvailableDidis(villageId: Int): Int
 
+    @Query("SELECT * from $DIDI_TABLE where patSurveyStatus>0 AND villageId =:villageId AND activeStatus = 1")
+    fun fetchDidisListForPatEvent(villageId: Int): List<DidiEntity>
+
     @Query("UPDATE $DIDI_TABLE set needsToPostVo =:needsToPostVo WHERE id=:didiId ")
     fun updateNeedToPostVO(needsToPostVo: Boolean,didiId: Int)
 
@@ -278,6 +296,12 @@ interface DidiDao {
     @Query("SELECT * from $DIDI_TABLE where needsToPostImage = :needsToPostImage")
     fun fetchAllDidiNeedsToPostImage(needsToPostImage: Boolean) : List<DidiEntity>
 
+    @Query("SELECT * from $DIDI_TABLE where needsToPostImage = :needsToPostImage and villageId = :villageId")
+    fun fetchAllDidiNeedsToPostImageVillage(
+        needsToPostImage: Boolean,
+        villageId: Int
+    ): List<DidiEntity>
+
     @Query("UPDATE $DIDI_TABLE SET rankingEdit = :rankingEdit where villageId = :villageId")
     fun updateRankEditFlag(villageId: Int, rankingEdit: Boolean)
 
@@ -307,9 +331,10 @@ interface DidiDao {
 
     @Transaction
     fun updateDidiAfterRefresh(forceRefresh: Boolean = false, didiId: Int, didi: DidiEntity) {
-        if (forceRefresh)
-            deleteDidi(didiId)
-        insertDidi(didi)
+        if (!forceRefresh || getDidiCount(didiId) == 0) {
+            insertDidi(didi)
+        }
+
     }
 
 }

@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.auth.repository
 
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
+import com.nrlm.baselinesurvey.PREF_USER_TYPE
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.model.request.LoginRequest
 import com.nrlm.baselinesurvey.model.request.OtpRequest
@@ -29,6 +30,10 @@ class OtpVerificationRepositoryImpl @Inject constructor(
 
     override fun saveAccessToken(token: String) {
         prefRepo.saveAccessToken(token)
+    }
+
+    override fun saveUserType(userType: String) {
+        prefRepo.savePref(PREF_USER_TYPE, userType)
     }
 
 }

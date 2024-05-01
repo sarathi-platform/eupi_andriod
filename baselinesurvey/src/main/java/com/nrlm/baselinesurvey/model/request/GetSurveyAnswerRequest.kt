@@ -5,5 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class GetSurveyAnswerRequest(
     @SerializedName("surveyId") val surveyId: Int,
     @Transient
-    @SerializedName("userId") val userId: String
+    @SerializedName("mobileNumber") val mobileNumber: String,
+    @SerializedName("userId") val userId: Int
+
 )

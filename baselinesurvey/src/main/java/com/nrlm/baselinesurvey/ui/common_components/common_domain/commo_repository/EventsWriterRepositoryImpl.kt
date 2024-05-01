@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository
 
+import android.net.Uri
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
@@ -40,8 +41,9 @@ class EventsWriterRepositoryImpl @Inject constructor(
     private val missionEntityDao: MissionEntityDao,
     private val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
     private val eventsDao: EventsDao,
-    private val eventDependencyDao: EventDependencyDao
-) : EventsWriterRepository {
+    private val eventDependencyDao: EventDependencyDao,
+
+    ) : EventsWriterRepository {
 
     override suspend fun <T> createEvent(
         eventItem: T,
@@ -57,6 +59,7 @@ class EventsWriterRepositoryImpl @Inject constructor(
 
                 val requestPayload = (eventItem as SectionStatusUpdateEventDto)
                 val survey = surveyEntityDao.getSurveyDetailForLanguage(
+                    userId = getBaseLineUserId(),
                     requestPayload.surveyId,
                     prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
                 )
@@ -97,6 +100,7 @@ class EventsWriterRepositoryImpl @Inject constructor(
                     is SaveAnswerEventDto -> {
                         val requestPayload = (eventItem as SaveAnswerEventDto)
                         val survey = surveyEntityDao.getSurveyDetailForLanguage(
+                            userId = getBaseLineUserId(),
                             requestPayload.surveyId,
                             prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
                         )
@@ -136,6 +140,7 @@ class EventsWriterRepositoryImpl @Inject constructor(
                     is SaveAnswerEventForFormQuestionDto -> {
                         val requestPayload = (eventItem as SaveAnswerEventForFormQuestionDto)
                         val survey = surveyEntityDao.getSurveyDetailForLanguage(
+                            userId = getBaseLineUserId(),
                             requestPayload.surveyId,
                             prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
                         )
@@ -182,8 +187,11 @@ class EventsWriterRepositoryImpl @Inject constructor(
 
             EventName.UPDATE_TASK_STATUS_EVENT -> {
                 val requestPayload = (eventItem as UpdateTaskStatusEventDto)
-
-                val mission = missionEntityDao.getMission(requestPayload.missionId)
+                val mission =
+                    missionEntityDao.getMission(
+                        userId = getBaseLineUserId(),
+                        requestPayload.missionId
+                    )
 
                 var event = Events(
                     name = eventName.name,
@@ -219,8 +227,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
 
             EventName.UPDATE_ACTIVITY_STATUS_EVENT -> {
                 val requestPayload = (eventItem as UpdateActivityStatusEventDto)
-
-                val mission = missionEntityDao.getMission(requestPayload.missionId)
+                val mission =
+                    missionEntityDao.getMission(getBaseLineUserId(), requestPayload.missionId)
 
                 var event = Events(
                     name = eventName.name,
@@ -256,8 +264,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
 
             EventName.UPDATE_MISSION_STATUS_EVENT -> {
                 val requestPayload = (eventItem as UpdateMissionStatusEventDto)
-
-                val mission = missionEntityDao.getMission(requestPayload.missionId)
+                val mission =
+                    missionEntityDao.getMission(getBaseLineUserId(), requestPayload.missionId)
 
                 var event = Events(
                     name = eventName.name,
@@ -348,10 +356,35 @@ class EventsWriterRepositoryImpl @Inject constructor(
         didiId: Int
     ): Boolean {
         return didiSectionProgressEntityDao.getSectionProgressForDidi(
+            userId = getBaseLineUserId(),
             surveyId,
             sectionId,
             didiId
         ) == null
+    }
+
+    override suspend fun saveImageEventToMultipleSources(event: Events, uri: Uri) {
+
+        val eventFormatter: IEventFormatter = getEventFormatter()
+        try {
+            eventFormatter.saveAndFormatEvent(
+                event = event,
+                dependencyEntity = listOf(),
+                listOf(
+                    EventWriterName.FILE_EVENT_WRITER,
+                    EventWriterName.IMAGE_EVENT_WRITER,
+                    EventWriterName.DB_EVENT_WRITER,
+                    EventWriterName.LOG_EVENT_WRITER
+                ), uri
+            )
+        } catch (exception: Exception) {
+            BaselineLogger.e("ImageEventWriter", exception.message ?: "")
+        }
+
+    }
+
+    override fun getBaseLineUserId(): String {
+        return prefRepo.getUniqueUserIdentifier()
     }
 
 }

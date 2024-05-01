@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material3.LinearProgressIndicator
@@ -24,39 +25,44 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.DIDI_LIST
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
+import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.MoveSurveyeesUpdateBannerComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
+import com.nrlm.baselinesurvey.ui.section_screen.presentation.SectionScreenEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.SurveyeeScreenViewModel
-import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_40_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
-import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.progressIndicatorColor
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -74,6 +80,7 @@ fun AllSurveyeeListTab(
     activityDate: String,
     activityId: Int,
 ) {
+    val context = LocalContext.current
 
     val surveyeeList = viewModel.filteredSurveyeeListState.value
 
@@ -101,23 +108,33 @@ fun AllSurveyeeListTab(
                 .then(modifier)
         ) {
 
-            LoaderComponent(visible = loaderState.isLoaderVisible)
-
             if (!loaderState.isLoaderVisible) {
-                if (surveyeeList.isEmpty()) {
-                    Box(
+                if (viewModel.surveyeeListState.value.isEmpty()) {
+                    Column(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = 16.dp),
-                        contentAlignment = Alignment.Center
+                        verticalArrangement = Arrangement.Center,
                     ) {
                         Text(
                             if (!activityName.equals("Conduct Hamlet Survey")) stringResource(R.string.didi_list_empty_state) else stringResource(
                                 R.string.empty_task_message
                             ),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
                             style = defaultTextStyle,
                             color = textColorDark
                         )
+                        Spacer(modifier = Modifier.padding(vertical = 10.dp))
+                        ButtonPositive(
+                            buttonTitle = stringResource(id = R.string.retry),
+                            isActive = true,
+                            isArrowRequired = false,
+                            onClick = {
+                                viewModel.refreshData()
+                            })
+
+
                     }
                 } else {
                     LazyColumn(
@@ -131,22 +148,15 @@ fun AllSurveyeeListTab(
 
                         item {
                             Column(modifier = Modifier.fillMaxSize()) {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 10.dp),
-                                    text = activityName,
-                                    style = largeTextStyle,
-                                    color = blueDark
-                                )
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 10.dp, bottom = 10.dp),
-                                    text = stringResource(id = R.string.due_by_x, activityDate),
-                                    style = newMediumTextStyle,
-                                    color = black100Percent
-                                )
+                                //TODO in future in uncomment whenever get correct data from backend
+//                                Text(
+//                                    modifier = Modifier
+//                                        .fillMaxWidth()
+//                                        .padding(start = 10.dp, bottom = 10.dp),
+//                                    text = stringResource(id = R.string.due_by_x, activityDate),
+//                                    style = newMediumTextStyle,
+//                                    color = black100Percent
+//                                )
                             }
                         }
                         item {
@@ -184,10 +194,12 @@ fun AllSurveyeeListTab(
                         }
 
                         item {
+                            val pendingTasks = viewModel.getPendingDidiCountLive(activityId)
+                                .observeAsState().value ?: 0
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 linearProgress.value =
-                                    (surveyeeList.filter { it.surveyeeDetails.surveyStatus == SurveyState.COMPLETED.ordinal }.size.toFloat()
-                                            /*.coerceIn(0.0F, 1.0F)*/ / if (surveyeeList.isNotEmpty()) surveyeeList.size.toFloat() else 0.0F
+                                    ((if (surveyeeList.isNotEmpty()) (surveyeeList.size - pendingTasks).toFloat() else 0.0F)
+                                            /*.coerceIn(0.0F, 1.0F)*/ / (if (surveyeeList.isNotEmpty()) surveyeeList.size.toFloat() else 0.0F)
                                             /*.coerceIn(0.0F, 1.0F)*/)
                                 LinearProgressIndicator(
                                     modifier = Modifier
@@ -201,7 +213,7 @@ fun AllSurveyeeListTab(
                                 )
                                 Spacer(modifier = Modifier.width(dimen_8_dp))
                                 Text(
-                                    text = "${surveyeeList.filter { it.surveyeeDetails.surveyStatus == SurveyState.COMPLETED.ordinal }.size}/${surveyeeList.size}",
+                                    text = "${numberInEnglishFormat(if (surveyeeList.isNotEmpty()) (surveyeeList.size - pendingTasks) else 0)}/${surveyeeList.size}",
                                     color = textColorDark,
                                     style = smallTextStyle
                                 )
@@ -238,16 +250,40 @@ fun AllSurveyeeListTab(
                                         )
                                     },
                                     //Todo add proper tex
-                                    primaryButtonText = "Start " + activityName.split(" ")[1],
+                                    primaryButtonText = stringResource(R.string.start) + activityName.split(
+                                        " "
+                                    )[1],
                                     buttonClicked = { buttonName, surveyeeId ->
-                                        BaselineCore.setCurrentActivityName(activityName)
-                                        handleButtonClick(
-                                            buttonName,
-                                            surveyeeId,
-                                            activityId,
-                                            navController,
-                                            activityName
-                                        )
+                                        if (!buttonName.equals(ButtonName.NOT_AVAILABLE)) {
+                                            BaselineCore.setCurrentActivityName(activityName)
+                                            handleButtonClick(
+                                                buttonName,
+                                                surveyeeId,
+                                                activityId,
+                                                navController,
+                                                activityName
+                                            )
+                                        } else {
+                                            viewModel.onEvent(
+                                                SurveyeeListEvents.UpdateSurveyeeStatusForUi(
+                                                    surveyeeId = surveyeeId,
+                                                    isFilterApplied = viewModel.isFilterAppliedState.value.isFilterApplied,
+                                                    state = SurveyState.NOT_AVAILABLE
+                                                )
+                                            )
+                                            viewModel.onEvent(
+                                                SectionScreenEvent.UpdateSubjectStatus(
+                                                    surveyeeId,
+                                                    SurveyState.NOT_AVAILABLE
+                                                )
+                                            )
+                                            viewModel.onEvent(
+                                                SectionScreenEvent.UpdateTaskStatus(
+                                                    surveyeeId,
+                                                    SectionStatus.NOT_AVAILABLE
+                                                )
+                                            )
+                                        }
                                     }
                                 )
                             }
@@ -261,12 +297,37 @@ fun AllSurveyeeListTab(
                                     fromScreen = ALL_TAB,
                                     primaryButtonText = "Start " + activityName.split(" ")[1],
                                     buttonClicked = { buttonName, surveyeeId ->
-                                        handleButtonClick(
-                                            buttonName,
-                                            surveyeeId,
-                                            activityId,
-                                            navController
-                                        )
+                                        if (!buttonName.equals(ButtonName.NOT_AVAILABLE)) {
+                                            BaselineCore.setCurrentActivityName(activityName)
+                                            handleButtonClick(
+                                                buttonName,
+                                                surveyeeId,
+                                                activityId,
+                                                navController,
+                                                activityName
+                                            )
+                                        } else {
+                                            viewModel.onEvent(
+                                                SurveyeeListEvents.UpdateSurveyeeStatusForUi(
+                                                    surveyeeId = surveyeeId,
+                                                    key = key,
+                                                    isFilterApplied = viewModel.isFilterAppliedState.value.isFilterApplied,
+                                                    state = SurveyState.NOT_AVAILABLE
+                                                )
+                                            )
+                                            viewModel.onEvent(
+                                                SectionScreenEvent.UpdateSubjectStatus(
+                                                    surveyeeId,
+                                                    SurveyState.NOT_AVAILABLE
+                                                )
+                                            )
+                                            viewModel.onEvent(
+                                                SectionScreenEvent.UpdateTaskStatus(
+                                                    surveyeeId,
+                                                    SectionStatus.NOT_AVAILABLE
+                                                )
+                                            )
+                                        }
                                     },
                                     checkBoxChecked = { surveyeeEntity, isChecked ->
                                         onActionEvent(
@@ -310,11 +371,13 @@ fun AllSurveyeeListTab(
             }
         }
 
-//        PullRefreshIndicator(
-//            refreshing = loaderState.isLoaderVisible,
-//            state = pullRefreshState,
-//            modifier = Modifier.align(Alignment.TopCenter),
-//            contentColor = blueDark,
-//        )
+        PullRefreshIndicator(
+            refreshing = loaderState.isLoaderVisible,
+            state = pullRefreshState,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = dimen_40_dp),
+            contentColor = blueDark,
+        )
     }
 }

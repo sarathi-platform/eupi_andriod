@@ -186,6 +186,7 @@ const val NETWORK_ERROR_MSG = "Make sure that Wi-Fi or mobile data is turned on,
 val COMMON_ERROR_MSG = MyApplication.applicationContext().getString(R.string.common_error_message_text)
 const val COMMON_ERROR_TITLE = "Something Went Wrong"
 const val TIMEOUT_ERROR_MSG = "Your request timed out. Please try again in some time."
+const val JSON_PARSING_EXCEPTION = "Unable to parse JSON"
 val UNAUTHORISED_MESSAGE = "401 Unauthorized"
 
 const val LAST_UPDATE_TIME = "last_updated_time"

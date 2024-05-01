@@ -11,7 +11,35 @@ import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.FileProvider
 import androidx.core.text.isDigitsOnly
 import com.google.gson.Gson
@@ -22,6 +50,7 @@ import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_NAME
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ZERO_RESULT
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
@@ -33,23 +62,31 @@ import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.model.FormResponseObjectDto
+import com.nrlm.baselinesurvey.model.datamodel.ComplexSearchState
 import com.nrlm.baselinesurvey.model.datamodel.ConditionsDto
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.QuestionList
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.model.datamodel.TagMappingDto
+import com.nrlm.baselinesurvey.model.datamodel.ValuesDto
 import com.nrlm.baselinesurvey.ui.Constants.ItemType
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.ui.common_components.ButtonNegative
+import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
+import com.nrlm.baselinesurvey.ui.common_components.MainTitle
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
-import com.nrlm.baselinesurvey.ui.search.viewmodel.ComplexSearchState
+import com.nrlm.baselinesurvey.ui.theme.NotoSans
+import com.nrlm.baselinesurvey.ui.theme.black100Percent
+import com.nrlm.baselinesurvey.ui.theme.greyBorder
 import com.nudge.core.enums.EventName
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.UUID
 
 fun uriFromFile(context: Context, file: File): Uri {
     try {
@@ -134,6 +171,10 @@ fun setKeyboardToPan(context: MainActivity) {
     context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
 }
 
+fun getUniqueIdForEntity(): String {
+    return UUID.randomUUID().toString().replace("-", "") + "|" + System.currentTimeMillis()
+}
+
 fun setKeyboardToReadjust(context: MainActivity) {
     context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 }
@@ -165,388 +206,6 @@ fun List<DidiSectionProgressEntity>.findItemBySectionId(sectionId:Int): DidiSect
 fun List<OptionsItem>.findItemBySectionId(optionId:Int): OptionsItem {
     return this[this.map { it.optionId }.indexOf(optionId)]
 }
-
-/*val sampleSetcion1 = Sections(
-    sectionId = 1,
-    sectionName = "Financial Inclusion",
-    sectionOrder = 1,
-    sectionIcon = "sample_step_icon_1",
-//    sectionIcon = R.drawable.sample_step_icon_1,
-    sectionDetails = "Please check if the family is getting ration through the public distribution system (PDS) of the government or not?",
-    questionList = listOf(
-        QuestionList(
-            questionId = 1,
-            questionDisplay = "Did everyone in your family have at least 2 meals per day in the last 1 month?",
-            questionSummary = "Please check if the family is getting ration through the public distribution system (PDS) of the government or not? \n\nPlease check the granary/ where they store their grain and also check with neighbors also to understand the food security of the family",
-            order = 1,
-            type = "RadioButton",
-            gotoQuestionId = 2,
-            options = listOf(
-                OptionsItem(
-                    optionId = 1,
-                    display = "YES",
-                    weight = 1,
-                    summary = "YES",
-                    optionValue = 1,
-                    // optionImage = R.drawable.icon_check,
-                    optionImage = "",
-                    optionType = ""
-                ),
-                OptionsItem(
-                    optionId = 2,
-                    display = "NO",
-                    weight = 0,
-                    summary = "NO",
-                    optionValue = 0,
-                    //  optionImage = R.drawable.icon_close,
-                    optionImage = "",
-                    optionType = ""
-                )
-            ),
-            *//*questionImageUrl = "Section1_GovtService.webp",*//*
-        ),
-        QuestionList(
-            questionId = 2,
-            questionDisplay = "Does the family have a working <b>2-wheeler</b>?",
-            questionSummary = "Please check if the family is getting ration through the public distribution system (PDS) of the government or not?",
-            order =
-            2,
-            type =
-            "RadioButton",
-            gotoQuestionId =
-            3,
-            options = listOf(
-                OptionsItem(
-                    optionId =
-                    1,
-                    display =
-                    "YES",
-                    weight =
-                    1,
-                    summary =
-                    "YES",
-                    optionValue =
-                    1,
-//                    optionImage =
-//                    R.drawable.icon_check,
-                    optionImage = "",
-                    optionType =
-                    ""
-                ),
-                OptionsItem(
-                    optionId =
-                    2,
-                    display =
-                    "NO",
-                    weight =
-                    0,
-                    summary =
-                    "NO",
-                    optionValue =
-                    0,
-//                    optionImage =
-//                    R.drawable.icon_close,
-                    optionImage = "",
-                    optionType =
-                    ""
-                )
-            ),
-            *//*questionImageUrl =
-            "Section1_2wheeler.webp"*//*
-        ),
-        QuestionList(
-            questionId = 3,
-            questionDisplay = "Does the family have a working <b>Colour Television or Fridge</b>?",
-            questionSummary = "Does the family have a working <b>Colour Television or Fridge</b>?",
-            order = 3,
-            type = "RadioButton",
-            gotoQuestionId = 4,
-            options = listOf(
-                OptionsItem(
-                    optionId = 1,
-                    display = "YES",
-                    weight = 1,
-                    summary = "YES",
-                    optionValue = 1,
-                    //  optionImage = R.drawable.icon_check,
-//                    optionImage =R.drawable.icon_check,
-                    optionImage = "",
-                    optionType = ""
-                ),
-                OptionsItem(
-                    optionId = 2,
-                    display = "NO",
-                    weight = 0,
-                    summary = "NO",
-                    optionValue = 0,
-                    // optionImage = R.drawable.icon_close,
-//                    optionImage = R.drawable.icon_close,
-                    optionImage = "",
-                    optionType = ""
-                )
-            )
-            *//*questionImageUrl = "Section1_ColourTV.webp"*//*
-            )
-
-    ),
-    contentList = listOf(ContentList(BLANK_STRING, BLANK_STRING))
-)
-val sampleSection2 = Sections(
-    sectionId = 2,
-    sectionName = "Food Security",
-    sectionOrder = 2,
-    sectionDetails = "Please check the granary/ where they store their grain and also check with neighbors also to understand the food security of the family",
-    sectionIcon = "sample_step_icon_3",
-//    sectionIcon = R.drawable.sample_step_icon_3,
-    questionList = listOf(
-        QuestionList(
-            questionId = 18,
-            questionDisplay = "Is this a <b>woman headed</b> family?",
-            questionSummary = "Is this a <b>woman headed</b> family?",
-            order = 18,
-            type = "RadioButton",
-            gotoQuestionId = 19,
-            options = listOf(
-                OptionsItem(
-                    optionId = 6,
-                    display = "NO",
-                    weight = 0,
-                    summary = "NO",
-                    optionValue = 0,
-//                    optionImage = R.drawable.icon_close,
-                    optionImage = "",
-                    optionType = ""
-                ),
-                OptionsItem(
-                    optionId = 5,
-                    display = "YES",
-                    weight = 2,
-                    summary = "YES",
-                    optionValue = 1,
-//                    optionImage = R.drawable.icon_check,
-                    optionImage = "",
-                    optionType = ""
-                )
-            )*//*,
-            questionImageUrl = "Section1and2_AdultFemale_WomanHeaded.webp",*//*
-        ),
-        QuestionList(
-            questionId = 21,
-            questionDisplay = "What is the <b>educational status </b> of adult members in the family?",
-            questionSummary = "What is the <b>educational status </b> of adult members in the family?",
-            order = 21,
-            type =
-            "List",
-            gotoQuestionId =
-            22,
-            options = listOf(
-                OptionsItem(
-                    optionId =
-                    30,
-                    display =
-                    "Atleast <b>1 adult </b> literate member who has <b> Passed Class 10</b>",
-                    weight =
-                    0,
-                    summary =
-                    "Atleast 1 adult > Class 10",
-                    optionValue =
-                    1,
-                    optionImage =
-                    "",
-                    optionType =
-                    ""
-                ),
-                OptionsItem(
-                    optionId =
-                    31,
-                    display =
-                    "Atleast <b>1 adult</b> literate member who can read, write Bangla/ Kok Borok but has <b>not Passed Class 10</b>",
-                    weight =
-                    1,
-                    summary =
-                    "Atleast 1 literate adult < Class 10",
-                    optionValue =
-                    2,
-                    optionImage =
-                    "",
-                    optionType =
-                    ""
-                ),
-                OptionsItem(
-                    optionId =
-                    32,
-                    display =
-                    "\"<b>No adult</b> in the family is literate (cannot read or write Bangla / Kok-Borok)",
-                    weight =
-                    2,
-                    summary =
-                    "No literate adult",
-                    optionValue =
-                    3,
-                    optionImage =
-                    "",
-                    optionType =
-                    ""
-                )
-            )*//*,
-            questionImageUrl =
-            "Section1_2wheeler.webp",*//*
-        ),
-        QuestionList(
-            questionId = 12,
-            questionDisplay = "How much is your current savings? (Select all that apply)",
-            questionSummary = "How much is your current savings? (Select all that apply)",
-            order = 12,
-            type = "Grid",
-            gotoQuestionId = 13,
-            options = listOf(
-                OptionsItem(
-                    optionId = 1,
-                    display = "Bank",
-                    weight = 1,
-                    summary = "Bank",
-                    optionValue = 0,
-                    optionImage = "",
-                    optionType = ""
-                ),
-                OptionsItem(
-                    optionId = 2,
-                    display = "Cash at home",
-                    weight = 2,
-                    summary = "Cash at home",
-                    optionValue = 1,
-                    optionImage = "",
-                    optionType = ""
-                ),
-                OptionsItem(
-                    optionId = 3,
-                    display = "General",
-                    weight = 3,
-                    summary = "General",
-                    optionValue = 3,
-                    optionImage = "",
-                    optionType = ""
-                ),
-                OptionsItem(
-                    optionId = 4,
-                    display = "Other",
-                    weight = 4,
-                    summary = "Other",
-                    optionValue = 4,
-                    optionImage = "",
-                    optionType = ""
-                )
-            )*//*,
-            questionImageUrl = "Section1_ColourTV.webp",*//*
-        )
-    ),
-    contentList = listOf(ContentList(BLANK_STRING, BLANK_STRING))
-)*/
-/*val sampleSetcion3 = Sections(
-    sectionId = 3,
-    sectionOrder = 1,
-//    sectionIcon = "sample_step_icon_2",
-    sectionIcon = R.drawable.sample_step_icon_2,
-    questionList = listOf(
-        QuestionEntity(
-            id = 1,
-            questionId = 1,
-            questionDisplay = "Is anyone in the household engaged in <b>Government service</b>?",
-            questionSummary = "Is anyone in the household engaged in <b>Government service</b>?",
-            order = 1,
-            type = "RadioButton",
-            gotoQuestionId = 2,
-            options = listOf(
-                OptionsItem(
-                    optionId = 1,
-                    display = "YES",
-                    weight = 1,
-                    summary = "YES",
-                    optionValue = 1,
-                    optionImage = R.drawable.icon_check,
-                    optionType = ""
-                ),
-                OptionsItem(
-                    optionId = 2,
-                    display = "NO",
-                    weight = 0,
-                    summary = "NO",
-                    optionValue = 0,
-                    optionImage = R.drawable.icon_close,
-                    optionType = ""
-                )
-            ),
-            questionImageUrl = "Section1_GovtService.webp",
-        ),
-        QuestionEntity(
-            id = 2,
-            questionId = 2,
-            questionDisplay = "Does the family have a working <b>2-wheeler</b>?",
-            questionSummary = "Does the family have a working <b>2-wheeler</b>?",
-            order =
-            2,
-            type =
-            "RadioButton",
-            gotoQuestionId =
-            3,
-            options = listOf(
-                OptionsItem(
-                    optionId = 1,
-                    display = "YES",
-                    weight = 1,
-                    summary = "YES",
-                    optionValue = 1,
-                    optionImage = R.drawable.icon_check,
-                    optionType = ""
-                ),
-                OptionsItem(
-                    optionId = 2,
-                    display = "NO",
-                    weight = 0,
-                    summary = "NO",
-                    optionValue = 0,
-                    optionImage = R.drawable.icon_close,
-                    optionType = ""
-                )
-            ),
-            questionImageUrl =
-            "Section1_2wheeler.webp",
-        ),
-        QuestionEntity(
-            id = 3,
-            questionId = 3,
-            questionDisplay = "Does the family have a working <b>Colour Television or Fridge</b>?",
-            questionSummary = "Does the family have a working <b>Colour Television or Fridge</b>?",
-            order = 3,
-            type = "RadioButton",
-            gotoQuestionId = 4,
-            options = listOf(
-                OptionsItem(
-                    optionId = 1,
-                    display = "YES",
-                    weight = 1,
-                    summary = "YES",
-                    optionValue = 1,
-                    optionImage = R.drawable.icon_check,
-                    optionType = ""
-                ),
-                OptionsItem(
-                    optionId = 2,
-                    display = "NO",
-                    weight = 0,
-                    summary = "NO",
-                    optionValue = 0,
-                    optionImage = R.drawable.icon_close,
-                    optionType = ""
-                )
-            ),
-            questionImageUrl = "Section1_ColourTV.webp",
-
-            )
-    )
-)*/
-//val firstSampleList = listOf<Sections>(sampleSetcion1, sampleSection2)
-//val secondSampleList = listOf<Sections>(sampleSetcion3)
 
 fun Context.findActivity(): ComponentActivity? = when (this) {
     is ComponentActivity -> this
@@ -667,9 +326,10 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
         optionType = this.type,
         summary = this.questionSummary,
         values = emptyList(),
+        contentEntities = this.contentList ?: listOf(),
         conditional = this.conditional
     )
-    val valuesList = mutableListOf<String>()
+    val valuesList = mutableListOf<ValuesDto>()
     val conditions = mutableListOf<ConditionsDto>()
     this.options?.forEach {
         it?.conditions?.forEach { condition ->
@@ -681,7 +341,7 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
                 it.values.let { it1 -> valuesList.addAll(it1) }
             }
             else -> {
-                valuesList.add(it?.display ?: BLANK_STRING)
+                valuesList.add(ValuesDto(id = 0, it?.display ?: BLANK_STRING))
             }
         }
     }
@@ -713,6 +373,7 @@ fun QuestionList.convertFormTypeQuestionListToOptionItemEntity(sectionId: Int, s
             order = optionsItem?.order ?: -1,
             values = optionsItem?.values,
             languageId = languageId,
+            contentEntities = optionsItem?.contentList ?: listOf(),
             conditions = optionsItem?.conditions
         )
         optionsItemEntityList.add(optionItemEntity)
@@ -812,7 +473,43 @@ fun List<OptionItemEntityState>.updateOptionItemEntityListStateForQuestionByCond
     return updatedOptionItemEntityStateList
 }
 
-fun QuestionList.convertToOptionItemEntity(sectionId: Int, surveyId: Int, questionId: Int, languageId: Int): OptionItemEntity {
+fun List<OptionItemEntityState>.updateOptionsForNoneCondition(
+    conditionResult: Boolean,
+    optionId: Int,
+    noneOptionUnselected: Boolean
+): List<OptionItemEntityState> {
+    val updatedOptionItemEntityStateList = mutableListOf<OptionItemEntityState>()
+    if (noneOptionUnselected) {
+        this.forEach { optionItemEntityStateForQuestion ->
+            val updatedOptionItemEntityState = optionItemEntityStateForQuestion.copy(
+                isOptionEnabled = true
+            )
+            updatedOptionItemEntityStateList.add(updatedOptionItemEntityState)
+        }
+    } else {
+        this.forEach { optionItemEntityStateForQuestion ->
+            if (optionItemEntityStateForQuestion.optionId != optionId) {
+                val updatedOptionItemEntityState = optionItemEntityStateForQuestion.copy(
+                    isOptionEnabled = conditionResult
+                )
+                updatedOptionItemEntityStateList.add(updatedOptionItemEntityState)
+            } else {
+                val updatedOptionItemEntityState = optionItemEntityStateForQuestion.copy(
+                    isOptionEnabled = true
+                )
+                updatedOptionItemEntityStateList.add(updatedOptionItemEntityState)
+            }
+        }
+    }
+    return updatedOptionItemEntityStateList
+}
+
+fun QuestionList.convertToOptionItemEntity(
+    sectionId: Int,
+    surveyId: Int,
+    questionId: Int,
+    languageId: Int
+): OptionItemEntity {
     return OptionItemEntity(
         id = 0,
         questionId = questionId,
@@ -870,6 +567,49 @@ fun ConditionsDto.checkCondition(userInputValue: String): Boolean {
             Operator.MORE_THAN -> {
                 userInputValue.toInt() > condition.first().toInt()
             }
+            Operator.MORE_THAN_EQUAL_TO -> {
+                userInputValue.toInt() >= condition.first().toInt()
+            }
+
+            else -> {
+                false
+            }
+        }
+        return result
+    } catch (ex: Exception) {
+        return false
+    }
+}
+
+fun ConditionsDto.checkConditionForMultiSelectDropDown(userInputValue: String): Boolean {
+    val condition = this.value.split(CONDITIONS_DELIMITER, ignoreCase = true)
+    try {
+        val result = when (checkStringOperator(this.operator)) {
+            Operator.EQUAL_TO -> {
+                userInputValue.contains(condition.first(), ignoreCase = true)
+            }
+
+            Operator.LESS_THAN -> {
+                userInputValue.toInt() < condition.first().toInt()
+            }
+
+            Operator.IN_BETWEEN -> {
+                userInputValue.toInt() >= condition.first()
+                    .toInt() && userInputValue.toInt() <= condition.last().toInt()
+            }
+
+            Operator.NOT_EQUAL_TO -> {
+                !userInputValue.equals(condition.first(), ignoreCase = true)
+            }
+
+            Operator.LESS_THAN_EQUAL_TO -> {
+                userInputValue.toInt() <= condition.first().toInt()
+            }
+
+            Operator.MORE_THAN -> {
+                userInputValue.toInt() > condition.first().toInt()
+            }
+
             Operator.MORE_THAN_EQUAL_TO -> {
                 userInputValue.toInt() >= condition.first().toInt()
             }
@@ -1026,8 +766,12 @@ fun <T> getParentEntityMapForEvent(eventItem: T, eventName: EventName): Map<Stri
     }
 }
 
-fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType): List<SaveAnswerEventOptionItemDto> {
+fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType?): List<SaveAnswerEventOptionItemDto> {
     val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
+
+    if (type == null)
+        return saveAnswerEventOptionItemDtoList
+
     when (type) {
         QuestionType.RadioButton -> {
             val mSaveAnswerEventOptionItemDto =
@@ -1054,7 +798,11 @@ fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType): 
         QuestionType.InputNumber,
         QuestionType.InputNumberEditText -> {
             val mSaveAnswerEventOptionItemDto =
-                SaveAnswerEventOptionItemDto(this.optionId ?: 0, this.selectedValue)
+                SaveAnswerEventOptionItemDto(
+                    this.optionId ?: 0,
+                    this.selectedValue,
+                    optionDesc = this.display ?: BLANK_STRING
+                )
             saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
         }
 
@@ -1066,6 +814,63 @@ fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType): 
     return saveAnswerEventOptionItemDtoList
 }
 
+fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: QuestionType?): List<SaveAnswerEventOptionItemDto> {
+    val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
+
+    if (type == null)
+        return saveAnswerEventOptionItemDtoList
+    this.forEach {
+        when (type) {
+            QuestionType.RadioButton -> {
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+            }
+
+            QuestionType.List,
+            QuestionType.SingleSelect -> {
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+            }
+
+            QuestionType.SingleSelectDropDown,
+            QuestionType.SingleSelectDropdown -> {
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.selectedValue)
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+            }
+
+            QuestionType.Input,
+            QuestionType.InputText,
+            QuestionType.InputNumber,
+            QuestionType.InputNumberEditText -> {
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(
+                        it.optionId ?: 0,
+                        it.selectedValue,
+                        optionDesc = it.display ?: BLANK_STRING
+                    )
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+            }
+
+            QuestionType.MultiSelect,
+            QuestionType.Grid -> {
+
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+
+            }
+
+            else -> {
+
+            }
+
+        }
+    }
+    return saveAnswerEventOptionItemDtoList
+}
 fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemDto(type: QuestionType): List<SaveAnswerEventOptionItemDto> {
     val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
     when (type) {
@@ -1088,7 +893,8 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemDto(type: QuestionT
 
 
 fun List<FormQuestionResponseEntity>.convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto(
-    type: QuestionType
+    type: QuestionType,
+    optionsItemEntityList: List<OptionItemEntityState>
 ): List<SaveAnswerEventOptionItemDto> {
     val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
     if (type == QuestionType.Form) {
@@ -1096,7 +902,9 @@ fun List<FormQuestionResponseEntity>.convertFormQuestionResponseEntityToSaveAnsw
             val saveAnswerEventOptionItemDto = SaveAnswerEventOptionItemDto(
                 optionId = formQuestionResponseEntity.optionId,
                 selectedValue = formQuestionResponseEntity.selectedValue,
-                referenceId = formQuestionResponseEntity.referenceId
+                referenceId = formQuestionResponseEntity.referenceId,
+                optionDesc = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }?.optionItemEntity?.display
+                    ?: BLANK_STRING
             )
             saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
         }
@@ -1105,7 +913,70 @@ fun List<FormQuestionResponseEntity>.convertFormQuestionResponseEntityToSaveAnsw
     return saveAnswerEventOptionItemDtoList
 }
 
-fun List<FormResponseObjectDto>.convertFormResponseObjectToSaveAnswerEventOptionDto(): List<SaveAnswerEventOptionItemDto> {
+fun OptionItemEntity.convertOptionItemEntityToSaveAnswerEventOptionItemDtoForFormWithNone(
+    userId: String,
+    didiId: Int,
+    referenceId: String
+): List<SaveAnswerEventOptionItemDto> {
+
+    val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
+    val formQuestionResponseEntity =
+        this.convertOptionItemEntityToFormResponseEntityForFormWithNone(
+            userId = userId,
+            didiId = didiId,
+            referenceId = referenceId
+        )
+
+    val saveAnswerEventOptionItemDto = SaveAnswerEventOptionItemDto(
+        optionId = formQuestionResponseEntity.optionId,
+        selectedValue = formQuestionResponseEntity.selectedValue,
+        referenceId = formQuestionResponseEntity.referenceId,
+        optionDesc = this.display
+            ?: BLANK_STRING
+    )
+
+    saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
+
+
+    return saveAnswerEventOptionItemDtoList
+
+}
+
+fun OptionItemEntity.convertOptionItemEntityToFormResponseEntityForFormWithNone(
+    userId: String,
+    didiId: Int,
+    referenceId: String
+): FormQuestionResponseEntity {
+    val formQuestionResponseEntity = FormQuestionResponseEntity(
+        userId = userId,
+        didiId = didiId,
+        surveyId = this.surveyId,
+        sectionId = this.sectionId,
+        questionId = this.questionId ?: 0,
+        optionId = this.optionId ?: 0,
+        selectedValue = this.selectedValue ?: BLANK_STRING,
+        referenceId = referenceId
+    )
+    return formQuestionResponseEntity
+}
+
+fun List<OptionItemEntity>.toOptionItemStateList(): List<OptionItemEntityState> {
+    val optionsItemEntityStateList = ArrayList<OptionItemEntityState>()
+    this.forEach { optionItemEntity ->
+        optionsItemEntityStateList.add(
+            OptionItemEntityState(
+                optionItemEntity.optionId,
+                optionItemEntity,
+                !optionItemEntity.conditional
+            )
+        )
+    }
+    return optionsItemEntityStateList
+}
+
+fun List<FormResponseObjectDto>.convertFormResponseObjectToSaveAnswerEventOptionDto(
+    optionsItemEntityList: List<OptionItemEntity>
+): List<SaveAnswerEventOptionItemDto> {
     val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
 
     this.forEach { formResponseObjectDto ->
@@ -1113,7 +984,9 @@ fun List<FormResponseObjectDto>.convertFormResponseObjectToSaveAnswerEventOption
             val saveAnswerEventOptionItemDto = SaveAnswerEventOptionItemDto(
                 optionId = memberDetails.key,
                 selectedValue = memberDetails.value,
-                referenceId = formResponseObjectDto.referenceId
+                referenceId = formResponseObjectDto.referenceId,
+                optionDesc = optionsItemEntityList.find { it.optionId == memberDetails.key }?.display
+                    ?: BLANK_STRING
             )
             saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
         }
@@ -1124,7 +997,8 @@ fun List<FormResponseObjectDto>.convertFormResponseObjectToSaveAnswerEventOption
 
 fun List<InputTypeQuestionAnswerEntity>.convertInputTypeQuestionToEventOptionItemDto(
     questionId: Int,
-    questionType: QuestionType
+    questionType: QuestionType,
+    optionsItemEntity: List<OptionItemEntityState>
 ): List<SaveAnswerEventOptionItemDto> {
     val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
 
@@ -1138,7 +1012,10 @@ fun List<InputTypeQuestionAnswerEntity>.convertInputTypeQuestionToEventOptionIte
     filteredAnswerListForQuestion.forEach { inputTypeQuestionAnswerEntity ->
         val saveAnswerEventOptionItemDto = SaveAnswerEventOptionItemDto(
             optionId = inputTypeQuestionAnswerEntity.optionId,
-            selectedValue = inputTypeQuestionAnswerEntity.inputValue
+            selectedValue = inputTypeQuestionAnswerEntity.inputValue,
+            optionDesc = optionsItemEntity.find { it.optionId == inputTypeQuestionAnswerEntity.optionId }?.optionItemEntity?.display
+                ?: BLANK_STRING
+
         )
         saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
     }
@@ -1153,48 +1030,110 @@ fun List<FormResponseObjectDto>.getIndexForReferenceId(referenceId: String): Int
 
 //TODO remove this list and fetch this from server.
 val tagList: List<TagMappingDto> = listOf(
-    TagMappingDto(id = 1, name = "FoodSecurtiy"),
-    TagMappingDto(id = 2, name = "Had 2 Meals per day"),
-    TagMappingDto(id = 3, name = "Food Shortage"),
-    TagMappingDto(id = 4, name = "Owns Kitchen Garden"),
-    TagMappingDto(id = 5, name = "Last 7 days food consumption"),
-    TagMappingDto(id = 6, name = "Ration Card type"),
-    TagMappingDto(id = 7, name = "PDS Items"),
-    TagMappingDto(id = 8, name = "last 1 month"),
-    TagMappingDto(id = 9, name = "last 12 months"),
-    TagMappingDto(id = 12, name = "SocialInclusion"),
-    TagMappingDto(id = 13, name = "SHG Membership Status"),
-    TagMappingDto(id = 14, name = "SHG Name"),
-    TagMappingDto(id = 15, name = "SHG Membership Tenure"),
-    TagMappingDto(id = 16, name = "SHG Savings Account"),
-    TagMappingDto(id = 17, name = "Amount in SHG Savings"),
-    TagMappingDto(id = 18, name = "SHG Loan Status"),
-    TagMappingDto(id = 19, name = "Amount of SHG Loan"),
-    TagMappingDto(id = 20, name = "WomenEmpowerment"),
-    TagMappingDto(id = 21, name = "Decision Making"),
-    TagMappingDto(id = 22, name = "Monetary contribution"),
-    TagMappingDto(id = 23, name = "FinancialInclusion"),
-    TagMappingDto(id = 24, name = "HasBankAccount"),
-    TagMappingDto(id = 25, name = "SavingsBeyondSHG"),
-    TagMappingDto(id = 26, name = "DebtStatus"),
-    TagMappingDto(id = 27, name = "DebtSources"),
-    TagMappingDto(id = 28, name = "Active Insurance"),
-    TagMappingDto(id = 29, name = "LivelihoodSources"),
-    TagMappingDto(id = 30, name = "Has family financial support"),
-    TagMappingDto(id = 31, name = "IncomeSourcesCount"),
-    TagMappingDto(id = 32, name = "IncomeSources"),
-    TagMappingDto(id = 37, name = "Farming"),
-    TagMappingDto(id = 38, name = "Livestock"),
-    TagMappingDto(id = 39, name = "Small Business"),
-    TagMappingDto(id = 40, name = "NonMarketOutcomes"),
-    TagMappingDto(id = 42, name = "Civic Engagement"),
-    TagMappingDto(id = 43, name = "Political Participation"),
-    TagMappingDto(id = 10, name = "At least once"),
-    TagMappingDto(id = 11, name = "At least thrice"),
-    TagMappingDto(id = 44, name = "Household Information"),
-    TagMappingDto(id = 45, name = "Public Infra"),
-    TagMappingDto(id = 46, name = "Key programme"),
+    TagMappingDto(id = 1, name = "Personal Info"),
+    TagMappingDto(id = 2, name = "HouseHold Details"),
+    TagMappingDto(id = 3, name = "Food Security"),
+    TagMappingDto(id = 4, name = "Social Inclusion"),
+    TagMappingDto(id = 5, name = "Women Empowerment"),
+    TagMappingDto(id = 6, name = "Financial Inclusion"),
+    TagMappingDto(id = 7, name = "Household Entitlements"),
+    TagMappingDto(id = 8, name = "Livelihood Sources"),
+    TagMappingDto(id = 9, name = "Name"),
+    TagMappingDto(id = 10, name = "Age"),
+    TagMappingDto(id = 11, name = "Photo"),
+    TagMappingDto(id = 12, name = "Caste"),
+    TagMappingDto(id = 13, name = "Aadhar"),
+    TagMappingDto(id = 14, name = "Voter"),
+    TagMappingDto(id = 15, name = "Martial Status"),
+    TagMappingDto(id = 16, name = "Village Name"),
+    TagMappingDto(id = 17, name = "Village Organization Name"),
+    TagMappingDto(id = 18, name = "Hamlet / Tola Name"),
+    TagMappingDto(id = 19, name = "Small group name"),
+    TagMappingDto(id = 20, name = "House No"),
+    TagMappingDto(id = 21, name = "Able-bodied women"),
+    TagMappingDto(id = 22, name = "UPCM name"),
+    TagMappingDto(id = 23, name = "UPCM contact"),
+    TagMappingDto(id = 24, name = "HouseHoldCount"),
+    TagMappingDto(id = 25, name = "Had 2 Meals"),
+    TagMappingDto(id = 26, name = "Food Shortage months"),
+    TagMappingDto(id = 27, name = "Owns Kitchen Garden"),
+    TagMappingDto(id = 28, name = "Last 7 days food consumption"),
+    TagMappingDto(id = 29, name = "Ration Card Type"),
+    TagMappingDto(id = 30, name = "PDS Items"),
+    TagMappingDto(id = 31, name = "Last 1 month"),
+    TagMappingDto(id = 32, name = "Last 12 months"),
+    TagMappingDto(id = 33, name = "At least once"),
+    TagMappingDto(id = 34, name = "At least thrice"),
+    TagMappingDto(id = 35, name = "SHG Membership Status"),
+    TagMappingDto(id = 36, name = "SHG name"),
+    TagMappingDto(id = 37, name = "SHG Membership Tenure"),
+    TagMappingDto(id = 38, name = "SHG Savings Account"),
+    TagMappingDto(id = 39, name = "Amount in SHG Savings"),
+    TagMappingDto(id = 40, name = "SHG Loan Status"),
+    TagMappingDto(id = 41, name = "Amount of SHG Loan"),
+    TagMappingDto(id = 42, name = "Decision Making"),
+    TagMappingDto(id = 43, name = "Monetary contribution"),
+    TagMappingDto(id = 44, name = "HasBankAccount"),
+    TagMappingDto(id = 45, name = "Savings Beyond SHG"),
+    TagMappingDto(id = 46, name = "Debt Status"),
+    TagMappingDto(id = 47, name = "Debt Sources"),
+    TagMappingDto(id = 48, name = "Active Insurance"),
+    TagMappingDto(id = 49, name = "Government Scheme"),
+    TagMappingDto(id = 50, name = "Has family financial support"),
+    TagMappingDto(id = 51, name = "Income Sources Count"),
+    TagMappingDto(id = 52, name = "Income Soruces"),
+    TagMappingDto(id = 53, name = "Farming Income"),
+    TagMappingDto(id = 54, name = "Livestock Income"),
+    TagMappingDto(id = 55, name = "Small Business Income"),
+    TagMappingDto(id = 56, name = "Casual Labour - Agri Income"),
+    TagMappingDto(id = 57, name = "Total Income"),
+    TagMappingDto(id = 58, name = "Household Information"),
+    TagMappingDto(id = 59, name = "Public Infra"),
+    TagMappingDto(id = 60, name = "Key programme"),
 )
+/*listOf(
+TagMappingDto(id = 1, name = "FoodSecurtiy"),
+TagMappingDto(id = 2, name = "Had 2 Meals per day"),
+TagMappingDto(id = 3, name = "Food Shortage"),
+TagMappingDto(id = 4, name = "Owns Kitchen Garden"),
+TagMappingDto(id = 5, name = "Last 7 days food consumption"),
+TagMappingDto(id = 6, name = "Ration Card type"),
+TagMappingDto(id = 7, name = "PDS Items"),
+TagMappingDto(id = 8, name = "last 1 month"),
+TagMappingDto(id = 9, name = "last 12 months"),
+TagMappingDto(id = 12, name = "SocialInclusion"),
+TagMappingDto(id = 13, name = "SHG Membership Status"),
+TagMappingDto(id = 14, name = "SHG Name"),
+TagMappingDto(id = 15, name = "SHG Membership Tenure"),
+TagMappingDto(id = 16, name = "SHG Savings Account"),
+TagMappingDto(id = 17, name = "Amount in SHG Savings"),
+TagMappingDto(id = 18, name = "SHG Loan Status"),
+TagMappingDto(id = 19, name = "Amount of SHG Loan"),
+TagMappingDto(id = 20, name = "WomenEmpowerment"),
+TagMappingDto(id = 21, name = "Decision Making"),
+TagMappingDto(id = 22, name = "Monetary contribution"),
+TagMappingDto(id = 23, name = "FinancialInclusion"),
+TagMappingDto(id = 24, name = "HasBankAccount"),
+TagMappingDto(id = 25, name = "SavingsBeyondSHG"),
+TagMappingDto(id = 26, name = "DebtStatus"),
+TagMappingDto(id = 27, name = "DebtSources"),
+TagMappingDto(id = 28, name = "Active Insurance"),
+TagMappingDto(id = 29, name = "LivelihoodSources"),
+TagMappingDto(id = 30, name = "Has family financial support"),
+TagMappingDto(id = 31, name = "IncomeSourcesCount"),
+TagMappingDto(id = 32, name = "IncomeSources"),
+TagMappingDto(id = 37, name = "Farming"),
+TagMappingDto(id = 38, name = "Livestock"),
+TagMappingDto(id = 39, name = "Small Business"),
+TagMappingDto(id = 40, name = "NonMarketOutcomes"),
+TagMappingDto(id = 42, name = "Civic Engagement"),
+TagMappingDto(id = 43, name = "Political Participation"),
+TagMappingDto(id = 10, name = "At least once"),
+TagMappingDto(id = 11, name = "At least thrice"),
+TagMappingDto(id = 44, name = "Household Information"),
+TagMappingDto(id = 45, name = "Public Infra"),
+TagMappingDto(id = 46, name = "Key programme"),
+)*/
 
 fun List<TagMappingDto>.findTagForId(id: Int): String {
     if (id == -1)
@@ -1208,3 +1147,137 @@ fun List<TagMappingDto>.findIdFromTag(tag: String): Int {
         return -1
     return this.find { it.name == tag }?.id ?: -1
 }
+
+fun String.getImagePathFromString(): String {
+    return try {
+        this.split("|").first()
+    } catch (ex: Exception) {
+        BaselineLogger.e("Utils", "String.getImagePathFromString(): exception: ${ex.message}", ex)
+        BLANK_STRING
+    }
+}
+
+fun numberInEnglishFormat(number: Int): String {
+    return String.format(Locale.ENGLISH,"%s", number)
+}
+
+fun List<FormQuestionResponseEntity>.findUnchangedOptions(storeCacheForResponse: List<FormQuestionResponseEntity>): List<FormQuestionResponseEntity> {
+    val unchangedList = this.toMutableList()
+    unchangedList.removeAll(storeCacheForResponse)
+    return unchangedList
+}
+
+@Composable
+fun ShowCustomDialog(
+    title: String,
+    message: String,
+    positiveButtonTitle: String? = BLANK_STRING,
+    negativeButtonTitle: String? = BLANK_STRING,
+    dismissOnBackPress: Boolean? = true,
+    onPositiveButtonClick: () -> Unit,
+    onNegativeButtonClick: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = { }, properties = DialogProperties(
+            dismissOnClickOutside = false,
+            dismissOnBackPress = dismissOnBackPress ?: true
+        )
+    ) {
+        Surface(
+            color = Color.Transparent,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Column(
+                    modifier = Modifier
+                        .background(color = Color.White, shape = RoundedCornerShape(6.dp)),
+                ) {
+                    Column(
+                        Modifier.padding(vertical = 16.dp, horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        if (!title.isNullOrEmpty()) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceAround,
+                                modifier = Modifier
+                            ) {
+                                MainTitle(
+                                    title,
+                                    Modifier
+                                        .weight(1f)
+                                        .fillMaxWidth(),
+                                    align = TextAlign.Center
+                                )
+                            }
+                            Divider(thickness = 1.dp, color = greyBorder)
+                        }
+                        Text(
+                            text = message,
+                            style = TextStyle(
+                                color = black100Percent,
+                                fontSize = 16.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.Normal,
+                            ),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .padding(horizontal = 5.dp)
+                                .wrapContentWidth()
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Row(modifier = Modifier.fillMaxWidth()) {
+
+                            if (!negativeButtonTitle.isNullOrEmpty()) {
+                                ButtonNegative(
+                                    buttonTitle = negativeButtonTitle
+                                        ?: stringResource(id = R.string.cancel_tola_text),
+                                    isArrowRequired = false,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    onNegativeButtonClick()
+                                }
+
+                            } else {
+                                Spacer(modifier = Modifier.weight(2f))
+                            }
+
+                            Spacer(modifier = Modifier.width(8.dp))
+                            positiveButtonTitle?.let {
+                                if (!it.isNullOrEmpty()) {
+                                    ButtonPositive(
+                                        buttonTitle = it,
+                                        isArrowRequired = false,
+                                        isActive = true,
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(vertical = 2.dp)
+                                    ) {
+                                        onPositiveButtonClick()
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+//fun List<ValuesDto>?.toOptionItemEntity(): List<OptionItemEntity> {
+//
+//    val optionsItemEntityList = ArrayList<OptionItemEntity>()
+//
+//    if (this == null)
+//        return emptyList()
+//
+//    this.forEach {
+//        val optItem = OptionItemEntity(
+//            sec
+//        )
+//    }
+//
+//}

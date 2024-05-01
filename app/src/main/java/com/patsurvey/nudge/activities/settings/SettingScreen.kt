@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Context.BATTERY_SERVICE
 import android.os.BatteryManager
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
@@ -78,6 +80,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.ui.navigation.CoreGraph
 import com.nudge.core.ui.navigation.SettingScreens
+import com.nudge.core.importDbFile
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
@@ -113,6 +116,7 @@ import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
+import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.SYNC_FAILED
@@ -160,6 +164,7 @@ fun SettingScreen(
         list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
         list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
         list.add(SettingOptionModel(7, stringResource(id = R.string.export_file), BLANK_STRING))
+        list.add(SettingOptionModel(8, stringResource(id = R.string.load_server_data), BLANK_STRING))
 
         /*if (BuildConfig.DEBUG) *//*list.add(
             SettingOptionModel(
@@ -188,6 +193,14 @@ fun SettingScreen(
         list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
         list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
         list.add(SettingOptionModel(7, stringResource(id = R.string.export_file), BLANK_STRING))
+        list.add(SettingOptionModel(8, stringResource(id = R.string.load_server_data), BLANK_STRING))
+        list.add(
+            SettingOptionModel(
+                9,
+                stringResource(id = R.string.regenerate_event_file),
+                BLANK_STRING
+            )
+        )
         /*if (BuildConfig.DEBUG) *//*list.add(
             SettingOptionModel(
                 6,
@@ -195,9 +208,39 @@ fun SettingScreen(
                 BLANK_STRING
             )
         )*/
+//        list.add(SettingOptionModel(9, stringResource(id = R.string.recover_old_data), BLANK_STRING))
     }
     viewModel.createSettingMenu(list)
+
+    if(viewModel.showLoadConfimationDialog.value){
+        showCustomDialog(
+            title = stringResource(id = R.string.are_you_sure),
+            message =stringResource(id = R.string.are_you_sure_you_want_to_load_data_from_server),
+            positiveButtonTitle = stringResource(id = R.string.yes_text),
+            negativeButtonTitle = stringResource(id = R.string.option_no),
+            onNegativeButtonClick = {viewModel.showLoadConfimationDialog.value =false},
+            onPositiveButtonClick = {
+                viewModel.showAPILoader.value=true
+                viewModel.exportDbAndImages{
+                    viewModel.clearLocalDB{
+                        viewModel.showAPILoader.value=false
+                        if (navController.graph.route == Graph.ROOT) {
+                            navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route)
+                        } else {
+                            navController.navigate(Graph.LOGOUT_GRAPH)
+                        }
+                    }
+                }
+            })
+    }
 //    }
+
+    val filePicker =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) {
+//            importDbFile(NudgeCore.getAppContext(),it!!){
+//                viewModel.showAppRestartDialog.value=true
+//            }
+        }
     LaunchedEffect(key1 = true) {
         val villageId = viewModel.prefRepo.getSelectedVillage().id
         viewModel.isFormAAvailableForVillage(context = context, villageId = villageId)
@@ -247,41 +290,6 @@ fun SettingScreen(
     val isBPCDataNeedToBeSynced = remember {
         mutableStateOf(false)
     }
-
-//    LaunchedEffect(key1 = Unit) {
-//        if (!viewModel.prefRepo.isUserBPC()) {
-//            viewModel.isFirstStepNeedToBeSync(stepOneStatus)
-//            viewModel.isSecondStepNeedToBeSync(stepTwoStatus)
-//            viewModel.isThirdStepNeedToBeSync(stepThreeStatus)
-//            viewModel.isFourthStepNeedToBeSync(stepFourStatus)
-//            viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
-//            if (stepOneStatus.value == 0
-//                || stepTwoStatus.value == 0
-//                || stepThreeStatus.value == 0
-//                || stepFourStatus.value == 0
-//                || stepFiveStatus.value == 0
-//            )
-//                isDataNeedToBeSynced.value = 1
-//            else if ((stepOneStatus.value == 3 || stepOneStatus.value == 2)
-//                && (stepTwoStatus.value == 3 || stepTwoStatus.value == 2)
-//                && (stepThreeStatus.value == 3 || stepThreeStatus.value == 2)
-//                && (stepFourStatus.value == 3 || stepFourStatus.value == 2)
-//                && (stepFiveStatus.value == 3 || stepFiveStatus.value == 2)
-//            )
-//                isDataNeedToBeSynced.value = 2
-//            else
-//                isDataNeedToBeSynced.value = 0
-//            viewModel.isDataNeedToBeSynced(
-//                stepOneStatus,
-//                stepTwoStatus,
-//                stepThreeStatus,
-//                stepFourStatus,
-//                stepFiveStatus
-//            )
-//        } else {
-//            viewModel.isBPCDataNeedToBeSynced(isBPCDataNeedToBeSynced)
-//        }
-//    }
 
     BackHandler() {
         if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
@@ -401,6 +409,19 @@ fun SettingScreen(
 
                                 7 -> {
                                     viewModel.compressEventData(context.getString(R.string.share_export_file))
+                                }
+                                8 -> {
+                                    if ((context as MainActivity).isOnline.value) {
+                                        viewModel.showLoadConfimationDialog.value = true
+                                    }else{
+                                        showToast(
+                                            context,
+                                            context.getString(R.string.logout_no_internet_error_message)
+                                        )
+                                    }
+                                }
+                                9 -> {
+                                    filePicker.launch("*/*")
                                 }
 
                                 else -> {

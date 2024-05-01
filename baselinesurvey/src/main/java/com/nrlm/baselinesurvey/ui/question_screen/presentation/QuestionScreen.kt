@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.question_screen.presentation
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.absolutePadding
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -37,6 +39,8 @@ import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
+import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.DescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ImageExpanderDialogComponent
@@ -57,13 +61,11 @@ import com.nrlm.baselinesurvey.ui.theme.inactiveTextBlue
 import com.nrlm.baselinesurvey.ui.theme.lightGray2
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
 import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
-import com.nudge.core.ui.navigation.VIDEO_PLAYER_SCREEN_ROUTE_NAME
-import com.nudge.core.ui.navigation.navigateBackToSurveyeeListScreen
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
@@ -77,18 +79,21 @@ fun QuestionScreen(
     sectionId: Int,
     nextSectionHandler: (sectionId: Int) -> Unit
 ) {
+    val outerState= rememberLazyListState()
+    val innerState= rememberLazyListState()
 
     val sectionDetails = viewModel.filterSectionList.value
     val loaderState = viewModel.loaderState.value
 
 
     LaunchedEffect(key1 = true) {
-        viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-        viewModel.init(surveyId = surveyId, sectionId = sectionId, surveyeeId = surveyeeId)
-        delay(300)
-        viewModel.updateSaveUpdateState()
-        delay(300)
-        viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+        try {
+            viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
+            viewModel.init(surveyId = surveyId, sectionId = sectionId, surveyeeId = surveyeeId)
+
+        } catch (ex: Exception) {
+            BaselineLogger.e("QuestionScreen", "LaunchedEffect -> exception: ${ex.message}", ex)
+        }
     }
 
     val scaffoldState =
@@ -181,12 +186,12 @@ fun QuestionScreen(
                     .padding(top = dimen_10_dp)
                     .fillMaxSize(),
                 bottomBar = {
-                    if (viewModel.didiDetails?.surveyStatus != SurveyState.COMPLETED.ordinal) {
+                    if (viewModel.didiDetails.value?.surveyStatus != SurveyState.COMPLETED.ordinal) {
                         BottomAppBar(
                             containerColor = white,
                             tonalElevation = defaultCardElevation
                         ) {
-                            Column {
+                            Box(modifier = Modifier.padding(horizontal = dimen_16_dp)) {
                                 ExtendedFloatingActionButton(
                                     modifier = Modifier
                                         .fillMaxWidth(),
@@ -211,7 +216,7 @@ fun QuestionScreen(
                                                     true
                                                 )
                                             )
-                                             navController.navigateBackToSurveyeeListScreen()
+                                                navigateBackToSurveyeeListScreen(navController)
                                             else
                                                 nextSectionHandler(sectionId)
                                         }
@@ -250,6 +255,8 @@ fun QuestionScreen(
                 NestedLazyList(
                     navController = navController,
                     sectionDetails = sectionDetails,
+                    outerState = outerState,
+                    innerState = innerState,
                     viewModel = viewModel,
                     surveyeeId = surveyeeId,
                     sectionInfoButtonClicked = {

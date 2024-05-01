@@ -33,12 +33,17 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,7 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -57,9 +62,15 @@ import com.nrlm.baselinesurvey.ARG_FROM_SECTION_SCREEN
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
+import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
+import com.nrlm.baselinesurvey.navigation.home.navigateToQuestionScreen
+import com.nrlm.baselinesurvey.navigation.home.navigateToSearchScreen
+import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.ComplexSearchComponent
 import com.nrlm.baselinesurvey.ui.common_components.SectionItemComponent
+import com.nrlm.baselinesurvey.ui.common_components.emptySpacer
 import com.nrlm.baselinesurvey.ui.description_component.presentation.DescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ImageExpanderDialogComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
@@ -82,13 +93,10 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
-import com.nudge.core.ui.navigation.VIDEO_PLAYER_SCREEN_ROUTE_NAME
-import com.nudge.core.ui.navigation.navigateBackToSurveyeeListScreen
-import com.nudge.core.ui.navigation.navigateToQuestionScreen
-import com.nudge.core.ui.navigation.navigateToSearchScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -102,11 +110,25 @@ fun SectionListScreen(
     didiId: Int,
     surveyId: Int
 ) {
+    val context = LocalContext.current
+
 
     val loaderState = viewModel.loaderState.value
+    val isSettingScreenOpened = remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(key1 = true) {
         viewModel.init(didiId, surveyId)
+    }
+
+    DisposableEffect(key1 = Unit) {
+        isSettingScreenOpened.value = false
+        onDispose {
+//            if (isSettingScreenOpened.value) {
+            viewModel.close()
+//            }
+        }
     }
 
     val sectionsList = viewModel.sectionItemStateList.value
@@ -132,11 +154,24 @@ fun SectionListScreen(
         mutableStateOf(false)
     }
 
-    val linearProgress = mutableStateOf(0.0f)
+    val linearProgress = remember { mutableStateOf(0.0f) }
+    val pullRefreshState = rememberPullRefreshState(
+        viewModel.loaderState.value.isLoaderVisible,
+        {
+            if (BaselineCore.isOnline.value) {
+                viewModel.refreshData()
+            } else {
+                showCustomToast(
+                    context,
+                    context.getString(R.string.refresh_failed_please_try_again)
+                )
 
+            }
+
+        })
     BackHandler {
         BaselineCore.setCurrentActivityName(BLANK_STRING)
-        navController.navigateBackToSurveyeeListScreen()
+        navigateBackToSurveyeeListScreen(navController)
     }
 
     Scaffold(
@@ -149,7 +184,7 @@ fun SectionListScreen(
                 IconButton(
                     onClick = {
                         BaselineCore.setCurrentActivityName(BLANK_STRING)
-                        navController.navigateBackToSurveyeeListScreen()
+                        navigateBackToSurveyeeListScreen(navController)
                     },
                     modifier = Modifier
                 ) {
@@ -177,16 +212,20 @@ fun SectionListScreen(
                             .align(Alignment.CenterEnd)
                             .zIndex(1f)
                     ) {
-//                        Image(
-//                            modifier = Modifier
-//                                .padding(5.dp)
-//                                .clickable {
-//                                    if (!isBannerExpanded.value)
-//                                        isBannerExpanded.value = true
-//                                },
-//                            painter = painterResource(id = R.drawable.info_icon),
-//                            contentDescription = ""
-//                        )
+
+                            Icon(
+                                painter = painterResource(id = R.drawable.more_icon),
+                                contentDescription = "more action button",
+                                tint = blueDark,
+                                modifier = Modifier
+                                    .background(Color.White)
+                                    .padding(10.dp)
+                                    .clickable {
+                                        isSettingScreenOpened.value = true
+                                        navController.navigate(Graph.SETTING_GRAPH)
+                                    }
+                            )
+
                     }
                     this@TopAppBar.AnimatedVisibility(
                         visible = isBannerExpanded.value,
@@ -240,31 +279,36 @@ fun SectionListScreen(
         },
         bottomBar = {
             if (viewModel.allSessionCompleted.value && viewModel.didiDetails?.surveyStatus != SurveyState.COMPLETED.ordinal) {
-                Box(
+                BottomAppBar(
                     modifier = Modifier
-                        .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
-                        .padding(vertical = dimensionResource(id = R.dimen.dp_15))
+                        .background(white)
                 ) {
-                    ButtonPositive(
-                        buttonTitle = "Submit ${if (surveyId == 1) "BaseLine" else "Hamlet"} for ${viewModel.didiName.value}",
-                        isArrowRequired = false,
-                        isActive = true
+                    Box(
+                        modifier = Modifier
+                            .background(white)
+                            .padding(dimen_16_dp)
                     ) {
-                        viewModel.onEvent(
-                            SectionScreenEvent.UpdateSubjectStatus(
-                                didiId,
-                                SurveyState.COMPLETED
+                        ButtonPositive(
+                            buttonTitle = "Submit ${if (surveyId == 1) "Baseline" else "Hamlet"} for ${viewModel.didiName.value}",
+                            isArrowRequired = false,
+                            isActive = true
+                        ) {
+                            viewModel.onEvent(
+                                SectionScreenEvent.UpdateSubjectStatus(
+                                    didiId,
+                                    SurveyState.COMPLETED
+                                )
                             )
-                        )
-                        viewModel.onEvent(
-                            SectionScreenEvent.UpdateTaskStatus(
-                                didiId,
-                                SectionStatus.COMPLETED
+                            viewModel.onEvent(
+                                SectionScreenEvent.UpdateTaskStatus(
+                                    didiId,
+                                    SectionStatus.COMPLETED
+                                )
                             )
-                        )
-                        BaselineCore.setCurrentActivityName(BLANK_STRING)
-                        navController.navigateBackToSurveyeeListScreen()
+                            BaselineCore.setCurrentActivityName(BLANK_STRING)
+                            navigateBackToSurveyeeListScreen(navController)
 
+                        }
                     }
                 }
             }
@@ -283,12 +327,13 @@ fun SectionListScreen(
 
         if (!loaderState.isLoaderVisible) {
             if (sectionsList.size == 1 && sectionsList[0].section.sectionName.equals(NO_SECTION, true)) {
-                navController.navigateToQuestionScreen(didiId, sectionsList[0].section.sectionId, surveyId = sectionsList[0].section.surveyId)
+                navigateToQuestionScreen(didiId, sectionsList[0].section.sectionId, surveyId = sectionsList[0].section.surveyId, navController)
             } else {
                 ModelBottomSheetDescriptionContentComponent(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(it),
+                        .padding(it)
+                        .pullRefresh(pullRefreshState),
                     sheetContent = {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             IconButton(onClick = {
@@ -303,11 +348,13 @@ fun SectionListScreen(
                                     tint = blueDark
                                 )
                             }
-                            Divider(
-                                thickness = dimen_1_dp,
-                                color = lightGray2,
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                            if (scaffoldState.isVisible) {
+                                Divider(
+                                    thickness = dimen_1_dp,
+                                    color = lightGray2,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
                             DescriptionContentComponent(
                                 buttonClickListener = {
                                     scope.launch {
@@ -342,7 +389,7 @@ fun SectionListScreen(
 
                         item {
                             ComplexSearchComponent {
-                                navController.navigateToSearchScreen( surveyId, surveyeeId = didiId, fromScreen = ARG_FROM_SECTION_SCREEN)
+                                navigateToSearchScreen(navController, surveyId, surveyeeId = didiId, fromScreen = ARG_FROM_SECTION_SCREEN)
                             }
                         }
 
@@ -382,10 +429,11 @@ fun SectionListScreen(
                                 index,
                                 sectionStateItem = sectionStateItem,
                                 onclick = {
-                                    navController.navigateToQuestionScreen(
+                                    navigateToQuestionScreen(
                                         didiId = didiId,
                                         sectionId = sectionStateItem.section.sectionId,
-                                        sectionStateItem.section.surveyId
+                                        sectionStateItem.section.surveyId,
+                                        navController
                                     )
                                 },
                                 onDetailIconClicked = {
@@ -420,9 +468,27 @@ fun SectionListScreen(
                                 }
                             )
                         }
+
+                        emptySpacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(dimen_16_dp)
+                        )
                     }
                 }
+
             }
         }
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState)) {
+            PullRefreshIndicator(
+                refreshing = viewModel.loaderState.value.isLoaderVisible,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter),
+                contentColor = blueDark,
+            )
+        }
+
     }
 }
