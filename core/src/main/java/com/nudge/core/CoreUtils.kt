@@ -548,16 +548,15 @@ fun getFileNameFromURL(url: String): String{
 fun importDbFile(appContext: Context,deleteDBName:String,importedDbUri: Uri,applicationID: String,onImportSuccess:()->Unit) {
     CoroutineScope(Dispatchers.IO).launch {
         try {
-            val importedFile =
-                FileUtils.getFile( appContext,importedDbUri)
+
             val currentDBFile = appContext.getDatabasePath(deleteDBName)
             val isDeleted= appContext.deleteDatabase(deleteDBName)
             if(isDeleted){
-                    importedFile?.toUri()?.let {
-                        appContext.contentResolver.openInputStream(it).use { outputStream->
-                            copyUriToAnotherLocation(appContext.contentResolver, sourceUri = it, destinationUri = currentDBFile.toUri())
-                        }
+                importedDbUri?.let {
+                    appContext.contentResolver.openInputStream(it).use { outputStream->
+                        copyUriToAnotherLocation(appContext.contentResolver, sourceUri = it, destinationUri = currentDBFile.toUri() )
                     }
+                }
                 CoreLogger.d(appContext,"ImportDbFile", "Import completed")
             }
             onImportSuccess()
