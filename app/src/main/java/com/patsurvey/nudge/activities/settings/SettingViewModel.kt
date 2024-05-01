@@ -1112,8 +1112,7 @@ class SettingViewModel @Inject constructor(
             appContext = NudgeCore.getAppContext(),
             applicationID = BuildConfig.APPLICATION_ID,
             mobileNo = userUniqueId,
-            databaseName = NUDGE_DATABASE,
-            userName = ""
+            databaseName = NUDGE_DATABASE
         ) {
             onExportSuccess()
         }
