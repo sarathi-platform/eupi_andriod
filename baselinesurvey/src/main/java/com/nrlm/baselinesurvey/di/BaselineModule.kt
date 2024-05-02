@@ -102,9 +102,6 @@ import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSurvyeDetail
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.SectionListScreenUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.UpdateSubjectStatusUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.UpdateTaskStatusUseCase
-import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepository
-import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepositoryImpl
-import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SettingBSUserCase
 import com.nrlm.baselinesurvey.ui.splash.domain.repository.SplashScreenRepository
 import com.nrlm.baselinesurvey.ui.splash.domain.repository.SplashScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.splash.domain.use_case.FetchLanguageFromNetworkConfigUseCase
@@ -620,15 +617,15 @@ object BaselineModule {
         )
     }
 
-    @Provides
-    @Singleton
-    fun provideSettingBSScreenRepository(
-        prefRepo: PrefRepo,
-        apiService: BaseLineApiService,
-        nudgeBaselineDatabase: NudgeBaselineDatabase
-    ): SettingBSRepository {
-        return SettingBSRepositoryImpl(prefRepo, apiService,nudgeBaselineDatabase)
-    }
+//    @Provides
+//    @Singleton
+//    fun provideSettingBSScreenRepository(
+//        prefRepo: PrefRepo,
+//        apiService: BaseLineApiService,
+//        nudgeBaselineDatabase: NudgeBaselineDatabase
+//    ): SettingBSRepository {
+//        return SettingBSRepositoryImpl(prefRepo, apiService,nudgeBaselineDatabase)
+//    }
 
 //    @Provides
 //    @Singleton

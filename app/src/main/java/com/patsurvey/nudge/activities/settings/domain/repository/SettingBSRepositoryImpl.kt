@@ -33,6 +33,10 @@ class SettingBSRepositoryImpl(
         prefRepo.savePref(LANGUAGE_OPEN_FROM_SETTING,true)
     }
 
+    override fun clearLocalData() {
+        TODO("Not yet implemented")
+    }
+
     override fun getUserType(): String? {
         return prefRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING)
     }

@@ -3,7 +3,6 @@ package com.patsurvey.nudge.activities.settings.domain.repository
 import android.content.Context
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.StepListEntity
-import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.model.response.ApiResponseModel
 
 
@@ -13,6 +12,8 @@ interface SettingBSRepository {
     fun clearSharedPref()
 
     fun saveLanguageScreenOpenFrom()
+
+    fun clearLocalData()
 
     fun getUserType():String?
 

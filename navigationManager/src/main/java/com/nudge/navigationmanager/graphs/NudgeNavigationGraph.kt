@@ -33,8 +33,8 @@ fun NavController.navigateToSearchScreen(
     this.navigate("$SEARCH_SCREEN_ROUTE_NAME/$surveyeId/$surveyeeId/$fromScreen")
 }
 
-fun NavController.navigateToBaseLineStartScreen(surveyeeId: Int, survyId: Int) {
-    this.navigate("$BASELINE_START_SCREEN_ROUTE_NAME/$surveyeeId/$survyId")
+fun NavController.navigateToBaseLineStartScreen(surveyeeId: Int, survyId: Int,sectionId:Int) {
+    this.navigate("$BASELINE_START_SCREEN_ROUTE_NAME/$surveyeeId/$survyId/$sectionId")
 }
 
 fun NavController.navigateToFormTypeQuestionScreen(

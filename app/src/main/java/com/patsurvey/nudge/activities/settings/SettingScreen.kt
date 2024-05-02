@@ -78,9 +78,8 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.nudge.core.ui.navigation.CoreGraph
-import com.nudge.core.ui.navigation.SettingScreens
-import com.nudge.core.importDbFile
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
+import com.nudge.navigationmanager.graphs.SettingScreens
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
@@ -224,10 +223,10 @@ fun SettingScreen(
                 viewModel.exportDbAndImages{
                     viewModel.clearLocalDB{
                         viewModel.showAPILoader.value=false
-                        if (navController.graph.route == Graph.ROOT) {
+                        if (navController.graph.route == NudgeNavigationGraph.ROOT) {
                             navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route)
                         } else {
-                            navController.navigate(Graph.LOGOUT_GRAPH)
+                            navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
                         }
                     }
                 }
@@ -293,7 +292,7 @@ fun SettingScreen(
 
     BackHandler() {
         if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
-            navController.navigate(CoreGraph.HOME) {
+            navController.navigate(NudgeNavigationGraph.HOME) {
                 popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                     inclusive = true
                     saveState = false
@@ -323,7 +322,7 @@ fun SettingScreen(
                 navigationIcon = {
                     IconButton(onClick = {
                         if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
-                            navController.navigate(CoreGraph.HOME) {
+                            navController.navigate(NudgeNavigationGraph.HOME) {
                                 popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                                     inclusive = true
                                     saveState = false
@@ -681,10 +680,10 @@ fun SettingScreen(
                 navController.navigate(AuthScreen.LOGIN.route)
                 isChangeGraphCalled.value = false
             } else {
-                if (navController.graph.route == CoreGraph.ROOT) {
+                if (navController.graph.route == NudgeNavigationGraph.ROOT) {
                     navController.navigate(AuthScreen.LOGIN.route)
                 } else {
-                    navController.navigate(CoreGraph.LOGOUT_GRAPH)
+                    navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
                 }
             }
         }

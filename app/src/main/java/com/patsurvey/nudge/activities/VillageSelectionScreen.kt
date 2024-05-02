@@ -59,7 +59,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
-import com.nudge.core.ui.navigation.CoreGraph
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
@@ -402,10 +402,10 @@ fun VillageSelectionScreen(
                                 }
                             } else {
                                 Log.d("TAG", "VillageSelectionScreen: Graph 1: ${navController.graph.route}")
-                                if(navController.graph.route?.equals(CoreGraph.BASE_HOME,true)==true){
+                                if(navController.graph.route?.equals(NudgeNavigationGraph.BASE_HOME,true)==true){
                                     Log.d("TAG", "VillageSelectionScreen: Graph 2: ${navController.graph.route}")
                                     navController.popBackStack()
-                                    navController.navigate(CoreGraph.HOME)
+                                    navController.navigate(NudgeNavigationGraph.HOME)
                                 }
                                 Log.d("TAG", "VillageSelectionScreen: Graph 3: ${navController.graph.route}")
 

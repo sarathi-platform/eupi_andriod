@@ -8,6 +8,8 @@ import android.util.SparseArray
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.util.forEach
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.download.AndroidDownloader
 import com.nudge.communicationModule.EventObserverInterface
 import kotlinx.coroutines.CoroutineScope
@@ -126,41 +128,6 @@ object BaselineCore {
             getAppContext().startActivity(intent)
         } catch (ex: Exception) {
             BaselineLogger.e(TAG, "startExternalActivity exception: ${ex.message}")
-        }
-    }
-
-
-
-    fun downloadAuthorizedImageItem(id:Int, image: String, prefRepo: PrefRepo, surveyeeEntityDao: SurveyeeEntityDao) {
-        BaselineApplication.appScopeLaunch {
-            try {
-                val imageFile = getAuthImagePath(getAppContext(), image)
-                if (!imageFile.exists()) {
-                    val localDownloader = downloader
-                    val downloadManager = getAppContext().getSystemService(DownloadManager::class.java)
-                    localDownloader?.currentDownloadingId?.value = id
-                    val downloadId = localDownloader?.downloadAuthorizedImageFile(
-                        image,
-                        FileType.IMAGE,
-                        prefRepo
-                    )
-                    if (downloadId != null) {
-                        localDownloader.checkDownloadStatus(downloadId,
-                            id,
-                            downloadManager,
-                            onDownloadComplete = {
-                                surveyeeEntityDao.updateImageLocalPath(id,imageFile.absolutePath)
-                            }, onDownloadFailed = {
-                                BaselineLogger.d("VillageSelectorViewModel", "downloadAuthorizedImageItem -> onDownloadFailed")
-                            })
-                    }
-                } else {
-                    surveyeeEntityDao.updateImageLocalPath(id,imageFile.absolutePath)
-                }
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-                BaselineLogger.e("VillageSelectorViewModel", "downloadAuthorizedImageItem -> downloadItem exception", ex)
-            }
         }
     }
 

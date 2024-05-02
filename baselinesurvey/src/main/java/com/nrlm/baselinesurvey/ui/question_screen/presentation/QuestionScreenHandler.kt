@@ -12,8 +12,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
-import com.nudge.core.ui.navigation.navigateBackToDidiScreen
-import com.nudge.core.ui.navigation.navigateBackToSectionListScreen
+import com.nudge.navigationmanager.graphs.navigateBackToDidiScreen
+import com.nudge.navigationmanager.graphs.navigateBackToSectionListScreen
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnrememberedMutableState")

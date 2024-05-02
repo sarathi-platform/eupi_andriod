@@ -1,10 +1,9 @@
-package com.nrlm.baselinesurvey.ui.setting.domain.use_case
-
-import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepository
+package com.patsurvey.nudge.activities.settings.domain.use_case
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.patsurvey.nudge.activities.settings.domain.repository.SettingBSRepository
 
 class ClearLocalDBUseCase(
-    private val repository:SettingBSRepository
+    private val repository: SettingBSRepository
 ) {
     suspend operator fun invoke():Boolean{
         return try {

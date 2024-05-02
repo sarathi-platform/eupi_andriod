@@ -10,14 +10,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.navigation.home.HomeScreens
-import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponentWithText
 import com.nrlm.baselinesurvey.ui.common_components.ShowCustomDialog
 import com.nrlm.baselinesurvey.ui.common_components.common_events.DialogEvents
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.DataLoadingScreenViewModel
-import com.nudge.core.ui.navigation.BSHomeScreens
+import com.nudge.navigationmanager.graphs.BSHomeScreens
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 
 @Composable
 fun DataLoadingScreenComponent(
@@ -41,7 +40,7 @@ fun DataLoadingScreenComponent(
                 navController.navigate(BSHomeScreens.Home_SCREEN.route)
             }
         } else {
-            navController.navigate(HomeScreens.Home_SCREEN.route)
+            navController.navigate(BSHomeScreens.Home_SCREEN.route)
         }
     }
 
@@ -62,14 +61,14 @@ fun DataLoadingScreenComponent(
                 onNegativeButtonClick = {
                     viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
                     viewModel.logout()
-                    navController.navigate(Graph.LOGOUT_GRAPH)
+                    navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
                 },
                 onPositiveButtonClick = {
                     viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
                     viewModel.clearLocalDB {
                         viewModel.fetchAllData {
                             viewModel.setAllDataFetched()
-                            navController.navigate(HomeScreens.Home_SCREEN.route)
+                            navController.navigate(BSHomeScreens.Home_SCREEN.route)
                         }
                     }
                 }

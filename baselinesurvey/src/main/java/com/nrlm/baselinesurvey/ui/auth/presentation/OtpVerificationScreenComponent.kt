@@ -63,7 +63,6 @@ import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
-import com.nudge.navigationmanager.graphs.NavigationGraph
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import java.text.SimpleDateFormat
 import java.util.Date

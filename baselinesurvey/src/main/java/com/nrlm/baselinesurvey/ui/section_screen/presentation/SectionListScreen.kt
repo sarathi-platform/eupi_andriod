@@ -62,11 +62,6 @@ import com.nrlm.baselinesurvey.ARG_FROM_SECTION_SCREEN
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
-import com.nrlm.baselinesurvey.navigation.home.navigateBackToSurveyeeListScreen
-import com.nrlm.baselinesurvey.navigation.home.navigateToQuestionScreen
-import com.nrlm.baselinesurvey.navigation.home.navigateToSearchScreen
-import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.ComplexSearchComponent
 import com.nrlm.baselinesurvey.ui.common_components.SectionItemComponent
@@ -97,6 +92,11 @@ import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
+import com.nudge.navigationmanager.graphs.navigateBackToSurveyeeListScreen
+import com.nudge.navigationmanager.graphs.navigateToQuestionScreen
+import com.nudge.navigationmanager.graphs.navigateToSearchScreen
+import com.nudge.navigationmanager.routes.VIDEO_PLAYER_SCREEN_ROUTE_NAME
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -171,7 +171,7 @@ fun SectionListScreen(
         })
     BackHandler {
         BaselineCore.setCurrentActivityName(BLANK_STRING)
-        navigateBackToSurveyeeListScreen(navController)
+        navController.navigateBackToSurveyeeListScreen()
     }
 
     Scaffold(
@@ -184,7 +184,7 @@ fun SectionListScreen(
                 IconButton(
                     onClick = {
                         BaselineCore.setCurrentActivityName(BLANK_STRING)
-                        navigateBackToSurveyeeListScreen(navController)
+                        navController.navigateBackToSurveyeeListScreen()
                     },
                     modifier = Modifier
                 ) {
@@ -222,7 +222,7 @@ fun SectionListScreen(
                                     .padding(10.dp)
                                     .clickable {
                                         isSettingScreenOpened.value = true
-                                        navController.navigate(Graph.SETTING_GRAPH)
+                                        navController.navigate(NudgeNavigationGraph.SETTING_GRAPH)
                                     }
                             )
 
@@ -306,7 +306,7 @@ fun SectionListScreen(
                                 )
                             )
                             BaselineCore.setCurrentActivityName(BLANK_STRING)
-                            navigateBackToSurveyeeListScreen(navController)
+                            navController.navigateBackToSurveyeeListScreen()
 
                         }
                     }
@@ -327,7 +327,7 @@ fun SectionListScreen(
 
         if (!loaderState.isLoaderVisible) {
             if (sectionsList.size == 1 && sectionsList[0].section.sectionName.equals(NO_SECTION, true)) {
-                navigateToQuestionScreen(didiId, sectionsList[0].section.sectionId, surveyId = sectionsList[0].section.surveyId, navController)
+                navController.navigateToQuestionScreen(didiId, sectionsList[0].section.sectionId, surveyId = sectionsList[0].section.surveyId)
             } else {
                 ModelBottomSheetDescriptionContentComponent(
                     modifier = Modifier
@@ -389,7 +389,7 @@ fun SectionListScreen(
 
                         item {
                             ComplexSearchComponent {
-                                navigateToSearchScreen(navController, surveyId, surveyeeId = didiId, fromScreen = ARG_FROM_SECTION_SCREEN)
+                                navController.navigateToSearchScreen(surveyId, surveyeeId = didiId, fromScreen = ARG_FROM_SECTION_SCREEN)
                             }
                         }
 
@@ -429,11 +429,10 @@ fun SectionListScreen(
                                 index,
                                 sectionStateItem = sectionStateItem,
                                 onclick = {
-                                    navigateToQuestionScreen(
+                                    navController.navigateToQuestionScreen(
                                         didiId = didiId,
                                         sectionId = sectionStateItem.section.sectionId,
-                                        sectionStateItem.section.surveyId,
-                                        navController
+                                        sectionStateItem.section.surveyId
                                     )
                                 },
                                 onDetailIconClicked = {

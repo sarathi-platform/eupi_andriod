@@ -26,7 +26,7 @@ import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.ShowCustomDialog
-import com.nudge.core.ui.navigation.CoreGraph
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 import com.patsurvey.nudge.navigation.AuthScreen
 
@@ -111,7 +111,7 @@ fun ExportImportScreen(
                 viewModel.exportLocalDatabase(isNeedToShare = false){
                     viewModel.clearLocalDatabase{
                         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
-                        navController.navigate(route = CoreGraph.HOME){
+                        navController.navigate(route = NudgeNavigationGraph.HOME){
                             launchSingleTop=true
                             popUpTo(AuthScreen.START_SCREEN.route){
                                 inclusive=true

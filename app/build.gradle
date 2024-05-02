@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId "com.nrlm.sarathi"
-        minSdk 23
+        minSdk 24
         targetSdk 33
         versionCode 8
         versionName version
