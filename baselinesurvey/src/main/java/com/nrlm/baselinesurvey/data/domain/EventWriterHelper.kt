@@ -105,7 +105,7 @@ interface EventWriterHelper {
     )
 
 
-    suspend fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto
+    suspend fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto?
 
     suspend fun getMissionActivityTaskEventList(
         missionId: Int,

@@ -71,6 +71,14 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 SettingTagEnum.REGENERATE_EVENTS.name
             )
         )
+        list.add(
+            SettingOptionModel(
+                8,
+                context.getString(R.string.export_baseline_qna),
+                BLANK_STRING,
+                SettingTagEnum.EXPORT_BASELINE_QNA.name
+            )
+        )
 
         return list.ifEmpty { arrayListOf() }
     }
