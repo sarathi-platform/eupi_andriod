@@ -47,6 +47,8 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
 
     var questionEntity: QuestionEntity? = null
 
+    val isEditAllowed = mutableStateOf(true)
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is LoaderEvent.UpdateLoaderState -> {
@@ -159,6 +161,16 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
                 mOptionItemEntityList,
                 questionTag
             ).distinctBy { it.referenceId })
+
+            val task =
+                formResponseSummaryScreenUseCase.getPendingTaskCountLiveUseCase.getActivityFromSubjectId(
+                    surveyeeId
+                )
+            isEditAllowed.value =
+                formResponseSummaryScreenUseCase.getPendingTaskCountLiveUseCase.isActivityComplete(
+                    task.missionId,
+                    task.activityId
+                )
         }
     }
 

@@ -423,7 +423,7 @@
     <string name="name_comparision">Name</string>
     <string name="age_comparision">Age</string>
     <string name="relationship_comparision">Relationship</string>
-    <string name="income_source_comparision">sources of income</string>
+    <string name="income_source_comparision">Source of income</string>
     <string name="agriculture_produce_comparision">Agricultural produce</string>
     <string name="livestock_comparision">Type of livestock</string>
     <string name="income_frequency_comparision">Income frequency</string>

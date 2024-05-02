@@ -1,6 +1,8 @@
 package com.nrlm.baselinesurvey.ui.question_screen.viewmodel
 
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
@@ -132,6 +134,8 @@ class QuestionScreenViewModel @Inject constructor(
 
     val formWithNoneOptionMarkedSet = mutableSetOf<Int>()
 
+    val inputNumberQuestionMap = mutableMapOf<Int, List<InputTypeQuestionAnswerEntity>>()
+
     fun initQuestionScreenHandler(surveyeeId: Int, subjectId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _sectionsList.value = questionScreenUseCase.getSectionsListUseCase.invoke(surveyeeId)
@@ -230,6 +234,9 @@ class QuestionScreenViewModel @Inject constructor(
             )
 
             updateQuestionAnswerMapForNumericInputQuestions()
+
+            inputNumberQuestionMap.clear()
+            inputNumberQuestionMap.putAll(inputTypeQuestionAnswerEntityList.value.groupBy { it.questionId })
 
             _filterSectionList.value = _sectionDetail.value
             contentMapping.value = getContentData()
@@ -809,7 +816,8 @@ class QuestionScreenViewModel @Inject constructor(
 
             is QuestionTypeEvent.UpdateConditionQuestionStateForInputNumberOptions -> {
 
-                if (event.optionItemEntity.conditions == null) {
+                //TODO @Anupam Commenting for now, need to find permanent solution to hide condtional questions for unselected options.
+                /*if (event.optionItemEntity.conditions == null) {
                     val questionToUpdate = questionEntityStateList.find { it.questionId == event.questionEntityState?.questionId }
                     questionToUpdate?.optionItemEntityState?.forEach { optionItemEntity ->
                         optionItemEntity.optionItemEntity?.conditions?.forEach { conditionDto ->
@@ -819,14 +827,15 @@ class QuestionScreenViewModel @Inject constructor(
                             )
                         }
                     }
-                }
+                }*/
 
 
                 event.optionItemEntity.conditions?.forEach { conditionsDto ->
 
+                    //TODO @Anupam Commenting for now, need to find permanent solution to hide condtional questions for unselected options.
                     //Hide conditional questions for the unselected values.
-                    val questionToUpdate = questionEntityStateList.find { it.questionId == event.questionEntityState?.questionId && it.showQuestion }
-                    val unselectedOption = questionToUpdate?.optionItemEntityState?.filter { it.optionId != event.optionItemEntity.optionId }
+                    /*val questionToUpdate = questionEntityStateList.find { it.questionId == event.questionEntityState?.questionId && it.showQuestion }
+                    val unselectedOption = questionToUpdate?.optionItemEntityState?.filter { !event.inputTypeQuestionEntity.map { it.optionId }.contains(it.optionId) }
                     unselectedOption?.forEach { optionItemEntityState ->
                         optionItemEntityState.optionItemEntity?.conditions?.forEach { conditionsDto ->
                             val mConditionCheckResult = conditionsDto?.checkCondition(event.optionItemEntity.display ?: BLANK_STRING)
@@ -840,7 +849,7 @@ class QuestionScreenViewModel @Inject constructor(
                                 }
                             }
                         }
-                    }
+                    }*/
 
                     if (event.optionItemEntity.selectedValue != "0") {
                         val conditionCheckResult = conditionsDto?.checkCondition(
@@ -1653,5 +1662,40 @@ class QuestionScreenViewModel @Inject constructor(
     }
 
     fun getUserId(): String = questionScreenUseCase.getSectionUseCase.getUniqueUserIdentifier()
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun saveInputNumberOptionResponse(questionId: Int, optionId: Int, selectedValue: String) {
+
+        val responseList = mutableListOf<InputTypeQuestionAnswerEntity>()
+
+        val question = questionEntityStateList.toList().find { it.questionId == questionId }
+
+        val mOption = InputTypeQuestionAnswerEntity(
+            userId = questionScreenUseCase.getSectionUseCase.getUniqueUserIdentifier(),
+            didiId = didiDetails.value?.didiId ?: 0,
+            surveyId = question?.questionEntity?.surveyId ?: 0,
+            sectionId = question?.questionEntity?.sectionId ?: 0,
+            questionId = questionId,
+            optionId = optionId,
+            inputValue = selectedValue
+        )
+
+        val oldValues = inputNumberQuestionMap[questionId]
+
+        oldValues?.let {
+            responseList.clear()
+            responseList.addAll(it)
+        }
+
+        if (selectedValue != "0" && selectedValue != BLANK_STRING)
+            responseList.add(mOption)
+        else {
+            if (oldValues?.map { it.optionId }?.contains(mOption.optionId) == true)
+                responseList.removeIf { it.optionId == mOption.optionId }
+        }
+
+        inputNumberQuestionMap[questionId] = responseList
+
+    }
 
 }

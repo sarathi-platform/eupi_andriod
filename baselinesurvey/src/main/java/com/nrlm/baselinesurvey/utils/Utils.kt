@@ -582,15 +582,15 @@ fun ConditionsDto.checkCondition(userInputValue: String): Boolean {
     }
 }
 
-fun ConditionsDto.checkConditionForMultiSelectDropDown(userInputValue: String): Boolean {
+fun ConditionsDto.checkConditionForMultiSelectDropDown(userInputValue: List<String>): Boolean {
     val condition = this.value.split(CONDITIONS_DELIMITER, ignoreCase = true)
     try {
         val result = when (checkStringOperator(this.operator)) {
             Operator.EQUAL_TO -> {
-                userInputValue.contains(condition.first(), ignoreCase = true)
+                userInputValue.contains(condition.first())
             }
 
-            Operator.LESS_THAN -> {
+            /*Operator.LESS_THAN -> {
                 userInputValue.toInt() < condition.first().toInt()
             }
 
@@ -613,7 +613,7 @@ fun ConditionsDto.checkConditionForMultiSelectDropDown(userInputValue: String): 
 
             Operator.MORE_THAN_EQUAL_TO -> {
                 userInputValue.toInt() >= condition.first().toInt()
-            }
+            }*/
 
             else -> {
                 false

@@ -29,6 +29,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.DELIMITER_MULTISELECT_OPTIONS
 import com.nrlm.baselinesurvey.LIVELIHOOD_SOURCE_TAG
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
@@ -171,6 +172,7 @@ fun NestedLazyListForFormQuestions(
                                     sources = option.optionItemEntity.values,
                                     isEditAllowed = isEditAllowed,
                                     selectOptionText = if (viewModel.tempRefId.value != BLANK_STRING) {
+
                                         option.optionItemEntity.values?.find {
                                             it.value == (formQuestionResponseEntity.value.getResponseForOptionId(
                                                 option.optionId ?: -1
@@ -218,26 +220,42 @@ fun NestedLazyListForFormQuestions(
                                 }
                             }
 
+
                             QuestionType.MultiSelectDropDown.name,
                             QuestionType.MultiSelectDropdown.name -> {
+
+                                val mOption = if (viewModel.tempRefId.value != BLANK_STRING)
+                                    option.optionItemEntity?.values?.filter {
+                                        formQuestionResponseEntity.value.getResponseForOptionId(
+                                            option.optionId ?: -1
+                                        )?.selectedValue?.split(DELIMITER_MULTISELECT_OPTIONS)
+                                            ?.contains(it.id.toString()) == true
+                                    }?.map { it.value }?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
+                                        ?: BLANK_STRING
+                                else
+                                    option.optionItemEntity?.values?.filter {
+                                        viewModel.storeCacheForResponse.getResponseForOptionId(
+                                            optionId = option.optionId ?: -1
+                                        )?.selectedValue?.split(DELIMITER_MULTISELECT_OPTIONS)
+                                            ?.contains(it.id.toString()) == true
+                                    }?.map { it.value }?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
+                                        ?: BLANK_STRING
+
+
                                 TypeMultiSelectedDropDownComponent(
                                     title = option.optionItemEntity.display,
                                     sources = option.optionItemEntity.values,
                                     showQuestionState = option,
                                     isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
-                                    selectOptionText = if (viewModel.tempRefId.value != BLANK_STRING)
-                                        formQuestionResponseEntity.value.getResponseForOptionId(
-                                            option.optionId ?: -1
-                                        )?.selectedValue
-                                            ?: BLANK_STRING
-                                    else
-                                        viewModel.storeCacheForResponse.getResponseForOptionId(
-                                            optionId = option.optionId ?: -1
-                                        )?.selectedValue ?: BLANK_STRING,
+                                    selectOptionText = mOption,
                                     onInfoButtonClicked = {
                                         sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
                                     }
                                 ) { value ->
+                                    val valueIds = option.optionItemEntity.values?.filter {
+                                        value.split(DELIMITER_MULTISELECT_OPTIONS)
+                                            .contains(it.value)
+                                    }?.map { it.id } ?: listOf()
                                     questionTypeScreenViewModel.onEvent(
                                         QuestionTypeEvent.UpdateConditionalOptionState(
                                             option,
@@ -250,7 +268,7 @@ fun NestedLazyListForFormQuestions(
                                             saveFormQuestionResponseEntity(
                                                 formTypeOption,
                                                 option.optionId ?: 0,
-                                                value,
+                                                valueIds.joinToString(DELIMITER_MULTISELECT_OPTIONS),
                                                 viewModel.referenceId
                                             )
                                         )

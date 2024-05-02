@@ -10,6 +10,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
+import com.nrlm.baselinesurvey.DELIMITER_MULTISELECT_OPTIONS
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
@@ -23,6 +24,7 @@ import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
 import com.nrlm.baselinesurvey.ui.common_components.common_events.DialogEvents
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
+import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenEvents
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.entity.FormTypeOption
 import com.nrlm.baselinesurvey.ui.question_type_screen.domain.use_case.FormQuestionScreenUseCase
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.QuestionTypeEvent
@@ -43,6 +45,7 @@ import com.nrlm.baselinesurvey.utils.isNumeric
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.DialogState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -503,7 +506,13 @@ class QuestionTypeScreenViewModel @Inject constructor(
                                     QuestionType.MultiSelectDropDown.name.toLowerCase()
                                 )
                             ) {
-                                conditionsDto?.checkConditionForMultiSelectDropDown(event.userInputValue)
+                                val stringValue =
+                                    event.optionItemEntityState.optionItemEntity.values?.filter {
+                                        event.userInputValue.split(
+                                            DELIMITER_MULTISELECT_OPTIONS
+                                        ).contains(it.value)
+                                    }?.map { it.value } ?: listOf()
+                                conditionsDto?.checkConditionForMultiSelectDropDown(stringValue)
 
                             } else {
                                 conditionsDto?.checkCondition(event.userInputValue)
@@ -518,8 +527,14 @@ class QuestionTypeScreenViewModel @Inject constructor(
                                                 QuestionType.MultiSelectDropDown.name.toLowerCase()
                                             )
                                         ) {
+                                            val stringValue =
+                                                event.optionItemEntityState.optionItemEntity.values?.filter {
+                                                    event.userInputValue.split(
+                                                        DELIMITER_MULTISELECT_OPTIONS
+                                                    ).contains(it.value)
+                                                }?.map { it.value } ?: listOf()
                                             subCondtionDto?.checkConditionForMultiSelectDropDown(
-                                                event.userInputValue
+                                                stringValue
                                             )
 
                                         } else {
@@ -534,8 +549,14 @@ class QuestionTypeScreenViewModel @Inject constructor(
                         }
                     }
                 } else {
-                    event.optionItemEntityState?.optionItemEntity?.conditions?.forEach { conditionsDto ->
-                        updateQuestionStateForCondition(false, conditionsDto)
+                    if (!TextUtils.equals(
+                            event.optionItemEntityState?.optionItemEntity?.optionType?.toLowerCase(),
+                            QuestionType.MultiSelectDropDown.name.toLowerCase()
+                        )
+                    ) {
+                        event.optionItemEntityState?.optionItemEntity?.conditions?.forEach { conditionsDto ->
+                            updateQuestionStateForCondition(false, conditionsDto)
+                        }
                     }
                 }
 
@@ -672,6 +693,14 @@ class QuestionTypeScreenViewModel @Inject constructor(
                                 )
                         )
                     )
+                    onEvent(
+                        QuestionScreenEvents.SectionProgressUpdated(
+                            finalFormQuestionResponseList.first().surveyId,
+                            finalFormQuestionResponseList.first().sectionId,
+                            didiId,
+                            SectionStatus.INPROGRESS
+                        )
+                    )
                 }
             }
 
@@ -716,7 +745,15 @@ class QuestionTypeScreenViewModel @Inject constructor(
                         }
                     }
                 }
-                removeAnswersForUnSelectedConditions(event.formQuestionResponseEntity)
+                if (!TextUtils.equals(
+                        updatedOptionList.toList()
+                            .find { it.optionId == event.formQuestionResponseEntity.optionId }
+                            ?.optionItemEntity?.optionType?.toLowerCase(),
+                        QuestionType.MultiSelectDropDown.name.toLowerCase()
+                    )
+                ) {
+                    removeAnswersForUnSelectedConditions(event.formQuestionResponseEntity)
+                }
 
                 updateCachedData()
             }
@@ -741,7 +778,92 @@ class QuestionTypeScreenViewModel @Inject constructor(
                     )
                 }
             }
+
+            is QuestionScreenEvents.SectionProgressUpdated -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    onEvent(
+                        EventWriterEvents.UpdateSectionStatusEvent(
+                            event.surveyId,
+                            event.sectionId,
+                            event.didiId,
+                            event.sectionStatus
+                        )
+                    )
+                    formQuestionScreenUseCase.updateSectionProgressUseCase.invoke(
+                        event.surveyId,
+                        event.sectionId,
+                        event.didiId,
+                        event.sectionStatus
+                    )
+
+                    updateMissionActivityTaskStatus(event.didiId, SectionStatus.INPROGRESS)
+                }
+            }
+
+            is EventWriterEvents.UpdateSectionStatusEvent -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val updateSectionStatusEvent =
+                        eventWriterHelperImpl.createUpdateSectionStatusEvent(
+                            event.surveyId,
+                            event.sectionId,
+                            event.didiId,
+                            event.sectionStatus
+                        )
+                    formQuestionScreenUseCase.eventsWriterUserCase.invoke(
+                        events = updateSectionStatusEvent,
+                        eventType = EventType.STATEFUL
+                    )
+                }
+            }
+
+            is EventWriterEvents.UpdateMissionActivityTaskStatus -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    eventWriterHelperImpl.markMissionActivityTaskInProgress(
+                        missionId = event.missionId,
+                        activityId = event.activityId,
+                        taskId = event.taskId,
+                        status = event.status
+                    )
+                }
+            }
+
+            is EventWriterEvents.UpdateMissionActivityTaskStatusEvent -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val eventList = eventWriterHelperImpl.getMissionActivityTaskEventList(
+                        missionId = event.missionId,
+                        activityId = event.activityId,
+                        taskId = event.taskId,
+                        status = event.status
+                    )
+                    eventList.forEach { event ->
+                        formQuestionScreenUseCase.eventsWriterUserCase.invoke(
+                            events = event,
+                            eventType = EventType.STATEFUL
+                        )
+                    }
+                }
+            }
         }
+    }
+
+    private suspend fun updateMissionActivityTaskStatus(didiId: Int, sectionStatus: SectionStatus) {
+        val activityForSubjectDto = eventWriterHelperImpl.getActivityFromSubjectId(didiId)
+        onEvent(
+            EventWriterEvents.UpdateMissionActivityTaskStatus(
+                missionId = activityForSubjectDto.missionId,
+                activityId = activityForSubjectDto.activityId,
+                taskId = activityForSubjectDto.taskId,
+                status = sectionStatus
+            )
+        )
+        onEvent(
+            EventWriterEvents.UpdateMissionActivityTaskStatusEvent(
+                missionId = activityForSubjectDto.missionId,
+                activityId = activityForSubjectDto.activityId,
+                taskId = activityForSubjectDto.taskId,
+                status = sectionStatus
+            )
+        )
     }
 
     private fun removeAnswersForUnSelectedConditions(response: FormQuestionResponseEntity) {
