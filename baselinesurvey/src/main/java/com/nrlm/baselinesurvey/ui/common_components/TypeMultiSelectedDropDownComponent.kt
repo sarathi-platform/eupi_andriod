@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.toSize
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.DELIMITER_MULTISELECT_OPTIONS
 import com.nrlm.baselinesurvey.model.datamodel.ValuesDto
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 
@@ -33,7 +34,7 @@ fun TypeMultiSelectedDropDownComponent(
         if (selectOptionText.equals(BLANK_STRING, true))
             mutableStateOf(emptyList<String>())
         else
-            mutableStateOf(selectOptionText.split(", "))
+            mutableStateOf(selectOptionText.split(DELIMITER_MULTISELECT_OPTIONS))
     }
 
     VerticalAnimatedVisibilityComponent(visible = showQuestionState?.showQuestion ?: true) {
