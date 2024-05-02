@@ -274,7 +274,7 @@ fun exportOnlyLogFile(context: Context){
         }
     }
 
-    fun exportBaseLineQnA() {
+    fun exportBaseLineQnA(context: Context) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -286,7 +286,7 @@ fun exportOnlyLogFile(context: Context){
                         val dto = Gson().fromJson(payload, SaveAnswerEventDto::class.java)
                         dtoList.add(dto)
                     } catch (e: Exception) {
-                        BaselineLogger.e("SettingBSViewModel", "Exception CSV generate: ${e.message} ---------------")
+                        BaselineLogger.e("ExportImportViewModel", "Exception CSV SAVE ANSWER generate: ${e.message} ---------------")
                     }
                 }
                 val formQuestionEvents = eventWriterHelperImpl.generateFormTypeEventsForCSV()
@@ -298,7 +298,7 @@ fun exportOnlyLogFile(context: Context){
                             Gson().fromJson(payload, SaveAnswerEventForFormQuestionDto::class.java)
                         dtoSaveFormList.add(dto)
                     } catch (e: Exception) {
-                        BaselineLogger.e("SettingBSViewModel", "Exception CSV generate: ${e.message} ---------------")
+                        BaselineLogger.e("ExportImportViewModel", "Exception CSV SAVE ANSWER FORM generate: ${e.message} ---------------")
                     }
                 }
                 val sectionList = sectionEntityDao.getSectionsT(
@@ -340,7 +340,8 @@ fun exportOnlyLogFile(context: Context){
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             } catch (exception: Exception) {
                 exception.printStackTrace()
-                BaselineLogger.e("SettingBSViewModel", "Exception CSV generate: ${exception.message} ---------------")
+                withContext(Dispatchers.Main) {showCustomToast(context, context.getString(R.string.no_data_available_at_the_moment))}
+                BaselineLogger.e("ExportImportViewModel", "Exception CSV generate work: ${exception.message} ---------------")
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
@@ -365,7 +366,7 @@ fun exportOnlyLogFile(context: Context){
             content = list,
         ).catch { error ->
             // handle error here
-            BaselineLogger.e("SettingBSViewModel", "Export CSV error: $error ---------------")
+            BaselineLogger.e("ExportImportViewModel", "Export CSV error: $error ---------------")
         }.collect { path ->
             val file = File(path)
             uri = FileProvider.getUriForFile(

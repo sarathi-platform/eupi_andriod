@@ -91,7 +91,7 @@ fun ExportImportScreen(
                     viewModel.regenerateEvents(context.getString(R.string.share_export_file))
                 }
                 SettingTagEnum.EXPORT_BASELINE_QNA.name -> {
-                    viewModel.exportBaseLineQnA()
+                    viewModel.exportBaseLineQnA(context)
                 }
             }
         },
