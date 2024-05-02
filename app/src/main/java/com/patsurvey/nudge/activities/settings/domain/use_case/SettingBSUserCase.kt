@@ -5,5 +5,6 @@ data class SettingBSUserCase (
     val logoutUseCase: LogoutUseCase,
     val saveLanguageScreenOpenFromUseCase: SaveLanguageScreenOpenFromUseCase,
     val getAllPoorDidiForVillageUseCase: GetAllPoorDidiForVillageUseCase,
-    val exportHandlerSettingUseCase: ExportHandlerSettingUseCase
+    val exportHandlerSettingUseCase: ExportHandlerSettingUseCase,
+    val getUserDetailsUseCase: GetUserDetailsUseCase
 )

@@ -26,4 +26,12 @@ interface SettingBSRepository {
 
     suspend fun exportAllFiles(context: Context)
 
+    fun setAllDataSynced()
+
+    fun getUserMobileNumber():String
+    fun getUserID():String
+    fun getUserEmail():String
+
+    fun getUserName(): String
+
 }

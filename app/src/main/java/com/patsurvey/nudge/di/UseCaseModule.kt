@@ -6,6 +6,7 @@ import com.patsurvey.nudge.activities.settings.domain.repository.SettingBSReposi
 import com.patsurvey.nudge.activities.settings.domain.use_case.ExportHandlerSettingUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.GetAllPoorDidiForVillageUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.GetSettingOptionListUseCase
+import com.patsurvey.nudge.activities.settings.domain.use_case.GetUserDetailsUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.LogoutUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SaveLanguageScreenOpenFromUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
@@ -45,7 +46,8 @@ object UseCaseModule {
             logoutUseCase = LogoutUseCase(repository),
             saveLanguageScreenOpenFromUseCase = SaveLanguageScreenOpenFromUseCase(repository),
             getAllPoorDidiForVillageUseCase = GetAllPoorDidiForVillageUseCase(repository),
-            exportHandlerSettingUseCase = ExportHandlerSettingUseCase(repository)
+            exportHandlerSettingUseCase = ExportHandlerSettingUseCase(repository),
+            getUserDetailsUseCase = GetUserDetailsUseCase(repository)
 
         )
     }

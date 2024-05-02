@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import com.google.gson.Gson
+import com.nrlm.baselinesurvey.PREF_KEY_IS_DATA_SYNC
 import com.patsurvey.nudge.data.prefs.StrictModePermitter.permitDiskReads
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.utils.ACCESS_TOKEN
@@ -249,5 +250,9 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
 
     override fun setPreviousUserMobile(mobileNumber: String) {
         prefs.edit().putString(PREF_KEY_PREVIOUS_USER_MOBILE, mobileNumber).apply()
+    }
+
+    override fun setDataSyncStatus(status: Boolean) {
+        prefs.edit().putBoolean(PREF_KEY_IS_DATA_SYNC + getMobileNumber(), status).apply()
     }
 }

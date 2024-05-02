@@ -4,26 +4,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
-import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 import com.patsurvey.nudge.activities.settings.viewmodel.SettingBSViewModel
-import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.utils.showCustomToast
-import com.nudge.core.ui.navigation.CoreGraph
-import com.nudge.core.ui.navigation.SettingScreens
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
+import com.nudge.navigationmanager.graphs.SettingScreens
 import com.patsurvey.nudge.activities.settings.domain.DigitalFormEnum
-import com.patsurvey.nudge.utils.CustomLoaderDialog
 import com.patsurvey.nudge.utils.UPCM_USER
 import com.patsurvey.nudge.utils.showCustomDialog
 import com.patsurvey.nudge.utils.showToast
@@ -46,21 +39,6 @@ fun SettingBSScreen(
      viewModel.initOptions(context)
     }
 
-//    if (loaderState.value.isLoaderVisible) {
-//        Box(
-//            modifier = Modifier
-//                .fillMaxSize(),
-//            contentAlignment = Alignment.Center
-//        ) {
-//            CircularProgressIndicator(
-//                color = blueDark,
-//                modifier = Modifier
-//                    .size(28.dp)
-//                    .align(Alignment.Center)
-//            )
-//        }
-//    }
-
 
     if (viewModel.showLogoutDialog.value) {
         showCustomDialog(
@@ -76,7 +54,7 @@ fun SettingBSScreen(
                 viewModel.showLoader.value=true
                 viewModel.performLogout(context) {
                     if (it)
-                        navController.navigate(CoreGraph.LOGOUT_GRAPH)
+                        navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
                     else showCustomToast(context, context.getString(R.string.something_went_wrong))
                 }
             })

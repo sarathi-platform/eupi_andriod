@@ -11,6 +11,8 @@ import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.service.csv.ExportHelper
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.PREF_KEY_EMAIL
+import com.patsurvey.nudge.utils.PREF_KEY_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 
 class SettingBSRepositoryImpl(
@@ -63,5 +65,26 @@ class SettingBSRepositoryImpl(
 
     override suspend fun exportAllFiles(context: Context) {
         exportHelper.exportAllData(context)
+    }
+
+    override fun setAllDataSynced() {
+        prefRepo.setDataSyncStatus(false)
+    }
+
+    override fun getUserMobileNumber(): String {
+        return prefRepo.getMobileNumber()?: BLANK_STRING
+    }
+
+    override fun getUserID(): String {
+        return prefRepo.getUserId()
+    }
+
+    override fun getUserEmail(): String {
+        return prefRepo.getPref(PREF_KEY_EMAIL, BLANK_STRING)?: BLANK_STRING
+    }
+
+    override fun getUserName(): String {
+        return prefRepo.getPref(PREF_KEY_NAME, BLANK_STRING) ?: BLANK_STRING
+
     }
 }

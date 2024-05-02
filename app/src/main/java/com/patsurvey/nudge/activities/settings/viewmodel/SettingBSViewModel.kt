@@ -3,11 +3,16 @@ package com.patsurvey.nudge.activities.settings.viewmodel
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.net.toFile
+import androidx.core.net.toUri
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.BuildConfig
+import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
@@ -18,11 +23,16 @@ import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LogWriter
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nudge.core.SARATHI_DIRECTORY_NAME
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
+import com.nudge.core.exportDbFile
 import com.nudge.core.getDefaultBackUpFileName
+import com.nudge.core.getFirstName
+import com.nudge.core.json
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.uriFromFile
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 import com.patsurvey.nudge.database.service.csv.ExportHelper
@@ -156,19 +166,19 @@ class SettingBSViewModel @Inject constructor(
 
     fun clearLocalData() {//TOdo move this logic to repository
         nudgeBaselineDatabase.contentEntityDao().deleteContent()
-        nudgeBaselineDatabase.didiDao().deleteSurveyees()
-        nudgeBaselineDatabase.activityTaskEntityDao().deleteActivityTask()
-        nudgeBaselineDatabase.missionEntityDao().deleteMissions()
-        nudgeBaselineDatabase.missionActivityEntityDao().deleteActivities()
-        nudgeBaselineDatabase.optionItemDao().deleteOptions()
-        nudgeBaselineDatabase.questionEntityDao().deleteAllQuestions()
-        nudgeBaselineDatabase.sectionAnswerEntityDao().deleteAllSectionAnswer()
-        nudgeBaselineDatabase.inputTypeQuestionAnswerDao().deleteAllInputTypeAnswers()
-        nudgeBaselineDatabase.formQuestionResponseDao().deleteAllFormQuestions()
-        nudgeBaselineDatabase.didiSectionProgressEntityDao().deleteAllSectionProgress()
+        nudgeBaselineDatabase.didiDao().deleteSurveyees(prefRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.activityTaskEntityDao().deleteActivityTask(prefRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.missionEntityDao().deleteMissions(prefRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.missionActivityEntityDao().deleteActivities(prefRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.optionItemDao().deleteOptions(prefRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.questionEntityDao().deleteAllQuestions(prefRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.sectionAnswerEntityDao().deleteAllSectionAnswer(prefRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.inputTypeQuestionAnswerDao().deleteAllInputTypeAnswers(prefRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.formQuestionResponseDao().deleteAllFormQuestions(prefRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.didiSectionProgressEntityDao().deleteAllSectionProgress(prefRepo.getUniqueUserIdentifier())
         nudgeBaselineDatabase.villageListDao().deleteAllVilleges()
-        nudgeBaselineDatabase.surveyEntityDao().deleteAllSurvey()
-        nudgeBaselineDatabase.didiInfoEntityDao().deleteAllDidiInfo()
+        nudgeBaselineDatabase.surveyEntityDao().deleteAllSurvey(prefRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.didiInfoEntityDao().deleteAllDidiInfo(prefRepo.getUniqueUserIdentifier())
         clearSharedPref()
     }
 
@@ -184,34 +194,118 @@ class SettingBSViewModel @Inject constructor(
         settingBSUserCase.saveLanguageScreenOpenFromUseCase.invoke()
     }
 
-    fun buildAndShareLogs() {
+   /* fun buildAndShareLogs() {
         BaselineLogger.d("SettingBSViewModel", "buildAndShareLogs---------------")
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            LogWriter.buildSupportLogAndShare(prefRepo)
+            LogWriter.buildSupportLogAndShare(prefRepo,prefRepo)
         }
-    }
+    }*/
 
     fun compressEventData(title: String) {
-
+        BaselineLogger.d("SettingBSViewModel", "compressEventData---------------")
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 onEvent(LoaderEvent.UpdateLoaderState(true))
+                val fileUriList: ArrayList<Uri> = arrayListOf()
+                val fileAndDbZipList = ArrayList<Pair<String, Uri?>>()
                 val compression = ZipFileCompression()
-                val fileUri = compression.compressBackupFiles(
-                    MyApplication.applicationContext(),
-                    prefRepo.getMobileNumber() ?: ""
-                )
 
+                // Image Files and Zip
                 val imageUri = compression.compressBackupImages(
-                    MyApplication.applicationContext(),
-                    prefRepo.getMobileNumber() ?: ""
+                    BaselineCore.getAppContext(),
+                    settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber(),
+                    userName = settingBSUserCase.getUserDetailsUseCase.getUserName(),
+
+                    )
+
+                if(imageUri!=Uri.EMPTY) {
+                    imageUri?.let {
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                            fileUriList.add(it)
+                        else
+                            fileUriList.add(
+                                uriFromFile(context = BaselineCore.getAppContext(),
+                                applicationID = BuildConfig.APPLICATION_ID,
+                                file = it.toFile())
+                            )
+                        BaselineLogger.d("SettingBSViewModel", "Image File Uri: ${it.path}---------------")
+                    }
+                }
+
+                // Database File and URI
+                val dbUri = exportDbFile(
+                    appContext = BaselineCore.getAppContext(),
+                    applicationID = BuildConfig.APPLICATION_ID,
+                    databaseName = NUDGE_BASELINE_DATABASE
                 )
 
-                openShareSheet(imageUri, fileUri, title)
+
+                if(dbUri!= Uri.EMPTY){
+                    dbUri?.let {
+                        BaselineLogger.d("SettingBSViewModel", "Database File Uri: ${it.path}---------------")
+                        fileAndDbZipList.add(Pair(NUDGE_BASELINE_DATABASE,it))
+                    }
+                }
+
+                val eventFilePath =
+                    File(Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + getUserMobileNumber())
+
+                if(eventFilePath.exists() && eventFilePath.isDirectory){
+                    val eventFiles= eventFilePath.listFiles()?.filter { it.isFile && it.name.contains("event") }
+                    if (eventFiles != null) {
+                        if(eventFiles.isNotEmpty()){
+                            eventFiles.forEach {
+                                fileAndDbZipList.add(Pair(it.name,it.toUri()))
+                            }
+                        }
+                    }
+                }
+
+                // Add Log File
+
+
+
+                val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext()){}
+                if (logFile != null) {
+                    val logFileUri= uriFromFile(BaselineCore.getAppContext(),logFile, BuildConfig.APPLICATION_ID)
+                    if(logFileUri!=Uri.EMPTY) {
+                        logFileUri.let {
+                            fileAndDbZipList.add(Pair(logFile.name,it))
+                            BaselineLogger.d("SettingBSViewModel", "Log File Uri: ${it.path}---------------")
+
+                        }
+                    }
+                }
+                val zipFileName =
+                    "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_sarathi_${System.currentTimeMillis()}"
+
+                if(fileUriList.isNotEmpty()){
+                    val zipLogDbFileUri= compression.compressData(
+                        BaselineCore.getAppContext(),
+                        zipFileName,
+                        Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + getUserMobileNumber(),
+                        fileAndDbZipList,
+                        getUserMobileNumber()
+                    )
+                    zipLogDbFileUri?.let {
+                        if(it != Uri.EMPTY){
+                            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                                fileUriList.add(it)
+                            else fileUriList.add(
+                                uriFromFile(context = BaselineCore.getAppContext(),
+                                applicationID = BuildConfig.APPLICATION_ID,
+                                file = it.toFile())
+                            )
+                        }
+                    }
+                }
+
+                BaselineLogger.d("SettingBSViewModel", " Share Dialog Open ${fileUriList.json()}" )
+                openShareSheet(fileUriList, title, ZIP_MIME_TYPE)
                 CoreSharedPrefs.getInstance(BaselineCore.getAppContext()).setFileExported(true)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             } catch (exception: Exception) {
-                BaselineLogger.e("Compression", exception.message ?: "")
+                BaselineLogger.e("Compression Exception", exception.message ?: "")
                 exception.printStackTrace()
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
@@ -348,5 +442,9 @@ class SettingBSViewModel @Inject constructor(
         prefRepo.setPreviousUserMobile(mobileNumber = prefRepo.getMobileNumber()?: BLANK_STRING)
         prefRepo.saveSettingOpenFrom(0)
 
+    }
+
+    fun getUserMobileNumber():String{
+        return settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
     }
 }
