@@ -848,22 +848,24 @@ class QuestionTypeScreenViewModel @Inject constructor(
 
     private suspend fun updateMissionActivityTaskStatus(didiId: Int, sectionStatus: SectionStatus) {
         val activityForSubjectDto = eventWriterHelperImpl.getActivityFromSubjectId(didiId)
-        onEvent(
-            EventWriterEvents.UpdateMissionActivityTaskStatus(
-                missionId = activityForSubjectDto.missionId,
-                activityId = activityForSubjectDto.activityId,
-                taskId = activityForSubjectDto.taskId,
-                status = sectionStatus
+        activityForSubjectDto?.let {
+            onEvent(
+                EventWriterEvents.UpdateMissionActivityTaskStatus(
+                    missionId = activityForSubjectDto.missionId,
+                    activityId = activityForSubjectDto.activityId,
+                    taskId = activityForSubjectDto.taskId,
+                    status = sectionStatus
+                )
             )
-        )
-        onEvent(
-            EventWriterEvents.UpdateMissionActivityTaskStatusEvent(
-                missionId = activityForSubjectDto.missionId,
-                activityId = activityForSubjectDto.activityId,
-                taskId = activityForSubjectDto.taskId,
-                status = sectionStatus
+            onEvent(
+                EventWriterEvents.UpdateMissionActivityTaskStatusEvent(
+                    missionId = activityForSubjectDto.missionId,
+                    activityId = activityForSubjectDto.activityId,
+                    taskId = activityForSubjectDto.taskId,
+                    status = sectionStatus
+                )
             )
-        )
+        }
     }
 
     private fun removeAnswersForUnSelectedConditions(response: FormQuestionResponseEntity) {

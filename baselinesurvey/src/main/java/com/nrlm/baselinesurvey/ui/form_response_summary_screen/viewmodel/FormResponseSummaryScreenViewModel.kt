@@ -168,7 +168,7 @@ class FormResponseSummaryScreenViewModel @Inject constructor(
                 )
             isEditAllowed.value =
                 formResponseSummaryScreenUseCase.getPendingTaskCountLiveUseCase.isActivityComplete(
-                    task.missionId,
+                    task?.missionId!!,
                     task.activityId
                 )
         }
