@@ -2,9 +2,11 @@ package com.nrlm.baselinesurvey.ui.setting.viewmodel
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.net.toFile
 import androidx.core.net.toUri
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
@@ -101,7 +103,13 @@ class SettingBSViewModel @Inject constructor(
                     )
 
                 if(imageUri!=Uri.EMPTY) {
-                    imageUri?.let { fileUriList.add(it)
+                    imageUri?.let {
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                        fileUriList.add(it)
+                        else
+                            fileUriList.add(uriFromFile(context = BaselineCore.getAppContext(),
+                                applicationID = BuildConfig.APPLICATION_ID,
+                                file = it.toFile()))
                         BaselineLogger.d("SettingBSViewModel", "Image File Uri: ${it.path}---------------")
                     }
                 }
@@ -163,7 +171,11 @@ class SettingBSViewModel @Inject constructor(
                     )
                     zipLogDbFileUri?.let {
                         if(it != Uri.EMPTY){
+                            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                             fileUriList.add(it)
+                            else fileUriList.add(uriFromFile(context = BaselineCore.getAppContext(),
+                                applicationID = BuildConfig.APPLICATION_ID,
+                                file = it.toFile()))
                         }
                     }
                 }

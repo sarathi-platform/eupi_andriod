@@ -428,7 +428,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override fun deleteSurveyeeList() {
-        surveyeeEntityDao.deleteSurveyees()
+        surveyeeEntityDao.deleteSurveyees(getBaseLineUserId())
     }
 
     override fun saveSurveyeeList(surveyeeEntity: SurveyeeEntity) {

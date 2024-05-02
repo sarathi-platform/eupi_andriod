@@ -2,10 +2,14 @@ package com.nrlm.baselinesurvey.ui.backup.viewmodel
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.net.toFile
 import androidx.core.content.FileProvider
 import com.google.gson.Gson
 import com.nrlm.baselinesurvey.BLANK_STRING
@@ -48,6 +52,7 @@ import com.nudge.core.importDbFile
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
+import com.nudge.core.uriFromFile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -95,12 +100,17 @@ class ExportImportViewModel @Inject constructor(
 
     fun clearLocalDatabase(onPageChange:()->Unit){
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val result=exportImportUseCase.clearLocalDBExportUseCase.invoke()
-            if(result){
-                exportImportUseCase.clearLocalDBExportUseCase.setAllDataSyncStatus()
-                withContext(Dispatchers.Main){
-                    onPageChange()
+            try {
+                val result=exportImportUseCase.clearLocalDBExportUseCase.invoke()
+                if(result){
+                    exportImportUseCase.clearLocalDBExportUseCase.setAllDataSyncStatus()
+                    withContext(Dispatchers.Main){
+                        onPageChange()
+                    }
                 }
+            }catch (ex:Exception){
+                ex.printStackTrace()
+                BaselineLogger.e("ExportImportViewModel","clearLocalDatabase : ${ex.message}",ex)
             }
         }
     }
@@ -117,29 +127,51 @@ class ExportImportViewModel @Inject constructor(
                  userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName())
              ) {
                  BaselineLogger.d("ExportImportViewModel","exportLocalDatabase : ${it.path}")
-
+                 onEvent(LoaderEvent.UpdateLoaderState(false))
                  if (isNeedToShare) {
-                     openShareSheet(arrayListOf(it), "", type = ZIP_MIME_TYPE)
-                     onExportSuccess(it)
+                     openShareSheet(convertURIAccToOS(it), "", type = ZIP_MIME_TYPE)
                  } else {
                      onExportSuccess(it)
                  }
              }
          }catch (e:Exception){
              onEvent(LoaderEvent.UpdateLoaderState(false))
-            BaselineLogger.e("ExportImportViewModel","exportLocalDatabase :${e.message}")
+            BaselineLogger.e("ExportImportViewModel","exportLocalDatabase :${e.message}",e)
          }
 
     }
 
     private fun openShareSheet(fileUriList: ArrayList<Uri>?, title: String, type: String,) {
         if(fileUriList?.isNotEmpty() == true){
+            try {
+
+
             val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
             shareIntent.setType(type)
             shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
             shareIntent.putExtra(Intent.EXTRA_TITLE, title)
             val chooserIntent = Intent.createChooser(shareIntent, title)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
+                val resInfoList: List<ResolveInfo> =
+                    BaselineCore.getAppContext().packageManager
+                        .queryIntentActivities(chooserIntent, PackageManager.MATCH_DEFAULT_ONLY)
+
+                for (resolveInfo in resInfoList) {
+                    val packageName = resolveInfo.activityInfo.packageName
+                    BaselineCore.getAppContext().grantUriPermission(
+                        packageName,
+                        fileUriList[0],
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                }
+            }else{
+                shareIntent.putExtra(Intent.EXTRA_STREAM,fileUriList)
+            }
             BaselineCore.startExternalApp(chooserIntent)
+            }catch (ex:Exception){
+                BaselineLogger.e("ExportImportViewModel","openShareSheet :${ex.message}",ex)
+            }
         }
 
     }
@@ -159,12 +191,12 @@ class ExportImportViewModel @Inject constructor(
             onEvent(LoaderEvent.UpdateLoaderState(false))
             if(imageZipUri != null){
                 BaselineLogger.d("ExportImportViewModel","exportLocalImages: ${imageZipUri.path} ----")
-                openShareSheet(arrayListOf(imageZipUri),"Share All Images", type = ZIP_MIME_TYPE)
+                openShareSheet(convertURIAccToOS(imageZipUri),"Share All Images", type = ZIP_MIME_TYPE)
             }
         }
         }catch (e:Exception){
             onEvent(LoaderEvent.UpdateLoaderState(false))
-            BaselineLogger.e("ExportImportViewModel","exportLocalImages :${e.message}")
+            BaselineLogger.e("ExportImportViewModel","exportLocalImages :${e.message}",e)
         }
     }
 fun exportOnlyLogFile(context: Context){
@@ -185,7 +217,7 @@ fun exportOnlyLogFile(context: Context){
                 mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
             ) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
-                openShareSheet(arrayListOf(it) ,"", type = ZIP_MIME_TYPE)
+                openShareSheet(convertURIAccToOS(it) ,"", type = ZIP_MIME_TYPE)
             }
 
 
@@ -193,7 +225,7 @@ fun exportOnlyLogFile(context: Context){
     }
    }catch (e:Exception){
        onEvent(LoaderEvent.UpdateLoaderState(false))
-       BaselineLogger.e("ExportImportViewModel","exportOnlyLogFile :${e.message}")
+       BaselineLogger.e("ExportImportViewModel","exportOnlyLogFile :${e.message}",e)
    }
 }
     fun compressEventData(title: String) {
@@ -211,16 +243,22 @@ fun exportOnlyLogFile(context: Context){
                 )
                if(fileUri!=null) {
                    BaselineLogger.d("ExportImportViewModel","compressEventData ${fileUri.path}----")
-                   openShareSheet(arrayListOf(fileUri), title, type = ZIP_MIME_TYPE)
+                   openShareSheet(convertURIAccToOS(fileUri), title, type = ZIP_MIME_TYPE)
                }
                 CoreSharedPrefs.getInstance(BaselineCore.getAppContext()).setFileExported(true)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             } catch (exception: Exception) {
-                BaselineLogger.e("Compression", exception.message ?: "")
+                BaselineLogger.e("Compression", exception.message ?: "",exception)
                 exception.printStackTrace()
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
+    }
+
+    private fun convertURIAccToOS(uri: Uri): ArrayList<Uri> {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            return arrayListOf(uri)
+       return arrayListOf(uriFromFile(BaselineCore.getAppContext(),uri.toFile(),BuildConfig.APPLICATION_ID))
     }
 
     fun restartApp(context: Context, cls: Class<*>) {
@@ -245,8 +283,7 @@ fun exportOnlyLogFile(context: Context){
             onImportSuccess()
         }
         } catch (exception: Exception) {
-            BaselineLogger.e("ExportImportViewModel", "importSelectedDB : ${exception.message}")
-            exception.printStackTrace()
+            BaselineLogger.e("ExportImportViewModel", "importSelectedDB : ${exception.message}",exception)
             onEvent(LoaderEvent.UpdateLoaderState(false))
         }
     }
