@@ -54,7 +54,7 @@ interface MissionActivityDao {
     fun isActivityExist(userId: String, missionId: Int): Boolean
 
     @Query("SELECT $activityForSubject FROM $ACTIVITY_TABLE_NAME LEFT JOIN $TASK_TABLE_NAME on $ACTIVITY_TABLE_NAME.activityId = $TASK_TABLE_NAME.activityId where $TASK_TABLE_NAME.userId=:userId and $TASK_TABLE_NAME.didiId = :subjectId")
-    fun getActivityFromSubjectId(userId: String, subjectId: Int): ActivityForSubjectDto
+    fun getActivityFromSubjectId(userId: String, subjectId: Int): ActivityForSubjectDto?
 
     @Query("SELECT * from $ACTIVITY_TABLE_NAME where userId=:userId and  missionId = :missionId and activityId = :activityId")
     fun getActivity(userId: String, missionId: Int, activityId: Int): MissionActivityEntity
