@@ -18,7 +18,7 @@ interface MissionSummaryScreenRepository {
 
     fun isActivityCompleted(missionId: Int, activityId: Int): Boolean
 
-    fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto
+    fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto?
 
     suspend fun getMission(missionId: Int): MissionEntity
     fun getBaseLineUserId(): String

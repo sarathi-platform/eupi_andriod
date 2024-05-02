@@ -39,6 +39,7 @@ var surveyId: Int? = 0,
 @CsvBindByName(column = "Subject Id")
 var subjectId : Int? = 0,
 
+var sectionId: Int? = 0,
 
 
 ) : Exportable
@@ -69,7 +70,7 @@ data class HamletQnATableCSV(
     @CsvBindByName(column = "Subject Id")
     var subjectId : Int? = 0,
 
-
+    var sectionId: Int? = 0,
 
     ) : Exportable
 
