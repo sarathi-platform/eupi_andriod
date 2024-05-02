@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.data.domain
 
-import android.util.Log
 import androidx.core.net.toUri
 import android.text.TextUtils
 import com.nrlm.baselinesurvey.BLANK_STRING
@@ -178,30 +177,32 @@ class EventWriterHelperImpl @Inject constructor(
             referenceOptionList.add(OptionItemEntityState(it.optionId, it, !it.conditional))
         }
 
-        val mSaveAnswerEventDto = SaveAnswerEventDto(
-            surveyId = surveyId,
-            dateCreated = System.currentTimeMillis(),
-            languageId = languageId,
-            subjectId = didiId,
-            subjectType = activityForSubjectDto.subject,
-            sectionId = sectionId,
-            question = SaveAnswerEventQuestionItemDto(
-                questionId = questionId,
-                questionType = questionType,
-                tag = questionTag,
-                showQuestion = showQuestion,
-                questionDesc = questionItem?.questionDisplay ?: BLANK_STRING,
-                options = saveAnswerEventOptionItemDtoList.getOptionDescriptionInEnglish(
-                    surveyId,
-                    sectionId,
-                    questionId,
-                    questionType,
-                    referenceOptionList
-                )
-            ),
-            referenceId = surveyEntity?.referenceId ?: 0,
-            localTaskId = taskLocalId ?: BLANK_STRING
-        )
+        val mSaveAnswerEventDto = activityForSubjectDto?.subject?.let {
+            SaveAnswerEventDto(
+                surveyId = surveyId,
+                dateCreated = System.currentTimeMillis(),
+                languageId = languageId,
+                subjectId = didiId,
+                subjectType = it,
+                sectionId = sectionId,
+                question = SaveAnswerEventQuestionItemDto(
+                    questionId = questionId,
+                    questionType = questionType,
+                    tag = questionTag,
+                    showQuestion = showQuestion,
+                    questionDesc = questionItem?.questionDisplay ?: BLANK_STRING,
+                    options = saveAnswerEventOptionItemDtoList.getOptionDescriptionInEnglish(
+                        surveyId,
+                        sectionId,
+                        questionId,
+                        questionType,
+                        referenceOptionList
+                    )
+                ),
+                referenceId = surveyEntity?.referenceId ?: 0,
+                localTaskId = taskLocalId ?: BLANK_STRING
+            )
+        }
         val mSaveAnswerEventDtoEvent = repositoryImpl.createEvent(
             mSaveAnswerEventDto,
             EventName.SAVE_RESPONSE_EVENT,
@@ -254,24 +255,26 @@ class EventWriterHelperImpl @Inject constructor(
             )
         }
 
-        val mSaveAnswerEventDto = SaveAnswerEventForFormQuestionDto(
-            surveyId = surveyId,
-            dateCreated = System.currentTimeMillis(),
-            languageId = languageId,
-            subjectId = didiId,
-            subjectType = activityForSubjectDto.subject,
-            sectionId = sectionId,
-            question = SaveAnswerEventQuestionItemForFormQuestionDto(
-                questionId = questionId,
-                questionType = questionType,
-                tag = questionTag,
-                showQuestion = showQuestion,
-                options = optionList,
-                questionDesc = questionItem?.questionDisplay ?: BLANK_STRING
-            ),
-            referenceId = surveyEntity?.referenceId ?: 0,
-            localTaskId = taskLocalId ?: BLANK_STRING
-        )
+        val mSaveAnswerEventDto = activityForSubjectDto?.subject?.let {
+            SaveAnswerEventForFormQuestionDto(
+                surveyId = surveyId,
+                dateCreated = System.currentTimeMillis(),
+                languageId = languageId,
+                subjectId = didiId,
+                subjectType = it,
+                sectionId = sectionId,
+                question = SaveAnswerEventQuestionItemForFormQuestionDto(
+                    questionId = questionId,
+                    questionType = questionType,
+                    tag = questionTag,
+                    showQuestion = showQuestion,
+                    options = optionList,
+                    questionDesc = questionItem?.questionDisplay ?: BLANK_STRING
+                ),
+                referenceId = surveyEntity?.referenceId ?: 0,
+                localTaskId = taskLocalId ?: BLANK_STRING
+            )
+        }
         val mSaveAnswerEventDtoEvent = repositoryImpl.createEvent(
             mSaveAnswerEventDto,
             EventName.SAVE_RESPONSE_EVENT,
@@ -289,18 +292,20 @@ class EventWriterHelperImpl @Inject constructor(
             activityDao.getActivityFromSubjectId(getBaseLineUserId(), subjectId)
         val taskLocalId = taskDao.getTaskLocalId(getBaseLineUserId(), subjectId)
 
-        val mUpdateTaskStatusEventDto = UpdateTaskStatusEventDto(
-            missionId = activityForSubjectDto.missionId,
-            activityId = activityForSubjectDto.activityId,
-            taskId = activityForSubjectDto.taskId,
-            subjectId = subjectId,
-            subjectType = activityForSubjectDto.subject,
-            referenceType = StatusReferenceType.TASK.name,
-            status = sectionStatus.name,
-            actualStartDate = activityForSubjectDto.actualStartDate,
-            actualCompletedDate = activityForSubjectDto.actualCompletedDate,
-            localTaskId = taskLocalId ?: BLANK_STRING
-        )
+        val mUpdateTaskStatusEventDto = activityForSubjectDto?.let {
+            UpdateTaskStatusEventDto(
+                missionId = it.missionId,
+                activityId = activityForSubjectDto.activityId,
+                taskId = activityForSubjectDto.taskId,
+                subjectId = subjectId,
+                subjectType = activityForSubjectDto.subject,
+                referenceType = StatusReferenceType.TASK.name,
+                status = sectionStatus.name,
+                actualStartDate = activityForSubjectDto.actualStartDate,
+                actualCompletedDate = activityForSubjectDto.actualCompletedDate,
+                localTaskId = taskLocalId ?: BLANK_STRING
+            )
+        }
 
         val mUpdateTaskStatusEvent = repositoryImpl.createEvent(
             mUpdateTaskStatusEventDto,
@@ -477,7 +482,7 @@ class EventWriterHelperImpl @Inject constructor(
         markMissionCompleted(missionId, status)
     }
 
-    override suspend fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto {
+    override suspend fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto? {
         return activityDao.getActivityFromSubjectId(userId = getBaseLineUserId(), subjectId)
     }
 

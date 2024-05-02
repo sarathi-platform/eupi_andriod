@@ -16,7 +16,7 @@ fun List<SaveAnswerEventDto>.toCSVSave(sectionList: List<SectionEntity>, didiDet
     val sub = it.question.options.map { mIt -> mIt.optionDesc }
     val subject = sub.joinToString("\n")
     BaseLineQnATableCSV(
-        id = it.surveyId.toString(),
+        id = it.question.questionId.toString(),
         question = it.question.questionDesc,
         subQuestion = subject,
         response = response,
@@ -27,7 +27,8 @@ fun List<SaveAnswerEventDto>.toCSVSave(sectionList: List<SectionEntity>, didiDet
         house = houseNo,
         cohoretName = cohoretName,
         villageName = villageName,
-        surveyId = it.surveyId
+        surveyId = it.surveyId,
+        sectionId = it.sectionId
         )
 }
 
@@ -56,7 +57,8 @@ fun List<SaveAnswerEventForFormQuestionDto>.toCsv(sectionList: List<SectionEntit
                     house = houseNo,
                     cohoretName = cohoretName,
                     villageName = villageName,
-                    surveyId = it.surveyId
+                    surveyId = it.surveyId,
+                    sectionId = it.sectionId
                 ))
             }
         }
@@ -89,7 +91,7 @@ fun List<BaseLineQnATableCSV>.toCsv() : List<HamletQnATableCSV> = map {
         response = it.response,
         subjectId = it.subjectId,
         section = it.section,
-        cohoretName = it.cohoretName,
+        cohoretName = it.didiName, /*CohoretName is Didi Name*/
         villageName = it.villageName,
         surveyId = it.surveyId,
     )
