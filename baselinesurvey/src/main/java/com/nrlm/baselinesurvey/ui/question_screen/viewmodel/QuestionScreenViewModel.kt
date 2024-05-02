@@ -140,10 +140,12 @@ class QuestionScreenViewModel @Inject constructor(
                 questionScreenUseCase.getPendingTaskCountLiveUseCase.getActivityFromSubjectId(
                     subjectId
                 )
-            isEditAllowed = questionScreenUseCase.getPendingTaskCountLiveUseCase.isActivityComplete(
-                task.missionId,
-                task.activityId
-            )
+            if (task != null) {
+                isEditAllowed = questionScreenUseCase.getPendingTaskCountLiveUseCase.isActivityComplete(
+                    task.missionId,
+                    task.activityId
+                )
+            }
         }
     }
 
@@ -1200,22 +1202,26 @@ class QuestionScreenViewModel @Inject constructor(
 
     private suspend fun updateMissionActivityTaskStatus(didiId: Int, sectionStatus: SectionStatus) {
         val activityForSubjectDto = eventsWriterHelperImpl.getActivityFromSubjectId(didiId)
-        onEvent(
-            EventWriterEvents.UpdateMissionActivityTaskStatus(
-                missionId = activityForSubjectDto.missionId,
-                activityId = activityForSubjectDto.activityId,
-                taskId = activityForSubjectDto.taskId,
-                status = sectionStatus
+        if (activityForSubjectDto != null) {
+            onEvent(
+                EventWriterEvents.UpdateMissionActivityTaskStatus(
+                    missionId = activityForSubjectDto.missionId,
+                    activityId = activityForSubjectDto.activityId,
+                    taskId = activityForSubjectDto.taskId,
+                    status = sectionStatus
+                )
             )
-        )
-        onEvent(
-            EventWriterEvents.UpdateMissionActivityTaskStatusEvent(
-                missionId = activityForSubjectDto.missionId,
-                activityId = activityForSubjectDto.activityId,
-                taskId = activityForSubjectDto.taskId,
-                status = sectionStatus
+        }
+        if (activityForSubjectDto != null) {
+            onEvent(
+                EventWriterEvents.UpdateMissionActivityTaskStatusEvent(
+                    missionId = activityForSubjectDto.missionId,
+                    activityId = activityForSubjectDto.activityId,
+                    taskId = activityForSubjectDto.taskId,
+                    status = sectionStatus
+                )
             )
-        )
+        }
     }
 
     private fun saveOrUpdateMiscTypeQuestionAnswers(
