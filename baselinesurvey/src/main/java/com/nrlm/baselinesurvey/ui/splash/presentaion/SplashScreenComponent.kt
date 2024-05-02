@@ -119,7 +119,7 @@ fun SplashScreenComponent(
                 painter = painterResource(id = R.drawable.nrlm_logo),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
-                modifier = Modifier.size(137.dp)
+                modifier = Modifier.size(157.dp)
             )
         }
 
@@ -132,7 +132,6 @@ fun SplashScreenComponent(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 /*Text(text = "Sarathi", style = veryLargeTextStyle, color = blueDark)*/
                 Image(painter = painterResource(id = R.drawable.sarathi_logo_full), contentDescription = "Sarathi Logo")
-                Text(text = "To End Ultra Poverty", style = smallTextStyleNormalWeight, color = blueDark)
             }
         }
 
