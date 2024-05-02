@@ -110,7 +110,7 @@ class ExportImportViewModel @Inject constructor(
                 }
             }catch (ex:Exception){
                 ex.printStackTrace()
-                BaselineLogger.d("ExportImportViewModel","clearLocalDatabase : ${ex.message}")
+                BaselineLogger.e("ExportImportViewModel","clearLocalDatabase : ${ex.message}",ex)
             }
         }
     }
@@ -128,20 +128,15 @@ class ExportImportViewModel @Inject constructor(
              ) {
                  BaselineLogger.d("ExportImportViewModel","exportLocalDatabase : ${it.path}")
                  onEvent(LoaderEvent.UpdateLoaderState(false))
-                 if(isNeedToShare){
-                     openShareSheet(convertURIAccToOS(it) ,"")
-                 } else onExportSuccess(it)
-
                  if (isNeedToShare) {
-                     openShareSheet(arrayListOf(it), "", type = ZIP_MIME_TYPE)
-                     onExportSuccess(it)
+                     openShareSheet(convertURIAccToOS(it), "", type = ZIP_MIME_TYPE)
                  } else {
                      onExportSuccess(it)
                  }
              }
          }catch (e:Exception){
              onEvent(LoaderEvent.UpdateLoaderState(false))
-            BaselineLogger.e("ExportImportViewModel","exportLocalDatabase :${e.message}")
+            BaselineLogger.e("ExportImportViewModel","exportLocalDatabase :${e.message}",e)
          }
 
     }
@@ -175,7 +170,7 @@ class ExportImportViewModel @Inject constructor(
             }
             BaselineCore.startExternalApp(chooserIntent)
             }catch (ex:Exception){
-                ex.printStackTrace()
+                BaselineLogger.e("ExportImportViewModel","openShareSheet :${ex.message}",ex)
             }
         }
 
@@ -196,12 +191,12 @@ class ExportImportViewModel @Inject constructor(
             onEvent(LoaderEvent.UpdateLoaderState(false))
             if(imageZipUri != null){
                 BaselineLogger.d("ExportImportViewModel","exportLocalImages: ${imageZipUri.path} ----")
-                openShareSheet(arrayListOf(imageZipUri),"Share All Images", type = ZIP_MIME_TYPE)
+                openShareSheet(convertURIAccToOS(imageZipUri),"Share All Images", type = ZIP_MIME_TYPE)
             }
         }
         }catch (e:Exception){
             onEvent(LoaderEvent.UpdateLoaderState(false))
-            BaselineLogger.e("ExportImportViewModel","exportLocalImages :${e.message}")
+            BaselineLogger.e("ExportImportViewModel","exportLocalImages :${e.message}",e)
         }
     }
 fun exportOnlyLogFile(context: Context){
@@ -222,7 +217,7 @@ fun exportOnlyLogFile(context: Context){
                 mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
             ) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
-                openShareSheet(arrayListOf(it) ,"", type = ZIP_MIME_TYPE)
+                openShareSheet(convertURIAccToOS(it) ,"", type = ZIP_MIME_TYPE)
             }
 
 
@@ -230,7 +225,7 @@ fun exportOnlyLogFile(context: Context){
     }
    }catch (e:Exception){
        onEvent(LoaderEvent.UpdateLoaderState(false))
-       BaselineLogger.e("ExportImportViewModel","exportOnlyLogFile :${e.message}")
+       BaselineLogger.e("ExportImportViewModel","exportOnlyLogFile :${e.message}",e)
    }
 }
     fun compressEventData(title: String) {
@@ -248,19 +243,19 @@ fun exportOnlyLogFile(context: Context){
                 )
                if(fileUri!=null) {
                    BaselineLogger.d("ExportImportViewModel","compressEventData ${fileUri.path}----")
-                   openShareSheet(arrayListOf(fileUri), title, type = ZIP_MIME_TYPE)
+                   openShareSheet(convertURIAccToOS(fileUri), title, type = ZIP_MIME_TYPE)
                }
                 CoreSharedPrefs.getInstance(BaselineCore.getAppContext()).setFileExported(true)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             } catch (exception: Exception) {
-                BaselineLogger.e("Compression", exception.message ?: "")
+                BaselineLogger.e("Compression", exception.message ?: "",exception)
                 exception.printStackTrace()
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
     }
 
-    fun convertURIAccToOS(uri: Uri): ArrayList<Uri> {
+    private fun convertURIAccToOS(uri: Uri): ArrayList<Uri> {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             return arrayListOf(uri)
        return arrayListOf(uriFromFile(BaselineCore.getAppContext(),uri.toFile(),BuildConfig.APPLICATION_ID))
@@ -288,8 +283,7 @@ fun exportOnlyLogFile(context: Context){
             onImportSuccess()
         }
         } catch (exception: Exception) {
-            BaselineLogger.e("ExportImportViewModel", "importSelectedDB : ${exception.message}")
-            exception.printStackTrace()
+            BaselineLogger.e("ExportImportViewModel", "importSelectedDB : ${exception.message}",exception)
             onEvent(LoaderEvent.UpdateLoaderState(false))
         }
     }
