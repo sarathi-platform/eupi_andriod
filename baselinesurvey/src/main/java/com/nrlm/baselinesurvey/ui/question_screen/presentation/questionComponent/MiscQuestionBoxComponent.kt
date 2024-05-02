@@ -28,6 +28,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -233,15 +234,13 @@ fun MiscQuestionBoxComponent(
                                                 TypeDropDownComponent(
                                                     title = optionsItem.optionItemEntity.display
                                                         ?: BLANK_STRING,
-                                                    hintText = optionsItem.optionItemEntity.selectedValue
-                                                        ?: "Select",
+                                                    hintText = if (selectedOption?.selectedValueId != 0) optionsItem.optionItemEntity.values?.find { it.id == selectedOption?.selectedValueId!! }?.value
+                                                        ?: stringResource(id = R.string.select) else stringResource(
+                                                        id = R.string.select
+                                                    ),
                                                     showQuestionState = optionsItem,
                                                     sources = optionsItem.optionItemEntity.values,
-                                                    selectOptionText = optionsItem.optionItemEntity.values?.find {
-                                                        it.value == (selectedOption?.selectedValue
-                                                            ?: BLANK_STRING)
-                                                    }?.id
-                                                        ?: 0, //TODO change from checking text to check only for id
+                                                    selectOptionText = selectedOption?.selectedValueId!!,
                                                     onInfoButtonClicked = {}
                                                 ) { selectedValue ->
                                                     if (isEditAllowed) {

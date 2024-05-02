@@ -40,9 +40,10 @@ fun ExportImportScreen(
             viewModel.showRestartAppDialog.value=false
             it?.let { uri->
                 if(uri != Uri.EMPTY){
+
                     viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
                     BaselineLogger.d("ExportImportScreen","Selected File :${uri.path}")
-                   viewModel.importSelectedDB(uri){
+                    viewModel.importSelectedDB(uri){
                        viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
                        viewModel.showRestartAppDialog.value=false
                        viewModel.restartApp(context, MainActivity::class.java)
@@ -113,6 +114,7 @@ fun ExportImportScreen(
                 viewModel.exportLocalDatabase(isNeedToShare = false){
                     viewModel.clearLocalDatabase{
                         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+                        viewModel.showLoadConfirmationDialog.value =false
                         navController.navigate(route = Graph.HOME){
                             launchSingleTop=true
                             popUpTo(AuthScreen.START_SCREEN.route){

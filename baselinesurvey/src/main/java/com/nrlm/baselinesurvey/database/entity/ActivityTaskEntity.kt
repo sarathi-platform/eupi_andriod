@@ -35,8 +35,8 @@ data class ActivityTaskEntity(
     var subjectId: Int,
     var language: String?,
     var localTaskId: String,
-    val isActive: Int = 1
-) {
+    var isActive: Int = 1,
+    ) {
     companion object {
         fun getActivityTaskEntity(
             userId: String,
