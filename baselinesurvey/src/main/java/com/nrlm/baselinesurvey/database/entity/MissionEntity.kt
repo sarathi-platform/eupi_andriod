@@ -30,7 +30,8 @@ data class MissionEntity(
     var activityComplete: Int,
     var language: String?,
     var actualStartDate: String = BLANK_STRING,
-    var actualCompletedDate: String = BLANK_STRING
+    var actualCompletedDate: String = BLANK_STRING,
+    var isActive: Int = 1
 ) {
     companion object {
         fun getMissionEntity(

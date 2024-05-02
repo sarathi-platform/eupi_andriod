@@ -37,8 +37,7 @@ data class MissionActivityEntity(
     var pendingDidi: Int,
     val isAllTask: Boolean,
     var language: String?,
-
-
+    var isActive: Int
     ) {
     companion object {
         fun getMissionActivityEntity(
@@ -64,7 +63,8 @@ data class MissionActivityEntity(
                 activityStatus = SurveyState.INPROGRESS.ordinal,
                 pendingDidi = activityTaskSize,
                 isAllTask = false,
-                language = activity.language
+                language = activity.language,
+                isActive = 1
             )
         }
 
