@@ -1,4 +1,4 @@
-package com.patsurvey.nudge.activities.backup.presentation
+package com.nrlm.baselinesurvey.ui.backup.presentation
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -20,15 +20,15 @@ import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.activity.MainActivity
-import com.patsurvey.nudge.activities.backup.viewmodel.ExportImportViewModel
+import com.nrlm.baselinesurvey.navigation.AuthScreen
+import com.nrlm.baselinesurvey.navigation.navgraph.Graph
+import com.nrlm.baselinesurvey.ui.backup.viewmodel.ExportImportViewModel
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
+import com.nrlm.baselinesurvey.ui.setting.domain.SettingTagEnum
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.ShowCustomDialog
-import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
-import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
-import com.patsurvey.nudge.navigation.AuthScreen
 
 @Composable
 fun ExportImportScreen(
@@ -40,9 +40,10 @@ fun ExportImportScreen(
             viewModel.showRestartAppDialog.value=false
             it?.let { uri->
                 if(uri != Uri.EMPTY){
+
                     viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
                     BaselineLogger.d("ExportImportScreen","Selected File :${uri.path}")
-                   viewModel.importSelectedDB(uri){
+                    viewModel.importSelectedDB(uri){
                        viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
                        viewModel.showRestartAppDialog.value=false
                        viewModel.restartApp(context, MainActivity::class.java)
@@ -66,7 +67,9 @@ fun ExportImportScreen(
                 }
 
                 SettingTagEnum.EXPORT_DATABASE.name -> {
-                    viewModel.exportLocalDatabase(true) { }
+                    viewModel.exportLocalDatabase(true) {
+                        viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+                    }
                 }
 
                 SettingTagEnum.EXPORT_IMAGES.name -> {
@@ -88,12 +91,12 @@ fun ExportImportScreen(
                 SettingTagEnum.REGENERATE_EVENTS.name -> {
                     viewModel.regenerateEvents(context.getString(R.string.share_export_file))
                 }
+                SettingTagEnum.EXPORT_BASELINE_QNA.name -> {
+                    viewModel.exportBaseLineQnA(context)
+                }
             }
         },
-        onLogoutClick = {},
-        onParticularFormClick = {formIndex->},
-        isLoaderVisible = false,
-        expanded = false
+        onLogoutClick = {}
     )
 
     if(viewModel.showLoadConfirmationDialog.value){
@@ -111,7 +114,8 @@ fun ExportImportScreen(
                 viewModel.exportLocalDatabase(isNeedToShare = false){
                     viewModel.clearLocalDatabase{
                         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
-                        navController.navigate(route = NudgeNavigationGraph.HOME){
+                        viewModel.showLoadConfirmationDialog.value =false
+                        navController.navigate(route = Graph.HOME){
                             launchSingleTop=true
                             popUpTo(AuthScreen.START_SCREEN.route){
                                 inclusive=true

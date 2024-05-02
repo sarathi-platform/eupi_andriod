@@ -7,15 +7,18 @@ plugins {
     id 'kotlin-kapt'
 }
 
-def version = "1.10"
+def version = "2.0.2"
 android {
     namespace 'com.nrlm.baselinesurvey'
     compileSdk 34
 
     defaultConfig {
+        applicationId "com.nrlm.sarathi"
         minSdk 23
-        versionCode 1
+        targetSdk 33
+        versionCode 7
         versionName version
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true
@@ -164,8 +167,10 @@ dependencies {
     //Permissions
     implementation "com.google.accompanist:accompanist-permissions:0.21.1-beta"
 
-    //Local
+    //OTP
     implementation 'com.github.magneto3572:Magotp:1.0.4'
+
+    //Local
     implementation 'com.akexorcist:localization:1.2.11'
 
     //Coil

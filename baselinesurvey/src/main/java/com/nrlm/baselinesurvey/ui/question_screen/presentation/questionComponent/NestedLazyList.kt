@@ -1,7 +1,9 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponent
 
+import android.os.Build
 import android.text.TextUtils
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -89,6 +91,7 @@ import kotlinx.coroutines.withContext
 
 private val NEED_TO_UPDATE_LIST_DEFAULT_VALUE = Pair(false, BLANK_STRING)
 
+@RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun NestedLazyList(
     modifier: Modifier = Modifier,
@@ -327,7 +330,6 @@ fun NestedLazyList(
                     )
                 }
             }
-
 
 
             // TODO Commenting this until it is fixed.
@@ -781,7 +783,7 @@ fun NestedLazyList(
                                                     questionId = question.questionId ?: 0,
                                                     subjectId = surveyeeId,
                                                     formQuestionResponseList = listOf(
-                                                        mOptionItem.copy(selectedValue = mOptionItem.values?.first()?.value)
+                                                        mOptionItem.copy(selectedValue = mOptionItem.values?.last()?.value) //when marked NO
                                                             .convertOptionItemEntityToFormResponseEntityForFormWithNone(
                                                                 userId = questionScreenViewModel.getUserId(),
                                                                 didiId = surveyeeId,
@@ -812,7 +814,7 @@ fun NestedLazyList(
                                                     questionId = question.questionId ?: 0,
                                                     subjectId = surveyeeId,
                                                     formQuestionResponseList = listOf(
-                                                        mOptionItem.copy(selectedValue = mOptionItem.values?.last()?.value)
+                                                        mOptionItem.copy(selectedValue = mOptionItem.values?.first()?.value) //when marked YES
                                                             .convertOptionItemEntityToFormResponseEntityForFormWithNone(
                                                                 userId = questionScreenViewModel.getUserId(),
                                                                 didiId = surveyeeId,
@@ -934,10 +936,19 @@ fun NestedLazyList(
                                             QuestionType.InputNumber.name -> {
                                                 val mOptionItem =
                                                     optionItem.copy(selectedValue = selectedValue)
+
+                                                questionScreenViewModel.saveInputNumberOptionResponse(
+                                                    questionId = question.questionId!!,
+                                                    mOptionItem.optionId!!,
+                                                    selectedValue = selectedValue
+                                                )
+
                                                 questionScreenViewModel.onEvent(
                                                     QuestionTypeEvent.UpdateConditionQuestionStateForInputNumberOptions(
                                                         question,
-                                                        mOptionItem
+                                                        mOptionItem,
+                                                        questionScreenViewModel.inputNumberQuestionMap[question.questionId]
+                                                            ?: emptyList()
                                                     )
                                                 )
                                             }
@@ -1022,8 +1033,6 @@ fun NestedLazyList(
                                             QuestionType.Input.name,
                                             QuestionType.InputText.name,
                                             QuestionType.InputNumberEditText.name,
-                                            QuestionType.SingleSelectDropdown.name,
-                                            QuestionType.SingleSelectDropDown.name,
                                             QuestionType.HrsMinPicker.name,
                                             QuestionType.YrsMonthPicker.name -> {
                                                 questionScreenViewModel.onEvent(
@@ -1031,6 +1040,22 @@ fun NestedLazyList(
                                                         surveyeeId = surveyeeId,
                                                         questionEntityState = question,
                                                         optionItemEntity = optionItem,
+                                                        selectedValue = selectedValue
+                                                    )
+                                                )
+                                            }
+
+                                            QuestionType.SingleSelectDropdown.name,
+                                            QuestionType.SingleSelectDropDown.name -> {
+                                                val mOption = optionItem.copy(
+                                                    selectedValue = selectedValue,
+                                                    selectedValueId = selectedId
+                                                )
+                                                questionScreenViewModel.onEvent(
+                                                    QuestionScreenEvents.SaveMiscTypeQuestionAnswers(
+                                                        surveyeeId = surveyeeId,
+                                                        questionEntityState = question,
+                                                        optionItemEntity = mOptionItem,
                                                         selectedValue = selectedValue
                                                     )
                                                 )
@@ -1131,11 +1156,11 @@ fun NestedLazyList(
                                         }
                                     )
 
-                                        Spacer(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(dimen_8_dp)
-                                        )
+                                    Spacer(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(dimen_8_dp)
+                                    )
 
                                 }
                             }

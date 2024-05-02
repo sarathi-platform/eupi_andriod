@@ -99,7 +99,7 @@ fun MissionSummaryScreen(
                             val pendingTaskCount =
                                 viewModel.getPendingDidiCountLive(activity.activityId)
                                     .observeAsState().value ?: 0
-                            val pendingTasks = numberInEnglishFormat(pendingTaskCount)
+                            val pendingTasks = numberInEnglishFormat(pendingTaskCount, null)
 
                             var subTitle = if (activity.activityId == 1) {
                                 if (pendingTaskCount > 1) {

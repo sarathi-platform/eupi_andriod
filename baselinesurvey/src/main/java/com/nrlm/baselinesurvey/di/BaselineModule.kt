@@ -568,7 +568,8 @@ object BaselineModule {
     @Singleton
     fun providesQuestionTypeScreenUseCase(
         formQuestionResponse: FormQuestionResponseRepository,
-        eventsWriterRepository: EventsWriterRepository
+        eventsWriterRepository: EventsWriterRepository,
+        questionScreenRepository: QuestionScreenRepository
     ): FormQuestionScreenUseCase {
         return FormQuestionScreenUseCase(
             getFormQuestionResponseUseCase = GetFormQuestionResponseUseCase(
@@ -584,6 +585,7 @@ object BaselineModule {
             deleteFormQuestionResponseUseCase = DeleteFormQuestionResponseUseCase(
                 formQuestionResponse
             ),
+            updateSectionProgressUseCase = UpdateSectionProgressUseCase(questionScreenRepository),
             eventsWriterUserCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }
@@ -749,11 +751,15 @@ object BaselineModule {
     @Provides
     fun provideFormResponseSummaryScreenUseCase(
         repository: FormQuestionResponseRepository,
-        eventsWriterRepository: EventsWriterRepository
+        eventsWriterRepository: EventsWriterRepository,
+        missionSummaryScreenRepository: MissionSummaryScreenRepository
     ): FormResponseSummaryScreenUseCase {
         return FormResponseSummaryScreenUseCase(
             getFormQuestionResponseUseCase = GetFormQuestionResponseUseCase(repository),
             deleteFormQuestionResponseUseCase = DeleteFormQuestionResponseUseCase(repository),
+            getPendingTaskCountLiveUseCase = GetPendingTaskCountLiveUseCase(
+                missionSummaryScreenRepository
+            ),
             eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }

@@ -3,10 +3,10 @@ package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository
 import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
-import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
-import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.CasteModel
+import com.nrlm.baselinesurvey.model.datamodel.MissionActivityModel
+import com.nrlm.baselinesurvey.model.datamodel.MissionTaskModel
 import com.nrlm.baselinesurvey.model.request.ContentMangerRequest
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
@@ -47,9 +47,11 @@ interface DataLoadingScreenRepository {
         missionName: String
     ): ApiResponseModel<List<MissionResponseModel>>
 
-    suspend fun saveMissionToDB(missions: MissionEntity)
-    suspend fun saveMissionsActivityToDB(activities: MissionActivityEntity)
-    suspend fun saveActivityTaskToDB(tasks: ActivityTaskEntity)
+    suspend fun saveMissionToDB(missions: List<MissionResponseModel>)
+    suspend fun saveMissionsActivityToDB(
+        activities: List<MissionActivityModel>,
+        missionId: Int,
+    )
     suspend fun deleteMissionsFromDB()
     suspend fun deleteMissionActivitiesFromDB()
     suspend fun deleteActivityTasksFromDB()
@@ -79,4 +81,10 @@ interface DataLoadingScreenRepository {
     fun insertApiStatus(apiEndPoint: String)
     fun isNeedToCallApi(apiEndPoint: String): Boolean
     fun getBaseLineUserId(): String
+    fun saveMissionsActivityTaskToDB(
+        missionId: Int,
+        activityId: Int,
+        activityName: String,
+        activities: List<MissionTaskModel>
+    )
 }

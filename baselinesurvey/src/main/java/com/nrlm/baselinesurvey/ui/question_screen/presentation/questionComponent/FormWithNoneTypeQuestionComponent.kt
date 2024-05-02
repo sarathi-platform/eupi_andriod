@@ -227,7 +227,7 @@ fun FormWithNoneTypeQuestionComponent(
                                                 RadioButtonOptionComponent(
                                                     index = index,
                                                     selectedIndex = if (isNoneQuestionAnswered.value) {
-                                                        if (isNoneMarked.value) 0 else 1
+                                                        if (isNoneMarked.value) 1 else 0
                                                     } else -1,
                                                     optionsItem = OptionItemEntity.getEmptyOptionItemEntity()
                                                         .copy(
@@ -244,13 +244,13 @@ fun FormWithNoneTypeQuestionComponent(
                                                     onOptionSelected = {
 
                                                         if (isEditAllowed) {
-                                                            if (it.display?.equals(optionList.first()) == true) {
+                                                            if (it.display?.equals(optionList.last()) == true) { //when marked NO
                                                                 isNoneMarked.value = true
                                                                 isNoneQuestionAnswered.value =
                                                                     true
                                                             }
 
-                                                            if (it.display?.equals(optionList.last()) == true) {
+                                                            if (it.display?.equals(optionList.first()) == true) { //when marked Yes
                                                                 isNoneMarked.value = false
                                                                 isNoneQuestionAnswered.value =
                                                                     true
