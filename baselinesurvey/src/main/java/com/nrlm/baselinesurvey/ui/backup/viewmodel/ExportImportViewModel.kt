@@ -311,14 +311,14 @@ fun exportOnlyLogFile(context: Context){
                 baseLineQnATableCSV.addAll(dtoList.toCSVSave(sectionList, surveeList))
                 baseLineQnATableCSV.addAll(dtoSaveFormList.toCsv(sectionList, surveeList))
                 /*BaseLine*/
-                val baseLineListQnaCSV = baseLineQnATableCSV.filter { it.surveyId == 1 }
+                val baseLineListQnaCSV = baseLineQnATableCSV.filter { it.surveyId == 1 }.sortedBy { it.sectionId }
                 val baseLineMap = baseLineListQnaCSV.groupBy { it.subjectId }
                 val baseLineListQna = ArrayList<BaseLineQnATableCSV>()
                 baseLineMap.forEach {
                     baseLineListQna.addAll(it.value)
                 }
                 /*Hamlet */
-                val hamletListQnaCSV = baseLineQnATableCSV.filter { it.surveyId == 2}
+                val hamletListQnaCSV = baseLineQnATableCSV.filter { it.surveyId == 2}.sortedBy { it.sectionId }
                 val hamletMap = hamletListQnaCSV.groupBy { it.subjectId }
                 val hamletListQna = ArrayList<BaseLineQnATableCSV>()
                 hamletMap.forEach{
