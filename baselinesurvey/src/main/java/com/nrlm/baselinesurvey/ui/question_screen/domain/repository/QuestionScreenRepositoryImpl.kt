@@ -3,7 +3,7 @@ package com.nrlm.baselinesurvey.ui.question_screen.domain.repository
 import android.util.Log
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.dao.ContentDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.FormQuestionResponseDao
@@ -32,7 +32,7 @@ import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import javax.inject.Inject
 
 class QuestionScreenRepositoryImpl @Inject constructor(
-    private val prefRepo: PrefRepo,
+    private val prefBSRepo: PrefBSRepo,
     private val baseLineApiService: BaseLineApiService,
     private val surveyeeEntityDao: SurveyeeEntityDao,
     private val surveyEntityDao: SurveyEntityDao,
@@ -119,7 +119,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getSelectedLanguage(): Int {
-        return prefRepo.getAppLanguageId() ?: 2
+        return prefBSRepo.getAppLanguageId() ?: 2
     }
 
     override suspend fun updateSectionProgress(
@@ -262,7 +262,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
             questionEntityDao.getAllQuestionsForLanguage(
                 userid = getBaseLineUserId(),
                 surveyId,
-                prefRepo.getAppLanguageId() ?: 2
+                prefBSRepo.getAppLanguageId() ?: 2
             )
         val localSectionAnswersList = sectionAnswerEntityDao.getAllAnswerForDidi(
             userId = getBaseLineUserId(),
@@ -280,7 +280,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
                     userId = getBaseLineUserId(),
                     sectionId = sectionAnswerEntity.sectionId,
                     surveyId = surveyId,
-                    languageId = prefRepo.getAppLanguageId() ?: 2
+                    languageId = prefBSRepo.getAppLanguageId() ?: 2
                 ).sectionName,
                 options = getOptionsFromOptionsItems(sectionAnswerEntity)
             )
@@ -301,7 +301,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
                         userId = getBaseLineUserId(),
                         sectionId = it.sectionId,
                         surveyId = surveyId,
-                        languageId = prefRepo.getAppLanguageId() ?: 2
+                        languageId = prefBSRepo.getAppLanguageId() ?: 2
                     ).sectionName,
                     sectionStatus = it.sectionStatus
                 )
@@ -309,12 +309,12 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         }
         val saveSurveyRequestModelItem = SaveSurveyRequestModel(
             beneficiaryId = didiId,
-            languageId = prefRepo.getAppLanguageId() ?: 2,
+            languageId = prefBSRepo.getAppLanguageId() ?: 2,
             baselineSurveyStatus = SectionStatus.INPROGRESS.ordinal,
             shgFlag = 1,
             stateId = 4,
             surveyId = surveyId,
-            userType = prefRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING) ?: BLANK_STRING,
+            userType = prefBSRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING) ?: BLANK_STRING,
             villageId = villageId,
             answerDetailDTOList = answerListDto,
             sectionList = sectionList
@@ -424,7 +424,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getBaseLineUserId(): String {
-        return prefRepo.getUniqueUserIdentifier()
+        return prefBSRepo.getUniqueUserIdentifier()
     }
 
     override suspend fun deleteResponseForQuestion(

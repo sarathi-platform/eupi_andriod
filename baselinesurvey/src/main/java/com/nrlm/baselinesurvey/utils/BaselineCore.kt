@@ -8,8 +8,6 @@ import android.util.SparseArray
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.util.forEach
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
-import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.download.AndroidDownloader
 import com.nudge.communicationModule.EventObserverInterface
 import kotlinx.coroutines.CoroutineScope

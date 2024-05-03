@@ -50,27 +50,25 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScree
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.ui.video_player.presentation.FullscreenView
 import com.nrlm.baselinesurvey.utils.BaselineCore
-import com.nudge.core.ui.navigation.BASELINE_START_SCREEN_ROUTE_NAME
-import com.nudge.core.ui.navigation.BSHomeScreens
-import com.nudge.core.ui.navigation.CoreGraph
-import com.nudge.core.ui.navigation.FORM_QUESTION_SUMMARY_SCREEN_ROUTE_NAME
-import com.nudge.core.ui.navigation.FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME
-import com.nudge.core.ui.navigation.QUESTION_SCREEN_ROUTE_NAME
-import com.nudge.core.ui.navigation.SEARCH_SCREEN_ROUTE_NAME
-import com.nudge.core.ui.navigation.SECTION_SCREEN_ROUTE_NAME
-import com.nudge.core.ui.navigation.navigateBackToMissionScreen
+import com.nudge.navigationmanager.graphs.BSHomeScreens
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
+import com.nudge.navigationmanager.graphs.navigateBackToMissionScreen
+import com.nudge.navigationmanager.utils.NavigationParams
+import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
+import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.navigation.selection.logoutGraph
 import com.patsurvey.nudge.navigation.selection.settingNavGraph
+import com.patsurvey.nudge.utils.ARG_FROM_HOME
 
 @Composable
-fun BSNavHomeGraph(navController: NavHostController, modifier: Modifier) {
+fun BSNavHomeGraph(navController: NavHostController, modifier: Modifier, prefRepo: PrefRepo) {
     NavHost(
         modifier = Modifier
             .fillMaxSize()
             .background(color = white)
             .then(modifier),
         navController = navController,
-        route = CoreGraph.BASE_HOME,
+        route = NudgeNavigationGraph.BASE_HOME,
         startDestination = BSHomeScreens.DATA_LOADING_SCREEN.route
     ) {
 
@@ -338,7 +336,7 @@ fun BSNavHomeGraph(navController: NavHostController, modifier: Modifier) {
 
         missionSummaryGraph(navController = navController)
         settingNavGraph(navController=navController)
-        logoutGraph(navController =navController)
+        logoutGraph(navController =navController,prefRepo)
     }
 
 }
@@ -346,7 +344,7 @@ fun BSNavHomeGraph(navController: NavHostController, modifier: Modifier) {
 
 fun NavGraphBuilder.missionSummaryGraph(navController: NavHostController) {
     navigation(
-        route = CoreGraph.MISSION_SUMMARY_GRAPH,
+        route = NudgeNavigationGraph.MISSION_SUMMARY_GRAPH,
         startDestination = BSHomeScreens.SURVEYEE_LIST_SCREEN.route, arguments = listOf(
             navArgument(
                 name = ARG_ACTIVITY_ID
@@ -388,7 +386,7 @@ fun NavGraphBuilder.missionSummaryGraph(navController: NavHostController) {
 
 fun NavGraphBuilder.settingNavGraph(navHostController: NavHostController){
     navigation(
-        route = Graph.SETTING_GRAPH,
+        route = NudgeNavigationGraph.SETTING_GRAPH,
         startDestination = SettingBSScreens.SETTING_SCREEN.route
     ){
         composable(
@@ -441,7 +439,7 @@ sealed class HomeScreens(val route: String) {
         HomeScreens(route = "$VIDEO_PLAYER_SCREEN_ROUTE_NAME/{$ARG_VIDEO_PATH}")
 
     object FormTypeQuestionScreen :
-        HomeScreens(route = "${FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME}/{$ARG_SURVEY_ID}/{$ARG_SECTION_ID}/{$ARG_QUESTION_ID}/{$ARG_DIDI_ID}?{$ARG_FORM_QUESTION_RESPONSE_REFERENCE_ID}")
+        HomeScreens(route = "${FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME}/{$ARG_SURVEY_ID}/{$ARG_SECTION_ID}/{$ARG_QUESTION_ID}/{$ARG_DIDI_ID}?{${NavigationParams.ARG_FORM_QUESTION_RESPONSE_REFERENCE_ID}}")
 
     object BaseLineStartScreen :
         HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}/{$ARG_SURVEY_ID}/{$ARG_SECTION_ID}")
@@ -577,7 +575,7 @@ sealed class LogoutBSScreens(val route: String) {
 
 fun NavGraphBuilder.logoutNavGraph(navController: NavHostController){
     navigation(
-        route = Graph.LOGOUT_GRAPH,
+        route = NudgeNavigationGraph.LOGOUT_GRAPH,
         startDestination = LogoutBSScreens.LOG_LOGIN_SCREEN.route
     ){
         composable(

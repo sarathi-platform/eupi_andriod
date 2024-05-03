@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.nudge.core.ui.navigation.CoreGraph
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.*
@@ -198,7 +198,7 @@ fun LoginScreen(
                     } else {
                         viewModel.generateOtp { success, message ->
                             if (success) {
-                                if(navController.graph.route?.equals(CoreGraph.HOME,true) == true){
+                                if(navController.graph.route?.equals(NudgeNavigationGraph.HOME,true) == true){
                                     navController.navigate(route = "otp_verification_screen/" + viewModel.mobileNumber.value.text)
                                 }else
                                     navController.navigate(route = "otp_verification_screen/" + viewModel.mobileNumber.value.text)

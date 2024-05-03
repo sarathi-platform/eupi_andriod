@@ -4,5 +4,4 @@ data class ExportImportUseCase(
     val getExportOptionListUseCase: GetExportOptionListUseCase,
     val clearLocalDBExportUseCase: ClearLocalDBExportUseCase,
     val getUserDetailsExportUseCase: GetUserDetailsExportUseCase
-
 )

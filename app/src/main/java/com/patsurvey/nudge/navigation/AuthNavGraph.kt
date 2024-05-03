@@ -10,12 +10,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreen
-import com.nudge.core.ui.navigation.CoreGraph
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.ProfileScreen
 import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.VillageScreen
 import com.patsurvey.nudge.activities.settings.BugLogggingMechanismScreen
-import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
@@ -28,7 +27,7 @@ import com.patsurvey.nudge.utils.ARG_VIDEO_ID
 
 fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
     navigation(
-        route = CoreGraph.AUTHENTICATION,
+        route = NudgeNavigationGraph.AUTHENTICATION,
         startDestination = AuthScreen.START_SCREEN.route
     ) {
 

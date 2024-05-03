@@ -5,7 +5,7 @@ import android.text.TextUtils
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.PREF_USER_TYPE
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
@@ -71,7 +71,7 @@ import java.util.UUID
 import javax.inject.Inject
 
 class EventWriterHelperImpl @Inject constructor(
-    val prefRepo: PrefRepo,
+    val prefBSRepo: PrefBSRepo,
     private val repositoryImpl: EventsWriterRepositoryImpl,
     private val eventsDao: EventsDao,
     private val eventDependencyDao: EventDependencyDao,
@@ -148,7 +148,7 @@ class EventWriterHelperImpl @Inject constructor(
         showQuestion: Boolean,
         saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     ): Events {
-        val languageId = prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
+        val languageId = prefBSRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
         val surveyEntity = surveyEntityDao.getSurveyDetailForLanguage(
             userId = getBaseLineUserId(),
             surveyId,
@@ -223,7 +223,7 @@ class EventWriterHelperImpl @Inject constructor(
         showQuestion: Boolean,
         saveAnswerEventOptionItemDtoList: List<SaveAnswerEventOptionItemDto>
     ): Events {
-        val languageId = prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
+        val languageId = prefBSRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
         val surveyEntity = surveyEntityDao.getSurveyDetailForLanguage(
             userId = getBaseLineUserId(),
             surveyId,
@@ -287,7 +287,7 @@ class EventWriterHelperImpl @Inject constructor(
         subjectId: Int,
         sectionStatus: SectionStatus
     ): Events {
-        val languageId = prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
+        val languageId = prefBSRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
         val activityForSubjectDto =
             activityDao.getActivityFromSubjectId(getBaseLineUserId(), subjectId)
         val taskLocalId = taskDao.getTaskLocalId(getBaseLineUserId(), subjectId)
@@ -556,8 +556,8 @@ class EventWriterHelperImpl @Inject constructor(
         return Events(
             name = eventName.name,
             type = eventName.topicName,
-            createdBy = prefRepo.getUserId(),
-            mobile_number = prefRepo.getMobileNumber() ?: "",
+            createdBy = prefBSRepo.getUserId(),
+            mobile_number = prefBSRepo.getMobileNumber() ?: "",
             request_payload = payload,
             status = EventSyncStatus.OPEN.name,
             modified_date = System.currentTimeMillis().toDate(),
@@ -574,7 +574,7 @@ class EventWriterHelperImpl @Inject constructor(
     }
 
     fun getBaseLineUserId(): String {
-        return prefRepo.getUniqueUserIdentifier()
+        return prefBSRepo.getUniqueUserIdentifier()
     }
 
     suspend fun List<SaveAnswerEventOptionItemDto>.getOptionDescriptionInEnglish(
@@ -638,8 +638,8 @@ class EventWriterHelperImpl @Inject constructor(
         return Events(
             name = eventName.name,
             type = eventName.topicName,
-            createdBy = prefRepo.getUserId(),
-            mobile_number = prefRepo.getMobileNumber() ?: "",
+            createdBy = prefBSRepo.getUserId(),
+            mobile_number = prefBSRepo.getMobileNumber() ?: "",
             request_payload = payload,
             status = EventSyncStatus.OPEN.name,
             modified_date = System.currentTimeMillis().toDate(),
@@ -656,7 +656,7 @@ class EventWriterHelperImpl @Inject constructor(
     }
 
     fun getUserId(): String {
-        return prefRepo.getMobileNumber() ?: BLANK_STRING
+        return prefBSRepo.getMobileNumber() ?: BLANK_STRING
     }
 
 
@@ -680,8 +680,8 @@ class EventWriterHelperImpl @Inject constructor(
 
     private fun changeFileName(prefix: String) {
         val coreSharedPrefs = CoreSharedPrefs.getInstance(BaselineCore.getAppContext())
-        coreSharedPrefs.setBackupFileName(getDefaultBackUpFileName(prefix + prefRepo.getMobileNumber()))
-        coreSharedPrefs.setImageBackupFileName(getDefaultImageBackUpFileName(prefix + prefRepo.getMobileNumber()))
+        coreSharedPrefs.setBackupFileName(getDefaultBackUpFileName(prefix + prefBSRepo.getMobileNumber()))
+        coreSharedPrefs.setImageBackupFileName(getDefaultImageBackUpFileName(prefix + prefBSRepo.getMobileNumber()))
         if (!TextUtils.isEmpty(prefix))
             coreSharedPrefs.setFileExported(false)
     }
@@ -725,11 +725,11 @@ class EventWriterHelperImpl @Inject constructor(
     private suspend fun regenerateImageUploadEvent() {
 
         val didiInfoEntityList =
-            baselineDatabase.didiInfoEntityDao().getAllDidi(prefRepo.getUniqueUserIdentifier())
+            baselineDatabase.didiInfoEntityDao().getAllDidi(prefBSRepo.getUniqueUserIdentifier())
         val didiInfoQuestion =
             baselineDatabase.questionEntityDao().getQuestionForType(QuestionType.DidiDetails.name)
         val sectionDetails = baselineDatabase.sectionEntityDao().getSurveySectionForLanguage(
-            userId = prefRepo.getUniqueUserIdentifier(),
+            userId = prefBSRepo.getUniqueUserIdentifier(),
             surveyId = didiInfoQuestion.surveyId,
             sectionId = didiInfoQuestion.sectionId,
             languageId = DEFAULT_LANGUAGE_ID
@@ -749,7 +749,7 @@ class EventWriterHelperImpl @Inject constructor(
                 didi = surveyeeEntity,
                 location = surveyeeEntity.crpImageLocalPath.split("|").last().toString(),
                 filePath = surveyeeEntity.crpImageLocalPath.split("|").first().toString(),
-                userType = prefRepo.getPref(PREF_USER_TYPE, "") ?: "Ultra Poor change maker (UPCM)",
+                userType = prefBSRepo.getPref(PREF_USER_TYPE, "") ?: "Ultra Poor change maker (UPCM)",
                 questionId = didiInfoQuestion.questionId ?: 0,
                 referenceId = surveyeeEntity.didiId.toString(),
                 questionEntity = didiInfoQuestion,
@@ -775,7 +775,7 @@ class EventWriterHelperImpl @Inject constructor(
     }
 
     private suspend fun regenerateMATStatusEvent() {
-        val userID = prefRepo.getUniqueUserIdentifier()
+        val userID = prefBSRepo.getUniqueUserIdentifier()
         baselineDatabase.missionEntityDao().getMissions(userID).forEach { missionEntity ->
 
 
@@ -827,7 +827,7 @@ class EventWriterHelperImpl @Inject constructor(
 
         }
         baselineDatabase.didiSectionProgressEntityDao()
-            .getAllSectionProgress(prefRepo.getUniqueUserIdentifier()).forEach {
+            .getAllSectionProgress(prefBSRepo.getUniqueUserIdentifier()).forEach {
                 val event = createUpdateSectionStatusEvent(
                     it.surveyId,
                     it.sectionId,
@@ -958,7 +958,7 @@ class EventWriterHelperImpl @Inject constructor(
         val events = mutableListOf<Events>()
 
         baselineDatabase.inputTypeQuestionAnswerDao()
-            .getAllInputTypeAnswersForQuestion(prefRepo.getUniqueUserIdentifier()).forEach {
+            .getAllInputTypeAnswersForQuestion(prefBSRepo.getUniqueUserIdentifier()).forEach {
                 val questionEntity = baselineDatabase.questionEntityDao()
                     .getQuestionEntity(
                         getBaseLineUserId(),
@@ -1004,7 +1004,7 @@ class EventWriterHelperImpl @Inject constructor(
                 )
             }
 
-        baselineDatabase.sectionAnswerEntityDao().getAllAnswer(prefRepo.getUniqueUserIdentifier())
+        baselineDatabase.sectionAnswerEntityDao().getAllAnswer(prefBSRepo.getUniqueUserIdentifier())
             .forEach {
                 val tag = baselineDatabase.questionEntityDao()
                     .getQuestionTag(getBaseLineUserId(), it.surveyId, it.sectionId, it.questionId)
@@ -1040,7 +1040,7 @@ class EventWriterHelperImpl @Inject constructor(
         val events = mutableListOf<Events>()
 
         val formResponseList = baselineDatabase.formQuestionResponseDao()
-            .getAllFormResponses(prefRepo.getUniqueUserIdentifier())
+            .getAllFormResponses(prefBSRepo.getUniqueUserIdentifier())
         val formResponseAndQuestionMap = formResponseList.groupBy { it.questionId }
         val uniqueId = getBaseLineUserId()
         formResponseAndQuestionMap.forEach { mapItem ->
@@ -1102,7 +1102,7 @@ class EventWriterHelperImpl @Inject constructor(
         val events = mutableListOf<Events>()
 
         val didiInfoEntityList =
-            baselineDatabase.didiInfoEntityDao().getAllDidi(prefRepo.getUniqueUserIdentifier())
+            baselineDatabase.didiInfoEntityDao().getAllDidi(prefBSRepo.getUniqueUserIdentifier())
         val didiInfoQuestion =
             baselineDatabase.questionEntityDao().getQuestionForType(QuestionType.DidiDetails.name)
 

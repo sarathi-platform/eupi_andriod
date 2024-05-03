@@ -11,9 +11,6 @@ import android.widget.Toast
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.BuildConfig.DEBUG
 import com.nrlm.baselinesurvey.BuildConfig.VERSION_NAME
-import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
-import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.utils.BaselineLogger.e
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

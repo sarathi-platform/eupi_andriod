@@ -145,12 +145,15 @@ sealed class SettingScreens(val route: String) {
     object FORM_C_SCREEN : SettingScreens(route = FORM_C_SCREEN_ROUTE_NAME)
     object PDF_VIEWER : SettingScreens(route = "$PDF_VIEWER_ROUTE_NAME/{${NavigationParams.ARG_FORM_PATH.value}}")
     object IMAGE_VIEWER : SettingScreens(route = "$IMAGE_VIEWER_ROUTE_NAME/{${NavigationParams.ARG_IMAGE_PATH.value}}")
+
+    object BACKUP_RECOVERY_SCREEN : SettingScreens(route = BACKUP_RECOVERY_SCREEN_ROUTE_NAME)
 }
 
 sealed class LogoutScreens(val route: String){
     object LOG_LOGIN_SCREEN : LogoutScreens(route = LOGIN_SCREEN_ROUTE_NAME)
     object LOG_VILLAGE_SELECTION_SCREEN : LogoutScreens(route = VILLAGE_SELECTION_ROUTE_NAME)
     object LOG_DATA_LOADING_SCREEN : LogoutScreens(route = DATA_LOADING_SCREEN_ROUTE_NAME)
+    object LOG_HOME_SCREEN : LogoutScreens(route = LOGOUT_HOME_ROUTE_NAME)
 
     object LOG_OTP_VERIFICATION : LogoutScreens(route = "$OTP_VERIFICATION_ROUTE_NAME/{${NavigationParams.ARG_MOBILE_NUMBER.value}}")
 }

@@ -1,11 +1,9 @@
 package com.patsurvey.nudge.activities.settings.viewmodel
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
@@ -15,7 +13,7 @@ import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
@@ -48,6 +46,7 @@ import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.UPCM_USER
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_CONSTANT
 import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.openShareSheet
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -64,7 +63,7 @@ class SettingBSViewModel @Inject constructor(
     private val settingBSUserCase: SettingBSUserCase,
     private val nudgeBaselineDatabase: NudgeBaselineDatabase,
     val exportHelper: ExportHelper,
-    val prefRepo: PrefRepo
+    val prefBSRepo: PrefBSRepo
 ):BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     var showLogoutDialog = mutableStateOf(false)
@@ -86,7 +85,7 @@ class SettingBSViewModel @Inject constructor(
 
         list.add(
             SettingOptionModel(
-                2,
+                1,
                 context.getString(R.string.profile),
                 BLANK_STRING,
                 SettingTagEnum.PROFILE.name
@@ -96,7 +95,7 @@ class SettingBSViewModel @Inject constructor(
             if(settingOpenFrom!= PageFrom.VILLAGE_PAGE.ordinal) {
                 list.add(
                     SettingOptionModel(
-                        3,
+                        2,
                         context.getString(R.string.forms),
                         BLANK_STRING,
                         SettingTagEnum.FORMS.name
@@ -106,7 +105,7 @@ class SettingBSViewModel @Inject constructor(
 
             list.add(
                 SettingOptionModel(
-                    4,
+                    3,
                     context.getString(R.string.training_videos),
                     BLANK_STRING,
                     SettingTagEnum.TRAINING_VIDEOS.name
@@ -115,7 +114,7 @@ class SettingBSViewModel @Inject constructor(
         }
         list.add(
             SettingOptionModel(
-                5,
+                4,
                 context.getString(R.string.language_text),
                 BLANK_STRING,
                 SettingTagEnum.LANGUAGE.name
@@ -123,23 +122,26 @@ class SettingBSViewModel @Inject constructor(
         )
         list.add(
             SettingOptionModel(
-                6,
-                context.getString(R.string.share_logs),
+                5,
+                context.getString(R.string.export_backup_file),
                 BLANK_STRING,
-                SettingTagEnum.SHARE_LOGS.name
+                SettingTagEnum.EXPORT_BACKUP_FILE.name
             )
         )
         list.add(
             SettingOptionModel(
-                7,
-                context.getString(R.string.export_file),
+                6,
+                context.getString(R.string.backup_recovery),
                 BLANK_STRING,
-                SettingTagEnum.EXPORT_FILE.name
+                SettingTagEnum.BACKUP_RECOVERY.name
             )
         )
-        _optionList.value=list
 
-        checkFormsAvailabilityForVillage(context,villageId)
+
+        _optionList.value=list
+        if(userType != UPCM_USER) {
+            checkFormsAvailabilityForVillage(context, villageId)
+        }
     }
 
     fun performLogout(context: Context, onLogout: (Boolean) -> Unit) {
@@ -166,28 +168,28 @@ class SettingBSViewModel @Inject constructor(
 
     fun clearLocalData() {//TOdo move this logic to repository
         nudgeBaselineDatabase.contentEntityDao().deleteContent()
-        nudgeBaselineDatabase.didiDao().deleteSurveyees(prefRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.activityTaskEntityDao().deleteActivityTask(prefRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.missionEntityDao().deleteMissions(prefRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.missionActivityEntityDao().deleteActivities(prefRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.optionItemDao().deleteOptions(prefRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.questionEntityDao().deleteAllQuestions(prefRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.sectionAnswerEntityDao().deleteAllSectionAnswer(prefRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.inputTypeQuestionAnswerDao().deleteAllInputTypeAnswers(prefRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.formQuestionResponseDao().deleteAllFormQuestions(prefRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.didiSectionProgressEntityDao().deleteAllSectionProgress(prefRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.didiDao().deleteSurveyees(prefBSRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.activityTaskEntityDao().deleteActivityTask(prefBSRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.missionEntityDao().deleteMissions(prefBSRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.missionActivityEntityDao().deleteActivities(prefBSRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.optionItemDao().deleteOptions(prefBSRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.questionEntityDao().deleteAllQuestions(prefBSRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.sectionAnswerEntityDao().deleteAllSectionAnswer(prefBSRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.inputTypeQuestionAnswerDao().deleteAllInputTypeAnswers(prefBSRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.formQuestionResponseDao().deleteAllFormQuestions(prefBSRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.didiSectionProgressEntityDao().deleteAllSectionProgress(prefBSRepo.getUniqueUserIdentifier())
         nudgeBaselineDatabase.villageListDao().deleteAllVilleges()
-        nudgeBaselineDatabase.surveyEntityDao().deleteAllSurvey(prefRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.didiInfoEntityDao().deleteAllDidiInfo(prefRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.surveyEntityDao().deleteAllSurvey(prefBSRepo.getUniqueUserIdentifier())
+        nudgeBaselineDatabase.didiInfoEntityDao().deleteAllDidiInfo(prefBSRepo.getUniqueUserIdentifier())
         clearSharedPref()
     }
 
     fun clearSharedPref() {
-        val languageId = prefRepo.getAppLanguageId()
-        val language = prefRepo.getAppLanguage()
-        prefRepo.clearSharedPreference()
-        prefRepo.saveAppLanguage(language)
-        prefRepo.saveAppLanguageId(languageId)
+        val languageId = prefBSRepo.getAppLanguageId()
+        val language = prefBSRepo.getAppLanguage()
+        prefBSRepo.clearSharedPreference()
+        prefBSRepo.saveAppLanguage(language)
+        prefBSRepo.saveAppLanguageId(languageId)
     }
 
     fun saveLanguagePageFrom() {
@@ -312,16 +314,6 @@ class SettingBSViewModel @Inject constructor(
         }
     }
 
-    private fun openShareSheet(imageUri: Uri?, fileUri: Uri?, title: String) {
-        val fileUris = listOf(fileUri, imageUri)
-        val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
-        shareIntent.setType(ZIP_MIME_TYPE)
-        shareIntent.putExtra(Intent.EXTRA_STREAM, ArrayList(fileUris))
-        shareIntent.putExtra(Intent.EXTRA_TITLE, title)
-        val chooserIntent = Intent.createChooser(shareIntent, title)
-        BaselineCore.startExternalApp(chooserIntent)
-    }
-
     override fun <T> onEvent(event: T) {
         when (event) {
             is LoaderEvent.UpdateLoaderState -> {
@@ -427,20 +419,20 @@ class SettingBSViewModel @Inject constructor(
     }
 
     fun clearAccessToken() {
-        prefRepo.saveAccessToken("")
+        prefBSRepo.saveAccessToken("")
         CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setBackupFileName(
             getDefaultBackUpFileName(
-                prefRepo.getMobileNumber() ?: ""
+                prefBSRepo.getMobileNumber() ?: ""
             )
         )
         CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setImageBackupFileName(
             getDefaultBackUpFileName(
-                prefRepo.getMobileNumber() ?: ""
+                prefBSRepo.getMobileNumber() ?: ""
             )
         )
         CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setFileExported(false)
-        prefRepo.setPreviousUserMobile(mobileNumber = prefRepo.getMobileNumber()?: BLANK_STRING)
-        prefRepo.saveSettingOpenFrom(0)
+        prefBSRepo.setPreviousUserMobile(mobileNumber = prefBSRepo.getMobileNumber()?: BLANK_STRING)
+        prefBSRepo.saveSettingOpenFrom(0)
 
     }
 

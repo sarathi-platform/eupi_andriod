@@ -50,7 +50,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import com.nudge.core.ui.navigation.CoreGraph
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
@@ -92,7 +92,7 @@ fun DigitalFormAScreen(
         if (fromScreen == ARG_FROM_SETTING)
             navController.popBackStack()
         else {
-            navController.navigate(CoreGraph.HOME) {
+            navController.navigate(NudgeNavigationGraph.HOME) {
                 popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                     inclusive = true
                     saveState = false
@@ -458,7 +458,7 @@ fun DigitalFormAScreen(
                         if (fromScreen == ARG_FROM_SETTING)
                             navController.popBackStack()
                         else {
-                            navController.navigate(CoreGraph.HOME) {
+                            navController.navigate(NudgeNavigationGraph.HOME) {
                                 popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                                     inclusive = true
                                     saveState = false

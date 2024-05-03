@@ -29,3 +29,5 @@ const val FORM_QUESTION_SUMMARY_SCREEN_ROUTE_NAME = "form_question_summary_scree
 const val LOGIN_SCREEN_ROUTE_NAME="login_screen"
 const val VILLAGE_SELECTION_ROUTE_NAME="village_selection_screen"
 const val OTP_VERIFICATION_ROUTE_NAME="otp_verification_screen"
+const val BACKUP_RECOVERY_SCREEN_ROUTE_NAME = "backup_recovery_screen"
+const val LOGOUT_HOME_ROUTE_NAME="logout_home_screen"

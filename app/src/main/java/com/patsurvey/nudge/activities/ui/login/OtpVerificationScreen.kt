@@ -45,8 +45,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.nudge.core.ui.navigation.CoreGraph
-import com.nudge.core.ui.navigation.LogoutScreens
+import com.nudge.navigationmanager.graphs.LogoutScreens
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
@@ -246,7 +246,7 @@ fun OtpVerificationScreen(
 
                         if (success){
                             if(isUPCMUser){
-                                if (navController.graph.route?.equals(CoreGraph.HOME, true) == true){
+                                if (navController.graph.route?.equals(NudgeNavigationGraph.HOME, true) == true){
                                     navController.navigate(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
                                         launchSingleTop = true
                                         popUpTo(AuthScreen.START_SCREEN.route) {
@@ -254,11 +254,11 @@ fun OtpVerificationScreen(
                                         }
                                     }
                                 }else{
-                                    navController.navigate(route = CoreGraph.BASE_HOME)
+                                    navController.navigate(route = NudgeNavigationGraph.BASE_HOME)
                                 }
 
                             }else {
-                                if (navController.graph.route?.equals(CoreGraph.HOME, true) == true) {
+                                if (navController.graph.route?.equals(NudgeNavigationGraph.HOME, true) == true) {
                                     navController.navigate(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route) {
                                         launchSingleTop = true
                                         popUpTo(AuthScreen.START_SCREEN.route) {

@@ -4,7 +4,7 @@ import android.text.TextUtils
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.LANGUAGE_OPEN_FROM_SETTING
 import com.nrlm.baselinesurvey.base.BaseRepository
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
@@ -19,7 +19,7 @@ import com.nudge.core.preference.CoreSharedPrefs
 import javax.inject.Inject
 
 class SplashScreenRepositoryImpl @Inject constructor(
-    private val prefRepo: PrefRepo,
+    private val prefBSRepo: PrefBSRepo,
     private val apiService: BaseLineApiService,
     private val languageListDao: LanguageListDao,
     private val nudgeBaselineDatabase: NudgeBaselineDatabase
@@ -43,36 +43,36 @@ class SplashScreenRepositoryImpl @Inject constructor(
     }
 
     override fun isLoggedIn(): Boolean {
-        return !TextUtils.isEmpty(prefRepo.getAccessToken())
+        return !TextUtils.isEmpty(prefBSRepo.getAccessToken())
     }
 
     override fun saveLanguageOpenFrom() {
-        prefRepo.savePref(LANGUAGE_OPEN_FROM_SETTING, false)
+        prefBSRepo.savePref(LANGUAGE_OPEN_FROM_SETTING, false)
     }
 
     override fun isDataSynced(): Boolean {
-        return prefRepo.getDataSyncStatus()
+        return prefBSRepo.getDataSyncStatus()
     }
 
     override fun setAllDataSynced() {
-        prefRepo.setDataSyncStatus(true)
+        prefBSRepo.setDataSyncStatus(true)
     }
 
     override fun performLogout(clearData: Boolean) {
         if (clearData) {
             clearLocalData()
         } else {
-            prefRepo.saveAccessToken("")
-            prefRepo.saveMobileNumber("")
+            prefBSRepo.saveAccessToken("")
+            prefBSRepo.saveMobileNumber("")
         }
     }
 
     override fun getPreviousMobileNumber(): String {
-        return prefRepo.getPreviousUserMobile()
+        return prefBSRepo.getPreviousUserMobile()
     }
 
     override fun getMobileNumber(): String {
-        return prefRepo.getMobileNumber() ?: BLANK_STRING
+        return prefBSRepo.getMobileNumber() ?: BLANK_STRING
     }
 
     override fun clearLocalData() {
@@ -97,29 +97,29 @@ class SplashScreenRepositoryImpl @Inject constructor(
 
     override fun clearSharedPref() {
         val coreSharedPrefs = CoreSharedPrefs.getInstance(BaselineCore.getAppContext())
-        val languageId = prefRepo.getAppLanguageId()
-        val language = prefRepo.getAppLanguage()
-        val accessToken = prefRepo.getAccessToken()
-        val mobileNumber = prefRepo.getMobileNumber()
-        prefRepo.clearSharedPreference()
-        prefRepo.saveAccessToken(accessToken ?: BLANK_STRING)
-        prefRepo.saveMobileNumber(mobileNumber ?: BLANK_STRING)
-        prefRepo.saveAppLanguage(language)
-        prefRepo.saveAppLanguageId(languageId)
+        val languageId = prefBSRepo.getAppLanguageId()
+        val language = prefBSRepo.getAppLanguage()
+        val accessToken = prefBSRepo.getAccessToken()
+        val mobileNumber = prefBSRepo.getMobileNumber()
+        prefBSRepo.clearSharedPreference()
+        prefBSRepo.saveAccessToken(accessToken ?: BLANK_STRING)
+        prefBSRepo.saveMobileNumber(mobileNumber ?: BLANK_STRING)
+        prefBSRepo.saveAppLanguage(language)
+        prefBSRepo.saveAppLanguageId(languageId)
         coreSharedPrefs.setBackupFileName(
             getDefaultBackUpFileName(
-                prefRepo.getMobileNumber() ?: BLANK_STRING
+                prefBSRepo.getMobileNumber() ?: BLANK_STRING
             )
         )
         coreSharedPrefs.setImageBackupFileName(
             getDefaultImageBackUpFileName(
-                prefRepo.getMobileNumber() ?: ""
+                prefBSRepo.getMobileNumber() ?: ""
             )
         )
     }
 
     fun getBaseLineUserId(): String {
-        return this.prefRepo.getUniqueUserIdentifier()
+        return this.prefBSRepo.getUniqueUserIdentifier()
     }
 
 }

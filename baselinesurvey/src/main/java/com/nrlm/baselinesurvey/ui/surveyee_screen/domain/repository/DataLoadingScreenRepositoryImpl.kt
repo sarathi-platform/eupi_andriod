@@ -18,7 +18,7 @@ import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
 import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.nrlm.baselinesurvey.SUCCESS_CODE
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.ContentDao
@@ -79,7 +79,7 @@ import com.nudge.core.toDate
 import javax.inject.Inject
 
 class DataLoadingScreenRepositoryImpl @Inject constructor(
-    val prefRepo: PrefRepo,
+    val prefBSRepo: PrefBSRepo,
     val baseLineApiService: BaseLineApiService,
     val languageListDao: LanguageListDao,
     val surveyeeEntityDao: SurveyeeEntityDao,
@@ -411,23 +411,23 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override fun saveUserDetails(userDetailsResponse: UserDetailsResponse) {
-        BaselineLogger.d("User Details        ","Mobile Number: ${prefRepo.getPref(PREF_MOBILE_NUMBER,BLANK_STRING)}")
+        BaselineLogger.d("User Details        ","Mobile Number: ${prefBSRepo.getPref(PREF_MOBILE_NUMBER,BLANK_STRING)}")
         BaselineLogger.d("User Details        ","User Email: ${userDetailsResponse.email}")
-        prefRepo.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: "")
-        prefRepo.savePref(PREF_KEY_NAME, userDetailsResponse.name ?: "")
-        prefRepo.savePref(PREF_KEY_EMAIL, userDetailsResponse.email ?: "")
-        prefRepo.savePref(PREF_KEY_IDENTITY_NUMBER, userDetailsResponse.identityNumber ?: "")
-        prefRepo.savePref(PREF_KEY_PROFILE_IMAGE, userDetailsResponse.profileImage ?: "")
-        prefRepo.savePref(PREF_KEY_ROLE_NAME, userDetailsResponse.roleName ?: "")
-        prefRepo.savePref(PREF_KEY_TYPE_NAME, userDetailsResponse.typeName ?: "")
-        prefRepo.savePref(PREF_STATE_ID, userDetailsResponse.referenceId.first().stateId ?: -1)
+        prefBSRepo.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: "")
+        prefBSRepo.savePref(PREF_KEY_NAME, userDetailsResponse.name ?: "")
+        prefBSRepo.savePref(PREF_KEY_EMAIL, userDetailsResponse.email ?: "")
+        prefBSRepo.savePref(PREF_KEY_IDENTITY_NUMBER, userDetailsResponse.identityNumber ?: "")
+        prefBSRepo.savePref(PREF_KEY_PROFILE_IMAGE, userDetailsResponse.profileImage ?: "")
+        prefBSRepo.savePref(PREF_KEY_ROLE_NAME, userDetailsResponse.roleName ?: "")
+        prefBSRepo.savePref(PREF_KEY_TYPE_NAME, userDetailsResponse.typeName ?: "")
+        prefBSRepo.savePref(PREF_STATE_ID, userDetailsResponse.referenceId.first().stateId ?: -1)
     }
 
     override fun getUserId(): Int {
-        if (TextUtils.isEmpty(prefRepo.getPref(PREF_KEY_USER_NAME, ""))) {
+        if (TextUtils.isEmpty(prefBSRepo.getPref(PREF_KEY_USER_NAME, ""))) {
             return 0
         }
-        return prefRepo.getPref(PREF_KEY_USER_NAME, "")?.toInt() ?: 0
+        return prefBSRepo.getPref(PREF_KEY_USER_NAME, "")?.toInt() ?: 0
     }
 
     override fun deleteSurveyeeList() {
@@ -578,11 +578,11 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override fun saveCasteList(castes: String) {
-        prefRepo.savePref(PREF_CASTE_LIST, castes)
+        prefBSRepo.savePref(PREF_CASTE_LIST, castes)
     }
 
     override fun getCasteList(): List<CasteModel> {
-        val castes = prefRepo.getPref(PREF_CASTE_LIST, BLANK_STRING)
+        val castes = prefBSRepo.getPref(PREF_CASTE_LIST, BLANK_STRING)
         return if ((castes?.isEmpty() == true) || castes.equals("[]")) emptyList()
         else {
             Gson().fromJson(castes, object : TypeToken<List<CasteModel>>() {}.type)
@@ -625,7 +625,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getSelectedLanguageId(): String {
-        return prefRepo.getAppLanguage() ?: "en"
+        return prefBSRepo.getAppLanguage() ?: "en"
     }
 
     override suspend fun getSurveyAnswers() {
@@ -633,8 +633,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
             val surveyAnswersResponse = baseLineApiService.getSurveyAnswers(
                 GetSurveyAnswerRequest(
                     surveyId = it,
-                    mobileNumber = prefRepo.getMobileNumber() ?: "",
-                    userId = prefRepo.getUserId().toInt()
+                    mobileNumber = prefBSRepo.getMobileNumber() ?: "",
+                    userId = prefBSRepo.getUserId().toInt()
                 )
             )
             if (surveyAnswersResponse.status.equals(
@@ -778,7 +778,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getStateId(): Int {
-        return prefRepo.getPref(PREF_STATE_ID, -1)
+        return prefBSRepo.getPref(PREF_STATE_ID, -1)
     }
 
     override suspend fun getSectionStatus() {
@@ -788,7 +788,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     SectionStatusRequest(
                         sectionId = 2,
                         surveyId = it,
-                        userId = prefRepo.getUserId().toInt()
+                        userId = prefBSRepo.getUserId().toInt()
                     )
                 )
                 if (sectionStatusResponse.status.equals(
@@ -823,7 +823,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getAppLanguageId(): Int {
-        return prefRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
+        return prefBSRepo.getAppLanguageId() ?: DEFAULT_LANGUAGE_ID
     }
 
     override fun updateApiStatus(
@@ -848,7 +848,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getBaseLineUserId(): String {
-        return prefRepo.getUniqueUserIdentifier()
+        return prefBSRepo.getUniqueUserIdentifier()
     }
     override fun isNeedToCallApi(apiEndPoint: String): Boolean {
         return if (apiStatusDao.getFailedAPICount() > 0) {
@@ -861,7 +861,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
 
 
     override fun saveSettingScreenOpen() {
-        prefRepo.savePref(PREF_KEY_IS_SETTING_SCREEN_OPEN,false)
+        prefBSRepo.savePref(PREF_KEY_IS_SETTING_SCREEN_OPEN,false)
     }
 
 }

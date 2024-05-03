@@ -1,6 +1,14 @@
 package com.patsurvey.nudge.di
 
 
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
+import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
+import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
+import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepositoryImpl
+import com.patsurvey.nudge.activities.backup.domain.use_case.ClearLocalDBExportUseCase
+import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
+import com.patsurvey.nudge.activities.backup.domain.use_case.GetExportOptionListUseCase
+import com.patsurvey.nudge.activities.backup.domain.use_case.GetUserDetailsExportUseCase
 import com.patsurvey.nudge.activities.settings.domain.repository.SettingBSRepository
 import com.patsurvey.nudge.activities.settings.domain.repository.SettingBSRepositoryImpl
 import com.patsurvey.nudge.activities.settings.domain.use_case.ExportHandlerSettingUseCase
@@ -49,6 +57,30 @@ object UseCaseModule {
             exportHandlerSettingUseCase = ExportHandlerSettingUseCase(repository),
             getUserDetailsUseCase = GetUserDetailsUseCase(repository)
 
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesExportImportScreenRepository(
+        nudgeBaselineDatabase: NudgeBaselineDatabase,
+        prefRepo: PrefBSRepo
+    ):ExportImportRepository{
+        return ExportImportRepositoryImpl(
+            nudgeBaselineDatabase = nudgeBaselineDatabase,
+            prefBSRepo = prefRepo
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesExportImportUseCase(
+        repository: ExportImportRepository
+    ): ExportImportUseCase {
+        return ExportImportUseCase(
+            clearLocalDBExportUseCase = ClearLocalDBExportUseCase(repository),
+            getExportOptionListUseCase = GetExportOptionListUseCase(repository),
+            getUserDetailsExportUseCase = GetUserDetailsExportUseCase(repository)
         )
     }
 }

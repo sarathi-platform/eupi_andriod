@@ -1,6 +1,6 @@
 package com.nrlm.baselinesurvey.ui.section_screen.domain.repository
 
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.ContentDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
@@ -20,7 +20,7 @@ import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 
 class SectionListScreenRepositoryImpl(
-    private val prefRepo: PrefRepo,
+    private val prefBSRepo: PrefBSRepo,
     private val baseLineApiService: BaseLineApiService,
     private val surveyEntityDao: SurveyEntityDao,
     private val sectionEntityDao: SectionEntityDao,
@@ -198,7 +198,7 @@ class SectionListScreenRepositoryImpl(
     }
 
     override fun getSelectedLanguage(): Int {
-        return prefRepo.getAppLanguageId() ?: 2
+        return prefBSRepo.getAppLanguageId() ?: 2
     }
 
     override fun getSectionProgressForDidi(
@@ -253,6 +253,6 @@ class SectionListScreenRepositoryImpl(
     }
 
     override fun getBaseLineUserId(): String {
-        return prefRepo.getUniqueUserIdentifier()
+        return prefBSRepo.getUniqueUserIdentifier()
     }
 }

@@ -3,7 +3,7 @@ package com.nrlm.baselinesurvey.data.prefs
 import com.nrlm.baselinesurvey.database.entity.VillageEntity
 
 
-interface PrefRepo {
+interface PrefBSRepo {
 
     fun getLoginStatus(): Boolean
 

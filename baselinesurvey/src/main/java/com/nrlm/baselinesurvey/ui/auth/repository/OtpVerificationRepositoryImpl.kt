@@ -3,7 +3,7 @@ package com.nrlm.baselinesurvey.ui.auth.repository
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
 import com.nrlm.baselinesurvey.PREF_USER_TYPE
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.model.request.LoginRequest
 import com.nrlm.baselinesurvey.model.request.OtpRequest
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
@@ -12,7 +12,7 @@ import com.nrlm.baselinesurvey.network.interfaces.BaseLineApiService
 import javax.inject.Inject
 
 class OtpVerificationRepositoryImpl @Inject constructor(
-    private val prefRepo: PrefRepo,
+    private val prefBSRepo: PrefBSRepo,
     private val baseLineApiService: BaseLineApiService
 ): OtpVerificationRepository {
 
@@ -25,15 +25,15 @@ class OtpVerificationRepositoryImpl @Inject constructor(
     }
 
     override fun getMobileNumber(): String {
-        return prefRepo.getPref(PREF_MOBILE_NUMBER, BLANK_STRING) ?: BLANK_STRING
+        return prefBSRepo.getPref(PREF_MOBILE_NUMBER, BLANK_STRING) ?: BLANK_STRING
     }
 
     override fun saveAccessToken(token: String) {
-        prefRepo.saveAccessToken(token)
+        prefBSRepo.saveAccessToken(token)
     }
 
     override fun saveUserType(userType: String) {
-        prefRepo.savePref(PREF_USER_TYPE, userType)
+        prefBSRepo.savePref(PREF_USER_TYPE, userType)
     }
 
 }

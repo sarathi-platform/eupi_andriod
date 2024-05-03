@@ -6,7 +6,7 @@ import com.nrlm.baselinesurvey.activity.domain.use_case.IsLoggedInUseCase
 import com.nrlm.baselinesurvey.activity.domain.use_case.MainActivityUseCase
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelper
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.ContentDao
@@ -147,12 +147,12 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideSplashScreenRepository(
-        prefRepo: PrefRepo,
+        prefBSRepo: PrefBSRepo,
         baseLineApiService: BaseLineApiService,
         languageListDao: LanguageListDao,
         baselineDatabase: NudgeBaselineDatabase
     ): SplashScreenRepository {
-        return SplashScreenRepositoryImpl(prefRepo, baseLineApiService, languageListDao, baselineDatabase)
+        return SplashScreenRepositoryImpl(prefBSRepo, baseLineApiService, languageListDao, baselineDatabase)
     }
 
     @Provides
@@ -219,21 +219,21 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideLanguageScreenRepository(
-        prefRepo: PrefRepo,
+        prefBSRepo: PrefBSRepo,
         baseLineApiService: BaseLineApiService,
         languageListDao: LanguageListDao,
         villageListDao: VillageListDao
     ): LanguageScreenRepository {
-        return LanguageScreenRepositoryImpl(prefRepo, languageListDao, villageListDao)
+        return LanguageScreenRepositoryImpl(prefBSRepo, languageListDao, villageListDao)
     }
 
     @Provides
     @Singleton
     fun provideLoginScreenRepository(
-        prefRepo: PrefRepo,
+        prefBSRepo: PrefBSRepo,
         baseLineApiService: BaseLineApiService
     ): LoginScreenRepository {
-        return LoginScreenRepositoryImpl(prefRepo, baseLineApiService)
+        return LoginScreenRepositoryImpl(prefBSRepo, baseLineApiService)
     }
 
     @Provides
@@ -248,10 +248,10 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideOtpVerificationRepository(
-        prefRepo: PrefRepo,
+        prefBSRepo: PrefBSRepo,
         baseLineApiService: BaseLineApiService
     ): OtpVerificationRepository {
-        return OtpVerificationRepositoryImpl(prefRepo, baseLineApiService)
+        return OtpVerificationRepositoryImpl(prefBSRepo, baseLineApiService)
     }
 
     @Provides
@@ -268,7 +268,7 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideSurveyeeListScreenRepository(
-        prefRepo: PrefRepo,
+        prefBSRepo: PrefBSRepo,
         baseLineApiService: BaseLineApiService,
         surveyeeEntityDao: SurveyeeEntityDao,
         languageListDao: LanguageListDao,
@@ -276,7 +276,7 @@ object BaselineModule {
         missionActivityDao: MissionActivityDao
     ): SurveyeeListScreenRepository {
         return SurveyeeListScreenRepositoryImpl(
-            prefRepo,
+            prefBSRepo,
             baseLineApiService,
             surveyeeEntityDao,
             languageListDao,
@@ -312,7 +312,7 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideSectionListScreenRepository(
-        prefRepo: PrefRepo,
+        prefBSRepo: PrefBSRepo,
         baseLineApiService: BaseLineApiService,
         surveyEntityDao: SurveyEntityDao,
         sectionEntityDao: SectionEntityDao,
@@ -324,7 +324,7 @@ object BaselineModule {
         taskDao: ActivityTaskDao
     ): SectionListScreenRepository {
         return SectionListScreenRepositoryImpl(
-            prefRepo,
+            prefBSRepo,
             baseLineApiService,
             surveyEntityDao,
             sectionEntityDao,
@@ -358,7 +358,7 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideQuestionScreenRepository(
-        prefRepo: PrefRepo,
+        prefBSRepo: PrefBSRepo,
         baseLineApiService: BaseLineApiService,
         surveyeeEntityDao: SurveyeeEntityDao,
         surveyEntityDao: SurveyEntityDao,
@@ -372,7 +372,7 @@ object BaselineModule {
         contentDao: ContentDao
     ): QuestionScreenRepository {
         return QuestionScreenRepositoryImpl(
-            prefRepo = prefRepo,
+            prefBSRepo = prefBSRepo,
             baseLineApiService = baseLineApiService,
             surveyeeEntityDao = surveyeeEntityDao,
             surveyEntityDao = surveyEntityDao,
@@ -425,10 +425,10 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideMainActivityRepository(
-        prefRepo: PrefRepo,
+        prefBSRepo: PrefBSRepo,
         baseLineApiService: BaseLineApiService
     ): MainActivityRepository {
-        return MainActivityRepositoryImpl(prefRepo, baseLineApiService)
+        return MainActivityRepositoryImpl(prefBSRepo, baseLineApiService)
     }
 
     @Provides
@@ -444,7 +444,7 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideDataLoadingScreenRepository(
-        prefRepo: PrefRepo,
+        prefBSRepo: PrefBSRepo,
         baseLineApiService: BaseLineApiService,
         languageListDao: LanguageListDao,
         surveyeeEntityDao: SurveyeeEntityDao,
@@ -462,7 +462,7 @@ object BaselineModule {
 
     ): DataLoadingScreenRepository {
         return DataLoadingScreenRepositoryImpl(
-            prefRepo,
+            prefBSRepo,
             baseLineApiService,
             languageListDao,
             surveyeeEntityDao,
@@ -504,11 +504,11 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideStartSurveyScreenRepository(
-        prefRepo: PrefRepo,
+        prefBSRepo: PrefBSRepo,
         surveyeeEntityDao: SurveyeeEntityDao,
         didiInfoDao: DidiInfoDao
     ): StartScreenRepository {
-        return StartScreenRepositoryImpl(prefRepo, surveyeeEntityDao, didiInfoDao)
+        return StartScreenRepositoryImpl(prefBSRepo, surveyeeEntityDao, didiInfoDao)
     }
 
     @Provides
@@ -533,13 +533,13 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideSurveyStateRepository(
-        prefRepo: PrefRepo,
+        prefBSRepo: PrefBSRepo,
         surveyeeEntityDao: SurveyeeEntityDao,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
         didiInfoDao: DidiInfoDao
     ): SurveyStateRepository {
         return SurveyStateRepositoryImpl(
-            prefRepo,
+            prefBSRepo,
             surveyeeEntityDao,
             didiSectionProgressEntityDao,
             didiInfoDao
@@ -552,14 +552,14 @@ object BaselineModule {
         questionEntityDao: QuestionEntityDao,
         optionItemDao: OptionItemDao,
         formQuestionResponseDao: FormQuestionResponseDao,
-        prefRepo: PrefRepo,
+        prefBSRepo: PrefBSRepo,
         contentDao: ContentDao
     ): FormQuestionResponseRepository {
         return FormQuestionResponseRepositoryImpl(
             questionEntityDao = questionEntityDao,
             optionItemDao = optionItemDao,
             formQuestionResponseDao = formQuestionResponseDao,
-            prefRepo = prefRepo,
+            prefBSRepo = prefBSRepo,
             contentDao = contentDao
         )
     }
@@ -596,9 +596,9 @@ object BaselineModule {
         missionEntityDao: MissionEntityDao,
         missionActivityDao: MissionActivityDao,
         taskDao: ActivityTaskDao,
-        prefRepo: PrefRepo
+        prefBSRepo: PrefBSRepo
     ): MissionScreenRepository {
-        return MissionScreenRepositoryImpl(missionEntityDao, missionActivityDao, taskDao, prefRepo)
+        return MissionScreenRepositoryImpl(missionEntityDao, missionActivityDao, taskDao, prefBSRepo)
     }
 
     @Provides
@@ -608,14 +608,14 @@ object BaselineModule {
         taskDao: ActivityTaskDao,
         surveyeeEntityDao: SurveyeeEntityDao,
         missionEntityDao: MissionEntityDao,
-        prefRepo: PrefRepo
+        prefBSRepo: PrefBSRepo
     ): MissionSummaryScreenRepository {
         return MissionSummaryScreenRepositoryImpl(
             missionActivityDao,
             taskDao,
             surveyeeEntityDao,
             missionEntityDao,
-            prefRepo
+            prefBSRepo
         )
     }
 
@@ -645,9 +645,9 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideProfileBSRepository(
-        prefRepo: PrefRepo
+        prefBSRepo: PrefBSRepo
     ): ProfileBSRepository {
-        return ProfileBSRepositoryImpl(prefRepo)
+        return ProfileBSRepositoryImpl(prefBSRepo)
     }
 
     @Provides
@@ -678,9 +678,9 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideCasteListRepository(
-        prefRepo: PrefRepo
+        prefBSRepo: PrefBSRepo
     ): CasteListRepository {
-        return CasteListRepositoryImpl(prefRepo)
+        return CasteListRepositoryImpl(prefBSRepo)
     }
 
     @Provides
@@ -694,7 +694,7 @@ object BaselineModule {
     @Provides
     @Singleton
     fun provideEventsWriterRepository(
-        prefRepo: PrefRepo,
+        prefBSRepo: PrefBSRepo,
         surveyEntityDao: SurveyEntityDao,
         missionEntityDao: MissionEntityDao,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
@@ -704,7 +704,7 @@ object BaselineModule {
         eventWriterHelper: EventWriterHelperImpl
     ): EventsWriterRepository {
         return EventsWriterRepositoryImpl(
-            prefRepo = prefRepo,
+            prefBSRepo = prefBSRepo,
             surveyEntityDao = surveyEntityDao,
             didiSectionProgressEntityDao = didiSectionProgressEntityDao,
             eventsDao = eventsDao,
@@ -716,7 +716,7 @@ object BaselineModule {
     @Provides
     @Singleton
     fun providesEventWriterHelper(
-        prefRepo: PrefRepo,
+        prefBSRepo: PrefBSRepo,
         repositoryImpl: EventsWriterRepositoryImpl,
         eventsDao: EventsDao,
         eventDependencyDao: EventDependencyDao,
@@ -731,7 +731,7 @@ object BaselineModule {
         baselineDatabase: NudgeBaselineDatabase
     ): EventWriterHelper {
         return EventWriterHelperImpl(
-            prefRepo = prefRepo,
+            prefBSRepo = prefBSRepo,
             repositoryImpl = repositoryImpl,
             eventsDao = eventsDao,
             eventDependencyDao = eventDependencyDao,

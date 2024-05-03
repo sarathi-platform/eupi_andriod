@@ -17,7 +17,6 @@ import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
 import com.patsurvey.nudge.activities.settings.domain.DigitalFormEnum
-import com.patsurvey.nudge.utils.UPCM_USER
 import com.patsurvey.nudge.utils.showCustomDialog
 import com.patsurvey.nudge.utils.showToast
 import java.util.Locale
@@ -87,18 +86,17 @@ fun SettingBSScreen(
                       expanded.value = !expanded.value
                   }
 
-                  SettingTagEnum.SHARE_LOGS.name -> {
-                      if (viewModel.userType == UPCM_USER)
-                          viewModel.buildAndShareLogs()
-                      else viewModel.buildAndShareLogsForSelection()
-                  }
 
-                  SettingTagEnum.EXPORT_FILE.name -> {
+                  SettingTagEnum.EXPORT_BACKUP_FILE.name -> {
                       viewModel.compressEventData(context.getString(R.string.share_export_file))
                   }
 
                   SettingTagEnum.TRAINING_VIDEOS.name -> {
                       navController.navigate(SettingScreens.VIDEO_LIST_SCREEN.route)
+                  }
+
+                  SettingTagEnum.BACKUP_RECOVERY.name -> {
+                      navController.navigate(SettingScreens.BACKUP_RECOVERY_SCREEN.route)
                   }
               }
           },

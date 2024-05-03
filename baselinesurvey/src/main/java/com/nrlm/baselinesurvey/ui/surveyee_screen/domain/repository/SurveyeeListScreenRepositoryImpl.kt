@@ -10,7 +10,7 @@ import com.nrlm.baselinesurvey.PREF_KEY_ROLE_NAME
 import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
 import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
 import com.nrlm.baselinesurvey.SUCCESS
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
@@ -27,7 +27,7 @@ import com.nudge.core.toDate
 import javax.inject.Inject
 
 class SurveyeeListScreenRepositoryImpl @Inject constructor(
-    private val prefRepo: PrefRepo,
+    private val prefBSRepo: PrefBSRepo,
     private val baseLineApiService: BaseLineApiService,
     private val surveyeeEntityDao: SurveyeeEntityDao,
     private val languageListDao: LanguageListDao,
@@ -67,13 +67,13 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
                 baseLineApiService.userAndVillageListAPI(languageId = userViewApiRequest)
             if (userApiResponse.status.equals(SUCCESS, true)) {
                 userApiResponse.data?.let {
-                    prefRepo.savePref(PREF_KEY_USER_NAME, it.username ?: "")
-                    prefRepo.savePref(PREF_KEY_NAME, it.name ?: "")
-                    prefRepo.savePref(PREF_KEY_EMAIL, it.email ?: "")
-                    prefRepo.savePref(PREF_KEY_IDENTITY_NUMBER, it.identityNumber ?: "")
-                    prefRepo.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage ?: "")
-                    prefRepo.savePref(PREF_KEY_ROLE_NAME, it.roleName ?: "")
-                    prefRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: "")
+                    prefBSRepo.savePref(PREF_KEY_USER_NAME, it.username ?: "")
+                    prefBSRepo.savePref(PREF_KEY_NAME, it.name ?: "")
+                    prefBSRepo.savePref(PREF_KEY_EMAIL, it.email ?: "")
+                    prefBSRepo.savePref(PREF_KEY_IDENTITY_NUMBER, it.identityNumber ?: "")
+                    prefBSRepo.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage ?: "")
+                    prefBSRepo.savePref(PREF_KEY_ROLE_NAME, it.roleName ?: "")
+                    prefBSRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: "")
                 }
                 val apiResponse = userApiResponse.data?.username?.toInt()
                     ?.let { baseLineApiService.getDidisFromNetwork(userId = it) }
@@ -206,7 +206,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
     }
 
     override fun getBaseLineUserId(): String {
-        return prefRepo.getUniqueUserIdentifier()
+        return prefBSRepo.getUniqueUserIdentifier()
     }
 
 

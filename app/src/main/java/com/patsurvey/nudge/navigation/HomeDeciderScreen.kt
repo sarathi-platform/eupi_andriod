@@ -11,7 +11,7 @@ import com.patsurvey.nudge.utils.UPCM_USER
 @Composable
 fun HomeDeciderScreen( prefRepo: PrefRepo){
     if(prefRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING).equals(UPCM_USER)){
-        BSHomeNavScreen()
+        BSHomeNavScreen(prefRepo=prefRepo)
     }else {
         HomeNavScreen(prefRepo = prefRepo)
     }

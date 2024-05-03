@@ -69,7 +69,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
-import com.nudge.core.ui.navigation.CoreGraph
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CircularDidiImage
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
@@ -135,7 +135,7 @@ fun ScoreComparisionScreen(
     }
 
     BackHandler() {
-        navController.navigate(CoreGraph.HOME){
+        navController.navigate(NudgeNavigationGraph.HOME){
             popUpTo(HomeScreens.BPC_PROGRESS_SCREEN.route){
                 inclusive = true
             }
@@ -411,7 +411,7 @@ fun ScoreComparisionScreen(
             positiveButtonText = stringResource(id = R.string.done_text),
             negativeButtonRequired = false,
             positiveButtonOnClick = {
-                navController.navigate(CoreGraph.HOME) {
+                navController.navigate(NudgeNavigationGraph.HOME) {
                     popUpTo(HomeScreens.BPC_PROGRESS_SCREEN.route) {
                         inclusive = true
                     }

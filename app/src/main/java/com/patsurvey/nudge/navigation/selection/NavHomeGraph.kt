@@ -13,9 +13,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
-import com.nudge.core.ui.navigation.CoreGraph
-import com.nudge.core.ui.navigation.LogoutScreens
-import com.nudge.core.ui.navigation.SettingScreens
+import com.nudge.navigationmanager.graphs.LogoutScreens
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
+import com.nudge.navigationmanager.graphs.SettingScreens
 import com.patsurvey.nudge.ProfileScreen
 import com.patsurvey.nudge.activities.AddDidiScreen
 import com.patsurvey.nudge.activities.DidiScreen
@@ -83,7 +83,7 @@ import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
     NavHost(
         navController = navController,
-        route = CoreGraph.HOME,
+        route = NudgeNavigationGraph.HOME,
         startDestination = HomeScreens.PROGRESS_SCREEN.route
     ) {
         composable(route = HomeScreens.PROGRESS_SCREEN.route) {
@@ -99,7 +99,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                     navController.navigate("bpc_graph/$villageId/$stepId")
                 },
                 onNavigateToSetting = {
-                    navController.navigate(CoreGraph.SETTING_GRAPH)
+                    navController.navigate(NudgeNavigationGraph.SETTING_GRAPH)
                 },
                 onBackClick = {
 
@@ -157,7 +157,7 @@ sealed class HomeScreens(val route: String) {
 
 fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
     navigation(
-        route = CoreGraph.DETAILS,
+        route = NudgeNavigationGraph.DETAILS,
         startDestination = DetailsScreen.TRANSECT_WALK_SCREEN.route,
         arguments = listOf(navArgument(ARG_VILLAGE_ID) {
             type = NavType.IntType
@@ -194,7 +194,7 @@ fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
                 modifier = Modifier,
                 message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
             ) {
-                navController.navigate(CoreGraph.HOME) {
+                navController.navigate(NudgeNavigationGraph.HOME) {
                     popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                         inclusive = true
                         saveState = false
@@ -216,7 +216,7 @@ sealed class DetailsScreen(val route: String) {
 
 fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
     navigation(
-        route = CoreGraph.ADD_DIDI,
+        route = NudgeNavigationGraph.ADD_DIDI,
         startDestination = DetailsScreen.ADD_DIDI_SCREEN.route,
         arguments = listOf(navArgument(ARG_DIDI_DETAILS_ID) {
             type = NavType.IntType
@@ -243,7 +243,7 @@ fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
 
 fun NavGraphBuilder.socialMappingNavGraph(navController: NavHostController) {
     navigation(
-        route = CoreGraph.SOCIAL_MAPPING,
+        route = NudgeNavigationGraph.SOCIAL_MAPPING,
         startDestination = SocialMappingScreen.SM_DIDI_SCREEN.route,
         arguments = listOf(navArgument(ARG_VILLAGE_ID) {
             type = NavType.IntType
@@ -287,7 +287,7 @@ fun NavGraphBuilder.socialMappingNavGraph(navController: NavHostController) {
                 modifier = Modifier,
                 message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
             ) {
-                navController.navigate(CoreGraph.HOME) {
+                navController.navigate(NudgeNavigationGraph.HOME) {
                     popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                         inclusive = true
                         saveState = false
@@ -308,7 +308,7 @@ sealed class SocialMappingScreen(val route: String) {
 
 fun NavGraphBuilder.wealthRankingNavGraph(navController: NavHostController) {
     navigation(
-        route = CoreGraph.WEALTH_RANKING,
+        route = NudgeNavigationGraph.WEALTH_RANKING,
         startDestination = WealthRankingScreens.WEALTH_RANKING_SCREEN.route,
         arguments = listOf(navArgument(ARG_VILLAGE_ID) {
             type = NavType.IntType
@@ -394,7 +394,7 @@ sealed class WealthRankingScreens(val route: String) {
 
 fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
     navigation(
-        route = CoreGraph.PAT_SCREENS,
+        route = NudgeNavigationGraph.PAT_SCREENS,
         startDestination = PatScreens.PAT_LIST_SCREEN.route,
         arguments = listOf(navArgument(ARG_VILLAGE_ID) {
             type = NavType.IntType
@@ -615,7 +615,7 @@ sealed class PatScreens(val route: String) {
 
 fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
     navigation(
-        route = CoreGraph.SETTING_GRAPH,
+        route = NudgeNavigationGraph.SETTING_GRAPH,
         startDestination = SettingScreens.SETTING_SCREEN.route
     ) {
         composable(route = SettingScreens.SETTING_SCREEN.route) {
@@ -698,7 +698,7 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
 
 
 fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
-    navigation(route = CoreGraph.VO_ENDORSEMENT_GRAPH,
+    navigation(route = NudgeNavigationGraph.VO_ENDORSEMENT_GRAPH,
         startDestination = VoEndorsmentScreeens.VO_ENDORSMENT_LIST_SCREEN.route,
         arguments = listOf(navArgument(ARG_VILLAGE_ID) {
             type = NavType.IntType
@@ -838,8 +838,8 @@ sealed class VoEndorsmentScreeens(val route: String) {
 
 }
 
-fun NavGraphBuilder.logoutGraph(navController: NavHostController){
-    navigation(route = CoreGraph.LOGOUT_GRAPH,
+fun NavGraphBuilder.logoutGraph(navController: NavHostController,prefRepo: PrefRepo){
+    navigation(route = NudgeNavigationGraph.LOGOUT_GRAPH,
         startDestination = LogoutScreens.LOG_LOGIN_SCREEN.route,
     ) {
 
@@ -872,7 +872,7 @@ fun NavGraphBuilder.logoutGraph(navController: NavHostController){
 
         composable(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route) {
             VillageScreen(navController = navController) {
-                navController.navigate(CoreGraph.SETTING_GRAPH)
+                navController.navigate(NudgeNavigationGraph.SETTING_GRAPH)
             }
         }
         composable(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
@@ -884,7 +884,7 @@ fun NavGraphBuilder.logoutGraph(navController: NavHostController){
 fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
 
     navigation(
-        route = CoreGraph.BPC_GRAPH,
+        route = NudgeNavigationGraph.BPC_GRAPH,
         startDestination = BpcDidiListScreens.BPC_DIDI_LIST.route,
         arguments = listOf(navArgument(ARG_VILLAGE_ID) {
             type = NavType.IntType

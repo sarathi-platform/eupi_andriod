@@ -1,4 +1,4 @@
-package com.nrlm.baselinesurvey.ui.backup.presentation
+package com.patsurvey.nudge.activities.backup.presentation
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -20,15 +20,15 @@ import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.activity.MainActivity
-import com.nrlm.baselinesurvey.navigation.AuthScreen
-import com.nrlm.baselinesurvey.navigation.navgraph.Graph
-import com.nrlm.baselinesurvey.ui.backup.viewmodel.ExportImportViewModel
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
-import com.nrlm.baselinesurvey.ui.setting.domain.SettingTagEnum
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.ShowCustomDialog
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
+import com.patsurvey.nudge.activities.backup.viewmodel.ExportImportViewModel
+import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
+import com.patsurvey.nudge.navigation.AuthScreen
 
 @Composable
 fun ExportImportScreen(
@@ -96,7 +96,10 @@ fun ExportImportScreen(
                 }
             }
         },
-        onLogoutClick = {}
+        onLogoutClick = {},
+        onParticularFormClick = {index->},
+        isLoaderVisible = false,
+        expanded = false
     )
 
     if(viewModel.showLoadConfirmationDialog.value){
@@ -115,7 +118,7 @@ fun ExportImportScreen(
                     viewModel.clearLocalDatabase{
                         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
                         viewModel.showLoadConfirmationDialog.value =false
-                        navController.navigate(route = Graph.HOME){
+                        navController.navigate(route = NudgeNavigationGraph.HOME){
                             launchSingleTop=true
                             popUpTo(AuthScreen.START_SCREEN.route){
                                 inclusive=true

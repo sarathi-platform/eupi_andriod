@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
-import com.nudge.core.ui.navigation.CoreGraph
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
@@ -129,7 +129,7 @@ fun SurveySummary(
             showDialog.value = !showDialog.value
         } else {
             if (isStepComplete) {
-                navController.navigate(CoreGraph.HOME) {
+                navController.navigate(NudgeNavigationGraph.HOME) {
                     popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                         inclusive = true
                         saveState = false

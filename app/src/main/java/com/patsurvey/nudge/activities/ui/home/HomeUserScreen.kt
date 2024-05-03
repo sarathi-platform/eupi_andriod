@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.nudge.core.ui.navigation.CoreGraph
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.activities.ProgressScreen
 import com.patsurvey.nudge.activities.ui.bpc.progress_screens.BpcProgressScreen
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -26,7 +26,7 @@ fun HomeUserScreen(
                 navController.navigate("bpc_graph/$villageId/$stepId")
             },
             onNavigateToSetting = {
-                navController.navigate(CoreGraph.SETTING_GRAPH)
+                navController.navigate(NudgeNavigationGraph.SETTING_GRAPH)
             },
             onBackClick = {
                 navController.navigate(HomeScreens.VILLAGE_SELECTION_SCREEN.route)
@@ -47,7 +47,7 @@ fun HomeUserScreen(
                 }
             },
             onNavigateToSetting = {
-                navController.navigate(CoreGraph.SETTING_GRAPH)
+                navController.navigate(NudgeNavigationGraph.SETTING_GRAPH)
             }, onBackClick = {
                 navController.navigate(HomeScreens.VILLAGE_SELECTION_SCREEN.route)
             }

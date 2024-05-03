@@ -20,7 +20,7 @@ import com.nrlm.baselinesurvey.PREF_KEY_NAME
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventDto
@@ -28,7 +28,6 @@ import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventForFormQuestionDto
 import com.nrlm.baselinesurvey.model.datamodel.toCSVSave
 import com.nrlm.baselinesurvey.model.datamodel.toCsv
 import com.nrlm.baselinesurvey.model.datamodel.toCsvR
-import com.nrlm.baselinesurvey.ui.backup.domain.use_case.ExportImportUseCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
@@ -53,6 +52,7 @@ import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
+import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -69,7 +69,7 @@ class ExportImportViewModel @Inject constructor(
     private val eventWriterHelperImpl: EventWriterHelperImpl,
     private val sectionEntityDao: SectionEntityDao,
     private val surveyeeEntityDao: SurveyeeEntityDao,
-    val prefRepo: PrefRepo
+    val prefBSRepo: PrefBSRepo
 ): BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val optionList: State<List<SettingOptionModel>> get() = _optionList
@@ -339,11 +339,11 @@ fun exportOnlyLogFile(context: Context){
                     }
                 }
                 val sectionList = sectionEntityDao.getSectionsT(
-                    prefRepo.getUniqueUserIdentifier(),
+                    prefBSRepo.getUniqueUserIdentifier(),
                     DEFAULT_LANGUAGE_ID
                 )
                 val surveeList =
-                    surveyeeEntityDao.getAllDidiForQNA(prefRepo.getUniqueUserIdentifier())
+                    surveyeeEntityDao.getAllDidiForQNA(prefBSRepo.getUniqueUserIdentifier())
                 val baseLineQnATableCSV = mutableListOf<BaseLineQnATableCSV>()
                 baseLineQnATableCSV.addAll(dtoList.toCSVSave(sectionList, surveeList))
                 baseLineQnATableCSV.addAll(dtoSaveFormList.toCsv(sectionList, surveeList))
@@ -363,11 +363,11 @@ fun exportOnlyLogFile(context: Context){
                 }
 
                 val title = "${
-                    prefRepo.getPref(
+                    prefBSRepo.getPref(
                         PREF_KEY_NAME,
                         com.nudge.core.BLANK_STRING
                     ) ?: com.nudge.core.BLANK_STRING
-                }-${prefRepo.getMobileNumber()}"
+                }-${prefBSRepo.getMobileNumber()}"
                 val baseLinePath = generateCsv(title = "Baseline - $title", baseLineListQna = baseLineListQna.toCsvR(), hamletListQna = null)
                 val hamletPath = generateCsv(title = "Hamlet - $title", baseLineListQna = null, hamletListQna = hamletListQna.toCsv())
                 val listPath: ArrayList<Uri>? = ArrayList()

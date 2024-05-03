@@ -1,34 +1,34 @@
-package com.nrlm.baselinesurvey.ui.backup.domain.repository
+package com.patsurvey.nudge.activities.backup.domain.repository
 
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nrlm.baselinesurvey.PREF_KEY_NAME
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import javax.inject.Inject
 
 class ExportImportRepositoryImpl @Inject constructor(
-    val prefRepo: PrefRepo,
+    val prefBSRepo: PrefBSRepo,
     val nudgeBaselineDatabase:NudgeBaselineDatabase
 ):ExportImportRepository {
     override fun clearLocalData() {
         try {
 
             nudgeBaselineDatabase.contentEntityDao().deleteContent()
-            nudgeBaselineDatabase.didiDao().deleteSurveyees(prefRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.activityTaskEntityDao().deleteActivityTask(prefRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.missionEntityDao().deleteMissions(prefRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.missionActivityEntityDao().deleteActivities(prefRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.optionItemDao().deleteOptions(prefRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.questionEntityDao().deleteAllQuestions(prefRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.sectionAnswerEntityDao().deleteAllSectionAnswer(prefRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.inputTypeQuestionAnswerDao().deleteAllInputTypeAnswers(prefRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.formQuestionResponseDao().deleteAllFormQuestions(prefRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.didiSectionProgressEntityDao().deleteAllSectionProgress(prefRepo.getUniqueUserIdentifier())
+            nudgeBaselineDatabase.didiDao().deleteSurveyees(prefBSRepo.getUniqueUserIdentifier())
+            nudgeBaselineDatabase.activityTaskEntityDao().deleteActivityTask(prefBSRepo.getUniqueUserIdentifier())
+            nudgeBaselineDatabase.missionEntityDao().deleteMissions(prefBSRepo.getUniqueUserIdentifier())
+            nudgeBaselineDatabase.missionActivityEntityDao().deleteActivities(prefBSRepo.getUniqueUserIdentifier())
+            nudgeBaselineDatabase.optionItemDao().deleteOptions(prefBSRepo.getUniqueUserIdentifier())
+            nudgeBaselineDatabase.questionEntityDao().deleteAllQuestions(prefBSRepo.getUniqueUserIdentifier())
+            nudgeBaselineDatabase.sectionAnswerEntityDao().deleteAllSectionAnswer(prefBSRepo.getUniqueUserIdentifier())
+            nudgeBaselineDatabase.inputTypeQuestionAnswerDao().deleteAllInputTypeAnswers(prefBSRepo.getUniqueUserIdentifier())
+            nudgeBaselineDatabase.formQuestionResponseDao().deleteAllFormQuestions(prefBSRepo.getUniqueUserIdentifier())
+            nudgeBaselineDatabase.didiSectionProgressEntityDao().deleteAllSectionProgress(prefBSRepo.getUniqueUserIdentifier())
             nudgeBaselineDatabase.villageListDao().deleteAllVilleges()
-            nudgeBaselineDatabase.surveyEntityDao().deleteAllSurvey(prefRepo.getUniqueUserIdentifier())
-            nudgeBaselineDatabase.didiInfoEntityDao().deleteAllDidiInfo(prefRepo.getUniqueUserIdentifier())
+            nudgeBaselineDatabase.surveyEntityDao().deleteAllSurvey(prefBSRepo.getUniqueUserIdentifier())
+            nudgeBaselineDatabase.didiInfoEntityDao().deleteAllDidiInfo(prefBSRepo.getUniqueUserIdentifier())
         }catch (ex:Exception){
             ex.printStackTrace()
             BaselineLogger.d("ExportImportRepositoryImpl","clearLocalData: ${ex.message}")
@@ -37,23 +37,23 @@ class ExportImportRepositoryImpl @Inject constructor(
     }
 
     override fun setAllDataSynced() {
-        prefRepo.setDataSyncStatus(false)
+        prefBSRepo.setDataSyncStatus(false)
     }
 
     override fun getUserMobileNumber(): String {
-        return prefRepo.getMobileNumber()?: BLANK_STRING
+        return prefBSRepo.getMobileNumber()?: BLANK_STRING
     }
 
     override fun getUserID(): String {
-        return prefRepo.getUserId()
+        return prefBSRepo.getUserId()
     }
 
     override fun getUserEmail(): String {
-        return prefRepo.getPref(PREF_KEY_EMAIL, BLANK_STRING)?: BLANK_STRING
+        return prefBSRepo.getPref(PREF_KEY_EMAIL, BLANK_STRING)?: BLANK_STRING
     }
 
     override fun getUserName(): String {
-        return prefRepo.getPref(PREF_KEY_NAME, BLANK_STRING) ?: BLANK_STRING
+        return prefBSRepo.getPref(PREF_KEY_NAME, BLANK_STRING) ?: BLANK_STRING
     }
 
 

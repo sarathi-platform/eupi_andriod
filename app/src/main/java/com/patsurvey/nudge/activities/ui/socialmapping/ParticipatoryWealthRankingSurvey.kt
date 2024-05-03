@@ -79,7 +79,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
-import com.nudge.core.ui.navigation.CoreGraph
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CircularDidiImage
 import com.patsurvey.nudge.activities.MainActivity
@@ -154,7 +154,7 @@ fun ParticipatoryWealthRankingSurvey(
             showDidiListForRank = Pair(!showDidiListForRank.first, WealthRank.NOT_RANKED)
         } else {
             if (isStepComplete) {
-                navController.navigate(CoreGraph.HOME) {
+                navController.navigate(NudgeNavigationGraph.HOME) {
                     popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                         inclusive = true
                         saveState = false

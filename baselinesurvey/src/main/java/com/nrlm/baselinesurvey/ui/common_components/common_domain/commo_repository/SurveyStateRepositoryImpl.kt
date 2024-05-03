@@ -1,6 +1,6 @@
 package com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository
 
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.dao.DidiInfoDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
@@ -8,7 +8,7 @@ import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 
 class SurveyStateRepositoryImpl(
-    val prefRepo: PrefRepo,
+    val prefBSRepo: PrefBSRepo,
     val surveyeeEntity: SurveyeeEntityDao,
     val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
     val didiInfoDao: DidiInfoDao
@@ -19,7 +19,7 @@ class SurveyStateRepositoryImpl(
     }
 
     override suspend fun saveDidiInfo(didiInfoEntity: DidiInfoEntity) {
-        didiInfoEntity.userId = prefRepo.getUniqueUserIdentifier()
+        didiInfoEntity.userId = prefBSRepo.getUniqueUserIdentifier()
         didiInfoDao.insertDidiInfo(didiInfoEntity)
     }
 

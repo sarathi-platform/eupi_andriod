@@ -12,11 +12,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.navigation.compose.rememberNavController
 import com.akexorcist.localizationactivity.core.LocalizationActivityDelegate
 import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
 import com.nrlm.baselinesurvey.activity.viewmodel.MainActivityViewModel
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.ui.common_components.NetworkBanner
 import com.nrlm.baselinesurvey.ui.theme.The_nudgeTheme
 import com.nrlm.baselinesurvey.ui.theme.white
@@ -30,7 +29,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     private val localizationDelegate = LocalizationActivityDelegate(this)
 
     @Inject
-    lateinit var sharedPrefs: PrefRepo
+    lateinit var sharedPrefs: PrefBSRepo
 
     private val mViewModel: MainActivityViewModel by viewModels()
 

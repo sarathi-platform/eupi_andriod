@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.nudge.core.ui.navigation.CoreGraph
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.navigation.baseline.BSHomeNavScreen
 import com.patsurvey.nudge.navigation.selection.HomeNavScreen
@@ -13,15 +13,15 @@ import com.patsurvey.nudge.navigation.selection.HomeNavScreen
 @Composable
 fun RootNavigationGraph(navController: NavHostController,prefRepo: PrefRepo){
     NavHost(navController = navController,
-        route = CoreGraph.ROOT,
-        startDestination = CoreGraph.AUTHENTICATION
+        route = NudgeNavigationGraph.ROOT,
+        startDestination = NudgeNavigationGraph.AUTHENTICATION
     ){
         authNavGraph(navController)
-        composable(route = CoreGraph.HOME) {
+        composable(route = NudgeNavigationGraph.HOME) {
             HomeNavScreen(prefRepo = prefRepo)
         }
-        composable(route = CoreGraph.BASE_HOME) {
-            BSHomeNavScreen()
+        composable(route = NudgeNavigationGraph.BASE_HOME) {
+            BSHomeNavScreen(prefRepo=prefRepo)
         }
     }
 }
