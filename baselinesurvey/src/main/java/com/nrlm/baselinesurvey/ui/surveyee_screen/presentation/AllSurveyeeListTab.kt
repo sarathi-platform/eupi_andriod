@@ -39,6 +39,7 @@ import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.DIDI_LIST
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.MoveSurveyeesUpdateBannerComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
@@ -233,6 +234,16 @@ fun AllSurveyeeListTab(
 
                         if (!viewModel.isFilterAppliedState.value.isFilterApplied) {
                             itemsIndexed(items = surveyeeList) { index, item ->
+                                var primaryButtonText =
+                                    if ((context as MainActivity).currentLanguage.language.equals("en")) stringResource(
+                                        R.string.start
+                                    ) + activityName.split(
+                                        " "
+                                    )[1] else stringResource(
+                                        id = R.string.start_activity, activityName.split(
+                                            " "
+                                        )[1]
+                                    )
                                 SurveyeeCardComponent(
                                     surveyeeState = item,
                                     showCheckBox = !isSelectionEnabled.value,
@@ -254,9 +265,7 @@ fun AllSurveyeeListTab(
                                         )
                                     },
                                     //Todo add proper tex
-                                    primaryButtonText = stringResource(R.string.start) + activityName.split(
-                                        " "
-                                    )[1],
+                                    primaryButtonText = primaryButtonText,
                                     buttonClicked = { buttonName, surveyeeId ->
                                         if (!buttonName.equals(ButtonName.NOT_AVAILABLE)) {
                                             BaselineCore.setCurrentActivityName(activityName)
@@ -293,13 +302,23 @@ fun AllSurveyeeListTab(
                             }
                         } else {
                             itemsIndexed(items = surveyeeListWithTolaFilter.keys.toList()) { index, key ->
+                                var primaryButtonText =
+                                    if ((context as MainActivity).currentLanguage.language.equals("en")) stringResource(
+                                        R.string.start
+                                    ) + activityName.split(
+                                        " "
+                                    )[1] else stringResource(
+                                        id = R.string.start_activity, activityName.split(
+                                            " "
+                                        )[1]
+                                    )
                                 SurveyeeCardWithTolaFilterComponent(
                                     tolaName = key,
                                     surveyeeStateList = surveyeeListWithTolaFilter[key]
                                         ?: emptyList(),
                                     showCheckBox = !isSelectionEnabled.value,
                                     fromScreen = ALL_TAB,
-                                    primaryButtonText = "Start " + activityName.split(" ")[1],
+                                    primaryButtonText = primaryButtonText,
                                     buttonClicked = { buttonName, surveyeeId ->
                                         if (!buttonName.equals(ButtonName.NOT_AVAILABLE)) {
                                             BaselineCore.setCurrentActivityName(activityName)

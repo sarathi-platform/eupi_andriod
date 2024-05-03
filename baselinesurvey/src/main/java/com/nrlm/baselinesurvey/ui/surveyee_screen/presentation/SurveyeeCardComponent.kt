@@ -75,7 +75,7 @@ fun SurveyeeCardComponent(
     surveyeeState: SurveyeeCardState,
     showCheckBox: Boolean,
     fromScreen: String,
-    primaryButtonText: String = "Start Baseline",
+    primaryButtonText: String = stringResource(R.string.start_baseline),
     checkBoxChecked: (surveyeeEntity: SurveyeeEntity, isChecked: Boolean) -> Unit,
     buttonClicked: (buttonName: ButtonName, surveyeeId: Int) -> Unit,
     moveDidiToThisWeek: (surveyeeCardState: SurveyeeCardState, moveToThisWeek: Boolean) -> Unit
