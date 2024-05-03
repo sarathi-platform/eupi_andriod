@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.model.mappers
 
+import android.text.TextUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nrlm.baselinesurvey.BLANK_STRING
@@ -8,6 +9,8 @@ import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.model.response.QuestionAnswerResponseModel
 import com.nrlm.baselinesurvey.model.response.QuestionOptionsResponseModel
+import com.nrlm.baselinesurvey.ui.Constants.QuestionType
+import com.nrlm.baselinesurvey.utils.convertEventValueFromMultiSelectDropDownEvent
 
 object OptionEntityMapper {
     fun getOptionEntityMapper(
@@ -50,7 +53,7 @@ object OptionEntityMapper {
 
         questionOptionsResponseModels.forEach { questionOptionsResponseModels ->
             val dropDownDownValues =
-                optionItemEntityList.find { it.optionId == questionOptionsResponseModels.optionId }?.values
+                optionItemEntityList.find { it.optionId == questionOptionsResponseModels.optionId }
             optionsList.add(
                 OptionItemEntity(
                     id = 0,
@@ -60,8 +63,13 @@ object OptionEntityMapper {
                     optionId = questionOptionsResponseModels.optionId,
                     display = questionEntity?.questionDisplay,
                     weight = null,
-                    selectedValue = questionOptionsResponseModels.selectedValue,
-                    // optionValue = questionOptionsResponseModels.select,
+                    selectedValue = if (TextUtils.equals(
+                            dropDownDownValues?.optionType?.toLowerCase(),
+                            QuestionType.MultiSelectDropDown.name.toLowerCase()
+                        )
+                    ) convertEventValueFromMultiSelectDropDownEvent(
+                        questionOptionsResponseModels.selectedValue ?: BLANK_STRING
+                    ) else questionOptionsResponseModels.selectedValue,
                     summary = questionEntity?.questionSummary,
                     count = questionEntity?.order,
                     optionType = BLANK_STRING,
@@ -69,7 +77,7 @@ object OptionEntityMapper {
                     order = questionEntity?.order ?: DEFAULT_ID,
                     languageId = questionEntity?.languageId,
                     isSelected = false,
-                    selectedValueId = if (!dropDownDownValues.isNullOrEmpty()) dropDownDownValues.find {
+                    selectedValueId = if (!dropDownDownValues?.values.isNullOrEmpty()) dropDownDownValues?.values?.find {
                         it.value.contains(
                             questionOptionsResponseModels.selectedValue ?: BLANK_STRING,
                             true

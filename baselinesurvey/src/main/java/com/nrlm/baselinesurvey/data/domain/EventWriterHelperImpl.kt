@@ -1,7 +1,7 @@
 package com.nrlm.baselinesurvey.data.domain
 
-import androidx.core.net.toUri
 import android.text.TextUtils
+import androidx.core.net.toUri
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.PREF_USER_TYPE
@@ -1036,7 +1036,7 @@ class EventWriterHelperImpl @Inject constructor(
 
 
 
-    private suspend fun regenerateFromResponseEvent(): List<Events> {
+    private suspend fun regenerateFromResponseEvent(forExcel: Boolean = false): List<Events> {
         val events = mutableListOf<Events>()
 
         val formResponseList = baselineDatabase.formQuestionResponseDao()
@@ -1056,10 +1056,9 @@ class EventWriterHelperImpl @Inject constructor(
             baselineDatabase.optionItemDao().getSurveySectionQuestionOptions(
                 surveyId = tempItem.surveyId,
                 sectionId = tempItem.sectionId,
-                questionId = mapItem.key,
+                questionId = tempItem.questionId ?: 0,
                 languageId = DEFAULT_LANGUAGE_ID,
                 userId = uniqueId
-
             ).forEach { optionItemEntity ->
                 optionItemEntityStateList.add(
                     OptionItemEntityState(
@@ -1068,10 +1067,76 @@ class EventWriterHelperImpl @Inject constructor(
                         !optionItemEntity.conditional
                     )
                 )
+                optionItemEntity.conditions?.forEach { conditionsDto ->
+                    when (conditionsDto?.resultType) {
+                        ResultType.Questions.name -> {
+                            conditionsDto?.resultList?.forEach { questionList ->
+                                if (questionList.type?.equals(QuestionType.Form.name, true) == true
+                                    || questionList.type?.equals(
+                                        QuestionType.FormWithNone.name,
+                                        true
+                                    ) == true
+                                ) {
+                                    val mOptionItemEntityList =
+                                        questionList.convertFormTypeQuestionListToOptionItemEntity(
+                                            optionItemEntity.sectionId,
+                                            optionItemEntity.surveyId,
+                                            optionItemEntity.languageId ?: DEFAULT_LANGUAGE_ID
+                                        )
+                                    mOptionItemEntityList.forEach { mOptionItemEntity ->
+                                        optionItemEntityStateList.add(
+                                            OptionItemEntityState(
+                                                mOptionItemEntity.optionId,
+                                                mOptionItemEntity,
+                                                false
+                                            )
+                                        )
+                                    }
+                                }
+                                val mOptionItemEntity =
+                                    questionList.convertQuestionListToOptionItemEntity(
+                                        optionItemEntity.sectionId,
+                                        optionItemEntity.surveyId
+                                    )
+                                optionItemEntityStateList.add(
+                                    OptionItemEntityState(
+                                        mOptionItemEntity.optionId,
+                                        mOptionItemEntity,
+                                        false
+                                    )
+                                )
+
+                                // TODO Handle later correctly
+                                mOptionItemEntity.conditions?.forEach { conditionsDto2 ->
+                                    if (conditionsDto2?.resultType.equals(
+                                            ResultType.Questions.name,
+                                            true
+                                        )
+                                    ) {
+                                        conditionsDto2?.resultList?.forEach { subQuestionList ->
+                                            val mOptionItemEntity2 =
+                                                subQuestionList.convertQuestionListToOptionItemEntity(
+                                                    mOptionItemEntity.sectionId,
+                                                    mOptionItemEntity.surveyId
+                                                )
+                                            optionItemEntityStateList.add(
+                                                OptionItemEntityState(
+                                                    mOptionItemEntity2.optionId,
+                                                    mOptionItemEntity2,
+                                                    false
+                                                )
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
-            mapItem.value.groupBy { it.referenceId }.forEach {
-                val didiResponse = it.value.first()
+            mapItem.value.let {
+                val didiResponse = it.first()
                 events.add(
                     createSaveAnswerEventForFormTypeQuestion(
                         surveyId = didiResponse.surveyId,
@@ -1087,9 +1152,10 @@ class EventWriterHelperImpl @Inject constructor(
                             didiResponse.sectionId,
                             didiResponse.questionId ?: 0
                         ),
-                        saveAnswerEventOptionItemDtoList = it.value.convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto(
+                        saveAnswerEventOptionItemDtoList = it.convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto(
                             QuestionType.Form,
-                            optionItemEntityStateList
+                            optionItemEntityStateList,
+                            forExcel = forExcel
                         )
                     )
                 )
@@ -1135,7 +1201,7 @@ class EventWriterHelperImpl @Inject constructor(
      suspend fun generateFormTypeEventsForCSV(): List<Events> {
         val events = mutableListOf<Events>()
          events.addAll(regenerateDidiInfoResponseEvent())
-        events.addAll(regenerateFromResponseEvent())
+         events.addAll(regenerateFromResponseEvent(forExcel = true))
 
         return events
     }

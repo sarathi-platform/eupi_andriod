@@ -451,7 +451,7 @@
     <string name="load_server_data">সার্ভার ডেটা লোড করুন</string>
     <string name="purpose_comparision">আপনার কৃষির উদ্দেশ্য কি?</string>
     <string name="net_income_label">প্রতি বছর মোট আয়: ₹</string>
-    <string name="net_income_comparision">প্রতি বছর মোট আয়</string>
+    <string name="net_income_comparision">থেকে প্রাপ্ত পারিবারিক আয় কত</string>
     <string name="hours">ঘন্টার</string>
     <string name="years">বছর</string>
     <string name="minute">মিনিটের</string>

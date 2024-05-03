@@ -9,8 +9,8 @@ import android.os.Build
 import android.os.Environment
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.core.net.toFile
 import androidx.core.content.FileProvider
+import androidx.core.net.toFile
 import com.google.gson.Gson
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BuildConfig
@@ -365,14 +365,29 @@ fun exportOnlyLogFile(context: Context){
                 val title = "${
                     prefRepo.getPref(
                         PREF_KEY_NAME,
-                        com.nudge.core.BLANK_STRING
-                    ) ?: com.nudge.core.BLANK_STRING
+                        BLANK_STRING
+                    ) ?: BLANK_STRING
                 }-${prefRepo.getMobileNumber()}"
-                val baseLinePath = generateCsv(title = "Baseline - $title", baseLineListQna = baseLineListQna.toCsvR(), hamletListQna = null)
-                val hamletPath = generateCsv(title = "Hamlet - $title", baseLineListQna = null, hamletListQna = hamletListQna.toCsv())
+
                 val listPath: ArrayList<Uri>? = ArrayList()
-                baseLinePath?.let { listPath?.add(it) }
-                hamletPath?.let { listPath?.add(it) }
+                if (!baseLineListQna.toCsvR().isNullOrEmpty()) {
+                    val baseLinePath = generateCsv(
+                        title = "Baseline - $title",
+                        baseLineListQna = baseLineListQna.toCsvR(),
+                        hamletListQna = null
+                    )
+                    baseLinePath?.let { listPath?.add(it) }
+                }
+
+                if (!hamletListQna.toCsv().isNullOrEmpty()) {
+                    val hamletPath = generateCsv(
+                        title = "Hamlet - $title",
+                        baseLineListQna = null,
+                        hamletListQna = hamletListQna.toCsv()
+                    )
+                    hamletPath?.let { listPath?.add(it) }
+                }
+
                 openShareSheet(fileUriList = listPath, title = title, type = EXCEL_TYPE)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             } catch (exception: Exception) {
@@ -420,6 +435,6 @@ fun exportOnlyLogFile(context: Context){
         } else {
             hamletListQna
         }
-        return list!!
+        return list ?: emptyList()
     }
 }
