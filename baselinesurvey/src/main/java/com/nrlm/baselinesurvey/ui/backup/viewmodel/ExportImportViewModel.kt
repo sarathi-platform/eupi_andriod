@@ -371,8 +371,16 @@ fun exportOnlyLogFile(context: Context){
                 val baseLinePath = generateCsv(title = "Baseline - $title", baseLineListQna = baseLineListQna.toCsvR(), hamletListQna = null)
                 val hamletPath = generateCsv(title = "Hamlet - $title", baseLineListQna = null, hamletListQna = hamletListQna.toCsv())
                 val listPath: ArrayList<Uri>? = ArrayList()
-                baseLinePath?.let { listPath?.add(it) }
-                hamletPath?.let { listPath?.add(it) }
+                baseLinePath?.let {
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                        listPath?.add(it)
+                    else listPath?.add(uriFromFile(applicationID = BuildConfig.APPLICATION_ID, context = context, file = it.toFile()))
+                }
+                hamletPath?.let {
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                        listPath?.add(it)
+                    else listPath?.add(uriFromFile(applicationID = BuildConfig.APPLICATION_ID, context = context, file = it.toFile()))
+                }
                 openShareSheet(fileUriList = listPath, title = title, type = EXCEL_TYPE)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             } catch (exception: Exception) {
@@ -420,6 +428,6 @@ fun exportOnlyLogFile(context: Context){
         } else {
             hamletListQna
         }
-        return list!!
+        return list ?: emptyList()
     }
 }
