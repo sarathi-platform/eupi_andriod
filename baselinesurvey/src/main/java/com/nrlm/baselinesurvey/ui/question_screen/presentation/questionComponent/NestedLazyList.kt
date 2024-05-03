@@ -84,6 +84,7 @@ import com.nrlm.baselinesurvey.utils.convertOptionItemEntityToFormResponseEntity
 import com.nrlm.baselinesurvey.utils.convertToSaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.findOptionFromId
 import com.nrlm.baselinesurvey.utils.mapToOptionItem
+import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -751,9 +752,11 @@ fun NestedLazyList(
                                     )
 
                                 val summaryValue =
-                                    questionScreenViewModel.getTotalIncomeForLivelihoodQuestion(
-                                        context,
-                                        question.questionId ?: 0
+                                    numberInEnglishFormat(
+                                        questionScreenViewModel.getTotalIncomeForLivelihoodQuestion(
+                                            context,
+                                            question.questionId ?: 0
+                                        ).toInt(), null
                                     )
 
                                 FormWithNoneTypeQuestionComponent(

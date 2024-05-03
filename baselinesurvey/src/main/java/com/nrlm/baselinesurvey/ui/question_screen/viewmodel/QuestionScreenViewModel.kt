@@ -345,20 +345,25 @@ class QuestionScreenViewModel @Inject constructor(
 
     private fun updateQuestionEntityStateForConditionalQuestions(questionEntityStateList: List<QuestionEntityState>) {
         questionEntityStateList.forEach { questionEntityState ->
-            sectionDetail.value.questionAnswerMapping[questionEntityState.questionId]?.forEach { optionItemEntity ->
-                onEvent(
-                    QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption(
-                        questionEntityState,
-                        optionItemEntity
-                    )
-                )
+            if (questionEntityState.questionEntity?.type == QuestionType.MultiSelect.name) {
                 onEvent(
                     QuestionTypeEvent.UpdateConditionQuestionStateForMultipleOption(
                         questionEntityState,
-                        listOf(optionItemEntity)
+                        sectionDetail.value.questionAnswerMapping[questionEntityState.questionId]
+                            ?: emptyList()
                     )
                 )
+            } else {
+                sectionDetail.value.questionAnswerMapping[questionEntityState.questionId]?.forEach { optionItemEntity ->
+                    onEvent(
+                        QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption(
+                            questionEntityState,
+                            optionItemEntity
+                        )
+                    )
+                }
             }
+
         }
     }
 
@@ -880,13 +885,10 @@ class QuestionScreenViewModel @Inject constructor(
                 // When All unselected
                 if (event.optionItemEntityList.isEmpty()) {
                     unselectedOptions.addAll(mOptionItemList ?: emptyList())
-                }
-                mOptionItemList?.forEach {
-                    event.optionItemEntityList?.map { it.optionId }?.forEach { selectOptionId ->
-                        if (it.optionId != selectOptionId) {
-                            unselectedOptions.add(it)
-                        }
-                    }
+                } else {
+                    mOptionItemList?.filter {
+                        event.optionItemEntityList.map { it.optionId }.contains(it.optionId) != true
+                    }?.let { unselectedOptions.addAll(it.toList()) }
                 }
 
                 unselectedOptions.distinctBy { it.optionId }.forEach { unselectedOptionItemEntityState ->
