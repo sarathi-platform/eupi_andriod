@@ -377,7 +377,11 @@ fun exportOnlyLogFile(context: Context){
                         baseLineListQna = baseLineListQna.toCsvR(),
                         hamletListQna = null
                     )
-                    baseLinePath?.let { listPath?.add(it) }
+                    baseLinePath?.let {
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                            listPath?.add(it)
+                        else listPath?.add(uriFromFile(applicationID = BuildConfig.APPLICATION_ID, context = context, file = it.toFile()))
+                    }
                 }
 
                 if (!hamletListQna.toCsv().isNullOrEmpty()) {
@@ -386,7 +390,11 @@ fun exportOnlyLogFile(context: Context){
                         baseLineListQna = null,
                         hamletListQna = hamletListQna.toCsv()
                     )
-                    hamletPath?.let { listPath?.add(it) }
+                    hamletPath?.let {
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                            listPath?.add(it)
+                        else listPath?.add(uriFromFile(applicationID = BuildConfig.APPLICATION_ID, context = context, file = it.toFile()))
+                    }
                 }
 
                 openShareSheet(fileUriList = listPath, title = title, type = EXCEL_TYPE)
