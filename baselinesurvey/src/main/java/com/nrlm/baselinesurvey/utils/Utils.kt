@@ -799,6 +799,16 @@ fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType?):
             saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
         }
 
+        QuestionType.HrsMinPicker,
+        QuestionType.YrsMonthPicker -> {
+            val mSaveAnswerEventOptionItemDto =
+                SaveAnswerEventOptionItemDto(
+                    this.optionId ?: 0,
+                    this.selectedValue,
+                    tag = this.optionTag
+                )
+            saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+        }
         QuestionType.Input,
         QuestionType.InputText,
         QuestionType.InputNumber,
@@ -861,6 +871,17 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: Question
                         it.optionId ?: 0,
                         it.selectedValue,
                         optionDesc = it.display ?: BLANK_STRING,
+                        tag = it.optionTag
+                    )
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+            }
+
+            QuestionType.HrsMinPicker,
+            QuestionType.YrsMonthPicker -> {
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(
+                        it.optionId ?: 0,
+                        it.selectedValue,
                         tag = it.optionTag
                     )
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
