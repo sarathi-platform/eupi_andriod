@@ -67,7 +67,7 @@ fun ExpandableDescriptionContentComponent(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             IconButton(onClick = {
-                questionDetailVisibilityState.value = true
+                questionDetailVisibilityState.value = !questionDetailVisibilityState.value
                 questionDetailExpanded(index)
             }) {
                 Icon(
