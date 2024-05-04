@@ -36,24 +36,6 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                     SettingTagEnum.EXPORT_DATABASE.name
                 )
             )
-            list.add(
-                SettingOptionModel(
-                    4,
-                    context.getString(R.string.load_server_data),
-                    BLANK_STRING,
-                    SettingTagEnum.LOAD_SERVER_DATA.name
-                )
-            )
-
-            list.add(
-                SettingOptionModel(
-                    5,
-                    context.getString(R.string.import_data),
-                    BLANK_STRING,
-                    SettingTagEnum.IMPORT_DATA.name
-                )
-            )
-
         list.add(
             SettingOptionModel(
                 6,
@@ -62,6 +44,31 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 SettingTagEnum.EXPORT_LOG_FILE.name
             )
         )
+        list.add(
+            SettingOptionModel(
+                8,
+                context.getString(R.string.export_baseline_qna),
+                BLANK_STRING,
+                SettingTagEnum.EXPORT_BASELINE_QNA.name
+            )
+        )
+        list.add(
+            SettingOptionModel(
+                5,
+                context.getString(R.string.import_data),
+                BLANK_STRING,
+                SettingTagEnum.IMPORT_DATA.name
+            )
+        )
+
+        list.add(
+                SettingOptionModel(
+                    4,
+                    context.getString(R.string.load_server_data),
+                    BLANK_STRING,
+                    SettingTagEnum.LOAD_SERVER_DATA.name
+                )
+            )
 
         list.add(
             SettingOptionModel(
@@ -69,14 +76,6 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 context.getString(R.string.regenerate_all_events),
                 BLANK_STRING,
                 SettingTagEnum.REGENERATE_EVENTS.name
-            )
-        )
-        list.add(
-            SettingOptionModel(
-                8,
-                context.getString(R.string.export_baseline_qna),
-                BLANK_STRING,
-                SettingTagEnum.EXPORT_BASELINE_QNA.name
             )
         )
 
