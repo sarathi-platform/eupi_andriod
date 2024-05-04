@@ -937,7 +937,9 @@ fun NestedLazyList(
 
                                             QuestionType.InputNumber.name -> {
                                                 val mOptionItem =
-                                                    optionItem.copy(selectedValue = selectedValue)
+                                                    if (selectedValue != BLANK_STRING) optionItem.copy(
+                                                        selectedValue = selectedValue
+                                                    ) else optionItem.copy(selectedValue = "0")
 
                                                 questionScreenViewModel.saveInputNumberOptionResponse(
                                                     questionId = question.questionId!!,
