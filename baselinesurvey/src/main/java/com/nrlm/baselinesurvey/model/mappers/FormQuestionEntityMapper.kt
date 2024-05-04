@@ -5,8 +5,8 @@ import com.nrlm.baselinesurvey.DEFAULT_ID
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.model.response.QuestionAnswerResponseModel
-import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.utils.convertEventValueFromMultiSelectDropDownEvent
+import com.nrlm.baselinesurvey.utils.isMultiSelectDropdown
 
 object FormQuestionEntityMapper {
     fun getFormQuestionEntity(
@@ -41,15 +41,4 @@ object FormQuestionEntityMapper {
         return formEntities
     }
 
-
-    private fun isMultiSelectDropdown(
-        optionsList: List<OptionItemEntity>,
-        optionId: Int?
-    ): Boolean {
-        val currentOption = optionsList.find { it.optionId == optionId }
-        return currentOption?.optionType.equals(
-            QuestionType.MultiSelectDropDown.name,
-            ignoreCase = true
-        )
-    }
 }
