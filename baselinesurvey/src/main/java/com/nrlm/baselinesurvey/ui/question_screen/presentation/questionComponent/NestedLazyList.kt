@@ -945,14 +945,44 @@ fun NestedLazyList(
                                                     selectedValue = selectedValue
                                                 )
 
-                                                questionScreenViewModel.onEvent(
+                                                inputTypeQuestionAnswerEntityList?.value?.filter { it.questionId == question.questionId }
+                                                    ?.let { inputTypeQuestionAnswerEntitiesForQuestion ->
+                                                        val mOptionList =
+                                                            ArrayList<OptionItemEntity>()
+                                                        inputTypeQuestionAnswerEntitiesForQuestion.forEach { inputTypeQuestionAnswerEntity ->
+
+                                                            question.optionItemEntityState.find { it.optionId == inputTypeQuestionAnswerEntity.optionId }?.optionItemEntity
+                                                                ?.copy(selectedValue = inputTypeQuestionAnswerEntity.inputValue)
+                                                                ?.let {
+                                                                    mOptionList.add(it)
+                                                                }
+                                                        }
+                                                        if (!mOptionList.map { it.optionId }
+                                                                .contains(mOptionItem.optionId)) {
+                                                            mOptionList.add(mOptionItem)
+                                                        } else {
+                                                            mOptionList.removeIf { it.optionId == mOptionItem.optionId }
+                                                            mOptionList.add(mOptionItem)
+                                                        }
+
+                                                        questionScreenViewModel.onEvent(
+                                                            QuestionTypeEvent.UpdateConditionQuestionStateForInputNumberOptions(
+                                                                questionEntityState = question,
+                                                                optionItemEntityList = mOptionList,
+                                                                inputTypeQuestionEntity = inputTypeQuestionAnswerEntitiesForQuestion
+                                                            )
+                                                        )
+
+                                                    }
+
+                                                /*questionScreenViewModel.onEvent(
                                                     QuestionTypeEvent.UpdateConditionQuestionStateForInputNumberOptions(
                                                         question,
                                                         mOptionItem,
                                                         questionScreenViewModel.inputNumberQuestionMap[question.questionId]
                                                             ?: emptyList()
                                                     )
-                                                )
+                                                )*/
                                             }
                                         }
 
