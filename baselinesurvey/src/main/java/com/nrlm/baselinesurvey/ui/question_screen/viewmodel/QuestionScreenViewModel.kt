@@ -353,6 +353,29 @@ class QuestionScreenViewModel @Inject constructor(
                             ?: emptyList()
                     )
                 )
+            } else if (questionEntityState.questionEntity?.type?.equals(
+                    QuestionType.InputNumber.name,
+                    true
+                ) == true
+            ) {
+
+                inputTypeQuestionAnswerEntityList?.value?.filter { it.questionId == questionEntityState.questionId }
+                    ?.let { inputTypeQuestionAnswerEntitiesForQuestion ->
+                        inputTypeQuestionAnswerEntitiesForQuestion.forEach { inputTypeQuestionAnswerEntity ->
+                            var mOption =
+                                questionEntityState.optionItemEntityState.find { it.optionId == inputTypeQuestionAnswerEntity.optionId }?.optionItemEntity
+                            mOption =
+                                mOption?.copy(selectedValue = inputTypeQuestionAnswerEntity.inputValue)
+                            onEvent(
+                                QuestionTypeEvent.UpdateConditionQuestionStateForInputNumberOptions(
+                                    questionEntityState = questionEntityState,
+                                    optionItemEntity = mOption!!,
+                                    inputTypeQuestionEntity = inputTypeQuestionAnswerEntitiesForQuestion
+                                )
+                            )
+                        }
+
+                    }
             } else {
                 sectionDetail.value.questionAnswerMapping[questionEntityState.questionId]?.forEach { optionItemEntity ->
                     onEvent(
@@ -1526,7 +1549,7 @@ class QuestionScreenViewModel @Inject constructor(
                 answeredQuestionCount.add(it.key)
             }
 
-            inputTypeQuestionAnswerEntityList.value.groupBy { it.optionId }.forEach {
+            inputTypeQuestionAnswerEntityList.value.groupBy { it.questionId }.forEach {
                 answeredQuestionCount.add(it.key)
             }
             val qesList = questionEntityStateList.toList()
