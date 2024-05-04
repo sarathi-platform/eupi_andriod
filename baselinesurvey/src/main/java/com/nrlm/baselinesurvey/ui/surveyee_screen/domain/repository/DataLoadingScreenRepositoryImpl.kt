@@ -668,7 +668,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     languageId = questionAnswerResponseModel.languageId
                 )
                 if (questionAnswerResponseModel.question?.questionType.equals(QuestionType.Form.name)) {
-                    val formQuestionEntityList = getFormQuestionEntity(questionAnswerResponseModel)
+                    val formQuestionEntityList =
+                        getFormQuestionEntity(questionAnswerResponseModel, optionsList)
                     formQuestionEntityList.forEach { formQuestionResponseEntity ->
                         formQuestionResponseEntity.userId = getBaseLineUserId()
                         val isQuestionAnswered =
