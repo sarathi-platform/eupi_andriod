@@ -69,7 +69,10 @@ import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nrlm.baselinesurvey.utils.convertFormTypeQuestionListToOptionItemEntity
+import com.nrlm.baselinesurvey.utils.convertQuestionListToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.entities.ApiStatusEntity
@@ -667,9 +670,13 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     surveyId = questionAnswerResponseModel.surveyId,
                     languageId = questionAnswerResponseModel.languageId
                 )
+
                 if (questionAnswerResponseModel.question?.questionType.equals(QuestionType.Form.name)) {
                     val formQuestionEntityList =
-                        getFormQuestionEntity(questionAnswerResponseModel, optionsList)
+                        getFormQuestionEntity(
+                            questionAnswerResponseModel,
+                            giveAllOptionIncludingConditional(questionAnswerResponseModel)
+                        )
                     formQuestionEntityList.forEach { formQuestionResponseEntity ->
                         formQuestionResponseEntity.userId = getBaseLineUserId()
                         val isQuestionAnswered =
@@ -859,5 +866,90 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         }
     }
 
+    fun giveAllOptionIncludingConditional(questionAnswerResponseModel: QuestionAnswerResponseModel): List<OptionItemEntityState> {
+        val optionItemEntityStateList = ArrayList<OptionItemEntityState>()
 
+        optionItemDao.getSurveySectionQuestionOptions(
+            userId = getBaseLineUserId(),
+            questionId = questionAnswerResponseModel.question?.questionId ?: DEFAULT_ID,
+            sectionId = questionAnswerResponseModel.sectionId.toInt(),
+            surveyId = questionAnswerResponseModel.surveyId,
+            languageId = questionAnswerResponseModel.languageId
+        ).forEach { optionItemEntity ->
+            optionItemEntityStateList.add(
+                OptionItemEntityState(
+                    optionItemEntity.optionId,
+                    optionItemEntity,
+                    !optionItemEntity.conditional
+                )
+            )
+            optionItemEntity.conditions?.forEach { conditionsDto ->
+                when (conditionsDto?.resultType) {
+                    ResultType.Questions.name -> {
+                        conditionsDto?.resultList?.forEach { questionList ->
+                            if (questionList.type?.equals(QuestionType.Form.name, true) == true
+                                || questionList.type?.equals(
+                                    QuestionType.FormWithNone.name,
+                                    true
+                                ) == true
+                            ) {
+                                val mOptionItemEntityList =
+                                    questionList.convertFormTypeQuestionListToOptionItemEntity(
+                                        optionItemEntity.sectionId,
+                                        optionItemEntity.surveyId,
+                                        optionItemEntity.languageId ?: DEFAULT_LANGUAGE_ID
+                                    )
+                                mOptionItemEntityList.forEach { mOptionItemEntity ->
+                                    optionItemEntityStateList.add(
+                                        OptionItemEntityState(
+                                            mOptionItemEntity.optionId,
+                                            mOptionItemEntity,
+                                            false
+                                        )
+                                    )
+                                }
+                            }
+                            val mOptionItemEntity =
+                                questionList.convertQuestionListToOptionItemEntity(
+                                    optionItemEntity.sectionId,
+                                    optionItemEntity.surveyId
+                                )
+                            optionItemEntityStateList.add(
+                                OptionItemEntityState(
+                                    mOptionItemEntity.optionId,
+                                    mOptionItemEntity,
+                                    false
+                                )
+                            )
+
+                            // TODO Handle later correctly
+                            mOptionItemEntity.conditions?.forEach { conditionsDto2 ->
+                                if (conditionsDto2?.resultType.equals(
+                                        ResultType.Questions.name,
+                                        true
+                                    )
+                                ) {
+                                    conditionsDto2?.resultList?.forEach { subQuestionList ->
+                                        val mOptionItemEntity2 =
+                                            subQuestionList.convertQuestionListToOptionItemEntity(
+                                                mOptionItemEntity.sectionId,
+                                                mOptionItemEntity.surveyId
+                                            )
+                                        optionItemEntityStateList.add(
+                                            OptionItemEntityState(
+                                                mOptionItemEntity2.optionId,
+                                                mOptionItemEntity2,
+                                                false
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return optionItemEntityStateList
+    }
 }

@@ -1038,14 +1038,14 @@ fun convertEventValueFromMultiSelectDropDownEvent(selectedValue: String): String
 }
 
 fun isMultiSelectDropdown(
-    optionsList: List<OptionItemEntity>,
+    optionsList: List<OptionItemEntityState>,
     optionId: Int?
 ): Boolean {
     val currentOption = optionsList.find { it.optionId == optionId }
-    return currentOption?.optionType.equals(
+    return currentOption?.optionItemEntity?.optionType?.equals(
         QuestionType.MultiSelectDropDown.name,
         ignoreCase = true
-    )
+    ) ?: false
 }
 
 fun OptionItemEntity.convertOptionItemEntityToSaveAnswerEventOptionItemDtoForFormWithNone(
