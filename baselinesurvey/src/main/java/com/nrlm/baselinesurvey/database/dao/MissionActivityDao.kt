@@ -39,6 +39,9 @@ interface MissionActivityDao {
     @Query("SELECT count(*) FROM $ACTIVITY_TABLE_NAME where  userId=:userId and activityId=:activityId ")
     suspend fun getActivityCount(userId: String, activityId: Int): Int
 
+    @Query("SELECT count(*) FROM $ACTIVITY_TABLE_NAME where  userId=:userId and missionId=:missionId ")
+    suspend fun getAllActivityCount(userId: String, missionId: Int): Int
+
     @Query("SELECT * FROM $ACTIVITY_TABLE_NAME where  userId=:userId and activityId=:activityId and isActive=1 ")
     suspend fun getActivitiesFormIds(userId: String, activityId: Int): MissionActivityEntity
 //    @Query("SELECT * FROM $ACTIVITY_TABLE_NAME where missionId=:missionId ")

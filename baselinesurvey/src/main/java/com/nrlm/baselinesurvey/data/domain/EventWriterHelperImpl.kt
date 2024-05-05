@@ -741,26 +741,42 @@ class EventWriterHelperImpl @Inject constructor(
 
 
                 }
-            val pendingActivityCount = baselineDatabase.missionActivityEntityDao()
-                .getPendingActivity(getBaseLineUserId(), missionId = missionEntity.missionId)
-            if (pendingActivityCount > 0) {
-                missionEntityDao.updateMissionStatus(
-                    userId = getBaseLineUserId(),
-                    missionId = missionEntity.missionId,
-                    status = SurveyState.INPROGRESS.name
-                )
-                saveMissionStatusEvent(
-                    missionStatus = SurveyState.INPROGRESS.ordinal,
-                    missionId = missionEntity.missionId
-                )
+            val totalActivityCount = baselineDatabase.missionActivityEntityDao()
+                .getAllActivityCount(getBaseLineUserId(), missionId = missionEntity.missionId)
+
+            if (totalActivityCount > 0) {
+                val pendingActivityCount = baselineDatabase.missionActivityEntityDao()
+                    .getPendingActivity(getBaseLineUserId(), missionId = missionEntity.missionId)
+                if (pendingActivityCount > 0) {
+                    missionEntityDao.updateMissionStatus(
+                        userId = getBaseLineUserId(),
+                        missionId = missionEntity.missionId,
+                        status = SurveyState.INPROGRESS.name
+                    )
+                    saveMissionStatusEvent(
+                        missionStatus = SurveyState.INPROGRESS.ordinal,
+                        missionId = missionEntity.missionId
+                    )
+                } else {
+                    missionEntityDao.updateMissionStatus(
+                        userId = getBaseLineUserId(),
+                        missionId = missionEntity.missionId,
+                        status = SurveyState.COMPLETED.name
+                    )
+                    saveMissionStatusEvent(
+                        missionStatus = SurveyState.COMPLETED.ordinal,
+                        missionId = missionEntity.missionId
+                    )
+
+                }
             } else {
                 missionEntityDao.updateMissionStatus(
                     userId = getBaseLineUserId(),
                     missionId = missionEntity.missionId,
-                    status = SurveyState.COMPLETED.name
+                    status = SurveyState.NOT_STARTED.name
                 )
                 saveMissionStatusEvent(
-                    missionStatus = SurveyState.COMPLETED.ordinal,
+                    missionStatus = SurveyState.NOT_STARTED.ordinal,
                     missionId = missionEntity.missionId
                 )
 
