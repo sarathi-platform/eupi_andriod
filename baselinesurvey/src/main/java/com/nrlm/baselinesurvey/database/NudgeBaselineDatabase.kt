@@ -47,6 +47,7 @@ import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.database.entity.VillageEntity
+import com.nrlm.baselinesurvey.utils.BaselineLogger
 import java.sql.SQLException
 
 // Increase DB Version everytime any change is made to any table or a new table is added.
@@ -132,10 +133,18 @@ abstract class NudgeBaselineDatabase: RoomDatabase()  {
             for(sql in execSqls) {
                 try {
                     database.execSQL(sql)
+                    BaselineLogger.i(
+                        "NudgeBaselineDatabase",
+                        "migration \"$sql\" Migration success"
+                    )
                 } catch (e: SQLException) {
-                    Log.d("NudgeBaselineDatabase", "migration \"$sql\" Migration Error", e)
+                    BaselineLogger.e(
+                        "NudgeBaselineDatabase",
+                        "migration \"$sql\" Migration Error",
+                        e
+                    )
                 } catch (t: Throwable) {
-                    Log.d("NudgeBaselineDatabase", "migration \"$sql\"", t)
+                    BaselineLogger.e("NudgeBaselineDatabase", "migration \"$sql\"", t)
                 }
             }
         }
