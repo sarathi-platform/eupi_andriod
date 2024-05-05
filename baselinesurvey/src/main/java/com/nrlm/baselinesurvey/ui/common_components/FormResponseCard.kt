@@ -176,7 +176,7 @@ fun FormResponseCard(
                             if (income == BLANK_STRING) {
                                 val option = optionItemListWithConditionals.find {
                                     it.display?.contains(
-                                        stringResource(id = R.string.income_source_comparision),
+                                        stringResource(id = R.string.livestock_comparision),
                                         ignoreCase = true
                                     )!!
                                 }
