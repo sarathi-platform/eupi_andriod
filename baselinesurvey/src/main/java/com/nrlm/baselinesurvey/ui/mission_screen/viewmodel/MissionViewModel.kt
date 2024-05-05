@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import com.nrlm.baselinesurvey.DELAY_2_SEC
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.ui.common_components.common_events.ApiStatusEvent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
@@ -27,6 +28,7 @@ import javax.inject.Inject
 class MissionViewModel @Inject constructor(
     private val missionScreenUseCase: MissionScreenUseCase,
     private val fetchDataUseCase: FetchDataUseCase,
+    private val eventWriterHelperImpl: EventWriterHelperImpl
 
     ) : BaseViewModel() {
     private val _missionList = mutableStateOf<List<MissionEntity>>(emptyList())
@@ -78,6 +80,7 @@ class MissionViewModel @Inject constructor(
     private fun initMissionScreenList() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             delay(DELAY_2_SEC)
+            eventWriterHelperImpl.recheckMATStatus()
             val mMissionList = missionScreenUseCase.getMissionListFromDbUseCase.invoke()
             mMissionList?.let {
                 _missionList.value = it

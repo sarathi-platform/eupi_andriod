@@ -131,5 +131,12 @@ interface MissionActivityDao {
     @Query("UPDATE $ACTIVITY_TABLE_NAME SET isActive = :isActive where  userId=:userId and missionId = :missionId and activityId= :activityId")
     fun updateActivityActiveStatus(missionId: Int, userId: String, isActive: Int, activityId: Int)
 
+    @Query("SELECT COUNT(*) from $ACTIVITY_TABLE_NAME where userId=:userId and missionId = :missionId AND status NOT in (:status) and isActive=1")
+    fun getPendingActivity(
+        userId: String,
+        missionId: Int,
+        status: List<String> = listOf(SurveyState.COMPLETED.name, SurveyState.NOT_AVAILABLE.name)
+    ): Int
+
 
 }
