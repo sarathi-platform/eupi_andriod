@@ -3,8 +3,10 @@ package com.nrlm.baselinesurvey.database.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.FORM_QUESTION_RESPONSE_TABLE
+import com.nrlm.baselinesurvey.database.converters.IntConverter
 
 @Entity(tableName = FORM_QUESTION_RESPONSE_TABLE)
 data class FormQuestionResponseEntity(
@@ -32,5 +34,9 @@ data class FormQuestionResponseEntity(
     var selectedValue: String,
 
     @ColumnInfo(name = "referenceId")
-    val referenceId: String
+    val referenceId: String,
+
+    @ColumnInfo(name = "selectedValueId")
+    @TypeConverters(IntConverter::class)
+    var selectedValueId: List<Int> = emptyList(),
 )
