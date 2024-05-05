@@ -48,6 +48,7 @@ import com.nrlm.baselinesurvey.utils.convertToSaveAnswerEventOptionItemsDto
 import com.nrlm.baselinesurvey.utils.findTagForId
 import com.nrlm.baselinesurvey.utils.getFileNameFromURL
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.tagList
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.REGENERATE_PREFIX
@@ -432,6 +433,7 @@ class EventWriterHelperImpl @Inject constructor(
         }
     }
 
+
     override suspend fun markMissionCompleted(missionId: Int, status: SectionStatus) {
         missionEntityDao.markMissionCompleted(
             userId = getBaseLineUserId(),
@@ -678,6 +680,111 @@ class EventWriterHelperImpl @Inject constructor(
 
     }
 
+    override suspend fun recheckMATStatus() {
+        missionEntityDao.getMissions(getBaseLineUserId()).forEach { missionEntity ->
+            baselineDatabase.missionActivityEntityDao()
+                .getActivities(missionId = missionEntity.missionId, userId = getBaseLineUserId())
+                .forEach { it ->
+                    val totalTaskActivityCount = taskDao.getTaskCountForActivity(
+                        userId = getBaseLineUserId(),
+                        activityId = it.activityId,
+                        missionId = missionEntity.missionId
+                    )
+
+                    if (totalTaskActivityCount > 0) {
+                        val pendingCount = taskDao.getPendingTaskCount(
+                            userId = getBaseLineUserId(),
+                            activityId = it.activityId
+                        )
+
+                        if (pendingCount > 0) {
+                            baselineDatabase.missionActivityEntityDao().updateActivityStatus(
+                                userId = getBaseLineUserId(),
+                                missionId = missionEntity.missionId,
+                                activityId = it.activityId,
+                                status = SurveyState.INPROGRESS.name
+                            )
+                            saveActivityStatusEvent(
+                                missionId = it.missionId,
+                                activityId = it.activityId,
+                                activityStatus = SurveyState.INPROGRESS.ordinal
+                            )
+
+                        } else {
+                            baselineDatabase.missionActivityEntityDao().updateActivityStatus(
+                                userId = getBaseLineUserId(),
+                                activityId = it.activityId,
+                                missionId = missionEntity.missionId,
+                                status = SurveyState.COMPLETED.name
+                            )
+                            saveActivityStatusEvent(
+                                missionId = it.missionId,
+                                activityId = it.activityId,
+                                activityStatus = SurveyState.COMPLETED.ordinal
+                            )
+
+
+                        }
+                    } else {
+                        baselineDatabase.missionActivityEntityDao().updateActivityStatus(
+                            userId = getBaseLineUserId(),
+                            activityId = it.activityId,
+                            missionId = missionEntity.missionId,
+                            status = SurveyState.NOT_STARTED.name
+                        )
+                        saveActivityStatusEvent(
+                            missionId = it.missionId,
+                            activityId = it.activityId,
+                            activityStatus = SurveyState.NOT_STARTED.ordinal
+                        )
+                    }
+
+
+                }
+            val totalActivityCount = baselineDatabase.missionActivityEntityDao()
+                .getAllActivityCount(getBaseLineUserId(), missionId = missionEntity.missionId)
+
+            if (totalActivityCount > 0) {
+                val pendingActivityCount = baselineDatabase.missionActivityEntityDao()
+                    .getPendingActivity(getBaseLineUserId(), missionId = missionEntity.missionId)
+                if (pendingActivityCount > 0) {
+                    missionEntityDao.updateMissionStatus(
+                        userId = getBaseLineUserId(),
+                        missionId = missionEntity.missionId,
+                        status = SurveyState.INPROGRESS.name
+                    )
+                    saveMissionStatusEvent(
+                        missionStatus = SurveyState.INPROGRESS.ordinal,
+                        missionId = missionEntity.missionId
+                    )
+                } else {
+                    missionEntityDao.updateMissionStatus(
+                        userId = getBaseLineUserId(),
+                        missionId = missionEntity.missionId,
+                        status = SurveyState.COMPLETED.name
+                    )
+                    saveMissionStatusEvent(
+                        missionStatus = SurveyState.COMPLETED.ordinal,
+                        missionId = missionEntity.missionId
+                    )
+
+                }
+            } else {
+                missionEntityDao.updateMissionStatus(
+                    userId = getBaseLineUserId(),
+                    missionId = missionEntity.missionId,
+                    status = SurveyState.NOT_STARTED.name
+                )
+                saveMissionStatusEvent(
+                    missionStatus = SurveyState.NOT_STARTED.ordinal,
+                    missionId = missionEntity.missionId
+                )
+
+            }
+        }
+
+    }
+
     private fun changeFileName(prefix: String) {
         val coreSharedPrefs = CoreSharedPrefs.getInstance(BaselineCore.getAppContext())
         coreSharedPrefs.setBackupFileName(getDefaultBackUpFileName(prefix + prefRepo.getMobileNumber()))
@@ -779,33 +886,17 @@ class EventWriterHelperImpl @Inject constructor(
         baselineDatabase.missionEntityDao().getMissions(userID).forEach { missionEntity ->
 
 
-            val event = createMissionStatusUpdateEvent(
+            saveMissionStatusEvent(
                 missionId = missionEntity.missionId,
-                SectionStatus.valueOf(
-                    SectionStatus.getSectionStatusNameFromOrdinal(
-                        missionEntity.missionStatus
-                    )
-                )
-            )
-
-            repositoryImpl.saveEventToMultipleSources(
-                event,
-                eventDependencies = listOf(),
-                eventType = EventType.STATEFUL
+                missionStatus = missionEntity.missionStatus
             )
         }
         baselineDatabase.missionActivityEntityDao().getAllActivities(userID).forEach {
 
-            val event = createActivityStatusUpdateEvent(
+            saveActivityStatusEvent(
                 missionId = it.missionId,
                 activityId = it.activityId,
-                status = SectionStatus.valueOf(SectionStatus.getSectionStatusNameFromOrdinal(it.activityStatus))
-
-            )
-            repositoryImpl.saveEventToMultipleSources(
-                event,
-                eventDependencies = listOf(),
-                eventType = EventType.STATEFUL
+                activityStatus = it.activityStatus
             )
 
 
@@ -841,6 +932,47 @@ class EventWriterHelperImpl @Inject constructor(
                 )
 
             }
+    }
+
+    private suspend fun EventWriterHelperImpl.saveActivityStatusEvent(
+        missionId: Int,
+        activityId: Int,
+        activityStatus: Int
+    ) {
+        val event = createActivityStatusUpdateEvent(
+            missionId = missionId,
+            activityId = activityId,
+            status = SectionStatus.valueOf(
+                SectionStatus.getSectionStatusNameFromOrdinal(
+                    activityStatus
+                )
+            )
+
+        )
+        repositoryImpl.saveEventToMultipleSources(
+            event,
+            eventDependencies = listOf(),
+            eventType = EventType.STATEFUL
+        )
+    }
+
+    private suspend fun EventWriterHelperImpl.saveMissionStatusEvent(
+        missionId: Int, missionStatus: Int
+    ) {
+        val event = createMissionStatusUpdateEvent(
+            missionId = missionId,
+            SectionStatus.valueOf(
+                SectionStatus.getSectionStatusNameFromOrdinal(
+                    missionStatus
+                )
+            )
+        )
+
+        repositoryImpl.saveEventToMultipleSources(
+            event,
+            eventDependencies = listOf(),
+            eventType = EventType.STATEFUL
+        )
     }
 
     suspend fun getOptionsInDefaultLanguage(

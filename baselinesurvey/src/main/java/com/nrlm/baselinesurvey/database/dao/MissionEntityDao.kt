@@ -37,7 +37,6 @@ interface MissionEntityDao {
 
     @Query("SELECT count(*) FROM $MISSION_TABLE_NAME where  userId=:userId and missionId=:missionId ")
     suspend fun getMissionCount(userId: String, missionId: Int): Int
-
     @Query("Update $MISSION_TABLE_NAME set pendingActivity=:pendingActivity, activityComplete=:activityComplete where  userId=:userId and missionId = :missionId")
     fun updateMissionStatus(
         userId: String,

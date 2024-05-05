@@ -139,4 +139,6 @@ interface EventWriterHelper {
     ): Events?
 
     suspend fun regenerateAllEvent()
+
+    suspend fun recheckMATStatus()
 }

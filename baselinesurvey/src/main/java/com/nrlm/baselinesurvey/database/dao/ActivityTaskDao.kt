@@ -103,6 +103,12 @@ interface ActivityTaskDao {
         status: List<String> = listOf(SurveyState.COMPLETED.name, SurveyState.NOT_AVAILABLE.name)
     ): LiveData<Int>
 
+    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where userId=:userId and activityId = :activityId AND status NOT in (:status) and isActive=1")
+    fun getPendingTaskCount(
+        userId: String,
+        activityId: Int,
+        status: List<String> = listOf(SurveyState.COMPLETED.name, SurveyState.NOT_AVAILABLE.name)
+    ): Int
     @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and missionId = :missionId and isActive=1")
     fun getTaskCountForMission(userId: String, missionId: Int): Int
 
@@ -115,5 +121,8 @@ interface ActivityTaskDao {
 
     @Query("UPDATE $TASK_TABLE_NAME SET isActive = :isActive where userId=:userId and  taskId = :taskId")
     fun updateActiveTaskStatus(isActive: Int, taskId: Int, userId: String)
+
+    @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and missionId = :missionId and activityId=:activityId and isActive=1")
+    fun getTaskCountForActivity(userId: String, missionId: Int, activityId: Int): Int
 
 }
