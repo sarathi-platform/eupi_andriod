@@ -959,22 +959,25 @@ class EventWriterHelperImpl @Inject constructor(
          baselineDatabase.inputTypeQuestionAnswerDao()
              .getAllInputTypeAnswersForQuestion(prefRepo.getUniqueUserIdentifier())
              .groupBy { Triple<Int, Int, Int>(it.questionId, it.sectionId, it.surveyId) }.forEach {
+                 val questionId = it.key.first
+                 val sectionId = it.key.second
+                 val surveyId = it.key.third
 
-                val questionEntity = baselineDatabase.questionEntityDao()
+                 val questionEntity = baselineDatabase.questionEntityDao()
                     .getQuestionEntity(
                         getBaseLineUserId(),
-                        it.key.third,
-                        it.key.second,
-                        it.key.first
+                        surveyId = surveyId,
+                        sectionId = sectionId,
+                        questionId = questionId
                     )
 
                 val optionList = baselineDatabase.optionItemDao()
                     .getSurveySectionQuestionOptions(
                         getBaseLineUserId(),
-                        it.key.third,
-                        it.key.second,
-                        it.key.first,
-                        2
+                        surveyId = surveyId,
+                        sectionId = sectionId,
+                        questionId = questionId,
+                        languageId = 2
                     )
                 var optionItemEntityState = ArrayList<OptionItemEntityState>()
                 optionList.forEach { optionItemEntity ->
@@ -988,15 +991,15 @@ class EventWriterHelperImpl @Inject constructor(
                 }
                 events.add(
                     createSaveAnswerEvent(
-                        it.key.third,
-                        it.key.second,
-                        it.value.first().didiId,
-                        it.key.first,
-                        QuestionType.Input.name,
-                        questionEntity?.tag ?: 0,
-                        questionEntity?.questionDisplay ?: "",
-                        true,
-                        it.value.convertInputTypeQuestionToEventOptionItemDto(
+                        surveyId = surveyId,
+                        sectionId = sectionId,
+                        questionId = questionId,
+                        didiId = it.value.first().didiId,
+                        questionType = QuestionType.Input.name,
+                        questionTag = questionEntity?.tag ?: 0,
+                        questionDesc = questionEntity?.questionDisplay ?: "",
+                        showQuestion = true,
+                        saveAnswerEventOptionItemDtoList = it.value.convertInputTypeQuestionToEventOptionItemDto(
                             it.key.first,
                             QuestionType.valueOf(questionEntity?.type ?: ""),
                             optionItemEntityState
@@ -1051,19 +1054,21 @@ class EventWriterHelperImpl @Inject constructor(
         }
         val uniqueId = getBaseLineUserId()
         formResponseAndQuestionMap.forEach { mapItem ->
-            val tempItem = mapItem.value.first()
+            val questionId = mapItem.key.first
+            val sectionId = mapItem.key.second
+            val surveyId = mapItem.key.third
             val question = baselineDatabase.questionEntityDao().getFormQuestionForId(
-                surveyId = tempItem.surveyId,
-                sectionId = tempItem.sectionId,
-                questionId = mapItem.key.first,
+                surveyId = surveyId,
+                sectionId = sectionId,
+                questionId = questionId,
                 languageId = DEFAULT_LANGUAGE_ID,
                 userid = uniqueId
             )
             val optionItemEntityStateList = ArrayList<OptionItemEntityState>()
             baselineDatabase.optionItemDao().getSurveySectionQuestionOptions(
-                surveyId = tempItem.surveyId,
-                sectionId = tempItem.sectionId,
-                questionId = tempItem.questionId ?: 0,
+                surveyId = surveyId,
+                sectionId = sectionId,
+                questionId = questionId ?: 0,
                 languageId = DEFAULT_LANGUAGE_ID,
                 userId = uniqueId
             ).forEach { optionItemEntity ->
