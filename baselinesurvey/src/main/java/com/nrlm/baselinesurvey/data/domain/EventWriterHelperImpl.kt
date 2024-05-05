@@ -956,24 +956,28 @@ class EventWriterHelperImpl @Inject constructor(
 
      suspend fun generateResponseEvent(): List<Events> {
         val events = mutableListOf<Events>()
+         baselineDatabase.inputTypeQuestionAnswerDao()
+             .getAllInputTypeAnswersForQuestion(prefRepo.getUniqueUserIdentifier())
+             .groupBy { Triple<Int, Int, Int>(it.questionId, it.sectionId, it.surveyId) }.forEach {
+                 val questionId = it.key.first
+                 val sectionId = it.key.second
+                 val surveyId = it.key.third
 
-        baselineDatabase.inputTypeQuestionAnswerDao()
-            .getAllInputTypeAnswersForQuestion(prefRepo.getUniqueUserIdentifier()).forEach {
-                val questionEntity = baselineDatabase.questionEntityDao()
+                 val questionEntity = baselineDatabase.questionEntityDao()
                     .getQuestionEntity(
                         getBaseLineUserId(),
-                        it.surveyId,
-                        it.sectionId,
-                        it.questionId
+                        surveyId = surveyId,
+                        sectionId = sectionId,
+                        questionId = questionId
                     )
 
                 val optionList = baselineDatabase.optionItemDao()
                     .getSurveySectionQuestionOptions(
                         getBaseLineUserId(),
-                        it.sectionId,
-                        it.surveyId,
-                        it.questionId,
-                        2
+                        surveyId = surveyId,
+                        sectionId = sectionId,
+                        questionId = questionId,
+                        languageId = 2
                     )
                 var optionItemEntityState = ArrayList<OptionItemEntityState>()
                 optionList.forEach { optionItemEntity ->
@@ -987,16 +991,16 @@ class EventWriterHelperImpl @Inject constructor(
                 }
                 events.add(
                     createSaveAnswerEvent(
-                        it.surveyId,
-                        it.sectionId,
-                        it.didiId,
-                        it.questionId,
-                        QuestionType.Input.name,
-                        questionEntity?.tag ?: 0,
-                        questionEntity?.questionDisplay ?: "",
-                        true,
-                        listOf(it).convertInputTypeQuestionToEventOptionItemDto(
-                            it.questionId,
+                        surveyId = surveyId,
+                        sectionId = sectionId,
+                        questionId = questionId,
+                        didiId = it.value.first().didiId,
+                        questionType = QuestionType.Input.name,
+                        questionTag = questionEntity?.tag ?: 0,
+                        questionDesc = questionEntity?.questionDisplay ?: "",
+                        showQuestion = true,
+                        saveAnswerEventOptionItemDtoList = it.value.convertInputTypeQuestionToEventOptionItemDto(
+                            it.key.first,
                             QuestionType.valueOf(questionEntity?.type ?: ""),
                             optionItemEntityState
                         )
@@ -1041,22 +1045,30 @@ class EventWriterHelperImpl @Inject constructor(
 
         val formResponseList = baselineDatabase.formQuestionResponseDao()
             .getAllFormResponses(prefRepo.getUniqueUserIdentifier())
-        val formResponseAndQuestionMap = formResponseList.groupBy { it.questionId }
+        val formResponseAndQuestionMap = formResponseList.groupBy {
+            Triple<Int, Int, Int>(
+                it.questionId,
+                it.sectionId,
+                it.surveyId
+            )
+        }
         val uniqueId = getBaseLineUserId()
         formResponseAndQuestionMap.forEach { mapItem ->
-            val tempItem = mapItem.value.first()
+            val questionId = mapItem.key.first
+            val sectionId = mapItem.key.second
+            val surveyId = mapItem.key.third
             val question = baselineDatabase.questionEntityDao().getFormQuestionForId(
-                surveyId = tempItem.surveyId,
-                sectionId = tempItem.sectionId,
-                questionId = mapItem.key,
+                surveyId = surveyId,
+                sectionId = sectionId,
+                questionId = questionId,
                 languageId = DEFAULT_LANGUAGE_ID,
                 userid = uniqueId
             )
             val optionItemEntityStateList = ArrayList<OptionItemEntityState>()
             baselineDatabase.optionItemDao().getSurveySectionQuestionOptions(
-                surveyId = tempItem.surveyId,
-                sectionId = tempItem.sectionId,
-                questionId = tempItem.questionId ?: 0,
+                surveyId = surveyId,
+                sectionId = sectionId,
+                questionId = questionId ?: 0,
                 languageId = DEFAULT_LANGUAGE_ID,
                 userId = uniqueId
             ).forEach { optionItemEntity ->
