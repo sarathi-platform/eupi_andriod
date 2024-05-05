@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.nrlm.baselinesurvey.database.converters.BeneficiaryStepConverter
 import com.nrlm.baselinesurvey.database.converters.ConditionsDtoConvertor
@@ -49,7 +50,7 @@ import com.nrlm.baselinesurvey.database.entity.VillageEntity
 import java.sql.SQLException
 
 // Increase DB Version everytime any change is made to any table or a new table is added.
-const val NUDGE_BASELINE_DATABASE_VERSION = 1
+const val NUDGE_BASELINE_DATABASE_VERSION = 2
 
 @Database(
     entities = [
@@ -116,16 +117,16 @@ abstract class NudgeBaselineDatabase: RoomDatabase()  {
     companion object {
 
         // ADD THIS TYPE OF SQL QUERY FOR TABLE CREATION OR ALTERATION
-        /*private const val CREATE_BPC_SELECTED_DID_TABLE = "CREATE TABLE `$BPC_SELECTED_DIDI_TABLE` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `serverId` INTEGER NOT NULL, `name` TEXT NOT NULL, `needsToPost` INTEGER NOT NULL, `address` TEXT NOT NULL," +
-                " `guardianName` TEXT NOT NULL, `relationship` TEXT NOT NULL, `castId` INTEGER NOT NULL, `castName` TEXT NOT NULL, `cohortId` INTEGER NOT NULL, `cohortName` TEXT NOT NULL, `villageId` INTEGER NOT NULL, `wealth_ranking` TEXT NOT NULL, `needsToPost` INTEGER NOT NULL DEFAULT 1)"*/
+        private const val ALTER_FORM_RESPONSE_TABLE =
+            "ALTER TABLE form_question_response_table ADD selectedValueId TEXT NOT NULL DEFAULT '';"
 
         // CREATE MIGRATION OBJECT FOR MIGRATION 1 to 2.
-        /*val MIGRATION_1_2 = object : Migration(1, 2) {
+        val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                Log.d("NudgeDatabase",  "MIGRATION_42_43")
-                migration(database, listOf(CREATE_BPC_SELECTED_DID_TABLE))
+                Log.d("NudgeDatabase", "MIGRATION_42_43")
+                migration(database, listOf(ALTER_FORM_RESPONSE_TABLE))
             }
-        }*/
+        }
 
         private fun migration(database: SupportSQLiteDatabase, execSqls: List<String>) {
             for(sql in execSqls) {
