@@ -674,8 +674,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                 if (questionAnswerResponseModel.question?.questionType.equals(QuestionType.Form.name)) {
                     val formQuestionEntityList =
                         getFormQuestionEntity(
-                            questionAnswerResponseModel,
-                            giveAllOptionIncludingConditional(questionAnswerResponseModel)
+                            questionAnswerResponseModel
                         )
                     formQuestionEntityList.forEach { formQuestionResponseEntity ->
                         formQuestionResponseEntity.userId = getBaseLineUserId()
@@ -866,90 +865,4 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         }
     }
 
-    fun giveAllOptionIncludingConditional(questionAnswerResponseModel: QuestionAnswerResponseModel): List<OptionItemEntityState> {
-        val optionItemEntityStateList = ArrayList<OptionItemEntityState>()
-
-        optionItemDao.getSurveySectionQuestionOptions(
-            userId = getBaseLineUserId(),
-            questionId = questionAnswerResponseModel.question?.questionId ?: DEFAULT_ID,
-            sectionId = questionAnswerResponseModel.sectionId.toInt(),
-            surveyId = questionAnswerResponseModel.surveyId,
-            languageId = questionAnswerResponseModel.languageId
-        ).forEach { optionItemEntity ->
-            optionItemEntityStateList.add(
-                OptionItemEntityState(
-                    optionItemEntity.optionId,
-                    optionItemEntity,
-                    !optionItemEntity.conditional
-                )
-            )
-            optionItemEntity.conditions?.forEach { conditionsDto ->
-                when (conditionsDto?.resultType) {
-                    ResultType.Questions.name -> {
-                        conditionsDto?.resultList?.forEach { questionList ->
-                            if (questionList.type?.equals(QuestionType.Form.name, true) == true
-                                || questionList.type?.equals(
-                                    QuestionType.FormWithNone.name,
-                                    true
-                                ) == true
-                            ) {
-                                val mOptionItemEntityList =
-                                    questionList.convertFormTypeQuestionListToOptionItemEntity(
-                                        optionItemEntity.sectionId,
-                                        optionItemEntity.surveyId,
-                                        optionItemEntity.languageId ?: DEFAULT_LANGUAGE_ID
-                                    )
-                                mOptionItemEntityList.forEach { mOptionItemEntity ->
-                                    optionItemEntityStateList.add(
-                                        OptionItemEntityState(
-                                            mOptionItemEntity.optionId,
-                                            mOptionItemEntity,
-                                            false
-                                        )
-                                    )
-                                }
-                            }
-                            val mOptionItemEntity =
-                                questionList.convertQuestionListToOptionItemEntity(
-                                    optionItemEntity.sectionId,
-                                    optionItemEntity.surveyId
-                                )
-                            optionItemEntityStateList.add(
-                                OptionItemEntityState(
-                                    mOptionItemEntity.optionId,
-                                    mOptionItemEntity,
-                                    false
-                                )
-                            )
-
-                            // TODO Handle later correctly
-                            mOptionItemEntity.conditions?.forEach { conditionsDto2 ->
-                                if (conditionsDto2?.resultType.equals(
-                                        ResultType.Questions.name,
-                                        true
-                                    )
-                                ) {
-                                    conditionsDto2?.resultList?.forEach { subQuestionList ->
-                                        val mOptionItemEntity2 =
-                                            subQuestionList.convertQuestionListToOptionItemEntity(
-                                                mOptionItemEntity.sectionId,
-                                                mOptionItemEntity.surveyId
-                                            )
-                                        optionItemEntityStateList.add(
-                                            OptionItemEntityState(
-                                                mOptionItemEntity2.optionId,
-                                                mOptionItemEntity2,
-                                                false
-                                            )
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return optionItemEntityStateList
-    }
 }

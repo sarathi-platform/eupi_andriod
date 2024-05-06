@@ -20,6 +20,7 @@ import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
+import com.nrlm.baselinesurvey.model.Tuple4
 import com.nrlm.baselinesurvey.model.datamodel.ActivityForSubjectDto
 import com.nrlm.baselinesurvey.model.datamodel.ImageUploadRequest
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventDto
@@ -709,21 +710,6 @@ class EventWriterHelperImpl @Inject constructor(
                                 activityId = it.activityId,
                                 activityStatus = SurveyState.INPROGRESS.ordinal
                             )
-
-                        } else {
-                            baselineDatabase.missionActivityEntityDao().updateActivityStatus(
-                                userId = getBaseLineUserId(),
-                                activityId = it.activityId,
-                                missionId = missionEntity.missionId,
-                                status = SurveyState.COMPLETED.name
-                            )
-                            saveActivityStatusEvent(
-                                missionId = it.missionId,
-                                activityId = it.activityId,
-                                activityStatus = SurveyState.COMPLETED.ordinal
-                            )
-
-
                         }
                     } else {
                         baselineDatabase.missionActivityEntityDao().updateActivityStatus(
@@ -738,8 +724,6 @@ class EventWriterHelperImpl @Inject constructor(
                             activityStatus = SurveyState.NOT_STARTED.ordinal
                         )
                     }
-
-
                 }
             val totalActivityCount = baselineDatabase.missionActivityEntityDao()
                 .getAllActivityCount(getBaseLineUserId(), missionId = missionEntity.missionId)
@@ -757,17 +741,6 @@ class EventWriterHelperImpl @Inject constructor(
                         missionStatus = SurveyState.INPROGRESS.ordinal,
                         missionId = missionEntity.missionId
                     )
-                } else {
-                    missionEntityDao.updateMissionStatus(
-                        userId = getBaseLineUserId(),
-                        missionId = missionEntity.missionId,
-                        status = SurveyState.COMPLETED.name
-                    )
-                    saveMissionStatusEvent(
-                        missionStatus = SurveyState.COMPLETED.ordinal,
-                        missionId = missionEntity.missionId
-                    )
-
                 }
             } else {
                 missionEntityDao.updateMissionStatus(
@@ -779,10 +752,8 @@ class EventWriterHelperImpl @Inject constructor(
                     missionStatus = SurveyState.NOT_STARTED.ordinal,
                     missionId = missionEntity.missionId
                 )
-
             }
         }
-
     }
 
     private fun changeFileName(prefix: String) {
@@ -1090,16 +1061,24 @@ class EventWriterHelperImpl @Inject constructor(
         val events = mutableListOf<Events>()
          baselineDatabase.inputTypeQuestionAnswerDao()
              .getAllInputTypeAnswersForQuestion(prefRepo.getUniqueUserIdentifier())
-             .groupBy { Triple<Int, Int, Int>(it.questionId, it.sectionId, it.surveyId) }.forEach {
+             .groupBy {
+                 Tuple4<Int, Int, Int, Int>(
+                     it.questionId,
+                     it.sectionId,
+                     it.surveyId,
+                     it.didiId
+                 )
+             }.forEach {
                  val questionId = it.key.first
                  val sectionId = it.key.second
                  val surveyId = it.key.third
+                 val didiId = it.key.fourth
 
                  val questionEntity = baselineDatabase.questionEntityDao()
-                    .getQuestionEntity(
-                        getBaseLineUserId(),
-                        surveyId = surveyId,
-                        sectionId = sectionId,
+                     .getQuestionEntity(
+                         getBaseLineUserId(),
+                         surveyId = surveyId,
+                         sectionId = sectionId,
                         questionId = questionId
                     )
 
@@ -1126,7 +1105,7 @@ class EventWriterHelperImpl @Inject constructor(
                         surveyId = surveyId,
                         sectionId = sectionId,
                         questionId = questionId,
-                        didiId = it.value.first().didiId,
+                        didiId = didiId,
                         questionType = QuestionType.Input.name,
                         questionTag = questionEntity?.tag ?: 0,
                         questionDesc = questionEntity?.questionDisplay ?: "",
@@ -1178,10 +1157,11 @@ class EventWriterHelperImpl @Inject constructor(
         val formResponseList = baselineDatabase.formQuestionResponseDao()
             .getAllFormResponses(prefRepo.getUniqueUserIdentifier())
         val formResponseAndQuestionMap = formResponseList.groupBy {
-            Triple<Int, Int, Int>(
+            Tuple4<Int, Int, Int, Int>(
                 it.questionId,
                 it.sectionId,
-                it.surveyId
+                it.surveyId,
+                it.didiId
             )
         }
         val uniqueId = getBaseLineUserId()
@@ -1189,6 +1169,8 @@ class EventWriterHelperImpl @Inject constructor(
             val questionId = mapItem.key.first
             val sectionId = mapItem.key.second
             val surveyId = mapItem.key.third
+            val didiId = mapItem.key.fourth
+
             val question = baselineDatabase.questionEntityDao().getFormQuestionForId(
                 surveyId = surveyId,
                 sectionId = sectionId,
@@ -1286,7 +1268,7 @@ class EventWriterHelperImpl @Inject constructor(
                         surveyId = didiResponse.surveyId,
                         sectionId = didiResponse.sectionId,
                         questionId = didiResponse.questionId,
-                        didiId = didiResponse.didiId,
+                        didiId = didiId,
                         questionTag = question?.tag ?: 0,
                         questionType = QuestionType.Form.name,
                         showQuestion = true,

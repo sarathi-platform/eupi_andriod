@@ -173,19 +173,19 @@ fun NestedLazyListForFormQuestions(
                                     isEditAllowed = isEditAllowed,
                                     selectOptionText = if (viewModel.tempRefId.value != BLANK_STRING) {
 
-                                        option.optionItemEntity.values?.find {
-                                            it.value == (formQuestionResponseEntity.value.getResponseForOptionId(
+                                        option.optionItemEntity.values?.find { valueDto ->
+                                            valueDto.id == (formQuestionResponseEntity.value.getResponseForOptionId(
                                                 option.optionId ?: -1
-                                            )?.selectedValue ?: BLANK_STRING)
+                                            )?.selectedValueId)?.first()
                                         }?.id
                                             ?: 0 //TODO change from checking text to check only for id
                                     }
 
                                     else {
-                                        option.optionItemEntity.values?.find {
-                                            it.value == (viewModel.storeCacheForResponse.getResponseForOptionId(
-                                                optionId = option.optionId ?: -1
-                                            )?.selectedValue ?: BLANK_STRING)
+                                        option.optionItemEntity.values?.find { valueDto ->
+                                            valueDto.id == (formQuestionResponseEntity.value.getResponseForOptionId(
+                                                option.optionId ?: -1
+                                            )?.selectedValueId)?.first()
                                         }?.id
                                             ?: 0 //TODO change from checking text to check only for id
                                     }
@@ -211,7 +211,8 @@ fun NestedLazyListForFormQuestions(
                                                 option.optionId ?: 0,
                                                 option.optionItemEntity.values?.find { it.id == value }?.value
                                                     ?: BLANK_STRING,
-                                                viewModel.referenceId
+                                                viewModel.referenceId,
+                                                selectedIds = listOf(value)
                                             )
                                         )
                                     }
@@ -228,16 +229,15 @@ fun NestedLazyListForFormQuestions(
                                     option.optionItemEntity?.values?.filter {
                                         formQuestionResponseEntity.value.getResponseForOptionId(
                                             option.optionId ?: -1
-                                        )?.selectedValue?.split(DELIMITER_MULTISELECT_OPTIONS)
-                                            ?.contains(it.id.toString()) == true
+                                        )?.selectedValueId?.contains(it.id) == true
                                     }?.map { it.value }?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
                                         ?: BLANK_STRING
                                 else
                                     option.optionItemEntity?.values?.filter {
                                         viewModel.storeCacheForResponse.getResponseForOptionId(
                                             optionId = option.optionId ?: -1
-                                        )?.selectedValue?.split(DELIMITER_MULTISELECT_OPTIONS)
-                                            ?.contains(it.id.toString()) == true
+                                        )?.selectedValueId
+                                            ?.contains(it.id) == true
                                     }?.map { it.value }?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
                                         ?: BLANK_STRING
 
@@ -268,8 +268,9 @@ fun NestedLazyListForFormQuestions(
                                             saveFormQuestionResponseEntity(
                                                 formTypeOption,
                                                 option.optionId ?: 0,
-                                                valueIds.joinToString(DELIMITER_MULTISELECT_OPTIONS),
-                                                viewModel.referenceId
+                                                selectedValue = value,
+                                                referenceId = viewModel.referenceId,
+                                                selectedIds = valueIds
                                             )
                                         )
                                     }

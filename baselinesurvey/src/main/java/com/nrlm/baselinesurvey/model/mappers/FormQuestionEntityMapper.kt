@@ -4,14 +4,10 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_ID
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.model.response.QuestionAnswerResponseModel
-import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
-import com.nrlm.baselinesurvey.utils.convertEventValueFromMultiSelectDropDownEvent
-import com.nrlm.baselinesurvey.utils.isMultiSelectDropdown
 
 object FormQuestionEntityMapper {
     fun getFormQuestionEntity(
         questionResponseModel: QuestionAnswerResponseModel,
-        optionsList: List<OptionItemEntityState>,
     ): List<FormQuestionResponseEntity> {
         val formEntities = ArrayList<FormQuestionResponseEntity>()
         val optionItemEntities = OptionEntityMapper.getOptionEntitiesMapperForForm(
@@ -26,14 +22,9 @@ object FormQuestionEntityMapper {
                     optionId = optionItemEntity.optionId ?: DEFAULT_ID,
                     sectionId = questionResponseModel.sectionId.toInt(),
                     surveyId = questionResponseModel.surveyId,
-                    selectedValue = if (isMultiSelectDropdown(
-                            optionsList,
-                            optionItemEntity.optionId
-                        )
-                    ) convertEventValueFromMultiSelectDropDownEvent(
-                        optionItemEntity.selectedValue ?: BLANK_STRING
-                    ) else optionItemEntity.selectedValue ?: BLANK_STRING,
-                    questionId = questionResponseModel.question?.questionId ?: -1
+                    selectedValue = optionItemEntity.selectedValue ?: BLANK_STRING,
+                    questionId = questionResponseModel.question?.questionId ?: -1,
+                    selectedValueId = optionItemEntity.selectedValueWithIds.map { it.id }
                 )
 
             )

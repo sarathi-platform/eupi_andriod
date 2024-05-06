@@ -50,7 +50,6 @@ import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_NAME
-import com.nrlm.baselinesurvey.DELIMITER_MULTISELECT_OPTIONS
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ZERO_RESULT
 import com.nrlm.baselinesurvey.activity.MainActivity
@@ -267,7 +266,8 @@ fun saveFormQuestionResponseEntity(
     formTypeOption: FormTypeOption,
     optionId: Int,
     selectedValue: String,
-    referenceId: String
+    referenceId: String,
+    selectedIds: List<Int> = emptyList()
 ): FormQuestionResponseEntity {
 
     return FormQuestionResponseEntity(
@@ -277,7 +277,8 @@ fun saveFormQuestionResponseEntity(
         questionId = formTypeOption.questionId,
         optionId = optionId,
         selectedValue = selectedValue,
-        referenceId = referenceId
+        referenceId = referenceId,
+        selectedValueId = selectedIds
     )
 }
 
@@ -289,11 +290,19 @@ fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObject
     referenceIdMap.forEach { formQuestionResponseEntityList ->
         val householdMember = FormResponseObjectDto()
         val householdMemberDetailsMap = mutableMapOf<Int, String>()
+        val selectedValueMap = mutableMapOf<Int, List<Int>>()
         householdMember.referenceId = formQuestionResponseEntityList.key
         householdMember.questionId = formQuestionResponseEntityList.value.first().questionId
         householdMember.questionTag = tagList.findTagForId(questionTag ?: -1)
         formQuestionResponseEntityList.value.forEachIndexed { index, formQuestionResponseEntity ->
-            householdMemberDetailsMap.put(formQuestionResponseEntity.optionId, formQuestionResponseEntity.selectedValue)
+            householdMemberDetailsMap.put(
+                formQuestionResponseEntity.optionId,
+                formQuestionResponseEntity.selectedValue
+            )
+            selectedValueMap.put(
+                formQuestionResponseEntity.optionId,
+                formQuestionResponseEntity.selectedValueId
+            )
             /*var option = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }
             if (option==null) {
                 optionsItemEntityList.forEach { optionItemEntity ->
@@ -309,6 +318,7 @@ fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObject
             }*/
 
             householdMember.memberDetailsMap = householdMemberDetailsMap
+            householdMember.selectedValueId = selectedValueMap
         }
         householdMembersList.add(householdMember)
     }
@@ -794,7 +804,9 @@ fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType?):
                 SaveAnswerEventOptionItemDto(
                     this.optionId ?: 0,
                     this.selectedValue,
-                    tag = this.optionTag
+                    tag = this.optionTag,
+                    selectedValueWithIds = this.values?.find { it.id == this.selectedValueId }
+                        ?.let { listOf(it) } ?: emptyList()
                 )
             saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
         }
@@ -857,7 +869,9 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: Question
                     SaveAnswerEventOptionItemDto(
                         it.optionId ?: 0,
                         it.selectedValue,
-                        tag = it.optionTag
+                        tag = it.optionTag,
+                        selectedValueWithIds = it.values?.find { valuesDto -> valuesDto.id == it.selectedValueId }
+                            ?.let { listOf(it) } ?: emptyList()
                     )
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
             }
@@ -933,119 +947,27 @@ fun List<FormQuestionResponseEntity>.convertFormQuestionResponseEntityToSaveAnsw
     val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
     if (type == QuestionType.Form) {
         this.forEach { formQuestionResponseEntity ->
-            if (forExcel) {
                 val saveAnswerEventOptionItemDto = SaveAnswerEventOptionItemDto(
                     optionId = formQuestionResponseEntity.optionId,
-                    selectedValue = if (
-                        (optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }?.optionItemEntity?.optionType?.toLowerCase()
-                            ?: BLANK_STRING) ==
-                        QuestionType.MultiSelectDropDown.name.toLowerCase()
-
-                    ) {
-                        getSelectedValuesForExcel(
-                            formQuestionResponseEntity.selectedValue,
-                            optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }
+                    selectedValue = formQuestionResponseEntity.selectedValue,
+                    referenceId = formQuestionResponseEntity.referenceId,
+                    optionDesc = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }?.optionItemEntity?.display
+                        ?: BLANK_STRING,
+                    selectedValueWithIds = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }?.optionItemEntity?.values?.filter {
+                        formQuestionResponseEntity.selectedValueId.contains(
+                            it.id
                         )
-                    } else {
-                        formQuestionResponseEntity.selectedValue
-                    },
-                    referenceId = formQuestionResponseEntity.referenceId,
-                    optionDesc = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }?.optionItemEntity?.display
-                        ?: BLANK_STRING,
+                    } ?: emptyList(),
                     tag = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }?.optionItemEntity?.optionTag
                         ?: 0
                 )
                 saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
-            } else {
-                val saveAnswerEventOptionItemDto = SaveAnswerEventOptionItemDto(
-                    optionId = formQuestionResponseEntity.optionId,
-                    selectedValue = if (
-                        (optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }?.optionItemEntity?.optionType?.toLowerCase()
-                            ?: BLANK_STRING)
-                        == QuestionType.MultiSelectDropDown.name.toLowerCase()
-
-                    ) {
-                        getEventValueForMultiSelectEvent(
-                            formQuestionResponseEntity.selectedValue,
-                            optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId })
-                    } else {
-                        formQuestionResponseEntity.selectedValue
-                    },
-                    referenceId = formQuestionResponseEntity.referenceId,
-                    optionDesc = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }?.optionItemEntity?.display
-                        ?: BLANK_STRING,
-                    tag = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }?.optionItemEntity?.optionTag
-                        ?: 0
-                )
-                saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
-            }
+//            }
 
         }
     }
 
     return saveAnswerEventOptionItemDtoList
-}
-
-fun getSelectedValuesForExcel(
-    selectedValue: String,
-    optionItemEntity: OptionItemEntityState?
-): String {
-    val valueIds = selectedValue.split(DELIMITER_MULTISELECT_OPTIONS)
-    val valuesList = ArrayList<String>()
-    valueIds?.forEach { id ->
-        valuesList.add(
-            optionItemEntity?.optionItemEntity?.values?.find { it.id == id.toInt() }?.value
-                ?: BLANK_STRING
-        )
-    }
-    return valuesList.joinToString(DELIMITER_MULTISELECT_OPTIONS)
-}
-
-const val MULTISELECT_DROPDOWN_VALUE_PREFIX = "valueIds="
-
-fun getEventValueForMultiSelectEvent(
-    selectedValue: String,
-    optionItemEntityState: OptionItemEntityState?
-): String {
-    val values = selectedValue.split(DELIMITER_MULTISELECT_OPTIONS)
-
-    val valueDtoList = ArrayList<ValuesDto?>()
-    values.forEach { id ->
-        valueDtoList.add(optionItemEntityState?.optionItemEntity?.values?.find { it.id == id.toInt() })
-    }
-
-    val resultString = ArrayList<String>()
-    valueDtoList.forEach {
-        if (it != null) {
-            resultString.add("${it.id}~${it.value}")
-        }
-    }
-
-    return MULTISELECT_DROPDOWN_VALUE_PREFIX + resultString.joinToString(CONDITIONS_DELIMITER)
-}
-
-fun convertEventValueFromMultiSelectDropDownEvent(selectedValue: String): String {
-    if (selectedValue == BLANK_STRING)
-        return selectedValue
-
-    val values = selectedValue.replace(MULTISELECT_DROPDOWN_VALUE_PREFIX, BLANK_STRING)
-        .split(CONDITIONS_DELIMITER)
-    val valueIds = ArrayList<String>()
-    values.forEach {
-        valueIds.add(it.split("~").first())
-    }
-    return valueIds.joinToString(DELIMITER_MULTISELECT_OPTIONS)
-}
-
-fun isMultiSelectDropdown(
-    optionsList: List<OptionItemEntityState>,
-    optionId: Int?
-): Boolean {
-    val currentOption = optionsList.find { it.optionId == optionId }
-    return currentOption?.optionItemEntity?.optionType?.equals(
-        QuestionType.MultiSelectDropDown.name,
-        ignoreCase = true
-    ) ?: false
 }
 
 fun OptionItemEntity.convertOptionItemEntityToSaveAnswerEventOptionItemDtoForFormWithNone(
@@ -1068,7 +990,12 @@ fun OptionItemEntity.convertOptionItemEntityToSaveAnswerEventOptionItemDtoForFor
         referenceId = formQuestionResponseEntity.referenceId,
         optionDesc = this.display
             ?: BLANK_STRING,
-        tag = this.optionTag
+        tag = this.optionTag,
+        selectedValueWithIds = this.values?.filter {
+            formQuestionResponseEntity.selectedValueId.contains(
+                it.id
+            )
+        } ?: emptyList()
     )
 
     saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
