@@ -345,20 +345,52 @@ class QuestionScreenViewModel @Inject constructor(
 
     private fun updateQuestionEntityStateForConditionalQuestions(questionEntityStateList: List<QuestionEntityState>) {
         questionEntityStateList.forEach { questionEntityState ->
-            sectionDetail.value.questionAnswerMapping[questionEntityState.questionId]?.forEach { optionItemEntity ->
-                onEvent(
-                    QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption(
-                        questionEntityState,
-                        optionItemEntity
-                    )
-                )
+            if (questionEntityState.questionEntity?.type == QuestionType.MultiSelect.name) {
                 onEvent(
                     QuestionTypeEvent.UpdateConditionQuestionStateForMultipleOption(
                         questionEntityState,
-                        listOf(optionItemEntity)
+                        sectionDetail.value.questionAnswerMapping[questionEntityState.questionId]
+                            ?: emptyList()
                     )
                 )
+            } else if (questionEntityState.questionEntity?.type?.equals(
+                    QuestionType.InputNumber.name,
+                    true
+                ) == true
+            ) {
+
+                inputTypeQuestionAnswerEntityList?.value?.filter { it.questionId == questionEntityState.questionId }
+                    ?.let { inputTypeQuestionAnswerEntitiesForQuestion ->
+                        val mOptionList = ArrayList<OptionItemEntity>()
+                        inputTypeQuestionAnswerEntitiesForQuestion.forEach { inputTypeQuestionAnswerEntity ->
+
+                            questionEntityState.optionItemEntityState.find { it.optionId == inputTypeQuestionAnswerEntity.optionId }?.optionItemEntity
+                                ?.copy(selectedValue = inputTypeQuestionAnswerEntity.inputValue)
+                                ?.let {
+                                    mOptionList.add(it)
+                                }
+                        }
+
+                        onEvent(
+                            QuestionTypeEvent.UpdateConditionQuestionStateForInputNumberOptions(
+                                questionEntityState = questionEntityState,
+                                optionItemEntityList = mOptionList,
+                                inputTypeQuestionEntity = inputTypeQuestionAnswerEntitiesForQuestion
+                            )
+                        )
+
+                    }
+            } else {
+                sectionDetail.value.questionAnswerMapping[questionEntityState.questionId]?.forEach { optionItemEntity ->
+                    onEvent(
+                        QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption(
+                            questionEntityState,
+                            optionItemEntity
+                        )
+                    )
+                }
             }
+
         }
     }
 
@@ -818,56 +850,121 @@ class QuestionScreenViewModel @Inject constructor(
 
             is QuestionTypeEvent.UpdateConditionQuestionStateForInputNumberOptions -> {
 
-                //TODO @Anupam Commenting for now, need to find permanent solution to hide condtional questions for unselected options.
-                /*if (event.optionItemEntity.conditions == null) {
-                    val questionToUpdate = questionEntityStateList.find { it.questionId == event.questionEntityState?.questionId }
-                    questionToUpdate?.optionItemEntityState?.forEach { optionItemEntity ->
-                        optionItemEntity.optionItemEntity?.conditions?.forEach { conditionDto ->
-                            updateQuestionStateForCondition(
-                                conditionResult = false,
-                                conditionDto
-                            )
-                        }
+                val mOptionItemList = event.questionEntityState?.optionItemEntityState?.toList()
+                val unSelectedOptions = mutableListOf<OptionItemEntityState>()
+
+                if (event.optionItemEntityList.isEmpty()) {
+                    unSelectedOptions.addAll(mOptionItemList ?: emptyList())
+                } else {
+                    mOptionItemList?.filter {
+                        !event.optionItemEntityList.map {
+                            it
+                                .optionId
+                        }.contains(
+                            it
+                                .optionId
+                        )
+                    }?.let {
+                        unSelectedOptions.addAll(it.toList())
                     }
-                }*/
+                }
 
-
-                event.optionItemEntity.conditions?.forEach { conditionsDto ->
-
-                    //TODO @Anupam Commenting for now, need to find permanent solution to hide condtional questions for unselected options.
-                    //Hide conditional questions for the unselected values.
-                    /*val questionToUpdate = questionEntityStateList.find { it.questionId == event.questionEntityState?.questionId && it.showQuestion }
-                    val unselectedOption = questionToUpdate?.optionItemEntityState?.filter { !event.inputTypeQuestionEntity.map { it.optionId }.contains(it.optionId) }
-                    unselectedOption?.forEach { optionItemEntityState ->
-                        optionItemEntityState.optionItemEntity?.conditions?.forEach { conditionsDto ->
-                            val mConditionCheckResult = conditionsDto?.checkCondition(event.optionItemEntity.display ?: BLANK_STRING)
-                            updateQuestionStateForCondition(conditionResult = mConditionCheckResult == true, conditionsDto)
-                            conditionsDto?.resultList?.forEach { subQuestion ->
-                                subQuestion.options?.forEach { subQuestionOption ->
-                                    subQuestionOption?.conditions?.forEach { subConditionDto ->
-                                        val mSubConditionCheckResult = subConditionDto?.checkCondition(event.optionItemEntity.display ?: BLANK_STRING)
-                                        updateQuestionStateForCondition(conditionResult = mSubConditionCheckResult == true, subConditionDto)
+                unSelectedOptions.distinctBy { it.optionId }
+                    .forEach { unseletecOptionItemEntityState ->
+                        unseletecOptionItemEntityState?.optionItemEntity?.conditions?.let {
+                            it.forEach { conditionsDto ->
+                                if (event.optionItemEntityList.isEmpty()) {
+                                    val conditionCheckResult =
+                                        conditionsDto?.checkCondition(BLANK_STRING)
+                                    if (conditionsDto?.resultType?.equals(
+                                            ResultType.Questions.name,
+                                            true
+                                        ) == true
+                                    ) {
+                                        updateQuestionStateForCondition(
+                                            conditionResult = conditionCheckResult == true,
+                                            conditionsDto
+                                        )
+                                        if (conditionCheckResult == false) {
+                                            onEvent(
+                                                QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption(
+                                                    conditionsDto!!
+                                                )
+                                            )
+                                        }
+                                    }
+                                    if (conditionsDto?.resultType?.equals(
+                                            ResultType.NoneMarked.name,
+                                            true
+                                        ) == true
+                                    ) {
+                                        updateQuestionOptionStateForNoneCondition(
+                                            conditionResult = conditionCheckResult == true,
+                                            optionId = unseletecOptionItemEntityState.optionId ?: 0,
+                                            conditionsDto = conditionsDto,
+                                            questionId = event.questionEntityState?.questionId ?: 0,
+                                            noneOptionUnselected = true
+                                        )
                                     }
                                 }
+
+                                event.optionItemEntityList.forEach { optionItemEntity ->
+                                    val conditionCheckResult = conditionsDto?.checkCondition(
+                                        optionItemEntity.display ?: BLANK_STRING
+                                    )
+                                    if (conditionsDto?.resultType?.equals(
+                                            ResultType.Questions.name,
+                                            true
+                                        ) == true
+                                    ) {
+                                        updateQuestionStateForCondition(
+                                            conditionResult = conditionCheckResult == true,
+                                            conditionsDto
+                                        )
+                                        if (conditionCheckResult == false) {
+                                            onEvent(
+                                                QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption(
+                                                    conditionsDto!!
+                                                )
+                                            )
+                                        }
+                                    }
+                                    if (conditionsDto?.resultType?.equals(
+                                            ResultType.NoneMarked.name,
+                                            true
+                                        ) == true
+                                    )
+                                        updateQuestionOptionStateForNoneCondition(
+                                            conditionResult = conditionCheckResult == true,
+                                            optionItemEntity.optionId ?: 0,
+                                            conditionsDto,
+                                            event.questionEntityState?.questionId ?: 0, true
+                                        )
+                                }
+
                             }
                         }
-                    }*/
-
-                    if (event.optionItemEntity.selectedValue != "0") {
-                        val conditionCheckResult = conditionsDto?.checkCondition(
-                            event.optionItemEntity.display ?: BLANK_STRING
-                        )
-                        updateQuestionStateForCondition(
-                            conditionResult = conditionCheckResult == true,
-                            conditionsDto
-                        )
-                    } else {
-                        updateQuestionStateForCondition(
-                            conditionResult = false,
-                            conditionsDto
-                        )
                     }
 
+                event.optionItemEntityList.forEach { optionItemEntity ->
+                    optionItemEntity.conditions?.let {
+                        it.forEach { conditionsDto ->
+                            if (optionItemEntity.selectedValue != "0") {
+                                val conditionCheckResult = conditionsDto?.checkCondition(
+                                    optionItemEntity.display ?: BLANK_STRING
+                                )
+                                updateQuestionStateForCondition(
+                                    conditionResult = conditionCheckResult == true,
+                                    conditionsDto
+                                )
+                            } else {
+                                updateQuestionStateForCondition(
+                                    conditionResult = false,
+                                    conditionsDto
+                                )
+                            }
+                        }
+                    }
                 }
             }
 
@@ -880,13 +977,10 @@ class QuestionScreenViewModel @Inject constructor(
                 // When All unselected
                 if (event.optionItemEntityList.isEmpty()) {
                     unselectedOptions.addAll(mOptionItemList ?: emptyList())
-                }
-                mOptionItemList?.forEach {
-                    event.optionItemEntityList?.map { it.optionId }?.forEach { selectOptionId ->
-                        if (it.optionId != selectOptionId) {
-                            unselectedOptions.add(it)
-                        }
-                    }
+                } else {
+                    mOptionItemList?.filter {
+                        event.optionItemEntityList.map { it.optionId }.contains(it.optionId) != true
+                    }?.let { unselectedOptions.addAll(it.toList()) }
                 }
 
                 unselectedOptions.distinctBy { it.optionId }.forEach { unselectedOptionItemEntityState ->
@@ -1524,7 +1618,7 @@ class QuestionScreenViewModel @Inject constructor(
                 answeredQuestionCount.add(it.key)
             }
 
-            inputTypeQuestionAnswerEntityList.value.groupBy { it.optionId }.forEach {
+            inputTypeQuestionAnswerEntityList.value.groupBy { it.questionId }.forEach {
                 answeredQuestionCount.add(it.key)
             }
             val qesList = questionEntityStateList.toList()

@@ -69,7 +69,10 @@ import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
+import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nrlm.baselinesurvey.utils.convertFormTypeQuestionListToOptionItemEntity
+import com.nrlm.baselinesurvey.utils.convertQuestionListToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.entities.ApiStatusEntity
@@ -667,8 +670,12 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     surveyId = questionAnswerResponseModel.surveyId,
                     languageId = questionAnswerResponseModel.languageId
                 )
+
                 if (questionAnswerResponseModel.question?.questionType.equals(QuestionType.Form.name)) {
-                    val formQuestionEntityList = getFormQuestionEntity(questionAnswerResponseModel)
+                    val formQuestionEntityList =
+                        getFormQuestionEntity(
+                            questionAnswerResponseModel
+                        )
                     formQuestionEntityList.forEach { formQuestionResponseEntity ->
                         formQuestionResponseEntity.userId = getBaseLineUserId()
                         val isQuestionAnswered =
@@ -857,6 +864,5 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
             true
         }
     }
-
 
 }

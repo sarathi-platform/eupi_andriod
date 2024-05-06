@@ -39,6 +39,9 @@ interface MissionActivityDao {
     @Query("SELECT count(*) FROM $ACTIVITY_TABLE_NAME where  userId=:userId and activityId=:activityId ")
     suspend fun getActivityCount(userId: String, activityId: Int): Int
 
+    @Query("SELECT count(*) FROM $ACTIVITY_TABLE_NAME where  userId=:userId and missionId=:missionId and isActive=1")
+    suspend fun getAllActivityCount(userId: String, missionId: Int): Int
+
     @Query("SELECT * FROM $ACTIVITY_TABLE_NAME where  userId=:userId and activityId=:activityId and isActive=1 ")
     suspend fun getActivitiesFormIds(userId: String, activityId: Int): MissionActivityEntity
 //    @Query("SELECT * FROM $ACTIVITY_TABLE_NAME where missionId=:missionId ")
@@ -130,6 +133,13 @@ interface MissionActivityDao {
 
     @Query("UPDATE $ACTIVITY_TABLE_NAME SET isActive = :isActive where  userId=:userId and missionId = :missionId and activityId= :activityId")
     fun updateActivityActiveStatus(missionId: Int, userId: String, isActive: Int, activityId: Int)
+
+    @Query("SELECT COUNT(*) from $ACTIVITY_TABLE_NAME where userId=:userId and missionId = :missionId AND status NOT in (:status) and isActive=1")
+    fun getPendingActivity(
+        userId: String,
+        missionId: Int,
+        status: List<String> = listOf(SurveyState.COMPLETED.name, SurveyState.NOT_AVAILABLE.name)
+    ): Int
 
 
 }

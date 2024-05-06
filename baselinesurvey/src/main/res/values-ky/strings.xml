@@ -26,7 +26,7 @@
     <string name="online_text">Online</string>
     <string name="offline_text">Offline</string>
     <string name="choose_language">Choose Language</string>
-    <string name="continue_text">Continue</string>
+    <string name="continue_text">Khlai thangdi</string>
     <string name="continue_pat_text">Continue PAT</string>
     <string name="enter_mobile_number">Enter Mobile Number</string>
     <string name="mobile_text">Mobile</string>
@@ -485,7 +485,7 @@
     <string name="task_completed_label">"Tangmung Paikha - "</string>
     <string name="purpose_comparision">What is the purpose of your farming?</string>
     <string name="net_income_label">Bisi kaisa ni ajemung: ₹</string>
-    <string name="net_income_comparision">Bisi kaisa ni ajemung</string>
+    <string name="net_income_comparision">khlai thani thangnai Tal chinwi o</string>
     <string name="hours">Hours</string>
     <string name="years">Years</string>
     <string name="minute">Minute</string>
@@ -504,6 +504,8 @@
     <string name="export_baseline_qna">Export Baseline QnA</string>
     <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
     <string name="no_data_available_at_the_moment">No data available at the moment</string>
+    <string name="start_baseline">Baseline chengdi</string>
+    <string name="start_activity">%s chengdi</string>
     <string name="read_more">Read More</string>
     <string name="content">Content</string>
 
