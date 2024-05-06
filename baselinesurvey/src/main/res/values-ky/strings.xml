@@ -504,5 +504,7 @@
     <string name="export_baseline_qna">Export Baseline QnA</string>
     <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
     <string name="no_data_available_at_the_moment">No data available at the moment</string>
+    <string name="read_more">Read More</string>
+    <string name="content">Content</string>
 
 </resources>

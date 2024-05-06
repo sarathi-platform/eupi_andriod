@@ -470,4 +470,6 @@
     <string name="export_baseline_qna">বেসলাইন QnA রপ্তানি করুন</string>
     <string name="form_alert_dialog_message">আপনি ফর্ম জমা না দিয়ে এগিয়ে গেলে এই পরিবর্তনগুলি হারিয়ে যাবে৷ \n\nআপনি কি অবিরত করতে চান?</string>
     <string name="no_data_available_at_the_moment">এই মুহূর্তে কোনও তথ্য উপলব্ধ নেই</string>
+    <string name="read_more">Read More</string>
+    <string name="content">Content</string>
 </resources>
