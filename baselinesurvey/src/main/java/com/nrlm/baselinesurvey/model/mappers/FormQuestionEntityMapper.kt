@@ -23,10 +23,13 @@ object FormQuestionEntityMapper {
                     sectionId = questionResponseModel.sectionId.toInt(),
                     surveyId = questionResponseModel.surveyId,
                     selectedValue = optionItemEntity.selectedValue ?: BLANK_STRING,
-                    questionId = questionResponseModel.question?.questionId ?: -1
+                    questionId = questionResponseModel.question?.questionId ?: -1,
+                    selectedValueId = optionItemEntity.selectedValueWithIds.map { it.id }
                 )
+
             )
         }
         return formEntities
     }
+
 }

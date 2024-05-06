@@ -32,7 +32,8 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
     private val surveyeeEntityDao: SurveyeeEntityDao,
     private val languageListDao: LanguageListDao,
     private val activityTaskDao: ActivityTaskDao,
-    private val activityDao: MissionActivityDao
+    private val activityDao: MissionActivityDao,
+    private val taskDao: ActivityTaskDao
 ): SurveyeeListScreenRepository {
 
     override suspend fun getSurveyeeList(
@@ -47,7 +48,13 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
                 didiList.addAll(mDidiList.filter { it.cohortId == task.didiId }.distinctBy { it.cohortId })
             } else {*/
             if (surveyeeEntityDao.isDidiExist(task.didiId)) {
-                didiList.add(surveyeeEntityDao.getDidi(task.didiId))
+                didiList.add(
+                    surveyeeEntityDao.getDidi(task.didiId).copy(
+                        surveyStatus = SurveyState.toInt(
+                            task.status ?: SurveyState.NOT_STARTED.name
+                        )
+                    )
+                )
             }
 //            }
         }

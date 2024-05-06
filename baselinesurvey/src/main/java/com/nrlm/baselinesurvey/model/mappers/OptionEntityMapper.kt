@@ -50,7 +50,7 @@ object OptionEntityMapper {
 
         questionOptionsResponseModels.forEach { questionOptionsResponseModels ->
             val dropDownDownValues =
-                optionItemEntityList.find { it.optionId == questionOptionsResponseModels.optionId }?.values
+                optionItemEntityList.find { it.optionId == questionOptionsResponseModels.optionId }
             optionsList.add(
                 OptionItemEntity(
                     id = 0,
@@ -61,7 +61,6 @@ object OptionEntityMapper {
                     display = questionEntity?.questionDisplay,
                     weight = null,
                     selectedValue = questionOptionsResponseModels.selectedValue,
-                    // optionValue = questionOptionsResponseModels.select,
                     summary = questionEntity?.questionSummary,
                     count = questionEntity?.order,
                     optionType = BLANK_STRING,
@@ -69,11 +68,9 @@ object OptionEntityMapper {
                     order = questionEntity?.order ?: DEFAULT_ID,
                     languageId = questionEntity?.languageId,
                     isSelected = false,
-                    selectedValueId = if (!dropDownDownValues.isNullOrEmpty()) dropDownDownValues.find {
-                        it.value.contains(
-                            questionOptionsResponseModels.selectedValue ?: BLANK_STRING,
-                            true
-                        )
+                    selectedValueId = if (!dropDownDownValues?.values.isNullOrEmpty()) dropDownDownValues?.values?.find { valueDto ->
+                        questionOptionsResponseModels.selectedValueWithIds.map { it.id }
+                            ?.contains(valueDto.id) == true
                     }?.id ?: 0 else 0
                 )
             )

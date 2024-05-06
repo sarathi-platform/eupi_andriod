@@ -61,7 +61,7 @@ sealed class QuestionTypeEvent {
 
     data class UpdateConditionQuestionStateForInputNumberOptions(
         val questionEntityState: QuestionEntityState?,
-        val optionItemEntity: OptionItemEntity,
+        val optionItemEntityList: List<OptionItemEntity>,
         val inputTypeQuestionEntity: List<InputTypeQuestionAnswerEntity>
     )
 

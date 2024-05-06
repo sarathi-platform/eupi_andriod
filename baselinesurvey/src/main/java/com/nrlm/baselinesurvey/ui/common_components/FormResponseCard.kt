@@ -132,13 +132,17 @@ fun FormResponseCard(
                                 true
                             )
                         ) {
+                            val option = optionItemListWithConditionals.find {
+                                it.display?.contains(
+                                    stringResource(id = R.string.income_source_comparision),
+                                    ignoreCase = true
+                                )!!
+                            }
                             append(
-                                formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                    it.display?.contains(
-                                        stringResource(id = R.string.income_source_comparision),
-                                        ignoreCase = true
-                                    )!!
-                                }?.optionId] ?: BLANK_STRING
+                                option?.values?.filter {
+                                    formResponseObjectDto.selectedValueId[option.optionId]
+                                        ?.contains(it.id) == true
+                                }?.map { it.value }?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
                             )
 
                             var income = BLANK_STRING
@@ -153,9 +157,8 @@ fun FormResponseCard(
                                 for (option in options) {
                                     val value =
                                         option.values?.filter {
-                                            formResponseObjectDto.memberDetailsMap[option.optionId]
-                                                ?.split(DELIMITER_MULTISELECT_OPTIONS)
-                                                ?.contains(it.id.toString()) == true
+                                            formResponseObjectDto.selectedValueId[option.optionId]
+                                                ?.contains(it.id) == true
                                         }?.map { it.value }?.joinToString(
                                             DELIMITER_MULTISELECT_OPTIONS
                                         )
@@ -170,15 +173,20 @@ fun FormResponseCard(
                                 }
                             }
 
-                            if (income == BLANK_STRING)
+                            if (income == BLANK_STRING) {
+                                val option = optionItemListWithConditionals.find {
+                                    it.display?.contains(
+                                        stringResource(id = R.string.livestock_comparision),
+                                        ignoreCase = true
+                                    )!!
+                                }
                                 income =
-                                    formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                        it.display?.contains(
-                                            stringResource(id = R.string.livestock_comparision),
-                                            ignoreCase = true
-                                        )!!
-                                    }?.optionId] ?: BLANK_STRING
-
+                                    option?.values?.filter {
+                                        formResponseObjectDto.selectedValueId[option.optionId]
+                                            ?.contains(it.id) == true
+                                    }?.map { it.value }?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
+                                        .toString()
+                            }
                             if (income != BLANK_STRING) {
                                 append(" | ")
                             }
@@ -214,11 +222,9 @@ fun FormResponseCard(
                             }
                             mode =
                                 mOption?.values?.filter {
-                                    formResponseObjectDto.memberDetailsMap[mOption?.optionId]
-                                        ?.split(DELIMITER_MULTISELECT_OPTIONS)
-                                        ?.contains(it.id.toString()) == true
-                                }
-                                    ?.map { it.value }?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
+                                    formResponseObjectDto.selectedValueId[mOption?.optionId]
+                                        ?.contains(it.id) == true
+                                }?.map { it.value }?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
                                     ?: BLANK_STRING
 
                             if (mode != BLANK_STRING)
@@ -292,9 +298,8 @@ fun FormResponseCard(
 
                                 var income =
                                     mOption?.values?.filter {
-                                        formResponseObjectDto.memberDetailsMap[mOption.optionId]
-                                            ?.split(DELIMITER_MULTISELECT_OPTIONS)
-                                            ?.contains(it.id.toString()) == true
+                                        formResponseObjectDto.selectedValueId[mOption.optionId]
+                                            ?.contains(it.id) == true
                                     }
                                         ?.map { it.value }
                                         ?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
@@ -311,12 +316,19 @@ fun FormResponseCard(
                                 true
                             )
                         ) {
-                            this.append(formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
+                            val mOption = optionItemListWithConditionals.find {
                                 it.display?.contains(
                                     stringResource(id = R.string.relationship_comparision),
                                     ignoreCase = true
                                 )!!
-                            }?.optionId] ?: BLANK_STRING)
+                            }
+                            this.append(mOption?.values?.filter {
+                                formResponseObjectDto.selectedValueId[mOption.optionId]
+                                    ?.contains(it.id) == true
+                            }
+                                ?.map { it.value }
+                                ?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
+                                ?: BLANK_STRING)
                             this.append(" | ")
                             this.append(formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                 it.display?.contains(
@@ -421,16 +433,23 @@ fun FormResponseCard(
                             )
                         ) {
                             var influenceType = BLANK_STRING
+                            val mOption = optionItemListWithConditionals.find {
+                                it.display?.contains(
+                                    stringResource(R.string.influence_type_comparision_and_label),
+                                    ignoreCase = true
+                                )!! || it.display.contains(
+                                    stringResource(R.string.designation_comparision_and_label),
+                                    true
+                                )!!
+                            }
                             influenceType =
-                                formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                    it.display?.contains(
-                                        stringResource(R.string.influence_type_comparision_and_label),
-                                        ignoreCase = true
-                                    )!! || it.display.contains(
-                                        stringResource(R.string.designation_comparision_and_label),
-                                        true
-                                    )!!
-                                }?.optionId] ?: BLANK_STRING
+                                mOption?.values?.filter {
+                                    formResponseObjectDto.selectedValueId[mOption.optionId]
+                                        ?.contains(it.id) == true
+                                }
+                                    ?.map { it.value }
+                                    ?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
+                                    ?: BLANK_STRING
 
                             append("${stringResource(R.string.influence_type_comparision_and_label)}: $influenceType")
 

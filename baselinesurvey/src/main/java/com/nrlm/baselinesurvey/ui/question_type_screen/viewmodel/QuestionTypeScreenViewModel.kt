@@ -735,6 +735,7 @@ class QuestionTypeScreenViewModel @Inject constructor(
                         }
                     } else {
                         form.selectedValue = event.formQuestionResponseEntity.selectedValue
+                        form.selectedValueId = event.formQuestionResponseEntity.selectedValueId
                         val index = storeCacheForResponse.map { it.optionId }.indexOf(form.optionId)
 //                            .coerceIn(0, storeCacheForResponse.size)
 

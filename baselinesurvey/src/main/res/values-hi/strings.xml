@@ -431,21 +431,14 @@
 
     <string name="warning">"चेतावनी! "</string>
     <string name="data_lost_message">किसी अन्य उपयोगकर्ता का पता चला यदि आप आगे बढ़ते हैं तो आप पिछले उपयोगकर्ता का डेटा खो देंगे।</string>
-    <string name="regenerate_all_events">सभी घटनाओं को पुनर्जीवित करें</string>
-    <string name="load_server_data">सर्वर डेटा लोड करें</string>
     <string name="logout_confirmation">क्या आप लॉग आउट करना चाहते हैं?</string>
     <string name="proceed">आगे बढ़ें</string>
     <string name="fetched_successfully">डेटा सफलतापूर्वक लाया गया</string>
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"शुरू "</string>
     <string name="retry">पुन: प्रयास करें</string>
-    <string name="import_data">आयात आंकड़ा</string>
-    <string name="export_images">केवल छवियाँ निर्यात करें</string>
     <string name="export_backup_file">बैकअप फ़ाइल निर्यात करें</string>
-    <string name="export_database">केवल डेटाबेस निर्यात करें</string>
     <string name="backup_recovery">बैकअप/पुनर्प्राप्ति</string>
-    <string name="export_event_file">ईवेंट फ़ाइल निर्यात करें</string>
-    <string name="export_log_file">केवल लॉग फ़ाइल निर्यात करें</string>
     <string name="madnatory_question_not_marked_error">सभी अनिवार्य प्रश्नों के उत्तर नहीं दिए गए हैं, कृपया सभी प्रश्नों के उत्तर दें!</string>
     <string name="view_label">View</string>
     <string name="task_completed_label">"Activity Completed - "</string>
@@ -466,8 +459,9 @@
     <string name="total_addelabel">"Total added: "</string>
     <string name="view_summary_label">View Summary</string>
     <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
-    <string name="export_baseline_qna">बेसलाइन QnA निर्यात करें</string>
     <string name="form_alert_dialog_message">यदि आप फॉर्म जमा किए बिना आगे बढ़ते हैं तो ये परिवर्तन खो जाएंगे। \n\nक्या आप जारी रखना चाहते हैं?</string>
     <string name="no_data_available_at_the_moment">फिलहाल कोई डेटा उपलब्ध नहीं है</string>
+    <string name="start_baseline">Start Baseline</string>
+    <string name="start_activity">%s Start</string>
 
 </resources>

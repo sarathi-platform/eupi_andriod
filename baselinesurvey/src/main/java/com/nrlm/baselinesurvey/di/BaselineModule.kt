@@ -273,7 +273,8 @@ object BaselineModule {
         surveyeeEntityDao: SurveyeeEntityDao,
         languageListDao: LanguageListDao,
         activityTaskDao: ActivityTaskDao,
-        missionActivityDao: MissionActivityDao
+        missionActivityDao: MissionActivityDao,
+        taskDao: ActivityTaskDao
     ): SurveyeeListScreenRepository {
         return SurveyeeListScreenRepositoryImpl(
             prefBSRepo,
@@ -281,7 +282,8 @@ object BaselineModule {
             surveyeeEntityDao,
             languageListDao,
             activityTaskDao,
-            missionActivityDao
+            missionActivityDao,
+            taskDao
         )
     }
 

@@ -58,7 +58,7 @@ fun MissionSummaryScreen(
                         .padding(10.dp)
                 ) {
                     ButtonPositive(
-                        buttonTitle = stringResource(R.string.mission_completed_text),
+                        buttonTitle = stringResource(R.string.complete) + " " + missionName,
                         isActive = true,
                         isLeftArrow = true
 

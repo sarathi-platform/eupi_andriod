@@ -92,7 +92,10 @@ fun SurveyeeListScreen(
                 DoubleButtonBox(
                     modifier = Modifier
                         .shadow(10.dp),
-                    positiveButtonText = stringResource(id = R.string.next),
+                    positiveButtonText = stringResource(id = R.string.complete) + " " + activityName.replace(
+                        oldValue = "Conduct ",
+                        newValue = BLANK_STRING
+                    ),
                     negativeButtonText = stringResource(id = R.string.go_back_text),
                     negativeButtonRequired = false,
                     isPositiveButtonActive = viewModel.isEnableNextBTn.value,
