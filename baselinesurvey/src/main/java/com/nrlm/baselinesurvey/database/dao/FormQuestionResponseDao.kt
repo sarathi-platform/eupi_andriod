@@ -71,7 +71,7 @@ interface FormQuestionResponseDao {
         optionId: Int
     ): Int
 
-    @Query("Update $FORM_QUESTION_RESPONSE_TABLE set selectedValue = :selectedValue where  userId=:userId and  didiId = :didiId AND surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND optionId = :optionId AND referenceId = :referenceId")
+    @Query("Update $FORM_QUESTION_RESPONSE_TABLE set selectedValue = :selectedValue, selectedValueId =:selectedValueIds where  userId=:userId and  didiId = :didiId AND surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND optionId = :optionId AND referenceId = :referenceId")
     fun updateOptionItemValue(
         userId: String,
         surveyId: Int,
@@ -80,7 +80,8 @@ interface FormQuestionResponseDao {
         optionId: Int,
         selectedValue: String,
         referenceId: String,
-        didiId: Int
+        didiId: Int,
+        selectedValueIds: List<Int>
     )
 
 

@@ -1018,7 +1018,8 @@ fun OptionItemEntity.convertOptionItemEntityToFormResponseEntityForFormWithNone(
         questionId = this.questionId ?: 0,
         optionId = this.optionId ?: 0,
         selectedValue = this.selectedValue ?: BLANK_STRING,
-        referenceId = referenceId
+        referenceId = referenceId,
+        selectedValueId = listOf(selectedValueId)
     )
     return formQuestionResponseEntity
 }
