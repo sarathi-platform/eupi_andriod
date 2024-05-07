@@ -459,8 +459,7 @@
     <string name="form_alert_dialog_message">जुदि नोंथाङा फर्मखौ जमा होआलासै आवगायलाङोब्ला बे सोलायनायफोरा गोमालांगोन। \n\nनोंथाङा सोलिबाय थानो लुबैयो नामा?</string>
     <string name="no_data_available_at_the_moment">दायो जेबो खारि गैया।</string>
     <string name="start_baseline">Start Baseline</string>
-    <string name="start_activity">%s Start </string>
-
+    <string name="start_activity"> Start %s</string>
     <string name="read_more">Read More</string>
     <string name="content">Content</string>
 </resources>
