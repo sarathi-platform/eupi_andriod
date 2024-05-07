@@ -11,7 +11,8 @@ class UpdateFormQuestionResponseUseCase(private val repository: FormQuestionResp
         optionId: Int,
         selectedValue: String,
         referenceId: String,
-        didiId: Int
+        didiId: Int,
+        selectedValueId: List<Int>
     ) {
         return repository.updateOptionItemValue(
             surveyId = surveyId,
@@ -20,7 +21,8 @@ class UpdateFormQuestionResponseUseCase(private val repository: FormQuestionResp
             optionId = optionId,
             selectedValue = selectedValue,
             referenceId = referenceId,
-            didiId = didiId
+            didiId = didiId,
+            selectedValueIds = selectedValueId
         )
     }
 

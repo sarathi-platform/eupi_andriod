@@ -41,7 +41,6 @@ data class OptionItemEntity(
     @Expose
     val optionId: Int? = null,
 
-
     @SerializedName("description")
     val display: String? = null,
 

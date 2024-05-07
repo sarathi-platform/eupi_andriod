@@ -104,9 +104,10 @@ fun FormWithNoneTypeQuestionComponent(
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyListState = rememberLazyListState()
     val innerGridState: LazyGridState = rememberLazyGridState()
-
+    val yes = stringResource(id = R.string.option_yes)
+    val no = stringResource(id = R.string.option_no)
     val optionList = remember {
-        listOf("Yes", "No")
+        listOf(yes, no)
     }
 
 
