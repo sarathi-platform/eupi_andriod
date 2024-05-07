@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
@@ -31,7 +32,7 @@ fun TextWithReadMoreComponent(
     textStyle: TextStyle = largeTextStyle,
     color: Color = textColorDark,
     maxLines: Int = 4,
-    contentData: String = "Please ask the Didis if they have any income from the following:\\n\\n Farming\\n\\n Livestock rearing\\n\\n Manual casual labour \\n\\n Selling bamboo shoots, mushrooms, fruits, spices etc.\\n\\n MNREGA\\n\\n Work from migrating to another city or place\\n\\n Self-employment work like cleaning, carpentry, small business, handicraft, handloom etc.\\n\\n Shop"
+    contentData: String = BLANK_STRING
 ) {
     var showDialog by remember { mutableStateOf(false) }
 

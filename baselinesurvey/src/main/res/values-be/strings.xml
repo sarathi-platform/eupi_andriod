@@ -441,7 +441,7 @@
     <string name="task_completed_label">"Activity Completed - "</string>
     <string name="purpose_comparision">What is the purpose of your farming?</string>
     <string name="net_income_label">Net income per year: ₹</string>
-    <string name="net_income_comparision">Net income per year</string>
+    <string name="net_income_comparision">निफ्राय आरजिनाया बेसेबां?</string>
     <string name="hours">घन्टाफोर</string>
     <string name="years">बोसोरफोर</string>
     <string name="minute">मिनिट</string>

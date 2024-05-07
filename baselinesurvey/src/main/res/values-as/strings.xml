@@ -449,7 +449,7 @@
     <string name="load_server_data">চাৰ্ভাৰ ডাটা লোড কৰক</string>
     <string name="purpose_comparision">What is the purpose of your farming?</string>
     <string name="net_income_label">Net income per year: ₹</string>
-    <string name="net_income_comparision">Net income per year</string>
+    <string name="net_income_comparision">ৰ পৰা মুঠ উপাৰ্জন কিমান?</string>
     <string name="task_completed_label">"Activity Completed - "</string>
     <string name="hours">ঘণ্টা</string>
     <string name="years">বছৰ</string>
