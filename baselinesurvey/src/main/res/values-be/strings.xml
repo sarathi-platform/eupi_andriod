@@ -427,7 +427,6 @@
     <string name="fetched_successfully">Data fetched successfully</string>
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"जागायजेन "</string>
-    <string name="regenerate_all_events">गासैबो इभेन्टफोरखौ फिन सोरजिफिन</string>
     <string name="load_server_data">Load Server Data</string>
     <string name="import_data">Import Data</string>
     <string name="export_images">Export Only Images</string>
@@ -457,7 +456,6 @@
     <string name="total_addelabel">"Total added: "</string>
     <string name="view_summary_label">View Summary</string>
     <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
-    <string name="export_baseline_qna">Export Baseline QnA</string>
     <string name="form_alert_dialog_message">जुदि नोंथाङा फर्मखौ जमा होआलासै आवगायलाङोब्ला बे सोलायनायफोरा गोमालांगोन। \n\nनोंथाङा सोलिबाय थानो लुबैयो नामा?</string>
     <string name="no_data_available_at_the_moment">दायो जेबो खारि गैया।</string>
     <string name="start_baseline">Start Baseline</string>
