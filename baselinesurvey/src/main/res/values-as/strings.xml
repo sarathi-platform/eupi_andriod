@@ -381,7 +381,7 @@
     <string name="x_didi_pending">%s %s Pending</string>
     <string name="save">চেভ</string>
 
-    <string name="name_comparision">নাম</string>
+    <string name="name_comparision">নামটো</string>
     <string name="age_comparision">বয়স কিমান</string>
     <string name="relationship_comparision">বাইদেউ’ৰ সৈতে সম্পৰ্ক</string>
     <string name="income_source_comparision">আয়ৰ উৎস কিমান</string>
