@@ -86,5 +86,5 @@ interface OptionItemDao {
     fun deleteOptions(userId: String)
 
     @Query("SELECT * FROM option_table WHERE languageId = :languageId AND optionId IN (:optionIds) AND questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId")
-    suspend fun getOptions(languageId: Int, optionIds: List<Int>, questionId: Int, sectionId: Int, surveyId: Int): List<OptionItemEntity>
+     fun getOptions(languageId: Int, optionIds: List<Int>, questionId: Int, sectionId: Int, surveyId: Int): List<OptionItemEntity>
 }

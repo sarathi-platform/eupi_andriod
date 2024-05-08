@@ -349,7 +349,7 @@ fun exportOnlyLogFile(context: Context){
                 val baseLineQnATableCSV = mutableListOf<BaseLineQnATableCSV>()
 
                 baseLineQnATableCSV.addAll(dtoList.toCSVSave(sectionList, surveeList, optionItemDao))
-//                baseLineQnATableCSV.addAll(dtoSaveFormList.toCsv(sectionList, surveeList))
+                baseLineQnATableCSV.addAll(dtoSaveFormList.toCsv(sectionList, surveeList, optionItemDao))
                 /*BaseLine*/
                 val baseLineListQnaCSV = baseLineQnATableCSV.filter { it.surveyId == 1 }.sortedBy { it.sectionId }
                 val baseLineMap = baseLineListQnaCSV.groupBy { it.subjectId }

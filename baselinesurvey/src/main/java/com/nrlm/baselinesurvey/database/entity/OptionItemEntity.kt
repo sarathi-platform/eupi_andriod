@@ -43,6 +43,7 @@ data class OptionItemEntity(
 
 
     @SerializedName("description")
+    @ColumnInfo(name = "display")
     val display: String? = null,
 
     @SerializedName("weight")
