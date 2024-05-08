@@ -7,7 +7,7 @@ import com.nudge.navigationmanager.utils.NavigationParams
 object NudgeNavigationGraph {
     const val ROOT = "root_graph"
     const val AUTHENTICATION = "auth_graph"
-    val HOME = "home_graph/{${NavigationParams.ARG_USER_TYPE.value}}"
+    val HOME = "home_graph"
     val BASE_HOME = "base_home_graph"
     val DETAILS = "details_graph/{${NavigationParams.ARG_VILLAGE_ID.value}}/{${NavigationParams.ARG_STEP_ID.value}}/{${NavigationParams.ARG_STEP_INDEX.value}}"
     val ADD_DIDI = "add_didi_graph/{${NavigationParams.ARG_DIDI_DETAILS_ID.value}}"
@@ -49,14 +49,14 @@ fun NavController.navigateToFormTypeQuestionScreen(
 }
 
 fun NavController.navigateBackToMissionScreen() {
-    this.popBackStack(BSHomeScreens.Home_SCREEN.route, false)
+    this.popBackStack(HomeScreens.Home_SCREEN.route, false)
 }
 fun NavController.navigateBackToSurveyeeListScreen() {
-    this.popBackStack(BSHomeScreens.SURVEYEE_LIST_SCREEN.route, false)
+    this.popBackStack(HomeScreens.SURVEYEE_LIST_SCREEN.route, false)
 }
 
 fun NavController.navigateBackToDidiScreen() {
-    this.popBackStack(BSHomeScreens.DIDI_SCREEN.route, false)
+    this.popBackStack(HomeScreens.BS_DIDI_DETAILS_SCREEN.route, false)
 }
 fun NavController.navigateToFormQuestionSummaryScreen(
     surveyId: Int,
@@ -67,8 +67,11 @@ fun NavController.navigateToFormQuestionSummaryScreen(
     this.navigate("$FORM_QUESTION_SUMMARY_SCREEN_ROUTE_NAME/$surveyId/$sectionId/$questionId/$didiId")
 }
 
+fun NavController.navigateToSurveyListWithParamsScreen(activityName:String,missionId:Int,activityDate:String,surveyId:Int){
+    this.navigate("$SURVEYEE_LIST_SCREEN_ROUTE_NAME/$activityName/$missionId/$activityDate/$surveyId")
+}
 fun NavController.navigateBackToSectionListScreen(surveyeeId: Int, surveyeId: Int) {
-    this.popBackStack(BSHomeScreens.SECTION_SCREEN.route, true)
+    this.popBackStack(HomeScreens.SECTION_SCREEN.route, true)
     this.navigateToSectionListScreen(surveyeeId = surveyeeId, surveyeId = surveyeId)
 }
 
@@ -78,7 +81,7 @@ fun NavController.navigateToSectionListScreen(surveyeeId: Int, surveyeId: Int) {
 
 fun NavController.navigateToSelectedSectionFromSearch(didiId: Int, sectionId: Int, surveyId: Int, isFromQuestionSearch: Boolean = true) {
     if (isFromQuestionSearch) {
-        this.popBackStack(BSHomeScreens.SECTION_SCREEN.route, true)
+        this.popBackStack(HomeScreens.SECTION_SCREEN.route, true)
     }
     this.navigateToQuestionScreen(didiId = didiId, sectionId = sectionId, surveyId = surveyId)
 }
@@ -87,50 +90,54 @@ fun NavController.navigateToQuestionScreen(
     sectionId: Int,
     surveyId: Int
 ) {
-    this.navigate("$QUESTION_SCREEN_ROUTE_NAME/${sectionId}/$didiId/$surveyId")
+    this.navigate("$BASELINE_QUESTION_SCREEN_ROUTE_NAME/${sectionId}/$didiId/$surveyId")
 }
 
+sealed class HomeScreens(val route: String) {
 
-
-sealed class BSHomeScreens(val route: String) {
-    object DATA_LOADING_SCREEN : BSHomeScreens(route = DATA_LOADING_SCREEN_ROUTE_NAME)
+    object PROGRESS_SEL_SCREEN : HomeScreens(route = PROGRESS_SCREEN_ROUTE_NAME)
+    object BPC_PROGRESS_SEL_SCREEN : HomeScreens(route = BPC_PROGRESS_SCREEN_ROUTE_NAME)
+    object DIDI_SEL_SCREEN : HomeScreens(route = DIDI_SCREEN_ROUTE_NAME)
+    object VILLAGE_SELECTION_SCREEN : HomeScreens(route = VILLAGE_SELECTION_SCREEN_ROUTE_NAME)
+    object DATA_LOADING_SCREEN : HomeScreens(route = DATA_LOADING_SCREEN_ROUTE_NAME)
     object SECTION_SCREEN :
-        BSHomeScreens(route = "$SECTION_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_DIDI_ID.value}}/{${NavigationParams.ARG_SURVEY_ID.value}}")
+        HomeScreens(route = "$SECTION_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_DIDI_ID.value}}/{${NavigationParams.ARG_SURVEY_ID.value}}")
 
     object QUESTION_SCREEN :
-        BSHomeScreens(route = "$QUESTION_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_SECTION_ID.value}}/{${NavigationParams.ARG_DIDI_ID.value}}/{${NavigationParams.ARG_SURVEY_ID.value}}")
+        HomeScreens(route = "$BASELINE_QUESTION_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_SECTION_ID.value}}/{${NavigationParams.ARG_DIDI_ID.value}}/{${NavigationParams.ARG_SURVEY_ID.value}}")
 
     object SURVEYEE_LIST_SCREEN :
-        BSHomeScreens(route = "$SURVEYEE_LIST_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_ACTIVITY_ID.value}}")
+        HomeScreens(route = "$SURVEYEE_LIST_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_ACTIVITY_ID.value}}")
 
     object VIDEO_PLAYER_SCREEN :
-        BSHomeScreens(route = "$VIDEO_PLAYER_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_VIDEO_PATH.value}}")
+        HomeScreens(route = "$VIDEO_PLAYER_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_VIDEO_PATH.value}}")
 
     object FormTypeQuestionScreen :
-        BSHomeScreens(route = "$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_QUESTION_NAME.value}}/{${NavigationParams.ARG_SURVEY_ID.value}}/{${NavigationParams.ARG_SECTION_ID.value}}/{${NavigationParams.ARG_QUESTION_ID.value}}/{${NavigationParams.ARG_DIDI_ID.value}}?{${NavigationParams.ARG_FORM_QUESTION_RESPONSE_REFERENCE_ID.value}}")
+        HomeScreens(route = "$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_QUESTION_NAME.value}}/{${NavigationParams.ARG_SURVEY_ID.value}}/{${NavigationParams.ARG_SECTION_ID.value}}/{${NavigationParams.ARG_QUESTION_ID.value}}/{${NavigationParams.ARG_DIDI_ID.value}}?{${NavigationParams.ARG_FORM_QUESTION_RESPONSE_REFERENCE_ID.value}}")
 
     object BaseLineStartScreen :
-        BSHomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_DIDI_ID.value}}/{${NavigationParams.ARG_SURVEY_ID.value}}")
+        HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_DIDI_ID.value}}/{${NavigationParams.ARG_SURVEY_ID.value}}")
 
     object SearchScreen :
-        BSHomeScreens(route = "$SEARCH_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_SURVEY_ID.value}}/{${NavigationParams.ARG_DIDI_ID.value}}/{${NavigationParams.ARG_FROM_SCREEN.value}}")
+        HomeScreens(route = "$SEARCH_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_SURVEY_ID.value}}/{${NavigationParams.ARG_DIDI_ID.value}}/{${NavigationParams.ARG_FROM_SCREEN.value}}")
 
-    object Home_SCREEN : BSHomeScreens(route = HOME_SCREEN_ROUTE_NAME)
-    object MISSION_SCREEN : BSHomeScreens(route = MISSION_SCREEN_ROUTE_NAME)
-    object DIDI_SCREEN : BSHomeScreens(route = DIDI_SCREEN_ROUTE_NAME)
+    object Home_SCREEN : HomeScreens(route = HOME_SCREEN_ROUTE_NAME)
+    object MISSION_SCREEN : HomeScreens(route = MISSION_SCREEN_ROUTE_NAME)
+    object BS_DIDI_DETAILS_SCREEN : HomeScreens(route = BASELINE_DIDI_DETAILS_ROUTE_NAME)
     object MISSION_SUMMARY_SCREEN :
-        BSHomeScreens(route = "$MISSION_SUMMARY_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_MISSION_ID.value}}/{${NavigationParams.ARG_MISSION_NAME.value}}/{${NavigationParams.ARG_MISSION_DATE.value}}")
+        HomeScreens(route = "$MISSION_SUMMARY_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_MISSION_ID.value}}/{${NavigationParams.ARG_MISSION_NAME.value}}/{${NavigationParams.ARG_MISSION_DATE.value}}")
 
     object Final_StepComplitionScreen :
-        BSHomeScreens(route = "$Final_Step_Complition_Screen_ROUTE_NAME/{${NavigationParams.ARG_COMPLETION_MESSAGE.value}}")
+        HomeScreens(route = "$Final_Step_Complition_Screen_ROUTE_NAME/{${NavigationParams.ARG_COMPLETION_MESSAGE.value}}")
 
     object STEP_COMPLETION_SCREEN :
-        BSHomeScreens(route = "$Step_Complition_Screen_ROUTE_NAME/{${NavigationParams.ARG_COMPLETION_MESSAGE.value}}")
+        HomeScreens(route = "$Step_Complition_Screen_ROUTE_NAME/{${NavigationParams.ARG_COMPLETION_MESSAGE.value}}")
 
-    object FORM_QUESTION_SUMMARY_SCREEN : BSHomeScreens(
+    object FORM_QUESTION_SUMMARY_SCREEN : HomeScreens(
         route = "$FORM_QUESTION_SUMMARY_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_SURVEY_ID.value}}/{${NavigationParams.ARG_SECTION_ID.value}}/{${NavigationParams.ARG_QUESTION_ID.value}}/{${NavigationParams.ARG_DIDI_ID.value}}"
     )
-
+    object SURVEYEE_LIST_SCREEN_WITH_PARAMS :
+        HomeScreens(route = "$SURVEYEE_LIST_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_ACTIVITY_ID.value}}/{${NavigationParams.ARG_MISSION_ID.value}}/{${NavigationParams.ARG_ACTIVITY_DATE.value}}/{${NavigationParams.ARG_SURVEY_ID.value}}")
 }
 
 sealed class SettingScreens(val route: String) {
@@ -157,6 +164,22 @@ sealed class LogoutScreens(val route: String){
 
     object LOG_OTP_VERIFICATION : LogoutScreens(route = "$OTP_VERIFICATION_ROUTE_NAME/{${NavigationParams.ARG_MOBILE_NUMBER.value}}")
 }
+
+sealed class AuthScreen(val route: String) {
+    object START_SCREEN : AuthScreen(route = AUTH_START_SCREEN_ROUTE_NAME)
+    object LANGUAGE_SCREEN : AuthScreen(route = AUTH_LANGUAGE_SCREEN_ROUTE_NAME)
+    object BUG_LOGGING_SCREEN : AuthScreen(route = AUTH_BUG_LOGGING_SCREEN_ROUTE_NAME)
+    object LOGIN : AuthScreen(route = AUTH_LOGIN_SCREEN_ROUTE_NAME)
+    object VILLAGE_SELECTION_SCREEN : AuthScreen(route = AUTH_VILLAGE_SELECTION_SCREEN_ROUTE_NAME)
+    object OTP_VERIFICATION : AuthScreen(route = "$AUTH_OTP_VERIFICATION_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_MOBILE_NUMBER.value}}")
+    object AUTH_SETTING_SCREEN : AuthScreen(route = AUTH_SETTING_SCREEN_ROUTE_NAME)
+    object PROFILE_SCREEN : AuthScreen(route = AUTH_PROFILE_SCREEN_ROUTE_NAME)
+    object VIDEO_LIST_SCREEN : AuthScreen(route = AUTH_VIDEO_LIST_SCREEN_ROUTE_NAME)
+    object VIDEO_PLAYER_SCREEN : AuthScreen(route = "$AUTH_VIDEO_PLAYER_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_VIDEO_ID.value}}")
+
+    object DATA_LOADING_SCREEN :AuthScreen(route = DATA_LOADING_SCREEN_ROUTE_NAME)
+}
+
 
 
 

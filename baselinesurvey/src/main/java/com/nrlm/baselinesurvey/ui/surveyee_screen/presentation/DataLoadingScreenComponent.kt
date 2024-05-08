@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.presentation
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -15,7 +16,7 @@ import com.nrlm.baselinesurvey.ui.common_components.ShowCustomDialog
 import com.nrlm.baselinesurvey.ui.common_components.common_events.DialogEvents
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.DataLoadingScreenViewModel
-import com.nudge.navigationmanager.graphs.BSHomeScreens
+import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 
 @Composable
@@ -34,19 +35,19 @@ fun DataLoadingScreenComponent(
             if (!viewModel.isAllDataFetched()) {
                 viewModel.fetchAllData {
                     viewModel.setAllDataFetched()
-                    navController.navigate(BSHomeScreens.Home_SCREEN.route)
+                    navController.navigate(HomeScreens.Home_SCREEN.route)
                 }
             } else {
-                navController.navigate(BSHomeScreens.Home_SCREEN.route)
+                navController.navigate(HomeScreens.Home_SCREEN.route)
             }
         } else {
-            navController.navigate(BSHomeScreens.Home_SCREEN.route)
+            navController.navigate(HomeScreens.Home_SCREEN.route)
         }
     }
 
     if (viewModel.errorNavigate.value) {
         viewModel.setAllDataFetched()
-        navController.navigate(BSHomeScreens.Home_SCREEN.route)
+        navController.navigate(HomeScreens.Home_SCREEN.route)
     }
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         LoaderComponentWithText(visible = loaderState.isLoaderVisible)
@@ -68,7 +69,7 @@ fun DataLoadingScreenComponent(
                     viewModel.clearLocalDB {
                         viewModel.fetchAllData {
                             viewModel.setAllDataFetched()
-                            navController.navigate(BSHomeScreens.Home_SCREEN.route)
+                            navController.navigate(HomeScreens.Home_SCREEN.route)
                         }
                     }
                 }

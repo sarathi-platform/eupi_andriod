@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.navigation.selection
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -22,23 +23,35 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.nrlm.baselinesurvey.navigation.BottomNavigationBar
+import com.nudge.navigationmanager.graphs.HomeScreens
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.greenActiveIcon
 import com.patsurvey.nudge.activities.ui.theme.smallestTextStyle
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.navigation.baseline.BSNavHomeGraph
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.BottomNavItem
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
+import com.patsurvey.nudge.utils.UPCM_USER
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun HomeNavScreen(navController: NavHostController = rememberNavController(), prefRepo: PrefRepo) {
     Scaffold(
-        bottomBar = { BottomBar(navController = navController, prefRepo) }
+        bottomBar = {
+            if(prefRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING).equals(UPCM_USER)){
+                BottomNavigationBar(navController = navController)
+            }else BottomBar(navController = navController, prefRepo)
+
+        }
     ) {
+        Log.d("TAG", "HomeNavScreen: ${prefRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING)}")
         NavHomeGraph(navController = navController, prefRepo)
+
     }
 }
 
@@ -48,14 +61,14 @@ fun BottomBar(navController: NavHostController, prefRepo: PrefRepo) {
         BottomNavItem(
             stringResource(R.string.progress_item_text),
             if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true))
-                HomeScreens.BPC_PROGRESS_SCREEN.route
+                HomeScreens.BPC_PROGRESS_SEL_SCREEN.route
             else
-                HomeScreens.PROGRESS_SCREEN.route,
+                HomeScreens.PROGRESS_SEL_SCREEN.route,
             painterResource(R.drawable.progress_icon)
         ),
         BottomNavItem(
             stringResource(R.string.didis_item_text_plural),
-            HomeScreens.DIDI_SCREEN.route,
+            HomeScreens.DIDI_SEL_SCREEN.route,
             painterResource(R.drawable.didi_icon)
         )
     )

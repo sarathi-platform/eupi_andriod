@@ -43,6 +43,7 @@ const val ZIP_MIME_TYPE = "application/zip"
 const val EXCEL_TYPE = "text/csv"
 const val REGENERATE_PREFIX = "regenerate_"
 const val PREF_KEY_IS_SETTING_SCREEN_OPEN= "is_setting_open"
+const val ENGLISH_LANGUAGE_CODE="en"
 
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),

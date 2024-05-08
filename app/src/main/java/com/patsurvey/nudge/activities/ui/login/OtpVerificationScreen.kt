@@ -45,6 +45,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.LogoutScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
@@ -59,11 +60,11 @@ import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
-import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.OTP_LENGTH
 import com.patsurvey.nudge.utils.OTP_RESEND_DURATION
 import com.patsurvey.nudge.utils.SEC_30_STRING
+import com.patsurvey.nudge.utils.UPCM_USER
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -78,11 +79,6 @@ fun OtpVerificationScreen(
     val otpValue = remember {
         RetryHelper.autoReadOtp
     }
-
-    /*var otpValue: MutableState<String> = autoReadOtpValue by remember {
-        mutableStateOf("")
-    }*/
-
     val snackState = rememberSnackBarState()
     val formattedTime = remember {
         mutableStateOf(SEC_30_STRING)
@@ -242,23 +238,27 @@ fun OtpVerificationScreen(
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_25)))
             Button(
                 onClick = {
-                    viewModel.validateOtp(context) { isUPCMUser,success, message ->
+                    viewModel.validateOtp(context) { userType,success, message ->
 
                         if (success){
-                            if(isUPCMUser){
-                                if (navController.graph.route?.equals(NudgeNavigationGraph.HOME, true) == true){
+                            if(userType.equals(UPCM_USER)){
+                                Log.d("TAG", "OtpVerificationScreen: ${userType} :: ${navController.graph.route} ")
+                                if (navController.graph.route?.equals(NudgeNavigationGraph.HOME, true) == true) {
                                     navController.navigate(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
                                         launchSingleTop = true
                                         popUpTo(AuthScreen.START_SCREEN.route) {
                                             inclusive = true
                                         }
                                     }
-                                }else{
-                                    navController.navigate(route = NudgeNavigationGraph.BASE_HOME)
+                                }else {
+                                    navController.popBackStack()
+                                    navController.navigate(
+                                        NudgeNavigationGraph.HOME
+                                    )
                                 }
-
-                            }else {
+                            }else{
                                 if (navController.graph.route?.equals(NudgeNavigationGraph.HOME, true) == true) {
+                                    Log.d("TAG", "OtpVerificationScreen: NudgeNavigationGraph.HOME true")
                                     navController.navigate(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route) {
                                         launchSingleTop = true
                                         popUpTo(AuthScreen.START_SCREEN.route) {
@@ -266,7 +266,10 @@ fun OtpVerificationScreen(
                                         }
                                     }
                                 } else {
-                                    navController.navigate(route = AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
+                                    Log.d("TAG", "OtpVerificationScreen: NudgeNavigationGraph.HOME false")
+
+                                    navController.navigate(route = AuthScreen.VILLAGE_SELECTION_SCREEN
+                                        .route) {
                                         launchSingleTop = true
                                         popUpTo(AuthScreen.START_SCREEN.route) {
                                             inclusive = true
@@ -277,6 +280,7 @@ fun OtpVerificationScreen(
                             RetryHelper.autoReadOtp.value = ""
                         }
                         else {
+                            Log.e("TAG", "OtpVerificationScreen: $message")
                             snackState.addMessage(
                                 message = message,
                                 isSuccess = false,

@@ -19,6 +19,7 @@ import javax.inject.Inject
 class ConfigRepository @Inject constructor(
     val apiService: ApiService,
     val languageListDao: LanguageListDao,
+    val baselineLanguageDao:com.nrlm.baselinesurvey.database.dao.LanguageListDao,
     val bpcScorePercentageDao: BpcScorePercentageDao,
     val prefRepo: PrefRepo
 ) : BaseRepository() {
@@ -34,6 +35,19 @@ class ConfigRepository @Inject constructor(
     fun getAllLanguages(): List<LanguageEntity> = languageListDao.getAllLanguages()
     fun insertAllLanguages(configResponseModel: ConfigResponseModel){
        languageListDao.insertAll(configResponseModel.languageList)
+        configResponseModel.languageList?.let {
+            val bsLangList=ArrayList<com.nrlm.baselinesurvey.database.entity.LanguageEntity>()
+            it.forEach {
+                bsLangList.add(com.nrlm.baselinesurvey.database.entity.LanguageEntity(
+                    id = it.id,
+                    language = it.language,
+                    localName = it.localName,
+                    orderNumber = it.orderNumber,
+                    langCode = it.langCode
+                ))
+            }
+            baselineLanguageDao.insertAll(bsLangList)
+        }
         configResponseModel.bpcSurveyPercentage.forEach { bpcScorePercentage ->
             bpcScorePercentageDao.insert(
                 BpcScorePercentageEntity(

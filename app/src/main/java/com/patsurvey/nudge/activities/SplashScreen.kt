@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,16 +28,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
+import com.nudge.navigationmanager.graphs.AuthScreen
+import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.splash.ConfigViewModel
 import com.patsurvey.nudge.activities.ui.theme.blueDark
-import com.patsurvey.nudge.activities.ui.theme.smallTextStyleNormalWeight
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
-import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.ONE_SECOND
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
 import com.patsurvey.nudge.utils.UPCM_USER
 import com.patsurvey.nudge.utils.showCustomToast
@@ -68,20 +71,7 @@ fun SplashScreen(
                 viewModel.showLoader.value=true
                 delay(SPLASH_SCREEN_DURATION)
                 viewModel.showLoader.value=false
-                if(viewModel.getUserType().equals(UPCM_USER)){
-                    navController.navigate(route = NudgeNavigationGraph.BASE_HOME){
-                        launchSingleTop=true
-                        popUpTo(AuthScreen.START_SCREEN.route){
-                            inclusive=true
-                        }
-                    }
-                }else{
-                    navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
-                        popUpTo(AuthScreen.START_SCREEN.route) {
-                            inclusive = true
-                        }
-                    }
-                }
+                openUserHomeScreen(userType = viewModel.getUserType()?: CRP_USER_TYPE,navController=navController)
 
             } else {
                 NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = false")
@@ -105,20 +95,7 @@ fun SplashScreen(
                     (context as MainActivity).quesImageList = it as MutableList<String>
                 }
                 if (isLoggedIn) {
-                    if(viewModel.getUserType().equals(UPCM_USER)){
-                        navController.navigate(route = NudgeNavigationGraph.BASE_HOME){
-                            launchSingleTop=true
-                            popUpTo(AuthScreen.START_SCREEN.route){
-                                inclusive=true
-                            }
-                        }
-                    }else{
-                        navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
-                            popUpTo(AuthScreen.START_SCREEN.route) {
-                                inclusive = true
-                            }
-                        }
-                    }
+                    openUserHomeScreen(userType = viewModel.getUserType()?: CRP_USER_TYPE,navController=navController)
                 } else {
                     NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = false")
                     navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
@@ -220,5 +197,38 @@ fun SplashScreen(
                 }
             }
         }
+    }
+
+}
+
+fun openUserHomeScreen(userType:String,navController: NavController) {
+    try {
+        Log.d("TAG", "openUserHomeScreen:m${userType} :: ${navController.graph.route    }")
+        if (userType.equals(UPCM_USER)
+        ) {
+            if(navController.graph.route?.equals(NudgeNavigationGraph.HOME) == true){
+                navController.navigate(route = HomeScreens.DATA_LOADING_SCREEN.route) {
+                    launchSingleTop = true
+                    popUpTo(AuthScreen.START_SCREEN.route) {
+                        inclusive = true
+                    }
+                }
+            }else{
+                navController.popBackStack()
+                navController.navigate(
+                    NudgeNavigationGraph.HOME
+                )
+            }
+
+        } else {
+            navController.navigate(route = AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
+                launchSingleTop = true
+                popUpTo(AuthScreen.START_SCREEN.route) {
+                    inclusive = true
+                }
+            }
+        }
+    } catch (ex: Exception) {
+        ex.printStackTrace()
     }
 }

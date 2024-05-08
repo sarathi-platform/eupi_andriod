@@ -26,7 +26,10 @@ import com.nrlm.baselinesurvey.ui.mission_summary_screen.viewModel.MissionSummar
 import com.nrlm.baselinesurvey.ui.theme.inprogressYellow
 import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.navigationmanager.graphs.HomeScreens
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph.MISSION_SUMMARY_GRAPH
 import com.nudge.navigationmanager.graphs.navigateBackToMissionScreen
+import com.nudge.navigationmanager.graphs.navigateToSurveyListWithParamsScreen
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -130,7 +133,12 @@ fun MissionSummaryScreen(
                                 iconResourceId = R.drawable.ic_mission_inprogress,
                                 backgroundColor = inprogressYellow,
                                 onclick = {
-                                    navController.navigate("add_didi_graph/${activity.activityName}/${missionId}/${activity.endDate}/${activity.activityId}")
+                                    navController.navigateToSurveyListWithParamsScreen(
+                                        activityName =activity.activityName,
+                                        activityDate =activity.endDate,
+                                        surveyId =activity.activityId,
+                                        missionId =missionId
+                                    )
                                 })
                         }
 

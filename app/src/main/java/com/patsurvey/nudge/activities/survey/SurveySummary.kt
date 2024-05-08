@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
+import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
@@ -55,7 +56,6 @@ import com.patsurvey.nudge.activities.ui.theme.yellowLight
 import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
 import com.patsurvey.nudge.data.prefs.SharedPrefs
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
-import com.patsurvey.nudge.navigation.selection.HomeScreens
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BottomButtonBox
@@ -130,7 +130,7 @@ fun SurveySummary(
         } else {
             if (isStepComplete) {
                 navController.navigate(NudgeNavigationGraph.HOME) {
-                    popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                    popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                         inclusive = true
                         saveState = false
                     }

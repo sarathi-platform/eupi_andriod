@@ -13,6 +13,7 @@ import com.patsurvey.nudge.utils.ARG_PAGE_FROM
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_CODE
 import com.patsurvey.nudge.utils.ONLINE_STATUS
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_MOBILE_NUMBER
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -254,5 +255,9 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
 
     override fun setDataSyncStatus(status: Boolean) {
         prefs.edit().putBoolean(PREF_KEY_IS_DATA_SYNC + getMobileNumber(), status).apply()
+    }
+
+    override fun getLoggedInUserType(): String {
+        return prefs.getString(PREF_KEY_TYPE_NAME, BLANK_STRING) ?: BLANK_STRING
     }
 }

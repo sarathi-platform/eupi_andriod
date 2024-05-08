@@ -78,6 +78,8 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.navigationmanager.graphs.AuthScreen
+import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
 import com.patsurvey.nudge.BuildConfig
@@ -108,14 +110,11 @@ import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
-import com.patsurvey.nudge.navigation.AuthScreen
-import com.patsurvey.nudge.navigation.selection.HomeScreens
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
-import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.SYNC_FAILED
@@ -293,7 +292,7 @@ fun SettingScreen(
     BackHandler() {
         if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
             navController.navigate(NudgeNavigationGraph.HOME) {
-                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                     inclusive = true
                     saveState = false
                 }
@@ -323,7 +322,7 @@ fun SettingScreen(
                     IconButton(onClick = {
                         if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
                             navController.navigate(NudgeNavigationGraph.HOME) {
-                                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                                popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                                     inclusive = true
                                     saveState = false
                                 }

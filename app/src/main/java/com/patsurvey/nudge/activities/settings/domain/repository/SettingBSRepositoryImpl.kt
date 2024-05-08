@@ -3,6 +3,10 @@ package com.patsurvey.nudge.activities.settings.domain.repository
 import android.content.Context
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.LANGUAGE_OPEN_FROM_SETTING
+import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nudge.core.getDefaultBackUpFileName
+import com.nudge.core.getDefaultImageBackUpFileName
+import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.StepListEntity
@@ -14,6 +18,7 @@ import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.PREF_KEY_EMAIL
 import com.patsurvey.nudge.utils.PREF_KEY_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
+import com.patsurvey.nudge.utils.UPCM_USER
 
 class SettingBSRepositoryImpl(
     private val prefRepo: PrefRepo,
@@ -29,6 +34,23 @@ class SettingBSRepositoryImpl(
 
     override fun clearSharedPref() {
         prefRepo.saveAccessToken(BLANK_STRING)
+        if(prefRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING).equals(UPCM_USER)) {
+            prefRepo.savePref(PREF_KEY_TYPE_NAME, BLANK_STRING)
+            val coreSharedPrefs = CoreSharedPrefs.getInstance(BaselineCore.getAppContext())
+            coreSharedPrefs.setBackupFileName(
+                getDefaultBackUpFileName(
+                    prefRepo.getMobileNumber() ?: BLANK_STRING
+                )
+            )
+            coreSharedPrefs.setImageBackupFileName(
+                getDefaultImageBackUpFileName(
+                    prefRepo.getMobileNumber() ?: ""
+                )
+            )
+            coreSharedPrefs.setFileExported(false)
+            prefRepo.setPreviousUserMobile(prefRepo.getMobileNumber() ?: BLANK_STRING)
+        }
+        prefRepo.savePref(PREF_KEY_TYPE_NAME, BLANK_STRING)
     }
 
     override fun saveLanguageScreenOpenFrom() {

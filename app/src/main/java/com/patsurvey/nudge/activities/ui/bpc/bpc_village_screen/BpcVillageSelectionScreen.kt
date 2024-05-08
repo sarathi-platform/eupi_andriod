@@ -61,6 +61,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.nudge.navigationmanager.graphs.AuthScreen
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
@@ -79,7 +81,6 @@ import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.database.VillageEntity
-import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPCVillageStatus
@@ -383,25 +384,13 @@ fun BpcVillageSelectionScreen(
                                     else -> {
                                         viewModel.updateSelectedVillage(villageList = villages)
                                         navController.popBackStack()
-                                        navController.navigate(
-                                            "home_graph/${
-                                                viewModel.villageSelectionRepository.prefRepo.getPref(
-                                                    PREF_KEY_TYPE_NAME, ""
-                                                ) ?: ""
-                                            }"
-                                        )
+                                        navController.navigate(NudgeNavigationGraph.HOME)
                                     }
                                 }
                             } else {
                                 viewModel.updateSelectedVillage(villageList = villages)
                                 navController.popBackStack()
-                                navController.navigate(
-                                    "home_graph/${
-                                        viewModel.villageSelectionRepository.prefRepo.getPref(
-                                            PREF_KEY_TYPE_NAME, ""
-                                        ) ?: ""
-                                    }"
-                                )
+                                navController.navigate(NudgeNavigationGraph.HOME)
                             }
 
                         }

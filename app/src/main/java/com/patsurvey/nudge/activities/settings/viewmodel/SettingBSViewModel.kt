@@ -147,18 +147,14 @@ class SettingBSViewModel @Inject constructor(
     fun performLogout(context: Context, onLogout: (Boolean) -> Unit) {
         CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
             val settingUseCaseResponse = settingBSUserCase.logoutUseCase.invoke()
-            if (userType == UPCM_USER) {
-                clearLocalData()
-            } else {
+            if (userType != UPCM_USER) {
                 exportLocalData(context)
-                clearAccessToken()
             }
             delay(2000)
             withContext(Dispatchers.Main) {
                showLoader.value=false
                 onLogout(settingUseCaseResponse)
             }
-
         }
     }
 
@@ -166,42 +162,10 @@ class SettingBSViewModel @Inject constructor(
         exportHelper.exportAllData(context)
     }
 
-    fun clearLocalData() {//TOdo move this logic to repository
-        nudgeBaselineDatabase.contentEntityDao().deleteContent()
-        nudgeBaselineDatabase.didiDao().deleteSurveyees(prefBSRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.activityTaskEntityDao().deleteActivityTask(prefBSRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.missionEntityDao().deleteMissions(prefBSRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.missionActivityEntityDao().deleteActivities(prefBSRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.optionItemDao().deleteOptions(prefBSRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.questionEntityDao().deleteAllQuestions(prefBSRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.sectionAnswerEntityDao().deleteAllSectionAnswer(prefBSRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.inputTypeQuestionAnswerDao().deleteAllInputTypeAnswers(prefBSRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.formQuestionResponseDao().deleteAllFormQuestions(prefBSRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.didiSectionProgressEntityDao().deleteAllSectionProgress(prefBSRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.villageListDao().deleteAllVilleges()
-        nudgeBaselineDatabase.surveyEntityDao().deleteAllSurvey(prefBSRepo.getUniqueUserIdentifier())
-        nudgeBaselineDatabase.didiInfoEntityDao().deleteAllDidiInfo(prefBSRepo.getUniqueUserIdentifier())
-        clearSharedPref()
-    }
-
-    fun clearSharedPref() {
-        val languageId = prefBSRepo.getAppLanguageId()
-        val language = prefBSRepo.getAppLanguage()
-        prefBSRepo.clearSharedPreference()
-        prefBSRepo.saveAppLanguage(language)
-        prefBSRepo.saveAppLanguageId(languageId)
-    }
-
     fun saveLanguagePageFrom() {
         settingBSUserCase.saveLanguageScreenOpenFromUseCase.invoke()
     }
 
-   /* fun buildAndShareLogs() {
-        BaselineLogger.d("SettingBSViewModel", "buildAndShareLogs---------------")
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            LogWriter.buildSupportLogAndShare(prefRepo,prefRepo)
-        }
-    }*/
 
     fun compressEventData(title: String) {
         BaselineLogger.d("SettingBSViewModel", "compressEventData---------------")
@@ -418,23 +382,7 @@ class SettingBSViewModel @Inject constructor(
         }
     }
 
-    fun clearAccessToken() {
-        prefBSRepo.saveAccessToken("")
-        CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setBackupFileName(
-            getDefaultBackUpFileName(
-                prefBSRepo.getMobileNumber() ?: ""
-            )
-        )
-        CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setImageBackupFileName(
-            getDefaultBackUpFileName(
-                prefBSRepo.getMobileNumber() ?: ""
-            )
-        )
-        CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setFileExported(false)
-        prefBSRepo.setPreviousUserMobile(mobileNumber = prefBSRepo.getMobileNumber()?: BLANK_STRING)
-        prefBSRepo.saveSettingOpenFrom(0)
 
-    }
 
     fun getUserMobileNumber():String{
         return settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()

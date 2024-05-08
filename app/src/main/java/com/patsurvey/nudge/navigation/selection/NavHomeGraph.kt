@@ -12,7 +12,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
+import com.nrlm.baselinesurvey.ui.profile.presentation.ProfileBSScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
+import com.nudge.navigationmanager.graphs.AuthScreen
+import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.LogoutScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
@@ -25,6 +28,7 @@ import com.patsurvey.nudge.activities.PatSurvaySectionSummaryScreen
 import com.patsurvey.nudge.activities.PatSurveyCompleteSummary
 import com.patsurvey.nudge.activities.StepCompletionScreen
 import com.patsurvey.nudge.activities.VillageScreen
+import com.patsurvey.nudge.activities.backup.presentation.ExportImportScreen
 import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
 import com.patsurvey.nudge.activities.survey.PatSuccessScreen
 import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
@@ -54,7 +58,7 @@ import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryScre
 import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.navigation.AuthScreen
+import com.patsurvey.nudge.navigation.baseline.BSNavHomeGraph
 import com.patsurvey.nudge.utils.ADD_DIDI_BLANK_ID
 import com.patsurvey.nudge.utils.ARG_COMPLETION_MESSAGE
 import com.patsurvey.nudge.utils.ARG_DIDI_DETAILS_ID
@@ -69,7 +73,6 @@ import com.patsurvey.nudge.utils.ARG_FROM_VO_ENDORSEMENT_SCREEN
 import com.patsurvey.nudge.utils.ARG_IMAGE_PATH
 import com.patsurvey.nudge.utils.ARG_IS_STEP_COMPLETE
 import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
-import com.patsurvey.nudge.utils.ARG_PAGE_FROM
 import com.patsurvey.nudge.utils.ARG_PAT_SUCCESS_MESSAGE
 import com.patsurvey.nudge.utils.ARG_QUESTION_INDEX
 import com.patsurvey.nudge.utils.ARG_SECTION_TYPE
@@ -84,13 +87,13 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
     NavHost(
         navController = navController,
         route = NudgeNavigationGraph.HOME,
-        startDestination = HomeScreens.PROGRESS_SCREEN.route
+        startDestination = HomeScreens.PROGRESS_SEL_SCREEN.route
     ) {
-        composable(route = HomeScreens.PROGRESS_SCREEN.route) {
+        composable(route = HomeScreens.PROGRESS_SEL_SCREEN.route) {
             HomeUserScreen(navController = navController, prefRepo = prefRepo)
         }
 
-        composable(route = HomeScreens.BPC_PROGRESS_SCREEN.route) {
+        composable(route = HomeScreens.BPC_PROGRESS_SEL_SCREEN.route) {
             BpcProgressScreen(
                 bpcProgreesScreenViewModel = hiltViewModel(),
                 navController = navController,
@@ -111,13 +114,10 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
             VillageScreen(navController = navController) {
                 navController.navigate(AuthScreen.AUTH_SETTING_SCREEN.route)
             }
-            /*VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()){
-                navController.navigate(AuthScreen.AUTH_SETTING_SCREEN.route)
-            }*/
         }
 
 
-        composable(route = HomeScreens.DIDI_SCREEN.route) {
+        composable(route = HomeScreens.DIDI_SEL_SCREEN.route) {
             DidiScreen(
                 navController = navController,
                 modifier = Modifier
@@ -142,17 +142,8 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         voEndorsmentNavGraph(navController = navController)
         logoutGraph(navController =navController,prefRepo)
         bpcDidiListNavGraph(navController = navController)
+        BSNavHomeGraph(navController)
     }
-}
-
-sealed class HomeScreens(val route: String) {
-    object PROGRESS_SCREEN : HomeScreens(route = "progress_screen")
-
-    object BPC_PROGRESS_SCREEN : HomeScreens(route = "bpc_progress_screen")
-
-    object DIDI_SCREEN : HomeScreens(route = "didi_screen/{$ARG_PAGE_FROM}")
-
-    object VILLAGE_SELECTION_SCREEN : HomeScreens(route = "home_village_selection_screen")
 }
 
 fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
@@ -195,7 +186,7 @@ fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
                 message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
             ) {
                 navController.navigate(NudgeNavigationGraph.HOME) {
-                    popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                    popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                         inclusive = true
                         saveState = false
                     }
@@ -288,7 +279,7 @@ fun NavGraphBuilder.socialMappingNavGraph(navController: NavHostController) {
                 message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
             ) {
                 navController.navigate(NudgeNavigationGraph.HOME) {
-                    popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                    popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                         inclusive = true
                         saveState = false
                     }
@@ -648,7 +639,7 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
         }
 
         composable(route = SettingScreens.PROFILE_SCREEN.route) {
-            ProfileScreen(profileScreenVideModel = hiltViewModel(), navController = navController)
+            ProfileBSScreen(navController = navController, viewModel = hiltViewModel())
         }
 
         composable(route = SettingScreens.FORM_A_SCREEN.route) {
@@ -690,6 +681,10 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
             }
         )) {
             FormImageViewerScreen(navController = navController, fileName =  it.arguments?.getString(ARG_IMAGE_PATH) ?: "", viewModel = hiltViewModel())
+        }
+
+        composable(route = SettingScreens.BACKUP_RECOVERY_SCREEN.route){
+            ExportImportScreen(navController = navController, viewModel = hiltViewModel())
         }
 
     }

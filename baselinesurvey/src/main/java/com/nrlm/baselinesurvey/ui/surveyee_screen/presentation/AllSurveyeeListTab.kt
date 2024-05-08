@@ -64,6 +64,7 @@ import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nudge.core.ENGLISH_LANGUAGE_CODE
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -235,7 +236,7 @@ fun AllSurveyeeListTab(
                         if (!viewModel.isFilterAppliedState.value.isFilterApplied) {
                             itemsIndexed(items = surveyeeList) { index, item ->
                                 var primaryButtonText =
-                                    if ((context as MainActivity).currentLanguage.language.equals("en")) stringResource(
+                                    if (viewModel.getAppLanguage().equals(ENGLISH_LANGUAGE_CODE)) stringResource(
                                         R.string.start
                                     ) + activityName.split(
                                         " "
@@ -303,7 +304,7 @@ fun AllSurveyeeListTab(
                         } else {
                             itemsIndexed(items = surveyeeListWithTolaFilter.keys.toList()) { index, key ->
                                 var primaryButtonText =
-                                    if ((context as MainActivity).currentLanguage.language.equals("en")) stringResource(
+                                    if (viewModel.getAppLanguage().equals(ENGLISH_LANGUAGE_CODE)) stringResource(
                                         R.string.start
                                     ) + activityName.split(
                                         " "

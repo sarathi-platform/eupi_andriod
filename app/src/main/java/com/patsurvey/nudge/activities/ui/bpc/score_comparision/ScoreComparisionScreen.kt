@@ -69,6 +69,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
+import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CircularDidiImage
@@ -85,7 +86,6 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.unmatchedOrangeColor
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.navigation.selection.HomeScreens
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_SUMMARY_SCREEN
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
@@ -136,7 +136,7 @@ fun ScoreComparisionScreen(
 
     BackHandler() {
         navController.navigate(NudgeNavigationGraph.HOME){
-            popUpTo(HomeScreens.BPC_PROGRESS_SCREEN.route){
+            popUpTo(HomeScreens.BPC_PROGRESS_SEL_SCREEN.route){
                 inclusive = true
             }
         }
@@ -412,7 +412,7 @@ fun ScoreComparisionScreen(
             negativeButtonRequired = false,
             positiveButtonOnClick = {
                 navController.navigate(NudgeNavigationGraph.HOME) {
-                    popUpTo(HomeScreens.BPC_PROGRESS_SCREEN.route) {
+                    popUpTo(HomeScreens.BPC_PROGRESS_SEL_SCREEN.route) {
                         inclusive = true
                     }
                 }

@@ -14,10 +14,10 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 fun BSHomeNavScreen(navController: NavHostController = rememberNavController(),prefRepo: PrefRepo) {
     Scaffold(bottomBar = { BottomNavigationBar(navController = navController) }) {
         it
-        BSNavHomeGraph(
-            navController = navController,
-            modifier = Modifier.padding(bottom = 30.dp),
-            prefRepo= prefRepo
-        )
+//        BSNavHomeGraph(
+//            navController = navController,
+//            modifier = Modifier.padding(bottom = 30.dp),
+//            prefRepo= prefRepo
+//        )
     }
 }

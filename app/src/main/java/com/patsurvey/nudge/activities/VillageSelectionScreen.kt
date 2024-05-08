@@ -59,6 +59,8 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
+import com.nudge.navigationmanager.graphs.AuthScreen
+import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
@@ -78,7 +80,6 @@ import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
-import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidthWithoutIcon
@@ -390,34 +391,12 @@ fun VillageSelectionScreen(
                                     0,2 -> showCustomToast(context,  context.getString(R.string.village_is_not_vo_endorsed_right_now))
                                     else -> {
                                         viewModel.updateSelectedVillage(villageList = villages)
-                                        navController.popBackStack()
-                                        navController.navigate(
-                                            "home_graph/${
-                                                viewModel.prefRepo.getPref(
-                                                    PREF_KEY_TYPE_NAME, ""
-                                                ) ?: ""
-                                            }"
-                                        )
+                                        navController.navigateToProgressScreen()
                                     }
                                 }
                             } else {
-                                Log.d("TAG", "VillageSelectionScreen: Graph 1: ${navController.graph.route}")
-                                if(navController.graph.route?.equals(NudgeNavigationGraph.BASE_HOME,true)==true){
-                                    Log.d("TAG", "VillageSelectionScreen: Graph 2: ${navController.graph.route}")
-                                    navController.popBackStack()
-                                    navController.navigate(NudgeNavigationGraph.HOME)
-                                }
-                                Log.d("TAG", "VillageSelectionScreen: Graph 3: ${navController.graph.route}")
-
                                 viewModel.updateSelectedVillage(villageList = villages)
-                                navController.popBackStack()
-                                navController.navigate(
-                                    "home_graph/${
-                                        viewModel.prefRepo.getPref(
-                                            PREF_KEY_TYPE_NAME, ""
-                                        ) ?: ""
-                                    }"
-                                )
+                                navController.navigateToProgressScreen()
                             }
 
                         }
@@ -431,6 +410,17 @@ fun VillageSelectionScreen(
                 )
             }
         }
+    }
+}
+
+fun NavController.navigateToProgressScreen(){
+    if (this.graph.route?.equals(NudgeNavigationGraph.HOME, true) == true) {
+            this.navigate(HomeScreens.PROGRESS_SEL_SCREEN.route){
+            this.popUpTo(AuthScreen.VILLAGE_SELECTION_SCREEN.route)
+        }
+    }else{
+        this.popBackStack()
+        this.navigate(NudgeNavigationGraph.HOME)
     }
 }
 
@@ -683,7 +673,6 @@ fun VillageAndVoBoxForBottomSheet(
 }
 
 private fun fetchBorderColorForVillage(stepId: Int,statusId: Int) :Int{
-    Log.d("TAG", "fetchBorderColorForVillage: stepId: $stepId :: statusId: ${StepStatus.getStepFromOrdinal(statusId)}")
     return if (stepId == 44 && (statusId == StepStatus.INPROGRESS.ordinal
                 || statusId == StepStatus.COMPLETED.ordinal)) {
         1

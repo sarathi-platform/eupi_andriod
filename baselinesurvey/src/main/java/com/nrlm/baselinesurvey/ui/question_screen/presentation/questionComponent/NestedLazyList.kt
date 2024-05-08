@@ -81,7 +81,7 @@ import com.nrlm.baselinesurvey.utils.findOptionFromId
 import com.nrlm.baselinesurvey.utils.mapToOptionItem
 import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
-import com.nudge.navigationmanager.graphs.BSHomeScreens
+import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.navigateToBaseLineStartScreen
 import com.nudge.navigationmanager.graphs.navigateToFormQuestionSummaryScreen
 import com.nudge.navigationmanager.graphs.navigateToFormTypeQuestionScreen
@@ -246,7 +246,7 @@ fun NestedLazyList(
                                 navController.popBackStack()
                             else
                                 navController.popBackStack(
-                                    BSHomeScreens.SURVEYEE_LIST_SCREEN.route,
+                                    HomeScreens.SURVEYEE_LIST_SCREEN.route,
                                     false
                                 )
                         })

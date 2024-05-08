@@ -23,6 +23,7 @@ import com.nrlm.baselinesurvey.utils.createMultiLanguageVillageRequest
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
+import com.nudge.core.ENGLISH_LANGUAGE_CODE
 import com.nudge.core.toDate
 import javax.inject.Inject
 
@@ -216,6 +217,9 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
         return prefBSRepo.getUniqueUserIdentifier()
     }
 
+    override fun getAppLanguage(): String {
+        return prefBSRepo.getAppLanguage()?:ENGLISH_LANGUAGE_CODE
+    }
 
 
 }

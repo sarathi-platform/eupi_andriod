@@ -90,5 +90,5 @@ interface PrefRepo {
    fun setPreviousUserMobile(mobileNumber: String)
 
    fun setDataSyncStatus(status: Boolean)
-
+   fun getLoggedInUserType():String
 }

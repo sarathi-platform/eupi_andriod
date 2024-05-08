@@ -1060,7 +1060,7 @@ class EventWriterHelperImpl @Inject constructor(
      suspend fun generateResponseEvent(): List<Events> {
         val events = mutableListOf<Events>()
          baselineDatabase.inputTypeQuestionAnswerDao()
-             .getAllInputTypeAnswersForQuestion(prefRepo.getUniqueUserIdentifier())
+             .getAllInputTypeAnswersForQuestion(prefBSRepo.getUniqueUserIdentifier())
              .groupBy {
                  Tuple4<Int, Int, Int, Int>(
                      it.questionId,
@@ -1155,7 +1155,7 @@ class EventWriterHelperImpl @Inject constructor(
         val events = mutableListOf<Events>()
 
         val formResponseList = baselineDatabase.formQuestionResponseDao()
-            .getAllFormResponses(prefRepo.getUniqueUserIdentifier())
+            .getAllFormResponses(prefBSRepo.getUniqueUserIdentifier())
         val formResponseAndQuestionMap = formResponseList.groupBy {
             Tuple4<Int, Int, Int, Int>(
                 it.questionId,

@@ -1,16 +1,37 @@
 package com.nudge.navigationmanager.routes
 
+
+//Authentication Routes
+const val AUTH_START_SCREEN_ROUTE_NAME="start_screen"
+const val AUTH_LANGUAGE_SCREEN_ROUTE_NAME="language_screen"
+const val AUTH_BUG_LOGGING_SCREEN_ROUTE_NAME="bug_logging_screen"
+const val AUTH_LOGIN_SCREEN_ROUTE_NAME="login_screen"
+const val AUTH_VILLAGE_SELECTION_SCREEN_ROUTE_NAME="village_selection_screen"
+const val AUTH_OTP_VERIFICATION_SCREEN_ROUTE_NAME="otp_verification_screen"
+const val AUTH_SETTING_SCREEN_ROUTE_NAME="setting_screen"
+const val AUTH_PROFILE_SCREEN_ROUTE_NAME="profile_screen"
+const val AUTH_VIDEO_LIST_SCREEN_ROUTE_NAME="video_list_screen"
+const val AUTH_VIDEO_PLAYER_SCREEN_ROUTE_NAME="video_player_screen"
+
+
+// Selection Routes
+const val PROGRESS_SCREEN_ROUTE_NAME="progress_screen"
+const val BPC_PROGRESS_SCREEN_ROUTE_NAME="bpc_progress_screen"
+const val DIDI_SCREEN_ROUTE_NAME = "didi_screen"
+const val VILLAGE_SELECTION_SCREEN_ROUTE_NAME = "home_village_selection_screen"
+
+//Baseline Routes
 const val DATA_LOADING_SCREEN_ROUTE_NAME = "data_loading_screen"
 const val SECTION_SCREEN_ROUTE_NAME = "section_screen"
-const val QUESTION_SCREEN_ROUTE_NAME = "question_screen"
+const val BASELINE_QUESTION_SCREEN_ROUTE_NAME = "baseline_question_screen"
 const val SURVEYEE_LIST_SCREEN_ROUTE_NAME = "surveyee_list_screen"
 const val VIDEO_PLAYER_SCREEN_ROUTE_NAME = "video_player_screen"
 const val FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME = "form_type_question_screen"
 const val BASELINE_START_SCREEN_ROUTE_NAME = "baseline_start_screen"
+const val BASELINE_DIDI_DETAILS_ROUTE_NAME = "baseline_didi_details_screen"
 const val SEARCH_SCREEN_ROUTE_NAME = "search_screen"
 const val HOME_SCREEN_ROUTE_NAME = "home_screen"
 const val MISSION_SCREEN_ROUTE_NAME = "mission_screen"
-const val DIDI_SCREEN_ROUTE_NAME = "didi_screen"
 const val MISSION_SUMMARY_SCREEN_ROUTE_NAME = "mission_summary_screen"
 const val Final_Step_Complition_Screen_ROUTE_NAME = "final_step_complition_screen"
 const val Step_Complition_Screen_ROUTE_NAME = "step_complition_screen"

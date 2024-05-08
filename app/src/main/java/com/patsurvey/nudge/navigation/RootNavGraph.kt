@@ -20,8 +20,5 @@ fun RootNavigationGraph(navController: NavHostController,prefRepo: PrefRepo){
         composable(route = NudgeNavigationGraph.HOME) {
             HomeNavScreen(prefRepo = prefRepo)
         }
-        composable(route = NudgeNavigationGraph.BASE_HOME) {
-            BSHomeNavScreen(prefRepo=prefRepo)
-        }
     }
 }

@@ -52,6 +52,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
@@ -60,7 +61,6 @@ import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
-import com.patsurvey.nudge.navigation.selection.HomeScreens
 import com.patsurvey.nudge.utils.ARG_FROM_SETTING
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
@@ -98,7 +98,7 @@ fun DigitalFormCScreen(
             navController.popBackStack()
         else {
             navController.navigate(NudgeNavigationGraph.HOME) {
-                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                     inclusive = true
                     saveState = false
                 }
@@ -546,7 +546,7 @@ fun DigitalFormCScreen(
                             navController.popBackStack()
                         else {
                             navController.navigate(NudgeNavigationGraph.HOME) {
-                                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                                popUpTo(HomeScreens.PROGRESS_SEL_SCREEN.route) {
                                     inclusive = true
                                     saveState = false
                                 }
