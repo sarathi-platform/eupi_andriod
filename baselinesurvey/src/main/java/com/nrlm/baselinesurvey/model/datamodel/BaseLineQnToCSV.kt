@@ -15,14 +15,15 @@ suspend fun List<SaveAnswerEventDto>.toCSVSave(
 ) : List<BaseLineQnATableCSV> = map {
 
     var response = ""
-    if (it.question.questionType.equals(
-            QuestionType.SingleSelectDropdown.name,
-            ignoreCase = true
-        ) || it.question.questionType.equals(
-            QuestionType.MultiSelectDropdown.name,
-            ignoreCase = true
-        )
-    ) {
+
+        if (it.question.questionType.equals(
+                QuestionType.SingleSelectDropdown.name,
+                ignoreCase = true
+            ) || it.question.questionType.equals(
+                QuestionType.MultiSelectDropdown.name,
+                ignoreCase = true
+            )
+        ) {
 
             val optionId = it.question.options.map { mIt -> mIt.optionId }
             val selectedValueOption = optionItemDao.getOptions(
@@ -43,22 +44,24 @@ suspend fun List<SaveAnswerEventDto>.toCSVSave(
             val selectedResponse = matchingValues.map { it.value }
 
             response = selectedResponse.joinToString("\n")
-    }else if (it.question.questionType.toLowerCase()
-            .contains(QuestionType.Input.name.toLowerCase())
-    ){
-        val selectedValues = it.question.options.map { mIt -> mIt.selectedValue }
-         response = selectedValues.joinToString("\n")
-    }else{
-        val optionId = it.question.options.map { mIt -> mIt.optionId }
-        val selectedValue = optionItemDao.getOptions(
-            DEFAULT_LANGUAGE_ID,
-            optionId,
-            it.question.questionId,
-            it.sectionId,
-            it.surveyId
-        )
-        val selectedResponse = selectedValue.map { it.display }
-        response = selectedResponse.joinToString("\n")
+        } else if (it.question.questionType.toLowerCase()
+                .contains(QuestionType.Input.name.toLowerCase()) ||
+            it.question.questionType.toLowerCase()
+                .contains(QuestionType.YrsMonthPicker.name.toLowerCase())
+        ) {
+            val selectedValues = it.question.options.map { mIt -> mIt.selectedValue }
+            response = selectedValues.joinToString("\n")
+        } else {
+            val optionId = it.question.options.map { mIt -> mIt.optionId }
+            val selectedValue = optionItemDao.getOptions(
+                DEFAULT_LANGUAGE_ID,
+                optionId,
+                it.question.questionId,
+                it.sectionId,
+                it.surveyId
+            )
+            val selectedResponse = selectedValue.map { it.display }
+            response = selectedResponse.joinToString("\n")
     }
     val didiName = didiDetailList.find { mIt -> mIt.didiId == it.subjectId }?.didiName
     val dadaName = didiDetailList.find { mIt -> mIt.didiId == it.subjectId }?.dadaName
@@ -101,44 +104,41 @@ fun List<SaveAnswerEventForFormQuestionDto>.toCsv(
         var response = ""
         it.question.options.forEach { o ->
             o.forEach { option->
+                        if (!option.selectedValueWithIds.isNullOrEmpty()) {
+                            val optionId = listOf(option.optionId)
+                            val selectedValueOption = optionItemDao.getOptions(
+                                DEFAULT_LANGUAGE_ID,
+                                optionId,
+                                it.question.questionId,
+                                it.sectionId,
+                                it.surveyId
+                            )
+                            if (!selectedValueOption.isNullOrEmpty()) {
+                                val selectedValue = selectedValueOption.first().values?.filter {
+                                    option.selectedValueWithIds.contains(it.id)
+                                }
 
+                                val selectedResponse = selectedValue?.map { it.value }
 
-                        if(!option.selectedValueWithIds.isNullOrEmpty())
-                    {
-                        val optionId = listOf(option.optionId)
-                        val selectedValueOption = optionItemDao.getOptions(
-                            DEFAULT_LANGUAGE_ID,
-                            optionId,
-                            it.question.questionId,
-                            it.sectionId,
-                            it.surveyId
-                        )
-                        if(!selectedValueOption.isNullOrEmpty()) {
-                            val selectedValue = selectedValueOption.first().values?.filter {
-                                option.selectedValueWithIds.contains(it.id)
+                                response = selectedResponse?.joinToString("\n") ?: ""
+                            } else {
+                                val selectedResponse = option.selectedValueWithIds.map { it.value }
+                                response = selectedResponse?.joinToString("\n") ?: ""
                             }
-
-                            val selectedResponse = selectedValue?.map { it.value }
-
-                            response = selectedResponse?.joinToString("\n") ?: ""
-                        }else{
-                            val selectedResponse = option.selectedValueWithIds.map { it.value }
-                            response = selectedResponse?.joinToString("\n") ?: ""
                         }
-                    }
 //                    else if (selectedValueOption.find { it.optionId == option.optionId }?.optionType.equals(
 //                            QuestionType.SingleSelectDropdown.name,
 //                            ignoreCase = true)
 //                        ) {
 //
 //                    }
-                    else {
-                        response = option.selectedValue!!
+                        else {
+                            response = option.selectedValue!!
 
 //                        val selectedResponse = selectedValueOption.map { it.selectedValue }
 //                        response = selectedResponse.joinToString("\n")
 
-                }
+                    }
                 csvList.add(
                 BaseLineQnATableCSV(
                     id = it.question.questionId.toString(),
