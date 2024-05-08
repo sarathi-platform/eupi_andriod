@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.ui.common_components.TextWithReadMoreComponent
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
@@ -39,7 +40,6 @@ import com.nrlm.baselinesurvey.ui.theme.quesOptionTextStyle
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
-import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.DescriptionContentType
 import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
@@ -68,14 +68,12 @@ fun DescriptionContentComponent(
             ) {
                 //TODO need to remove below check after getting correct paraphrase
                 if (descriptionContentState.subTextTypeDescriptionContent.isBlank()) {
-                    Text(
-                        text = descriptionContentState.textTypeDescriptionContent/*selectedSectionDescription.value*/,
-                        color = textColorDark,
-                        style = if (descriptionContentState.subTextTypeDescriptionContent.isNotBlank()) largeTextStyle else TextStyle(
+                    TextWithReadMoreComponent(
+                        contentData = descriptionContentState.textTypeDescriptionContent,
+                        textStyle = if (descriptionContentState.subTextTypeDescriptionContent.isNotBlank()) largeTextStyle else TextStyle(
                             fontFamily = NotoSans,
                             fontSize = 12.sp
-                        ),
-                        modifier = Modifier.padding(horizontal = dimen_10_dp)
+                        )
                     )
                 }
             }
@@ -86,11 +84,9 @@ fun DescriptionContentComponent(
                         .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = dimen_18_dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = descriptionContentState.subTextTypeDescriptionContent,
-                        color = textColorDark,
-                        style = quesOptionTextStyle,
-                        modifier = Modifier.padding(horizontal = dimen_10_dp)
+                    TextWithReadMoreComponent(
+                        contentData = descriptionContentState.textTypeDescriptionContent,
+                        textStyle = quesOptionTextStyle
                     )
                 }
             }

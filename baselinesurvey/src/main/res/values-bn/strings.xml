@@ -465,4 +465,6 @@
     <string name="start_baseline">বেসলাইন শুরু করুন</string>
     <string name="start_activity">%s শুরু করুন</string>
 
+    <string name="read_more">Read More</string>
+    <string name="content">Content</string>
 </resources>

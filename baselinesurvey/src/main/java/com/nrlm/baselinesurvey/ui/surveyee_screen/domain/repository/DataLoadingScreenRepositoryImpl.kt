@@ -69,10 +69,7 @@ import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.Constants.ResultType
-import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
 import com.nrlm.baselinesurvey.utils.BaselineLogger
-import com.nrlm.baselinesurvey.utils.convertFormTypeQuestionListToOptionItemEntity
-import com.nrlm.baselinesurvey.utils.convertQuestionListToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.entities.ApiStatusEntity
@@ -698,7 +695,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                                 optionId = formQuestionResponseEntity.optionId,
                                 selectedValue = formQuestionResponseEntity.selectedValue,
                                 referenceId = formQuestionResponseEntity.referenceId,
-                                didiId = formQuestionResponseEntity.didiId
+                                didiId = formQuestionResponseEntity.didiId,
+                                selectedValueIds = formQuestionResponseEntity.selectedValueId
                             )
                         } else {
                             baselineDatabase.formQuestionResponseDao()

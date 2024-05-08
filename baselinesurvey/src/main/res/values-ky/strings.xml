@@ -505,5 +505,7 @@
     <string name="no_data_available_at_the_moment">No data available at the moment</string>
     <string name="start_baseline">Baseline chengdi</string>
     <string name="start_activity">%s chengdi</string>
+    <string name="read_more">Read More</string>
+    <string name="content">Content</string>
 
 </resources>

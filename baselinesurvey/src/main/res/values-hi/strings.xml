@@ -463,5 +463,7 @@
     <string name="no_data_available_at_the_moment">फिलहाल कोई डेटा उपलब्ध नहीं है</string>
     <string name="start_baseline">Start Baseline</string>
     <string name="start_activity">%s Start</string>
+    <string name="read_more">Read More</string>
+    <string name="content">Content</string>
 
 </resources>

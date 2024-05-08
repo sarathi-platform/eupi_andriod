@@ -54,7 +54,8 @@ interface FormQuestionResponseRepository {
         optionId: Int,
         selectedValue: String,
         referenceId: String,
-        didiId: Int
+        didiId: Int,
+        selectedValueIds: List<Int>
     )
 
     suspend fun getFormResponseForReferenceId(referenceId: String): List<FormQuestionResponseEntity>

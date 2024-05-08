@@ -515,5 +515,7 @@
     <string name="start_baseline">Start Baseline</string>
     <string name="start_activity">%s Start </string>
 
+    <string name="read_more">Read More</string>
+    <string name="content">Content</string>
 
 </resources>
