@@ -365,8 +365,13 @@ fun exportOnlyLogFile(context: Context){
                     baseLineListQna.addAll(it.value)
                 }
                 /*Hamlet */
-                val hamletListQnaCSV = baseLineQnATableCSV.filter { it.surveyId == 2}.sortedBy { it.orderId }.sortedBy { it.sectionId }
-                val hamletMap = hamletListQnaCSV.groupBy { it.subjectId }
+                val hamletListQnaCSV = baseLineQnATableCSV.filter { it.surveyId == 2}
+                val hamletQnATableCSVGroupBySectionId = baseLineListQnaCSV
+                    .groupBy { it.sectionId }
+                    .toList()
+                    .sortedBy { it.first }
+                    .flatMap { it.second.sortedBy { it.orderId } }
+                val hamletMap = hamletQnATableCSVGroupBySectionId.groupBy { it.subjectId }
                 val hamletListQna = ArrayList<BaseLineQnATableCSV>()
                 hamletMap.forEach{
                     hamletListQna.addAll(it.value)
