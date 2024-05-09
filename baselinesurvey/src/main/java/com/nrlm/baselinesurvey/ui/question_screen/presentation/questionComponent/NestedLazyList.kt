@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -758,7 +759,15 @@ fun NestedLazyList(
                                             question.questionId ?: 0
                                         ).toInt(), null
                                     )
-
+                                if (itemCount == 0 && noneOptionResponse?.selectedValue.equals(
+                                        stringResource(id = R.string.option_yes)
+                                    )
+                                ) {
+                                    answeredQuestionCountIncreased(
+                                        question,
+                                        true
+                                    )
+                                }
                                 FormWithNoneTypeQuestionComponent(
                                     question = question.questionEntity,
                                     showQuestionState = question,
@@ -833,10 +842,9 @@ fun NestedLazyList(
 
                                             answeredQuestionCountIncreased(
                                                 question,
-                                                questionScreenViewModel.formWithNoneOptionMarkedSet.contains(
-                                                    mOptionItem.optionId
+                                                itemCount == 0
                                                 )
-                                            )
+
                                         }
 
                                         if (!isNoneMarkedForForm && isFormOpened) {

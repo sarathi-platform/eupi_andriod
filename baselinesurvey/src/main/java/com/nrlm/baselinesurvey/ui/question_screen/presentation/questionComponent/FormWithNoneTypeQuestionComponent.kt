@@ -124,6 +124,8 @@ fun FormWithNoneTypeQuestionComponent(
         if (noneOptionValue != null) {
             isNoneMarked.value= noneOptionValue.selectedValue.equals(no)
         }
+
+
     }
 
     SideEffect {
