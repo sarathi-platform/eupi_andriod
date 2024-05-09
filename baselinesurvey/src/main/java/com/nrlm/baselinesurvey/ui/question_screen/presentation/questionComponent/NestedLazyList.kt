@@ -746,7 +746,7 @@ fun NestedLazyList(
                                 val noneOptionResponse = questionScreenViewModel
                                     .formResponseEntityToQuestionMap.value[question.questionId]?.find { it.optionId == noneOptionItemEntity?.optionId }
 
-                                if (noneOptionResponse?.selectedValue == noneOptionItemEntity?.optionItemEntity?.values?.first()?.value)
+                                if (noneOptionResponse!=null && (noneOptionResponse?.selectedValue == noneOptionItemEntity?.optionItemEntity?.values?.first()?.value || noneOptionResponse?.selectedValue == noneOptionItemEntity?.optionItemEntity?.values?.last()?.value))
                                     questionScreenViewModel.setReferenceIdForFormWithNoneQuestion(
                                         noneOptionResponse?.referenceId ?: BLANK_STRING
                                     )
