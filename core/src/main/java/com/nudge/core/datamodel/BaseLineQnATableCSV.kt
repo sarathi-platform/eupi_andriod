@@ -40,7 +40,7 @@ var surveyId: Int? = 0,
 var subjectId : Int? = 0,
 
 var sectionId: Int? = 0,
-
+var orderId: Int? = 0,
 
 ) : Exportable
 
@@ -71,6 +71,8 @@ data class HamletQnATableCSV(
     var subjectId : Int? = 0,
 
     var sectionId: Int? = 0,
+    var orderId: Int? = 0,
+
 
     ) : Exportable
 

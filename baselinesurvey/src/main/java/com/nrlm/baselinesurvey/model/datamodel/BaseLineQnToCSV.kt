@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.model.datamodel
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
+import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
@@ -11,7 +12,9 @@ import com.nudge.core.datamodel.HamletQnATableCSV
 suspend fun List<SaveAnswerEventDto>.toCSVSave(
     sectionList: List<SectionEntity>,
     didiDetailList: List<SurveyeeEntity>,
-    optionItemDao: OptionItemDao
+    optionItemDao: OptionItemDao,
+    questionEntityDao: QuestionEntityDao,
+    uniqueUserIdentifier: String
 ) : List<BaseLineQnATableCSV> = map {
     val csvList = ArrayList<BaseLineQnATableCSV>()
     var response = ""
@@ -98,22 +101,18 @@ suspend fun List<SaveAnswerEventDto>.toCSVSave(
                 villageName = villageName,
                 surveyId = it.surveyId,
                 sectionId = it.sectionId,
-            )
+                orderId = questionEntityDao.getOrderId(userid = uniqueUserIdentifier, surveyId = it.surveyId, sectionId = it.sectionId, questionId = it.question.questionId))
             )
         }
     }
     return csvList
-
-
-
 }
-
-
-
 fun List<SaveAnswerEventForFormQuestionDto>.toCsv(
     sectionList: List<SectionEntity>,
     didiDetailList: List<SurveyeeEntity>,
-    optionItemDao: OptionItemDao
+    optionItemDao: OptionItemDao,
+    questionEntityDao: QuestionEntityDao,
+    uniqueUserIdentifier: String
 ) : List<BaseLineQnATableCSV> {
     val csvList = ArrayList<BaseLineQnATableCSV>()
     this.forEach {
@@ -166,8 +165,9 @@ fun List<SaveAnswerEventForFormQuestionDto>.toCsv(
                     cohoretName = cohoretName,
                     villageName = villageName,
                     surveyId = it.surveyId,
-                    sectionId = it.sectionId
-                ))
+                    sectionId = it.sectionId,
+                    orderId = questionEntityDao.getOrderId(userid = uniqueUserIdentifier, surveyId = it.surveyId, sectionId = it.sectionId, questionId = it.question.questionId))
+                )
             }
         }
     }
@@ -188,6 +188,7 @@ fun List<BaseLineQnATableCSV>.toCsvR() : List<BaseLineQnATableCSV> = map {
         cohoretName = it.cohoretName,
         villageName = it.villageName,
         surveyId = it.surveyId,
+        orderId = it.orderId
     )
 }
 
