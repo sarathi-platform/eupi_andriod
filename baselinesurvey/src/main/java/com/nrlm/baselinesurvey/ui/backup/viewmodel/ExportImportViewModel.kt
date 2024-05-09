@@ -366,7 +366,7 @@ fun exportOnlyLogFile(context: Context){
                 }
                 /*Hamlet */
                 val hamletListQnaCSV = baseLineQnATableCSV.filter { it.surveyId == 2}
-                val hamletQnATableCSVGroupBySectionId = baseLineListQnaCSV
+                val hamletQnATableCSVGroupBySectionId = hamletListQnaCSV
                     .groupBy { it.sectionId }
                     .toList()
                     .sortedBy { it.first }
