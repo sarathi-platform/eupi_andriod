@@ -7,6 +7,7 @@ import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
@@ -35,6 +36,8 @@ import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LogWriter
+import com.nrlm.baselinesurvey.utils.json
+import com.nrlm.baselinesurvey.utils.openShareSheet
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.EXCEL_TYPE
@@ -145,40 +148,6 @@ class ExportImportViewModel @Inject constructor(
 
     }
 
-    private fun openShareSheet(fileUriList: ArrayList<Uri>?, title: String, type: String,) {
-        if(fileUriList?.isNotEmpty() == true){
-            try {
-
-
-            val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
-            shareIntent.setType(type)
-            shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
-            shareIntent.putExtra(Intent.EXTRA_TITLE, title)
-            val chooserIntent = Intent.createChooser(shareIntent, title)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
-                val resInfoList: List<ResolveInfo> =
-                    BaselineCore.getAppContext().packageManager
-                        .queryIntentActivities(chooserIntent, PackageManager.MATCH_DEFAULT_ONLY)
-
-                for (resolveInfo in resInfoList) {
-                    val packageName = resolveInfo.activityInfo.packageName
-                    BaselineCore.getAppContext().grantUriPermission(
-                        packageName,
-                        fileUriList[0],
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    )
-                }
-            }else{
-                shareIntent.putExtra(Intent.EXTRA_STREAM,fileUriList)
-            }
-            BaselineCore.startExternalApp(chooserIntent)
-            }catch (ex:Exception){
-                BaselineLogger.e("ExportImportViewModel","openShareSheet :${ex.message}",ex)
-            }
-        }
-
-    }
 
     fun exportLocalImages(){
         BaselineLogger.d("ExportImportViewModel","exportLocalImages ----")
