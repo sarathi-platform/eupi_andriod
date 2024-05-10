@@ -29,7 +29,7 @@ interface MissionEntityDao {
     @Query("DELETE FROM $MISSION_TABLE_NAME where userId=:userId")
     fun deleteMissions(userId: String)
 
-    @Query("SELECT * FROM $MISSION_TABLE_NAME where userId=:userId")
+    @Query("SELECT * FROM $MISSION_TABLE_NAME where userId=:userId and isActive=1")
     suspend fun getMissions(userId: String): List<MissionEntity>
 
     @Query("SELECT * FROM $MISSION_TABLE_NAME where  userId=:userId and missionId=:missionId ")
@@ -37,7 +37,6 @@ interface MissionEntityDao {
 
     @Query("SELECT count(*) FROM $MISSION_TABLE_NAME where  userId=:userId and missionId=:missionId ")
     suspend fun getMissionCount(userId: String, missionId: Int): Int
-
     @Query("Update $MISSION_TABLE_NAME set pendingActivity=:pendingActivity, activityComplete=:activityComplete where  userId=:userId and missionId = :missionId")
     fun updateMissionStatus(
         userId: String,
@@ -79,5 +78,11 @@ interface MissionEntityDao {
         updateMissionStatus(userId, missionId, status)
         updateActualStartDate(userId, missionId, actualStartDate)
     }
+
+    @Query("Update $MISSION_TABLE_NAME set isActive=0 where userId=:userId ")
+    fun softDeleteMission(userId: String)
+
+    @Query("Update $MISSION_TABLE_NAME set isActive=1 where userId=:userId  and missionId=:missionId")
+    fun updateMissionActiveStatus(missionId: Int, userId: String)
 
 }

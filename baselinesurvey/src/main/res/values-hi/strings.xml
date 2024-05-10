@@ -373,8 +373,11 @@
     <string name="this_week_tab_title">This Week</string>
     <string name="all_tab_title">All</string>
     <string name="search_question_placeholder">Search Question</string>
-    <string name="save_next_section_button_text"><string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>--><![CDATA[Save]]></string></string>
+    <string name="save_next_section_button_text"><string name="save_next_section_button_text"><!--<![CDATA[Save & Next Section]]>-->
+        <![CDATA[Save]]></string></string>
     <string name="ok_text">Ok</string>
+    <string name="mission">मिशन</string>
+    <string name="x_didi_pending">%s %s Pending</string>
     <string name="save">Save</string>
 
 
@@ -382,8 +385,8 @@
     <string name="age_comparision">Age</string>
     <string name="relationship_comparision">Relationship</string>
     <string name="income_source_comparision">sources of income</string>
-    <string name="agriculture_produce_comparision">(A) Agricultural produce - </string>
-    <string name="livestock_comparision">(A) Type of livestock - </string>
+    <string name="agriculture_produce_comparision">Agricultural produce</string>
+    <string name="livestock_comparision">Type of livestock</string>
     <string name="income_frequency_comparision">Income frequency</string>
     <string name="no_income_comparision">No income</string>
     <string name="total_income_comparision">(E) Total Income</string>
@@ -428,26 +431,19 @@
 
     <string name="warning">"चेतावनी! "</string>
     <string name="data_lost_message">किसी अन्य उपयोगकर्ता का पता चला यदि आप आगे बढ़ते हैं तो आप पिछले उपयोगकर्ता का डेटा खो देंगे।</string>
-    <string name="regenerate_all_events">सभी घटनाओं को पुनर्जीवित करें</string>
-    <string name="load_server_data">सर्वर डेटा लोड करें</string>
     <string name="logout_confirmation">क्या आप लॉग आउट करना चाहते हैं?</string>
     <string name="proceed">आगे बढ़ें</string>
     <string name="fetched_successfully">डेटा सफलतापूर्वक लाया गया</string>
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"शुरू "</string>
     <string name="retry">पुन: प्रयास करें</string>
-    <string name="import_data">आयात आंकड़ा</string>
-    <string name="export_images">केवल छवियाँ निर्यात करें</string>
     <string name="export_backup_file">बैकअप फ़ाइल निर्यात करें</string>
-    <string name="export_database">केवल डेटाबेस निर्यात करें</string>
     <string name="backup_recovery">बैकअप/पुनर्प्राप्ति</string>
-    <string name="export_event_file">ईवेंट फ़ाइल निर्यात करें</string>
-    <string name="export_log_file">केवल लॉग फ़ाइल निर्यात करें</string>
     <string name="madnatory_question_not_marked_error">सभी अनिवार्य प्रश्नों के उत्तर नहीं दिए गए हैं, कृपया सभी प्रश्नों के उत्तर दें!</string>
     <string name="view_label">View</string>
     <string name="task_completed_label">"Activity Completed - "</string>
     <string name="purpose_comparision">What is the purpose of your farming?</string>
-    <string name="net_income_label">Net income per year</string>
+    <string name="net_income_label">Net income per year: ₹</string>
     <string name="net_income_comparision">Net income per year</string>
     <string name="hours">Hours</string>
     <string name="years">Years</string>
@@ -457,6 +453,15 @@
     <string name="total_annual_income_label">"Total annual income of the household: "</string>
     <string name="import_restart_dialog_message">फ़ाइल से डेटा आयात करने के बाद ऐप को पुनरारंभ करना होगा और वर्तमान डेटा खो जाएगा।</string>
     <string name="no_logs_available">कोई लॉग उपलब्ध नहीं</string>
-
+    <string name="hamlets_item_text_plural">Hamlets</string>
+    <string name="hamlets_item_text_singular">Hamlet</string>
+    <string name="activity_completed_message">You have successfully completed the %1$s activity</string>
+    <string name="total_addelabel">"Total added: "</string>
+    <string name="view_summary_label">View Summary</string>
+    <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
+    <string name="form_alert_dialog_message">यदि आप फॉर्म जमा किए बिना आगे बढ़ते हैं तो ये परिवर्तन खो जाएंगे। \n\nक्या आप जारी रखना चाहते हैं?</string>
+    <string name="no_data_available_at_the_moment">फिलहाल कोई डेटा उपलब्ध नहीं है</string>
+    <string name="start_baseline">Start Baseline</string>
+    <string name="start_activity">%s Start</string>
 
 </resources>

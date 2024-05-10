@@ -24,4 +24,6 @@ class GetSectionUseCase(
         return repository.getSelectedLanguage()
     }
 
+    fun getUniqueUserIdentifier(): String = repository.getBaseLineUserId()
+
 }

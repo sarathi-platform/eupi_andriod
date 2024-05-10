@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -18,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.navigation.home.navigateBackToMissionScreen
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
@@ -26,9 +24,7 @@ import com.nrlm.baselinesurvey.ui.common_components.StepsBox
 import com.nrlm.baselinesurvey.ui.common_components.ToolbarWithMenuComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.viewModel.MissionSummaryViewModel
-import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.inprogressYellow
-import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 
@@ -62,7 +58,7 @@ fun MissionSummaryScreen(
                         .padding(10.dp)
                 ) {
                     ButtonPositive(
-                        buttonTitle = stringResource(R.string.mission_completed_text),
+                        buttonTitle = stringResource(R.string.complete) + " " + missionName,
                         isActive = true,
                         isLeftArrow = true
 
@@ -98,10 +94,27 @@ fun MissionSummaryScreen(
                         itemsIndexed(
                             items = activities
                         ) { index, activity ->
-                            var subTitle = if (activity.activityId == 1) "Didis" else "Hamlets"
 
-                            val pendingTasks = numberInEnglishFormat(viewModel.getPendingDidiCountLive(activity.activityId)
-                                .observeAsState().value ?: 0)
+
+                            val pendingTaskCount =
+                                viewModel.getPendingDidiCountLive(activity.activityId)
+                                    .observeAsState().value ?: 0
+                            val pendingTasks = numberInEnglishFormat(pendingTaskCount, null)
+
+                            var subTitle = if (activity.activityId == 1) {
+                                if (pendingTaskCount > 1) {
+                                    stringResource(id = R.string.didis_item_text_plural)
+                                } else {
+                                    stringResource(id = R.string.didis_item_text_singular)
+                                }
+                            } else {
+                                if (pendingTaskCount > 1) {
+                                    stringResource(R.string.hamlets_item_text_plural)
+                                } else {
+                                    stringResource(R.string.hamlets_item_text_singular)
+                                }
+
+                            }
 
                             StepsBox(
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),

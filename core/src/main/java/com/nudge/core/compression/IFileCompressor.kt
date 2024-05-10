@@ -21,5 +21,4 @@ interface IFileCompressor {
     ): Uri?
 
     fun getCompressionType(): String
-
 }

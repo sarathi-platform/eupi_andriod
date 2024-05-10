@@ -78,7 +78,7 @@ class MissionSummaryScreenRepositoryImpl @Inject constructor(
         ).status != SectionStatus.COMPLETED.name
     }
 
-    override fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto {
+    override fun getActivityFromSubjectId(subjectId: Int): ActivityForSubjectDto? {
         return missionActivityDao.getActivityFromSubjectId(userId = getBaseLineUserId(), subjectId)
     }
 

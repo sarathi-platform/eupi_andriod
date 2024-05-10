@@ -30,8 +30,8 @@ interface SurveyeeEntityDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(didis: List<SurveyeeEntity>)
 
-    @Query("DELETE FROM $SURVEYEE_TABLE")
-    fun deleteSurveyees()
+    @Query("DELETE FROM $SURVEYEE_TABLE where userId=:userId ")
+    fun deleteSurveyees(userId:String)
 
     @Query("UPDATE $SURVEYEE_TABLE SET crpImageLocalPath = :crpImageLocalPath WHERE didiId = :didiId")
     fun updateImageLocalPath(didiId: Int, crpImageLocalPath: String)
@@ -59,4 +59,8 @@ interface SurveyeeEntityDao {
         }
     }
 
+    @Query("SELECT * FROM $SURVEYEE_TABLE  where userId=:userId ORDER BY id DESC")
+    suspend fun getAllDidiForQNA(
+        userId: String
+    ): List<SurveyeeEntity>
 }

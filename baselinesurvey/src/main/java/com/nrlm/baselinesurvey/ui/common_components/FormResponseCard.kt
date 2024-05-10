@@ -30,10 +30,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.DELIMITER_MULTISELECT_OPTIONS
+import com.nrlm.baselinesurvey.HOUSEHOLD_INFO_TAG_CONSTANT
+import com.nrlm.baselinesurvey.LIVELIHOOD_SOURCE_TAG_CONSTANT
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
@@ -51,6 +55,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleWithNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.showCustomToast
 import java.util.Locale
 
 @Composable
@@ -65,6 +70,8 @@ fun FormResponseCard(
 ) {
 
     val formResponseSummaryScreenViewModel = viewModel as FormResponseSummaryScreenViewModel
+
+    val context = LocalContext.current
 
     Card(
         elevation = CardDefaults.cardElevation(
@@ -110,7 +117,7 @@ fun FormResponseCard(
                 Column {
                     Text(text = buildAnnotatedString {
                         if (formResponseObjectDto.questionTag.equals(
-                                "Household information",
+                                HOUSEHOLD_INFO_TAG_CONSTANT,
                                 true
                             )
                         ) {
@@ -121,35 +128,24 @@ fun FormResponseCard(
                                 )!!
                             }?.optionId] ?: BLANK_STRING)
                         } else if (formResponseObjectDto.questionTag.equals(
-                                "Livelihood Sources",
+                                LIVELIHOOD_SOURCE_TAG_CONSTANT,
                                 true
                             )
                         ) {
+                            val option = optionItemListWithConditionals.find {
+                                it.display?.contains(
+                                    stringResource(id = R.string.income_source_comparision),
+                                    ignoreCase = true
+                                )!!
+                            }
                             append(
-                                formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                    it.display?.contains(
-                                        stringResource(id = R.string.income_source_comparision),
-                                        ignoreCase = true
-                                    )!!
-                                }?.optionId] ?: BLANK_STRING
+                                option?.values?.filter {
+                                    formResponseObjectDto.selectedValueId[option.optionId]
+                                        ?.contains(it.id) == true
+                                }?.map { it.value }?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
                             )
 
-                            var income =
-                                formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                    it.display?.contains(
-                                        stringResource(id = R.string.agriculture_produce_comparision),
-                                        ignoreCase = true
-                                    )!!
-                                }?.optionId] ?: BLANK_STRING
-
-                            if (income == BLANK_STRING)
-                                income =
-                                    formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                        it.display?.contains(
-                                            stringResource(id = R.string.livestock_comparision),
-                                            ignoreCase = true
-                                        )!!
-                                    }?.optionId] ?: BLANK_STRING
+                            var income = BLANK_STRING
 
                             if (income == BLANK_STRING) {
                                 val options = optionItemListWithConditionals.filter {
@@ -160,7 +156,14 @@ fun FormResponseCard(
                                 }
                                 for (option in options) {
                                     val value =
-                                        formResponseObjectDto.memberDetailsMap[option.optionId]
+                                        option.values?.filter {
+                                            formResponseObjectDto.selectedValueId[option.optionId]
+                                                ?.contains(it.id) == true
+                                        }?.map { it.value }?.joinToString(
+                                            DELIMITER_MULTISELECT_OPTIONS
+                                        )
+
+
                                     if (value != null) {
                                         income = value
                                         break
@@ -168,9 +171,22 @@ fun FormResponseCard(
                                         income = BLANK_STRING
                                     }
                                 }
-
                             }
 
+                            if (income == BLANK_STRING) {
+                                val option = optionItemListWithConditionals.find {
+                                    it.display?.contains(
+                                        stringResource(id = R.string.livestock_comparision),
+                                        ignoreCase = true
+                                    )!!
+                                }
+                                income =
+                                    option?.values?.filter {
+                                        formResponseObjectDto.selectedValueId[option.optionId]
+                                            ?.contains(it.id) == true
+                                    }?.map { it.value }?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
+                                        .toString()
+                            }
                             if (income != BLANK_STRING) {
                                 append(" | ")
                             }
@@ -198,21 +214,26 @@ fun FormResponseCard(
                             append(source)
 
                             var mode = BLANK_STRING
+                            val mOption = optionItemListWithConditionals.find {
+                                it.display?.contains(
+                                    stringResource(R.string.acess_to_public_transportation_comparision),
+                                    ignoreCase = true
+                                )!!
+                            }
                             mode =
-                                formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                    it.display?.contains(
-                                        stringResource(R.string.acess_to_public_transportation_comparision),
-                                        ignoreCase = true
-                                    )!!
-                                }?.optionId] ?: BLANK_STRING
+                                mOption?.values?.filter {
+                                    formResponseObjectDto.selectedValueId[mOption?.optionId]
+                                        ?.contains(it.id) == true
+                                }?.map { it.value }?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
+                                    ?: BLANK_STRING
 
                             if (mode != BLANK_STRING)
                                 append(" | ")
 
                             append(mode)
 
-                        } else if (formResponseObjectDto.questionTag.contains(
-                                "key programme",
+                        } else if (formResponseObjectDto.questionTag.toLowerCase().contains(
+                                "key programme".toLowerCase(),
                                 true
                             )
                         ) {
@@ -225,11 +246,69 @@ fun FormResponseCard(
                                     )!!
                                 }?.optionId] ?: BLANK_STRING
 
+                            Log.d("TAG", "FormResponseCard: key programme -> ${
+                                optionItemListWithConditionals.find {
+                                    it.display?.contains(
+                                        stringResource(id = R.string.name_comparision),
+                                        ignoreCase = true
+                                    )!!
+                                }
+                            } ")
                             append("${stringResource(id = R.string.name_comparision)}: $name")
 
-                        }
-                        else append(BLANK_STRING)
+                        } else append(BLANK_STRING)
                     }, style = smallTextStyleWithNormalWeight)
+
+                    Log.d(
+                        "TAG",
+                        "FormResponseCard: questionTag -> ${formResponseObjectDto.questionTag}, key programme -> ${
+                            formResponseObjectDto.questionTag.toLowerCase().contains(
+                                "key programme".toLowerCase(),
+                                true
+                            )
+                        } "
+                    )
+
+                    if (formResponseObjectDto.questionTag.equals(
+                            LIVELIHOOD_SOURCE_TAG_CONSTANT,
+                            true
+                        ) && ((formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
+                            it.display?.contains(
+                                stringResource(id = R.string.agriculture_produce_comparision),
+                                ignoreCase = true
+                            )!!
+                        }?.optionId] ?: BLANK_STRING) != BLANK_STRING)
+                    ) {
+                        Text(text = buildAnnotatedString {
+                            if (formResponseObjectDto.questionTag.equals(
+                                    LIVELIHOOD_SOURCE_TAG_CONSTANT,
+                                    true
+                                )
+                            ) {
+                                append(
+                                    stringResource(id = R.string.agriculture_produce_comparision) + ": "
+                                )
+
+                                val mOption = optionItemListWithConditionals.find {
+                                    it.display?.contains(
+                                        stringResource(id = R.string.agriculture_produce_comparision),
+                                        ignoreCase = true
+                                    )!!
+                                }
+
+                                var income =
+                                    mOption?.values?.filter {
+                                        formResponseObjectDto.selectedValueId[mOption.optionId]
+                                            ?.contains(it.id) == true
+                                    }
+                                        ?.map { it.value }
+                                        ?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
+                                        ?: BLANK_STRING
+
+                                append(income)
+                            } else append(BLANK_STRING)
+                        }, style = smallTextStyleWithNormalWeight)
+                    }
 
                     Text(text = buildAnnotatedString {
                         if (formResponseObjectDto.questionTag.equals(
@@ -237,12 +316,19 @@ fun FormResponseCard(
                                 true
                             )
                         ) {
-                            this.append(formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
+                            val mOption = optionItemListWithConditionals.find {
                                 it.display?.contains(
                                     stringResource(id = R.string.relationship_comparision),
                                     ignoreCase = true
                                 )!!
-                            }?.optionId] ?: BLANK_STRING)
+                            }
+                            this.append(mOption?.values?.filter {
+                                formResponseObjectDto.selectedValueId[mOption.optionId]
+                                    ?.contains(it.id) == true
+                            }
+                                ?.map { it.value }
+                                ?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
+                                ?: BLANK_STRING)
                             this.append(" | ")
                             this.append(formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
                                 it.display?.contains(
@@ -309,17 +395,14 @@ fun FormResponseCard(
                                         )!!
                                     }.forEach {
                                         if (income == BLANK_STRING) {
-                                            Log.d(
-                                                "TAG",
-                                                "FormResponseCard: it.optionId -> ${it.optionId}"
-                                            )
-
                                             income =
                                                 formResponseObjectDto.memberDetailsMap[it.optionId]
                                                     ?: BLANK_STRING
                                         }
                                         return@forEach
                                     }
+                                    if (income == BLANK_STRING)
+                                        append("0")
                                 }
 
                                 if (income == BLANK_STRING)
@@ -344,22 +427,29 @@ fun FormResponseCard(
 
                             append("Average Cost: ₹ $avgCost")
 
-                        } else if (formResponseObjectDto.questionTag.contains(
-                                "key programme",
+                        } else if (formResponseObjectDto.questionTag.toLowerCase().contains(
+                                "key programme".toLowerCase(),
                                 true
                             )
                         ) {
                             var influenceType = BLANK_STRING
+                            val mOption = optionItemListWithConditionals.find {
+                                it.display?.contains(
+                                    stringResource(R.string.influence_type_comparision_and_label),
+                                    ignoreCase = true
+                                )!! || it.display.contains(
+                                    stringResource(R.string.designation_comparision_and_label),
+                                    true
+                                )!!
+                            }
                             influenceType =
-                                formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
-                                    it.display?.contains(
-                                        stringResource(R.string.influence_type_comparision_and_label),
-                                        ignoreCase = true
-                                    )!! || it.display.contains(
-                                        stringResource(R.string.designation_comparision_and_label),
-                                        true
-                                    )!!
-                                }?.optionId] ?: BLANK_STRING
+                                mOption?.values?.filter {
+                                    formResponseObjectDto.selectedValueId[mOption.optionId]
+                                        ?.contains(it.id) == true
+                                }
+                                    ?.map { it.value }
+                                    ?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
+                                    ?: BLANK_STRING
 
                             append("${stringResource(R.string.influence_type_comparision_and_label)}: $influenceType")
 
@@ -380,7 +470,16 @@ fun FormResponseCard(
                     .fillMaxWidth()
             ) {
                 TextButton(
-                    onClick = { onUpdate(formResponseObjectDto.referenceId) }, modifier = Modifier
+                    onClick = {
+                        if (formResponseSummaryScreenViewModel.isEditAllowed.value) {
+                            onUpdate(formResponseObjectDto.referenceId)
+                        } else {
+                            showCustomToast(
+                                context,
+                                context.getString(R.string.edit_disable_message)
+                            )
+                        }
+                    }, modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     colors = ButtonDefaults.buttonColors(
@@ -401,7 +500,16 @@ fun FormResponseCard(
                         .width(1.dp)
                 )
                 TextButton(
-                    onClick = { onDelete(formResponseObjectDto.referenceId) }, modifier = Modifier
+                    onClick = {
+                        if (formResponseSummaryScreenViewModel.isEditAllowed.value) {
+                            onDelete(formResponseObjectDto.referenceId)
+                        } else {
+                            showCustomToast(
+                                context,
+                                context.getString(R.string.edit_disable_message)
+                            )
+                        }
+                    }, modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     colors = ButtonDefaults.buttonColors(

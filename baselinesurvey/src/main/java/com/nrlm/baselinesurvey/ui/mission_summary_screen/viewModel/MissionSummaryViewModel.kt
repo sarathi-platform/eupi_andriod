@@ -14,6 +14,7 @@ import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -52,6 +53,8 @@ class MissionSummaryViewModel @Inject constructor(
 
     fun init(missionId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            eventWriterHelperImpl.recheckMATStatus()
+            delay(200)
             missionSummaryScreenUseCase.getMissionActivitiesFromDBUseCase.invoke(missionId)?.let {
                 _activities.value = it
             }

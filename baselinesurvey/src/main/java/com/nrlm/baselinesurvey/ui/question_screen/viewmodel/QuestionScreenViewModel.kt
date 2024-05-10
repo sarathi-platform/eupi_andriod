@@ -1,6 +1,8 @@
 package com.nrlm.baselinesurvey.ui.question_screen.viewmodel
 
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
@@ -128,6 +130,12 @@ class QuestionScreenViewModel @Inject constructor(
     private var _formResponseObjectDtoList = mutableStateOf(mutableListOf<FormResponseObjectDto>())
     val formResponseObjectDtoList: State<List<FormResponseObjectDto>> get() = _formResponseObjectDtoList
 
+    var referenceIdForFormWithNone: String = BLANK_STRING
+
+    val formWithNoneOptionMarkedSet = mutableSetOf<Int>()
+
+    val inputNumberQuestionMap = mutableMapOf<Int, List<InputTypeQuestionAnswerEntity>>()
+
     fun initQuestionScreenHandler(surveyeeId: Int, subjectId: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _sectionsList.value = questionScreenUseCase.getSectionsListUseCase.invoke(surveyeeId)
@@ -136,10 +144,12 @@ class QuestionScreenViewModel @Inject constructor(
                 questionScreenUseCase.getPendingTaskCountLiveUseCase.getActivityFromSubjectId(
                     subjectId
                 )
-            isEditAllowed = questionScreenUseCase.getPendingTaskCountLiveUseCase.isActivityComplete(
-                task.missionId,
-                task.activityId
-            )
+            if (task != null) {
+                isEditAllowed = questionScreenUseCase.getPendingTaskCountLiveUseCase.isActivityComplete(
+                    task.missionId,
+                    task.activityId
+                )
+            }
         }
     }
 
@@ -227,6 +237,9 @@ class QuestionScreenViewModel @Inject constructor(
 
             updateQuestionAnswerMapForNumericInputQuestions()
 
+            inputNumberQuestionMap.clear()
+            inputNumberQuestionMap.putAll(inputTypeQuestionAnswerEntityList.value.groupBy { it.questionId })
+
             _filterSectionList.value = _sectionDetail.value
             contentMapping.value = getContentData()
             initQuestionEntityStateList()
@@ -265,6 +278,9 @@ class QuestionScreenViewModel @Inject constructor(
                 it.questionEntity?.type == QuestionType.Form.name || it
                     .questionEntity?.type == QuestionType.FormWithNone.name
             }
+
+        answeredQuestionCount.clear()
+
         map.keys.forEach { questionId ->
             onEvent(
                 QuestionScreenEvents.UpdateAnsweredQuestionCount(
@@ -329,20 +345,52 @@ class QuestionScreenViewModel @Inject constructor(
 
     private fun updateQuestionEntityStateForConditionalQuestions(questionEntityStateList: List<QuestionEntityState>) {
         questionEntityStateList.forEach { questionEntityState ->
-            sectionDetail.value.questionAnswerMapping[questionEntityState.questionId]?.forEach { optionItemEntity ->
-                onEvent(
-                    QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption(
-                        questionEntityState,
-                        optionItemEntity
-                    )
-                )
+            if (questionEntityState.questionEntity?.type == QuestionType.MultiSelect.name) {
                 onEvent(
                     QuestionTypeEvent.UpdateConditionQuestionStateForMultipleOption(
                         questionEntityState,
-                        listOf(optionItemEntity)
+                        sectionDetail.value.questionAnswerMapping[questionEntityState.questionId]
+                            ?: emptyList()
                     )
                 )
+            } else if (questionEntityState.questionEntity?.type?.equals(
+                    QuestionType.InputNumber.name,
+                    true
+                ) == true
+            ) {
+
+                inputTypeQuestionAnswerEntityList?.value?.filter { it.questionId == questionEntityState.questionId }
+                    ?.let { inputTypeQuestionAnswerEntitiesForQuestion ->
+                        val mOptionList = ArrayList<OptionItemEntity>()
+                        inputTypeQuestionAnswerEntitiesForQuestion.forEach { inputTypeQuestionAnswerEntity ->
+
+                            questionEntityState.optionItemEntityState.find { it.optionId == inputTypeQuestionAnswerEntity.optionId }?.optionItemEntity
+                                ?.copy(selectedValue = inputTypeQuestionAnswerEntity.inputValue)
+                                ?.let {
+                                    mOptionList.add(it)
+                                }
+                        }
+
+                        onEvent(
+                            QuestionTypeEvent.UpdateConditionQuestionStateForInputNumberOptions(
+                                questionEntityState = questionEntityState,
+                                optionItemEntityList = mOptionList,
+                                inputTypeQuestionEntity = inputTypeQuestionAnswerEntitiesForQuestion
+                            )
+                        )
+
+                    }
+            } else {
+                sectionDetail.value.questionAnswerMapping[questionEntityState.questionId]?.forEach { optionItemEntity ->
+                    onEvent(
+                        QuestionTypeEvent.UpdateConditionQuestionStateForSingleOption(
+                            questionEntityState,
+                            optionItemEntity
+                        )
+                    )
+                }
             }
+
         }
     }
 
@@ -455,7 +503,7 @@ class QuestionScreenViewModel @Inject constructor(
 
             is EventWriterEvents.SaveAnswerEvent -> {
                 CoroutineScope(Dispatchers.IO).launch {
-                    if (event.questionType == QuestionType.Form.name) {
+                    if (event.questionType == QuestionType.Form.name || event.questionType == QuestionType.FormWithNone.name) {
                         val saveAnswerEvent =
                             eventsWriterHelperImpl.createSaveAnswerEventForFormTypeQuestion(
                                 surveyId = event.surveyId,
@@ -802,54 +850,121 @@ class QuestionScreenViewModel @Inject constructor(
 
             is QuestionTypeEvent.UpdateConditionQuestionStateForInputNumberOptions -> {
 
-                if (event.optionItemEntity.conditions == null) {
-                    val questionToUpdate = questionEntityStateList.find { it.questionId == event.questionEntityState?.questionId }
-                    questionToUpdate?.optionItemEntityState?.forEach { optionItemEntity ->
-                        optionItemEntity.optionItemEntity?.conditions?.forEach { conditionDto ->
-                            updateQuestionStateForCondition(
-                                conditionResult = false,
-                                conditionDto
-                            )
-                        }
+                val mOptionItemList = event.questionEntityState?.optionItemEntityState?.toList()
+                val unSelectedOptions = mutableListOf<OptionItemEntityState>()
+
+                if (event.optionItemEntityList.isEmpty()) {
+                    unSelectedOptions.addAll(mOptionItemList ?: emptyList())
+                } else {
+                    mOptionItemList?.filter {
+                        !event.optionItemEntityList.map {
+                            it
+                                .optionId
+                        }.contains(
+                            it
+                                .optionId
+                        )
+                    }?.let {
+                        unSelectedOptions.addAll(it.toList())
                     }
                 }
 
-
-                event.optionItemEntity.conditions?.forEach { conditionsDto ->
-
-                    //Hide conditional questions for the unselected values.
-                    val questionToUpdate = questionEntityStateList.find { it.questionId == event.questionEntityState?.questionId && it.showQuestion }
-                    val unselectedOption = questionToUpdate?.optionItemEntityState?.filter { it.optionId != event.optionItemEntity.optionId }
-                    unselectedOption?.forEach { optionItemEntityState ->
-                        optionItemEntityState.optionItemEntity?.conditions?.forEach { conditionsDto ->
-                            val mConditionCheckResult = conditionsDto?.checkCondition(event.optionItemEntity.display ?: BLANK_STRING)
-                            updateQuestionStateForCondition(conditionResult = mConditionCheckResult == true, conditionsDto)
-                            conditionsDto?.resultList?.forEach { subQuestion ->
-                                subQuestion.options?.forEach { subQuestionOption ->
-                                    subQuestionOption?.conditions?.forEach { subConditionDto ->
-                                        val mSubConditionCheckResult = subConditionDto?.checkCondition(event.optionItemEntity.display ?: BLANK_STRING)
-                                        updateQuestionStateForCondition(conditionResult = mSubConditionCheckResult == true, subConditionDto)
+                unSelectedOptions.distinctBy { it.optionId }
+                    .forEach { unseletecOptionItemEntityState ->
+                        unseletecOptionItemEntityState?.optionItemEntity?.conditions?.let {
+                            it.forEach { conditionsDto ->
+                                if (event.optionItemEntityList.isEmpty()) {
+                                    val conditionCheckResult =
+                                        conditionsDto?.checkCondition(BLANK_STRING)
+                                    if (conditionsDto?.resultType?.equals(
+                                            ResultType.Questions.name,
+                                            true
+                                        ) == true
+                                    ) {
+                                        updateQuestionStateForCondition(
+                                            conditionResult = conditionCheckResult == true,
+                                            conditionsDto
+                                        )
+                                        if (conditionCheckResult == false) {
+                                            onEvent(
+                                                QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption(
+                                                    conditionsDto!!
+                                                )
+                                            )
+                                        }
+                                    }
+                                    if (conditionsDto?.resultType?.equals(
+                                            ResultType.NoneMarked.name,
+                                            true
+                                        ) == true
+                                    ) {
+                                        updateQuestionOptionStateForNoneCondition(
+                                            conditionResult = conditionCheckResult == true,
+                                            optionId = unseletecOptionItemEntityState.optionId ?: 0,
+                                            conditionsDto = conditionsDto,
+                                            questionId = event.questionEntityState?.questionId ?: 0,
+                                            noneOptionUnselected = true
+                                        )
                                     }
                                 }
+
+                                event.optionItemEntityList.forEach { optionItemEntity ->
+                                    val conditionCheckResult = conditionsDto?.checkCondition(
+                                        optionItemEntity.display ?: BLANK_STRING
+                                    )
+                                    if (conditionsDto?.resultType?.equals(
+                                            ResultType.Questions.name,
+                                            true
+                                        ) == true
+                                    ) {
+                                        updateQuestionStateForCondition(
+                                            conditionResult = conditionCheckResult == true,
+                                            conditionsDto
+                                        )
+                                        if (conditionCheckResult == false) {
+                                            onEvent(
+                                                QuestionTypeEvent.RemoveConditionalQuestionValuesForUnselectedOption(
+                                                    conditionsDto!!
+                                                )
+                                            )
+                                        }
+                                    }
+                                    if (conditionsDto?.resultType?.equals(
+                                            ResultType.NoneMarked.name,
+                                            true
+                                        ) == true
+                                    )
+                                        updateQuestionOptionStateForNoneCondition(
+                                            conditionResult = conditionCheckResult == true,
+                                            optionItemEntity.optionId ?: 0,
+                                            conditionsDto,
+                                            event.questionEntityState?.questionId ?: 0, true
+                                        )
+                                }
+
                             }
                         }
                     }
 
-                    if (event.optionItemEntity.selectedValue != "0") {
-                        val conditionCheckResult = conditionsDto?.checkCondition(
-                            event.optionItemEntity.display ?: BLANK_STRING
-                        )
-                        updateQuestionStateForCondition(
-                            conditionResult = conditionCheckResult == true,
-                            conditionsDto
-                        )
-                    } else {
-                        updateQuestionStateForCondition(
-                            conditionResult = false,
-                            conditionsDto
-                        )
+                event.optionItemEntityList.forEach { optionItemEntity ->
+                    optionItemEntity.conditions?.let {
+                        it.forEach { conditionsDto ->
+                            if (optionItemEntity.selectedValue != "0") {
+                                val conditionCheckResult = conditionsDto?.checkCondition(
+                                    optionItemEntity.display ?: BLANK_STRING
+                                )
+                                updateQuestionStateForCondition(
+                                    conditionResult = conditionCheckResult == true,
+                                    conditionsDto
+                                )
+                            } else {
+                                updateQuestionStateForCondition(
+                                    conditionResult = false,
+                                    conditionsDto
+                                )
+                            }
+                        }
                     }
-
                 }
             }
 
@@ -862,13 +977,10 @@ class QuestionScreenViewModel @Inject constructor(
                 // When All unselected
                 if (event.optionItemEntityList.isEmpty()) {
                     unselectedOptions.addAll(mOptionItemList ?: emptyList())
-                }
-                mOptionItemList?.forEach {
-                    event.optionItemEntityList?.map { it.optionId }?.forEach { selectOptionId ->
-                        if (it.optionId != selectOptionId) {
-                            unselectedOptions.add(it)
-                        }
-                    }
+                } else {
+                    mOptionItemList?.filter {
+                        event.optionItemEntityList.map { it.optionId }.contains(it.optionId) != true
+                    }?.let { unselectedOptions.addAll(it.toList()) }
                 }
 
                 unselectedOptions.distinctBy { it.optionId }.forEach { unselectedOptionItemEntityState ->
@@ -1125,24 +1237,14 @@ class QuestionScreenViewModel @Inject constructor(
                 }
             }*/
 
-            is QuestionTypeEvent.FormQuestionMarkedWithNone -> {
+            is QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     val finalFormQuestionResponseList = mutableListOf<FormQuestionResponseEntity>()
 
                     val question = questionEntityStateList.toList()
                         .find { it.questionId == event.questionId }
 
-                    val formQuestionResponseItem = FormQuestionResponseEntity(
-                        didiId = didiDetails.value?.didiId ?: 0,
-                        surveyId = sectionDetail.value.surveyId,
-                        sectionId = sectionDetail.value.sectionId,
-                        questionId = event.questionId,
-                        optionId = event.optionId,
-                        selectedValue = "Yes",
-                        referenceId = UUID.randomUUID().toString()
-                    )
-
-                    finalFormQuestionResponseList.add(formQuestionResponseItem)
+                    finalFormQuestionResponseList.addAll(event.formQuestionResponseList)
 
                     finalFormQuestionResponseList.distinctBy { it.optionId }.forEach {
                         val existingFormQuestionResponseEntity =
@@ -1159,6 +1261,18 @@ class QuestionScreenViewModel @Inject constructor(
                             )
                         }
                     }
+
+                    event.formQuestionResponseList.find {
+                        it.optionId == question?.optionItemEntityState?.find {
+                            it
+                                .optionItemEntity?.optionType == QuestionType.FormWithNone.name
+                        }?.optionItemEntity?.optionId
+                    }?.optionId?.let {
+                        formWithNoneOptionMarkedSet.add(
+                            it
+                        )
+                    }
+
                     val completeOptionListForQuestion =
                         questionScreenUseCase.getFormQuestionResponseUseCase
                             .getFormResponsesForQuestion(
@@ -1191,22 +1305,26 @@ class QuestionScreenViewModel @Inject constructor(
 
     private suspend fun updateMissionActivityTaskStatus(didiId: Int, sectionStatus: SectionStatus) {
         val activityForSubjectDto = eventsWriterHelperImpl.getActivityFromSubjectId(didiId)
-        onEvent(
-            EventWriterEvents.UpdateMissionActivityTaskStatus(
-                missionId = activityForSubjectDto.missionId,
-                activityId = activityForSubjectDto.activityId,
-                taskId = activityForSubjectDto.taskId,
-                status = sectionStatus
+        if (activityForSubjectDto != null) {
+            onEvent(
+                EventWriterEvents.UpdateMissionActivityTaskStatus(
+                    missionId = activityForSubjectDto.missionId,
+                    activityId = activityForSubjectDto.activityId,
+                    taskId = activityForSubjectDto.taskId,
+                    status = sectionStatus
+                )
             )
-        )
-        onEvent(
-            EventWriterEvents.UpdateMissionActivityTaskStatusEvent(
-                missionId = activityForSubjectDto.missionId,
-                activityId = activityForSubjectDto.activityId,
-                taskId = activityForSubjectDto.taskId,
-                status = sectionStatus
+        }
+        if (activityForSubjectDto != null) {
+            onEvent(
+                EventWriterEvents.UpdateMissionActivityTaskStatusEvent(
+                    missionId = activityForSubjectDto.missionId,
+                    activityId = activityForSubjectDto.activityId,
+                    taskId = activityForSubjectDto.taskId,
+                    status = sectionStatus
+                )
             )
-        )
+        }
     }
 
     private fun saveOrUpdateMiscTypeQuestionAnswers(
@@ -1500,7 +1618,7 @@ class QuestionScreenViewModel @Inject constructor(
                 answeredQuestionCount.add(it.key)
             }
 
-            inputTypeQuestionAnswerEntityList.value.groupBy { it.optionId }.forEach {
+            inputTypeQuestionAnswerEntityList.value.groupBy { it.questionId }.forEach {
                 answeredQuestionCount.add(it.key)
             }
             val qesList = questionEntityStateList.toList()
@@ -1582,7 +1700,16 @@ class QuestionScreenViewModel @Inject constructor(
     }
 
     fun getFormResponseItemCountForQuestion(questionId: Int?): Int {
-        val formResponseItemListForQuestion = formResponseEntityToQuestionMap.value[questionId]
+        val question = questionEntityStateList.find { it.questionId == questionId }
+        val formWithNoneOption =
+            question?.optionItemEntityState?.find { it.optionItemEntity?.optionType == QuestionType.FormWithNone.name }
+        val formResponseItemListForQuestion =
+            formResponseEntityToQuestionMap.value[questionId]?.filter { it.optionId != formWithNoneOption?.optionId }
+//        val map = formResponseItemListForQuestion?.groupBy { it.referenceId }
+//        var size = map?.keys?.size ?: 0
+//        map?.forEach {
+//            if (if)
+//        }
         return formResponseItemListForQuestion?.groupBy { it.referenceId }?.keys?.size ?: 0
     }
 
@@ -1619,6 +1746,55 @@ class QuestionScreenViewModel @Inject constructor(
             return CalculatorUtils.calculate(expression)
         else
             return 0.0f
+
+    }
+
+    fun getReferenceIdForFormWithNoneQuestion(): String {
+        if (referenceIdForFormWithNone == BLANK_STRING)
+            referenceIdForFormWithNone = UUID.randomUUID().toString()
+
+        return referenceIdForFormWithNone
+    }
+
+    fun setReferenceIdForFormWithNoneQuestion(referenceId: String) {
+        if (referenceIdForFormWithNone == BLANK_STRING)
+            referenceIdForFormWithNone = referenceId
+    }
+
+    fun getUserId(): String = questionScreenUseCase.getSectionUseCase.getUniqueUserIdentifier()
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun saveInputNumberOptionResponse(questionId: Int, optionId: Int, selectedValue: String) {
+
+        val responseList = mutableListOf<InputTypeQuestionAnswerEntity>()
+
+        val question = questionEntityStateList.toList().find { it.questionId == questionId }
+
+        val mOption = InputTypeQuestionAnswerEntity(
+            userId = questionScreenUseCase.getSectionUseCase.getUniqueUserIdentifier(),
+            didiId = didiDetails.value?.didiId ?: 0,
+            surveyId = question?.questionEntity?.surveyId ?: 0,
+            sectionId = question?.questionEntity?.sectionId ?: 0,
+            questionId = questionId,
+            optionId = optionId,
+            inputValue = selectedValue
+        )
+
+        val oldValues = inputNumberQuestionMap[questionId]
+
+        oldValues?.let {
+            responseList.clear()
+            responseList.addAll(it)
+        }
+
+        if (selectedValue != "0" && selectedValue != BLANK_STRING)
+            responseList.add(mOption)
+        else {
+            if (oldValues?.map { it.optionId }?.contains(mOption.optionId) == true)
+                responseList.removeIf { it.optionId == mOption.optionId }
+        }
+
+        inputNumberQuestionMap[questionId] = responseList
 
     }
 

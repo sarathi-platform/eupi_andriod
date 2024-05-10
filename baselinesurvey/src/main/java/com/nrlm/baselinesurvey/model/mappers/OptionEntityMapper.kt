@@ -41,33 +41,37 @@ object OptionEntityMapper {
 
     fun getOptionEntitiesMapper(
         questionAnswerResponseModel: QuestionAnswerResponseModel,
-        questionEntity: QuestionEntity?
+        questionEntity: QuestionEntity?,
+        optionItemEntityList: List<OptionItemEntity>
     ): List<OptionItemEntity> {
         val questionOptionsResponseModels =
             toQuestionOptionModel(questionAnswerResponseModel.question?.options as List<Any>)
         val optionsList: ArrayList<OptionItemEntity> = ArrayList()
 
         questionOptionsResponseModels.forEach { questionOptionsResponseModels ->
+            val dropDownDownValues =
+                optionItemEntityList.find { it.optionId == questionOptionsResponseModels.optionId }
             optionsList.add(
                 OptionItemEntity(
-                id = 0,
-                sectionId = questionAnswerResponseModel.sectionId.toInt(),
-                surveyId = questionAnswerResponseModel.surveyId ?: -1,
-                questionId = questionAnswerResponseModel.question?.questionId,
-                optionId = questionOptionsResponseModels.optionId,
-                display = questionEntity?.questionDisplay,
-                weight = null,
-                selectedValue = questionOptionsResponseModels.selectedValue,
-                // optionValue = questionOptionsResponseModels.select,
-                summary = questionEntity?.questionSummary,
-                count = questionEntity?.order,
-                optionType = BLANK_STRING,
-                conditional = questionEntity?.isConditional ?: false,
-                order = questionEntity?.order ?: DEFAULT_ID,
-                languageId = questionEntity?.languageId,
-                isSelected = false
-
-
+                    id = 0,
+                    sectionId = questionAnswerResponseModel.sectionId.toInt(),
+                    surveyId = questionAnswerResponseModel.surveyId ?: -1,
+                    questionId = questionAnswerResponseModel.question?.questionId,
+                    optionId = questionOptionsResponseModels.optionId,
+                    display = questionEntity?.questionDisplay,
+                    weight = null,
+                    selectedValue = questionOptionsResponseModels.selectedValue,
+                    summary = questionEntity?.questionSummary,
+                    count = questionEntity?.order,
+                    optionType = BLANK_STRING,
+                    conditional = questionEntity?.isConditional ?: false,
+                    order = questionEntity?.order ?: DEFAULT_ID,
+                    languageId = questionEntity?.languageId,
+                    isSelected = false,
+                    selectedValueId = if (!dropDownDownValues?.values.isNullOrEmpty()) dropDownDownValues?.values?.find { valueDto ->
+                        questionOptionsResponseModels.selectedValueWithIds.map { it.id }
+                            ?.contains(valueDto.id) == true
+                    }?.id ?: 0 else 0
                 )
             )
         }

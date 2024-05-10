@@ -80,6 +80,9 @@ interface QuestionEntityDao {
     @Query("SELECT * from $QUESTION_TABLE where type = :type")
     fun getQuestionForType(type: String): QuestionEntity
 
+    @Query("SELECT * from $QUESTION_TABLE where type in (:type) and userId = :userid")
+    fun getQuestionForTypeForSurveySection(type: List<String>, userid: String): List<QuestionEntity>
+
     @Query("Delete from $QUESTION_TABLE where userId=:userid ")
     fun deleteAllQuestions(userid: String)
 }

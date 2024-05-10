@@ -75,13 +75,15 @@ fun SurveyeeCardComponent(
     surveyeeState: SurveyeeCardState,
     showCheckBox: Boolean,
     fromScreen: String,
-    primaryButtonText: String = "Start Baseline",
+    primaryButtonText: String = stringResource(R.string.start_baseline),
     checkBoxChecked: (surveyeeEntity: SurveyeeEntity, isChecked: Boolean) -> Unit,
     buttonClicked: (buttonName: ButtonName, surveyeeId: Int) -> Unit,
     moveDidiToThisWeek: (surveyeeCardState: SurveyeeCardState, moveToThisWeek: Boolean) -> Unit
 ) {
+
+
     val surveyeeMarkedNotAvailable = remember {
-        mutableStateOf(surveyeeState.surveyeeDetails.surveyStatus == SurveyState.NOT_AVAILABLE.ordinal)
+        mutableStateOf(surveyeeState.surveyState == SurveyState.NOT_AVAILABLE)
     }
     Card(
         elevation = CardDefaults.cardElevation(
@@ -274,7 +276,10 @@ fun SurveyeeCardComponent(
                                 ),
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text(text = "Not Available", style = smallTextStyleNormalWeight)
+                                Text(
+                                    text = stringResource(id = R.string.not_avaliable),
+                                    style = smallTextStyleNormalWeight
+                                )
                             }
                         } else {
                             Spacer(modifier = Modifier.weight(1f))

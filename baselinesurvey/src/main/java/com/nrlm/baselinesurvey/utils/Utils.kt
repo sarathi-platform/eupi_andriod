@@ -266,7 +266,8 @@ fun saveFormQuestionResponseEntity(
     formTypeOption: FormTypeOption,
     optionId: Int,
     selectedValue: String,
-    referenceId: String
+    referenceId: String,
+    selectedIds: List<Int> = emptyList()
 ): FormQuestionResponseEntity {
 
     return FormQuestionResponseEntity(
@@ -276,7 +277,8 @@ fun saveFormQuestionResponseEntity(
         questionId = formTypeOption.questionId,
         optionId = optionId,
         selectedValue = selectedValue,
-        referenceId = referenceId
+        referenceId = referenceId,
+        selectedValueId = selectedIds
     )
 }
 
@@ -288,11 +290,19 @@ fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObject
     referenceIdMap.forEach { formQuestionResponseEntityList ->
         val householdMember = FormResponseObjectDto()
         val householdMemberDetailsMap = mutableMapOf<Int, String>()
+        val selectedValueMap = mutableMapOf<Int, List<Int>>()
         householdMember.referenceId = formQuestionResponseEntityList.key
         householdMember.questionId = formQuestionResponseEntityList.value.first().questionId
         householdMember.questionTag = tagList.findTagForId(questionTag ?: -1)
         formQuestionResponseEntityList.value.forEachIndexed { index, formQuestionResponseEntity ->
-            householdMemberDetailsMap.put(formQuestionResponseEntity.optionId, formQuestionResponseEntity.selectedValue)
+            householdMemberDetailsMap.put(
+                formQuestionResponseEntity.optionId,
+                formQuestionResponseEntity.selectedValue
+            )
+            selectedValueMap.put(
+                formQuestionResponseEntity.optionId,
+                formQuestionResponseEntity.selectedValueId
+            )
             /*var option = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }
             if (option==null) {
                 optionsItemEntityList.forEach { optionItemEntity ->
@@ -308,6 +318,7 @@ fun List<FormQuestionResponseEntity>.mapFormQuestionResponseToFromResponseObject
             }*/
 
             householdMember.memberDetailsMap = householdMemberDetailsMap
+            householdMember.selectedValueId = selectedValueMap
         }
         householdMembersList.add(householdMember)
     }
@@ -326,7 +337,7 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
         optionType = this.type,
         summary = this.questionSummary,
         values = emptyList(),
-        contentEntities = this.options?.first()?.contentList ?: listOf(),
+        contentEntities = this.contentList ?: listOf(),
         conditional = this.conditional
     )
     val valuesList = mutableListOf<ValuesDto>()
@@ -373,6 +384,7 @@ fun QuestionList.convertFormTypeQuestionListToOptionItemEntity(sectionId: Int, s
             order = optionsItem?.order ?: -1,
             values = optionsItem?.values,
             languageId = languageId,
+            optionTag = this.attributeTag ?: 0,
             contentEntities = optionsItem?.contentList ?: listOf(),
             conditions = optionsItem?.conditions
         )
@@ -581,15 +593,15 @@ fun ConditionsDto.checkCondition(userInputValue: String): Boolean {
     }
 }
 
-fun ConditionsDto.checkConditionForMultiSelectDropDown(userInputValue: String): Boolean {
+fun ConditionsDto.checkConditionForMultiSelectDropDown(userInputValue: List<String>): Boolean {
     val condition = this.value.split(CONDITIONS_DELIMITER, ignoreCase = true)
     try {
         val result = when (checkStringOperator(this.operator)) {
             Operator.EQUAL_TO -> {
-                userInputValue.contains(condition.first(), ignoreCase = true)
+                userInputValue.contains(condition.first())
             }
 
-            Operator.LESS_THAN -> {
+            /*Operator.LESS_THAN -> {
                 userInputValue.toInt() < condition.first().toInt()
             }
 
@@ -612,7 +624,7 @@ fun ConditionsDto.checkConditionForMultiSelectDropDown(userInputValue: String): 
 
             Operator.MORE_THAN_EQUAL_TO -> {
                 userInputValue.toInt() >= condition.first().toInt()
-            }
+            }*/
 
             else -> {
                 false
@@ -775,24 +787,40 @@ fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType?):
     when (type) {
         QuestionType.RadioButton -> {
             val mSaveAnswerEventOptionItemDto =
-                SaveAnswerEventOptionItemDto(this.optionId ?: 0, this.display)
+                SaveAnswerEventOptionItemDto(this.optionId ?: 0, this.display, tag = this.optionTag)
             saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
         }
 
         QuestionType.List,
         QuestionType.SingleSelect -> {
             val mSaveAnswerEventOptionItemDto =
-                SaveAnswerEventOptionItemDto(this.optionId ?: 0, this.display)
+                SaveAnswerEventOptionItemDto(this.optionId ?: 0, this.display, tag = this.optionTag)
             saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
         }
 
         QuestionType.SingleSelectDropDown,
         QuestionType.SingleSelectDropdown -> {
             val mSaveAnswerEventOptionItemDto =
-                SaveAnswerEventOptionItemDto(this.optionId ?: 0, this.selectedValue)
+                SaveAnswerEventOptionItemDto(
+                    this.optionId ?: 0,
+                    this.selectedValue,
+                    tag = this.optionTag,
+                    selectedValueWithIds = this.values?.find { it.id == this.selectedValueId }
+                        ?.let { listOf(it) } ?: emptyList()
+                )
             saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
         }
 
+        QuestionType.HrsMinPicker,
+        QuestionType.YrsMonthPicker -> {
+            val mSaveAnswerEventOptionItemDto =
+                SaveAnswerEventOptionItemDto(
+                    this.optionId ?: 0,
+                    this.selectedValue,
+                    tag = this.optionTag
+                )
+            saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+        }
         QuestionType.Input,
         QuestionType.InputText,
         QuestionType.InputNumber,
@@ -801,7 +829,8 @@ fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType?):
                 SaveAnswerEventOptionItemDto(
                     this.optionId ?: 0,
                     this.selectedValue,
-                    optionDesc = this.display ?: BLANK_STRING
+                    optionDesc = this.display ?: BLANK_STRING,
+                    tag = this.optionTag
                 )
             saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
         }
@@ -823,21 +852,27 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: Question
         when (type) {
             QuestionType.RadioButton -> {
                 val mSaveAnswerEventOptionItemDto =
-                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display, tag = it.optionTag)
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
             }
 
             QuestionType.List,
             QuestionType.SingleSelect -> {
                 val mSaveAnswerEventOptionItemDto =
-                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display, tag = it.optionTag)
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
             }
 
             QuestionType.SingleSelectDropDown,
             QuestionType.SingleSelectDropdown -> {
                 val mSaveAnswerEventOptionItemDto =
-                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.selectedValue)
+                    SaveAnswerEventOptionItemDto(
+                        it.optionId ?: 0,
+                        it.selectedValue,
+                        tag = it.optionTag,
+                        selectedValueWithIds = it.values?.find { valuesDto -> valuesDto.id == it.selectedValueId }
+                            ?.let { listOf(it) } ?: emptyList()
+                    )
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
             }
 
@@ -849,7 +884,19 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: Question
                     SaveAnswerEventOptionItemDto(
                         it.optionId ?: 0,
                         it.selectedValue,
-                        optionDesc = it.display ?: BLANK_STRING
+                        optionDesc = it.display ?: BLANK_STRING,
+                        tag = it.optionTag
+                    )
+                saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
+            }
+
+            QuestionType.HrsMinPicker,
+            QuestionType.YrsMonthPicker -> {
+                val mSaveAnswerEventOptionItemDto =
+                    SaveAnswerEventOptionItemDto(
+                        it.optionId ?: 0,
+                        it.selectedValue,
+                        tag = it.optionTag
                     )
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
             }
@@ -858,7 +905,7 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: Question
             QuestionType.Grid -> {
 
                 val mSaveAnswerEventOptionItemDto =
-                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display, tag = it.optionTag)
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
 
             }
@@ -878,7 +925,7 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemDto(type: QuestionT
         QuestionType.Grid -> {
             this.forEach {
                 val mSaveAnswerEventOptionItemDto =
-                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display)
+                    SaveAnswerEventOptionItemDto(it.optionId ?: 0, it.display, tag = it.optionTag)
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
             }
         }
@@ -894,23 +941,86 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemDto(type: QuestionT
 
 fun List<FormQuestionResponseEntity>.convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto(
     type: QuestionType,
-    optionsItemEntityList: List<OptionItemEntityState>
+    optionsItemEntityList: List<OptionItemEntityState>,
+    forExcel: Boolean = false
 ): List<SaveAnswerEventOptionItemDto> {
     val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
     if (type == QuestionType.Form) {
         this.forEach { formQuestionResponseEntity ->
-            val saveAnswerEventOptionItemDto = SaveAnswerEventOptionItemDto(
-                optionId = formQuestionResponseEntity.optionId,
-                selectedValue = formQuestionResponseEntity.selectedValue,
-                referenceId = formQuestionResponseEntity.referenceId,
-                optionDesc = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }?.optionItemEntity?.display
-                    ?: BLANK_STRING
-            )
-            saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
+                val saveAnswerEventOptionItemDto = SaveAnswerEventOptionItemDto(
+                    optionId = formQuestionResponseEntity.optionId,
+                    selectedValue = formQuestionResponseEntity.selectedValue,
+                    referenceId = formQuestionResponseEntity.referenceId,
+                    optionDesc = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }?.optionItemEntity?.display
+                        ?: BLANK_STRING,
+                    selectedValueWithIds = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }?.optionItemEntity?.values?.filter {
+                        formQuestionResponseEntity.selectedValueId.contains(
+                            it.id
+                        )
+                    } ?: emptyList(),
+                    tag = optionsItemEntityList.find { it.optionId == formQuestionResponseEntity.optionId }?.optionItemEntity?.optionTag
+                        ?: 0
+                )
+                saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
+//            }
+
         }
     }
 
     return saveAnswerEventOptionItemDtoList
+}
+
+fun OptionItemEntity.convertOptionItemEntityToSaveAnswerEventOptionItemDtoForFormWithNone(
+    userId: String,
+    didiId: Int,
+    referenceId: String
+): List<SaveAnswerEventOptionItemDto> {
+
+    val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
+    val formQuestionResponseEntity =
+        this.convertOptionItemEntityToFormResponseEntityForFormWithNone(
+            userId = userId,
+            didiId = didiId,
+            referenceId = referenceId
+        )
+
+    val saveAnswerEventOptionItemDto = SaveAnswerEventOptionItemDto(
+        optionId = formQuestionResponseEntity.optionId,
+        selectedValue = formQuestionResponseEntity.selectedValue,
+        referenceId = formQuestionResponseEntity.referenceId,
+        optionDesc = this.display
+            ?: BLANK_STRING,
+        tag = this.optionTag,
+        selectedValueWithIds = this.values?.filter {
+            formQuestionResponseEntity.selectedValueId.contains(
+                it.id
+            )
+        } ?: emptyList()
+    )
+
+    saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
+
+
+    return saveAnswerEventOptionItemDtoList
+
+}
+
+fun OptionItemEntity.convertOptionItemEntityToFormResponseEntityForFormWithNone(
+    userId: String,
+    didiId: Int,
+    referenceId: String
+): FormQuestionResponseEntity {
+    val formQuestionResponseEntity = FormQuestionResponseEntity(
+        userId = userId,
+        didiId = didiId,
+        surveyId = this.surveyId,
+        sectionId = this.sectionId,
+        questionId = this.questionId ?: 0,
+        optionId = this.optionId ?: 0,
+        selectedValue = this.selectedValue ?: BLANK_STRING,
+        referenceId = referenceId
+    )
+    return formQuestionResponseEntity
 }
 
 fun List<OptionItemEntity>.toOptionItemStateList(): List<OptionItemEntityState> {
@@ -939,7 +1049,10 @@ fun List<FormResponseObjectDto>.convertFormResponseObjectToSaveAnswerEventOption
                 selectedValue = memberDetails.value,
                 referenceId = formResponseObjectDto.referenceId,
                 optionDesc = optionsItemEntityList.find { it.optionId == memberDetails.key }?.display
-                    ?: BLANK_STRING
+                    ?: BLANK_STRING,
+                tag = optionsItemEntityList.find { it.optionId == memberDetails.key }?.optionTag
+                    ?: 0
+
             )
             saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
         }
@@ -967,7 +1080,9 @@ fun List<InputTypeQuestionAnswerEntity>.convertInputTypeQuestionToEventOptionIte
             optionId = inputTypeQuestionAnswerEntity.optionId,
             selectedValue = inputTypeQuestionAnswerEntity.inputValue,
             optionDesc = optionsItemEntity.find { it.optionId == inputTypeQuestionAnswerEntity.optionId }?.optionItemEntity?.display
-                ?: BLANK_STRING
+                ?: BLANK_STRING,
+            tag = optionsItemEntity.find { it.optionId == inputTypeQuestionAnswerEntity.optionId }?.optionItemEntity?.optionTag
+                ?: 0
 
         )
         saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
@@ -1043,6 +1158,26 @@ val tagList: List<TagMappingDto> = listOf(
     TagMappingDto(id = 58, name = "Household Information"),
     TagMappingDto(id = 59, name = "Public Infra"),
     TagMappingDto(id = 60, name = "Key programme"),
+    TagMappingDto(id = 61, name = "SHG meeting"),
+    TagMappingDto(id = 62, name = "Savings Storage"),
+    TagMappingDto(id = 63, name = "NonMarketOutcomes"),
+    TagMappingDto(id = 64, name = "Civic Engagement"),
+    TagMappingDto(id = 65, name = "Political Participation"),
+    TagMappingDto(id = 66, name = "Manual Casual Labour"),
+    TagMappingDto(id = 67, name = "NTFP"),
+    TagMappingDto(id = 68, name = "MGNREGA"),
+    TagMappingDto(id = 69, name = "Remittance from migration"),
+    TagMappingDto(id = 70, name = "Self-employment / Shop"),
+    TagMappingDto(id = 71, name = "Others"),
+    TagMappingDto(id = 72, name = "Name"),
+    TagMappingDto(id = 73, name = "Relationship"),
+    TagMappingDto(id = 74, name = "Age"),
+    TagMappingDto(id = 75, name = "Anganwadi"),
+    TagMappingDto(id = 76, name = "Immunized"),
+    TagMappingDto(id = 77, name = "School"),
+    TagMappingDto(id = 78, name = "Education"),
+    TagMappingDto(id = 79, name = "Marital Status"),
+    TagMappingDto(id = 80, name = "Disabled"),
 )
 /*listOf(
 TagMappingDto(id = 1, name = "FoodSecurtiy"),
@@ -1110,8 +1245,13 @@ fun String.getImagePathFromString(): String {
     }
 }
 
-fun numberInEnglishFormat(number: Int): String {
-    return String.format(Locale.ENGLISH,"%s", number)
+fun numberInEnglishFormat(number: Int, range: IntRange?): String {
+    var mNumber = number
+    if (range != null) {
+        mNumber = number.coerceIn(range)
+    }
+
+    return String.format(Locale.ENGLISH, "%s", mNumber)
 }
 
 fun List<FormQuestionResponseEntity>.findUnchangedOptions(storeCacheForResponse: List<FormQuestionResponseEntity>): List<FormQuestionResponseEntity> {
@@ -1122,17 +1262,19 @@ fun List<FormQuestionResponseEntity>.findUnchangedOptions(storeCacheForResponse:
 
 @Composable
 fun ShowCustomDialog(
-    title:String,
-    message:String,
-    positiveButtonTitle : String ?= BLANK_STRING,
-    negativeButtonTitle : String ?= BLANK_STRING,
+    title: String,
+    message: String,
+    positiveButtonTitle: String? = BLANK_STRING,
+    negativeButtonTitle: String? = BLANK_STRING,
     dismissOnBackPress: Boolean? = true,
-    onPositiveButtonClick:()->Unit,
-    onNegativeButtonClick:()->Unit){
-    Dialog(onDismissRequest = {  }, properties = DialogProperties(
-        dismissOnClickOutside = false,
-        dismissOnBackPress = dismissOnBackPress ?: true
-    )
+    onPositiveButtonClick: () -> Unit,
+    onNegativeButtonClick: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = { }, properties = DialogProperties(
+            dismissOnClickOutside = false,
+            dismissOnBackPress = dismissOnBackPress ?: true
+        )
     ) {
         Surface(
             color = Color.Transparent,
@@ -1143,8 +1285,11 @@ fun ShowCustomDialog(
                     modifier = Modifier
                         .background(color = Color.White, shape = RoundedCornerShape(6.dp)),
                 ) {
-                    Column(Modifier.padding(vertical = 16.dp, horizontal = 16.dp),verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        if(!title.isNullOrEmpty()) {
+                    Column(
+                        Modifier.padding(vertical = 16.dp, horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        if (!title.isNullOrEmpty()) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceAround,
@@ -1177,7 +1322,7 @@ fun ShowCustomDialog(
 
                         Row(modifier = Modifier.fillMaxWidth()) {
 
-                            if(!negativeButtonTitle.isNullOrEmpty()) {
+                            if (!negativeButtonTitle.isNullOrEmpty()) {
                                 ButtonNegative(
                                     buttonTitle = negativeButtonTitle
                                         ?: stringResource(id = R.string.cancel_tola_text),
@@ -1187,13 +1332,13 @@ fun ShowCustomDialog(
                                     onNegativeButtonClick()
                                 }
 
-                            }else{
+                            } else {
                                 Spacer(modifier = Modifier.weight(2f))
                             }
 
                             Spacer(modifier = Modifier.width(8.dp))
                             positiveButtonTitle?.let {
-                                if(!it.isNullOrEmpty()) {
+                                if (!it.isNullOrEmpty()) {
                                     ButtonPositive(
                                         buttonTitle = it,
                                         isArrowRequired = false,
@@ -1214,3 +1359,4 @@ fun ShowCustomDialog(
         }
     }
 }
+
