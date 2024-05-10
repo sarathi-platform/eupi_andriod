@@ -105,6 +105,7 @@ fun FormWithNoneTypeQuestionComponent(
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyListState = rememberLazyListState()
     val innerGridState: LazyGridState = rememberLazyGridState()
+    val no = stringResource(id = R.string.option_no)
     val optionList = remember {
         showQuestionState.optionItemEntityState.find { it.optionItemEntity?.optionType == QuestionType.FormWithNone.name }?.optionItemEntity?.values
             ?: emptyList()
