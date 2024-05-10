@@ -79,6 +79,7 @@ import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.uriFromFile
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
+import java.io.File
 
 @SuppressLint("StateFlowValueCalledInComposition", "UnrememberedMutableState")
 @Composable
@@ -101,7 +102,9 @@ fun BaseLineStartScreen(
         baseLineStartViewModel.getDidiDetails(
             didiId = didiId,
             sectionId = sectionId,
-            surveyId = surveyId
+            surveyId = surveyId,
+            false,
+            localContext
         )
         delay(200)
         baseLineStartViewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -238,11 +241,30 @@ fun BaseLineStartScreen(
                             "rememberLauncherForActivityResult -> onResult = success: $success"
                         )
                         if (success) {
-                            baseLineStartViewModel.onEvent(
-                                StartSurveyScreenEvents.SaveImagePathForSurveyee(
+                            if (baseLineStartViewModel.tempUri == Uri.EMPTY) {
+                                baseLineStartViewModel.imagePath =
+                                    baseLineStartViewModel.getTempFilePath()
+                                val uri =
+                                    uriFromFile(localContext, File(baseLineStartViewModel.imagePath))
+                                baseLineStartViewModel.tempUri = uri
+                                baseLineStartViewModel.getDidiDetails(
+                                    didiId,
+                                    sectionId = sectionId,
+                                    surveyId,
+                                    true,
                                     localContext
                                 )
-                            )
+                                BaselineLogger.e(
+                                    "CameraIssue",
+                                    "ImagePath ${baseLineStartViewModel.imagePath}"
+                                )
+                            } else {
+                                baseLineStartViewModel.onEvent(
+                                    StartSurveyScreenEvents.SaveImagePathForSurveyee(
+                                        localContext
+                                    )
+                                )
+                            }
                         } else {
                             baseLineStartViewModel.shouldShowPhoto.value =
                                 baseLineStartViewModel.photoUri.value != Uri.EMPTY
@@ -302,6 +324,9 @@ fun BaseLineStartScreen(
                                                 imageFile.absolutePath
                                             val uri = uriFromFile(localContext, imageFile)
                                             baseLineStartViewModel.tempUri = uri
+                                            baseLineStartViewModel.saveTempFilePath(
+                                                baseLineStartViewModel.imagePath
+                                            )
                                             cameraLauncher.launch(uri)
                                         }
 
@@ -358,6 +383,9 @@ fun BaseLineStartScreen(
                                                 imageFile.absolutePath
                                             val uri = uriFromFile(localContext, imageFile)
                                             baseLineStartViewModel.tempUri = uri
+                                            baseLineStartViewModel.saveTempFilePath(
+                                                baseLineStartViewModel.imagePath
+                                            )
                                             cameraLauncher.launch(uri)
                                         }
 
@@ -447,6 +475,9 @@ fun BaseLineStartScreen(
                                     )
                                     baseLineStartViewModel.tempUri = uri
 //                                patDidiSummaryViewModel.photoUri = uri
+                                    baseLineStartViewModel.saveTempFilePath(
+                                        baseLineStartViewModel.imagePath
+                                    )
                                     cameraLauncher.launch(uri)
                                     baseLineStartViewModel.shouldShowPhoto.value = false
                                 }
@@ -505,6 +536,9 @@ fun BaseLineStartScreen(
                                     )
                                     baseLineStartViewModel.tempUri = uri
 //                                patDidiSummaryViewModel.photoUri = uri
+                                    baseLineStartViewModel.saveTempFilePath(
+                                        baseLineStartViewModel.imagePath
+                                    )
                                     cameraLauncher.launch(uri)
                                     baseLineStartViewModel.shouldShowPhoto.value = false
                                 }
@@ -573,6 +607,9 @@ fun BaseLineStartScreen(
                                     baseLineStartViewModel.imagePath = imageFile.absolutePath
                                     val uri = uriFromFile(localContext, imageFile)
                                     baseLineStartViewModel.tempUri = uri
+                                    baseLineStartViewModel.saveTempFilePath(
+                                        baseLineStartViewModel.imagePath
+                                    )
                                     cameraLauncher.launch(uri)
                                 }
 
@@ -625,6 +662,9 @@ fun BaseLineStartScreen(
                                     baseLineStartViewModel.imagePath = imageFile.absolutePath
                                     val uri = uriFromFile(localContext, imageFile)
                                     baseLineStartViewModel.tempUri = uri
+                                    baseLineStartViewModel.saveTempFilePath(
+                                        baseLineStartViewModel.imagePath
+                                    )
                                     cameraLauncher.launch(uri)
                                 }
 

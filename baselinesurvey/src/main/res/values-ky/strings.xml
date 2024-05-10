@@ -446,7 +446,7 @@
     <string name="to_the_nearest_permanent_market_comparision">Ganani tongsuknai hatio</string>
     <string name="to_the_nearest_bank_comparsion">Ganani Banko</string>
     <string name="to_the_replacement_string">"Ganani "</string>
-    <string name="average_travel_cost_comparision">"Bebaktwi beraimung rang baima"</string>
+    <string name="average_travel_cost_comparision">Bebaktwi beraimung rang baima</string>
     <string name="questions_data_tab_title">Questions Data</string>
     <string name="section_information_tab_title">Sections</string>
     <string name="search_hamlet">Search Hamlet</string>
@@ -505,5 +505,8 @@
     <string name="no_data_available_at_the_moment">No data available at the moment</string>
     <string name="start_baseline">Baseline chengdi</string>
     <string name="start_activity">%s chengdi</string>
+    <string name="read_more">Read More</string>
+    <string name="content">Content</string>
+    <string name="average_cost">Bebaktwi beraimung rang baima: ₹ %1$s</string>
 
 </resources>
