@@ -45,10 +45,10 @@ class ZipFileCompression : IFileCompressor {
         userName: String
     ): Uri? {
         val zipFileName =
-            "${getFirstName(userName)}_${mobileNo}_sarathi_${System.currentTimeMillis()}_"
+            "${getFirstName(userName)}_${mobileNo}_SARATHI_${System.currentTimeMillis()}_"
         return compressData(
             context,
-            zipFileName + "image",
+            zipFileName + "Image",
             filePath,
             listOf(),
             mobileNo

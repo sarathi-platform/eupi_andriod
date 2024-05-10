@@ -29,17 +29,21 @@ import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LogWriter
+import com.nrlm.baselinesurvey.utils.openShareSheet
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.SARATHI_DIRECTORY_NAME
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EXCEL_TYPE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
+import com.nudge.core.compression.ZipManager
+import com.nudge.core.copyZipFile
 import com.nudge.core.exportDbFile
 import com.nudge.core.getFirstName
 import com.nudge.core.json
 import com.nudge.core.datamodel.BaseLineQnATableCSV
 import com.nudge.core.datamodel.HamletQnATableCSV
+import com.nudge.core.exportAllOldImages
 import com.nudge.core.exportcsv.CsvConfig
 import com.nudge.core.exportcsv.ExportService
 import com.nudge.core.exportcsv.Exportable
@@ -50,6 +54,7 @@ import com.nudge.core.uriFromFile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -95,22 +100,18 @@ class SettingBSViewModel @Inject constructor(
                 val compression = ZipFileCompression()
 
                 // Image Files and Zip
-                val imageUri = compression.compressBackupImages(
-                    BaselineCore.getAppContext(),
-                    settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber(),
-                    userName = settingBSUserCase.getUserDetailsUseCase.getUserName(),
-
-                    )
+                val imageUri = exportAllOldImages(
+                    appContext = BaselineCore.getAppContext(),
+                    applicationID = BuildConfig.APPLICATION_ID,
+                    mobileNo = settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber(),
+                    timeInMillSec = System.currentTimeMillis().toString(),
+                    userName = getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())
+                )
 
                 if(imageUri!=Uri.EMPTY) {
                     imageUri?.let {
-                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                         fileUriList.add(it)
-                        else
-                            fileUriList.add(uriFromFile(context = BaselineCore.getAppContext(),
-                                applicationID = BuildConfig.APPLICATION_ID,
-                                file = it.toFile()))
-                        BaselineLogger.d("SettingBSViewModel", "Image File Uri: ${it.path}---------------")
+                        BaselineLogger.d("SettingBSViewModel_URI", "Image File Uri: ${it.path}---------------")
                     }
                 }
 
@@ -191,18 +192,6 @@ class SettingBSViewModel @Inject constructor(
             }
         }
     }
-    private fun openShareSheet( fileUriList: ArrayList<Uri>?, title: String, type: String,) {
-        if(fileUriList?.isNotEmpty() == true){
-            val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
-            shareIntent.setType(type)
-            shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
-            shareIntent.putExtra(Intent.EXTRA_TITLE, title)
-            val chooserIntent = Intent.createChooser(shareIntent, title)
-            BaselineCore.startExternalApp(chooserIntent)
-        }
-
-    }
-
     override fun <T> onEvent(event: T) {
         when (event) {
             is LoaderEvent.UpdateLoaderState -> {
