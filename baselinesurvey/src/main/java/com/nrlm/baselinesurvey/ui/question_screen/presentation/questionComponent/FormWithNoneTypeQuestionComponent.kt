@@ -104,10 +104,10 @@ fun FormWithNoneTypeQuestionComponent(
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyListState = rememberLazyListState()
     val innerGridState: LazyGridState = rememberLazyGridState()
-    val yes = stringResource(id = R.string.option_yes)
-    val no = stringResource(id = R.string.option_no)
+
     val optionList = remember {
-        listOf(yes, no)
+        showQuestionState.optionItemEntityState.find { it.optionItemEntity?.optionType == QuestionType.FormWithNone.name }?.optionItemEntity?.values
+            ?: emptyList()
     }
 
 
@@ -232,7 +232,7 @@ fun FormWithNoneTypeQuestionComponent(
                                                     } else -1,
                                                     optionsItem = OptionItemEntity.getEmptyOptionItemEntity()
                                                         .copy(
-                                                            display = item,
+                                                            display = item.value,
                                                             sectionId = question?.sectionId
                                                                 ?: 0,
                                                             surveyId = question?.surveyId ?: 0,
@@ -245,13 +245,13 @@ fun FormWithNoneTypeQuestionComponent(
                                                     onOptionSelected = {
 
                                                         if (isEditAllowed) {
-                                                            if (it.display?.equals(optionList.last()) == true) { //when marked NO
+                                                            if (it.display?.equals(optionList.last().value) == true) { //when marked NO
                                                                 isNoneMarked.value = true
                                                                 isNoneQuestionAnswered.value =
                                                                     true
                                                             }
 
-                                                            if (it.display?.equals(optionList.first()) == true) { //when marked Yes
+                                                            if (it.display?.equals(optionList.first().value) == true) { //when marked Yes
                                                                 isNoneMarked.value = false
                                                                 isNoneQuestionAnswered.value =
                                                                     true

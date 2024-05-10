@@ -111,7 +111,7 @@ class BaseLineStartViewModel @Inject constructor(
         val directory = getImagePath(context)
         val filePath = File(
             directory,
-            "${didi.id}-${didi.cohortId}-${didi.villageId}_${System.currentTimeMillis()}.png"
+            "${didi.didiId}-${didi.cohortId}-${didi.villageId}_${System.currentTimeMillis()}.png"
         )
         return filePath
     }
@@ -266,7 +266,13 @@ class BaseLineStartViewModel @Inject constructor(
         }
     }
 
-    fun getDidiDetails(didiId: Int, sectionId: Int, surveyId: Int) {
+    fun getDidiDetails(
+        didiId: Int,
+        sectionId: Int,
+        surveyId: Int,
+        isFromImageFail: Boolean,
+        localContext: Context
+    ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val selectedLanguage = startSurveyScreenUserCase.getSectionUseCase.getSelectedLanguage()
             sectionDetails = startSurveyScreenUserCase.getSectionUseCase.invoke(
@@ -301,6 +307,9 @@ class BaseLineStartViewModel @Inject constructor(
             phoneNumber.value = didiInfo.value?.phoneNumber ?: BLANK_STRING
             isVoterCard.value = didiInfo.value?.isVoterCard ?: -1
             aadharNumber.value = didiInfo.value?.adharNumber ?: BLANK_STRING
+            if (isFromImageFail) {
+                onEvent(StartSurveyScreenEvents.SaveImagePathForSurveyee(localContext))
+            }
         }
     }
 
@@ -453,6 +462,14 @@ class BaseLineStartViewModel @Inject constructor(
                 saveAnswerEventOptionItemDtoList = saveAnswerEventOptionItemDtoList.toList()
             )
         )
+    }
+
+    fun saveTempFilePath(imagePath: String) {
+        startSurveyScreenUserCase.saveSurveyeeImagePathUseCase.saveTempPath(imagePath)
+    }
+
+    fun getTempFilePath(): String {
+        return startSurveyScreenUserCase.saveSurveyeeImagePathUseCase.getTempPath()
     }
 
 }
