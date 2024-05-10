@@ -64,7 +64,7 @@ class FetchSurveyeeListFromNetworkUseCase(
 
                 }
 
-                apiResponse.data?.didiList?.distinctBy { it.cohortName }?.forEach {
+                apiResponse.data?.didiList?.distinctBy { it.cohortId }?.forEach {
                     if (!localSurveyeeEntityList.map { surveyeeEntity -> surveyeeEntity.didiId }.contains(it.cohortId)) {
                         val taskForSubject = repository.getTaskForSubjectId(it.cohortId)
                         val hamletSurveyEntity = SurveyeeEntity(
