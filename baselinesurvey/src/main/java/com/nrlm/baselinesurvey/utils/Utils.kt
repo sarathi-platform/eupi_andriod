@@ -1179,6 +1179,7 @@ val tagList: List<TagMappingDto> = listOf(
     TagMappingDto(id = 78, name = "Education"),
     TagMappingDto(id = 79, name = "Marital Status"),
     TagMappingDto(id = 80, name = "Disabled"),
+    TagMappingDto(id = 84, name = "Reason to leave SHG"),
 )
 /*listOf(
 TagMappingDto(id = 1, name = "FoodSecurtiy"),
