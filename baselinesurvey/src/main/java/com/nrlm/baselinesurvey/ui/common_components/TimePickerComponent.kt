@@ -214,21 +214,23 @@ fun getDelimiter(typePicker: String): String {
 }
 
 fun getPickerValue(typePicker: String, firstValue: String, secondValue: String): String {
-    if ((firstValue.isBlank() && secondValue.isBlank()) || (firstValue.equals("00") && secondValue.equals(
+    if ((firstValue.isBlank() && secondValue.isBlank()) || ((firstValue.equals("00") && secondValue.equals(
             "00"
-        ))
+        ))) || ((firstValue.equals("0") && secondValue.equals(
+            "0"
+        )))
     ) {
         return ""
     }
     if (typePicker == QuestionType.HrsMinPicker.name) {
-        return if (firstValue.isBlank() || firstValue.equals("00")) "${secondValue} ${MINUTE}" else if (secondValue.isBlank() || secondValue.equals(
+        return if (firstValue.isBlank() || firstValue.equals("00") || firstValue.equals("0")) "${secondValue} ${MINUTE}" else if (secondValue.isBlank() || secondValue.equals(
                 "00"
-            )
+            ) || secondValue.equals("0")
         ) "${firstValue} ${HOURS}" else "${firstValue} ${HOURS} ${secondValue} ${MINUTE}"
     } else if (typePicker == QuestionType.YrsMonthPicker.name) {
-        return if (firstValue.isBlank() || firstValue.equals("00")) "${secondValue}  ${MONTHS}" else if (secondValue.isBlank() || secondValue.equals(
+        return if (firstValue.isBlank() || firstValue.equals("00") || firstValue.equals("0")) "${secondValue}  ${MONTHS}" else if (secondValue.isBlank() || secondValue.equals(
                 "00"
-            )
+            ) || secondValue.equals("0")
         ) "${firstValue}  ${YEAR}" else "${firstValue} ${YEAR} ${secondValue} ${MONTHS}"
     }
     return BLANK_STRING
