@@ -411,7 +411,7 @@
     <string name="to_the_nearest_permanent_market_comparision">কাছের স্থায়ী বাজারে</string>
     <string name="to_the_nearest_bank_comparsion">কাছের ব্যাঙ্কে</string>
     <string name="to_the_replacement_string">""</string>
-    <string name="average_travel_cost_comparision">"গড় ভ্রমণ খরচ"</string>
+    <string name="average_travel_cost_comparision">গড় ভ্রমণ খরচ</string>
     <string name="questions_data_tab_title">প্রশ্ন</string>
     <string name="section_information_tab_title">বিভাগসমূহ</string>
     <string name="search_hamlet">হ্যামলেট অনুসন্ধান করুন</string>
@@ -467,4 +467,5 @@
 
     <string name="read_more">Read More</string>
     <string name="content">Content</string>
+    <string name="average_cost">গড় ভ্রমণ খরচ: ₹ %1$s</string>
 </resources>

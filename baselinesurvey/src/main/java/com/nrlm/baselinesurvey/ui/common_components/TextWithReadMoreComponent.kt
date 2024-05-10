@@ -51,7 +51,7 @@ fun TextWithReadMoreComponent(
                     showDialog = false
                 },
                 onPositiveButtonClick = {
-
+//Here click listener is not need as we are showing only one button i.e negative button
                 })
         }
     }

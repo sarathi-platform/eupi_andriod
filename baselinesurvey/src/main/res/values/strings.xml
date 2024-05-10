@@ -517,5 +517,6 @@
 
     <string name="read_more">Read More</string>
     <string name="content">Content</string>
+    <string name="average_cost">Average Cost: ₹ %1$s</string>
 
 </resources>
