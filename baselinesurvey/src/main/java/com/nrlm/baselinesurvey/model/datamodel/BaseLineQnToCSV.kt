@@ -39,7 +39,8 @@ suspend fun List<SaveAnswerEventDto>.toCSVSave(
                     optionId,
                     it.question.questionId,
                     it.sectionId,
-                    it.surveyId
+                    it.surveyId,
+                    uniqueUserIdentifier
                 )
                 val optionItemId = option.selectedValueWithIds
                 val selectedValue = selectedValueOption.flatMap { it.values!! }
@@ -81,7 +82,8 @@ suspend fun List<SaveAnswerEventDto>.toCSVSave(
                     optionId,
                     it.question.questionId,
                     it.sectionId,
-                    it.surveyId
+                    it.surveyId,
+                    uniqueUserIdentifier
                 )
                 val selectedResponse = selectedValue.map { it.display }
                 response = selectedResponse.joinToString("\n")
@@ -142,7 +144,8 @@ fun List<SaveAnswerEventForFormQuestionDto>.toCsv(
                         optionId,
                         it.question.questionId,
                         it.sectionId,
-                        it.surveyId
+                        it.surveyId,
+                        uniqueUserIdentifier
                     )
                     if (!selectedValueOption.isNullOrEmpty()) {
                         val selectedValue = selectedValueOption.first().values?.filter {
