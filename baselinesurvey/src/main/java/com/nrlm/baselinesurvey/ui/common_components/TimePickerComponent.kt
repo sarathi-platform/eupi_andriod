@@ -111,7 +111,7 @@ fun RangePickerComponent(
                             getPickerValue(
                                 typePicker = typePicker,
                                 firstValue = firstInputValue.value,
-                                secandValue = selectValue
+                                secondValue = secondValue
                             ),
                             0
                         )
@@ -136,7 +136,7 @@ fun RangePickerComponent(
                             getPickerValue(
                                 typePicker = typePicker,
                                 firstValue = firstInputValue.value,
-                                secandValue = getSources(typePicker).find { it.id == selectedValue }?.value
+                                secondValue = getSources(typePicker).find { it.id == selectedValue }?.value
                                     ?: BLANK_STRING
                             ),
                             selectedValue
@@ -213,11 +213,11 @@ fun getDelimiter(typePicker: String): String {
     return ""
 }
 
-fun getPickerValue(typePicker: String, firstValue: String, secandValue: String): String {
+fun getPickerValue(typePicker: String, firstValue: String, secondValue: String): String {
     if (typePicker == QuestionType.HrsMinPicker.name) {
-        return "${firstValue} Hours ${secandValue} Minutes"
+        return "${firstValue} Hours ${secondValue} Minutes"
     } else if (typePicker == QuestionType.YrsMonthPicker.name) {
-        return "${firstValue} Year ${secandValue} Months"
+        return "${firstValue} Year ${secondValue} Months"
     }
     return BLANK_STRING
 }
