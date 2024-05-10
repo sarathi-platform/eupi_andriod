@@ -784,7 +784,10 @@ fun NestedLazyList(
                                                     questionId = question.questionId ?: 0,
                                                     subjectId = surveyeeId,
                                                     formQuestionResponseList = listOf(
-                                                        mOptionItem.copy(selectedValue = mOptionItem.values?.last()?.value) //when marked NO
+                                                        mOptionItem.copy(selectedValue = mOptionItem.values?.last()?.value,
+                                                            selectedValueId = mOptionItem.values?.last()?.id
+                                                                ?: 0
+                                                        ) //when marked NO
                                                             .convertOptionItemEntityToFormResponseEntityForFormWithNone(
                                                                 userId = questionScreenViewModel.getUserId(),
                                                                 didiId = surveyeeId,
@@ -815,7 +818,10 @@ fun NestedLazyList(
                                                     questionId = question.questionId ?: 0,
                                                     subjectId = surveyeeId,
                                                     formQuestionResponseList = listOf(
-                                                        mOptionItem.copy(selectedValue = mOptionItem.values?.first()?.value) //when marked YES
+                                                        mOptionItem.copy(selectedValue = mOptionItem.values?.first()?.value,
+                                                            selectedValueId = mOptionItem.values?.first()?.id
+                                                                ?: 0
+                                                        ) //when marked YES
                                                             .convertOptionItemEntityToFormResponseEntityForFormWithNone(
                                                                 userId = questionScreenViewModel.getUserId(),
                                                                 didiId = surveyeeId,

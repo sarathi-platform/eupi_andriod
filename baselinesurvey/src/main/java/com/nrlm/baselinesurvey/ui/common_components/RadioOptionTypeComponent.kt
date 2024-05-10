@@ -51,7 +51,7 @@ fun RadioOptionTypeComponent(
     isContent: Boolean = false,
     selectedValue: String = BLANK_STRING,
     onInfoButtonClicked: () -> Unit,
-    onOptionSelected: (optionValue: String) -> Unit
+    onOptionSelected: (optionValue: String, optionId: Int) -> Unit
 ) {
     val yesNoButtonViewHeight = remember {
         mutableStateOf(0.dp)
@@ -136,7 +136,7 @@ fun RadioOptionTypeComponent(
                         TextButton(
                             onClick = {
                                 selectedValue.value = optionValueText.value
-                                onOptionSelected(optionValueText.value)
+                                onOptionSelected(optionValueText.value, optionValueText.id)
                             }, modifier = Modifier
                                 .weight(1f)
                                 .background(

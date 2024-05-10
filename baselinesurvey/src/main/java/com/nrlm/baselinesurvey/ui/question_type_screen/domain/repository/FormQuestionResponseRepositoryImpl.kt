@@ -115,7 +115,8 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
         optionId: Int,
         selectedValue: String,
         referenceId: String,
-        didiId: Int
+        didiId: Int,
+        selectedValueIds: List<Int>
     ) {
         return formQuestionResponseDao.updateOptionItemValue(
             userId = getBaseLineUserId(),
@@ -125,7 +126,8 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
             optionId = optionId,
             selectedValue = selectedValue,
             referenceId = referenceId,
-            didiId = didiId
+            didiId = didiId,
+            selectedValueIds = selectedValueIds
         )
     }
 
@@ -175,7 +177,8 @@ class FormQuestionResponseRepositoryImpl @Inject constructor(
             selectedValue = formQuestionResponseEntity.selectedValue,
             referenceId = formQuestionResponseEntity.referenceId,
             didiId = formQuestionResponseEntity.didiId,
-            userId = getBaseLineUserId()
+            userId = getBaseLineUserId(),
+            selectedValueIds = formQuestionResponseEntity.selectedValueId
         )
     }
 

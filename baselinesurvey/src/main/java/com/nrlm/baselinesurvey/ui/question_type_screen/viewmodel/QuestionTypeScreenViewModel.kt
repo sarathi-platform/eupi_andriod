@@ -464,7 +464,8 @@ class QuestionTypeScreenViewModel @Inject constructor(
                             event.formQuestionResponseEntity.optionId,
                             event.formQuestionResponseEntity.selectedValue,
                             event.formQuestionResponseEntity.referenceId,
-                            event.formQuestionResponseEntity.didiId
+                            event.formQuestionResponseEntity.didiId,
+                            event.formQuestionResponseEntity.selectedValueId
                         )
                     } else {
                         formQuestionScreenUseCase.saveFormQuestionResponseUseCase.invoke(event.formQuestionResponseEntity)

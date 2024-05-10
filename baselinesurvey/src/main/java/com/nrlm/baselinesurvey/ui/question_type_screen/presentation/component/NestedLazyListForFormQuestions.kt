@@ -377,7 +377,7 @@ fun NestedLazyListForFormQuestions(
                                     onInfoButtonClicked = {
                                         sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
                                     },
-                                    onOptionSelected = { selectedValue ->
+                                    onOptionSelected = { selectedValue, selectedOptionId ->
                                         questionTypeScreenViewModel.onEvent(
                                             QuestionTypeEvent.UpdateConditionalOptionState(
                                                 option,
@@ -391,7 +391,9 @@ fun NestedLazyListForFormQuestions(
                                                     formTypeOption,
                                                     option.optionId ?: 0,
                                                     selectedValue,
-                                                    viewModel.referenceId
+                                                    viewModel.referenceId,
+                                                    selectedIds = listOf(selectedOptionId)
+
                                                 )
                                             )
                                         }
