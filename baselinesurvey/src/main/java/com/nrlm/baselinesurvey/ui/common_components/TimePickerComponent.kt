@@ -214,10 +214,22 @@ fun getDelimiter(typePicker: String): String {
 }
 
 fun getPickerValue(typePicker: String, firstValue: String, secondValue: String): String {
+    if ((firstValue.isBlank() && secondValue.isBlank()) || (firstValue.equals("00") && secondValue.equals(
+            "00"
+        ))
+    ) {
+        return ""
+    }
     if (typePicker == QuestionType.HrsMinPicker.name) {
-        return "${firstValue} Hours ${secondValue} Minutes"
+        return if (firstValue.isBlank() || firstValue.equals("00")) "${secondValue} ${MINUTE}" else if (secondValue.isBlank() || secondValue.equals(
+                "00"
+            )
+        ) "${firstValue} ${HOURS}" else "${firstValue} ${HOURS} ${secondValue} ${MINUTE}"
     } else if (typePicker == QuestionType.YrsMonthPicker.name) {
-        return "${firstValue} Year ${secondValue} Months"
+        return if (firstValue.isBlank() || firstValue.equals("00")) "${secondValue}  ${MONTHS}" else if (secondValue.isBlank() || secondValue.equals(
+                "00"
+            )
+        ) "${firstValue}  ${YEAR}" else "${firstValue} ${YEAR} ${secondValue} ${MONTHS}"
     }
     return BLANK_STRING
 }
@@ -254,11 +266,11 @@ fun getFirstValue(typePicker: String, defaultValue: String): String {
         val numbers = regex.findAll(defaultValue)
             .map { it.value }
             .toList()
-        firstValue = numbers.getOrElse(0) { "00" } // Fetches the first number (5)
+        firstValue = numbers.getOrElse(0) { "" } // Fetches the first number (5)
     } else {
         val value = defaultValue.split(" ")
         if (value.first().isBlank()) {
-            firstValue = "00"
+            firstValue = ""
         }
     }
     return firstValue
@@ -280,9 +292,9 @@ fun getSecondValue(typePicker: String, defaultValue: String): String {
         .map { it.value }
         .toList()
     if (isOnlySecondValueContain(defaultValue)) {
-        secondValue = numbers.getOrElse(0) { "00" } // Fetches the first number (5)
+        secondValue = numbers.getOrElse(0) { "" } // Fetches the first number (5)
     } else {
-        secondValue = numbers.getOrElse(1) { "00" } // Fetches the first number (5)
+        secondValue = numbers.getOrElse(1) { "" } // Fetches the first number (5)
     }
     return secondValue
 }
@@ -298,9 +310,9 @@ fun getTypePicker(questionType: String): String? {
 
 fun getSecondDefaultValue(typePicker: String): String {
     if (typePicker == QuestionType.HrsMinPicker.name) {
-        return "00"
+        return ""
     } else if (typePicker == QuestionType.YrsMonthPicker.name) {
-        return "00"
+        return ""
     }
     return BLANK_STRING
 }
