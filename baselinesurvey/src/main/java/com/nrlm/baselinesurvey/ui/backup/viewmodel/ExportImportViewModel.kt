@@ -11,7 +11,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
 import androidx.core.content.FileProvider
-import androidx.core.net.toFile
 import com.google.gson.Gson
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BuildConfig
@@ -22,6 +21,8 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.database.dao.OptionItemDao
+import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventDto
@@ -70,6 +71,8 @@ class ExportImportViewModel @Inject constructor(
     private val eventWriterHelperImpl: EventWriterHelperImpl,
     private val sectionEntityDao: SectionEntityDao,
     private val surveyeeEntityDao: SurveyeeEntityDao,
+    private val optionItemDao: OptionItemDao,
+    private val questionEntityDao: QuestionEntityDao,
     val prefRepo: PrefRepo
 ): BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
@@ -346,18 +349,29 @@ fun exportOnlyLogFile(context: Context){
                 val surveeList =
                     surveyeeEntityDao.getAllDidiForQNA(prefRepo.getUniqueUserIdentifier())
                 val baseLineQnATableCSV = mutableListOf<BaseLineQnATableCSV>()
-                baseLineQnATableCSV.addAll(dtoList.toCSVSave(sectionList, surveeList))
-                baseLineQnATableCSV.addAll(dtoSaveFormList.toCsv(sectionList, surveeList))
+
+                baseLineQnATableCSV.addAll(dtoList.toCSVSave(sectionList, surveeList, optionItemDao, questionEntityDao, prefRepo.getUniqueUserIdentifier()))
+                baseLineQnATableCSV.addAll(dtoSaveFormList.toCsv(sectionList, surveeList, optionItemDao, questionEntityDao, prefRepo.getUniqueUserIdentifier()))
                 /*BaseLine*/
-                val baseLineListQnaCSV = baseLineQnATableCSV.filter { it.surveyId == 1 }.sortedBy { it.sectionId }
-                val baseLineMap = baseLineListQnaCSV.groupBy { it.subjectId }
+                val baseLineListQnaCSV = baseLineQnATableCSV.filter { it.surveyId == 1 }
+                val baseLineQnATableCSVGroupBySectionId = baseLineListQnaCSV
+                    .groupBy { it.sectionId }
+                    .toList()
+                    .sortedBy { it.first }
+                    .flatMap { it.second.sortedBy { it.orderId } }
+                val baseLineMap = baseLineQnATableCSVGroupBySectionId.groupBy { it.subjectId}
                 val baseLineListQna = ArrayList<BaseLineQnATableCSV>()
                 baseLineMap.forEach {
                     baseLineListQna.addAll(it.value)
                 }
                 /*Hamlet */
-                val hamletListQnaCSV = baseLineQnATableCSV.filter { it.surveyId == 2}.sortedBy { it.sectionId }
-                val hamletMap = hamletListQnaCSV.groupBy { it.subjectId }
+                val hamletListQnaCSV = baseLineQnATableCSV.filter { it.surveyId == 2}
+                val hamletQnATableCSVGroupBySectionId = hamletListQnaCSV
+                    .groupBy { it.sectionId }
+                    .toList()
+                    .sortedBy { it.first }
+                    .flatMap { it.second.sortedBy { it.orderId } }
+                val hamletMap = hamletQnATableCSVGroupBySectionId.groupBy { it.subjectId }
                 val hamletListQna = ArrayList<BaseLineQnATableCSV>()
                 hamletMap.forEach{
                     hamletListQna.addAll(it.value)

@@ -10,7 +10,7 @@ var id: String? = BLANK_STRING,
 @CsvBindByName(column = "Didi Name")
 var didiName : String? = BLANK_STRING,
 
-@CsvBindByName(column = "Guardian Name")
+@CsvBindByName(column = "Husband/Father Name")
 var dadaName : String? = BLANK_STRING,
 
 @CsvBindByName(column = "Didi-House-No")
@@ -40,7 +40,7 @@ var surveyId: Int? = 0,
 var subjectId : Int? = 0,
 
 var sectionId: Int? = 0,
-
+var orderId: Int? = 0,
 
 ) : Exportable
 
@@ -71,6 +71,8 @@ data class HamletQnATableCSV(
     var subjectId : Int? = 0,
 
     var sectionId: Int? = 0,
+    var orderId: Int? = 0,
+
 
     ) : Exportable
 
