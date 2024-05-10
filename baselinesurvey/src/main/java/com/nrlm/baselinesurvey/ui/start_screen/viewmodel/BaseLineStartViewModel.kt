@@ -111,7 +111,7 @@ class BaseLineStartViewModel @Inject constructor(
         val directory = getImagePath(context)
         val filePath = File(
             directory,
-            "${didi.id}-${didi.cohortId}-${didi.villageId}_${System.currentTimeMillis()}.png"
+            "${didi.didiId}-${didi.cohortId}-${didi.villageId}_${System.currentTimeMillis()}.png"
         )
         return filePath
     }
