@@ -23,7 +23,11 @@ import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DELIMITER_TIME
 import com.nrlm.baselinesurvey.DELIMITER_YEAR
+import com.nrlm.baselinesurvey.HOURS
+import com.nrlm.baselinesurvey.MINUTE
+import com.nrlm.baselinesurvey.MONTHS
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.YEAR
 import com.nrlm.baselinesurvey.model.datamodel.ValuesDto
 import com.nrlm.baselinesurvey.ui.Constants.QuestionType
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.OptionItemEntityState
@@ -104,9 +108,11 @@ fun RangePickerComponent(
                                 )
                             ) getSecondDefaultValue(typePicker) else secondInputValue.value
                         onAnswerSelection(
-                            "${firstInputValue.value}${
-                                getDelimiter(typePicker)
-                            }${secondValue}",
+                            getPickerValue(
+                                typePicker = typePicker,
+                                firstValue = firstInputValue.value,
+                                secandValue = selectValue
+                            ),
                             0
                         )
                     }
@@ -127,9 +133,12 @@ fun RangePickerComponent(
                             getSources(typePicker).find { it.id == selectedValue }?.value
                                 ?: BLANK_STRING/* selectedValue*/
                         onAnswerSelection(
-                            "${firstInputValue.value}${
-                                getDelimiter(typePicker)
-                            }${getSources(typePicker).find { it.id == selectedValue }?.value ?: BLANK_STRING}",
+                            getPickerValue(
+                                typePicker = typePicker,
+                                firstValue = firstInputValue.value,
+                                secandValue = getSources(typePicker).find { it.id == selectedValue }?.value
+                                    ?: BLANK_STRING
+                            ),
                             selectedValue
                         )
 
@@ -204,43 +213,78 @@ fun getDelimiter(typePicker: String): String {
     return ""
 }
 
-fun getFirstValue(typePicker: String, defaultValue: String): String {
-    if (getTypePicker(typePicker)?.equals(QuestionType.HrsMinPicker.name) == true) {
-        return if (defaultValue.contains(DELIMITER_TIME)) defaultValue.split(
-            DELIMITER_TIME,
-            ignoreCase = true
-        )
-            .first() else ""
-    } else if (getTypePicker(typePicker)?.equals(QuestionType.YrsMonthPicker.name) == true) {
-        return if (defaultValue.contains(DELIMITER_YEAR)) defaultValue.split(
-            DELIMITER_YEAR,
-            ignoreCase = true
-        )
-            .first() else ""
+fun getPickerValue(typePicker: String, firstValue: String, secandValue: String): String {
+    if (typePicker == QuestionType.HrsMinPicker.name) {
+        return "${firstValue} Hours ${secandValue} Minutes"
+    } else if (typePicker == QuestionType.YrsMonthPicker.name) {
+        return "${firstValue} Year ${secandValue} Months"
     }
     return BLANK_STRING
 }
 
-fun getSecondValue(typePicker: String, defaultValue: String): String {
-    var value = BLANK_STRING
-    if (getTypePicker(typePicker)?.equals(QuestionType.HrsMinPicker.name) == true) {
-        if (defaultValue.contains(DELIMITER_TIME)) {
-            val baseMinValue = defaultValue.split(
-                DELIMITER_TIME,
-                ignoreCase = true
-            )[1]
-            value = baseMinValue.ifEmpty { "00" }
-        }
-    } else if (getTypePicker(typePicker)?.equals(QuestionType.YrsMonthPicker.name) == true) {
-        if (defaultValue.contains(DELIMITER_YEAR)) {
-            val baseMonthValue = defaultValue.split(
-                DELIMITER_YEAR,
-                ignoreCase = true
-            )[1]
-            value = baseMonthValue.ifEmpty { "0" }
+fun isFirstValueContain(value: String): Boolean {
+    return value.contains(YEAR, true) || value.contains(DELIMITER_YEAR, true) || value.contains(
+        HOURS,
+        true
+    ) || value.contains(
+        DELIMITER_TIME, true
+    )
+}
+
+fun isOnlySecondValueContain(value: String): Boolean {
+    return (value.contains(MONTHS, true) && !value.contains(YEAR, true)) || (value.contains(
+        MINUTE,
+        true
+    ) && !value.contains(HOURS, true))
+}
+
+fun getFirstValue(typePicker: String, defaultValue: String): String {
+    var firstValue = BLANK_STRING
+    val delimiter =
+        if (getTypePicker(typePicker)?.equals(QuestionType.HrsMinPicker.name) == true) DELIMITER_TIME else DELIMITER_YEAR
+    if (defaultValue.contains(delimiter)) {
+        return defaultValue.split(
+            delimiter,
+            ignoreCase = true
+        )
+            .first()
+    }
+    if (isFirstValueContain(defaultValue)) {
+        val regex = Regex("\\d+")
+        val numbers = regex.findAll(defaultValue)
+            .map { it.value }
+            .toList()
+        firstValue = numbers.getOrElse(0) { "00" } // Fetches the first number (5)
+    } else {
+        val value = defaultValue.split(" ")
+        if (value.first().isBlank()) {
+            firstValue = "00"
         }
     }
-    return value
+    return firstValue
+}
+
+
+fun getSecondValue(typePicker: String, defaultValue: String): String {
+    var secondValue = BLANK_STRING
+    val delimiter =
+        if (getTypePicker(typePicker)?.equals(QuestionType.HrsMinPicker.name) == true) DELIMITER_TIME else DELIMITER_YEAR
+    if (defaultValue.contains(delimiter)) {
+        return defaultValue.split(
+            delimiter,
+            ignoreCase = true
+        )[1]
+    }
+    val regex = Regex("\\d+")
+    val numbers = regex.findAll(defaultValue)
+        .map { it.value }
+        .toList()
+    if (isOnlySecondValueContain(defaultValue)) {
+        secondValue = numbers.getOrElse(0) { "00" } // Fetches the first number (5)
+    } else {
+        secondValue = numbers.getOrElse(1) { "00" } // Fetches the first number (5)
+    }
+    return secondValue
 }
 
 fun getTypePicker(questionType: String): String? {
@@ -256,7 +300,7 @@ fun getSecondDefaultValue(typePicker: String): String {
     if (typePicker == QuestionType.HrsMinPicker.name) {
         return "00"
     } else if (typePicker == QuestionType.YrsMonthPicker.name) {
-        return "0"
+        return "00"
     }
     return BLANK_STRING
 }
@@ -265,8 +309,8 @@ fun getSecondDefaultValue(typePicker: String): String {
 @Composable
 fun PreviewTimePickerComponent() {
     RangePickerComponent(
-        defaultValue = "",
-        typePicker = "YrsMonthPicker",
+        defaultValue = ":15",
+        typePicker = "HrsMinPicker",
         showQuestionState = getEmptyStateObject(),
         onInfoButtonClicked = { /*TODO*/ }) { value, id ->
     }
