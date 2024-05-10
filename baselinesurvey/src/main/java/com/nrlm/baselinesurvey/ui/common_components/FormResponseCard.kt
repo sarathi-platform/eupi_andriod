@@ -425,7 +425,7 @@ fun FormResponseCard(
                                     )!!
                                 }?.optionId] ?: BLANK_STRING
 
-                            append("Average Cost: ₹ $avgCost")
+                            append(stringResource(R.string.average_cost, avgCost))
 
                         } else if (formResponseObjectDto.questionTag.toLowerCase().contains(
                                 "key programme".toLowerCase(),
