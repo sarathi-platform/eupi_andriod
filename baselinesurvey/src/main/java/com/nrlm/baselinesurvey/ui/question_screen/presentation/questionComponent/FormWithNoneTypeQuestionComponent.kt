@@ -28,6 +28,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -104,8 +105,6 @@ fun FormWithNoneTypeQuestionComponent(
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyListState = rememberLazyListState()
     val innerGridState: LazyGridState = rememberLazyGridState()
-    val yes = stringResource(id = R.string.option_yes)
-    val no = stringResource(id = R.string.option_no)
     val optionList = remember {
         showQuestionState.optionItemEntityState.find { it.optionItemEntity?.optionType == QuestionType.FormWithNone.name }?.optionItemEntity?.values
             ?: emptyList()
@@ -113,16 +112,23 @@ fun FormWithNoneTypeQuestionComponent(
 
 
     val isNoneMarked = remember {
-        mutableStateOf(false)
+        mutableStateOf(true)
     }
 
     val isNoneQuestionAnswered = remember {
         mutableStateOf(false)
     }
 
+    LaunchedEffect(key1 = true) {
+        if (noneOptionValue != null) {
+            isNoneMarked.value= noneOptionValue.selectedValue.equals(no)
+        }
+
+
+    }
+
     SideEffect {
         if (noneOptionValue != null) {
-//            isNoneMarked.value = true
             isNoneQuestionAnswered.value = true
         }
 
