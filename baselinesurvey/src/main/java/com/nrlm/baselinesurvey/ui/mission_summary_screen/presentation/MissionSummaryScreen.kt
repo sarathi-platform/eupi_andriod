@@ -60,7 +60,7 @@ fun MissionSummaryScreen(
                     ButtonPositive(
                         buttonTitle = stringResource(R.string.complete) + " " + missionName,
                         isActive = true,
-                        isLeftArrow = true
+                        isLeftArrow = false
 
                     ) {
                         viewModel.onEvent(
