@@ -22,5 +22,5 @@ data class SaveAnswerEventOptionItemDto(
     val optionDesc: String = BLANK_STRING,
     @SerializedName("selectedValueWithIds")
     @Expose
-    val selectedValueWithIds: List<ValuesDto> = emptyList()
+    val selectedValueWithIds: List<ValuesDto> = emptyList(),
 )

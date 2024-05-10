@@ -85,4 +85,12 @@ interface QuestionEntityDao {
 
     @Query("Delete from $QUESTION_TABLE where userId=:userid ")
     fun deleteAllQuestions(userid: String)
+
+    @Query("SELECT `order` from $QUESTION_TABLE where  userId=:userid and surveyId = :surveyId and sectionId = :sectionId and questionId = :questionId")
+    fun getOrderId(
+        userid: String,
+        surveyId: Int,
+        sectionId: Int,
+        questionId: Int
+    ): Int?
 }

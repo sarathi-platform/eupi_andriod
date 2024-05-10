@@ -425,7 +425,7 @@ fun FormResponseCard(
                                     )!!
                                 }?.optionId] ?: BLANK_STRING
 
-                            append("Average Cost: ₹ $avgCost")
+                            append(stringResource(R.string.average_cost, avgCost))
 
                         } else if (formResponseObjectDto.questionTag.toLowerCase().contains(
                                 "key programme".toLowerCase(),
@@ -442,16 +442,32 @@ fun FormResponseCard(
                                     true
                                 )!!
                             }
-                            influenceType =
-                                mOption?.values?.filter {
-                                    formResponseObjectDto.selectedValueId[mOption.optionId]
-                                        ?.contains(it.id) == true
-                                }
-                                    ?.map { it.value }
-                                    ?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
-                                    ?: BLANK_STRING
+                            if (mOption?.display.equals(
+                                    stringResource(R.string.designation_comparision_and_label),
+                                    true,
+                                )
+                            ) {
+                                influenceType =
+                                    formResponseObjectDto.memberDetailsMap[optionItemListWithConditionals.find {
+                                        it.display?.contains(
+                                            stringResource(id = R.string.designation_comparision_and_label),
+                                            ignoreCase = true
+                                        )!!
+                                    }?.optionId] ?: BLANK_STRING
+                                append("${stringResource(R.string.designation_comparision_and_label)}: $influenceType")
 
-                            append("${stringResource(R.string.influence_type_comparision_and_label)}: $influenceType")
+                            } else {
+                                influenceType =
+                                    mOption?.values?.filter {
+                                        formResponseObjectDto.selectedValueId[mOption.optionId]
+                                            ?.contains(it.id) == true
+                                    }
+                                        ?.map { it.value }
+                                        ?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
+                                        ?: BLANK_STRING
+
+                                append("${stringResource(R.string.influence_type_comparision_and_label)}: $influenceType")
+                            }
 
                         } else {
                             append(BLANK_STRING)
