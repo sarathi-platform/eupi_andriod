@@ -203,9 +203,14 @@ fun QuestionScreen(
                     partNumber = if (sectionType.equals(TYPE_EXCLUSION, true)) 1 else 2,
                     viewModel = viewModel
                 )
+                Log.e("TAG", "QuestionScreenIssue: 1" )
+
                 answeredQuestion.value = answerList.size
+                Log.e("TAG", "QuestionScreenIssue: 2" )
+
                 viewModel.findListTypeSelectedAnswer(pagerState.currentPage, didiId)
                 eventToPageChange.value = false
+                Log.e("TAG", "QuestionScreenIssue: 3" )
                 HorizontalPager(
                     state = pagerState,
                     userScrollEnabled = false

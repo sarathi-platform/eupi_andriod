@@ -515,7 +515,7 @@ fun SectionOneSummeryItem(
                         .height(30.dp)
                 )
         }
-            HtmlText(
+            de.charlex.compose.material.HtmlText(
                 text = "${index+1}. ${quesSummery}.",
                 style = TextStyle(
                     color = textColorDark,
@@ -531,7 +531,7 @@ fun SectionOneSummeryItem(
                     .padding(start = 8.dp)
                     .weight(1f)
             )
-            HtmlText(
+            de.charlex.compose.material.HtmlText(
                 text = "${answerValue}",
                 style = TextStyle(
                     color = if (optionValue == 1) greenOnline else redNoAnswer,

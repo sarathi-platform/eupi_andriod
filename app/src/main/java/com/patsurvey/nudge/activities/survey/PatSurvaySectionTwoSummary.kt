@@ -482,7 +482,7 @@ fun SectionTwoSummeryItem(
                 Log.d("TAG", "SectionTwoSummeryItem Num: ${summaryText} ")
             }
             Log.d("TAG", "SectionTwoSummeryItem: ${summaryText} ")
-            HtmlText(
+            de.charlex.compose.material.HtmlText(
                 text = buildAnnotatedString {
                     withStyle(
                         SpanStyle(

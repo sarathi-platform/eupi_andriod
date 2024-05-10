@@ -293,4 +293,5 @@ dependencies {
 
     //FCM
     implementation 'com.google.firebase:firebase-messaging:23.4.0'
+    implementation 'de.charlex.compose.material:material-html-text:2.0.0-beta01'
 }

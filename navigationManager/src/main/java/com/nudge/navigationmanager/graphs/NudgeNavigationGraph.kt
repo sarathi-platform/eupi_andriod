@@ -90,7 +90,7 @@ fun NavController.navigateToQuestionScreen(
     sectionId: Int,
     surveyId: Int
 ) {
-    this.navigate("$BASELINE_QUESTION_SCREEN_ROUTE_NAME/${sectionId}/$didiId/$surveyId")
+    this.navigate("$BASELINE_QUESTION_SCREEN_ROUTE_NAME/${sectionId}/${didiId}/${surveyId}")
 }
 
 sealed class HomeScreens(val route: String) {
@@ -116,7 +116,7 @@ sealed class HomeScreens(val route: String) {
         HomeScreens(route = "$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_QUESTION_NAME.value}}/{${NavigationParams.ARG_SURVEY_ID.value}}/{${NavigationParams.ARG_SECTION_ID.value}}/{${NavigationParams.ARG_QUESTION_ID.value}}/{${NavigationParams.ARG_DIDI_ID.value}}?{${NavigationParams.ARG_FORM_QUESTION_RESPONSE_REFERENCE_ID.value}}")
 
     object BaseLineStartScreen :
-        HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_DIDI_ID.value}}/{${NavigationParams.ARG_SURVEY_ID.value}}")
+        HomeScreens(route = "$BASELINE_START_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_DIDI_ID.value}}/{${NavigationParams.ARG_SURVEY_ID.value}}/{${NavigationParams.ARG_SECTION_ID.value}}")
 
     object SearchScreen :
         HomeScreens(route = "$SEARCH_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_SURVEY_ID.value}}/{${NavigationParams.ARG_DIDI_ID.value}}/{${NavigationParams.ARG_FROM_SCREEN.value}}")

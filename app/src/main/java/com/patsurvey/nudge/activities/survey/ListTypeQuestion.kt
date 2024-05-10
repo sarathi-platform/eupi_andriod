@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,7 +51,7 @@ fun ListTypeQuestion(
     onAnswerSelection: (Int,Int) -> Unit
 ) {
     Column(modifier = modifier) {
-        HtmlText(
+        de.charlex.compose.material.HtmlText(
             modifier = Modifier
                 .border(
                     BorderStroke(1.dp, lightGray2),
@@ -144,7 +145,7 @@ fun OptionCard(
                 Modifier.padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                HtmlText(
+                de.charlex.compose.material.HtmlText(
                     text = buttonTitle,
                     style = TextStyle(
                         color = if(selectedIndex == index) Color.White else Color.Black,
