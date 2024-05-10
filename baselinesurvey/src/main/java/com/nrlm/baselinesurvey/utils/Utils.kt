@@ -352,7 +352,7 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
                 it.values.let { it1 -> valuesList.addAll(it1) }
             }
             else -> {
-                valuesList.add(ValuesDto(id = 0, it?.display ?: BLANK_STRING))
+                valuesList.add(ValuesDto(id = it?.optionId ?: 0, it?.display ?: BLANK_STRING))
             }
         }
     }
@@ -1018,7 +1018,8 @@ fun OptionItemEntity.convertOptionItemEntityToFormResponseEntityForFormWithNone(
         questionId = this.questionId ?: 0,
         optionId = this.optionId ?: 0,
         selectedValue = this.selectedValue ?: BLANK_STRING,
-        referenceId = referenceId
+        referenceId = referenceId,
+        selectedValueId = listOf(selectedValueId)
     )
     return formQuestionResponseEntity
 }
