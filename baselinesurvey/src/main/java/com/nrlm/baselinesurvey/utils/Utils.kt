@@ -3,6 +3,8 @@ package com.nrlm.baselinesurvey.utils
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -1179,6 +1181,7 @@ val tagList: List<TagMappingDto> = listOf(
     TagMappingDto(id = 78, name = "Education"),
     TagMappingDto(id = 79, name = "Marital Status"),
     TagMappingDto(id = 80, name = "Disabled"),
+    TagMappingDto(id = 84, name = "Reason to leave SHG"),
 )
 /*listOf(
 TagMappingDto(id = 1, name = "FoodSecurtiy"),
@@ -1360,4 +1363,39 @@ fun ShowCustomDialog(
         }
     }
 }
+
+fun openShareSheet(fileUriList: ArrayList<Uri>?, title: String, type: String) {
+    if(fileUriList?.isNotEmpty() == true){
+        try {
+
+
+            val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
+            shareIntent.setType(type)
+            shareIntent.putExtra(Intent.EXTRA_TITLE, title)
+            val chooserIntent = Intent.createChooser(shareIntent, title)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
+                val resInfoList: List<ResolveInfo> =
+                    BaselineCore.getAppContext().packageManager
+                        .queryIntentActivities(chooserIntent, PackageManager.MATCH_DEFAULT_ONLY)
+
+                for (resolveInfo in resInfoList) {
+                    val packageName = resolveInfo.activityInfo.packageName
+                    BaselineCore.getAppContext().grantUriPermission(
+                        packageName,
+                        fileUriList[0],
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                }
+            }else{
+                shareIntent.putExtra(Intent.EXTRA_STREAM,fileUriList)
+            }
+            BaselineCore.startExternalApp(chooserIntent)
+        }catch (ex:Exception){
+            BaselineLogger.e("ExportImportViewModel","openShareSheet :${ex.message}",ex)
+        }
+    }
+
+}
+
 
