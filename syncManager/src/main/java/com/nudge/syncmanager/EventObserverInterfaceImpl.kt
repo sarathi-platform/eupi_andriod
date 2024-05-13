@@ -1,6 +1,7 @@
 package com.nudge.syncmanager
 
 import android.content.Context
+import android.util.Log
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.Data
@@ -14,8 +15,10 @@ import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.NetworkSpeed
+import com.nudge.core.json
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.math.log
 
 class EventObserverInterfaceImpl @Inject constructor(
     val eventsDao: EventsDao,

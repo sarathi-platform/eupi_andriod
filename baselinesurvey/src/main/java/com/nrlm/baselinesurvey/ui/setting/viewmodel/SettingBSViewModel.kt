@@ -43,6 +43,7 @@ import com.nudge.core.getFirstName
 import com.nudge.core.json
 import com.nudge.core.datamodel.BaseLineQnATableCSV
 import com.nudge.core.datamodel.HamletQnATableCSV
+import com.nudge.core.enums.NetworkSpeed
 import com.nudge.core.exportAllOldImages
 import com.nudge.core.exportcsv.CsvConfig
 import com.nudge.core.exportcsv.ExportService
@@ -205,4 +206,14 @@ class SettingBSViewModel @Inject constructor(
    fun getUserMobileNumber():String{
         return settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
     }
+    fun syncAllPending(networkSpeed: NetworkSpeed) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                BaselineCore.getEventObserver()?.syncPendingEvent(BaselineCore.getAppContext(), networkSpeed)
+            }catch (ex:Exception){
+                BaselineLogger.d("SettingBSViewModel"," syncAllPending: ${ex.printStackTrace()} ")
+            }
+        }
+    }
+
 }

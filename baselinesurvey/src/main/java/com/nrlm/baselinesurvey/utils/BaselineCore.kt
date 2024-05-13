@@ -15,10 +15,13 @@ import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.download.AndroidDownloader
 import com.nrlm.baselinesurvey.download.utils.FileType
 import com.nudge.communicationModule.EventObserverInterface
+import com.nudge.syncmanager.SyncManager
 
 object BaselineCore {
 
     private val TAG = BaselineCore::class.java.simpleName
+
+    private var eventObserver: EventObserverInterface? = null
 
     private lateinit var connectionLiveData: ConnectionMonitor
     private val validNetworksList: MutableSet<Network> = HashSet()
@@ -52,11 +55,24 @@ object BaselineCore {
     fun setIsEditAllowedForNoneMarkedQuestionFlag(flag: Boolean) {
         isEditAllowedForNoneMarkedQuestion = flag
     }
+    fun getEventObserver(): EventObserverInterface? {
+        return eventObserver
+    }
+
+    fun removeEventObserver(syncManager: SyncManager) {
+        eventObserver = null
+        syncManager.removeObserver()
+    }
 
 
-    fun init() {
+    fun init(syncManager: SyncManager) {
         downloader = AndroidDownloader(BaselineApplication.applicationContext())
         connectionLiveData = ConnectionMonitor(BaselineApplication.applicationContext())
+        eventObserver = syncManager.initEventObserver()
+    }
+
+    fun getNetworkInfo(){
+
     }
 
     fun addCommunicationObserver(observer: EventObserverInterface, name: String) {
@@ -156,8 +172,8 @@ object BaselineCore {
         }
     }
 
-    fun cleanUp() {
-
+    fun cleanUp(syncManager: SyncManager) {
+        removeEventObserver(syncManager)
     }
 
 }

@@ -22,7 +22,9 @@ import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSetting
 import com.nrlm.baselinesurvey.ui.setting.domain.SettingTagEnum
 import com.nrlm.baselinesurvey.ui.setting.viewmodel.SettingBSViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nrlm.baselinesurvey.utils.ConnectionMonitor
 import com.nrlm.baselinesurvey.utils.ShowCustomDialog
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nudge.core.model.SettingOptionModel
@@ -64,21 +66,20 @@ fun SettingBSScreen(
                 SettingTagEnum.EXPORT_BACKUP_FILE.name
             )
         )
-
-        /*list.add(
-            SettingOptionModel(
-                4,
-                context.getString(R.string.export_file),
-                BLANK_STRING,
-                SettingTagEnum.EXPORT_FILE.name
-            )
-        )*/
         list.add(
             SettingOptionModel(
                 5,
                 context.getString(R.string.backup_recovery),
                 BLANK_STRING,
                 SettingTagEnum.BACKUP_RECOVERY.name
+            )
+        )
+        list.add(
+            SettingOptionModel(
+                6,
+                context.getString(R.string.sync_up),
+                BLANK_STRING,
+                SettingTagEnum.SYNC_DATA_NOW.name
             )
         )
         viewModel._optionList.value = list
@@ -146,6 +147,10 @@ fun SettingBSScreen(
 
                 SettingTagEnum.BACKUP_RECOVERY.name -> {
                     navController.navigate(SettingBSScreens.BACKUP_RECOVERY_SCREEN.route)
+                }
+
+                SettingTagEnum.SYNC_DATA_NOW.name ->{
+                    viewModel.syncAllPending(ConnectionMonitor.DoesNetworkHaveInternet.getNetworkStrength())
                 }
 
             }

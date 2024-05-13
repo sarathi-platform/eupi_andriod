@@ -53,14 +53,12 @@ class SyncUploadWorker @AssistedInject constructor(
 //                    }
                 DeviceBandwidthSampler.getInstance().stopSampling()
                 Result.success()
-
-                throw SocketTimeoutException()
-
                 // do long running work
-            } catch (ex: SocketTimeoutException) {
+            } catch (ex: Exception) {
                 DeviceBandwidthSampler.getInstance().stopSampling()
-
-                Result.retry()
+                if(runAttemptCount<3)
+                 Result.retry()
+                else Result.failure()
             }
         } else {
             Result.failure()

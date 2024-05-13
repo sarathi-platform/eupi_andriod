@@ -129,6 +129,7 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.1.2")
     implementation "androidx.compose.runtime:runtime-livedata:1.4.3"
     implementation project(":core")
+    implementation project(':internetSpeedChecker')
 
 //    implementation project(path: ':baselinesurvey')
     testImplementation 'junit:junit:4.13.2'
@@ -200,6 +201,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics")
+    implementation 'androidx.hilt:hilt-work:1.0.0'
+
 
 
 }
