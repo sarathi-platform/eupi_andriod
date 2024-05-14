@@ -52,7 +52,13 @@ import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_NAME
+import com.nrlm.baselinesurvey.DELIMITER_TIME
+import com.nrlm.baselinesurvey.DELIMITER_YEAR
+import com.nrlm.baselinesurvey.HOURS
+import com.nrlm.baselinesurvey.MINUTE
+import com.nrlm.baselinesurvey.MONTHS
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.YEAR
 import com.nrlm.baselinesurvey.ZERO_RESULT
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
@@ -779,7 +785,26 @@ fun <T> getParentEntityMapForEvent(eventItem: T, eventName: EventName): Map<Stri
         }
     }
 }
-
+fun formatHrsYearEventData(selectedValue: String): String {
+    var formattedResponse = BLANK_STRING
+    var response: List<String>
+    if (selectedValue.contains(DELIMITER_YEAR)) {
+        response = selectedValue.split(DELIMITER_YEAR)
+        if (response.size == 1) {
+            formattedResponse = response.first() + YEAR
+        } else if (response.size > 1) {
+            formattedResponse = formattedResponse + response[1] + MONTHS
+        }
+    } else if (selectedValue.contains(DELIMITER_TIME)) {
+        response = selectedValue.split(DELIMITER_TIME)
+        if (response.size == 1) {
+            formattedResponse = response.first() + HOURS
+        } else if (response.size > 1) {
+            formattedResponse = formattedResponse + response[1] + MINUTE
+        }
+    }
+    return formattedResponse
+}
 fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType?): List<SaveAnswerEventOptionItemDto> {
     val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
 
@@ -818,7 +843,7 @@ fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType?):
             val mSaveAnswerEventOptionItemDto =
                 SaveAnswerEventOptionItemDto(
                     this.optionId ?: 0,
-                    this.selectedValue,
+                    formatHrsYearEventData(this.selectedValue ?: BLANK_STRING),
                     tag = this.optionTag
                 )
             saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
@@ -897,7 +922,7 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: Question
                 val mSaveAnswerEventOptionItemDto =
                     SaveAnswerEventOptionItemDto(
                         it.optionId ?: 0,
-                        it.selectedValue,
+                        formatHrsYearEventData(it.selectedValue ?: BLANK_STRING),
                         tag = it.optionTag
                     )
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
