@@ -7,6 +7,6 @@ import javax.inject.Inject
 class GetMissionRepositoryImpl @Inject constructor(val missionDao: MissionDao) : BaseRepository(),
     IMissionRepository {
 
-    override suspend fun getAllActiveMission(): List<MissionEntity> = missionDao.getMissions("")
+    override suspend fun getAllActiveMission(): List<MissionEntity> = missionDao.getMissions("99")
 
 }
