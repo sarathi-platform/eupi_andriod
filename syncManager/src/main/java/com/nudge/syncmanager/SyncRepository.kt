@@ -8,6 +8,7 @@ import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.request.EventRequest
 import com.nudge.core.model.request.toEventRequest
 import com.nudge.core.model.response.SyncEventResponse
+import com.nudge.syncmanager.network.SyncApiService
 import javax.inject.Inject
 
 class SyncApiRepository @Inject constructor(

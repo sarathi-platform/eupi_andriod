@@ -1,4 +1,4 @@
-package com.nudge.syncmanager
+package com.nudge.syncmanager.utils
 
 import java.text.SimpleDateFormat
 import java.util.Date

@@ -1,9 +1,9 @@
 package com.nudge.syncmanager.di
 
 import com.nudge.core.Core
-import com.nudge.syncmanager.FirebaseRepository
-import com.nudge.syncmanager.FirebaseRepositoryImpl
-import com.nudge.syncmanager.SyncApiService
+import com.nudge.syncmanager.firebase.FirebaseRepository
+import com.nudge.syncmanager.firebase.FirebaseRepositoryImpl
+import com.nudge.syncmanager.network.SyncApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

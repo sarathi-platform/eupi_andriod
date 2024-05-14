@@ -1,4 +1,4 @@
-package com.nudge.syncmanager
+package com.nudge.syncmanager.utils
 
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"
 

@@ -1,4 +1,4 @@
-package com.nudge.syncmanager
+package com.nudge.syncmanager.workers
 
 import android.content.Context
 import android.util.Log
@@ -8,9 +8,9 @@ import androidx.work.WorkerParameters
 import com.facebook.network.connectionclass.ConnectionClassManager
 import com.facebook.network.connectionclass.DeviceBandwidthSampler
 import com.nudge.core.getBatchSize
+import com.nudge.syncmanager.SyncApiRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import java.net.SocketTimeoutException
 
 @HiltWorker
 class SyncUploadWorker @AssistedInject constructor(

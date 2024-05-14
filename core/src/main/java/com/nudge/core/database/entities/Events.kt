@@ -62,8 +62,13 @@ data class Events (
     val metadata: String?,
 
     @ColumnInfo("payloadLocalId")
-    val payloadLocalId: String?
+    val payloadLocalId: String?,
 
+    @ColumnInfo("request_id")
+    val requestId:String?= BLANK_STRING,
+
+    @ColumnInfo("eventId")
+    val eventId:String?= BLANK_STRING,
 ) {
     companion object {
         fun getEmptyEvent(): Events {

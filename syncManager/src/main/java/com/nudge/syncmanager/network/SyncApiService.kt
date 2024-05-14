@@ -1,4 +1,4 @@
-package com.nudge.syncmanager
+package com.nudge.syncmanager.network
 
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.request.EventRequest

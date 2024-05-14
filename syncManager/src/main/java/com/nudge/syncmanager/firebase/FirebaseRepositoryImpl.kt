@@ -1,4 +1,4 @@
-package com.nudge.syncmanager
+package com.nudge.syncmanager.firebase
 
 import com.nudge.core.Core
 import com.nudge.core.EVENTS_BACKUP_COLLECTION
