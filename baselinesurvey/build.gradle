@@ -9,7 +9,7 @@ plugins {
     id 'com.google.firebase.crashlytics'
 }
 
-def version = "2.0.10"
+def version = "2.0.11"
 android {
     namespace 'com.nrlm.baselinesurvey'
     compileSdk 34
@@ -18,7 +18,7 @@ android {
         applicationId "com.nrlm.sarathi"
         minSdk 23
         targetSdk 33
-        versionCode 14
+        versionCode 15
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
