@@ -9,8 +9,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 24
-
+        minSdk = 23
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -41,18 +40,21 @@ android {
 
 dependencies {
     implementation("androidx.activity:activity:1.8.0")
-    val composeVersion = "1.6.7"
+    val composeVersion = "1.4.1"
     val retrofit = "2.9.0"
     val roomVersion = "2.5.2"
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.9.0")
     implementation("androidx.compose.ui:ui:$composeVersion")
     implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
-    implementation("androidx.compose.material:material:1.6.7")
+    implementation("androidx.compose.material:material:1.3.1")
     implementation("androidx.hilt:hilt-work:1.0.0")
     implementation("com.google.code.gson:gson:$retrofit")
     implementation("com.squareup.retrofit2:retrofit:$retrofit")
     implementation("com.squareup.retrofit2:converter-gson:$retrofit")
+    //Compose Navigation
+    implementation("androidx.navigation:navigation-compose:2.5.3")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     //Room
     implementation("androidx.room:room-runtime:$roomVersion")

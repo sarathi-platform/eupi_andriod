@@ -109,4 +109,10 @@ object DatabaseModule {
         Room.databaseBuilder(context, NudgeGrantDatabase::class.java, NUDGE_GRANT_DATABASE)
             .fallbackToDestructiveMigration()
             .build()
+
+    @Provides
+    @Singleton
+    fun provideMissionDao(db: NudgeGrantDatabase) = db.missionDao()
+
+
 }
