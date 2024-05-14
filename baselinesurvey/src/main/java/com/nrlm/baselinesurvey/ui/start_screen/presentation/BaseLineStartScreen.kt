@@ -234,7 +234,7 @@ fun BaseLineStartScreen(
                     onResult = { success ->
                         hasImage = success
                         BaselineLogger.d(
-                            "PatDidiSummaryScreen",
+                            "BaseLineStartScreen",
                             "rememberLauncherForActivityResult -> onResult = success: $success"
                         )
                         if (success) {

@@ -110,9 +110,6 @@ class QuestionScreenViewModel @Inject constructor(
                     }
                     questionList?.let {
                         _questionList.value = it
-                        Log.d("TAG", "getAllQuestionsAnswers Step 1: ${questionList.json()}")
-                        Log.d("TAG", "QuestionScreenOpen Step 1 Data: ")
-
                     }
                     localAnswerList?.let {
                         _answerList.value = it
