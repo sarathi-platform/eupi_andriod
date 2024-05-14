@@ -467,5 +467,6 @@
     <string name="read_more">Read More</string>
     <string name="content">Content</string>
     <string name="average_cost">গড় ভ্ৰমণ ব্যয: ₹ %1$s</string>
+    <string name="only_one_entry_can_be_added">কেৱল এটা প্ৰবিষ্টি যোগ কৰিব পাৰি</string>
 
 </resources>
