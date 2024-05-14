@@ -3,9 +3,11 @@ package com.patsurvey.nudge.di
 import android.content.Context
 import androidx.room.Room
 import com.nudge.core.NUDGE_DATABASE
+import com.nudge.core.NUDGE_GRANT_DATABASE
 import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.database.NudgeDatabase
+import com.patsurvey.nudge.database.NudgeGrantDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -101,4 +103,10 @@ object DatabaseModule {
     @Singleton
     fun providesEventDependencyDao(syncDb: SyncManagerDatabase) = syncDb.eventsDependencyDao()
 
+    @Provides
+    @Singleton
+    fun provideGrantDatabase(@ApplicationContext context: Context) =
+        Room.databaseBuilder(context, NudgeGrantDatabase::class.java, NUDGE_GRANT_DATABASE)
+            .fallbackToDestructiveMigration()
+            .build()
 }
