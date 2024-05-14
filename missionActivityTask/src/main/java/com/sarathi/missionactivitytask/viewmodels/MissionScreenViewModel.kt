@@ -1,6 +1,9 @@
 package com.sarathi.missionactivitytask.viewmodels
 
+import android.util.Log
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sarathi.missionactivitytask.domain.usecases.GetMissionsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -8,14 +11,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MissionScreenViewModel @Inject constructor(
-) : BaseViewModel() {
+    private val missionsUseCase: GetMissionsUseCase
+) : ViewModel() {
 
 
-    init {
+    fun getMission() {
 
         viewModelScope.launch(Dispatchers.IO) {
 
-//            Log.d("Mission", missionList.first().missionName)
+            val missionList = missionsUseCase.getAllMission()
+            Log.d("Mission", missionList.first().missionName)
 
         }
 

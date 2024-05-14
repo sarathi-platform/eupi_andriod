@@ -2,7 +2,6 @@ package com.patsurvey.nudge.activities.ui.login
 
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.CountDownTimer
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -57,11 +56,13 @@ import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
+import com.patsurvey.nudge.navigation.AuthScreen
+import com.patsurvey.nudge.navigation.home.LogoutScreens
+import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.OTP_LENGTH
 import com.patsurvey.nudge.utils.OTP_RESEND_DURATION
 import com.patsurvey.nudge.utils.SEC_30_STRING
-import com.sarathi.missionactivitytask.MatActivity
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -243,22 +244,22 @@ fun OtpVerificationScreen(
                     viewModel.validateOtp { success, message ->
                         if (success){
 
-                            context.startActivity(Intent(context, MatActivity::class.java))
-//                            if(navController.graph.route?.equals(Graph.HOME,true) == true){
-//                                navController.navigate(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route){
-//                                    launchSingleTop=true
-//                                    popUpTo(AuthScreen.START_SCREEN.route){
-//                                        inclusive=true
-//                                    }
-//                                }
-//                            }else{
-//                                navController.navigate(route = AuthScreen.VILLAGE_SELECTION_SCREEN.route){
-//                                    launchSingleTop=true
-//                                    popUpTo(AuthScreen.START_SCREEN.route){
-//                                        inclusive=true
-//                                    }
-//                                }
-//                            }
+//                            context.startActivity(Intent(context, MatActivity::class.java))
+                            if (navController.graph.route?.equals(Graph.HOME, true) == true) {
+                                navController.navigate(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route) {
+                                    launchSingleTop = true
+                                    popUpTo(AuthScreen.START_SCREEN.route) {
+                                        inclusive = true
+                                    }
+                                }
+                            } else {
+                                navController.navigate(route = AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
+                                    launchSingleTop = true
+                                    popUpTo(AuthScreen.START_SCREEN.route) {
+                                        inclusive = true
+                                    }
+                                }
+                            }
                             RetryHelper.autoReadOtp.value = ""
                         }
                         else {
