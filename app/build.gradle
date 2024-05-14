@@ -15,7 +15,7 @@ android {
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.nrlm.sarathi_selection"
+        applicationId "com.nrlm.sarathi"
         minSdk 23
         targetSdk 33
         versionCode 8
@@ -286,6 +286,7 @@ dependencies {
     implementation (project(":core"))
     implementation(project(":internetSpeedChecker"))
     implementation(project(":CommunicationModule"))
+    implementation(project(":missionActivityTask"))
     implementation 'androidx.work:work-runtime-ktx:2.7.1'
     kapt("androidx.hilt:hilt-compiler:1.0.0")
 
