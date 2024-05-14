@@ -1,5 +1,6 @@
 package com.nudge.core
 
+import android.app.Activity
 import android.content.Context
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -8,7 +9,7 @@ import com.google.firebase.ktx.Firebase
 class Core {
 
     private var db: FirebaseFirestore? = null
-
+    private var mApplicationContext:Activity ?=null
     fun init(context: Context) {
         initializeFirebaseDb()
     }
@@ -25,6 +26,15 @@ class Core {
         return db
 
     }
+
+    fun setMainActivityContext(context: Activity){
+        mApplicationContext=context
+    }
+    fun getMainActivityContext(): Activity? {
+        return mApplicationContext
+    }
+
+
 
 
 }

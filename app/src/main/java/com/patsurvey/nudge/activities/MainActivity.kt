@@ -33,6 +33,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.get
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
+import com.nudge.core.Core
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
@@ -83,6 +84,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
             setTheme(R.style.Android_starter_project_blow_lollipop)
         }
         super.onCreate(savedInstanceState)
+        Core().setMainActivityContext(this)
         getSyncEnabled()
         setContent {
             Nudge_Theme {

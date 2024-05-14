@@ -1,7 +1,7 @@
 package com.nrlm.baselinesurvey.ui.language.domain.repository
 
+import android.content.Context
 import com.nrlm.baselinesurvey.LANGUAGE_OPEN_FROM_SETTING
-import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.VillageListDao
@@ -35,9 +35,8 @@ class LanguageScreenRepositoryImpl @Inject constructor(
         prefBSRepo.saveAppLanguageId(id)
     }
 
-    override fun saveSelectedLanguageCode(mainActivity: MainActivity, languageCode: String) {
+    override fun saveSelectedLanguageCode(mainActivity: Context, languageCode: String) {
         prefBSRepo.saveAppLanguage(languageCode)
-        mainActivity.setLanguage(languageCode)
     }
 
     override fun getLanguageScreenOpenFrom(): Boolean {

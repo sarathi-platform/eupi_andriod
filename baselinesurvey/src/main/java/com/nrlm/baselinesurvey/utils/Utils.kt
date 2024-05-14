@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.utils
 
+import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -52,7 +53,6 @@ import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_NAME
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ZERO_RESULT
-import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
@@ -82,6 +82,7 @@ import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component.Op
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.greyBorder
+import com.nudge.core.Core
 import com.nudge.core.enums.EventName
 import java.io.File
 import java.text.SimpleDateFormat
@@ -167,7 +168,7 @@ fun stringToInt(string: String):Int{
     return intValue
 }
 
-fun setKeyboardToPan(context: MainActivity) {
+fun setKeyboardToPan(context: Activity) {
     context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
 }
 
@@ -175,7 +176,7 @@ fun getUniqueIdForEntity(): String {
     return UUID.randomUUID().toString().replace("-", "") + "|" + System.currentTimeMillis()
 }
 
-fun setKeyboardToReadjust(context: MainActivity) {
+fun setKeyboardToReadjust(context: Activity) {
     context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 }
 
@@ -221,7 +222,7 @@ fun openSettings(context: Context) {
         addCategory(Intent.CATEGORY_DEFAULT)
     }
     appSettingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    (context as MainActivity).startActivity(appSettingsIntent)
+    Core().getMainActivityContext()?.startActivity(appSettingsIntent)
 }
 
 fun List<SectionEntity>.getSectionIndexById(sectionId: Int): Int {

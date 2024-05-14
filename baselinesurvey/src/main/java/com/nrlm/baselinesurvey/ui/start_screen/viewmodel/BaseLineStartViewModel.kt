@@ -16,7 +16,6 @@ import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
-import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
@@ -125,7 +124,7 @@ class BaseLineStartViewModel @Inject constructor(
                 photoUri.value = tempUri
                 handleImageCapture(
                     photoPath = imagePath,
-                    context = (event.context as MainActivity),
+                    context = event.context,
                     didiEntity.value,
                 )
             }

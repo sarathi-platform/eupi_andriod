@@ -77,6 +77,7 @@ import com.nrlm.baselinesurvey.utils.openSettings
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.uriFromFile
+import com.nudge.core.Core
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 
@@ -239,9 +240,11 @@ fun BaseLineStartScreen(
                         )
                         if (success) {
                             baseLineStartViewModel.onEvent(
-                                StartSurveyScreenEvents.SaveImagePathForSurveyee(
-                                    localContext
-                                )
+                                Core().getMainActivityContext()?.let { it1 ->
+                                    StartSurveyScreenEvents.SaveImagePathForSurveyee(
+                                        it1
+                                    )
+                                }
                             )
                         } else {
                             baseLineStartViewModel.shouldShowPhoto.value =

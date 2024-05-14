@@ -43,7 +43,6 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.ONE_SECOND
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.SarathiLogoTextViewComponent
 import com.nrlm.baselinesurvey.ui.language.viewModel.LanguageScreenViewModel
@@ -177,15 +176,15 @@ fun LanguageScreenComponent(
                                 )
                             )
                         }
-                        if (viewModel.isLanguageVillageAvailable.value) {
-                            viewModel.onEvent(LanguageSelectionEvent.ChangeAppLanguage((context as MainActivity),
-                                languagesState.languageList[languagesState.selectedLanguageId].langCode ?: DEFAULT_LANGUAGE_CODE
-                            ))
-                        } else {
-                            viewModel.onEvent(LanguageSelectionEvent.ChangeAppLanguage((context as MainActivity),
-                                DEFAULT_LANGUAGE_CODE
-                            ))
-                        }
+//                        if (viewModel.isLanguageVillageAvailable.value) {
+////                            viewModel.onEvent(LanguageSelectionEvent.ChangeAppLanguage((context as MainActivity),
+////                                languagesState.languageList[languagesState.selectedLanguageId].langCode ?: DEFAULT_LANGUAGE_CODE
+////                            ))
+//                        } else {
+////                            viewModel.onEvent(LanguageSelectionEvent.ChangeAppLanguage((context as MainActivity),
+////                                DEFAULT_LANGUAGE_CODE
+////                            ))
+//                        }
                     }
                     if(viewModel.getLanguageScreenOpenFrom()){
                         navController.popBackStack()

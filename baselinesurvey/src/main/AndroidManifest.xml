@@ -20,13 +20,6 @@
 
 
     <application>
-        <activity
-            android:name=".activity.MainActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.Android_starter_project">
-        </activity>
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

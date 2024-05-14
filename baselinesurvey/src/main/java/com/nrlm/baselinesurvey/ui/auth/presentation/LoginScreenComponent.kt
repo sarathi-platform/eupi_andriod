@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.MOBILE_NUMBER_LENGTH
-import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.auth.viewmodel.LoginScreenViewModel
 import com.nrlm.baselinesurvey.ui.common_components.CustomSnackBarShow
@@ -69,11 +68,9 @@ fun LoginScreenComponent(
 
     val loaderState = viewModel.loaderState.value
 
-    val activity = context as MainActivity
-
     val focusManager = LocalFocusManager.current
 
-    setKeyboardToReadjust(activity)
+//    setKeyboardToReadjust(activity)
     val networkErrorMessage = viewModel.networkErrorMessage.value
 
     BackHandler {
