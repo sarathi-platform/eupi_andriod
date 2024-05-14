@@ -785,25 +785,36 @@ fun <T> getParentEntityMapForEvent(eventItem: T, eventName: EventName): Map<Stri
         }
     }
 }
+fun String.evaluateValue(): Boolean {
+    return this.isBlank() || this == "00" || this == "0"
+}
 fun formatHrsYearEventData(selectedValue: String): String {
-    var formattedResponse = BLANK_STRING
-    var response: List<String>
+    val response: List<String>
     if (selectedValue.contains(DELIMITER_YEAR)) {
         response = selectedValue.split(DELIMITER_YEAR)
-        if (response.size == 1) {
-            formattedResponse = response.first() + YEAR
-        } else if (response.size > 1) {
-            formattedResponse = formattedResponse + response[1] + MONTHS
-        }
+        val evaluateYearVal: String =
+            if (response.first().evaluateValue()) {
+                "${response[1]} $MONTHS"
+            } else if (response[1].evaluateValue()) {
+                "${response.first()} $YEAR"
+            } else {
+                "${response.first()} $YEAR ${response[1]} $MONTHS"
+            }
+        return evaluateYearVal
     } else if (selectedValue.contains(DELIMITER_TIME)) {
         response = selectedValue.split(DELIMITER_TIME)
-        if (response.size == 1) {
-            formattedResponse = response.first() + HOURS
-        } else if (response.size > 1) {
-            formattedResponse = formattedResponse + response[1] + MINUTE
-        }
+        val evaluateTimeVal: String =
+            if (response.first().evaluateValue()
+            ) {
+                "${response[1]} $MINUTE"
+            } else if (response[1].evaluateValue()) {
+                "${response.first()} $HOURS"
+            } else {
+                "${response.first()} $HOURS ${response[1]} $MINUTE"
+            }
+        return evaluateTimeVal
     }
-    return formattedResponse
+    return selectedValue
 }
 fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType?): List<SaveAnswerEventOptionItemDto> {
     val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
