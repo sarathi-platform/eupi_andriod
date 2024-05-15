@@ -42,6 +42,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.compose.material3:material3-android:1.2.1")
     val retrofit = "2.9.0"
     val okhttp3 = "4.9.0"
     val compose_version = "1.4.1"
@@ -93,5 +94,7 @@ dependencies {
 
     //CSV Export
     implementation("com.opencsv:opencsv:5.3")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+
 
 }

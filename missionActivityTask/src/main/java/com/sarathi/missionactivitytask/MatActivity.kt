@@ -4,8 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import com.sarathi.missionactivitytask.viewmodels.MissionScreenViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -15,6 +13,9 @@ import com.sarathi.missionactivitytask.ui.basic.mission.BasicActivityCard
 import com.sarathi.missionactivitytask.ui.theme.The_nudgeTheme
 import com.sarathi.missionactivitytask.ui.theme.white
 import com.sarathi.missionactivitytask.ui.utils.StatusEnum
+import com.sarathi.missionactivitytask.viewmodels.MissionScreenViewModel
+import dagger.hilt.android.AndroidEntryPoint
+
 @AndroidEntryPoint
 class MatActivity : ComponentActivity() {
     private val mViewModel: MissionScreenViewModel by viewModels()

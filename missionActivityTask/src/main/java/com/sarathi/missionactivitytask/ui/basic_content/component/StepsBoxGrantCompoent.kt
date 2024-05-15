@@ -33,20 +33,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.ui.common_components.IconButtonForward
-import com.nrlm.baselinesurvey.ui.theme.black100Percent
-import com.nrlm.baselinesurvey.ui.theme.greenLight
-import com.nrlm.baselinesurvey.ui.theme.greenOnline
-import com.nrlm.baselinesurvey.ui.theme.greyBorder
-import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
-import com.nrlm.baselinesurvey.ui.theme.smallTextStyleMediumWeight2
-import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
-import com.nrlm.baselinesurvey.ui.theme.stepIconCompleted
-import com.nrlm.baselinesurvey.ui.theme.stepIconEnableColor
-import com.nrlm.baselinesurvey.ui.theme.textColorDark
-import com.nrlm.baselinesurvey.ui.theme.trackColor
-import com.nrlm.baselinesurvey.ui.theme.white
+import com.sarathi.missionactivitytask.R
+import com.sarathi.missionactivitytask.ui.theme.black100Percent
+import com.sarathi.missionactivitytask.ui.theme.greenLight
+import com.sarathi.missionactivitytask.ui.theme.greenOnline
+import com.sarathi.missionactivitytask.ui.theme.greyBorderColor
+import com.sarathi.missionactivitytask.ui.theme.largeTextStyle
+import com.sarathi.missionactivitytask.ui.theme.smallTextStyleMediumWeight2
+import com.sarathi.missionactivitytask.ui.theme.smallerTextStyleNormalWeight
+import com.sarathi.missionactivitytask.ui.theme.stepIconCompleted
+import com.sarathi.missionactivitytask.ui.theme.stepIconEnableColor
+import com.sarathi.missionactivitytask.ui.theme.textColorDark
+import com.sarathi.missionactivitytask.ui.theme.trackColor
+import com.sarathi.missionactivitytask.ui.theme.white
+
 
 @Composable
 fun StepsBoxGrantComponent(
@@ -87,7 +87,7 @@ fun StepsBoxGrantComponent(
                 .clip(RoundedCornerShape(6.dp))
                 .border(
                     width = 1.dp,
-                    color = if (isCompleted) greenOnline else greyBorder,
+                    color = if (isCompleted) greenOnline else greyBorderColor,
                     shape = RoundedCornerShape(6.dp)
                 )
                 .background(if (isCompleted) greenLight else white)
@@ -176,17 +176,17 @@ fun StepsBoxGrantComponent(
                     }
                 }
 
-                IconButtonForward(
-                    modifier = Modifier
-                        .constrainAs(buttonContainer) {
-                            bottom.linkTo(textContainer.bottom)
-                            top.linkTo(textContainer.top)
-                            end.linkTo(parent.end)
-                        }
-                        .size(40.dp)
-                ) {
-                    onclick(index)
-                }
+//                IconButtonForward(
+//                    modifier = Modifier
+//                        .constrainAs(buttonContainer) {
+//                            bottom.linkTo(textContainer.bottom)
+//                            top.linkTo(textContainer.top)
+//                            end.linkTo(parent.end)
+//                        }
+//                        .size(40.dp)
+//                ) {
+//                    onclick(index)
+//                }
 
             }
         }
@@ -214,7 +214,7 @@ fun StepsBoxGrantComponent(
                     .clip(CircleShape)
                     .border(
                         width = 1.dp,
-                        color = greyBorder,
+                        color = greyBorderColor,
                         shape = CircleShape
                     )
                     .background(Color.White, shape = CircleShape)
@@ -236,7 +236,7 @@ fun StepsBoxGrantComponent(
         }
         if (stepNo < 5) {
             Divider(
-                color = greyBorder,
+                color = greyBorderColor,
                 modifier = Modifier
                     .height(8.dp)  //fill the max height
                     .width(1.dp)
@@ -248,7 +248,7 @@ fun StepsBoxGrantComponent(
             )
 
             Divider(
-                color = greyBorder,
+                color = greyBorderColor,
                 modifier = Modifier
                     .height(8.dp)  //fill the max height
                     .width(1.dp)

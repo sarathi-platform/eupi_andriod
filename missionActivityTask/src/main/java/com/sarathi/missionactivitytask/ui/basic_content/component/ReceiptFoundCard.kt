@@ -26,18 +26,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.ui.theme.blueDark
-import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
-import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
-import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
-import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
-import com.nrlm.baselinesurvey.ui.theme.smallTextStyleMediumWeight
-import com.nrlm.baselinesurvey.ui.theme.white
+import com.sarathi.missionactivitytask.R
+import com.sarathi.missionactivitytask.ui.theme.blueDark
+import com.sarathi.missionactivitytask.ui.theme.defaultTextStyle
+import com.sarathi.missionactivitytask.ui.theme.dimen_10_dp
+import com.sarathi.missionactivitytask.ui.theme.dimen_18_dp
+import com.sarathi.missionactivitytask.ui.theme.newMediumTextStyle
+import com.sarathi.missionactivitytask.ui.theme.roundedCornerRadiusDefault
+import com.sarathi.missionactivitytask.ui.theme.smallTextStyleMediumWeight
+import com.sarathi.missionactivitytask.ui.theme.white
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
@@ -187,7 +186,7 @@ fun ReceiptFoundCard(
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(
-                            text = stringResource(id = R.string.start).trim(),
+                            text = "Start",
                             style = smallTextStyleMediumWeight,
                             color = white
                         )
