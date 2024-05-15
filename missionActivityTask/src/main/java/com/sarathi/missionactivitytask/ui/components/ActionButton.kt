@@ -3,10 +3,10 @@ package com.sarathi.missionactivitytask.ui.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +32,7 @@ fun PrimaryButton(
             onClick = onClick,
             shape = RoundedCornerShape(roundedCornerRadiusDefault),
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = blueDark,
+                containerColor = blueDark,
                 contentColor = white
             ),
             modifier = modifier
@@ -63,7 +63,7 @@ fun SecondaryButton(
         shape = RoundedCornerShape(roundedCornerRadiusDefault),
         border = BorderStroke(dimen_1_dp, borderGreyLight),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = languageItemActiveBg, contentColor = blueDark
+            containerColor = languageItemActiveBg, contentColor = blueDark
         ),
         modifier = modifier
     ) {
