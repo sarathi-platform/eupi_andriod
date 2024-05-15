@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sarathi.missionactivitytask.ui.theme.blueDark
 import com.sarathi.missionactivitytask.ui.theme.borderGreyLight
+import com.sarathi.missionactivitytask.ui.theme.dimen_1_dp
 import com.sarathi.missionactivitytask.ui.theme.dimen_2_dp
 import com.sarathi.missionactivitytask.ui.theme.languageItemActiveBg
 import com.sarathi.missionactivitytask.ui.theme.roundedCornerRadiusDefault
@@ -26,6 +27,7 @@ fun PrimaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier,
+    isIcon: Boolean = true
 ){
         Button(
             onClick = onClick,
@@ -40,12 +42,14 @@ fun PrimaryButton(
                 text = text,
                 style = smallTextStyleMediumWeight
             )
-            Icon(
-                Icons.Filled.ArrowForward,
-                contentDescription = "Proceed",
-                tint = white,
-                modifier = Modifier.absolutePadding(top = dimen_2_dp, left = dimen_2_dp)
-            )
+            if(isIcon) {
+                Icon(
+                    Icons.Filled.ArrowForward,
+                    contentDescription = "Proceed",
+                    tint = white,
+                    modifier = Modifier.absolutePadding(top = dimen_2_dp, left = dimen_2_dp)
+                )
+            }
     }
 }
 
@@ -58,7 +62,7 @@ fun SecondaryButton(
     Button(
         onClick = onClick,
         shape = RoundedCornerShape(roundedCornerRadiusDefault),
-        border = BorderStroke(1.dp, borderGreyLight),
+        border = BorderStroke(dimen_1_dp, borderGreyLight),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = languageItemActiveBg, contentColor = blueDark
         ),
