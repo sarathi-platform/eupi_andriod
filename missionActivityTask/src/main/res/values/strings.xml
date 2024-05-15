@@ -1,1 +1,4 @@
-<resources></resources>
+<resources>
+    <string name="online_text">Online</string>
+    <string name="offline_text">Offline</string>
+</resources>

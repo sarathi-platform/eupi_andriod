@@ -1,4 +1,4 @@
-package com.sarathi.missionactivitytask.ui.utils
+package com.sarathi.missionactivitytask.utils
 
 import androidx.compose.ui.graphics.Color
 import com.sarathi.missionactivitytask.ui.theme.mediumRankColor

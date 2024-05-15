@@ -41,8 +41,8 @@ import com.sarathi.missionactivitytask.ui.theme.largeTextStyle
 import com.sarathi.missionactivitytask.ui.theme.smallTextStyleMediumWeight2
 import com.sarathi.missionactivitytask.ui.theme.smallerTextStyle
 import com.sarathi.missionactivitytask.ui.theme.weight_100_percent
-import com.sarathi.missionactivitytask.ui.utils.StatusEnum
-import com.sarathi.missionactivitytask.ui.utils.statusColor
+import com.sarathi.missionactivitytask.utils.StatusEnum
+import com.sarathi.missionactivitytask.utils.statusColor
 
 @Composable
 fun BasicActivityCard(

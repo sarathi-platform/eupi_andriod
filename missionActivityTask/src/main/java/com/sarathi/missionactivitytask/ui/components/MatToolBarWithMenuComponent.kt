@@ -97,7 +97,7 @@ fun MatToolBarWithMenuComponent(
 
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewMatToolBarWithMenuComponent() {
     MatToolBarWithMenuComponent(title = "Mission Summary", modifier = Modifier, onBackIconClick = {
