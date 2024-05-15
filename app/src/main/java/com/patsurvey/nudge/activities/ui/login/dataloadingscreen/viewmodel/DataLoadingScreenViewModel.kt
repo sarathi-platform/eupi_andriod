@@ -10,11 +10,15 @@ import com.patsurvey.nudge.activities.ui.login.dataloadingscreen.util.LoaderStat
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class DataLoadingScreenViewModel(val fetchDataUseCase: FetchDataUseCase) : BaseViewModel() {
+@HiltViewModel
+class DataLoadingScreenViewModel @Inject constructor(val fetchDataUseCase: FetchDataUseCase) :
+    BaseViewModel() {
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
     val loaderState: State<LoaderState> get() = _loaderState
     override fun onServerError(error: ErrorModel?) {
