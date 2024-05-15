@@ -23,25 +23,24 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_30_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_5_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_6_dp
-import com.nrlm.baselinesurvey.ui.theme.weight_100_percent
-
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
 import com.sarathi.missionactivitytask.ui.components.LinearProgressBar
 import com.sarathi.missionactivitytask.ui.components.PrimaryButton
 import com.sarathi.missionactivitytask.ui.components.SecondaryButton
 import com.sarathi.missionactivitytask.ui.theme.blueDark
+import com.sarathi.missionactivitytask.ui.theme.dimen_10_dp
+import com.sarathi.missionactivitytask.ui.theme.dimen_16_dp
+import com.sarathi.missionactivitytask.ui.theme.dimen_18_dp
+import com.sarathi.missionactivitytask.ui.theme.dimen_1_dp
+import com.sarathi.missionactivitytask.ui.theme.dimen_24_dp
+import com.sarathi.missionactivitytask.ui.theme.dimen_30_dp
+import com.sarathi.missionactivitytask.ui.theme.dimen_5_dp
+import com.sarathi.missionactivitytask.ui.theme.dimen_6_dp
 import com.sarathi.missionactivitytask.ui.theme.largeTextStyle
 import com.sarathi.missionactivitytask.ui.theme.smallTextStyleMediumWeight2
 import com.sarathi.missionactivitytask.ui.theme.smallerTextStyle
+import com.sarathi.missionactivitytask.ui.theme.weight_100_percent
 import com.sarathi.missionactivitytask.ui.utils.StatusEnum
 import com.sarathi.missionactivitytask.ui.utils.statusColor
 
