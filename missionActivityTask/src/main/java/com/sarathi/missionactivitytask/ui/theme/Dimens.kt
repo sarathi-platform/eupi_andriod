@@ -7,6 +7,7 @@ val roundedCornerRadiusDefault = 6.dp
 val dimen_0_dp = 0.dp
 val dimen_1_dp = 1.dp
 val dimen_2_dp = 2.dp
+val dimen_5_dp = 5.dp
 val dimen_6_dp = 6.dp
 val dimen_7_dp = 7.dp
 val dimen_8_dp = 8.dp

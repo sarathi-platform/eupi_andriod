@@ -108,19 +108,19 @@ fun ContentBody(title: String, prefixIcon: Int, suffixIcon: Int) {
         Icon(
             painter = painterResource(id = prefixIcon),
             contentDescription = null,  // Ideally, provide meaningful descriptions
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(dimen_24_dp)
         )
 
         Text(
             text = title,
             style = largeTextStyle.copy(color = blueDark),
             modifier = Modifier
-                .padding(start = 5.dp)
+                .padding(start = dimen_5_dp)
                 .weight(weight_100_percent),
             overflow = TextOverflow.Ellipsis
         )
 
-        Spacer(modifier = Modifier.width(5.dp))
+        Spacer(modifier = Modifier.width(dimen_5_dp))
 
         Icon(
             painter = painterResource(id = suffixIcon),

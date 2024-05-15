@@ -47,26 +47,6 @@ dependencies {
     val compose_version = "1.4.1"
 
     implementation("androidx.core:core-ktx:1.12.0")
-    val roomVersion = "2.5.2"
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
-    implementation("androidx.activity:activity-compose:1.9.0")
-    implementation("androidx.compose.ui:ui:$composeVersion")
-    implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
-    implementation("androidx.compose.material:material:1.6.7")
-    implementation("androidx.hilt:hilt-work:1.0.0")
-    implementation("com.google.code.gson:gson:$retrofit")
-    implementation("com.squareup.retrofit2:retrofit:$retrofit")
-    implementation("com.squareup.retrofit2:converter-gson:$retrofit")
-    //Material
-    implementation("androidx.compose.material3:material3")
-    implementation ("androidx.compose.material:material:1.6.7")
-    implementation("androidx.compose.material3:material3:1.2.1")
-    //Room
-    implementation("androidx.room:room-runtime:$roomVersion")
-    implementation("androidx.room:room-ktx:$roomVersion")
-    annotationProcessor("androidx.room:room-compiler:$roomVersion")
-    androidTestImplementation("androidx.room:room-testing:$roomVersion")
-    implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     testImplementation("junit:junit:4.13.2")
@@ -104,7 +84,10 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.5.3")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     implementation(project(":internetSpeedChecker"))
-
+    //Material
+    implementation("androidx.compose.material3:material3")
+    implementation ("androidx.compose.material:material:1.6.7")
+    implementation("androidx.compose.material3:material3:1.2.1")
     //Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
 
