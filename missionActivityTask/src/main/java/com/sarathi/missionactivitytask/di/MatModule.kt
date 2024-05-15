@@ -1,5 +1,7 @@
 package com.sarathi.missionactivitytask.di
 
+import com.sarathi.missionactivitytask.domain.repository.GetMissionRepositoryImpl
+import com.sarathi.missionactivitytask.domain.usecases.GetMissionsUseCase
 import com.sarathi.missionactivitytask.network.MatApiService
 import dagger.Module
 import dagger.Provides
@@ -16,4 +18,19 @@ class MatModule {
     fun provideMatApi(retrofit: Retrofit): MatApiService {
         return retrofit.create(MatApiService::class.java)
     }
+
+//    @Singleton
+//    @Provides
+//    fun provideMissionRepository(): IMissionRepository {
+//        return GetMissionRepositoryImpl()
+//    }
+
+
+    @Singleton
+    @Provides
+    fun provideMissionUseCase(missionRepository: GetMissionRepositoryImpl): GetMissionsUseCase {
+        return GetMissionsUseCase(missionRepository)
+    }
+
+
 }

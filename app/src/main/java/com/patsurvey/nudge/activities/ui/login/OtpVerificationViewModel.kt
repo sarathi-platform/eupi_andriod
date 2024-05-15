@@ -6,8 +6,6 @@ import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
-import com.patsurvey.nudge.model.request.LoginRequest
-import com.patsurvey.nudge.model.request.OtpRequest
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.SUCCESS
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OtpVerificationViewModel @Inject constructor(
-    private val otpVerificationRepository: OtpVerificationRepository
+    private val otpVerificationRepository: OtpVerificationRepository,
 ) : BaseViewModel() {
 
     val otpNumber = mutableStateOf("")
@@ -42,6 +40,8 @@ class OtpVerificationViewModel @Inject constructor(
                 showLoader.value = false
                 withContext(Dispatchers.Main) {
                     onOtpResponse(true, response.message)
+
+
                 }
             } else {
                 onError(tag = "OtpVerificationViewModel", "Error : ${response.message}")
