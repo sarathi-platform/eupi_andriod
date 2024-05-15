@@ -716,12 +716,12 @@ class EventWriterHelperImpl @Inject constructor(
                             userId = getBaseLineUserId(),
                             activityId = it.activityId,
                             missionId = missionEntity.missionId,
-                            status = SurveyState.NOT_STARTED.name
+                            status = SurveyState.COMPLETED.name
                         )
                         saveActivityStatusEvent(
                             missionId = it.missionId,
                             activityId = it.activityId,
-                            activityStatus = SurveyState.NOT_STARTED.ordinal
+                            activityStatus = SurveyState.COMPLETED.ordinal
                         )
                     }
                 }
@@ -746,10 +746,10 @@ class EventWriterHelperImpl @Inject constructor(
                 missionEntityDao.updateMissionStatus(
                     userId = getBaseLineUserId(),
                     missionId = missionEntity.missionId,
-                    status = SurveyState.NOT_STARTED.name
+                    status = SurveyState.COMPLETED.name
                 )
                 saveMissionStatusEvent(
-                    missionStatus = SurveyState.NOT_STARTED.ordinal,
+                    missionStatus = SurveyState.COMPLETED.ordinal,
                     missionId = missionEntity.missionId
                 )
             }

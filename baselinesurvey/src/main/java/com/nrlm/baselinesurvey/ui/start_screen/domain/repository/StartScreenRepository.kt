@@ -15,5 +15,7 @@ interface StartScreenRepository {
     fun getStateId(): Int
     fun getUserType(): String?
     fun getBaseLineUserId(): String
+    fun saveTempImagePath(imagePath: String)
+    fun getTempImagePath(): String
 
 }

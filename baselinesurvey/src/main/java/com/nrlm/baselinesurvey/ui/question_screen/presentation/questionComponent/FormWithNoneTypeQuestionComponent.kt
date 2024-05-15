@@ -28,6 +28,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -104,23 +105,31 @@ fun FormWithNoneTypeQuestionComponent(
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyListState = rememberLazyListState()
     val innerGridState: LazyGridState = rememberLazyGridState()
-
+    val no = stringResource(id = R.string.option_no)
     val optionList = remember {
-        listOf("Yes", "No")
+        showQuestionState.optionItemEntityState.find { it.optionItemEntity?.optionType == QuestionType.FormWithNone.name }?.optionItemEntity?.values
+            ?: emptyList()
     }
 
 
     val isNoneMarked = remember {
-        mutableStateOf(false)
+        mutableStateOf(true)
     }
 
     val isNoneQuestionAnswered = remember {
         mutableStateOf(false)
     }
 
+    LaunchedEffect(key1 = true) {
+        if (noneOptionValue != null) {
+            isNoneMarked.value= noneOptionValue.selectedValue.equals(no)
+        }
+
+
+    }
+
     SideEffect {
         if (noneOptionValue != null) {
-//            isNoneMarked.value = true
             isNoneQuestionAnswered.value = true
         }
 
@@ -231,7 +240,7 @@ fun FormWithNoneTypeQuestionComponent(
                                                     } else -1,
                                                     optionsItem = OptionItemEntity.getEmptyOptionItemEntity()
                                                         .copy(
-                                                            display = item,
+                                                            display = item.value,
                                                             sectionId = question?.sectionId
                                                                 ?: 0,
                                                             surveyId = question?.surveyId ?: 0,
@@ -244,13 +253,13 @@ fun FormWithNoneTypeQuestionComponent(
                                                     onOptionSelected = {
 
                                                         if (isEditAllowed) {
-                                                            if (it.display?.equals(optionList.last()) == true) { //when marked NO
+                                                            if (it.display?.equals(optionList.last().value) == true) { //when marked NO
                                                                 isNoneMarked.value = true
                                                                 isNoneQuestionAnswered.value =
                                                                     true
                                                             }
 
-                                                            if (it.display?.equals(optionList.first()) == true) { //when marked Yes
+                                                            if (it.display?.equals(optionList.first().value) == true) { //when marked Yes
                                                                 isNoneMarked.value = false
                                                                 isNoneQuestionAnswered.value =
                                                                     true

@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -51,7 +53,13 @@ import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_NAME
+import com.nrlm.baselinesurvey.DELIMITER_TIME
+import com.nrlm.baselinesurvey.DELIMITER_YEAR
+import com.nrlm.baselinesurvey.HOURS
+import com.nrlm.baselinesurvey.MINUTE
+import com.nrlm.baselinesurvey.MONTHS
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.YEAR
 import com.nrlm.baselinesurvey.ZERO_RESULT
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
@@ -353,7 +361,7 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
                 it.values.let { it1 -> valuesList.addAll(it1) }
             }
             else -> {
-                valuesList.add(ValuesDto(id = 0, it?.display ?: BLANK_STRING))
+                valuesList.add(ValuesDto(id = it?.optionId ?: 0, it?.display ?: BLANK_STRING))
             }
         }
     }
@@ -778,7 +786,37 @@ fun <T> getParentEntityMapForEvent(eventItem: T, eventName: EventName): Map<Stri
         }
     }
 }
-
+fun String.evaluateValue(): Boolean {
+    return this.isBlank() || this == "00" || this == "0"
+}
+fun formatHrsYearEventData(selectedValue: String): String {
+    val response: List<String>
+    if (selectedValue.contains(DELIMITER_YEAR)) {
+        response = selectedValue.split(DELIMITER_YEAR)
+        val evaluateYearVal: String =
+            if (response.first().evaluateValue()) {
+                "${response[1]} $MONTHS"
+            } else if (response[1].evaluateValue()) {
+                "${response.first()} $YEAR"
+            } else {
+                "${response.first()} $YEAR ${response[1]} $MONTHS"
+            }
+        return evaluateYearVal
+    } else if (selectedValue.contains(DELIMITER_TIME)) {
+        response = selectedValue.split(DELIMITER_TIME)
+        val evaluateTimeVal: String =
+            if (response.first().evaluateValue()
+            ) {
+                "${response[1]} $MINUTE"
+            } else if (response[1].evaluateValue()) {
+                "${response.first()} $HOURS"
+            } else {
+                "${response.first()} $HOURS ${response[1]} $MINUTE"
+            }
+        return evaluateTimeVal
+    }
+    return selectedValue
+}
 fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType?): List<SaveAnswerEventOptionItemDto> {
     val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
 
@@ -817,7 +855,7 @@ fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType?):
             val mSaveAnswerEventOptionItemDto =
                 SaveAnswerEventOptionItemDto(
                     this.optionId ?: 0,
-                    this.selectedValue,
+                    formatHrsYearEventData(this.selectedValue ?: BLANK_STRING),
                     tag = this.optionTag
                 )
             saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
@@ -896,7 +934,7 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: Question
                 val mSaveAnswerEventOptionItemDto =
                     SaveAnswerEventOptionItemDto(
                         it.optionId ?: 0,
-                        it.selectedValue,
+                        formatHrsYearEventData(it.selectedValue ?: BLANK_STRING),
                         tag = it.optionTag
                     )
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
@@ -1019,7 +1057,8 @@ fun OptionItemEntity.convertOptionItemEntityToFormResponseEntityForFormWithNone(
         questionId = this.questionId ?: 0,
         optionId = this.optionId ?: 0,
         selectedValue = this.selectedValue ?: BLANK_STRING,
-        referenceId = referenceId
+        referenceId = referenceId,
+        selectedValueId = listOf(selectedValueId)
     )
     return formQuestionResponseEntity
 }
@@ -1179,6 +1218,7 @@ val tagList: List<TagMappingDto> = listOf(
     TagMappingDto(id = 78, name = "Education"),
     TagMappingDto(id = 79, name = "Marital Status"),
     TagMappingDto(id = 80, name = "Disabled"),
+    TagMappingDto(id = 84, name = "Reason to leave SHG"),
 )
 /*listOf(
 TagMappingDto(id = 1, name = "FoodSecurtiy"),
@@ -1360,4 +1400,39 @@ fun ShowCustomDialog(
         }
     }
 }
+
+fun openShareSheet(fileUriList: ArrayList<Uri>?, title: String, type: String) {
+    if(fileUriList?.isNotEmpty() == true){
+        try {
+
+
+            val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
+            shareIntent.setType(type)
+            shareIntent.putExtra(Intent.EXTRA_TITLE, title)
+            val chooserIntent = Intent.createChooser(shareIntent, title)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
+                val resInfoList: List<ResolveInfo> =
+                    BaselineCore.getAppContext().packageManager
+                        .queryIntentActivities(chooserIntent, PackageManager.MATCH_DEFAULT_ONLY)
+
+                for (resolveInfo in resInfoList) {
+                    val packageName = resolveInfo.activityInfo.packageName
+                    BaselineCore.getAppContext().grantUriPermission(
+                        packageName,
+                        fileUriList[0],
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                }
+            }else{
+                shareIntent.putExtra(Intent.EXTRA_STREAM,fileUriList)
+            }
+            BaselineCore.startExternalApp(chooserIntent)
+        }catch (ex:Exception){
+            BaselineLogger.e("ExportImportViewModel","openShareSheet :${ex.message}",ex)
+        }
+    }
+
+}
+
 

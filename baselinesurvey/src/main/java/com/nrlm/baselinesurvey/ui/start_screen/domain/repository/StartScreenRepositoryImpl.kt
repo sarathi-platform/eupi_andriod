@@ -51,5 +51,15 @@ class StartScreenRepositoryImpl @Inject constructor(
         return prefBSRepo.getUniqueUserIdentifier()
     }
 
+    override fun saveTempImagePath(imagePath: String) {
+        prefRepo.savePref("temp_image_path", imagePath)
+
+
+    }
+
+    override fun getTempImagePath(): String {
+        return prefRepo.getPref("temp_image_path", "")!!
+    }
+
 
 }

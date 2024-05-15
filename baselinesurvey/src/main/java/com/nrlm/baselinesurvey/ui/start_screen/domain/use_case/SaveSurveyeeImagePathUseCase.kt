@@ -11,4 +11,12 @@ class SaveSurveyeeImagePathUseCase(
         repository.saveImageLocalPathForSurveyee(surveyeeEntity, finalPathWithCoordinates)
     }
 
+    fun saveTempPath(imagePath: String) {
+        repository.saveTempImagePath(imagePath)
+    }
+
+    fun getTempPath(): String {
+        return repository.getTempImagePath()
+    }
+
 }

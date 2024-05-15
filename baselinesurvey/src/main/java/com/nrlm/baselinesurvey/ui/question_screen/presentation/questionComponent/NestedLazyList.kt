@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -748,7 +749,7 @@ fun NestedLazyList(
                                 val noneOptionResponse = questionScreenViewModel
                                     .formResponseEntityToQuestionMap.value[question.questionId]?.find { it.optionId == noneOptionItemEntity?.optionId }
 
-                                if (noneOptionResponse?.selectedValue == noneOptionItemEntity?.optionItemEntity?.values?.first()?.value)
+                                if (noneOptionResponse!=null && (noneOptionResponse?.selectedValue == noneOptionItemEntity?.optionItemEntity?.values?.first()?.value || noneOptionResponse?.selectedValue == noneOptionItemEntity?.optionItemEntity?.values?.last()?.value))
                                     questionScreenViewModel.setReferenceIdForFormWithNoneQuestion(
                                         noneOptionResponse?.referenceId ?: BLANK_STRING
                                     )
@@ -760,7 +761,15 @@ fun NestedLazyList(
                                             question.questionId ?: 0
                                         ).toInt(), null
                                     )
-
+                                if (itemCount == 0 && noneOptionResponse?.selectedValue.equals(
+                                        stringResource(id = R.string.option_yes)
+                                    )
+                                ) {
+                                    answeredQuestionCountIncreased(
+                                        question,
+                                        true
+                                    )
+                                }
                                 FormWithNoneTypeQuestionComponent(
                                     question = question.questionEntity,
                                     showQuestionState = question,
@@ -786,7 +795,10 @@ fun NestedLazyList(
                                                     questionId = question.questionId ?: 0,
                                                     subjectId = surveyeeId,
                                                     formQuestionResponseList = listOf(
-                                                        mOptionItem.copy(selectedValue = mOptionItem.values?.last()?.value) //when marked NO
+                                                        mOptionItem.copy(selectedValue = mOptionItem.values?.last()?.value,
+                                                            selectedValueId = mOptionItem.values?.last()?.id
+                                                                ?: 0
+                                                        ) //when marked NO
                                                             .convertOptionItemEntityToFormResponseEntityForFormWithNone(
                                                                 userId = questionScreenViewModel.getUserId(),
                                                                 didiId = surveyeeId,
@@ -817,7 +829,10 @@ fun NestedLazyList(
                                                     questionId = question.questionId ?: 0,
                                                     subjectId = surveyeeId,
                                                     formQuestionResponseList = listOf(
-                                                        mOptionItem.copy(selectedValue = mOptionItem.values?.first()?.value) //when marked YES
+                                                        mOptionItem.copy(selectedValue = mOptionItem.values?.first()?.value,
+                                                            selectedValueId = mOptionItem.values?.first()?.id
+                                                                ?: 0
+                                                        ) //when marked YES
                                                             .convertOptionItemEntityToFormResponseEntityForFormWithNone(
                                                                 userId = questionScreenViewModel.getUserId(),
                                                                 didiId = surveyeeId,
@@ -829,10 +844,9 @@ fun NestedLazyList(
 
                                             answeredQuestionCountIncreased(
                                                 question,
-                                                questionScreenViewModel.formWithNoneOptionMarkedSet.contains(
-                                                    mOptionItem.optionId
+                                                itemCount == 0
                                                 )
-                                            )
+
                                         }
 
                                         if (!isNoneMarkedForForm && isFormOpened) {

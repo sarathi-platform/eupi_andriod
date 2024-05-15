@@ -175,7 +175,17 @@ fun FormTypeQuestionComponent(
                                             .fillMaxWidth()
                                             .weight(weight_60_percent)
                                     ) {
-                                        if (isEditAllowed) {
+                                        if ((itemCount > 0 && isPublicInfraSectionForm(
+                                                sectionId = question?.sectionId ?: 0,
+                                                surveyId = question?.surveyId ?: 0,
+                                                questionId = question?.questionId ?: 0
+                                            )) && isEditAllowed
+                                        ) {
+                                            showCustomToast(
+                                                context,
+                                                context.getString(R.string.only_one_entry_can_be_added)
+                                            )
+                                        } else if (isEditAllowed) {
                                             onAnswerSelection(questionIndex)
                                         } else {
                                             showCustomToast(
@@ -276,4 +286,12 @@ fun FormTypeQuestionComponent(
             }
         }
     }
+}
+
+private fun isPublicInfraSectionForm(surveyId: Int, sectionId: Int, questionId: Int): Boolean {
+    //TODO Its handle with validation field that come in survey for now we are doing through  question ids
+    val questionIds = listOf(8, 9, 11, 111, 12)
+    return surveyId == 2 && sectionId == 2 && (questionIds.contains(
+        questionId
+    ))
 }
