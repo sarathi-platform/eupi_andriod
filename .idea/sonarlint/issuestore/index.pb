@@ -141,3 +141,7 @@ l
 <app/src/main/java/com/patsurvey/nudge/data/prefs/PrefRepo.kt,d/b/db0867dd05a0aca53058dcff1c327b8426a3f5d5
 o
 ?app/src/main/java/com/patsurvey/nudge/data/prefs/SharedPrefs.kt,9/f/9fd55e6103db0a9a5df9d5db15b3f81734af838c
+p
+@app/src/main/java/com/patsurvey/nudge/activities/SplashScreen.kt,e/0/e029852c06bfb7f56ff59dccaa5f6ccb6defe2d6
+†
+VmissionActivityTask/src/main/java/com/sarathi/missionactivitytask/ui/ActivityScreen.kt,d/d/dddcc7a61c68091f33e22382b970073a6c135f1d
