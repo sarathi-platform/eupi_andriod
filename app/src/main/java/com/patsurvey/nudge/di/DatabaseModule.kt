@@ -6,6 +6,9 @@ import com.nudge.core.NUDGE_DATABASE
 import com.nudge.core.NUDGE_GRANT_DATABASE
 import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.syncmanager.database.SyncManagerDatabase
+import com.patsurvey.nudge.activities.ui.login.dataloadingscreen.domain.FetchDataUseCase
+import com.patsurvey.nudge.activities.ui.login.dataloadingscreen.domain.use_case.FetchMissionDataFromNetworkUseCase
+import com.patsurvey.nudge.activities.ui.login.dataloadingscreen.repository.IDataLoadingScreenRepository
 import com.patsurvey.nudge.database.NudgeDatabase
 import com.patsurvey.nudge.database.NudgeGrantDatabase
 import dagger.Module
@@ -114,5 +117,14 @@ object DatabaseModule {
     @Singleton
     fun provideMissionDao(db: NudgeGrantDatabase) = db.missionDao()
 
+    @Provides
+    @Singleton
+    fun provideFetchDataUseCaseUseCase(
+        repository: IDataLoadingScreenRepository,
+    ): FetchDataUseCase {
+        return FetchDataUseCase(
+            fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository)
+        )
+    }
 
 }
