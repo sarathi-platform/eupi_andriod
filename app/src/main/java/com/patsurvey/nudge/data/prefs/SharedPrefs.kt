@@ -39,6 +39,9 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_NEED_TO_SCROLL = "questions_need_to_scroll"
         const val PREF_KEY_SYNC_ENABLED = "sync_enabled"
         const val PREF_KEY_PREVIOUS_USER_MOBILE = "previous_user_mobile"
+        const val PREF_USER_TYPE = "pref_user_type"
+        const val UP_CM_USER = "Ultra Poor change maker (UPCM)"
+
     }
 
     val prefs: SharedPreferences by lazy {
@@ -250,4 +253,10 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     override fun setPreviousUserMobile(mobileNumber: String) {
         prefs.edit().putString(PREF_KEY_PREVIOUS_USER_MOBILE, mobileNumber).apply()
     }
+
+    override fun isUpCmUser(): Boolean {
+        val userType = prefs.getString(PREF_USER_TYPE, BLANK_STRING) ?: BLANK_STRING
+        return userType == UP_CM_USER
+    }
+
 }

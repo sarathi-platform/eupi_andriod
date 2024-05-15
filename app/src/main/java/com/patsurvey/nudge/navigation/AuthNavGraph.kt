@@ -16,6 +16,7 @@ import com.patsurvey.nudge.activities.settings.BugLogggingMechanismScreen
 import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
+import com.patsurvey.nudge.activities.ui.login.dataloadingscreen.screen.DataLoadingScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
@@ -79,9 +80,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             VillageScreen(navController = navController) {
                 navController.navigate(AuthScreen.AUTH_SETTING_SCREEN.route)
             }
-            /*VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()){
-                navController.navigate(AuthScreen.AUTH_SETTING_SCREEN.route)
-            }*/
+
         }
 
         composable(route = AuthScreen.AUTH_SETTING_SCREEN.route) {
@@ -108,11 +107,13 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
         composable(route = AuthScreen.PROFILE_SCREEN.route) {
             ProfileScreen(profileScreenVideModel = hiltViewModel(), navController = navController)
         }
+        composable(route = AuthScreen.MatDataLoadingScreen.route) {
+            DataLoadingScreen(viewModel = hiltViewModel())
+        }
 
 
     }
-//    settingNavGraph(navController)
-//   logoutGraph(navController =navController)
+
 }
 
 sealed class AuthScreen(val route: String) {
@@ -126,4 +127,5 @@ sealed class AuthScreen(val route: String) {
     object PROFILE_SCREEN : AuthScreen(route = "profile_screen")
     object VIDEO_LIST_SCREEN : AuthScreen(route = "video_list_screen")
     object VIDEO_PLAYER_SCREEN : AuthScreen(route = "video_player_screen/{$ARG_VIDEO_ID}")
+    object MatDataLoadingScreen : AuthScreen(route = "mat_data_loading_screen")
 }

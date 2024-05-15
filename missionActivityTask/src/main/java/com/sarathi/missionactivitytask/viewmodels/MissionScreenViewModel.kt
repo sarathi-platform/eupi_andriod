@@ -1,6 +1,5 @@
 package com.sarathi.missionactivitytask.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sarathi.missionactivitytask.domain.usecases.GetMissionsUseCase
@@ -20,7 +19,6 @@ class MissionScreenViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             val missionList = missionsUseCase.getAllMission()
-            Log.d("Mission", missionList.first().missionName)
 
         }
 

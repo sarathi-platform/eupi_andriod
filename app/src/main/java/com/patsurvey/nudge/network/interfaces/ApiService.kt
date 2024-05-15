@@ -6,16 +6,48 @@ import com.google.gson.JsonObject
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponse
 import com.patsurvey.nudge.activities.settings.TransactionIdResponseForPatStatus
+import com.patsurvey.nudge.activities.ui.login.dataloadingscreen.domain.MissionRequest
 import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.TolaEntity
-import com.patsurvey.nudge.model.request.*
-import com.patsurvey.nudge.model.response.*
+import com.patsurvey.nudge.model.request.AddWorkFlowRequest
+import com.patsurvey.nudge.model.request.BpcUpdateSelectedDidiRequest
+import com.patsurvey.nudge.model.request.EditDidiRequest
+import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
+import com.patsurvey.nudge.model.request.EditWorkFlowRequest
+import com.patsurvey.nudge.model.request.GetQuestionListRequest
+import com.patsurvey.nudge.model.request.LoginRequest
+import com.patsurvey.nudge.model.request.OtpRequest
+import com.patsurvey.nudge.model.request.PATSummarySaveRequest
+import com.patsurvey.nudge.model.request.SaveMatchSummaryRequest
+import com.patsurvey.nudge.model.request.StepResultTypeRequest
+import com.patsurvey.nudge.model.request.StepsListRequest
+import com.patsurvey.nudge.model.response.ApiResponseModel
+import com.patsurvey.nudge.model.response.BeneficiaryApiResponse
+import com.patsurvey.nudge.model.response.BpcSummaryResponse
+import com.patsurvey.nudge.model.response.ConfigResponseModel
+import com.patsurvey.nudge.model.response.DidiApiResponse
+import com.patsurvey.nudge.model.response.DidiWealthRankingResponse
+import com.patsurvey.nudge.model.response.OtpVerificationModel
+import com.patsurvey.nudge.model.response.PATSummaryResponseItem
+import com.patsurvey.nudge.model.response.QuestionListResponse
+import com.patsurvey.nudge.model.response.SaveMatchSummaryResponse
+import com.patsurvey.nudge.model.response.TolaApiResponse
+import com.patsurvey.nudge.model.response.TransactionResponseModel
+import com.patsurvey.nudge.model.response.UserDetailsResponse
+import com.patsurvey.nudge.model.response.WorkFlowResponse
 import com.patsurvey.nudge.utils.KEY_HEADER_MOBILE
 import com.patsurvey.nudge.utils.KEY_HEADER_TYPE
+import com.sarathi.missionactivitytask.models.response.MissionResponseModel
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.Headers
+import retrofit2.http.Multipart
+import retrofit2.http.POST
+import retrofit2.http.Part
+import retrofit2.http.Query
 
 interface ApiService {
 
@@ -38,7 +70,6 @@ interface ApiService {
     @GET("/read-api/config/step/get")
     suspend fun getStepsList(@Query("villageId") villageId: Int): ApiResponseModel<StepsListRequest>
 
-    //TODO Integrate Api when backend fixes the response.
     @POST("/write-api/cohort/add")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun addCohort(@Body cohortList: JsonArray): ApiResponseModel<List<TolaApiResponse>>
@@ -177,4 +208,9 @@ interface ApiService {
 
     @POST("/read-api/custom/log")
     suspend fun addLogs(@Body logsBody: String): JsonObject?
+
+    @POST("/mission-service/mission/view")
+    @Headers("${KEY_HEADER_TYPE}:${KEY_HEADER_MOBILE}")
+    suspend fun getBaseLineMission(@Body missionRequest: MissionRequest): ApiResponseModel<List<MissionResponseModel>>
+
 }
