@@ -76,4 +76,6 @@ class OtpVerificationViewModel @Inject constructor(
     override fun onServerError(errorModel: ErrorModelWithApi?) {
         TODO("Not yet implemented")
     }
+
+    fun isUpCmUser(): Boolean = otpVerificationRepository.isUpCmUser()
 }

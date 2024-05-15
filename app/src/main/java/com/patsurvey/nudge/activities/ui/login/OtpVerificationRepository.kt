@@ -1,7 +1,6 @@
 package com.patsurvey.nudge.activities.ui.login
 
 import com.google.gson.Gson
-import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.VillageListDao
@@ -50,4 +49,7 @@ class OtpVerificationRepository @Inject constructor(
        return prefRepo.getMobileNumber();
     }
 
+    fun isUpCmUser(): Boolean {
+        return prefRepo.isUpCmUser()
+    }
 }

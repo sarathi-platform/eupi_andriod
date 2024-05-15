@@ -30,7 +30,6 @@ import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.splash.ConfigViewModel
 import com.patsurvey.nudge.activities.ui.theme.blueDark
-import com.patsurvey.nudge.activities.ui.theme.smallTextStyleNormalWeight
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
 import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -64,11 +63,13 @@ fun SplashScreen(
                 viewModel.showLoader.value=true
                 delay(SPLASH_SCREEN_DURATION)
                 viewModel.showLoader.value=false
-                navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
-                    popUpTo(AuthScreen.START_SCREEN.route) {
-                        inclusive = true
-                    }
-                }
+                navController.navigate(route = AuthScreen.MatDataLoadingScreen.route)
+
+//                navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
+//                    popUpTo(AuthScreen.START_SCREEN.route) {
+//                        inclusive = true
+//                    }
+//                }
             } else {
                 NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = false")
                 delay(ONE_SECOND)
@@ -92,11 +93,13 @@ fun SplashScreen(
                 }
                 if (isLoggedIn) {
                     NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = true")
-                    navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
-                        popUpTo(AuthScreen.START_SCREEN.route) {
-                            inclusive = true
-                        }
-                    }
+                    navController.navigate(route = AuthScreen.MatDataLoadingScreen.route)
+
+//                    navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
+//                        popUpTo(AuthScreen.START_SCREEN.route) {
+//                            inclusive = true
+//                        }
+//                    }
                 } else {
                     NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = false")
                     navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)

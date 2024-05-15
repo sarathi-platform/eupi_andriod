@@ -88,4 +88,6 @@ interface PrefRepo {
     fun getISSyncEnabled(): Boolean
    fun getPreviousUserMobile(): String
    fun setPreviousUserMobile(mobileNumber: String)
+
+    fun isUpCmUser(): Boolean
 }
