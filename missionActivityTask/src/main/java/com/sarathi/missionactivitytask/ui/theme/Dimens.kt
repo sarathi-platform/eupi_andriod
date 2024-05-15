@@ -20,6 +20,7 @@ val dimen_18_dp = 18.dp
 val dimen_24_dp = 24.dp
 val dimen_30_dp = 30.dp
 
+val weigh_0_percent = 0f
 val weight_10_percent = 0.1f
 val weight_20_percent = 0.2f
 val weight_40_percent = 0.4f

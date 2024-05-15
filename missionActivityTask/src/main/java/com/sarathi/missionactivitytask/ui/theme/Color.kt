@@ -19,5 +19,5 @@ val placeholderGrey = Color(0xFFACACAC)
 val borderGreyLight = Color(0xFFEBEBEB)
 val white = Color(0xFFFFFFFF)
 val mediumRankColor = Color(0xFFE08B00)
-val trackColor = Color(0xFFD1D5DE)
+val trackLinearColor = Color(0xFFD1D5DE)
 
