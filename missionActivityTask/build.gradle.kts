@@ -53,7 +53,10 @@ dependencies {
     implementation("com.google.code.gson:gson:$retrofit")
     implementation("com.squareup.retrofit2:retrofit:$retrofit")
     implementation("com.squareup.retrofit2:converter-gson:$retrofit")
-
+    //Material
+    implementation("androidx.compose.material3:material3")
+    implementation ("androidx.compose.material:material:1.6.7")
+    implementation("androidx.compose.material3:material3:1.2.1")
     //Room
     implementation("androidx.room:room-runtime:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
