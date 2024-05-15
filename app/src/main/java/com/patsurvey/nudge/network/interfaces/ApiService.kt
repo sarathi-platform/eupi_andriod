@@ -210,7 +210,7 @@ interface ApiService {
     suspend fun addLogs(@Body logsBody: String): JsonObject?
 
     @POST("/mission-service/mission/view")
-    // @Headers("${KEY_HEADER_TYPE}:${KEY_HEADER_MOBILE}")
+    @Headers("${KEY_HEADER_TYPE}:${KEY_HEADER_MOBILE}")
     suspend fun getBaseLineMission(@Body missionRequest: MissionRequest): ApiResponseModel<List<MissionResponseModel>>
 
 }
