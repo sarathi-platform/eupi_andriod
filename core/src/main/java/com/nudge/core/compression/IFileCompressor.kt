@@ -13,6 +13,7 @@ interface IFileCompressor {
         mobileNo: String,
         userName: String
     ): Uri?
+
     suspend fun compressBackupImages(
         context: Context,
         mobileNo: String,
@@ -21,4 +22,13 @@ interface IFileCompressor {
     ): Uri?
 
     fun getCompressionType(): String
+
+    fun deleteOldFiles(
+        context: Context,
+        fileNameReference: String,
+        folderName: String,
+        fileType: String,
+        applicationId: String? = null,
+        checkInAppDirectory: Boolean = false
+    )
 }
