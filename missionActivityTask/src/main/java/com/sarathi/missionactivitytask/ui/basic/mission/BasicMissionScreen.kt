@@ -13,7 +13,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
 import com.sarathi.missionactivitytask.ui.components.LinearProgressBar
@@ -137,7 +136,7 @@ fun InfoText(pendingCount: Int, totalCount: Int, countStatusText: String) {
         style = smallTextStyleMediumWeight2.copy(color = blueDark),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 24.dp)
+            .padding(start = dimen_24_dp)
     )
 }
 
@@ -146,8 +145,8 @@ fun ActionButtons(primaryButtonText: String, secondaryButtonText: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(18.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
+            .padding(dimen_18_dp),
+        horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
     ) {
         Spacer(modifier = Modifier.weight(weight_100_percent))
 
@@ -155,7 +154,7 @@ fun ActionButtons(primaryButtonText: String, secondaryButtonText: String) {
             SecondaryButton(
                 text = secondaryButtonText,
                 onClick = { /*TODO*/ },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(weight_100_percent)
             )
         }
         if (primaryButtonText.isNotEmpty()) {
@@ -167,7 +166,5 @@ fun ActionButtons(primaryButtonText: String, secondaryButtonText: String) {
         }
     }
 }
-
-
 
 
