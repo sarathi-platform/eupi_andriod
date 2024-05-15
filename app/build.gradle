@@ -7,6 +7,7 @@ plugins {
     id 'kotlin-kapt'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
+    id("org.sonarqube")
 
 }
 def version = "0.1.43"
