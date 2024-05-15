@@ -1,4 +1,4 @@
-package com.nrlm.baselinesurvey.ui.basic_content.component
+package com.sarathi.missionactivitytask.ui.basic_content.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.nrlm.baselinesurvey.R
 
 @Composable
 fun BasicContentListScreen(items: List<BasicContent>, grantSteps: List<GrantStep>) {
@@ -42,7 +41,7 @@ fun BasicContentListScreen(items: List<BasicContent>, grantSteps: List<GrantStep
                     subTitle = grantStep.boxSubTitle,
                     stepNo = index,
                     index = index,
-                    iconResourceId = R.drawable.ic_mission_inprogress
+                    iconResourceId = 0
                 ) {
 
                 }

@@ -1,4 +1,4 @@
-package com.nrlm.baselinesurvey.ui.basic_content.component
+package com.sarathi.missionactivitytask.ui.basic_content.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,18 +23,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.ui.basic_content.constants.ContentShape
-import com.nrlm.baselinesurvey.ui.basic_content.constants.ContentType
-import com.nrlm.baselinesurvey.ui.theme.lightGray2
-import com.nrlm.baselinesurvey.ui.theme.smallTextStyleMediumWeight2
-import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
-import com.nrlm.baselinesurvey.ui.theme.textColorDark
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
+import com.sarathi.missionactivitytask.ui.basic_content.constants.ContentShape
 
 
 @Composable
@@ -63,13 +56,14 @@ private fun ContentView(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        //lightGray2
         Box(
             modifier = Modifier
                 .padding(start = 16.dp, end = 16.dp)
                 .size(60.dp)
                 .clip(shape = CircleShape)
                 .border(
-                    1.dp, color = lightGray2, RoundedCornerShape(100.dp)
+                    1.dp, color = Color.Black, RoundedCornerShape(100.dp)
                 )
                 .background(color = Color.Transparent)
                 .fillMaxSize(),
@@ -78,9 +72,9 @@ private fun ContentView(
             ContentData(contentType = contentType, moreContentData = moreContentData)
         }
         if (contentTitle.isNotBlank()) {
+            //style = smallTextStyleMediumWeight2
             Text(
                 text = contentTitle,
-                style = smallTextStyleMediumWeight2,
                 fontSize = 10.sp
             )
         }
@@ -89,23 +83,23 @@ private fun ContentView(
 
 @Composable
 fun ContentData(contentType: String, moreContentData: String) {
-    if (contentType.equals(ContentType.IMAGE.name)) {
-        val painter: Painter = painterResource(id = R.drawable.nrlm_logo)
-        Image(painter = painter, contentDescription = null)
-    } else if (contentType.equals(ContentType.VIDEO.name)) {
-        ImageOverlay(resId = R.drawable.ttn_logo)
-    } else if (contentType.equals(ContentType.FILE.name)) {
-        val painter: Painter =
-            painterResource(id = R.drawable.baseline_food_security_sutritional_diversity)
-        Image(painter = painter, contentDescription = null)
-    } else if (contentType.equals(ContentType.MORE_DATA.name)) {
-        Text(
-            text = moreContentData,
-            textAlign = TextAlign.Center,
-            style = smallerTextStyle,
-            fontSize = 10.sp
-        )
-    }
+//    if (contentType.equals(ContentType.IMAGE.name)) {
+//        val painter: Painter = painterResource(id = R.drawable.nrlm_logo)
+//        Image(painter = painter, contentDescription = null)
+//    } else if (contentType.equals(ContentType.VIDEO.name)) {
+//        ImageOverlay(resId = R.drawable.ttn_logo)
+//    } else if (contentType.equals(ContentType.FILE.name)) {
+//        val painter: Painter =
+//            painterResource(id = R.drawable.baseline_food_security_sutritional_diversity)
+//        Image(painter = painter, contentDescription = null)
+//    } else if (contentType.equals(ContentType.MORE_DATA.name)) {
+//        Text(
+//            text = moreContentData,
+//            textAlign = TextAlign.Center,
+//            style = smallerTextStyle,
+//            fontSize = 10.sp
+//        )
+//    }
 }
 
 @Composable
@@ -125,10 +119,11 @@ fun ImageOverlay(resId: Int) {
             contentAlignment = Alignment.Center
 
         ) {
+            //textColorDark
             Icon(
                 imageVector = Icons.Default.PlayArrow,
                 contentDescription = null,
-                tint = textColorDark,
+                tint = Color.Black,
             )
         }
     }

@@ -1,4 +1,4 @@
-package com.nrlm.baselinesurvey.ui.basic_content.component
+package com.sarathi.missionactivitytask.ui.basic_content.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
