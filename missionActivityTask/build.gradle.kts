@@ -84,8 +84,9 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     implementation(project(":internetSpeedChecker"))
     //Material
-    implementation ("androidx.compose.material:material:1.6.7")
+    implementation("androidx.compose.material:material:1.5.3")
     implementation("androidx.compose.material3:material3:1.2.1")
+    implementation("androidx.compose.material3:material3")
     //Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
 
