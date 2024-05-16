@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.nrlm.baselinesurvey.navigation.home.HomeNavScreen
+import com.sarathi.missionactivitytask.navigation.home.HomeNavScreen
 
 
 @Composable
