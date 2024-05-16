@@ -36,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.nrlm.baselinesurvey.ACTIVITY_HAMLET_SURVEY
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.DIDI_LIST
 import com.nrlm.baselinesurvey.R
@@ -117,7 +118,7 @@ fun AllSurveyeeListTab(
                         verticalArrangement = Arrangement.Center,
                     ) {
                         Text(
-                            if (!activityName.equals("Conduct Hamlet Survey")) stringResource(R.string.didi_list_empty_state) else stringResource(
+                            if (!activityName.equals(ACTIVITY_HAMLET_SURVEY)) stringResource(R.string.didi_list_empty_state) else stringResource(
                                 R.string.empty_task_message
                             ),
                             modifier = Modifier.fillMaxWidth(),
@@ -161,7 +162,7 @@ fun AllSurveyeeListTab(
                         }
                         item {
                             SearchWithFilterViewComponent(
-                                placeholderString = if (!activityName.equals("Conduct Hamlet Survey")) stringResource(
+                                placeholderString = if (!activityName.equals(ACTIVITY_HAMLET_SURVEY)) stringResource(
                                     id = R.string.search_didis
                                 ) else stringResource(
                                     R.string.search_hamlet
@@ -186,7 +187,7 @@ fun AllSurveyeeListTab(
                                         SearchEvent.PerformSearch(
                                             queryTerm,
                                             viewModel.isFilterAppliedState.value.isFilterApplied,
-                                            if (!activityName.equals("Conduct Hamlet Survey")) DIDI_LIST else ALL_TAB
+                                            if (!activityName.equals(ACTIVITY_HAMLET_SURVEY)) DIDI_LIST else ALL_TAB
                                         )
                                     )
                                 }

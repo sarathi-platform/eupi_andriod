@@ -337,5 +337,6 @@ const val MINUTE = "Minutes"
 
 const val LIVELIHOOD_SOURCE_TAG_CONSTANT = "Livelihood Sources"
 const val HOUSEHOLD_INFO_TAG_CONSTANT = "Household information"
+const val ACTIVITY_HAMLET_SURVEY="Conduct Hamlet Survey"
 
 

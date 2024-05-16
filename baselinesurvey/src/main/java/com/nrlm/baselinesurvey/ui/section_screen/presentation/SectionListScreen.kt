@@ -198,7 +198,7 @@ fun SectionListScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.CenterStart),
-                        text = viewModel.didiDetails?.didiName ?: BLANK_STRING/*if (!BaselineCore.getCurrentActivityName().equals("Conduct Hamlet Survey")) viewModel.didiDetails?.didiName ?: BLANK_STRING else viewModel.didiDetails?.cohortName ?: BLANK_STRING*/,
+                        text = viewModel.didiDetails?.didiName ?: BLANK_STRING,
                         style = largeTextStyle,
                         color = blueDark
                     )

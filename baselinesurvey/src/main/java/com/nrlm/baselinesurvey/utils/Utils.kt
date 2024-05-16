@@ -97,18 +97,6 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.UUID
 
-fun uriFromFile(context: Context, file: File): Uri {
-    try {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file)
-        } else {
-            Uri.fromFile(file)
-        }
-    } catch (ex: Exception) {
-        return Uri.EMPTY
-        Log.e("uriFromFile", "exception", ex)
-    }
-}
 
 fun getAuthImageFileNameFromURL(url: String): String{
     return url.substring(url.lastIndexOf('=') + 1, url.length)

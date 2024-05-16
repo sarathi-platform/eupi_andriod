@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -43,6 +44,7 @@ import com.nrlm.baselinesurvey.utils.toOptionItemStateList
 import com.nudge.core.compressImage
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventType
+import com.nudge.core.model.CoreAppDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -111,6 +113,7 @@ class BaseLineStartViewModel @Inject constructor(
             directory,
             "${didi.didiId}-${didi.cohortId}-${didi.villageId}_${System.currentTimeMillis()}.png"
         )
+        Log.d("TAG", "getFileName: ${filePath}")
         return filePath
     }
 
@@ -269,7 +272,7 @@ class BaseLineStartViewModel @Inject constructor(
         sectionId: Int,
         surveyId: Int,
         isFromImageFail: Boolean,
-        localContext: Context
+        localContext: Activity
     ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val selectedLanguage = startSurveyScreenUserCase.getSectionUseCase.getSelectedLanguage()

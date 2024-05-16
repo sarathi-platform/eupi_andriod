@@ -12,6 +12,7 @@ import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.BuildConfig.DEBUG
 import com.nrlm.baselinesurvey.BuildConfig.VERSION_NAME
 import com.nrlm.baselinesurvey.utils.BaselineLogger.e
+import com.nudge.core.uriFromFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -377,75 +378,6 @@ object LogWriter {
             return null
         }
     }
-    suspend fun buildSupportLogAndShare(userMobileNo:String,userEmail:String) {
-        val context = BaselineCore.getAppContext()
-        try {
-
-            val logDir = BaselineCore.getAppContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-            val logFile = File(logDir, getSupportLogFileName())
-            if (logFile.isFile) logFile.delete()
-
-            if (!getSyslogFile(logFile)) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "No logs to send", Toast.LENGTH_SHORT).show()
-                }
-                return
-            }
-
-
-            val subject = "Sarathi debug log - Email: $userEmail UserId: $userMobileNo"
-            val message = "The following individual logs are contained within the attachment:\n\n"
-            withContext(Dispatchers.Main) {
-                share(
-                    context = context,
-                    logFile,
-                    arrayOf(
-                        "anupam.bhardwaj@tothenew.com",
-                        "anas.mansoori@tothenew.com",
-                        "ravi.chauhan@tothenew.com",
-                        "nitish.bhardwaj@tothenew.com",
-                        "ritik.singh@tothenew.com",
-                        "ankit.jain3@tothenew.com"
-                    ),
-                    subject,
-                    message
-                )?.let {
-                    BaselineCore.startExternalApp(it)
-                }
-            }
-        } catch (ex: Exception) {
-            e(TAG, "buildSupportLogAndShare", ex)
-            withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Logs unavailable", Toast.LENGTH_SHORT).show()
-            }
-            return
-        }
-    }
-
-    fun share(context: Context, file: File, emails: Array<String?>?, subject: String, message: String): Intent? {
-        try {
-            return Intent.createChooser(
-                Intent(Intent.ACTION_SEND)
-                    .setType("vnd.android.cursor.dir/email")
-                    .putExtra(Intent.EXTRA_EMAIL, emails)
-                    .putExtra(Intent.EXTRA_SUBJECT, subject)
-                    .putExtra(Intent.EXTRA_TEXT, message)
-                    .putExtra(
-                        Intent.EXTRA_STREAM,
-                        uriFromFile(
-                            context,
-                            file
-                        )
-                    )
-                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
-                "Share File"
-            )
-        } catch (ex: Exception) {
-            e(TAG, "share file", ex)
-        }
-        return null
-    }
-
     fun getSupportLogFileName(): String {
         return SUPPORT_LOG_FILE_NAME_PREFIX + SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US).format(
             Date()

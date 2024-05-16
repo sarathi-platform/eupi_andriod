@@ -21,7 +21,6 @@ import com.nrlm.baselinesurvey.PREF_KEY_NAME
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
@@ -320,8 +319,8 @@ fun exportOnlyLogFile(context: Context){
                     surveyeeEntityDao.getAllDidiForQNA(prefBSRepo.getUniqueUserIdentifier())
                 val baseLineQnATableCSV = mutableListOf<BaseLineQnATableCSV>()
 
-                baseLineQnATableCSV.addAll(dtoList.toCSVSave(sectionList, surveeList, optionItemDao, questionEntityDao, prefRepo.getUniqueUserIdentifier()))
-                baseLineQnATableCSV.addAll(dtoSaveFormList.toCsv(sectionList, surveeList, optionItemDao, questionEntityDao, prefRepo.getUniqueUserIdentifier()))
+                baseLineQnATableCSV.addAll(dtoList.toCSVSave(sectionList, surveeList, optionItemDao, questionEntityDao, prefBSRepo.getUniqueUserIdentifier()))
+                baseLineQnATableCSV.addAll(dtoSaveFormList.toCsv(sectionList, surveeList, optionItemDao, questionEntityDao, prefBSRepo.getUniqueUserIdentifier()))
                 /*BaseLine*/
                 val baseLineListQnaCSV = baseLineQnATableCSV.filter { it.surveyId == 1 }
                 val baseLineQnATableCSVGroupBySectionId = baseLineListQnaCSV
