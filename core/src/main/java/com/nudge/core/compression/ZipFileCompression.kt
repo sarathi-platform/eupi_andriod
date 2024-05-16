@@ -194,37 +194,16 @@ class ZipFileCompression : IFileCompressor {
                 val filePathToZipped =
                     Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + folderName
 
-                // query for the file
-                val cursor: Cursor? = contentResolver.query(
-                    extVolumeUri,
-                    null,
-                    MediaStore.MediaColumns.RELATIVE_PATH + " = ?",
-                    arrayOf("$filePathToZipped/"), null
-                )
 
                 val fileUris: ArrayList<Pair<String, Uri?>> = ArrayList()
 
-                // if file found
-                if (cursor != null && cursor.count > 0) {
-                    // get URI
-                    while (cursor.moveToNext()) {
-                        val idIndex = cursor.getColumnIndex(MediaStore.MediaColumns._ID)
-                        val displayNameIndex =
-                            cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)
-                        if (idIndex > -1) {
-                            val id = cursor.getLong(idIndex)
-                            val displayName = cursor.getString(displayNameIndex)
-                            fileUris.add(
-                                Pair(
-                                    first = displayName,
-                                    second = ContentUris.withAppendedId(extVolumeUri, id)
-                                )
-                            )
-                        }
-                    }
-
-                    cursor.close()
-                }
+                fileUris.addAll(
+                    getFileUrisFromMediaStore(
+                        contentResolver,
+                        extVolumeUri,
+                        filePathToZipped
+                    )
+                )
 
                 val filteredUris = fileUris.filter {
                     it.first.contains(
@@ -274,6 +253,48 @@ class ZipFileCompression : IFileCompressor {
             )
         }
 
+    }
+
+    private fun getFileUrisFromMediaStore(
+        contentResolver: ContentResolver,
+        extVolumeUri: Uri,
+        filePathToZipped: String
+    ): List<Pair<String, Uri?>> {
+
+        val list = ArrayList<Pair<String, Uri?>>()
+
+        // query for the file
+        val cursor: Cursor? = contentResolver.query(
+            extVolumeUri,
+            null,
+            MediaStore.MediaColumns.RELATIVE_PATH + " = ?",
+            arrayOf("$filePathToZipped/"), null
+        )
+
+
+        // if file found
+        if (cursor != null && cursor.count > 0) {
+            // get URI
+            while (cursor.moveToNext()) {
+                val idIndex = cursor.getColumnIndex(MediaStore.MediaColumns._ID)
+                val displayNameIndex =
+                    cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)
+                if (idIndex > -1) {
+                    val id = cursor.getLong(idIndex)
+                    val displayName = cursor.getString(displayNameIndex)
+                    list.add(
+                        Pair(
+                            first = displayName,
+                            second = ContentUris.withAppendedId(extVolumeUri, id)
+                        )
+                    )
+                }
+            }
+
+            cursor.close()
+        }
+
+        return list
     }
 
     private fun deleteOldImageZipFilesFromAppDirectory(
