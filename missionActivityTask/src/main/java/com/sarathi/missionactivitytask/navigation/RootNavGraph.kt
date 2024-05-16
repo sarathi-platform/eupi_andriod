@@ -12,7 +12,7 @@ fun RootNavigationGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
         route = Graph.ROOT,
-        startDestination = Graph.AUTHENTICATION
+        startDestination = Graph.HOME
     ) {
         composable(route = Graph.HOME) {
             HomeNavScreen()

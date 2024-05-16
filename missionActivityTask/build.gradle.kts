@@ -42,7 +42,6 @@ android {
 }
 
 dependencies {
-    implementation("androidx.compose.material3:material3-android:1.2.1")
     val retrofit = "2.9.0"
     val okhttp3 = "4.9.0"
     val compose_version = "1.4.1"
@@ -84,18 +83,18 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     implementation(project(":internetSpeedChecker"))
     //Material
-    implementation("androidx.compose.material:material:1.5.3")
-    implementation("androidx.compose.material3:material3:1.2.1")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material:1.3.1")
+    implementation("androidx.compose.material3:material3:1.1.2")
     //Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
     //Firebase Firestore
     implementation("com.google.firebase:firebase-firestore")
 
     //CSV Export
     implementation("com.opencsv:opencsv:5.3")
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
 
 }

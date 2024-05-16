@@ -231,3 +231,9 @@ PmissionActivityTask/src/main/java/com/sarathi/missionactivitytask/utils/Utils.k
 UmissionActivityTask/src/main/java/com/sarathi/missionactivitytask/utils/StatusEnum.kt,e/e/ee74f252d0232395d87cd4e069c511b10bfe754d
 “
 cmissionActivityTask/src/main/java/com/sarathi/missionactivitytask/navigation/home/HomeNavScreen1.kt,d/1/d107fcb937ce59ffa2e3f222ad7d46d56dcacb60
+@
+app/build.gradle,f/4/f4a01d6a4fcb971362ec00a83903fd3902f52164
+y
+Iapp/src/main/java/com/patsurvey/nudge/activities/survey/QuestionScreen.kt,e/7/e723786d14561729ddcb922ace4175150b1b7c5b
+€
+Papp/src/main/java/com/patsurvey/nudge/activities/ui/digital_forms/ImageViewer.kt,e/1/e198a5958e7c07b74e9cdb03dcf3212d0552c634

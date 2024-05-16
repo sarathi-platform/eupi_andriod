@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.sarathi.missionactivitytask.navigation.Graph
+import com.sarathi.missionactivitytask.ui.basic.mission.BasicActivityCard
 import com.sarathi.missionactivitytask.ui.theme.white
 
 @Composable
@@ -23,6 +24,7 @@ fun NavHomeGraph(navController: NavHostController, modifier: Modifier) {
     ) {
 
         composable(route = HomeScreens.MissionScreen.route) {
+            BasicActivityCard()
             // DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
         }
     }
