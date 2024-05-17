@@ -76,6 +76,7 @@ class SettingBSViewModel @Inject constructor(
                 val fileAndDbZipList = ArrayList<Pair<String, Uri?>>()
                 val compression = ZipFileCompression()
 
+                //Delete Old Image zips.
                 compression.deleteOldFiles(
                     context = BaselineCore.getAppContext(),
                     fileNameReference = "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_Sarathi_Image",
@@ -83,6 +84,14 @@ class SettingBSViewModel @Inject constructor(
                     fileType = SUFFIX_IMAGE_ZIP_FILE,
                     applicationId = BuildConfig.APPLICATION_ID,
                     checkInAppDirectory = true
+                )
+
+                //Delete old event zips.
+                compression.deleteOldFiles(
+                    context = BaselineCore.getAppContext(),
+                    fileNameReference = "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_sarathi_",
+                    folderName = getUserMobileNumber(),
+                    fileType = SUFFIX_EVENT_ZIP_FILE
                 )
 
                 // Image Files and Zip
@@ -149,13 +158,6 @@ class SettingBSViewModel @Inject constructor(
                     "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_sarathi_${System.currentTimeMillis()}"
 
                 if(fileUriList.isNotEmpty()) {
-
-                    compression.deleteOldFiles(
-                        context = BaselineCore.getAppContext(),
-                        fileNameReference = "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_sarathi_",
-                        folderName = getUserMobileNumber(),
-                        fileType = SUFFIX_EVENT_ZIP_FILE
-                    )
 
                     val zipLogDbFileUri = compression.compressData(
                         BaselineCore.getAppContext(),
