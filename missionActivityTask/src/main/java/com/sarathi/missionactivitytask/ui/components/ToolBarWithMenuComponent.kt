@@ -1,8 +1,11 @@
 package com.sarathi.missionactivitytask.ui.components
 
+import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,23 +15,26 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.ui.basic_content.component.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.theme.blueDark
+import com.sarathi.missionactivitytask.ui.theme.defaultTextStyle
 import com.sarathi.missionactivitytask.ui.theme.largeTextStyle
 import com.sarathi.missionactivitytask.ui.theme.textColorDark
 import com.sarathi.missionactivitytask.ui.theme.white
 
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun ToolBarWithMenuComponent(
     title: String,
@@ -38,9 +44,12 @@ fun ToolBarWithMenuComponent(
     navController: NavController? = rememberNavController(),
     onBackIconClick: () -> Unit,
     onSearchValueChange: (String) -> Unit,
+    isDataAvailable: Boolean = true,
     onBottomUI: @Composable () -> Unit,
     onContentUI: @Composable (PaddingValues) -> Unit
 ) {
+    val dataAvailableState = mutableStateOf(isDataAvailable)
+
     Scaffold(
         modifier = modifier,
         containerColor = white,
@@ -69,11 +78,9 @@ fun ToolBarWithMenuComponent(
                                 text = title,
                                 style = largeTextStyle,
                                 color = textColorDark,
-                                textAlign = TextAlign.Center,
-
-                                )
+                                textAlign = TextAlign.Center
+                            )
                         }
-
                     }
                 },
                 actions = {
@@ -93,7 +100,6 @@ fun ToolBarWithMenuComponent(
             )
         },
         bottomBar = {
-
             onBottomUI()
         }
     ) {
@@ -102,19 +108,42 @@ fun ToolBarWithMenuComponent(
                 .fillMaxSize()
                 .padding(top = 75.dp)
         ) {
-            if (isSearch) {
-                SearchWithFilterViewComponent(placeholderString = "Search",
-                    filterSelected = false,
-                    modifier = Modifier.padding(horizontal = 10.dp),
-                    showFilter = false,
-                    onFilterSelected = {},
-                    onSearchValueChange = { queryTerm ->
-                    })
+            if (dataAvailableState.value) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp)
+                        .align(Alignment.CenterHorizontally),
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        stringResource(R.string.not_able_to_load),
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        style = defaultTextStyle,
+                        color = textColorDark
+                    )
+                    Spacer(modifier = Modifier.padding(vertical = 10.dp))
+                    ButtonPositiveComponent(
+                        buttonTitle = stringResource(id = R.string.retry),
+                        isActive = true,
+                        isArrowRequired = false,
+                        onClick = {
+                        })
+                }
+            } else {
+                if (isSearch) {
+                    SearchWithFilterViewComponent(placeholderString = "Search",
+                        filterSelected = false,
+                        modifier = Modifier.padding(horizontal = 10.dp),
+                        showFilter = false,
+                        onFilterSelected = {},
+                        onSearchValueChange = { queryTerm ->
+                        })
+                }
+                onContentUI(it)
             }
-            onContentUI(it)
         }
-
-
     }
 
 }

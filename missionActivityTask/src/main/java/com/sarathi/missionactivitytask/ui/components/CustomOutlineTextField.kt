@@ -1,4 +1,4 @@
-package com.sarathi.missionactivitytask.ui.basic_content.component
+package com.sarathi.missionactivitytask.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource

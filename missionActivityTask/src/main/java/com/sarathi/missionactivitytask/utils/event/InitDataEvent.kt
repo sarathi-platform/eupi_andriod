@@ -1,4 +1,4 @@
-package com.sarathi.missionactivitytask.utils
+package com.sarathi.missionactivitytask.utils.event
 
 
 sealed class InitDataEvent {

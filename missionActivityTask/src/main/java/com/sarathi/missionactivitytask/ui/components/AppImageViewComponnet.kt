@@ -1,4 +1,4 @@
-package com.sarathi.missionactivitytask.ui.basic_content.component
+package com.sarathi.missionactivitytask.ui.components
 
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.asAndroidColorFilter
 import androidx.compose.ui.viewinterop.AndroidView
 
 @Composable
-fun AppImageView(
+fun AppImageViewComponent(
     modifier: Modifier = Modifier,
     @DrawableRes resource: Int,
     colorFilter: ColorFilter? = null

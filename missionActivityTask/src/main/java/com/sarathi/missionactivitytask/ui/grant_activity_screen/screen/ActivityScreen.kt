@@ -9,8 +9,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.viewmodel.ActivityScreenViewModel
-import com.sarathi.missionactivitytask.utils.InitDataEvent
-import com.sarathi.missionactivitytask.utils.LoaderEvent
+import com.sarathi.missionactivitytask.utils.event.InitDataEvent
+import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 
 @Composable
 fun ActivityScreen(
@@ -27,6 +27,7 @@ fun ActivityScreen(
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
         isSearch = true,
+        isDataAvailable = viewModel.activityList.value.isEmpty(),
         onSearchValueChange = {
 
         },

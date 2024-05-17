@@ -19,7 +19,7 @@ import com.sarathi.missionactivitytask.ui.theme.greenOnline
 import com.sarathi.missionactivitytask.ui.theme.redOffline
 
 @Composable
-fun NetworkBanner(
+fun NetworkBannerComponent(
     modifier: Modifier = Modifier,
     isOnline: Boolean = true,
 ) {

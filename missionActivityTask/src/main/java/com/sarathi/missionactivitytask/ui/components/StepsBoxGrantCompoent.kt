@@ -1,4 +1,4 @@
-package com.sarathi.missionactivitytask.ui.basic_content.component
+package com.sarathi.missionactivitytask.ui.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -23,14 +23,12 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -43,7 +41,6 @@ import androidx.constraintlayout.compose.Dimension
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.theme.black100Percent
 import com.sarathi.missionactivitytask.ui.theme.blueDark
-import com.sarathi.missionactivitytask.ui.theme.dimen_10_dp
 import com.sarathi.missionactivitytask.ui.theme.greenLight
 import com.sarathi.missionactivitytask.ui.theme.greenOnline
 import com.sarathi.missionactivitytask.ui.theme.greyBorderColor
@@ -53,7 +50,6 @@ import com.sarathi.missionactivitytask.ui.theme.smallerTextStyleNormalWeight
 import com.sarathi.missionactivitytask.ui.theme.stepIconCompleted
 import com.sarathi.missionactivitytask.ui.theme.stepIconEnableColor
 import com.sarathi.missionactivitytask.ui.theme.textColorDark
-import com.sarathi.missionactivitytask.ui.theme.trackColor
 import com.sarathi.missionactivitytask.ui.theme.white
 
 
@@ -71,7 +67,7 @@ fun StepsBoxGrantComponent(
 ) {
     val curPercentage = animateFloatAsState(
         targetValue =
-        10.toFloat(),
+        0.toFloat(),
         label = "",
         animationSpec = tween()
     )
@@ -161,14 +157,8 @@ fun StepsBoxGrantComponent(
                         maxLines = 2,
                         style = largeTextStyle
                     )
-                    LinearProgressIndicator(
-                        progress = curPercentage.value,
-                        color = greenOnline,
-                        trackColor = trackColor,
-                        strokeCap = StrokeCap.Round,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(end = dimen_10_dp)
+                    LinearProgressBarComponent(
+                        progress = curPercentage.value
                     )
                     if (subTitle != "") {
                         Text(
@@ -298,6 +288,7 @@ fun IconButtonForward(
         Icon(Icons.Default.ArrowForward, contentDescription = null, tint = Color.White)
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun StepBoxPreview() {

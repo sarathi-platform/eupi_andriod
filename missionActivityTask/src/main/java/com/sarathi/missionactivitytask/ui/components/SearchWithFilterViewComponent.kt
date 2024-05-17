@@ -1,4 +1,4 @@
-package com.sarathi.missionactivitytask.ui.basic_content.component
+package com.sarathi.missionactivitytask.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -149,7 +149,7 @@ fun SearchWithFilterViewComponent(
                             focusManager.clearFocus()
                             onFilterSelected(filterSelected)
                         }) {
-                        AppImageView(
+                        AppImageViewComponent(
                             resource = if (!filterSelected) R.drawable.ic_search_filter_unselected
                             else R.drawable.ic_search_filter_selected,
                             modifier = Modifier

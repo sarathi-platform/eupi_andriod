@@ -26,7 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
-import com.sarathi.missionactivitytask.ui.components.LinearProgressBar
+import com.sarathi.missionactivitytask.ui.components.LinearProgressBarComponent
 import com.sarathi.missionactivitytask.ui.components.PrimaryButton
 import com.sarathi.missionactivitytask.ui.components.SecondaryButton
 import com.sarathi.missionactivitytask.ui.theme.blueDark
@@ -99,7 +99,7 @@ fun BasicMissionCard(
                         .fillMaxWidth()
                         .padding(horizontal = dimen_30_dp, vertical = dimen_16_dp)
                 ) {
-                    LinearProgressBar(
+                    LinearProgressBarComponent(
                         progress = pendingCount.toFloat() / totalCount,
                     )
                     Text(

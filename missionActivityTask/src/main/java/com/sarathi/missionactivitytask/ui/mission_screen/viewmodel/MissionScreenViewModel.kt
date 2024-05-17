@@ -4,8 +4,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.sarathi.missionactivitytask.data.entities.MissionEntity
 import com.sarathi.missionactivitytask.domain.usecases.GetMissionsUseCase
-import com.sarathi.missionactivitytask.utils.InitDataEvent
-import com.sarathi.missionactivitytask.utils.LoaderEvent
+import com.sarathi.missionactivitytask.utils.event.InitDataEvent
+import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope

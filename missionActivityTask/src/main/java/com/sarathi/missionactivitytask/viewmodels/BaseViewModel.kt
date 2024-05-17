@@ -3,8 +3,8 @@ package com.sarathi.missionactivitytask.viewmodels
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.sarathi.missionactivitytask.utils.LoaderEvent
 import com.sarathi.missionactivitytask.utils.LoaderState
+import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import kotlinx.coroutines.CoroutineExceptionHandler
 
 abstract class BaseViewModel : ViewModel() {

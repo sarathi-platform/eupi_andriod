@@ -15,8 +15,8 @@ import com.sarathi.missionactivitytask.navigation.home.navigateToActivityScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.BasicMissionCard
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.mission_screen.viewmodel.MissionScreenViewModel
-import com.sarathi.missionactivitytask.utils.InitDataEvent
-import com.sarathi.missionactivitytask.utils.LoaderEvent
+import com.sarathi.missionactivitytask.utils.event.InitDataEvent
+import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 
 @Composable
 fun GrantMissionScreen(
@@ -40,6 +40,7 @@ fun GrantMissionScreen(
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
         isSearch = true,
+        isDataAvailable = viewModel.missionList.value.isEmpty(),
         onSearchValueChange = {},
         onBottomUI = {
         },

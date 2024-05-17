@@ -5,15 +5,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import com.sarathi.missionactivitytask.ui.theme.blueDark
+import com.sarathi.missionactivitytask.ui.theme.greenOnline
 import com.sarathi.missionactivitytask.ui.theme.trackLinearColor
 
 
 @Composable
-fun LinearProgressBar(
+fun LinearProgressBarComponent(
     progress: Float = 0f,
     modifier: Modifier = Modifier,
-    activeColor: Color = blueDark,
+    activeColor: Color = greenOnline,
     trackColor: Color = trackLinearColor
 ) {
     LinearProgressIndicator(

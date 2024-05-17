@@ -14,9 +14,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.data.entities.MissionActivityEntity
-import com.sarathi.missionactivitytask.ui.basic_content.component.BasicContentComponent
-import com.sarathi.missionactivitytask.ui.basic_content.component.ButtonComponent
-import com.sarathi.missionactivitytask.ui.basic_content.component.StepsBoxGrantComponent
+import com.sarathi.missionactivitytask.ui.components.BasicContentComponent
+import com.sarathi.missionactivitytask.ui.components.ButtonComponent
+import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
 
 @Composable
 fun ActivityRowCard(
