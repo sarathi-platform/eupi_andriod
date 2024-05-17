@@ -3,6 +3,8 @@ package com.sarathi.missionactivitytask.di
 import com.sarathi.missionactivitytask.domain.repository.GetMissionRepositoryImpl
 import com.sarathi.missionactivitytask.domain.usecases.GetMissionsUseCase
 import com.sarathi.missionactivitytask.network.MatApiService
+import com.sarathi.missionactivitytask.ui.grant_activity_screen.domain.repository.GetActivityRepositoryImpl
+import com.sarathi.missionactivitytask.ui.grant_activity_screen.domain.usecase.GetActivityUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,6 +32,12 @@ class MatModule {
     @Provides
     fun provideMissionUseCase(missionRepository: GetMissionRepositoryImpl): GetMissionsUseCase {
         return GetMissionsUseCase(missionRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun provideActivityUseCase(activityRepositoryImpl: GetActivityRepositoryImpl): GetActivityUseCase {
+        return GetActivityUseCase(activityRepositoryImpl)
     }
 
 

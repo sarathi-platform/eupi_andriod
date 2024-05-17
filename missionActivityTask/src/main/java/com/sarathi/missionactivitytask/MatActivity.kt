@@ -12,14 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-
 import androidx.navigation.compose.rememberNavController
 import com.sarathi.missionactivitytask.navigation.RootNavigationGraph
-import com.sarathi.missionactivitytask.ui.basic.mission.BasicActivityCard
+import com.sarathi.missionactivitytask.ui.mission_screen.viewmodel.MissionScreenViewModel
 import com.sarathi.missionactivitytask.ui.theme.The_nudgeTheme
 import com.sarathi.missionactivitytask.ui.theme.white
-import com.sarathi.missionactivitytask.utils.StatusEnum
-import com.sarathi.missionactivitytask.viewmodels.MissionScreenViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -68,14 +65,14 @@ class MatActivity : ComponentActivity() {
 @Preview
 @Composable
 fun CheckMissionScreen(){
-    BasicActivityCard(
-        title = "CSG disbursement to Didi's",
-        status = StatusEnum.InProgress,
-        pendingCount = 2,
-        totalCount = 10,
-        primaryButtonText = "Start",
-        countStatusText = "Activity Pending",
-        topHeaderText = "Due on 22nd March",
-        needToShowProgressBar = true,
-    )
+//    BasicMissionCard(
+//        title = "CSG disbursement to Didi's",
+//        status = StatusEnum.InProgress,
+//        pendingCount = 2,
+//        totalCount = 10,
+//        primaryButtonText = "Start",
+//        countStatusText = "Activity Pending",
+//        topHeaderText = "Due on 22nd March",
+//        needToShowProgressBar = true,
+//    )
 }

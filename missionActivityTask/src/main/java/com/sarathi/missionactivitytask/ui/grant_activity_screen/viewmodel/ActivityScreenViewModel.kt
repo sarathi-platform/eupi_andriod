@@ -1,9 +1,9 @@
-package com.sarathi.missionactivitytask.ui.mission_screen.viewmodel
+package com.sarathi.missionactivitytask.ui.grant_activity_screen.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import com.sarathi.missionactivitytask.data.entities.MissionEntity
-import com.sarathi.missionactivitytask.domain.usecases.GetMissionsUseCase
+import com.sarathi.missionactivitytask.data.entities.MissionActivityEntity
+import com.sarathi.missionactivitytask.ui.grant_activity_screen.domain.usecase.GetActivityUseCase
 import com.sarathi.missionactivitytask.utils.InitDataEvent
 import com.sarathi.missionactivitytask.utils.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
@@ -14,16 +14,17 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+
 @HiltViewModel
-class MissionScreenViewModel @Inject constructor(
-    private val missionsUseCase: GetMissionsUseCase
+class ActivityScreenViewModel @Inject constructor(
+    private val getActivityUseCase: GetActivityUseCase
 ) : BaseViewModel() {
-    private val _missionList = mutableStateOf<List<MissionEntity>>(emptyList())
-    val missionList: State<List<MissionEntity>> get() = _missionList
+    private val _activityList = mutableStateOf<List<MissionActivityEntity>>(emptyList())
+    val activityList: State<List<MissionActivityEntity>> get() = _activityList
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
-                initMissionScreen()
+                initActivityScreen()
             }
 
             is LoaderEvent.UpdateLoaderState -> {
@@ -34,12 +35,13 @@ class MissionScreenViewModel @Inject constructor(
         }
     }
 
-    private fun initMissionScreen() {
+    private fun initActivityScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            _missionList.value = missionsUseCase.getAllMission()
+            _activityList.value = getActivityUseCase.getActivities()
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
     }
+
 }

@@ -32,19 +32,19 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         missionDao.softDeleteMission("")
         missions.forEach { mission ->
             val missionCount = missionDao.getMissionCount(
-                userId = "",
+                userId = "99",
                 missionId = mission.missionId
             )
             if (missionCount == 0) {
                 missionDao.insertMission(
                     MissionEntity.getMissionEntity(
-                        userId = "",
+                        userId = "99",
                         activityTaskSize = mission.activities.size,
                         mission = mission
                     )
                 )
             } else {
-                missionDao.updateMissionActiveStatus(mission.missionId, "")
+                missionDao.updateMissionActiveStatus(mission.missionId, "99")
             }
         }
 
@@ -56,13 +56,13 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     ) {
         activities.forEach { missionActivityModel ->
             val activityCount = missionActivityDao.getActivityCount(
-                userId = "",
+                userId = "99",
                 missionActivityModel.activityId
             )
             if (activityCount == 0) {
                 missionActivityDao.insertMissionActivity(
                     MissionActivityEntity.getMissionActivityEntity(
-                        "",
+                        "99",
                         missionId,
                         missionActivityModel.tasks.size,
                         missionActivityModel
@@ -71,7 +71,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
             } else {
                 missionActivityDao.updateActivityActiveStatus(
                     missionId,
-                    "",
+                    "99",
                     1,
                     missionActivityModel.activityId
                 )
@@ -85,17 +85,17 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         activityName: String,
         activities: List<MissionTaskModel>
     ) {
-        activityTaskDao.softDeleteActivityTask("", activityId, missionId)
+        activityTaskDao.softDeleteActivityTask("99", activityId, missionId)
         activities.forEach { task ->
             val taskCount =
                 activityTaskDao.getTaskByIdCount(
-                    userId = "",
+                    userId = "99",
                     taskId = task.id ?: 0
                 )
             if (taskCount == 0) {
                 activityTaskDao.insertActivityTask(
                     ActivityTaskEntity.getActivityTaskEntity(
-                        userId = "",
+                        userId = "99",
                         missionId = missionId,
                         activityId = activityId,
                         activityName = activityName,
@@ -103,7 +103,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     )
                 )
             } else {
-                activityTaskDao.updateActiveTaskStatus(1, task.id ?: 0, "")
+                activityTaskDao.updateActiveTaskStatus(1, task.id ?: 0, "99")
             }
 
         }

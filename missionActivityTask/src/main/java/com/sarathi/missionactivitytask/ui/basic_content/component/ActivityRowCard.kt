@@ -9,11 +9,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.sarathi.missionactivitytask.R
+import com.sarathi.missionactivitytask.data.entities.MissionActivityEntity
 
 @Composable
-fun BasicContentListScreen(items: List<BasicContent>, grantSteps: List<GrantStep>) {
+fun ActivityRowCard(items: List<BasicContent> = listOf(), activities: List<MissionActivityEntity>) {
     Column {
         Row(modifier = Modifier.padding(10.dp)) {
             items.forEachIndexed { index, item ->
@@ -34,14 +37,15 @@ fun BasicContentListScreen(items: List<BasicContent>, grantSteps: List<GrantStep
         LazyColumn(
         ) {
             itemsIndexed(
-                items = grantSteps
-            ) { index, grantStep ->
+                items = activities
+            ) { index, activity ->
                 StepsBoxGrantComponent(
-                    boxTitle = grantStep.boxTittle,
-                    subTitle = grantStep.boxSubTitle,
-                    stepNo = index,
+                    boxTitle = activity.activityName,
+                    subTitle = activity.activityName,
+                    stepNo = index + 1,
                     index = index,
-                    iconResourceId = 0
+                    isDividerVisible = index != activities.lastIndex,
+                    painter = painterResource(id = R.drawable.ic_mission_inprogress)
                 ) {
 
                 }
@@ -92,7 +96,7 @@ fun PreviewBasicContentScreen() {
         grantStep2
     )
 
-    BasicContentListScreen(items = contents, grantSteps = grantSteps)
+    // ActivityRowCard(items = contents, grantSteps = grantSteps)
 }
 
 data class BasicContent(val contentType: String, val contentTitle: String)

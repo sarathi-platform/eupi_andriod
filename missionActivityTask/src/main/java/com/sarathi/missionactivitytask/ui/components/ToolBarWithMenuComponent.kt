@@ -8,8 +8,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,9 +27,10 @@ import com.sarathi.missionactivitytask.ui.theme.white
 
 
 @Composable
-fun MatToolBarWithMenuComponent(
+fun ToolBarWithMenuComponent(
     title: String,
     modifier: Modifier,
+    iconResId: Int = R.drawable.arrow_left,
     navController: NavController? = rememberNavController(),
     onBackIconClick: () -> Unit,
     onBottomUI: @Composable () -> Unit,
@@ -50,7 +49,7 @@ fun MatToolBarWithMenuComponent(
                             modifier = Modifier
                         ) {
                             Icon(
-                                imageVector = Icons.Default.ArrowBack,
+                                painter = painterResource(id = iconResId),
                                 contentDescription = "Back Button",
                                 tint = Color.Black
                             )
@@ -100,7 +99,7 @@ fun MatToolBarWithMenuComponent(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewMatToolBarWithMenuComponent() {
-    MatToolBarWithMenuComponent(title = "Mission Summary", modifier = Modifier, onBackIconClick = {
+    ToolBarWithMenuComponent(title = "Mission Summary", modifier = Modifier, onBackIconClick = {
 
     }, onContentUI = {
 
