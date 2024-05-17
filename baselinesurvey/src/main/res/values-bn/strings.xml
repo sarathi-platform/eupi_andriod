@@ -469,4 +469,5 @@
     <string name="content">Content</string>
     <string name="average_cost">গড় ভ্রমণ খরচ: ₹ %1$s</string>
     <string name="only_one_entry_can_be_added">শুধুমাত্র একটি এন্ট্রি যোগ করা যাবে</string>
+    <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
 </resources>

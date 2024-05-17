@@ -97,7 +97,7 @@ fun ExportImportScreen(
                 }
 
                 SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name -> {
-                    viewModel.markAllActivityInProgress()
+                    viewModel.markAllActivityInProgress(context)
                 }
             }
         },

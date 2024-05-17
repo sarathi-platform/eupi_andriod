@@ -22,6 +22,8 @@ import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.LOCAL_BACKUP_EXTENSION
 import com.nudge.core.SARATHI_DIRECTORY_NAME
+import com.nudge.core.SUFFIX_EVENT_ZIP_FILE
+import com.nudge.core.SUFFIX_IMAGE_ZIP_FILE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.exportAllOldImages

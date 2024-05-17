@@ -2,16 +2,13 @@ package com.nrlm.baselinesurvey.ui.backup.viewmodel
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.core.net.toFile
 import androidx.core.content.FileProvider
+import androidx.core.net.toFile
 import com.google.gson.Gson
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BuildConfig
@@ -22,7 +19,6 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
-import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
@@ -30,7 +26,6 @@ import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventForFormQuestionDto
-import com.nrlm.baselinesurvey.model.datamodel.UpdateActivityStatusEventDto
 import com.nrlm.baselinesurvey.model.datamodel.toCSVSave
 import com.nrlm.baselinesurvey.model.datamodel.toCsv
 import com.nrlm.baselinesurvey.model.datamodel.toCsvR
@@ -39,7 +34,6 @@ import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LogWriter
-import com.nrlm.baselinesurvey.utils.json
 import com.nrlm.baselinesurvey.utils.openShareSheet
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
@@ -441,7 +435,7 @@ fun exportOnlyLogFile(context: Context){
         return list ?: emptyList()
     }
 
-    fun markAllActivityInProgress() {
+    fun markAllActivityInProgress(context: Context) {
         CoroutineScope(Dispatchers.IO).launch {
 
             val userId = prefRepo.getUniqueUserIdentifier()
@@ -470,6 +464,12 @@ fun exportOnlyLogFile(context: Context){
                 )
             }
 
+            withContext(Dispatchers.Main) {
+                showCustomToast(
+                    context,
+                    context.getString(R.string.all_activities_marked_as_in_progress)
+                )
+            }
         }
     }
 }
