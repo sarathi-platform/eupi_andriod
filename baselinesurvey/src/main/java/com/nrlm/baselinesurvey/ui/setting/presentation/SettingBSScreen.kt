@@ -159,7 +159,8 @@ fun SettingBSScreen(
                 }
 
                 SettingTagEnum.SYNC_DATA_NOW.name ->{
-                    viewModel.syncAllPending(ConnectionMonitor.DoesNetworkHaveInternet.getNetworkStrength())
+                    navController.navigate(SettingBSScreens.SYNC_EVENT_SCREEN.route)
+//                    viewModel.syncAllPending(ConnectionMonitor.DoesNetworkHaveInternet.getNetworkStrength())
                 }
 
             }
