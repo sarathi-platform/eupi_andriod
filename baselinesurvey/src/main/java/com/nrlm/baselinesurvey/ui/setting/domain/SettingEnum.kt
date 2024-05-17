@@ -15,5 +15,6 @@ enum class SettingTagEnum {
     EXPORT_LOG_FILE,
     REGENERATE_EVENTS,
     EXPORT_BASELINE_QNA,
-    SYNC_DATA_NOW
+    SYNC_DATA_NOW,
+    SYNC_STOP
 }

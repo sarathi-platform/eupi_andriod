@@ -1,14 +1,17 @@
 package com.nrlm.baselinesurvey.ui.setting.presentation
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -27,6 +30,7 @@ import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.ConnectionMonitor
 import com.nrlm.baselinesurvey.utils.ShowCustomDialog
 import com.nrlm.baselinesurvey.utils.showCustomToast
+import com.nudge.core.json
 import com.nudge.core.model.SettingOptionModel
 import java.util.Locale
 
@@ -37,7 +41,6 @@ fun SettingBSScreen(
 ) {
     val list = ArrayList<SettingOptionModel>()
     val context = LocalContext.current
-
     val loaderState = viewModel.loaderState
 
     LaunchedEffect(key1 = true){
@@ -82,10 +85,17 @@ fun SettingBSScreen(
                 SettingTagEnum.SYNC_DATA_NOW.name
             )
         )
+
+        list.add(
+            SettingOptionModel(
+                7,
+                "Stop Sync",
+                BLANK_STRING,
+                SettingTagEnum.SYNC_STOP.name
+            )
+        )
         viewModel._optionList.value = list
     }
-
-
     if(viewModel.showLogoutConfirmationDialog.value){
         ShowCustomDialog(title = stringResource(id = R.string.logout),
             message = stringResource(id = R.string.logout_confirmation),
@@ -119,7 +129,6 @@ fun SettingBSScreen(
             )
         }
     }
-
     CommonSettingScreen(
         title = stringResource(id = R.string.settings_screen_title),
         versionText = " ${BuildConfig.FLAVOR.uppercase(Locale.getDefault())} v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",

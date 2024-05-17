@@ -394,13 +394,12 @@ class SettingRepository @Inject constructor(
             modified_date = System.currentTimeMillis().toDate(),
             request_payload = requestPayload,
             payloadLocalId = payloadLocalId,
-            status = EventSyncStatus.OPEN.name,
+            status = EventSyncStatus.OPEN.eventSyncStatus,
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,
                 depends_on = emptyList(),
                 request_payload_size = requestPayload.getSizeInLong(),
             ).json(),
-            consumer_status = BLANK_STRING,
             result = null
         )
         val dependsOn = createEventDependency(eventItem, eventName, event)

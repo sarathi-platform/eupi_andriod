@@ -562,10 +562,10 @@ class EventWriterHelperImpl @Inject constructor(
             createdBy = prefRepo.getUserId(),
             mobile_number = prefRepo.getMobileNumber() ?: "",
             request_payload = payload,
-            status = EventSyncStatus.OPEN.name,
+            status = EventSyncStatus.OPEN.eventSyncStatus,
             modified_date = System.currentTimeMillis().toDate(),
             result = null,
-            consumer_status = BLANK_STRING,
+
             payloadLocalId = UUID.randomUUID().toString(),
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,
@@ -644,10 +644,9 @@ class EventWriterHelperImpl @Inject constructor(
             createdBy = prefRepo.getUserId(),
             mobile_number = prefRepo.getMobileNumber() ?: "",
             request_payload = payload,
-            status = EventSyncStatus.OPEN.name,
+            status = EventSyncStatus.OPEN.eventSyncStatus,
             modified_date = System.currentTimeMillis().toDate(),
             result = null,
-            consumer_status = BLANK_STRING,
             payloadLocalId = UUID.randomUUID().toString(),
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,

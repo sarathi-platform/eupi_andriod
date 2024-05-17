@@ -15,26 +15,40 @@ class SyncApiRepository @Inject constructor(
     val apiService: SyncApiService,
     private val eventDao: EventsDao
 ) {
-    suspend fun syncEventToServer(events: List<Events>): ApiResponseModel<List<SyncEventResponse>> {
+    suspend fun syncProducerEventToServer(events: List<Events>): ApiResponseModel<List<SyncEventResponse>> {
         val eventRequest: List<EventRequest> = events.map {
             it.toEventRequest()
         }
         return apiService.syncEvent(eventRequest)
     }
 
-    suspend fun getPendingEventFromDb(): List<Events> {
-        return eventDao.getAllPendingEvent(listOf(EventSyncStatus.RETRY, EventSyncStatus.OPEN))
-
+    fun getPendingEventFromDb(batchLimit:Int,retryCount:Int): List<Events> {
+        return eventDao.getAllPendingEvent(
+            listOf(
+                EventSyncStatus.OPEN.eventSyncStatus,
+                EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus
+            ),
+            batchLimit = batchLimit,
+            retryCount=retryCount
+        )
     }
 
     suspend fun getPendingEventCount(): Int {
         return eventDao.getTotalPendingEventCount(
             listOf(
-                EventSyncStatus.RETRY,
-                EventSyncStatus.OPEN
+                EventSyncStatus.OPEN.eventSyncStatus,
+                EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus
             )
         )
 
+    }
+
+    fun updateSuccessEventStatus(eventList:List<SyncEventResponse>){
+        eventDao.updateSuccessEventStatus(eventList)
+    }
+
+    fun updateFailedEventStatus(eventList:List<SyncEventResponse>){
+        eventDao.updateFailedEventStatus(eventList)
     }
 }
 

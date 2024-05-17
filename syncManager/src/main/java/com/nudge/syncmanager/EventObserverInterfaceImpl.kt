@@ -1,19 +1,25 @@
 package com.nudge.syncmanager
 
 import android.content.Context
+import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.Data
+import androidx.work.ListenableWorker
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
+import com.google.common.util.concurrent.ListenableFuture
 import com.nudge.communicationModule.EventObserverInterface
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.NetworkSpeed
+import com.nudge.core.json
 import com.nudge.syncmanager.workers.SyncUploadWorker
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -59,12 +65,15 @@ class EventObserverInterfaceImpl @Inject constructor(
                     TimeUnit.MILLISECONDS
                 ).setInputData(data.build())
                 .build()
+       val workManager=WorkManager.getInstance(context)
 
-        WorkManager
-            .getInstance(context)
+        val workerInfo=  workManager.getWorkInfoByIdLiveData(uploadWorkRequest.id)
+        Log.d("TAG", "syncPendingEvent workerInfo: ${workerInfo.value?.json()}")
+        workManager
             .enqueue(uploadWorkRequest)
-
     }
+
+
 
     fun getBatchSize(networkSpeed: NetworkSpeed): Int {
         return when (networkSpeed) {
