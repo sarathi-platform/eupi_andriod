@@ -68,7 +68,7 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                     BLANK_STRING,
                     SettingTagEnum.LOAD_SERVER_DATA.name
                 )
-            )
+        )
 
         list.add(
             SettingOptionModel(
@@ -76,6 +76,15 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 context.getString(R.string.regenerate_all_events),
                 BLANK_STRING,
                 SettingTagEnum.REGENERATE_EVENTS.name
+            )
+        )
+
+        list.add(
+            SettingOptionModel(
+                8,
+                "Mark Activity Inprogress",
+                BLANK_STRING,
+                SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name
             )
         )
 

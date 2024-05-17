@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.nrlm.baselinesurvey.TASK_TABLE_NAME
 import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
+import com.nrlm.baselinesurvey.model.datamodel.SummaryFileDto
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 
 @Dao
@@ -124,5 +125,12 @@ interface ActivityTaskDao {
 
     @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and missionId = :missionId and activityId=:activityId and isActive=1")
     fun getTaskCountForActivity(userId: String, missionId: Int, activityId: Int): Int
+
+    @Query("SELECT status as summaryKey, count(*) as summaryCount from $TASK_TABLE_NAME where userId = :userId and missionId = :missionId and activityId = :activityId group by status")
+    fun getTaskSummaryByStatus(
+        userId: String,
+        missionId: Int,
+        activityId: Int
+    ): List<SummaryFileDto>
 
 }

@@ -22,12 +22,15 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
+import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventDto
 import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventForFormQuestionDto
+import com.nrlm.baselinesurvey.model.datamodel.UpdateActivityStatusEventDto
 import com.nrlm.baselinesurvey.model.datamodel.toCSVSave
 import com.nrlm.baselinesurvey.model.datamodel.toCsv
 import com.nrlm.baselinesurvey.model.datamodel.toCsvR
@@ -40,11 +43,13 @@ import com.nrlm.baselinesurvey.utils.json
 import com.nrlm.baselinesurvey.utils.openShareSheet
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.EXCEL_TYPE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.datamodel.BaseLineQnATableCSV
 import com.nudge.core.datamodel.HamletQnATableCSV
+import com.nudge.core.enums.EventType
 import com.nudge.core.exportAllOldImages
 import com.nudge.core.exportLogFile
 import com.nudge.core.exportOldData
@@ -56,6 +61,7 @@ import com.nudge.core.getFirstName
 import com.nudge.core.importDbFile
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.toDate
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -76,6 +82,7 @@ class ExportImportViewModel @Inject constructor(
     private val surveyeeEntityDao: SurveyeeEntityDao,
     private val optionItemDao: OptionItemDao,
     private val questionEntityDao: QuestionEntityDao,
+    private val missionActivityDao: MissionActivityDao,
     val prefRepo: PrefRepo
 ): BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
@@ -421,12 +428,48 @@ fun exportOnlyLogFile(context: Context){
         }
         return uri
     }
-    fun checkCSVList(hamletListQna: List<HamletQnATableCSV>?, baseLineListQna: List<BaseLineQnATableCSV>?): List<Exportable> {
+
+    fun checkCSVList(
+        hamletListQna: List<HamletQnATableCSV>?,
+        baseLineListQna: List<BaseLineQnATableCSV>?
+    ): List<Exportable> {
         val list = if (hamletListQna.isNullOrEmpty()) {
             baseLineListQna
         } else {
             hamletListQna
         }
         return list ?: emptyList()
+    }
+
+    fun markAllActivityInProgress() {
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val userId = prefRepo.getUniqueUserIdentifier()
+
+            val activities = missionActivityDao.getAllActivities(userId)
+
+            activities.forEach { activity ->
+
+                missionActivityDao.markActivityStart(
+                    userId,
+                    activity.missionId,
+                    activity.activityId,
+                    SectionStatus.INPROGRESS.name,
+                    System.currentTimeMillis().toDate().toString()
+                )
+
+                val updateTaskStatusEvent =
+                    eventWriterHelperImpl.createActivityStatusUpdateEvent(
+                        missionId = activity.missionId,
+                        activityId = activity.activityId,
+                        status = SectionStatus.INPROGRESS
+                    )
+                exportImportUseCase.eventsWriterUseCase.invoke(
+                    events = updateTaskStatusEvent,
+                    eventType = EventType.STATEFUL
+                )
+            }
+
+        }
     }
 }
