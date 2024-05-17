@@ -88,10 +88,6 @@ fun SyncEventScreen(
                 )
             }
 
-            Column(modifier = Modifier
-                .background(Color.White)
-                .fillMaxWidth()
-            ) {
 
            LazyColumn {
                     itemsIndexed(syncEventList.value) { index, item ->
@@ -103,7 +99,7 @@ fun SyncEventScreen(
                         }
                     }
                 }
-            }
+
         }
 
     }
