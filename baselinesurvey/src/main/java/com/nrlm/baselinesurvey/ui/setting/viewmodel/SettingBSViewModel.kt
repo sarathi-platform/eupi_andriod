@@ -77,6 +77,24 @@ class SettingBSViewModel @Inject constructor(
                 val fileAndDbZipList = ArrayList<Pair<String, Uri?>>()
                 val compression = ZipFileCompression()
 
+                //Delete Old Image zips.
+                compression.deleteOldFiles(
+                    context = BaselineCore.getAppContext(),
+                    fileNameReference = "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_Sarathi_Image",
+                    folderName = getUserMobileNumber(),
+                    fileType = SUFFIX_IMAGE_ZIP_FILE,
+                    applicationId = BuildConfig.APPLICATION_ID,
+                    checkInAppDirectory = true
+                )
+
+                //Delete old event zips.
+                compression.deleteOldFiles(
+                    context = BaselineCore.getAppContext(),
+                    fileNameReference = "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_sarathi_",
+                    folderName = getUserMobileNumber(),
+                    fileType = SUFFIX_EVENT_ZIP_FILE
+                )
+
                 // Image Files and Zip
                 val imageUri = exportAllOldImages(
                     appContext = BaselineCore.getAppContext(),
@@ -161,9 +179,9 @@ class SettingBSViewModel @Inject constructor(
                         getUserMobileNumber()
                     )
                     zipLogDbFileUri?.let {
-                        if(it != Uri.EMPTY){
-                            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                            fileUriList.add(it)
+                        if (it != Uri.EMPTY) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                                fileUriList.add(it)
                             else fileUriList.add(uriFromFile(context = BaselineCore.getAppContext(),
                                 applicationID = BuildConfig.APPLICATION_ID,
                                 file = it.toFile()))
