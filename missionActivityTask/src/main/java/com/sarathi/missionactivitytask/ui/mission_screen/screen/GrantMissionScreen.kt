@@ -1,15 +1,12 @@
 package com.sarathi.missionactivitytask.ui.mission_screen.screen
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -42,37 +39,28 @@ fun GrantMissionScreen(
         modifier = Modifier.fillMaxSize(),
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
+        isSearch = true,
+        onSearchValueChange = {},
         onBottomUI = {
         },
         onContentUI = {
             if (viewModel.missionList.value.isNotEmpty()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp),
-                ) {
-                    Column(modifier = Modifier.padding(top = 55.dp)) {
-                        LazyColumn {
-                            items(viewModel.missionList.value) { mission ->
-                                BasicMissionCard(
-                                    countStatusText = "kjkjk",
-                                    topHeaderText = "hdshk",
-                                    totalCount = 10,
-                                    title = mission.missionName,
-                                    needToShowProgressBar = true,
-                                    primaryButtonText = "Start",
-                                    onPrimaryClick = {
-                                        navigateToActivityScreen(navController)
-                                    }
-
-                                )
+                LazyColumn {
+                    items(viewModel.missionList.value) { mission ->
+                        BasicMissionCard(
+                            countStatusText = "Activities Completed",
+                            topHeaderText = "Due by 22 March",
+                            totalCount = 2,
+                            title = mission.missionName,
+                            needToShowProgressBar = true,
+                            primaryButtonText = "Start",
+                            onPrimaryClick = {
+                                navigateToActivityScreen(navController)
                             }
 
-                        }
+                        )
                     }
                 }
-
-
             }
         }
     )

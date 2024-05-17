@@ -1,4 +1,4 @@
-package com.sarathi.missionactivitytask.ui.basic_content.component
+package com.sarathi.missionactivitytask.ui.grant_activity_screen.screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,22 +14,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.data.entities.MissionActivityEntity
+import com.sarathi.missionactivitytask.ui.basic_content.component.BasicContentComponent
+import com.sarathi.missionactivitytask.ui.basic_content.component.ButtonComponent
+import com.sarathi.missionactivitytask.ui.basic_content.component.StepsBoxGrantComponent
 
 @Composable
-fun ActivityRowCard(items: List<BasicContent> = listOf(), activities: List<MissionActivityEntity>) {
+fun ActivityRowCard(
+    contents: List<BasicContent> = listOf(),
+    activities: List<MissionActivityEntity>
+) {
     Column {
-        Row(modifier = Modifier.padding(10.dp)) {
-            items.forEachIndexed { index, item ->
+        Row(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp, start = 20.dp, end = 20.dp)) {
+            contents.forEachIndexed { index, item ->
                 if (index < 3) {
                     BasicContentComponent(
                         contentType = item.contentType,
                         contentTitle = item.contentTitle
                     )
-                } else {
-                    BasicContentComponent(
-                        contentType = "MORE_DATA",
-                        moreContentData = "+ ${items.size - index} More Data"
-                    )
+                } else if (index == 3) {
+                    ButtonComponent(title = "+ ${contents.size - index} More Data")
                 }
             }
         }
@@ -41,7 +44,7 @@ fun ActivityRowCard(items: List<BasicContent> = listOf(), activities: List<Missi
             ) { index, activity ->
                 StepsBoxGrantComponent(
                     boxTitle = activity.activityName,
-                    subTitle = activity.activityName,
+                    subTitle = "0/5 VOs completed",
                     stepNo = index + 1,
                     index = index,
                     isDividerVisible = index != activities.lastIndex,

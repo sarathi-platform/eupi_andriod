@@ -1,7 +1,9 @@
 package com.sarathi.missionactivitytask.ui.components
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
@@ -20,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.sarathi.missionactivitytask.R
+import com.sarathi.missionactivitytask.ui.basic_content.component.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.theme.blueDark
 import com.sarathi.missionactivitytask.ui.theme.largeTextStyle
 import com.sarathi.missionactivitytask.ui.theme.textColorDark
@@ -30,9 +33,11 @@ import com.sarathi.missionactivitytask.ui.theme.white
 fun ToolBarWithMenuComponent(
     title: String,
     modifier: Modifier,
+    isSearch: Boolean = false,
     iconResId: Int = R.drawable.arrow_left,
     navController: NavController? = rememberNavController(),
     onBackIconClick: () -> Unit,
+    onSearchValueChange: (String) -> Unit,
     onBottomUI: @Composable () -> Unit,
     onContentUI: @Composable (PaddingValues) -> Unit
 ) {
@@ -88,10 +93,28 @@ fun ToolBarWithMenuComponent(
             )
         },
         bottomBar = {
+
             onBottomUI()
         }
     ) {
-        onContentUI(it)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 75.dp)
+        ) {
+            if (isSearch) {
+                SearchWithFilterViewComponent(placeholderString = "Search",
+                    filterSelected = false,
+                    modifier = Modifier.padding(horizontal = 10.dp),
+                    showFilter = false,
+                    onFilterSelected = {},
+                    onSearchValueChange = { queryTerm ->
+                    })
+            }
+            onContentUI(it)
+        }
+
+
     }
 
 }
@@ -99,9 +122,9 @@ fun ToolBarWithMenuComponent(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewMatToolBarWithMenuComponent() {
-    ToolBarWithMenuComponent(title = "Mission Summary", modifier = Modifier, onBackIconClick = {
-
-    }, onContentUI = {
-
-    }, onBottomUI = {})
+//    ToolBarWithMenuComponent(title = "Mission Summary", modifier = Modifier, onBackIconClick = {
+//
+//    }, onContentUI = {
+//
+//    }, onBottomUI = {})
 }

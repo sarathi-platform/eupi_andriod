@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
@@ -22,12 +21,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
 import com.sarathi.missionactivitytask.ui.basic_content.constants.ContentShape
+import com.sarathi.missionactivitytask.ui.basic_content.constants.ContentType
+import com.sarathi.missionactivitytask.ui.theme.black1
+import com.sarathi.missionactivitytask.ui.theme.lightGray2
+import com.sarathi.missionactivitytask.ui.theme.smallTextStyleMediumWeight2
+import com.sarathi.missionactivitytask.ui.theme.textColorDark
+import com.sarathi.missionactivitytask.ui.theme.white
 
 
 @Composable
@@ -56,14 +63,13 @@ private fun ContentView(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        //lightGray2
         Box(
             modifier = Modifier
                 .padding(start = 16.dp, end = 16.dp)
                 .size(60.dp)
                 .clip(shape = CircleShape)
                 .border(
-                    1.dp, color = Color.Black, RoundedCornerShape(100.dp)
+                    1.dp, color = lightGray2, RoundedCornerShape(100.dp)
                 )
                 .background(color = Color.Transparent)
                 .fillMaxSize(),
@@ -72,10 +78,10 @@ private fun ContentView(
             ContentData(contentType = contentType, moreContentData = moreContentData)
         }
         if (contentTitle.isNotBlank()) {
-            //style = smallTextStyleMediumWeight2
             Text(
                 text = contentTitle,
-                fontSize = 10.sp
+                fontSize = 10.sp,
+                style = smallTextStyleMediumWeight2
             )
         }
     }
@@ -83,23 +89,23 @@ private fun ContentView(
 
 @Composable
 fun ContentData(contentType: String, moreContentData: String) {
-//    if (contentType.equals(ContentType.IMAGE.name)) {
-//        val painter: Painter = painterResource(id = R.drawable.nrlm_logo)
-//        Image(painter = painter, contentDescription = null)
-//    } else if (contentType.equals(ContentType.VIDEO.name)) {
-//        ImageOverlay(resId = R.drawable.ttn_logo)
-//    } else if (contentType.equals(ContentType.FILE.name)) {
-//        val painter: Painter =
-//            painterResource(id = R.drawable.baseline_food_security_sutritional_diversity)
-//        Image(painter = painter, contentDescription = null)
-//    } else if (contentType.equals(ContentType.MORE_DATA.name)) {
-//        Text(
-//            text = moreContentData,
-//            textAlign = TextAlign.Center,
-//            style = smallerTextStyle,
-//            fontSize = 10.sp
-//        )
-//    }
+    when (contentType) {
+        ContentType.IMAGE.name -> {
+            val painter: Painter = painterResource(id = R.drawable.ic_sarathi_logo)
+            Image(painter = painter, contentDescription = null)
+        }
+
+        ContentType.VIDEO.name -> {
+            ImageOverlay(resId = R.drawable.ic_mission_inprogress)
+        }
+
+        ContentType.FILE.name -> {
+            val painter: Painter =
+                painterResource(id = R.drawable.ic_mission_inprogress)
+            Image(painter = painter, contentDescription = null)
+        }
+    }
+
 }
 
 @Composable
@@ -109,21 +115,30 @@ fun ImageOverlay(resId: Int) {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            painter = painter,
-            contentDescription = "",
-        )
         Box(
             modifier = Modifier
-                .wrapContentSize(Alignment.Center),
-            contentAlignment = Alignment.Center
-
+                .fillMaxSize()
+                .background(black1.copy(.10f))
         ) {
-            //textColorDark
+            Image(
+                painter = painter,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.FillBounds,
+                contentDescription = "",
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .size(26.dp)
+                .clip(shape = CircleShape)
+                .background(color = white),
+            contentAlignment = Alignment.Center
+        ) {
             Icon(
                 imageVector = Icons.Default.PlayArrow,
                 contentDescription = null,
-                tint = Color.Black,
+                tint = textColorDark,
             )
         }
     }
