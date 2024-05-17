@@ -208,3 +208,65 @@ fun CommonSettingCard(
 
     }
 }
+
+@Composable
+fun SyncEventCard(
+    title: String,
+    subTitle: String,
+    status :String,
+    onClick: () -> Unit
+) {
+
+    Column(modifier = Modifier
+        .background(Color.White)
+        .fillMaxWidth()
+        .clickable {
+            onClick()
+        }) {
+        Column(
+            modifier = Modifier
+                .background(Color.White)
+                .fillMaxWidth()
+                .padding(horizontal = dimensionResource(id = R.dimen.dp_20))
+                .padding(vertical = dimensionResource(id = R.dimen.dp_15))
+        ) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(
+                    text = title,
+                    textAlign = TextAlign.Start,
+                    fontSize = 16.sp,
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    color = textColorDark,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
+            }
+            Text(
+                text = subTitle,
+                textAlign = TextAlign.Start,
+                fontSize = 13.sp,
+                fontFamily = NotoSans,
+                fontWeight = FontWeight.Normal,
+                color = black100Percent,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text = status,
+                textAlign = TextAlign.Start,
+                fontSize = 13.sp,
+                fontFamily = NotoSans,
+                fontWeight = FontWeight.Normal,
+                color = black100Percent,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(dimensionResource(id = R.dimen.dp_2))
+                    .background(borderGreyLight)
+            )
+        }
+    }
+}

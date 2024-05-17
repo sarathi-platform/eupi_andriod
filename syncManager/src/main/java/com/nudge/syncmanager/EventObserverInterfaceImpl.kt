@@ -43,6 +43,11 @@ class EventObserverInterfaceImpl @Inject constructor(
         eventDependencyDao.insertAll(eventDependencies)
     }
 
+    override suspend fun getEvent(): List<Events> {
+        return eventsDao.getAllEvent()
+    }
+
+
     override suspend fun syncPendingEvent(context: Context, networkSpeed: NetworkSpeed) {
 
         val constraints = Constraints.Builder()

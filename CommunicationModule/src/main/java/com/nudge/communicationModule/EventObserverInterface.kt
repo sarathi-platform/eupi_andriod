@@ -18,4 +18,6 @@ interface EventObserverInterface {
     suspend fun addEventDependencies(eventDependencies: List<EventDependencyEntity>)
 
     suspend fun syncPendingEvent(context: Context, networkSpeed: NetworkSpeed)
+
+    suspend fun getEvent():List<Events>
 }

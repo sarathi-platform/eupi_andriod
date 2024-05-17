@@ -52,6 +52,7 @@ import com.nrlm.baselinesurvey.ui.splash.presentaion.SplashScreenComponent
 import com.nrlm.baselinesurvey.ui.start_screen.presentation.BaseLineStartScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreen
+import com.nrlm.baselinesurvey.ui.sync_event.presentation.SyncEventScreen
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.ui.video_player.presentation.FullscreenView
 import com.nrlm.baselinesurvey.utils.BaselineCore
@@ -414,6 +415,9 @@ fun NavGraphBuilder.settingNavGraph(navHostController: NavHostController){
         composable(route = SettingBSScreens.BACKUP_RECOVERY_SCREEN.route){
             ExportImportScreen(navController = navHostController, viewModel = hiltViewModel())
         }
+        composable(route = SettingBSScreens.SYNC_EVENT_SCREEN.route){
+            SyncEventScreen(navController = navHostController, viewModel = hiltViewModel())
+        }
     }
 }
 
@@ -422,6 +426,8 @@ sealed class SettingBSScreens(val route: String){
     object LANGUAGE_SCREEN : SettingBSScreens(route =LANGUAGE_SCREEN_ROUTE_NAME )
     object PROFILE_SCREEN : SettingBSScreens(route =PROFILE_BS_SCREEN_ROUTE_NAME )
     object BACKUP_RECOVERY_SCREEN : SettingBSScreens(route =BACKUP_RECOVERY_SCREEN_ROUTE_NAME )
+    object SYNC_EVENT_SCREEN : SettingBSScreens(route =SYNC_EVENT_SCREEN_ROUTE_NAME )
+
 }
 
 sealed class HomeScreens(val route: String) {
@@ -482,6 +488,7 @@ const val LANGUAGE_SCREEN_ROUTE_NAME = "language_screen"
 const val PROFILE_BS_SCREEN_ROUTE_NAME = "profile_bs_screen"
 const val BACKUP_RECOVERY_SCREEN_ROUTE_NAME = "backup_recovery_screen"
 const val FORM_QUESTION_SUMMARY_SCREEN_ROUTE_NAME = "form_question_summary_screen"
+const val SYNC_EVENT_SCREEN_ROUTE_NAME = "sync_event_screen"
 
 
 fun navigateToBaseLineStartScreen(
