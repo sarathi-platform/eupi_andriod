@@ -126,7 +126,7 @@ interface ActivityTaskDao {
     @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and missionId = :missionId and activityId=:activityId and isActive=1")
     fun getTaskCountForActivity(userId: String, missionId: Int, activityId: Int): Int
 
-    @Query("SELECT status as summaryKey, count(*) as summaryCount from $TASK_TABLE_NAME where userId = :userId and missionId = :missionId and activityId = :activityId group by status")
+    @Query("SELECT status as summaryKey, count(*) as summaryCount from $TASK_TABLE_NAME where userId = :userId and missionId = :missionId and activityId = :activityId and isActive = 1 group by status")
     fun getTaskSummaryByStatus(
         userId: String,
         missionId: Int,
