@@ -82,7 +82,7 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
         list.add(
             SettingOptionModel(
                 8,
-                "Mark Activity Inprogress",
+                context.getString(R.string.mark_activity_inprogress_label),
                 BLANK_STRING,
                 SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name
             )

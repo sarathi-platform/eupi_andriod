@@ -9,7 +9,6 @@ import androidx.core.net.toFile
 import androidx.core.net.toUri
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
-import com.nrlm.baselinesurvey.PREF_KEY_NAME
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SettingBSUserCase
@@ -19,7 +18,6 @@ import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LogWriter
 import com.nrlm.baselinesurvey.utils.openShareSheet
 import com.nrlm.baselinesurvey.utils.states.LoaderState
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.LOCAL_BACKUP_EXTENSION
 import com.nudge.core.SARATHI_DIRECTORY_NAME
 import com.nudge.core.SUFFIX_EVENT_ZIP_FILE
@@ -206,10 +204,7 @@ class SettingBSViewModel @Inject constructor(
 
     private suspend fun getSummaryFile(): Pair<String, Uri?>? {
         val summaryFileNameWithoutExtension = "Sarathi_${
-            (prefRepo.getPref(
-                PREF_KEY_NAME,
-                BLANK_STRING
-            ) ?: BLANK_STRING).trim().split(" ").first()
+            getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())
         }_${prefRepo.getUniqueUserIdentifier()}_summary_file"
 
         val summaryFileNameWithExtension = summaryFileNameWithoutExtension + LOCAL_BACKUP_EXTENSION

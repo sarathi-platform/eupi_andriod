@@ -468,5 +468,6 @@
     <string name="average_cost">Average Cost: ₹ %1$s</string>
     <string name="only_one_entry_can_be_added">केवल एक प्रविष्टि जोड़ी जा सकती है</string>
     <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
+    <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
 
 </resources>
