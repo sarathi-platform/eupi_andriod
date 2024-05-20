@@ -183,7 +183,7 @@ fun FormTypeQuestionComponent(
                                         ) {
                                             showCustomToast(
                                                 context,
-                                                "Only One item we can added"
+                                                context.getString(R.string.only_one_entry_can_be_added)
                                             )
                                         } else if (isEditAllowed) {
                                             onAnswerSelection(questionIndex)

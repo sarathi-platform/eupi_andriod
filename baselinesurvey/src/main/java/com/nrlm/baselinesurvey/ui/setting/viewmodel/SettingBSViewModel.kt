@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.ui.setting.viewmodel
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -10,20 +9,8 @@ import androidx.core.net.toFile
 import androidx.core.net.toUri
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
-import androidx.core.content.FileProvider
-import com.google.gson.Gson
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
-import com.nrlm.baselinesurvey.PREF_KEY_NAME
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
-import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
-import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
-import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventDto
-import com.nrlm.baselinesurvey.model.datamodel.SaveAnswerEventForFormQuestionDto
-import com.nrlm.baselinesurvey.model.datamodel.toCSVSave
-import com.nrlm.baselinesurvey.model.datamodel.toCsv
-import com.nrlm.baselinesurvey.model.datamodel.toCsvR
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SettingBSUserCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
@@ -31,31 +18,22 @@ import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LogWriter
 import com.nrlm.baselinesurvey.utils.openShareSheet
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nudge.core.LOCAL_BACKUP_EXTENSION
 import com.nudge.core.SARATHI_DIRECTORY_NAME
-import com.nudge.core.BLANK_STRING
-import com.nudge.core.EXCEL_TYPE
+import com.nudge.core.SUFFIX_EVENT_ZIP_FILE
+import com.nudge.core.SUFFIX_IMAGE_ZIP_FILE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
-import com.nudge.core.compression.ZipManager
-import com.nudge.core.copyZipFile
+import com.nudge.core.exportAllOldImages
 import com.nudge.core.exportDbFile
 import com.nudge.core.getFirstName
 import com.nudge.core.json
-import com.nudge.core.datamodel.BaseLineQnATableCSV
-import com.nudge.core.datamodel.HamletQnATableCSV
-import com.nudge.core.exportAllOldImages
-import com.nudge.core.exportcsv.CsvConfig
-import com.nudge.core.exportcsv.ExportService
-import com.nudge.core.exportcsv.Exportable
-import com.nudge.core.exportcsv.Exports
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.uriFromFile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -98,6 +76,24 @@ class SettingBSViewModel @Inject constructor(
                 val fileUriList: ArrayList<Uri> = arrayListOf()
                 val fileAndDbZipList = ArrayList<Pair<String, Uri?>>()
                 val compression = ZipFileCompression()
+
+                //Delete Old Image zips.
+                compression.deleteOldFiles(
+                    context = BaselineCore.getAppContext(),
+                    fileNameReference = "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_Sarathi_Image",
+                    folderName = getUserMobileNumber(),
+                    fileType = SUFFIX_IMAGE_ZIP_FILE,
+                    applicationId = BuildConfig.APPLICATION_ID,
+                    checkInAppDirectory = true
+                )
+
+                //Delete old event zips.
+                compression.deleteOldFiles(
+                    context = BaselineCore.getAppContext(),
+                    fileNameReference = "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_sarathi_",
+                    folderName = getUserMobileNumber(),
+                    fileType = SUFFIX_EVENT_ZIP_FILE
+                )
 
                 // Image Files and Zip
                 val imageUri = exportAllOldImages(
@@ -150,20 +146,33 @@ class SettingBSViewModel @Inject constructor(
 
                 val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext()){}
                 if (logFile != null) {
-                    val logFileUri= uriFromFile(BaselineCore.getAppContext(),logFile,BuildConfig.APPLICATION_ID)
-                    if(logFileUri!=Uri.EMPTY) {
+                    val logFileUri = uriFromFile(
+                        BaselineCore.getAppContext(),
+                        logFile,
+                        BuildConfig.APPLICATION_ID
+                    )
+                    if (logFileUri != Uri.EMPTY) {
                         logFileUri.let {
-                            fileAndDbZipList.add(Pair(logFile.name,it))
-                            BaselineLogger.d("SettingBSViewModel", "Log File Uri: ${it.path}---------------")
+                            fileAndDbZipList.add(Pair(logFile.name, it))
+                            BaselineLogger.d(
+                                "SettingBSViewModel",
+                                "Log File Uri: ${it.path}---------------"
+                            )
 
                         }
                     }
                 }
+
+                // Add Summary File
+                getSummaryFile()?.let {
+                    fileAndDbZipList.add(it)
+                }
+
                 val zipFileName =
                     "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_sarathi_${System.currentTimeMillis()}"
 
-                if(fileUriList.isNotEmpty()){
-                   val zipLogDbFileUri= compression.compressData(
+                if (fileUriList.isNotEmpty()) {
+                    val zipLogDbFileUri = compression.compressData(
                         BaselineCore.getAppContext(),
                         zipFileName,
                         Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + getUserMobileNumber(),
@@ -171,9 +180,9 @@ class SettingBSViewModel @Inject constructor(
                         getUserMobileNumber()
                     )
                     zipLogDbFileUri?.let {
-                        if(it != Uri.EMPTY){
-                            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                            fileUriList.add(it)
+                        if (it != Uri.EMPTY) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                                fileUriList.add(it)
                             else fileUriList.add(uriFromFile(context = BaselineCore.getAppContext(),
                                 applicationID = BuildConfig.APPLICATION_ID,
                                 file = it.toFile()))
@@ -192,6 +201,22 @@ class SettingBSViewModel @Inject constructor(
             }
         }
     }
+
+    private suspend fun getSummaryFile(): Pair<String, Uri?>? {
+        val summaryFileNameWithoutExtension = "Sarathi_${
+            getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())
+        }_${prefRepo.getUniqueUserIdentifier()}_summary_file"
+
+        val summaryFileNameWithExtension = summaryFileNameWithoutExtension + LOCAL_BACKUP_EXTENSION
+
+        return settingBSUserCase.getSummaryFileUseCase.invoke(
+            userId = prefRepo.getUniqueUserIdentifier(),
+            mobileNo = getUserMobileNumber(),
+            fileNameWithoutExtension = summaryFileNameWithoutExtension,
+            fileNameWithExtension = summaryFileNameWithExtension
+        )
+    }
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is LoaderEvent.UpdateLoaderState -> {

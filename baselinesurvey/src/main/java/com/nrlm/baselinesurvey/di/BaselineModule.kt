@@ -108,9 +108,12 @@ import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSurvyeDetail
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.SectionListScreenUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.UpdateSubjectStatusUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.UpdateTaskStatusUseCase
+import com.nrlm.baselinesurvey.ui.setting.domain.repository.GetSummaryFileRepository
+import com.nrlm.baselinesurvey.ui.setting.domain.repository.GetSummaryFileRepositoryImpl
 import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepository
 import com.nrlm.baselinesurvey.ui.setting.domain.repository.SettingBSRepositoryImpl
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.ClearLocalDBUseCase
+import com.nrlm.baselinesurvey.ui.setting.domain.use_case.GetSummaryFileUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.GetUserDetailsUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.LogoutUseCase
 import com.nrlm.baselinesurvey.ui.setting.domain.use_case.SaveLanguageScreenOpenFromUseCase
@@ -639,19 +642,30 @@ object BaselineModule {
         apiService: ApiService,
         nudgeBaselineDatabase: NudgeBaselineDatabase
     ): SettingBSRepository {
-        return SettingBSRepositoryImpl(prefRepo, apiService,nudgeBaselineDatabase)
+        return SettingBSRepositoryImpl(prefRepo, apiService, nudgeBaselineDatabase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetSummaryFileRepository(
+        activityTaskDao: ActivityTaskDao,
+        missionActivityDao: MissionActivityDao
+    ): GetSummaryFileRepository {
+        return GetSummaryFileRepositoryImpl(activityTaskDao, missionActivityDao)
     }
 
     @Provides
     @Singleton
     fun providesSettingScreenUseCase(
-        repository: SettingBSRepository
+        repository: SettingBSRepository,
+        getSummaryFileRepository: GetSummaryFileRepository
     ): SettingBSUserCase {
         return SettingBSUserCase(
             getUserDetailsUseCase = GetUserDetailsUseCase(repository),
             logoutUseCase = LogoutUseCase(repository),
             saveLanguageScreenOpenFromUseCase = SaveLanguageScreenOpenFromUseCase(repository),
-            clearLocalDBUseCase = ClearLocalDBUseCase(repository)
+            clearLocalDBUseCase = ClearLocalDBUseCase(repository),
+            getSummaryFileUseCase = GetSummaryFileUseCase(getSummaryFileRepository)
         )
     }
 
@@ -788,11 +802,15 @@ object BaselineModule {
 
     @Singleton
     @Provides
-    fun provideExportImportUseCase(repository: ExportImportRepository):ExportImportUseCase{
+    fun provideExportImportUseCase(
+        repository: ExportImportRepository,
+        eventsWriterRepository: EventsWriterRepository
+    ): ExportImportUseCase {
         return ExportImportUseCase(
             getExportOptionListUseCase = GetExportOptionListUseCase(repository),
             clearLocalDBExportUseCase = ClearLocalDBExportUseCase(repository),
-            getUserDetailsExportUseCase = GetUserDetailsExportUseCase(repository)
+            getUserDetailsExportUseCase = GetUserDetailsExportUseCase(repository),
+            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)
         )
     }
 }
