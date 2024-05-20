@@ -7,9 +7,10 @@ plugins {
     id 'kotlin-kapt'
     id("com.google.gms.google-services")
     id 'com.google.firebase.crashlytics'
+    id("org.sonarqube")
 }
 
-def version = "2.0.9"
+def version = "2.0.13"
 android {
     namespace 'com.nrlm.baselinesurvey'
     compileSdk 34
@@ -18,7 +19,7 @@ android {
         applicationId "com.nrlm.sarathi"
         minSdk 23
         targetSdk 33
-        versionCode 12
+        versionCode 17
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

@@ -16,7 +16,7 @@ android {
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.nrlm.sarathi_selection"
+        applicationId "com.nrlm.sarathi.selection"
         minSdk 23
         targetSdk 33
         versionCode 8

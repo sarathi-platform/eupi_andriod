@@ -131,6 +131,35 @@
     },
     {
       "client_info": {
+        "mobilesdk_app_id": "1:309685900415:android:d0a0cfd092684134c99b4a",
+        "android_client_info": {
+          "package_name": "com.nrlm.sarathi.selection"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "309685900415-e2krihpg4orb8mg2krf9kpees4n625ai.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDd0J_gZxpuwB77YKv2Lter8wNPOozd5Kw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "309685900415-e2krihpg4orb8mg2krf9kpees4n625ai.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:309685900415:android:47e65af13a8938a0c99b4a",
         "android_client_info": {
           "package_name": "com.nrlm.sarathi.stage"
