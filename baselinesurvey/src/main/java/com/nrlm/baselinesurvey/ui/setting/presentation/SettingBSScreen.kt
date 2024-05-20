@@ -85,15 +85,6 @@ fun SettingBSScreen(
                 SettingTagEnum.SYNC_DATA_NOW.name
             )
         )
-
-        list.add(
-            SettingOptionModel(
-                7,
-                "Stop Sync",
-                BLANK_STRING,
-                SettingTagEnum.SYNC_STOP.name
-            )
-        )
         viewModel._optionList.value = list
     }
     if(viewModel.showLogoutConfirmationDialog.value){
@@ -160,7 +151,6 @@ fun SettingBSScreen(
 
                 SettingTagEnum.SYNC_DATA_NOW.name ->{
                     navController.navigate(SettingBSScreens.SYNC_EVENT_SCREEN.route)
-//                    viewModel.syncAllPending(ConnectionMonitor.DoesNetworkHaveInternet.getNetworkStrength())
                 }
 
             }

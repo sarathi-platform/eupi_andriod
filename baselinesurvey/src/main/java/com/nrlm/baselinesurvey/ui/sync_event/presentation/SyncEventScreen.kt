@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.sync_event.presentation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,8 +35,11 @@ import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.SyncEventCard
 import com.nrlm.baselinesurvey.ui.sync_event.viewmodel.SyncEventViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
+import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.mediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
+import com.nrlm.baselinesurvey.utils.ConnectionMonitor
 
 @Composable
 fun SyncEventScreen(
@@ -43,10 +48,12 @@ fun SyncEventScreen(
     modifier: Modifier = Modifier,
     ) {
     val syncEventList = viewModel.syncEventList.collectAsState()
-   viewModel.getAllEvents()
+
 
     val loaderState = viewModel.loaderState
-
+  LaunchedEffect(key1 = true) {
+      viewModel.getAllEvents()
+  }
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -56,7 +63,7 @@ fun SyncEventScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(R.string.sync),
+                        text = stringResource(R.string.sync_your_data),
                         style = mediumTextStyle,
                         color = textColorDark,
                         modifier = Modifier,
@@ -79,12 +86,35 @@ fun SyncEventScreen(
                 .padding(top = it.calculateTopPadding())
                 .fillMaxSize()
         ) {
-            Row {
+            Row( modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp)
+                .padding(top = dimen_18_dp),
+                horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)) {
+                ButtonPositive(
+                    buttonTitle = "Sync Now",
+                    isArrowRequired = false,
+                    isActive = true,
+                    onClick = {
+                        viewModel.syncAllPending(ConnectionMonitor.DoesNetworkHaveInternet.getNetworkStrength())
+                        viewModel.getAllEvents()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
+
                 ButtonPositive(
                     buttonTitle = stringResource(id = R.string.retry),
                     isArrowRequired = false,
-                    onClick = {},
-                    modifier = Modifier.align(alignment = Alignment.CenterVertically)
+                    isActive = true,
+                    onClick = {
+                         viewModel.syncAllPending(ConnectionMonitor.DoesNetworkHaveInternet.getNetworkStrength())
+                        viewModel.getAllEvents()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
                 )
             }
 

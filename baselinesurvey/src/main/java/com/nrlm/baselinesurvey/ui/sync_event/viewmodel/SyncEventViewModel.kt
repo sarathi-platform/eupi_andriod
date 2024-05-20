@@ -9,6 +9,7 @@ import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.database.entities.Events
+import com.nudge.core.enums.NetworkSpeed
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +41,16 @@ class SyncEventViewModel @Inject constructor(
 
             }catch (ex:Exception){
                 BaselineLogger.d("SyncEventViewModel"," syncAllEvent: ${ex.printStackTrace()} ")
+            }
+        }
+    }
+
+    fun syncAllPending(networkSpeed: NetworkSpeed) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                BaselineCore.getEventObserver()?.syncPendingEvent(BaselineCore.getAppContext(), networkSpeed)
+            }catch (ex:Exception){
+                BaselineLogger.d("SettingBSViewModel"," syncAllPending: ${ex.printStackTrace()} ")
             }
         }
     }

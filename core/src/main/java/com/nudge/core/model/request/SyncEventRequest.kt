@@ -11,7 +11,7 @@ data class EventRequest(
     @SerializedName("created_by") val createdBy: String,
     @SerializedName("mobile_no") val mobileNo: String,
     @SerializedName("payload") val payload: String?,
-    @SerializedName("metadata_temp") val metadata: String?,
+    @SerializedName("metadata") val metadata: String?,
     @SerializedName("created_date") val createdDate: String?,
     @SerializedName("modified_date") val modifiedDate: String?,
 ) {

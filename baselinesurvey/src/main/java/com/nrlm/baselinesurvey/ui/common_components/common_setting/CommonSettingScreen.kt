@@ -39,6 +39,9 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark50
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.ui.theme.black100Percent
+import com.nrlm.baselinesurvey.ui.theme.greenDark
+import com.nrlm.baselinesurvey.ui.theme.redDark
+import com.nudge.core.EventSyncStatus
 import com.nudge.core.model.SettingOptionModel
 
 @Composable
@@ -258,7 +261,7 @@ fun SyncEventCard(
                 fontSize = 13.sp,
                 fontFamily = NotoSans,
                 fontWeight = FontWeight.Normal,
-                color = black100Percent,
+                color = if(status.equals(EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus)) greenDark else if(status.equals(EventSyncStatus.PRODUCER_FAILED.eventSyncStatus)) redDark else black100Percent,
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(
