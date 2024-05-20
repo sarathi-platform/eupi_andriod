@@ -2,15 +2,28 @@ package com.patsurvey.nudge.utils
 
 import android.content.Context
 import android.content.Intent
+import com.nudge.communicationModule.EventObserverInterface
+import com.nudge.syncmanager.SyncManager
 import com.patsurvey.nudge.MyApplication
-import java.util.ArrayList
 
 object NudgeCore {
 
     private val TAG = NudgeCore::class.java.simpleName
 
-    fun init (context: Context) {
+    private var eventObserver: EventObserverInterface? = null
 
+
+    fun initEventObserver(syncManager: SyncManager) {
+        eventObserver = syncManager.initEventObserver()
+    }
+
+    fun getEventObserver(): EventObserverInterface? {
+        return eventObserver
+    }
+
+    fun removeEventObserver(syncManager: SyncManager) {
+        eventObserver = null
+        syncManager.removeObserver()
     }
 
     fun getAppContext(): Context {
@@ -37,7 +50,8 @@ object NudgeCore {
         isOnline = online
     }
 
-    fun cleanUp() {
+    fun cleanUp(syncManager: SyncManager) {
+        removeEventObserver(syncManager)
     }
 
     fun preRequestCheck(): Boolean {

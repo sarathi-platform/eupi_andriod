@@ -9,6 +9,7 @@ import com.patsurvey.nudge.model.request.LoginRequest
 import com.patsurvey.nudge.model.request.OtpRequest
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.OtpVerificationModel
+import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.NudgeLogger
 import javax.inject.Inject
 
@@ -27,6 +28,14 @@ class OtpVerificationRepository @Inject constructor(
 
     fun saveAccessToken(token: String){
         prefRepo.saveAccessToken(token)
+    }
+
+    fun setIsUserBPC(typeName: String) {
+        if (typeName.equals(BPC_USER_TYPE, true)) {
+            prefRepo.setIsUserBPC(true)
+        } else {
+            prefRepo.setIsUserBPC(false)
+        }
     }
 
     suspend fun generateOtp(

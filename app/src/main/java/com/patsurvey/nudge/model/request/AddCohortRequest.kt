@@ -1,7 +1,9 @@
 package com.patsurvey.nudge.model.request
 
+import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
+import com.google.gson.reflect.TypeToken
 import com.patsurvey.nudge.database.TolaEntity
 
 data class AddCohortRequest(
@@ -13,6 +15,7 @@ data class AddCohortRequest(
     @SerializedName("localCreatedDate") var localCreatedDate : Long,
     @SerializedName("localModifiedDate") var localModifiedDate : Long,
     @SerializedName("deviceId") var deviceId : String = "",
+    @SerializedName("id") var id: Int = 0,
 ) {
 
     companion object {
@@ -26,6 +29,7 @@ data class AddCohortRequest(
                 localCreatedDate = tola.localCreatedDate ?: 0,
                 localModifiedDate = tola.localModifiedDate ?: 0,
                 deviceId = tola.localUniqueId?: "",
+                id = tola.serverId
             )
         }
     }
@@ -43,4 +47,14 @@ data class AddCohortRequest(
         return jsonObject
     }
 
+}
+
+fun String.getAddCohortRequestPayloadFromString(): AddCohortRequest? {
+    val type = object : TypeToken<AddCohortRequest?>() {}.type
+    return Gson().fromJson(this, type)
+}
+
+fun String.getAddDidiRequestPayloadFromString(): AddDidiRequest? {
+    val type = object : TypeToken<AddDidiRequest?>() {}.type
+    return Gson().fromJson(this, type)
 }

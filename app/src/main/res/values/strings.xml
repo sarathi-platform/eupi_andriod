@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">Sarathi</string>
+    <string name="app_name_uat" translatable="false">Sarathi UAT</string>
     <string name="english" translatable="false">English</string>
     <string name="hindi" translatable="false">हिंदी</string>
     <string name="bangla" translatable="false">হিন্দি</string>
@@ -244,8 +245,8 @@
     <string name="vo_endorsement">VO Endorsement</string>
     <string name="close">Close</string>
     <string name="add_more">Add More</string>
-    <string name="bpc_didi_screen_title">List of Didis auto selected For PAT Verification</string>
-    <string name="bpc_final_pat_submition_message">Do you want to submit this VO for BPM Approval?</string>
+    <string name="bpc_didi_screen_title">Didis available for verification</string>
+    <string name="bpc_final_pat_submition_message">Do you want to submit PAT verification for %1$s didis?</string>
 
     <string name="didi_selected_text_singular">%1$s Didi Selected</string>
     <string name="didi_selected_text_plural">%1$s Didis Selected</string>
@@ -296,6 +297,8 @@
     <string name="do_not_close_app_message">Please don\'t close the app or switch off the phone.</string>
     <string name="vo_endorsement_completed_village_banner_text">VO Endorsement completed</string>
     <string name="bpc_verification_completed_village_banner_text">BPC Verification Completed</string>
+    <string name="bpc_verification_in_progress_village_banner_text">BPC Verification In Progress</string>
+
     <string name="empty_tola_success_message">This Village does not have any Para / Tola.</string>
 
     <string name="total_poor_didis">Total Poor Didis</string>
@@ -342,6 +345,10 @@
     <string name="delete_didi">Delete</string>
     <string name="you_want_to_delete_video">You want to delete %1$s</string>
     <string name="share_logs">Share Logs</string>
+    <string name="export_file">Export file</string>
+    <string name="export_image" translatable="false">Export image</string>
+    <string name="share_export_file" translatable="false">Share exported file</string>
+    <string name="share_export_image" translatable="false">Share exported image</string>
     <string name="earning_member_can_not_be_more_than_family_members">Earning members cannot be more than family members</string>
     <string name="match_percentage_should_be_more_than_70">The Match % should be more than 70%</string>
     <string name="delete_and_retake">Delete &amp; Retake</string>
@@ -411,4 +418,17 @@
     <string name="cancel">Cancel</string>
     <string name="vo_endorsement_not_started">VO Endorsement is not started</string>
     <string name="export_data_test">Export Data</string>
+    <string name="network_not_available_message">Network not available, Please try again later!</string>
+    <string name="total_members_can_not_be_less_than_earning_members">Total family members can not be less than Earning members.</string>
+    <string name="logout_confirmation">Are you sure to logout?</string>
+    <string name="warning">Warning!</string>
+    <string name="data_lost_message">Another user detected if you proceed you will lost previous user\'s data</string>
+    <string name="proceed">Proceed</string>
+    <string name="fetched_successfully">Data fetched successfully</string>
+    <string name="regenerate_event_file">Regenerate event file</string>
+    <string name="load_server_data">Load Server Data</string>
+    <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
+    <string name="didi_verified_by_bpc">Didi verified by BPC</string>
+    <string name="recover_old_data">Recover Old Data</string>
+
 </resources>

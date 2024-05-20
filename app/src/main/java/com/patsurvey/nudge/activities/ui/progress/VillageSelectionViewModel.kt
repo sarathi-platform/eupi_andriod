@@ -4,9 +4,11 @@ package com.patsurvey.nudge.activities.ui.progress
 import android.app.DownloadManager
 import android.content.Context
 import android.os.Environment
+import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
+import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
@@ -32,16 +34,17 @@ import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
+import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.PoorDidiListDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.TrainingVideoDao
+import com.patsurvey.nudge.database.dao.UserDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.download.FileType
-import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.GetQuestionListRequest
@@ -135,26 +138,73 @@ class VillageSelectionViewModel @Inject constructor(
     val answerDao: AnswerDao,
     val bpcSummaryDao: BpcSummaryDao,
     val poorDidiListDao: PoorDidiListDao,
+    private val syncManagerDatabase: SyncManagerDatabase,
+    val userDao: UserDao,
     val downloader: AndroidDownloader,
+    val lastSelectedTolaDao: LastSelectedTolaDao,
+
     val villageSelectionRepository: VillageSelectionRepository
 
 ) : BaseViewModel() {
+    private var isNeedToCallVillageApi: Boolean = true
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
     val villageList: StateFlow<List<VillageEntity>> get() = _villagList
 
     val villageSelected = mutableStateOf(0)
     val stateId = mutableStateOf(1)
     val showLoader = mutableStateOf(false)
+    val showUserChangedDialog = mutableStateOf(false)
 
     val multiVillageRequest = mutableStateOf("2")
-
+    private var checkStatusCount = 0
     val isVoEndorsementComplete = mutableStateOf(mutableMapOf<Int, Boolean>())
     var _filterVillageList = MutableStateFlow(listOf<VillageEntity>())
     val filterVillageList: StateFlow<List<VillageEntity>> get() = _filterVillageList
 
 
-    fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
+    fun compareWithPreviousUser(context: Context) {
+        if (TextUtils.isEmpty(prefRepo.getPreviousUserMobile()) || prefRepo.getPreviousUserMobile()
+                .equals(prefRepo.getMobileNumber())
+        ) {
+            init(context)
+        } else {
+            showUserChangedDialog.value = true
+        }
+    }
 
+    fun clearLocalDB(context: Context) {
+        showLoader.value = true
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            casteListDao.deleteCasteTable()
+            tolaDao.deleteAllTola()
+            didiDao.deleteAllDidi()
+            lastSelectedTolaDao.deleteAllLastSelectedTola()
+            numericAnswerDao.deleteAllNumericAnswers()
+            answerDao.deleteAllAnswers()
+            questionListDao.deleteQuestionTable()
+            stepsListDao.deleteAllStepsFromDB()
+            userDao.deleteAllUserDetail()
+            villageListDao.deleteAllVilleges()
+            bpcSummaryDao.deleteAllSummary()
+            poorDidiListDao.deleteAllDidis()
+            syncManagerDatabase.eventsDao().deleteAllEvents()
+            syncManagerDatabase.eventsDependencyDao().deleteAllDependentEvents()
+            clearSharedPreference()
+            init(context)
+        }
+    }
+
+    private fun clearSharedPreference() {
+        val languageId = prefRepo.getAppLanguageId()
+        val language = prefRepo.getAppLanguage()
+        val accessToken = prefRepo.getAccessToken()
+        val mobileNo = prefRepo.getMobileNumber()
+        prefRepo.clearSharedPreference()
+        prefRepo.saveAppLanguage(language)
+        prefRepo.saveAppLanguageId(languageId)
+        prefRepo.saveAccessToken(accessToken ?: "")
+        prefRepo.saveMobileNumber(mobileNo)
+    }
     fun init(context: Context) {
         showLoader.value = true
         fetchUserDetails { success ->
@@ -1502,7 +1552,9 @@ class VillageSelectionViewModel @Inject constructor(
                 val localLanguageList = languageListDao.getAllLanguages()
                val villageReq= createMultiLanguageVillageRequest(localLanguageList)
                 if (!localVillageList.isNullOrEmpty()) {
-                    _villagList.value = localVillageList
+                    _villagList.value = localVillageList.distinctBy {
+                        it.id
+                    }
                    _filterVillageList.value = villageList.value
                     setVoEndorsementCompleteForVillages()
                     apiSuccess(true)
@@ -1694,37 +1746,71 @@ class VillageSelectionViewModel @Inject constructor(
 
     fun refreshBpcData(context: Context) {
         showLoader.value = true
-        villageSelectionRepository.refreshBpcData(prefRepo = prefRepo, object : NetworkCallbackListener{
-            override fun onSuccess() {
-                CoroutineScope(Dispatchers.IO).launch {
-                    val updatedVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
-                    withContext(Dispatchers.Main) {
-                        _villagList.value = updatedVillageList
-                        delay(100)
-                        showLoader.value = false
-                    }
-                }
+        villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) {
+            if (it.success) {
+            _filterVillageList.value = it.villageList.distinctBy {
+                it.id
+            }
+            _villagList.value = it.villageList.distinctBy {
+                it.id
+
+            }
+                villageSelectionRepository.refreshStepListData() {
+                showLoader.value = false
+
             }
 
-            override fun onFailed() {
-                showLoader.value = false
-                showCustomToast(context, context.getString(R.string.refresh_failed_please_try_again))
-            }
-        })
+            } else {
+                showCustomToast(
+                    context,
+                    context.getString(R.string.refresh_failed_please_try_again)
+                )
+        }
+
+        }
+
     }
 
     fun refreshCrpData(context: Context) {
         showLoader.value = true
-        villageSelectionRepository.refreshCrpData(prefRepo = prefRepo, object : NetworkCallbackListener{
-            override fun onSuccess() {
-                showLoader.value = false
+        if (isNeedToCallVillageApi) {
+            villageSelectionRepository.fetchUserAndVillageDetails(forceRefresh = true) { userAndVillageDetailModel ->
+                if (userAndVillageDetailModel.success) {
+                    isNeedToCallVillageApi = false
+                    _filterVillageList.value = userAndVillageDetailModel.villageList.distinctBy {
+                it.id
             }
+                    _villagList.value = userAndVillageDetailModel.villageList.distinctBy {
+                it.id
+            }
+                    refreshStepData(context)
+            } else {
+                    isNeedToCallVillageApi = true
+                showLoader.value = false
+                    showCustomToast(
+                        context,
+                        context.getString(R.string.refresh_failed_please_try_again)
+                    )
+            }
+        }
+        } else {
+            refreshStepData(context = context)
+        }
+    }
 
-            override fun onFailed() {
-                showLoader.value = false
-                showCustomToast(context, context.getString(R.string.refresh_failed_please_try_again))
+    private fun refreshStepData(context: Context) {
+        villageSelectionRepository.refreshStepListData() { stepListStatus ->
+            if (stepListStatus) {
+                showCustomToast(context, context.getString(R.string.fetched_successfully))
+                isNeedToCallVillageApi = true
+            } else {
+                showCustomToast(
+                    context,
+                    context.getString(R.string.refresh_failed_please_try_again)
+                )
             }
-        })
+            showLoader.value = false
+        }
     }
 
 
@@ -1740,6 +1826,13 @@ class VillageSelectionViewModel @Inject constructor(
         } else {
             villageList.value
         }
+    }
+
+    fun logout() {
+        prefRepo.saveAccessToken("")
+        prefRepo.saveMobileNumber("")
+        prefRepo.saveSettingOpenFrom(0)
+
     }
 
 }

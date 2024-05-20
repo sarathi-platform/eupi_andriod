@@ -1,34 +1,60 @@
 package com.patsurvey.nudge.activities.ui.bpc.progress_screens
 
-import android.app.Activity
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -40,14 +66,46 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
+import com.nudge.core.enums.NetworkSpeed
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.*
-import com.patsurvey.nudge.activities.ui.theme.*
-import com.patsurvey.nudge.navigation.AuthScreen
-import com.patsurvey.nudge.navigation.navgraph.Graph
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.activities.MainActivity
+import com.patsurvey.nudge.activities.UserDataView
+import com.patsurvey.nudge.activities.VillageSelectorDropDown
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.activities.ui.theme.borderGrey
+import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
+import com.patsurvey.nudge.activities.ui.theme.greenLight
+import com.patsurvey.nudge.activities.ui.theme.greenOnline
+import com.patsurvey.nudge.activities.ui.theme.greyBorder
+import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
+import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
+import com.patsurvey.nudge.activities.ui.theme.smallerTextStyleNormalWeight
+import com.patsurvey.nudge.activities.ui.theme.stepBoxActiveColor
+import com.patsurvey.nudge.activities.ui.theme.stepIconCompleted
+import com.patsurvey.nudge.activities.ui.theme.stepIconDisableColor
+import com.patsurvey.nudge.activities.ui.theme.stepIconEnableColor
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.activities.ui.theme.white
+import com.patsurvey.nudge.database.BpcSummaryEntity
+import com.patsurvey.nudge.database.StepListEntity
+import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.ConnectionMonitor
+import com.patsurvey.nudge.utils.DottedShape
+import com.patsurvey.nudge.utils.IconButtonForward
+import com.patsurvey.nudge.utils.NudgeCore
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
+import com.patsurvey.nudge.utils.PREF_KEY_NAME
+import com.patsurvey.nudge.utils.PREF_OPEN_FROM_HOME
+import com.patsurvey.nudge.utils.PageFrom
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.TableCell
+import com.patsurvey.nudge.utils.TextButtonWithIcon
+import com.patsurvey.nudge.utils.setKeyboardToPan
+import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -60,8 +118,12 @@ fun BpcProgressScreen(
     onBackClick:()->Unit
 ) {
 
+    val context = LocalContext.current
+
+    val mainActivity = context as? MainActivity
+
     LaunchedEffect(key1 = Unit) {
-        bpcProgreesScreenViewModel.init()
+        bpcProgreesScreenViewModel.init(context = context)
         delay(1000)
         bpcProgreesScreenViewModel.showLoader.value = false
     }
@@ -72,19 +134,71 @@ fun BpcProgressScreen(
 
 //    val steps by bpcProgreesScreenViewModel.stepList.collectAsState()
     val villages by bpcProgreesScreenViewModel.villageList.collectAsState()
-    val steps by bpcProgreesScreenViewModel.stepList.collectAsState()
+//    val steps by bpcProgreesScreenViewModel.stepList.collectAsState()
 
 
-    val summaryData = bpcProgreesScreenViewModel.summaryData.collectAsState()
+    val bpcSummaryData = remember {
+        mutableStateOf(BpcSummaryEntity.getEmptySummaryForVillage(bpcProgreesScreenViewModel.getSelectedVillage().id))
+    }
+
+    val stepListData = remember {
+        mutableStateListOf<StepListEntity>()
+    }
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
 
-    val mainActivity = LocalContext.current as? MainActivity
     mainActivity?.isLoggedInLive?.postValue(bpcProgreesScreenViewModel.isLoggedIn())
 
     setKeyboardToPan(mainActivity!!)
-    val context = LocalContext.current
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(key1 = context) {
+
+        bpcProgreesScreenViewModel.bpcSummaryLiveData.observe(lifecycleOwner) { bpcSummary ->
+            if (bpcSummary != null)
+                bpcSummaryData.value = bpcSummary
+//            else
+//                bpcSummaryData.value = BpcSummaryEntity.getEmptySummaryForVillage(bpcProgreesScreenViewModel.getSelectedVillage().id)
+        }
+        bpcProgreesScreenViewModel.stepListLive.observe(lifecycleOwner) { stepList ->
+            stepListData.addAll(stepList)
+        }
+
+        onDispose {
+            bpcProgreesScreenViewModel.bpcSummaryLiveData.removeObservers(lifecycleOwner)
+            bpcProgreesScreenViewModel.stepListLive.removeObservers(lifecycleOwner)
+        }
+    }
+
+    val isOnline  = remember {
+        mutableStateOf(true)
+    }
+
+    DisposableEffect(key1 = context) {
+        val connectionLiveData = ConnectionMonitor(context)
+        connectionLiveData.observe(lifecycleOwner) { isNetworkAvailable ->
+
+            NudgeLogger.d("SettingScreen",
+                "DisposableEffect: connectionLiveData.observe isNetworkAvailable -> isNetworkAvailable.isOnline = ${isNetworkAvailable.isOnline}, isNetworkAvailable.connectionSpeed = ${isNetworkAvailable.connectionSpeed}, isNetworkAvailable.speedType = ${isNetworkAvailable.speedType}")
+            isOnline.value = isNetworkAvailable.isOnline
+                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN)
+            NudgeCore.updateIsOnline(isNetworkAvailable.isOnline
+                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN)
+            )
+        }
+        onDispose {
+            connectionLiveData.removeObservers(lifecycleOwner)
+        }
+    }
+
+    val pullRefreshState = rememberPullRefreshState(
+        bpcProgreesScreenViewModel.showLoader.value,
+        {
+            bpcProgreesScreenViewModel.refreshDataForCurrentVillage()
+        })
+
     BackHandler {
         onBackClick()
     }
@@ -96,7 +210,7 @@ fun BpcProgressScreen(
     ) {
         ModalBottomSheetLayout(
             sheetContent = {
-                Column(
+                /*Column(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier
@@ -114,15 +228,11 @@ fun BpcProgressScreen(
                     LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
 
                         itemsIndexed(villages) { index, village ->
-                            VillageAndVoBoxForBottomSheet(
-                                tolaName = village.name,
-                                voName = village.federationName,
+                            BpcVillageAndVoBoxForBottomSheet(
+                                context = context,
+                                villageEntity = village,
                                 index = index,
                                 selectedIndex = bpcProgreesScreenViewModel.villageSelected.value,
-                                stepId = village.stepId,
-                                statusId = village.statusId,
-                                context = context,
-                                isUserBPC = bpcProgreesScreenViewModel.repository.prefRepo.isUserBPC()
                             ) {
                                 bpcProgreesScreenViewModel.showLoader.value = true
                                 bpcProgreesScreenViewModel.villageSelected.value = it
@@ -142,7 +252,7 @@ fun BpcProgressScreen(
                         item { Spacer(modifier = Modifier.height(16.dp)) }
                     }
 
-                }
+                }*/
             },
             sheetState = scaffoldState,
             sheetElevation = 20.dp,
@@ -203,9 +313,9 @@ fun BpcProgressScreen(
                 } else {
 
                     var isStepCompleted =
-                        if (!steps.isNullOrEmpty()) {
+                        if (!stepListData.isNullOrEmpty()) {
                             bpcProgreesScreenViewModel.isStepComplete(
-                                steps.sortedBy { it.orderNumber }.last().id,
+                                stepListData.sortedBy { it.orderNumber }.last().id,
                                 bpcProgreesScreenViewModel.repository.prefRepo.getSelectedVillage().id
                             )?.observeAsState()?.value ?: 0
                         } else {
@@ -213,8 +323,8 @@ fun BpcProgressScreen(
                         }
 
 
-                    Column(modifier = Modifier) {
-
+                    Column(modifier = Modifier.pullRefresh(pullRefreshState)) {
+                        
                         LazyColumn(
                             Modifier
                                 .background(Color.White)
@@ -236,20 +346,43 @@ fun BpcProgressScreen(
                                         PREF_KEY_IDENTITY_NUMBER,
                                         BLANK_STRING
                                     ) ?: "",
-                                    isUserBPC = true
+                                    isBackButtonShow = true,
+                                    isBPCUser = true
                                 ){
                                     onBackClick()
                                 }
                             }
 
                             item {
-                                VillageSelectorDropDown(selectedText = bpcProgreesScreenViewModel.selectedText.value) {
-                                    scope.launch {
-                                        if (!scaffoldState.isVisible) {
-                                            scaffoldState.show()
-                                        } else {
-                                            scaffoldState.hide()
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    VillageSelectorDropDown(
+                                        modifier = Modifier.weight(1f),
+                                        selectedText = bpcProgreesScreenViewModel.selectedText.value,
+                                        showCarrotIcon = false
+                                    ) {
+                                        /*scope.launch {
+                                            if (!scaffoldState.isVisible) {
+                                                scaffoldState.show()
+                                            } else {
+                                                scaffoldState.hide()
+                                            }
+                                        }*/
+                                    }
+                                    IconButton(
+                                        onClick = {
+                                            if (isOnline.value)
+                                                bpcProgreesScreenViewModel.refreshDataForCurrentVillage()
+                                            else
+                                                showCustomToast(context,
+                                                    context.getString(R.string.network_not_available_message))
                                         }
+                                    )
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Default.Refresh,
+                                            contentDescription = "Refresh Data button",
+                                            tint = blueDark
+                                        )
                                     }
                                 }
                             }
@@ -289,7 +422,7 @@ fun BpcProgressScreen(
 
                                             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                                                 TableCell(
-                                                    text = (summaryData.value.cohortCount ?: 0).toString(),
+                                                    text = (bpcSummaryData.value.cohortCount ?: 0).toString(),
                                                     style = TextStyle(
                                                         color = textColorDark,
                                                         fontSize = 18.sp,
@@ -303,7 +436,7 @@ fun BpcProgressScreen(
                                                 )
                                                 Spacer(modifier = Modifier.width(10.dp))
                                                 TableCell(
-                                                    text = if ((summaryData.value.cohortCount ?: 0) > 1)
+                                                    text = if ((bpcSummaryData.value.cohortCount ?: 0) > 1)
                                                         stringResource(R.string.summary_tolas_added_text_plural)
                                                     else
                                                         stringResource(R.string.summary_tolas_added_text_singular),
@@ -322,7 +455,7 @@ fun BpcProgressScreen(
 
                                             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                                                 TableCell(
-                                                    text = (summaryData.value.mobilisedCount ?: 0).toString(),
+                                                    text = (bpcSummaryData.value.mobilisedCount ?: 0).toString(),
                                                     style = TextStyle(
                                                         color = textColorDark,
                                                         fontSize = 18.sp,
@@ -336,7 +469,7 @@ fun BpcProgressScreen(
                                                 )
                                                 Spacer(modifier = Modifier.width(10.dp))
                                                 TableCell(
-                                                    text = if ((summaryData.value.mobilisedCount ?: 0) > 1)
+                                                    text = if ((bpcSummaryData.value.mobilisedCount ?: 0) > 1)
                                                         stringResource(R.string.summary_didis_mobilised_text_plural)
                                                     else
                                                         stringResource(R.string.summary_didis_mobilised_text_singular),
@@ -355,7 +488,7 @@ fun BpcProgressScreen(
 
                                             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                                                 TableCell(
-                                                    text = (summaryData.value.poorDidiCount ?: 0).toString(),
+                                                    text = (bpcSummaryData.value.poorDidiCount ?: 0).toString(),
                                                     style = TextStyle(
                                                         color = textColorDark,
                                                         fontSize = 18.sp,
@@ -369,7 +502,7 @@ fun BpcProgressScreen(
                                                 )
                                                 Spacer(modifier = Modifier.width(10.dp))
                                                 TableCell(
-                                                    text = if ((summaryData.value.poorDidiCount ?: 0) > 1)
+                                                    text = if ((bpcSummaryData.value.poorDidiCount ?: 0) > 1)
                                                         stringResource(R.string.summary_wealth_ranking_text_plural)
                                                     else
                                                         stringResource(R.string.summary_wealth_ranking_text_singular),
@@ -388,7 +521,7 @@ fun BpcProgressScreen(
 
                                             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                                                 TableCell(
-                                                    text = (summaryData.value.sentVoEndorsementCount ?: 0).toString(),
+                                                    text = (bpcSummaryData.value.sentVoEndorsementCount ?: 0).toString(),
                                                     style = TextStyle(
                                                         color = textColorDark,
                                                         fontSize = 18.sp,
@@ -402,7 +535,7 @@ fun BpcProgressScreen(
                                                 )
                                                 Spacer(modifier = Modifier.width(10.dp))
                                                 TableCell(
-                                                    text = if ((summaryData.value.sentVoEndorsementCount ?: 0) > 1)
+                                                    text = if ((bpcSummaryData.value.sentVoEndorsementCount ?: 0) > 1)
                                                         stringResource(R.string.summary_vo_endoresement_text_plural)
                                                     else
                                                         stringResource(R.string.summary_vo_endoresement_text_singular),
@@ -421,7 +554,7 @@ fun BpcProgressScreen(
 
                                             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                                                 TableCell(
-                                                    text = (summaryData.value.voEndorsedCount ?: 0).toString(),
+                                                    text = (bpcSummaryData.value.voEndorsedCount ?: 0).toString(),
                                                     style = TextStyle(
                                                         color = textColorDark,
                                                         fontSize = 18.sp,
@@ -435,7 +568,7 @@ fun BpcProgressScreen(
                                                 )
                                                 Spacer(modifier = Modifier.width(10.dp))
                                                 TableCell(
-                                                    text = if ((summaryData.value.voEndorsedCount ?: 0) > 1)
+                                                    text = if ((bpcSummaryData.value.voEndorsedCount ?: 0) > 1)
                                                         stringResource(R.string.didis_endorsed_by_vo_plural)
                                                     else stringResource(
                                                         R.string.didi_endorsed_by_vo_singular),
@@ -450,7 +583,81 @@ fun BpcProgressScreen(
                                                     modifier = Modifier
                                                         .padding(vertical = 8.dp)
                                                 )
+
                                             }
+
+
+                                            Row(
+                                                Modifier.fillMaxWidth(),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                TableCell(
+                                                    text = bpcProgreesScreenViewModel.bpcCompletedDidiCount.value.toString()
+                                                        ?: "0",
+                                                    style = TextStyle(
+                                                        color = textColorDark,
+                                                        fontSize = 18.sp,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        fontFamily = NotoSans
+                                                    ),
+                                                    alignment = TextAlign.End,
+                                                    weight = numberColumnWeight,
+                                                    modifier = Modifier
+                                                        .padding(vertical = 8.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(10.dp))
+                                                TableCell(
+                                                    text = stringResource(R.string.didi_verified_by_bpc),
+                                                    style = TextStyle(
+                                                        color = textColorDark,
+                                                        fontSize = 15.sp,
+                                                        fontWeight = FontWeight.Normal,
+                                                        fontFamily = NotoSans
+                                                    ),
+                                                    alignment = TextAlign.Start,
+                                                    weight = labelColumnWeight,
+                                                    modifier = Modifier
+                                                        .padding(vertical = 8.dp)
+                                                )
+
+                                            }
+
+                                            Row(
+                                                Modifier.fillMaxWidth(),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                TableCell(
+                                                    text = (bpcProgreesScreenViewModel.passPercentage.collectAsState().value).toString() + "%",
+                                                    style = TextStyle(
+                                                        color = textColorDark,
+                                                        fontSize = 18.sp,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        fontFamily = NotoSans
+                                                    ),
+                                                    alignment = TextAlign.End,
+                                                    weight = 0.2f,
+                                                    modifier = Modifier
+                                                        .padding(vertical = 8.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(10.dp))
+                                                TableCell(
+                                                    text = stringResource(R.string.match_percentage_box_text)
+                                                        .replace("{PERCENTAGE}%", "", true),
+                                                    style = TextStyle(
+                                                        color = textColorDark,
+                                                        fontSize = 15.sp,
+                                                        fontWeight = FontWeight.Normal,
+                                                        fontFamily = NotoSans
+                                                    ),
+                                                    alignment = TextAlign.Start,
+                                                    weight = 0.8f,
+                                                    modifier = Modifier
+                                                        .padding(vertical = 8.dp)
+                                                )
+
+                                            }
+
+
 
                                             Text(
                                                 text = stringResource(R.string.current_status_text),
@@ -677,6 +884,7 @@ fun BpcProgressScreen(
                                     index = 1,
                                     iconId = 6,
                                     viewModel = bpcProgreesScreenViewModel,
+                                    stepListData = stepListData,
                                     shouldBeActive = isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal,
                                     isCompleted = isStepCompleted == StepStatus.COMPLETED.ordinal,
                                     onclick = {
@@ -685,9 +893,9 @@ fun BpcProgressScreen(
                                         }
 //                                        bpcProgreesScreenViewModel.prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id, false)
                                         if (isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal) {
-                                            if (!steps.isNullOrEmpty()) {
+                                            if (!stepListData.isNullOrEmpty()) {
                                                 val stepId =
-                                                    steps.sortedBy { it.orderNumber }.last().id
+                                                    stepListData.sortedBy { it.orderNumber }.last().id
                                                 onNavigateToStep(
                                                     bpcProgreesScreenViewModel.repository.prefRepo.getSelectedVillage().id,
                                                     stepId,
@@ -721,6 +929,7 @@ fun StepsBoxForBpc(
     index: Int,
     iconId: Int,
     viewModel: BpcProgressScreenViewModel,
+    stepListData: SnapshotStateList<StepListEntity>,
     isCompleted: Boolean = false,
     shouldBeActive: Boolean = false,
     onclick: (Int) -> Unit
@@ -752,7 +961,7 @@ fun StepsBoxForBpc(
                 )
                 .background(Color.White)
                 .clickable {
-                    if (!viewModel.stepList.value.isNullOrEmpty()) {
+                    if (!stepListData.isNullOrEmpty()) {
                         onclick(index)
                     } else {
                         showCustomToast(context, "Something went wrong!") //Confirm this message.
@@ -859,7 +1068,7 @@ fun StepsBoxForBpc(
 
                         )
                         {
-                            if (!viewModel.stepList.value.isNullOrEmpty()) {
+                            if (!stepListData.isNullOrEmpty()) {
                                 onclick(index)
                             } else {
                                 showCustomToast(context, "Something went wrong!")
@@ -875,7 +1084,7 @@ fun StepsBoxForBpc(
                                 }
                                 .size(40.dp)
                         ) {
-                            if (!viewModel.stepList.value.isNullOrEmpty()) {
+                            if (!stepListData.isNullOrEmpty()) {
                                 onclick(index)
                             } else {
                                 showCustomToast(context, "Something went wrong!")

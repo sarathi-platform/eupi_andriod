@@ -2,19 +2,48 @@ package com.patsurvey.nudge.activities
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,13 +64,43 @@ import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
-import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
+import com.patsurvey.nudge.activities.ui.theme.dropDownBg
+import com.patsurvey.nudge.activities.ui.theme.greenLight
+import com.patsurvey.nudge.activities.ui.theme.greenOnline
+import com.patsurvey.nudge.activities.ui.theme.greyBorder
+import com.patsurvey.nudge.activities.ui.theme.largeTextStyle
+import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
+import com.patsurvey.nudge.activities.ui.theme.smallTextStyle
+import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
+import com.patsurvey.nudge.activities.ui.theme.smallerTextStyleNormalWeight
+import com.patsurvey.nudge.activities.ui.theme.stepBoxActiveColor
+import com.patsurvey.nudge.activities.ui.theme.stepIconCompleted
+import com.patsurvey.nudge.activities.ui.theme.stepIconDisableColor
+import com.patsurvey.nudge.activities.ui.theme.stepIconEnableColor
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
 import com.patsurvey.nudge.customviews.CustomSnackBarViewState
 import com.patsurvey.nudge.customviews.rememberSnackBarState
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
+import com.patsurvey.nudge.utils.ARG_FROM_PROGRESS
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.IconButtonForward
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
+import com.patsurvey.nudge.utils.PREF_KEY_NAME
+import com.patsurvey.nudge.utils.PREF_OPEN_FROM_HOME
+import com.patsurvey.nudge.utils.PREF_PROGRAM_NAME
+import com.patsurvey.nudge.utils.PageFrom
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.TextButtonWithIcon
+import com.patsurvey.nudge.utils.findStepNameForSelectedLanguage
+import com.patsurvey.nudge.utils.setKeyboardToPan
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -52,7 +111,8 @@ fun ProgressScreen(
     viewModel: ProgressScreenViewModel,
     stepsNavHostController: NavHostController,
     onNavigateToStep:(Int, Int, Int, Boolean) ->Unit,
-    onNavigateToSetting:()->Unit
+    onNavigateToSetting:()->Unit,
+    onBackClick:()->Unit
 ) {
     LaunchedEffect(key1 = Unit) {
         viewModel.init()
@@ -95,20 +155,10 @@ fun ProgressScreen(
     }
 
     BackHandler {
-        viewModel.showAppExitDialog.value = true
+            onBackClick()
     }
 
-    if(viewModel.showAppExitDialog.value){
-        showCustomDialog(
-            title = stringResource(id = R.string.are_you_sure),
-            message =stringResource(id = R.string.do_you_want_to_exit_the_app),
-            positiveButtonTitle = stringResource(id = R.string.exit),
-            negativeButtonTitle = stringResource(id = R.string.cancel),
-            onNegativeButtonClick = {viewModel.showAppExitDialog.value =false},
-            onPositiveButtonClick = {
-                (context as? MainActivity)?.finish()
-            })
-    }
+
 
     Surface(
         modifier = Modifier
@@ -134,7 +184,7 @@ fun ProgressScreen(
                     )
                     LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         NudgeLogger.d("ProgressScreen","BottomSheet : $villages :: size ${villages.size}")
-                        itemsIndexed(villages) { index, village ->
+                        itemsIndexed(villages.distinctBy { it.id }) { index, village ->
                             VillageAndVoBoxForBottomSheet(
                                 tolaName = village.name,
                                 voName = village.federationName,
@@ -151,7 +201,7 @@ fun ProgressScreen(
                                 viewModel.getStepsList(village.id)
                                 viewModel.updateSelectedVillage(village)
                                 viewModel.findInProgressStep(villageId = village.id)
-                                viewModel.selectedText.value = viewModel.villageList.value[it].name
+                                viewModel.selectedText.value = village.name
                                 scope.launch {
                                     scaffoldState.hide()
                                     delay(1000)
@@ -267,8 +317,11 @@ fun ProgressScreen(
                                     PREF_KEY_IDENTITY_NUMBER,
                                     BLANK_STRING
                                 ) ?: "",
-                                isUserBPC = false,
-                                onBackClick = {}
+                                isBackButtonShow = true,
+                                isBPCUser = false,
+                                onBackClick = {
+                                    onBackClick()
+                                }
                             )
                         }
 
@@ -347,11 +400,20 @@ fun ProgressScreen(
                                     isCompleted = isStepCompleted == StepStatus.COMPLETED.ordinal
                                 ) { index ->
                                     viewModel.stepSelected.value = index
+                                    mainActivity?.isFilterApplied?.value=false
                                     val step=viewModel.stepList.value[index]
                                     viewModel.saveFromPage(ARG_FROM_PROGRESS)
                                     if (mainActivity?.isOnline?.value == true) {
                                        viewModel.callWorkFlowAPI(villageId,step.id,step.programId)
                                     }
+                                    if (step.isComplete != StepStatus.COMPLETED.ordinal) {
+                                    viewModel.updateWorkflowStatusInEvent(
+                                        stepStatus = StepStatus.INPROGRESS,
+                                        stepId = step.id,
+                                        villageId = villageId
+                                    )
+                                    }
+
                                     when (index) {
                                         0 -> {
 //                                            onNavigateToTransWalk(villageId,stepId,index)
@@ -638,14 +700,15 @@ fun StepBoxPreview(){
 @Preview(showBackground = true)
 @Composable
 fun UserDataViewPreview(){
-    UserDataView(name = "Sarathi BPC", identity = "1212", isUserBPC = true, onBackClick = {})
+    UserDataView(name = "Sarathi BPC", identity = "1212", isBackButtonShow = true, isBPCUser = true,onBackClick = {})
 }
 @Composable
 fun UserDataView(
     modifier: Modifier = Modifier,
     name: String,
     identity: String,
-    isUserBPC:Boolean,
+    isBPCUser:Boolean,
+    isBackButtonShow:Boolean,
     onBackClick:()->Unit
 ) {
     ConstraintLayout() {
@@ -659,7 +722,7 @@ fun UserDataView(
                 .then(modifier)
         ) {
             Row {
-                if(isUserBPC) {
+                if(isBackButtonShow) {
                     Icon(
                         Icons.Default.ArrowBack,
                         contentDescription = "Negative Button",
@@ -681,7 +744,7 @@ fun UserDataView(
                 )
             }
 
-            if(!isUserBPC) {
+            if(!isBPCUser) {
                 Text(
                     text = stringResource(R.string.user_id_text) + identity,
                     color = textColorDark,
@@ -701,6 +764,7 @@ fun UserDataView(
 fun VillageSelectorDropDown(
     modifier: Modifier = Modifier,
     selectedText: String,
+    showCarrotIcon: Boolean = true,
     onClick: () -> Unit
 ) {
     Box(
@@ -734,13 +798,14 @@ fun VillageSelectorDropDown(
                 color = blueDark,
                 style = mediumTextStyle,
             )
-            Icon(
-                painterResource(id = R.drawable.baseline_keyboard_arrow_down),
-                contentDescription = "drop down menu icon",
-                tint = blueDark
-            )
+            if (showCarrotIcon) {
+                Icon(
+                    painterResource(id = R.drawable.baseline_keyboard_arrow_down),
+                    contentDescription = "drop down menu icon",
+                    tint = blueDark
+                )
+            }
         }
-
     }
 }
 

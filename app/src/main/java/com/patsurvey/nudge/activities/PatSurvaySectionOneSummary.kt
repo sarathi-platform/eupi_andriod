@@ -11,18 +11,35 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,13 +68,35 @@ import coil.compose.rememberImagePainter
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.borderGrey
+import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
+import com.patsurvey.nudge.activities.ui.theme.brownDark
+import com.patsurvey.nudge.activities.ui.theme.brownLoght
+import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
+import com.patsurvey.nudge.activities.ui.theme.greenOnline
+import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
+import com.patsurvey.nudge.activities.ui.theme.redNoAnswer
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.navigation.home.BpcDidiListScreens
 import com.patsurvey.nudge.navigation.home.PatScreens
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.AbleBodiedFlag
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.DoubleButtonBox
+import com.patsurvey.nudge.utils.EXTENSION_WEBP
+import com.patsurvey.nudge.utils.ExclusionType
+import com.patsurvey.nudge.utils.ForVOEndorsementType
+import com.patsurvey.nudge.utils.PageFrom
+import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.SHGFlag
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.TYPE_INCLUSION
+import com.patsurvey.nudge.utils.getImagePath
+import com.patsurvey.nudge.utils.showDidiImageDialog
 import java.io.File
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -255,6 +294,8 @@ fun PatSurvaySectionSummaryScreen(
                     didi.value.id,
                     PatSurveyStatus.COMPLETED.ordinal
                 )
+
+
                 if (patSectionSummaryViewModel.isYesSelected.value) {
                     var exclusionType = ExclusionType.SIMPLE_EXCLUSION.ordinal
 
@@ -275,9 +316,11 @@ fun PatSurvaySectionSummaryScreen(
                     } else {
                         showPatCompletion.value = true
                     }
+                    patSectionSummaryViewModel.savePATEvent(isExclusion = true)
                 } else {
                     patSectionSummaryViewModel.updateExclusionStatus(didi.value.id,ExclusionType.NO_EXCLUSION.ordinal,
                         TYPE_EXCLUSION)
+                    patSectionSummaryViewModel.savePATEvent()
                     if(patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()){
                         navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION/0")
                     }else navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION/0")

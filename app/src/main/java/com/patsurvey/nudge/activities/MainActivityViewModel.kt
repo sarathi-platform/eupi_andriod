@@ -1,12 +1,14 @@
 package com.patsurvey.nudge.activities
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.asLiveData
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.PoorDidiListDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
@@ -17,6 +19,7 @@ import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.ConnectionMonitorV2
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -34,9 +37,12 @@ class MainActivityViewModel @Inject constructor(
     val casteListDao: CasteListDao,
     val trainingVideoDao: TrainingVideoDao,
     val bpcSummaryDao: BpcSummaryDao,
-    val poorDidiListDao: PoorDidiListDao
+    val poorDidiListDao: PoorDidiListDao,
+    val languageListDao: LanguageListDao,
+    val connectionMonitor: ConnectionMonitorV2
 ): BaseViewModel() {
     val isLoggedIn = mutableStateOf(false)
+    val isOnline = connectionMonitor.isConnected.asLiveData()
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
     override fun onServerError(error: ErrorModel?) {
         /*TODO("Not yet implemented")*/
@@ -44,5 +50,10 @@ class MainActivityViewModel @Inject constructor(
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
         TODO("Not yet implemented")
+    }
+
+
+    fun saveSyncEnabledFromRemoteConfig(isEnabled: Boolean) {
+        prefRepo.saveIsSyncEnabled(isEnabled)
     }
 }

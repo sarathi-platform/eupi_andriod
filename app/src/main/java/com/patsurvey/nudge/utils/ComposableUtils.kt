@@ -21,22 +21,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,17 +44,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -93,7 +87,6 @@ import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -546,7 +539,7 @@ fun ShowDidisFromTola(
                         },
                         prefRepo = prefRepo,
                         onNotAvailableClick = { didi->
-//                            didiViewModel.setDidiAsUnavailable(didi.id)
+                            addDidiViewModel?.setDidiAsUnavailable(didi.id)
                         },
                         onItemClick = { didi ->
                             onNavigate(didi)
@@ -700,10 +693,12 @@ fun showCustomDialog(
     message:String,
     positiveButtonTitle : String ?=EMPTY_STRING,
     negativeButtonTitle : String ?=EMPTY_STRING,
+    dismissOnBackPress: Boolean? = true,
     onPositiveButtonClick:()->Unit,
     onNegativeButtonClick:()->Unit){
     Dialog(onDismissRequest = {  }, properties = DialogProperties(
-        dismissOnClickOutside = false
+        dismissOnClickOutside = false,
+        dismissOnBackPress = dismissOnBackPress ?: true
     )) {
         Surface(
             color = Color.Transparent,
@@ -750,7 +745,8 @@ fun showCustomDialog(
 
                                     if(!negativeButtonTitle.isNullOrEmpty()) {
                                         ButtonNegative(
-                                            buttonTitle = stringResource(id = R.string.cancel_tola_text),
+                                            buttonTitle = negativeButtonTitle
+                                                ?: stringResource(id = R.string.cancel_tola_text),
                                             isArrowRequired = false,
                                             modifier = Modifier.weight(1f)
                                         ) {
@@ -819,6 +815,42 @@ fun showCustomDialogPreview(){
         onNegativeButtonClick = {},
         onPositiveButtonClick = {}
     )
+}
+
+private val SaveMap = mutableMapOf<String, KeyParams>()
+
+private data class KeyParams(
+    val params: String = "",
+    val index: Int,
+    val scrollOffset: Int
+)
+
+
+@Composable
+fun rememberForeverLazyListState(
+    key: String,
+    params: String = "",
+    initialFirstVisibleItemIndex: Int = 0,
+    initialFirstVisibleItemScrollOffset: Int = 0
+): LazyListState {
+    val scrollState = rememberSaveable(saver = LazyListState.Saver) {
+        var savedValue = SaveMap[key]
+        if (savedValue?.params != params) savedValue = null
+        val savedIndex = savedValue?.index ?: initialFirstVisibleItemIndex
+        val savedOffset = savedValue?.scrollOffset ?: initialFirstVisibleItemScrollOffset
+        LazyListState(
+            savedIndex,
+            savedOffset
+        )
+    }
+    DisposableEffect(Unit) {
+        onDispose {
+            val lastIndex = scrollState.firstVisibleItemIndex
+            val lastOffset = scrollState.firstVisibleItemScrollOffset
+            SaveMap[key] = KeyParams(params, lastIndex, lastOffset)
+        }
+    }
+    return scrollState
 }
 
 

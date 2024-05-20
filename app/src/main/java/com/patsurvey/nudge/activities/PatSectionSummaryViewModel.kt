@@ -2,6 +2,8 @@ package com.patsurvey.nudge.activities
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
 import com.patsurvey.nudge.activities.survey.PatSectionSummaryRepository
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.DidiEntity
@@ -24,6 +26,7 @@ import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import com.patsurvey.nudge.utils.calculateScore
+import com.patsurvey.nudge.utils.getPatScoreEventName
 import com.patsurvey.nudge.utils.toWeightageRatio
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -211,12 +214,11 @@ class PatSectionSummaryViewModel @Inject constructor(
         }
     }
 
-    fun calculateDidiScore(didiId: Int) {
+    private suspend fun calculateDidiScore(didiId: Int) {
         var passingMark = 0
         var isDidiAccepted = false
         var comment = LOW_SCORE
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            withContext(Dispatchers.IO) {
+
                 _inclusiveQueList.value = patSectionRepository.getAllInclusiveQues(didiId)
                 if (_inclusiveQueList.value.isNotEmpty()) {
                     var totalWightWithoutNumQue = patSectionRepository.getTotalWeightWithoutNumQues(didiId)
@@ -286,8 +288,7 @@ class PatSectionSummaryViewModel @Inject constructor(
                 }
                 patSectionRepository.updateModifiedDateServerId(didiId)
             }
-        }
-    }
+
 
     fun updateVOEndorseAfterDidiRejected(didiId:Int,forVoEndorsementStatus:Int){
         job = CoroutineScope(Dispatchers.IO +exceptionHandler).launch {
@@ -301,4 +302,26 @@ class PatSectionSummaryViewModel @Inject constructor(
             )
         }
     }
+
+    fun savePATEvent(isExclusion:Boolean?=false) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            delay(300)
+            if (isExclusion == false) {
+                calculateDidiScore(didiEntity.value.id)
+            }
+            val updatedDidiEntity = patSectionRepository.getDidiFromDB(didiEntity.value.id)
+            patSectionRepository.saveEvent(
+                updatedDidiEntity,
+                EventName.SAVE_PAT_ANSWERS,
+                EventType.STATEFUL
+            )
+            patSectionRepository.saveEvent(
+                updatedDidiEntity,
+                getPatScoreEventName(updatedDidiEntity, patSectionRepository.prefRepo.isUserBPC()),
+                EventType.STATEFUL
+            )
+        }
+    }
+
+
 }

@@ -10,16 +10,16 @@ plugins {
     id("org.sonarqube")
 
 }
-def version = "0.1.43"
-def prodVersion = "1.0.4"
+def version = "0.1.80"
+def prodVersion = "1.1.9"
 android {
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
-        applicationId "com.nrlm.sarathi"
+        applicationId "com.nrlm.sarathi.selection"
         minSdk 23
         targetSdk 33
-        versionCode 3
+        versionCode 8
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -74,18 +74,29 @@ android {
     productFlavors{
         uat{
             applicationIdSuffix = ".uat"
-            manifestPlaceholders.app_name= "Nudge UAT"
+            manifestPlaceholders = [
+                    appName: "@string/app_name_uat",
+                    appIcon: "@mipmap/ic_launcher_uat",
+                    appIconRound: "@mipmap/ic_launcher_uat_round"
+            ]
             buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
         }
         staging{
             applicationIdSuffix = ".stage"
-            manifestPlaceholders.app_name= "Nudge STAGE"
-//            versionName '0.0.0'
+            manifestPlaceholders = [
+                    appName: "@string/app_name_uat",
+                    appIcon: "@mipmap/ic_launcher_uat",
+                    appIconRound: "@mipmap/ic_launcher_uat_round"
+            ]
             buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
         }
         production{
-            manifestPlaceholders.app_name= "The Nudge"
             versionName prodVersion
+            manifestPlaceholders = [
+                    appName: "@string/app_name",
+                    appIcon: "@mipmap/ic_launcher",
+                    appIconRound: "@mipmap/ic_launcher_round"
+            ]
             buildConfigField 'String', 'BASE_URL', '"https://sarathi.lokos.in/"'
         }
     }
@@ -124,12 +135,12 @@ configurations {
 
 dependencies {
 
-    implementation "androidx.core:core-ktx:1.10.0"
+    implementation "androidx.core:core-ktx:1.12.0"
 
     implementation "androidx.appcompat:appcompat:1.6.1"
-    implementation "androidx.fragment:fragment-ktx:1.5.6"
+    implementation "androidx.fragment:fragment-ktx:1.6.2"
 
-    implementation "com.google.android.material:material:1.9.0"
+    implementation "com.google.android.material:material:1.11.0"
 
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
 
@@ -146,6 +157,8 @@ dependencies {
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
     implementation "androidx.compose.material:material:1.3.1"
+    implementation 'androidx.hilt:hilt-work:1.0.0'
+    implementation 'com.google.firebase:firebase-config-ktx:21.6.1'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
 
     annotationProcessor "com.github.bumptech.glide:compiler:$glide"
@@ -227,6 +240,8 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:32.1.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-config-ktx:21.6.1'
+
 
     //SMS Read
     implementation "com.google.android.gms:play-services-auth:19.0.0"
@@ -268,5 +283,13 @@ dependencies {
     implementation ("com.opencsv:opencsv:5.3")
 
     implementation 'com.google.firebase:firebase-storage:20.3.0'
+    implementation (project(":syncManager"))
+    implementation (project(":core"))
+    implementation(project(":internetSpeedChecker"))
+    implementation(project(":CommunicationModule"))
+    implementation 'androidx.work:work-runtime-ktx:2.7.1'
+    kapt("androidx.hilt:hilt-compiler:1.0.0")
 
+    //FCM
+    implementation 'com.google.firebase:firebase-messaging:23.4.0'
 }

@@ -1,6 +1,16 @@
 package com.patsurvey.nudge.activities.survey
 
 import com.google.gson.Gson
+import com.nudge.core.EventSyncStatus
+import com.nudge.core.SELECTION_MISSION
+import com.nudge.core.database.entities.EventDependencyEntity
+import com.nudge.core.database.entities.Events
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
+import com.nudge.core.getSizeInLong
+import com.nudge.core.json
+import com.nudge.core.model.MetadataDto
+import com.nudge.core.toDate
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponseForPatStatus
 import com.patsurvey.nudge.base.BaseRepository
@@ -28,15 +38,15 @@ import com.patsurvey.nudge.model.response.SaveMatchSummaryResponse
 import com.patsurvey.nudge.model.response.TransactionResponseModel
 import com.patsurvey.nudge.model.response.WorkFlowResponse
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
 import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.getFormSubPath
-import com.patsurvey.nudge.utils.json
+import com.patsurvey.nudge.utils.getParentEntityMapForEvent
 import javax.inject.Inject
 
 class SurveySummaryRepository @Inject constructor(
@@ -137,6 +147,7 @@ class SurveySummaryRepository @Inject constructor(
         return stepsListDao.getAllStepsForVillage(villageId)
     }
 
+    fun getSelectedVillage() = prefRepo.getSelectedVillage()
    suspend fun editWorkFlow(addWorkFlowRequest: List<EditWorkFlowRequest>):ApiResponseModel<List<WorkFlowResponse>>{
        NudgeLogger.d("SurveySummaryRepository","editWorkFlow Request=> ${Gson().toJson(addWorkFlowRequest)}")
         return apiService.editWorkFlow(
@@ -172,6 +183,7 @@ class SurveySummaryRepository @Inject constructor(
             StepStatus.COMPLETED.ordinal,
             villageId
         )
+
         stepsListDao.updateNeedToPost(stepId, villageId, true)
         val stepDetails = stepsListDao.getStepForVillage(villageId, stepId)
         if (stepDetails.orderNumber < stepsListDao.getAllSteps().size) {
@@ -193,13 +205,16 @@ class SurveySummaryRepository @Inject constructor(
         return "${PREF_FORM_PATH}_${prefRepo.getSelectedVillage().id}_${subPath}"
     }
 
-    fun markBPCStepComplete(stepId: Int, isComplete: Int = 0,villageId:Int){
-        stepsListDao.markStepAsCompleteOrInProgress(
-            stepId = stepId,
-            isComplete = isComplete,
-            villageId = villageId
-        )
-        villageListDao.updateStepAndStatusId(villageId,stepId,StepStatus.COMPLETED.ordinal)
+    fun markBPCStepComplete(stepId: Int, isComplete: Int = 0, villageId: Int) {
+        val pendingVerificationDidiCount = didiDao.fetchPendingVerificationDidiCount(villageId)
+        if (pendingVerificationDidiCount == 0) {
+            stepsListDao.markStepAsCompleteOrInProgress(
+                stepId = stepId,
+                isComplete = isComplete,
+                villageId = villageId
+            )
+            villageListDao.updateStepAndStatusId(villageId, stepId, StepStatus.COMPLETED.ordinal)
+        }
     }
 
     fun updateBeneficiaryProcessStatus(didiId: Int, status: List<BeneficiaryProcessStatusModel>){
@@ -259,5 +274,87 @@ class SurveySummaryRepository @Inject constructor(
     fun updatePatEditFlag(villageId: Int, patEdit: Boolean){
         didiDao.updatePatEditFlag(villageId, patEdit)
     }
+
+    override suspend fun <T> createEvent(
+        eventItem: T,
+        eventName: EventName,
+        eventType: EventType
+    ): Events? {
+        if (eventType != EventType.STATEFUL)
+            return super.createEvent(eventItem, eventName, eventType)
+
+        when (eventName) {
+            EventName.SAVE_BPC_MATCH_SCORE -> {
+
+                val requestPayload = (eventItem as SaveMatchSummaryRequest).json()
+
+                var saveBpcMatchScoreEvent = Events(
+                    name = eventName.name,
+                    type = eventName.topicName,
+                    createdBy = prefRepo.getUserId(),
+                    mobile_number = prefRepo.getMobileNumber(),
+                    request_payload = requestPayload,
+                    status = EventSyncStatus.OPEN.name,
+                    modified_date = System.currentTimeMillis().toDate(),
+                    result = null,
+                    payloadLocalId = "",
+                    consumer_status = BLANK_STRING,
+                    metadata = MetadataDto(
+                        mission = SELECTION_MISSION,
+                        depends_on = listOf(),
+                        request_payload_size = requestPayload.getSizeInLong(),
+                        parentEntity = getParentEntityMapForEvent(eventItem, eventName)
+                    ).json()
+                )
+
+                return saveBpcMatchScoreEvent
+
+            }
+
+            else -> {
+                return super.createEvent(eventItem, eventName, eventType)
+            }
+        }
+
+    }
+
+    override suspend fun <T> createEventDependency(
+        eventItem: T,
+        eventName: EventName,
+        dependentEvent: Events
+    ): List<EventDependencyEntity> {
+        when (eventName) {
+            EventName.SAVE_BPC_MATCH_SCORE -> {
+                return emptyList()
+            }
+
+            else -> {
+                return emptyList()
+            }
+        }
+    }
+
+    override suspend fun <T> saveEvent(
+        eventItem: T,
+        eventName: EventName,
+        eventType: EventType
+    ) {
+
+
+        val event = this.createEvent(
+            eventItem,
+            eventName,
+            eventType
+        )
+
+        if (event?.id?.equals(BLANK_STRING) != true) {
+            event?.let {
+                val eventDependencies = this.createEventDependency(eventItem, eventName, it)
+                saveEventToMultipleSources(it, eventDependencies = eventDependencies)
+            }
+        }
+    }
+
+
 
 }

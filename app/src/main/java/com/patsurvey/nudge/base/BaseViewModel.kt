@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.analytics.AnalyticsHelper
+import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
@@ -23,6 +24,7 @@ import com.patsurvey.nudge.utils.RESPONSE_CODE_NO_DATA
 import com.patsurvey.nudge.utils.RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE
 import com.patsurvey.nudge.utils.RESPONSE_CODE_TIMEOUT
 import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
+import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TIMEOUT_ERROR_MSG
 import com.patsurvey.nudge.utils.UNAUTHORISED_MESSAGE
 import com.patsurvey.nudge.utils.UNREACHABLE_ERROR_MSG
@@ -192,6 +194,13 @@ abstract class BaseViewModel : ViewModel(){
         }
     }
 
+    open suspend fun updateWorkflowStatus(stepStatus: StepStatus, villageId: Int, stepId: Int) {}
+    open fun addRankingFlagEditEvent(iisUserBpc: Boolean = false, stepId: Int) {}
+
+    open fun isSyncEnabled(prefRepo: PrefRepo): Boolean {
+        return prefRepo.getISSyncEnabled()
+
+    }
 
 }
 

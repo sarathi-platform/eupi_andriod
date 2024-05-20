@@ -5,24 +5,28 @@ import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.net.toUri
+import androidx.lifecycle.viewModelScope
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
+import com.nudge.core.json
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
-import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.PoorDidiListDao
-import com.patsurvey.nudge.database.dao.StepsListDao
-import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
+import com.patsurvey.nudge.model.request.DocumentUploadRequest
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.utils.ACCEPTED
 import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
@@ -31,6 +35,7 @@ import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PAT_SURVEY
 import com.patsurvey.nudge.utils.PREF_FORM_C_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_D_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
@@ -41,7 +46,6 @@ import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
-import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.compressImage
 import com.patsurvey.nudge.utils.getFileNameFromURL
@@ -151,6 +155,8 @@ class FormPictureScreenViewModel @Inject constructor(
         }
     }
 
+    fun getSelectedVillage(): VillageEntity = repository.getSelectedVillage()
+
     fun setUri(context: Context) {
         uri.value = uriFromFile(context, File(imagePath.value))
     }
@@ -177,6 +183,7 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     fun saveFormPath(formPath: String, formName: String){
+
         Log.d("FormPictureScreen_saveFormPath", "prefKey: ${PREF_FORM_PATH}_${formName}, formPath: $formPath ")
         repository.prefRepo.savePref(getFormPathKey(formName)
             /*"${PREF_FORM_PATH}_${prefRepo.getSelectedVillage().name}_$formName"*/, formPath)
@@ -197,6 +204,7 @@ class FormPictureScreenViewModel @Inject constructor(
                 stepId = stepId,
                 updatedCompletedStepsList = updatedCompletedStepsList
             )
+            updateWorkflowStatus(StepStatus.COMPLETED, villageId, stepId)
         }
     }
 
@@ -283,10 +291,15 @@ class FormPictureScreenViewModel @Inject constructor(
 
                                 val updateVoStatusRequest = listOf(
                                     EditDidiWealthRankingRequest(
-                                        if (didi.serverId == 0) didi.id else didi.serverId,
+                                        didi.serverId,
                                         StepType.VO_ENDROSEMENT.name,
                                         ACCEPTED,
-                                        rankingEdit = false
+                                        rankingEdit = false,
+                                        name = didi.name,
+                                        address = didi.address,
+                                        guardianName = didi.guardianName,
+                                        villageId = didi.villageId,
+                                        deviceId = didi.localUniqueId
                                     )
                                 )
                                 NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> updateVoStatusRequest:" +
@@ -339,10 +352,15 @@ class FormPictureScreenViewModel @Inject constructor(
 
                                 val updateVoStatusRequest = listOf(
                                     EditDidiWealthRankingRequest(
-                                        if (didi.serverId == 0) didi.id else didi.serverId,
+                                        didi.serverId,
                                         StepType.VO_ENDROSEMENT.name,
                                         DidiEndorsementStatus.REJECTED.name,
-                                        rankingEdit = false
+                                        rankingEdit = false,
+                                        name = didi.name,
+                                        address = didi.address,
+                                        guardianName = didi.guardianName,
+                                        villageId = didi.villageId,
+                                        deviceId = didi.localUniqueId
                                     )
                                 )
                                 NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> updateVoStatusRequest:" +
@@ -404,6 +422,9 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     fun callWorkFlowAPI(villageId: Int,stepId: Int, networkCallbackListener: NetworkCallbackListener){
+        if (!isSyncEnabled(prefRepo = repository.prefRepo)) {
+            return
+        }
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> called")
             try {
@@ -417,8 +438,13 @@ class FormPictureScreenViewModel @Inject constructor(
                     val primaryWorkFlowRequest = listOf(
                         EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(5)].workFlowId,
                             StepStatus.COMPLETED.name, longToString(repository.prefRepo.getPref(
-                                PREF_VO_ENDORSEMENT_COMPLETION_DATE_ +repository.prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
-                        )
+                                PREF_VO_ENDORSEMENT_COMPLETION_DATE_ + repository.prefRepo.getSelectedVillage().id,
+                                System.currentTimeMillis()
+                            )
+                            ),
+                            villageId,
+                            programsProcessId = stepList[stepList.map { it.orderNumber }
+                                .indexOf(5)].id)
                     )
                     NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
 
@@ -465,7 +491,9 @@ class FormPictureScreenViewModel @Inject constructor(
                                 EditWorkFlowRequest(
                                     bpcStep.workFlowId,
                                     StepStatus.INPROGRESS.name,
-                                    System.currentTimeMillis().toString()
+                                    System.currentTimeMillis().toString(),
+                                    villageId,
+                                    programsProcessId = bpcStep.id
                                 )
                             )
                             val bpcStepWorkFlowResponse =
@@ -534,10 +562,10 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     fun getFormSubPath(formName: String, pageNumber: Int): String {
-        return "${formName}_page_$pageNumber"
+        return "${repository.prefRepo.getSelectedVillage().id}_${formName}_page_$pageNumber"
     }
 
-    fun uploadFormsCAndD(context: Context) {
+    fun uploadFormsCAndD(context: Context, isOnline: Boolean) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             val formList = arrayListOf<MultipartBody.Part>()
             try {
@@ -558,6 +586,23 @@ class FormPictureScreenViewModel @Inject constructor(
                             )
 //                              prefRepo.savePref(pageKey,File(compressedFormC).absolutePath)
                             formList.add(formCFilePart)
+
+                            val payload = DocumentUploadRequest(
+                                villageId = repository.prefRepo.getSelectedVillage().id.toString(),
+                                userType = if (repository.prefRepo.isUserBPC()) USER_BPC else USER_CRP,
+                                filePath = it.value,
+                                formName = "formC"
+                            ).json()
+                            val event = repository.createImageUploadEvent(
+                                payload = payload,
+                                mobileNumber = repository.prefRepo.getMobileNumber(),
+                                userID = repository.prefRepo.getUserId(),
+                                eventName = EventName.FORM_C_TOPIC,
+                                payloadlocalId = ""
+                            )
+
+                            repository.uri = File(compressedFormC).toUri()
+                            repository.writeImageEventIntoLogFile(event, listOf())
                         }
 
                     }
@@ -579,6 +624,40 @@ class FormPictureScreenViewModel @Inject constructor(
                             )
 //                                prefRepo.savePref(pageKey,File(compressedFormD).absolutePath)
                             formList.add(formDFilePart)
+
+                            val payload = DocumentUploadRequest(
+                                villageId = repository.prefRepo.getSelectedVillage().id.toString(),
+                                userType = if (repository.prefRepo.isUserBPC()) USER_BPC else USER_CRP,
+                                filePath = it.value,
+                                formName = "formD"
+                            ).json()
+
+                            repository.uri = File(compressedFormD).toUri()
+                            val event = repository.createImageUploadEvent(
+                                payload = payload,
+                                mobileNumber = repository.prefRepo.getMobileNumber(),
+                                userID = repository.prefRepo.getUserId(),
+                                eventName = EventName.FORM_D_TOPIC,
+                                payloadlocalId = ""
+
+                            )
+                            repository.writeImageEventIntoLogFile(event, listOf())
+
+                            /*val eventFormatter: IEventFormatter =
+                                EventWriterFactory().createEventWriter(
+                                    NudgeCore.getAppContext(),
+                                    EventFormatterName.JSON_FORMAT_EVENT
+                                )
+
+                            eventFormatter.saveAndFormatEvent(
+                                event = eventV1,
+                                listOf(
+                                    EventWriterName.FILE_EVENT_WRITER,
+                                    EventWriterName.IMAGE_EVENT_WRITER,
+                                    EventWriterName.DB_EVENT_WRITER,
+                                    EventWriterName.LOG_EVENT_WRITER
+                                ), File(it.value).toUri()
+                            )*/
                         }
 
                     }
@@ -594,17 +673,28 @@ class FormPictureScreenViewModel @Inject constructor(
                         "multipart/form-data".toMediaTypeOrNull(),
                         if (repository.prefRepo.isUserBPC()) USER_BPC else USER_CRP
                     )
-                val response = repository.uploadDocument(formList = formList, villageId = requestVillageId, userType = requestUserType)
-                if(response.status == SUCCESS){
-                    repository.prefRepo.savePref(
-                        PREF_NEED_TO_POST_FORM_C_AND_D_ + repository.prefRepo.getSelectedVillage().id,false)
+                if (isOnline && isSyncEnabled(prefRepo = repository.prefRepo)) {
+                    val response = repository.uploadDocument(
+                        formList = formList,
+                        villageId = requestVillageId,
+                        userType = requestUserType
+                    )
+
+                    if (response.status == SUCCESS) {
+                        repository.prefRepo.savePref(
+                            PREF_NEED_TO_POST_FORM_C_AND_D_ + repository.prefRepo.getSelectedVillage().id,
+                            false
+                        )
+                    }
                 }
+
             } catch (ex: Exception) {
                 ex.printStackTrace()
                 onCatchError(ex, ApiType.DOCUMENT_UPLOAD_API)
             }
         }
     }
+
 
     fun getImageFileName(context: Context, formName: String): File {
         val directory = getImagePath(context)
@@ -712,5 +802,42 @@ class FormPictureScreenViewModel @Inject constructor(
         },time)
     }
 
+    override suspend fun updateWorkflowStatus(
+        stepStatus: StepStatus,
+        villageId: Int,
+        stepId: Int
+    ) {
+        val stepEntity =
+            repository.getStepForVillage(villageId = villageId, stepId = stepId)
+        val updateWorkflowEvent = repository.createWorkflowEvent(
+            eventItem = stepEntity,
+            stepStatus = stepStatus,
+            eventName = EventName.WORKFLOW_STATUS_UPDATE,
+            eventType = EventType.STATEFUL,
+            prefRepo = repository.prefRepo
+        )
+        updateWorkflowEvent?.let { event ->
+            repository.saveEventToMultipleSources(event, listOf())
+        }
+    }
 
+    override fun addRankingFlagEditEvent(isUserBpc: Boolean, stepId: Int) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            val stepEntity =
+                repository.getStepForVillage(
+                    villageId = repository.prefRepo.getSelectedVillage().id,
+                    stepId = stepId
+                )
+
+            val addRankingFlagEditEvent = repository.createRankingFlagEditEvent(
+                stepEntity,
+                villageId = repository.prefRepo.getSelectedVillage().id,
+                stepType = if (isUserBpc) BPC_SURVEY_CONSTANT else PAT_SURVEY,
+                repository.prefRepo.getMobileNumber() ?: BLANK_STRING,
+                repository.prefRepo.getUserId()
+            )
+
+            repository.saveEventToMultipleSources(addRankingFlagEditEvent, listOf())
+        }
+    }
 }

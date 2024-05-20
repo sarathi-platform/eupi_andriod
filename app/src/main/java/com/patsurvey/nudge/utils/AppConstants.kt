@@ -5,6 +5,7 @@ import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 
 const val BLANK_STRING=""
+const val ONE="1"
 const val DEFAULT_LANGUAGE_CODE="en"
 const val MOBILE_NUMBER_LENGTH=10
 const val ASSET_VALUE_LENGTH=8
@@ -33,7 +34,6 @@ const val SPLASH_SCREEN_DURATION = 2000L
 const val ONE_SECOND = 2000L
 const val STEP_COMPLETION_DELAY = 900L
 const val FINAL_STEP_COMPLETION_DELAY = 3000L
-const val NUDGE_DATABASE = "NudgeDatabase"
 const val VILLAGE_TABLE_NAME = "village_table"
 const val LANGUAGE_TABLE_NAME = "language_table"
 const val NUMERIC_TABLE_NAME = "numeric_table"
@@ -186,6 +186,7 @@ const val NETWORK_ERROR_MSG = "Make sure that Wi-Fi or mobile data is turned on,
 val COMMON_ERROR_MSG = MyApplication.applicationContext().getString(R.string.common_error_message_text)
 const val COMMON_ERROR_TITLE = "Something Went Wrong"
 const val TIMEOUT_ERROR_MSG = "Your request timed out. Please try again in some time."
+const val JSON_PARSING_EXCEPTION = "Unable to parse JSON"
 val UNAUTHORISED_MESSAGE = "401 Unauthorized"
 
 const val LAST_UPDATE_TIME = "last_updated_time"
@@ -235,4 +236,10 @@ const val DEFAULT_LANGUAGE_ID = 2
 const val BPC_VERIFICATION_STEP_ORDER = 6
 const val VO_ENDORSEMENT_STEP_ORDER = 5
 const val EMPTY_STRING="";
+
+const val MIN_PROGRESS_COUNT_INT = 0
+const val MIN_PROGRESS_COUNT_FLOAT = 0F
+
+const val TOTAL_FAMILY_MEMBERS_OPTION_VALUE=1
+const val EARNING_FAMILY_MEMBERS_OPTION_VALUE=2
 

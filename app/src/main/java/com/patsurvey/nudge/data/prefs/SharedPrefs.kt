@@ -12,6 +12,7 @@ import com.patsurvey.nudge.utils.ARG_PAGE_FROM
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_CODE
 import com.patsurvey.nudge.utils.ONLINE_STATUS
+import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_MOBILE_NUMBER
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -36,6 +37,8 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_VO_SUMMARY_OPEN_FROM = "questions_open_from"
         const val PREF_KEY_QUESTIONS_SUMMARY_OPEN_FROM = "questions_summary_open_from"
         const val PREF_KEY_NEED_TO_SCROLL = "questions_need_to_scroll"
+        const val PREF_KEY_SYNC_ENABLED = "sync_enabled"
+        const val PREF_KEY_PREVIOUS_USER_MOBILE = "previous_user_mobile"
     }
 
     val prefs: SharedPreferences by lazy {
@@ -99,8 +102,8 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         prefs.edit().putString(PREF_MOBILE_NUMBER, mobileNumber).apply()
     }
 
-    override fun getMobileNumber(): String? {
-        return prefs.getString(PREF_MOBILE_NUMBER, "")
+    override fun getMobileNumber(): String {
+        return prefs.getString(PREF_MOBILE_NUMBER, "") ?: ""
     }
 
     override fun savePref(key: String, value: String) {
@@ -225,5 +228,26 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
 
     override fun isNeedQuestionToScroll(): Boolean {
         return prefs.getBoolean(PREF_KEY_NEED_TO_SCROLL,false)
+    }
+
+    override fun getUserId(): String {
+        return prefs.getString(PREF_KEY_USER_NAME, "") ?: ""
+    }
+
+    override fun saveIsSyncEnabled(isEnabled: Boolean) {
+        prefs.edit().putBoolean(PREF_KEY_SYNC_ENABLED, isEnabled).apply()
+    }
+
+    override fun getISSyncEnabled(): Boolean {
+        return prefs.getBoolean(PREF_KEY_SYNC_ENABLED, false)
+
+    }
+
+    override fun getPreviousUserMobile(): String {
+        return prefs.getString(PREF_KEY_PREVIOUS_USER_MOBILE, "") ?: ""
+    }
+
+    override fun setPreviousUserMobile(mobileNumber: String) {
+        prefs.edit().putString(PREF_KEY_PREVIOUS_USER_MOBILE, mobileNumber).apply()
     }
 }

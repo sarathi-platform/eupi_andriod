@@ -3,21 +3,67 @@ package com.patsurvey.nudge
 import android.annotation.SuppressLint
 import androidx.compose.runtime.MutableState
 import com.google.gson.Gson
+import com.nudge.core.json
 import com.patsurvey.nudge.activities.settings.SettingViewModel
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
-import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.StepListEntity
-import com.patsurvey.nudge.database.dao.*
+import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.NumericAnswerDao
+import com.patsurvey.nudge.database.dao.QuestionListDao
+import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
-import com.patsurvey.nudge.model.request.*
+import com.patsurvey.nudge.model.request.AddWorkFlowRequest
+import com.patsurvey.nudge.model.request.AnswerDetailDTOListItem
+import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
+import com.patsurvey.nudge.model.request.EditWorkFlowRequest
+import com.patsurvey.nudge.model.request.PATSummarySaveRequest
+import com.patsurvey.nudge.model.request.SaveMatchSummaryRequest
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.utils.*
-import kotlinx.coroutines.*
-import java.util.*
-import kotlin.collections.ArrayList
+import com.patsurvey.nudge.utils.AbleBodiedFlag
+import com.patsurvey.nudge.utils.ApiResponseFailException
+import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
+import com.patsurvey.nudge.utils.COMPLETED_STRING
+import com.patsurvey.nudge.utils.DIDI_NOT_AVAILABLE
+import com.patsurvey.nudge.utils.DIDI_REJECTED
+import com.patsurvey.nudge.utils.ExclusionType
+import com.patsurvey.nudge.utils.FLAG_RATIO
+import com.patsurvey.nudge.utils.FLAG_WEIGHT
+import com.patsurvey.nudge.utils.LOW_SCORE
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PAT_SURVEY
+import com.patsurvey.nudge.utils.PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_
+import com.patsurvey.nudge.utils.PREF_BPC_PAT_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
+import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.SHGFlag
+import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.USER_BPC
+import com.patsurvey.nudge.utils.USER_CRP
+import com.patsurvey.nudge.utils.VERIFIED_STRING
+import com.patsurvey.nudge.utils.calculateScore
+import com.patsurvey.nudge.utils.longToString
+import com.patsurvey.nudge.utils.toWeightageRatio
+import com.patsurvey.nudge.utils.updateLastSyncTime
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.Collections
+import java.util.Timer
+import java.util.TimerTask
 
 class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                           val prefRepo: PrefRepo,
@@ -239,26 +285,30 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     val villageId = village.id
                     val stepList =
                         stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
-                    val bpcStep = stepList.last()
-                    if (bpcStep.workFlowId > 0) {
-                        if (bpcStep.needToPost) {
-                            editWorkFlowRequest.add(
-                                (EditWorkFlowRequest(
-                                    bpcStep.workFlowId,
-                                    StepStatus.getStepFromOrdinal(bpcStep.isComplete)
-                                ))
-                            )
-                            needToEditStep.add(bpcStep)
-                        }
-                    } else {
-                        if (bpcStep.needToPost) {
-                            needToAddStep.add(bpcStep)
-                            addWorkFlowRequest.add(
-                                (AddWorkFlowRequest(
-                                    StepStatus.INPROGRESS.name, bpcStep.villageId,
-                                    bpcStep.programId, bpcStep.id
-                                ))
-                            )
+                    if (stepList.isNotEmpty()) {
+                        val bpcStep = stepList.last()
+                        if (bpcStep.workFlowId > 0) {
+                            if (bpcStep.needToPost) {
+                                editWorkFlowRequest.add(
+                                    (EditWorkFlowRequest(
+                                        bpcStep.workFlowId,
+                                        StepStatus.getStepFromOrdinal(bpcStep.isComplete),
+                                        villageId = villageId,
+                                        programsProcessId = bpcStep.id
+                                    ))
+                                )
+                                needToEditStep.add(bpcStep)
+                            }
+                        } else {
+                            if (bpcStep.needToPost) {
+                                needToAddStep.add(bpcStep)
+                                addWorkFlowRequest.add(
+                                    (AddWorkFlowRequest(
+                                        StepStatus.INPROGRESS.name, bpcStep.villageId,
+                                        bpcStep.programId, bpcStep.id
+                                    ))
+                                )
+                            }
                         }
                     }
                 }
@@ -332,7 +382,9 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                             EditWorkFlowRequest(
                                 step.workFlowId,
                                 StepStatus.getStepFromOrdinal(step.isComplete),
-                                stepCompletionDate
+                                stepCompletionDate,
+                                villageId = step.villageId,
+                                programsProcessId = step.id
                             )
                         )
                     }
@@ -413,24 +465,31 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     val passingScore = questionDao.getPassingScore()
                     val requestList = arrayListOf<SaveMatchSummaryRequest>()
                     villageList.forEach { village ->
-                        val bpcStep =
-                            stepsListDao.getAllStepsForVillage(village.id).sortedBy { it.orderNumber }.last()
-                        if (bpcStep.isComplete == StepStatus.COMPLETED.ordinal && !prefRepo.getPref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + village.id, false)) {
-                            val didiList = didiDao.getAllDidisForVillage(village.id)
-                            val matchPercentage = calculateMatchPercentage(
-                                didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal },
-                                passingScore
-                            )
-                            val saveMatchSummaryRequest = SaveMatchSummaryRequest(
-                                programId = bpcStep.programId,
-                                score = matchPercentage,
-                                villageId = village.id,
-                                didiNotAvailableCountBPC = didiList.filter {
-                                    it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
-                                            || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal
-                                }.size
-                            )
-                            requestList.add(saveMatchSummaryRequest)
+                        val bpcStepList =
+                            stepsListDao.getAllStepsForVillage(village.id).sortedBy { it.orderNumber }
+                        if (bpcStepList.isNotEmpty()) {
+                            val bpcStep = bpcStepList.last()
+                            if (bpcStep.isComplete == StepStatus.COMPLETED.ordinal && !prefRepo.getPref(
+                                    PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + village.id,
+                                    false
+                                )
+                            ) {
+                                val didiList = didiDao.getAllDidisForVillage(village.id)
+                                val matchPercentage = calculateMatchPercentage(
+                                    didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal },
+                                    passingScore
+                                )
+                                val saveMatchSummaryRequest = SaveMatchSummaryRequest(
+                                    programId = bpcStep.programId,
+                                    score = matchPercentage,
+                                    villageId = village.id,
+                                    didiNotAvailableCountBPC = didiList.filter {
+                                        it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
+                                                || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal
+                                    }.size
+                                )
+                                requestList.add(saveMatchSummaryRequest)
+                            }
                         }
                     }
                     NudgeLogger.d("SyncBPCDataOnServer","sendBpcMatchScore saveMatchSummary Request=> ${requestList.json()}")
@@ -503,10 +562,16 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     }
                     didiRequestList.add(
                         EditDidiWealthRankingRequest(
-                            id = if (didi.serverId == 0) didi.id else didi.serverId,
+                            name = didi.name,
+                            address = didi.address,
+                            guardianName = didi.guardianName,
+                            villageId = didi.villageId,
+                            id = didi.serverId,
                             score = didi.score,
                             comment =comment,
+                            cohortName = didi.cohortName,
                             type = BPC_SURVEY_CONSTANT,
+                            deviceId = didi.localUniqueId,
                             result = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) DIDI_NOT_AVAILABLE
                             else {
                                 if (didi.forVoEndorsement == 0) DIDI_REJECTED else {
@@ -587,6 +652,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     val didiIDList= answerDao.fetchPATSurveyDidiList()
                     if(didiIDList.isNotEmpty()){
                         didiIDList.forEach { didi->
+                            val didiEntity = didiDao.getDidi(didi.id)
                             NudgeLogger.d("SyncBPCDataOnServer", "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
                             val qList: ArrayList<AnswerDetailDTOListItem> = arrayListOf()
                             calculateDidiScore(didiId = didi.id)
@@ -679,9 +745,14 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                 }
                             scoreDidiList.add(
                                 EditDidiWealthRankingRequest(
-                                    id = if (didi.serverId == 0) didi.id else didi.serverId,
+                                    id = didi.serverId,
                                     score = didi.score,
                                     comment = comment,
+                                    cohortName = didiEntity.cohortName,
+                                    address = didiEntity.address,
+                                    guardianName = didiEntity.guardianName,
+                                    name = didiEntity.name,
+                                    villageId = didiEntity.villageId,
                                     type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
                                     result = if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
                                         DIDI_NOT_AVAILABLE
@@ -697,13 +768,17 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                     },
                                     rankingEdit = false,
                                     shgFlag = SHGFlag.fromInt(didi.shgFlag).name,
-                                    ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name
+                                    ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name,
+                                    deviceId = didiEntity.localUniqueId
                                 )
                             )
                             val patSummarySaveRequest = PATSummarySaveRequest(
                                 villageId = didi.villageId,
                                 surveyId = surveyId,
-                                beneficiaryId = if (didi.serverId == 0) didi.id else didi.serverId,
+                                cohortName = didiEntity.cohortName,
+                                beneficiaryAddress = didiEntity.address,
+                                guardianName = didiEntity.guardianName,
+                                beneficiaryId = didi.serverId,
                                 languageId = prefRepo.getAppLanguageId() ?: 2,
                                 stateId = prefRepo.getSelectedVillage().stateId,
                                 totalScore = didi.score,
@@ -714,7 +789,8 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                 section2Status = didi.section2Status,
                                 section1Status = didi.section1Status,
                                 shgFlag = didi.shgFlag,
-                                patExclusionStatus = didi.patExclusionStatus ?: 0
+                                patExclusionStatus = didi.patExclusionStatus ?: 0,
+
                             )
                             NudgeLogger.d("SyncBPCDataOnServer", "savePATSummeryToServer patSummarySaveRequest: $patSummarySaveRequest")
                             answeredDidiList.add(

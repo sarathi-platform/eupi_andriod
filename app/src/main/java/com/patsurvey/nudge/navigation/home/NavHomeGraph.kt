@@ -20,6 +20,7 @@ import com.patsurvey.nudge.activities.PatDidiSummaryScreen
 import com.patsurvey.nudge.activities.PatSurvaySectionSummaryScreen
 import com.patsurvey.nudge.activities.PatSurveyCompleteSummary
 import com.patsurvey.nudge.activities.StepCompletionScreen
+import com.patsurvey.nudge.activities.VillageScreen
 import com.patsurvey.nudge.activities.VillageSelectionScreen
 import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.survey.PatSuccessScreen
@@ -37,6 +38,7 @@ import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormCScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.FormImageViewerScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.PdfViewer
 import com.patsurvey.nudge.activities.ui.home.HomeUserScreen
+import com.patsurvey.nudge.activities.ui.home.HomeVillageScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
@@ -104,9 +106,12 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         }
 
         composable(route = HomeScreens.VILLAGE_SELECTION_SCREEN.route) {
-            VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()){
+            VillageScreen(navController = navController) {
                 navController.navigate(AuthScreen.AUTH_SETTING_SCREEN.route)
             }
+            /*VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()){
+                navController.navigate(AuthScreen.AUTH_SETTING_SCREEN.route)
+            }*/
         }
 
 
@@ -133,7 +138,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         patNavGraph(navController = navController)
         settingNavGraph(navController = navController)
         voEndorsmentNavGraph(navController = navController)
-        logoutGraph(navController =navController)
+        logoutGraph(navController =navController,prefRepo)
         bpcDidiListNavGraph(navController = navController)
     }
 }
@@ -842,10 +847,17 @@ sealed class VoEndorsmentScreeens(val route: String) {
 
 }
 
-fun NavGraphBuilder.logoutGraph(navController: NavHostController){
+fun NavGraphBuilder.logoutGraph(navController: NavHostController,prefRepo: PrefRepo){
     navigation(route = Graph.LOGOUT_GRAPH,
-        startDestination = LogoutScreens.LOG_LOGIN_SCREEN.route,
+        startDestination = LogoutScreens.LOG_HOME_SCREEN.route,
     ) {
+
+        composable(route = LogoutScreens.LOG_HOME_SCREEN.route) {
+            HomeVillageScreen(
+                navController,
+                prefRepo = prefRepo
+            )
+        }
         composable(route = LogoutScreens.LOG_LOGIN_SCREEN.route) {
             LoginScreen(
                 navController,
@@ -868,15 +880,19 @@ fun NavGraphBuilder.logoutGraph(navController: NavHostController){
         }
 
         composable(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route) {
-            VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()){
+            VillageScreen(navController = navController) {
                 navController.navigate(Graph.SETTING_GRAPH)
             }
+            /*VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()){
+                navController.navigate(Graph.SETTING_GRAPH)
+            }*/
         }
     }
 }
 
 sealed class LogoutScreens(val route: String) {
     object LOG_LOGIN_SCREEN : LogoutScreens(route = "login_screen")
+    object LOG_HOME_SCREEN : LogoutScreens(route = "login_home_screen")
     object LOG_VILLAGE_SELECTION_SCREEN : LogoutScreens(route = "village_selection_screen")
     object LOG_OTP_VERIFICATION : LogoutScreens(route = "otp_verification_screen/{$ARG_MOBILE_NUMBER}")
 

@@ -67,4 +67,5 @@ data class PATDidiStatusModel(
     @Expose
     var ableBodiedFlag: Int,
 
-)
+
+    )

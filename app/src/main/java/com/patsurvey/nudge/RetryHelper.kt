@@ -5,12 +5,16 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import com.nudge.core.getDefaultBackUpFileName
+import com.nudge.core.getDefaultImageBackUpFileName
+import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.analytics.EventParams
 import com.patsurvey.nudge.analytics.Events
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcSummaryEntity
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.PoorDidiEntity
 import com.patsurvey.nudge.database.QuestionEntity
@@ -20,6 +24,7 @@ import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.PoorDidiListDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
@@ -44,6 +49,7 @@ import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DOUBLE_ZERO
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.FAIL
+import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PAT_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.PREF_BPC_PAT_COMPLETION_DATE_
@@ -121,6 +127,7 @@ object RetryHelper {
     private var castListDao: CasteListDao? = null
     private var bpcSummaryDao: BpcSummaryDao? = null
     private var poorDidiListDao: PoorDidiListDao? = null
+    private var languageDao: LanguageListDao? = null
 
     val tokenExpired = mutableStateOf(false)
 
@@ -136,7 +143,8 @@ object RetryHelper {
         questionDao: QuestionListDao,
         castListDao: CasteListDao,
         bpcSummaryDao: BpcSummaryDao,
-        poorDidiListDao: PoorDidiListDao
+        poorDidiListDao: PoorDidiListDao,
+        languageListDao: LanguageListDao
     ) {
         setPrefRepo(prefRepo)
         setApiServices(apiService)
@@ -186,6 +194,7 @@ object RetryHelper {
         questionDao = null
         castListDao = null
         poorDidiListDao = null
+        languageDao = null
     }
 
     private fun setPrefRepo(mPrefRepo: PrefRepo) {
@@ -232,7 +241,9 @@ object RetryHelper {
         bpcSummaryDao = mBpcSummaryDao
     }
 
-
+    private fun setLanuageDao(mLanguageListDao: LanguageListDao) {
+        languageDao = mLanguageListDao
+    }
 
     private fun setPoorDidiListDao(mPoorDidiListDao: PoorDidiListDao) {
         poorDidiListDao = mPoorDidiListDao
@@ -1014,9 +1025,21 @@ object RetryHelper {
         }
     }
 
-    fun retryVillageListApi(request: String,saveVillageList: (success: Boolean, villageList: List<VillageEntity>?) -> Unit) {
+    fun retryVillageListApi(saveVillageList: (success: Boolean, villageList: List<VillageEntity>?) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
+                val languageList = languageDao?.getAllLanguages()
+                val request = createMultiLanguageVillageRequest(
+                    languageList ?: listOf(
+                        LanguageEntity(
+                            id = 2,
+                            language = "English",
+                            langCode = "en",
+                            orderNumber = 1,
+                            localName = "English"
+                        )
+                    )
+                )
                 val response = apiService?.userAndVillageListAPI(request)
                 withContext(Dispatchers.IO) {
                     if (response?.status.equals(SUCCESS, true)) {
@@ -1224,6 +1247,18 @@ object RetryHelper {
                     if (response?.status.equals(SUCCESS, true)) {
                         response?.data?.let {
                             prefRepo?.saveAccessToken(it.token)
+                            CoreSharedPrefs.getInstance(NudgeCore.getAppContext())
+                                .setBackupFileName(
+                                    getDefaultBackUpFileName(
+                                        prefRepo?.getMobileNumber() ?: ""
+                                    )
+                                )
+                            CoreSharedPrefs.getInstance(NudgeCore.getAppContext())
+                                .setImageBackupFileName(
+                                    getDefaultImageBackUpFileName(
+                                        prefRepo?.getMobileNumber() ?: ""
+                                    )
+                                )
                         }
                         withContext(Dispatchers.Main) {
                             onOtpResponse(true, response?.message ?: "Login Successful")
@@ -1278,6 +1313,20 @@ object RetryHelper {
             }
 
         }
+    }
+
+    private fun createMultiLanguageVillageRequest(localLanguageList: List<LanguageEntity>): String {
+        var requestString: StringBuilder = StringBuilder()
+        var request: String = "2"
+        if (localLanguageList.isNotEmpty()) {
+            localLanguageList.forEach {
+                requestString.append("${it.id}-")
+            }
+        } else request = "2"
+        if(requestString.contains("-")){
+            request= requestString.substring(0,requestString.length-1)
+        }
+        return request
     }
 
 }

@@ -77,7 +77,7 @@ class OtpVerificationScreenTest {
         val expectedResponse: ApiResponseModel<OtpVerificationModel> = ApiResponseModel(
             SUCCESS,
             "SUCCESS",
-            OtpVerificationModel("token")
+            OtpVerificationModel("token", typeName = "Community Resource Person")
         )
 
         Mockito.`when`(apiInterface.validateOtp(mockRequestBody)).thenReturn(expectedResponse)

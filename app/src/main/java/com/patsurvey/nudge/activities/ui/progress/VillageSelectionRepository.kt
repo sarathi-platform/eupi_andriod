@@ -8,23 +8,27 @@ import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
+import com.nudge.core.json
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.RetryHelper
+import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcSummaryEntity
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.PoorDidiEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.TolaEntity
+import com.patsurvey.nudge.database.TrainingVideoEntity
+import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
-import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.PoorDidiListDao
@@ -36,6 +40,8 @@ import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.download.FileType
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
+import com.patsurvey.nudge.model.dataModel.UserAndVillageDetailsModel
+import com.patsurvey.nudge.model.dataModel.UserDetailsModel
 import com.patsurvey.nudge.model.request.AddCohortRequest
 import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
@@ -60,17 +66,21 @@ import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
 import com.patsurvey.nudge.utils.COMPLETED_STRING
+import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_ID
 import com.patsurvey.nudge.utils.DIDI_NOT_AVAILABLE
 import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DOUBLE_ZERO
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
+import com.patsurvey.nudge.utils.DownloadStatus
 import com.patsurvey.nudge.utils.ExclusionType
+import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.FLAG_RATIO
 import com.patsurvey.nudge.utils.FLAG_WEIGHT
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.HEADING_QUESTION_TYPE
+import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
 import com.patsurvey.nudge.utils.LOW_SCORE
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -78,7 +88,13 @@ import com.patsurvey.nudge.utils.PAT_SURVEY
 import com.patsurvey.nudge.utils.PAT_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.PREF_BPC_PAT_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PREF_KEY_EMAIL
+import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
+import com.patsurvey.nudge.utils.PREF_KEY_NAME
+import com.patsurvey.nudge.utils.PREF_KEY_PROFILE_IMAGE
+import com.patsurvey.nudge.utils.PREF_KEY_ROLE_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
+import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_FORM_C_AND_D_
 import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
@@ -91,6 +107,8 @@ import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
 import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.RESPONSE_CODE_CONFLICT
+import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
 import com.patsurvey.nudge.utils.ResultType
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.SUCCESS
@@ -108,15 +126,18 @@ import com.patsurvey.nudge.utils.compressImage
 import com.patsurvey.nudge.utils.findImageLocationFromPath
 import com.patsurvey.nudge.utils.formatRatio
 import com.patsurvey.nudge.utils.getAuthImagePath
+import com.patsurvey.nudge.utils.getEmitLanguageList
 import com.patsurvey.nudge.utils.getFileNameFromURL
 import com.patsurvey.nudge.utils.getFormPathKey
 import com.patsurvey.nudge.utils.getFormSubPath
+import com.patsurvey.nudge.utils.getImagePath
+import com.patsurvey.nudge.utils.getVideoPath
 import com.patsurvey.nudge.utils.intToString
-import com.patsurvey.nudge.utils.json
 import com.patsurvey.nudge.utils.longToString
 import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.toWeightageRatio
 import com.patsurvey.nudge.utils.updateLastSyncTime
+import com.patsurvey.nudge.utils.videoList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -126,6 +147,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.HttpException
 import java.io.File
 import java.util.Collections
 import java.util.Timer
@@ -133,6 +155,7 @@ import java.util.TimerTask
 import javax.inject.Inject
 
 class VillageSelectionRepository @Inject constructor(
+    val prefRepo: PrefRepo,
     val apiService: ApiService,
     val villageListDao: VillageListDao,
     val stepsListDao: StepsListDao,
@@ -156,7 +179,6 @@ class VillageSelectionRepository @Inject constructor(
         repoJob = MyApplication.appScopeLaunch (Dispatchers.IO + exceptionHandler) {
             val awaitDeff = CoroutineScope(Dispatchers.IO).async {
                 try {
-
                     //Fetch PAT Question
                     fetchQuestions(prefRepo)
 
@@ -513,19 +535,19 @@ class VillageSelectionRepository @Inject constructor(
                             onCatchError(ex, ApiType.STEP_LIST_API)
                         }
                     }
-                    //Fetch Cohort/Tola Data
-                    syncCrpData(prefRepo = prefRepo, object : NetworkCallbackListener {
-                        override fun onSuccess() {
-                            //fetch all data
-                            villageList.forEach { village ->
-                                fetchDidiForCrp(prefRepo, village.id)
-                            }
-                        }
-
-                        override fun onFailed() {
-                            networkCallbackListener.onFailed()
-                        }
-                    })
+//                    //Fetch Cohort/Tola Data
+//                    syncCrpData(prefRepo = prefRepo, object : NetworkCallbackListener {
+//                        override fun onSuccess() {
+//                            //fetch all data
+//                            villageList.forEach { village ->
+//                                fetchDidiForCrp(prefRepo, village.id)
+//                            }
+//                        }
+//
+//                        override fun onFailed() {
+//                            networkCallbackListener.onFailed()
+//                        }
+//                    })
                 } catch (ex: Exception) {
                     NudgeLogger.e(
                         "VillageSelectionRepository",
@@ -557,6 +579,7 @@ class VillageSelectionRepository @Inject constructor(
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             //Fetch Didi Details
             try {
+                val oldDidiList = didiDao.getAllDidisForVillage(villageId)
                 val didiResponse =
                     apiService.getDidisFromNetwork(villageId = villageId)
                 if (didiResponse.status.equals(SUCCESS, true)) {
@@ -596,45 +619,64 @@ class VillageSelectionRepository @Inject constructor(
                                                 .indexOf(StepType.VO_ENDROSEMENT.name)].status)
                                         else DidiEndorsementStatus.NOT_STARTED.ordinal
 
+                                    var remoteDidiEntity = DidiEntity(
+                                        id = didi.id,
+                                        serverId = didi.id,
+                                        name = didi.name,
+                                        address = didi.address,
+                                        guardianName = didi.guardianName,
+                                        relationship = didi.relationship,
+                                        castId = didi.castId,
+                                        castName = casteName,
+                                        cohortId = didi.cohortId,
+                                        villageId = villageId,
+                                        cohortName = tolaName,
+                                        needsToPost = false,
+                                        wealth_ranking = wealthRanking,
+                                        forVoEndorsement = if (patSurveyAcceptedRejected.equals(
+                                                COMPLETED_STRING, true
+                                            )
+                                        ) 1 else 0,
+                                        voEndorsementStatus = voEndorsementStatus,
+                                        needsToPostRanking = false,
+                                        createdDate = didi.createdDate,
+                                        modifiedDate = didi.modifiedDate,
+                                        beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
+                                        shgFlag = SHGFlag.fromSting(
+                                            didi.shgFlag ?: SHGFlag.NOT_MARKED.name
+                                        ).value,
+                                        transactionId = "",
+                                        localCreatedDate = didi.localCreatedDate,
+                                        localModifiedDate = didi.localModifiedDate,
+                                        score = didi.crpScore,
+                                        crpScore = didi.crpScore,
+                                        crpComment = didi.crpComment,
+                                        comment = didi.comment,
+                                        crpUploadedImage = didi.crpUploadedImage,
+                                        needsToPostImage = false,
+                                        rankingEdit = didi.rankingEdit,
+                                        patEdit = didi.patEdit,
+                                        voEndorsementEdit = didi.voEndorsementEdit,
+                                        ableBodiedFlag = AbleBodiedFlag.fromSting(
+                                            didi.ableBodiedFlag ?: AbleBodiedFlag.NOT_MARKED.name
+                                        ).value
+                                    )
+                                    val oldDidiEntity = oldDidiList.filter {
+                                        it.name == remoteDidiEntity.name
+                                                && it.guardianName == remoteDidiEntity.guardianName
+                                                && it.address == remoteDidiEntity.address
+                                                && it.cohortName == remoteDidiEntity.cohortName
+                                                && it.villageId == remoteDidiEntity.villageId
+                                    }.firstOrNull()
+                                    oldDidiEntity.let { oldDidi ->
+                                        if (oldDidi?.serverId == 0) {
+                                            remoteDidiEntity = oldDidi.copy(
+                                                serverId = remoteDidiEntity.serverId
+                                            )
+                                        }
+                                    }
                                     didiDao.insertDidi(
-                                        DidiEntity(
-                                            id = didi.id,
-                                            serverId = didi.id,
-                                            name = didi.name,
-                                            address = didi.address,
-                                            guardianName = didi.guardianName,
-                                            relationship = didi.relationship,
-                                            castId = didi.castId,
-                                            castName = casteName,
-                                            cohortId = didi.cohortId,
-                                            villageId = villageId,
-                                            cohortName = tolaName,
-                                            needsToPost = false,
-                                            wealth_ranking = wealthRanking,
-                                            forVoEndorsement = if (patSurveyAcceptedRejected.equals(
-                                                    COMPLETED_STRING, true
-                                                )
-                                            ) 1 else 0,
-                                            voEndorsementStatus = voEndorsementStatus,
-                                            needsToPostRanking = false,
-                                            createdDate = didi.createdDate,
-                                            modifiedDate = didi.modifiedDate,
-                                            beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
-                                            shgFlag = SHGFlag.fromSting(didi.shgFlag ?: SHGFlag.NOT_MARKED.name).value,
-                                            transactionId = "",
-                                            localCreatedDate = didi.localCreatedDate,
-                                            localModifiedDate = didi.localModifiedDate,
-                                            score = didi.crpScore,
-                                            crpScore = didi.crpScore,
-                                            crpComment = didi.crpComment,
-                                            comment = didi.comment,
-                                            crpUploadedImage = didi.crpUploadedImage,
-                                            needsToPostImage = false,
-                                            rankingEdit = didi.rankingEdit,
-                                            patEdit = didi.patEdit,
-                                            voEndorsementEdit = didi.voEndorsementEdit,
-                                            ableBodiedFlag = AbleBodiedFlag.fromSting(didi.ableBodiedFlag ?: AbleBodiedFlag.NOT_MARKED.name).value
-                                        )
+                                        remoteDidiEntity
                                     )
 //                                                    }
                                     if(!didi.crpUploadedImage.isNullOrEmpty()){
@@ -959,45 +1001,31 @@ class VillageSelectionRepository @Inject constructor(
             tola.transactionId?.let { tolaDao.updateTolaTransactionId(tola.id, it) }
         }
         isPendingForCrp = 1
-        startSyncTimerForCrp(prefRepo, networkCallbackListener)
+        checkStatusForCrp(prefRepo, networkCallbackListener)
     }
 
-    private fun startSyncTimerForCrp(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
-        val timer = Timer()
-        timer.schedule(object : TimerTask(){
-            override fun run() {
-                when (isPendingForCrp) {
-                    1 -> {
+    fun checkStatusForCrp(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
+
                         checkTolaAddStatusForCrp(prefRepo, networkCallbackListener)
-                    }
-                    2 -> {
+
                         checkTolaDeleteStatusForCrp(prefRepo, networkCallbackListener)
-                    }
-                    3 -> {
+
                         checkTolaUpdateStatusForCrp(prefRepo, networkCallbackListener)
-                    }
-                    4 -> {
                         checkAddDidiStatusForCrp(prefRepo, networkCallbackListener)
-                    }
-                    5 -> {
                         checkDeleteDidiStatusForCrp(prefRepo, networkCallbackListener)
-                    }
-                    6 -> {
                         checkUpdateDidiStatusForCrp(prefRepo, networkCallbackListener)
-                    }
-                    7 -> {
-                        checkDidiWealthStatusForCrp(prefRepo = prefRepo, networkCallbackListener)
-                    }
-                    8 -> {
-                        checkDidiPatStatus(prefRepo, networkCallbackListener)
-                    }
-                    9 -> {
+
+
+        checkDidiWealthStatusForCrp(prefRepo = prefRepo, networkCallbackListener)
+
+
+        checkDidiPatStatus(prefRepo, networkCallbackListener)
+
                         checkVOStatus(prefRepo, networkCallbackListener)
-                    }
-                }
-            }
-        },pendingTimerTime)
+
+
     }
+
 
     private fun checkTolaAddStatusForCrp(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -1044,8 +1072,11 @@ class VillageSelectionRepository @Inject constructor(
                         jsonTola.add(
                             DeleteTolaRequest(
                                 tola.serverId,
-                                localModifiedDate = System.currentTimeMillis()
-                            ).toJson()
+                                localModifiedDate = System.currentTimeMillis(),
+                                tola.name,
+                                tola.villageId,
+                                tola.localUniqueId ?: ""
+                            ).json()
                         )
                     }
                 }
@@ -1070,7 +1101,7 @@ class VillageSelectionRepository @Inject constructor(
                                 }
                             }
                             isPendingForCrp = 2
-                            startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                            checkStatusForCrp(prefRepo, networkCallbackListener)
                         }
                     }
                 }
@@ -1146,7 +1177,7 @@ class VillageSelectionRepository @Inject constructor(
                                 }
                             }
                             isPendingForCrp = 3
-                            startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                            checkStatusForCrp(prefRepo, networkCallbackListener)
                         }
                     }
                 }
@@ -1241,7 +1272,7 @@ class VillageSelectionRepository @Inject constructor(
                             }
                         }
                         isPendingForCrp = 4
-                        startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                        checkStatusForCrp(prefRepo, networkCallbackListener)
                     }
                 } else {
                     withContext(Dispatchers.Main){
@@ -1292,8 +1323,7 @@ class VillageSelectionRepository @Inject constructor(
             val didiList = didiDao.getDidisToBeDeleted(
                 activeStatus = DidiStatus.DIID_DELETED.ordinal,
                 needsToPostDeleteStatus = true,
-                transactionId = "",
-                serverId = 0
+                transactionId = ""
             )
             val jsonDidi = JsonArray()
             if (didiList.isNotEmpty()) {
@@ -1322,7 +1352,7 @@ class VillageSelectionRepository @Inject constructor(
                                 }
                             }
                             isPendingForCrp = 5
-                            startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                            checkStatusForCrp(prefRepo, networkCallbackListener)
                         }
                     }
                 }
@@ -1343,7 +1373,10 @@ class VillageSelectionRepository @Inject constructor(
 
     private fun checkDeleteDidiStatusForCrp(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal,"",0)
+            val didiList = didiDao.fetchAllPendingDidiNeedToDelete(
+                DidiStatus.DIID_DELETED.ordinal,
+                ""
+            )
             if(didiList.isNotEmpty()) {
                 val ids: ArrayList<String> = arrayListOf()
                 didiList.forEach { didi ->
@@ -1376,11 +1409,22 @@ class VillageSelectionRepository @Inject constructor(
 
     private fun updateDidiToNetworkForCrp(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllDidiNeedToUpdate(true,"",0)
+            val didiList = didiDao.fetchAllDidiNeedToUpdate(true, "")
             if (didiList.isNotEmpty()) {
                 val didiRequestList = arrayListOf<EditDidiRequest>()
                 didiList.forEach { didi->
-                    didiRequestList.add(EditDidiRequest(didi.serverId,didi.name,didi.address,didi.guardianName,didi.castId,didi.cohortId))
+                    didiRequestList.add(
+                        EditDidiRequest(
+                            didi.serverId,
+                            didi.name,
+                            didi.address,
+                            didi.guardianName,
+                            didi.castId,
+                            didi.cohortId,
+                            didi.villageId,
+                            didi.cohortName
+                        )
+                    )
                 }
                 NudgeLogger.d("VillageSelectionRepository","updateDidiToNetworkForCrp updateDidis Request=> ${didiRequestList.json()}")
                 val response = apiService.updateDidis(didiRequestList)
@@ -1405,7 +1449,7 @@ class VillageSelectionRepository @Inject constructor(
                             }
                         }
                         isPendingForCrp = 6
-                        startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                        checkStatusForCrp(prefRepo, networkCallbackListener)
                     }
                 } else {
                     withContext(Dispatchers.Main){
@@ -1435,7 +1479,7 @@ class VillageSelectionRepository @Inject constructor(
 
     private fun checkUpdateDidiStatusForCrp(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllPendingDidiNeedToUpdate(true,"",0)
+            val didiList = didiDao.fetchAllPendingDidiNeedToUpdate(true, "")
             if(didiList.isNotEmpty()) {
                 val ids: ArrayList<String> = arrayListOf()
                 didiList.forEach { tola ->
@@ -1474,13 +1518,39 @@ class VillageSelectionRepository @Inject constructor(
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
-                    val needToPostDidiList=didiDao.getAllNeedToPostDidiRanking(true, 0)
+                    val needToPostDidiList = didiDao.getAllNeedToPostDidiRanking(true)
                     if (needToPostDidiList.isNotEmpty()) {
                         val didiWealthRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         val didiStepRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi ->
-                            didiWealthRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, rankingEdit = didi.rankingEdit, localModifiedDate = System.currentTimeMillis()))
-                            didiStepRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, rankingEdit = didi.rankingEdit, localModifiedDate = System.currentTimeMillis()))
+                            didiWealthRequestList.add(
+                                EditDidiWealthRankingRequest(
+                                    didi.serverId,
+                                    StepType.WEALTH_RANKING.name,
+                                    didi.wealth_ranking,
+                                    rankingEdit = didi.rankingEdit,
+                                    localModifiedDate = System.currentTimeMillis(),
+                                    name = didi.name,
+                                    address = didi.address,
+                                    guardianName = didi.guardianName,
+                                    villageId = didi.villageId,
+                                    deviceId = didi.localUniqueId
+                                )
+                            )
+                            didiStepRequestList.add(
+                                EditDidiWealthRankingRequest(
+                                    didi.serverId,
+                                    StepType.SOCIAL_MAPPING.name,
+                                    StepStatus.COMPLETED.name,
+                                    rankingEdit = didi.rankingEdit,
+                                    localModifiedDate = System.currentTimeMillis(),
+                                    name = didi.name,
+                                    address = didi.address,
+                                    guardianName = didi.guardianName,
+                                    villageId = didi.villageId,
+                                    deviceId = didi.localUniqueId
+                                )
+                            )
                         }
                         didiWealthRequestList.addAll(didiStepRequestList)
                         val updateWealthRankResponse = apiService.updateDidiRanking(didiWealthRequestList)
@@ -1499,7 +1569,7 @@ class VillageSelectionRepository @Inject constructor(
                                     }
                                 }
                                 isPendingForCrp = 7
-                                startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                                checkStatusForCrp(prefRepo, networkCallbackListener)
 
                             } else {
                                 needToPostDidiList.forEach { didi ->
@@ -1578,6 +1648,7 @@ class VillageSelectionRepository @Inject constructor(
                         calculateDidiScore(didiId = didi.id, prefRepo = prefRepo)
                         delay(100)
                         didi.score = didiDao.getDidiScoreFromDb(didi.id)
+                        val didiEntity = didiDao.getDidi(didi.id)
                         val qList: java.util.ArrayList<AnswerDetailDTOListItem> = arrayListOf()
                         val needToPostQuestionsList = answerDao.getAllNeedToPostQuesForDidi(didi.id)
                         if (needToPostQuestionsList.isNotEmpty()) {
@@ -1666,7 +1737,7 @@ class VillageSelectionRepository @Inject constructor(
                             }
                         scoreDidiList.add(
                             EditDidiWealthRankingRequest(
-                                id = if (didi.serverId == 0) didi.id else didi.serverId,
+                                id = didi.serverId,
                                 score = didi.score,
                                 comment = comment,
                                 type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
@@ -1684,7 +1755,11 @@ class VillageSelectionRepository @Inject constructor(
                                 },
                                 rankingEdit = didi.patEdit,
                                 shgFlag = SHGFlag.fromInt(didi.shgFlag).name,
-                                ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name
+                                ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name,
+                                address = didiEntity.address,
+                                guardianName = didiEntity.guardianName,
+                                villageId = didi.villageId,
+                                deviceId = didiEntity.localUniqueId
                             )
                         )
                         val stateId = villageListDao.getVillage(didi.villageId).stateId
@@ -1692,6 +1767,9 @@ class VillageSelectionRepository @Inject constructor(
                             PATSummarySaveRequest(
                                 villageId = didi.villageId,
                                 surveyId = surveyId,
+                                cohortName = didiEntity.cohortName,
+                                beneficiaryAddress = didiEntity.address,
+                                guardianName = didiEntity.guardianName,
                                 beneficiaryId = didi.serverId,
                                 languageId = prefRepo.getAppLanguageId() ?: 2,
                                 stateId = stateId,
@@ -1732,7 +1810,7 @@ class VillageSelectionRepository @Inject constructor(
                                         didiDao.updateDidiNeedToPostPat(didiIDList[i].id, true)
                                     }
                                     isPendingForCrp = 8
-                                    startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                                    checkStatusForCrp(prefRepo, networkCallbackListener)
                                 }
                                 savePatScoreToServer(scoreDidiList)
                             } else {
@@ -1840,7 +1918,7 @@ class VillageSelectionRepository @Inject constructor(
         }
     }
 
-    private fun checkDidiPatStatus(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
+    fun checkDidiPatStatus(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val didiList = didiDao.fetchPendingPatStatusDidi(true,"")
             if(didiList.isNotEmpty()) {
@@ -1875,17 +1953,34 @@ class VillageSelectionRepository @Inject constructor(
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
-                    val needToPostDidiList=didiDao.fetchAllVONeedToPostStatusDidi(needsToPostVo = true, transactionId = "", 0)
+                    val needToPostDidiList = didiDao.fetchAllVONeedToPostStatusDidi(
+                        needsToPostVo = true,
+                        transactionId = ""
+                    )
                     if(needToPostDidiList.isNotEmpty()){
                         val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi->
                             didi.voEndorsementStatus.let {
                                 if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
                                     didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, ACCEPTED,
-                                        localModifiedDate = System.currentTimeMillis(), rankingEdit = didi.voEndorsementEdit))
+                                        localModifiedDate = System.currentTimeMillis(),
+                                        rankingEdit = didi.voEndorsementEdit,
+                                        address = didi.address,
+                                        guardianName = didi.guardianName,
+                                        villageId = didi.villageId,
+                                        deviceId = didi.localUniqueId
+                                    )
+                                    )
                                 } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
                                     didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, DidiEndorsementStatus.REJECTED.name,
-                                        localModifiedDate = System.currentTimeMillis(), rankingEdit = didi.voEndorsementEdit))
+                                        localModifiedDate = System.currentTimeMillis(),
+                                        rankingEdit = didi.voEndorsementEdit,
+                                        address = didi.address,
+                                        guardianName = didi.guardianName,
+                                        villageId = didi.villageId,
+                                        deviceId = didi.localUniqueId
+                                    )
+                                    )
                                 }
                             }
                         }
@@ -1904,7 +1999,7 @@ class VillageSelectionRepository @Inject constructor(
                                     }
                                 }
                                 isPendingForCrp = 9
-                                startSyncTimerForCrp(prefRepo, networkCallbackListener)
+                                checkStatusForCrp(prefRepo, networkCallbackListener)
                             } else {
                                 if (didiListResponse != null) {
                                     for (i in didiRequestList.indices) {
@@ -2090,7 +2185,9 @@ class VillageSelectionRepository @Inject constructor(
                     if (step.workFlowId > 0) {
                         editWorkFlowRequest.add((EditWorkFlowRequest(
                             step.workFlowId,
-                            StepStatus.getStepFromOrdinal(step.isComplete)
+                            StepStatus.getStepFromOrdinal(step.isComplete),
+                            villageId = step.villageId,
+                            programsProcessId = step.id
                         )))
                         needToEditStep.add(step)
                     } else {
@@ -2182,7 +2279,9 @@ class VillageSelectionRepository @Inject constructor(
                     EditWorkFlowRequest(
                         step.workFlowId,
                         StepStatus.getStepFromOrdinal(step.isComplete),
-                        stepCompletionDate
+                        stepCompletionDate,
+                        villageId = step.villageId,
+                        programsProcessId = step.id
                     )
                 )
             }
@@ -2403,6 +2502,7 @@ class VillageSelectionRepository @Inject constructor(
                     val didiIDList= answerDao.fetchPATSurveyDidiList()
                     if(didiIDList.isNotEmpty()){
                         didiIDList.forEach { didi->
+                            val didiEntity = didiDao.getDidi(didi.id)
                             NudgeLogger.d("VillageSelectionRepository", "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
                             val qList: java.util.ArrayList<AnswerDetailDTOListItem> = arrayListOf()
                             calculateDidiScore(didiId = didi.id, prefRepo)
@@ -2495,7 +2595,7 @@ class VillageSelectionRepository @Inject constructor(
                                 }
                             scoreDidiList.add(
                                 EditDidiWealthRankingRequest(
-                                    id = if (didi.serverId == 0) didi.id else didi.serverId,
+                                    id = didi.serverId,
                                     score = didi.score,
                                     comment = comment,
                                     type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
@@ -2513,12 +2613,20 @@ class VillageSelectionRepository @Inject constructor(
                                     },
                                     rankingEdit = false,
                                     shgFlag = SHGFlag.fromInt(didi.shgFlag).name,
-                                    ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name
+                                    ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name,
+                                    name = didi.name,
+                                    address = didiEntity.address,
+                                    guardianName = didiEntity.guardianName,
+                                    villageId = didi.villageId,
+                                    deviceId = didiEntity.localUniqueId
                                 )
                             )
                             val patSummarySaveRequest = PATSummarySaveRequest(
                                 villageId = didi.villageId,
                                 surveyId = surveyId,
+                                cohortName = didiEntity.cohortName,
+                                beneficiaryAddress = didiEntity.address,
+                                guardianName = didiEntity.guardianName,
                                 beneficiaryId = if (didi.serverId == 0) didi.id else didi.serverId,
                                 languageId = prefRepo.getAppLanguageId() ?: 2,
                                 stateId = prefRepo.getSelectedVillage().stateId,
@@ -2693,10 +2801,14 @@ class VillageSelectionRepository @Inject constructor(
                     }
                     didiRequestList.add(
                         EditDidiWealthRankingRequest(
-                            id = if (didi.serverId == 0) didi.id else didi.serverId,
+                            id = didi.serverId,
                             score = didi.score,
                             comment =comment,
                             type = BPC_SURVEY_CONSTANT,
+                            address = didi.address,
+                            guardianName = didi.guardianName,
+                            villageId = didi.villageId,
+                            deviceId = didi.localUniqueId,
                             result = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) DIDI_NOT_AVAILABLE
                             else {
                                 if (didi.forVoEndorsement == 0) DIDI_REJECTED else {
@@ -2844,7 +2956,9 @@ class VillageSelectionRepository @Inject constructor(
                     if (bpcStep.workFlowId > 0) {
                         editWorkFlowRequest.add((EditWorkFlowRequest(
                             bpcStep.workFlowId,
-                            StepStatus.getStepFromOrdinal(bpcStep.isComplete)
+                            StepStatus.getStepFromOrdinal(bpcStep.isComplete),
+                            villageId = bpcStep.villageId,
+                            programsProcessId = bpcStep.id
                         )))
                         needToEditStep.add(bpcStep)
                     } else {
@@ -2917,7 +3031,9 @@ class VillageSelectionRepository @Inject constructor(
                         EditWorkFlowRequest(
                             step.workFlowId,
                             StepStatus.getStepFromOrdinal(step.isComplete),
-                            stepCompletionDate
+                            stepCompletionDate,
+                            villageId = step.villageId,
+                            programsProcessId = step.id
                         )
                     )
                 }
@@ -3561,6 +3677,412 @@ class VillageSelectionRepository @Inject constructor(
                 NudgeLogger.e("VillageSelectorViewModel", "downloadAuthorizedImageItem -> downloadItem exception", ex)
             }
         }
+    }
+
+
+
+    private fun createMultiLanguageVillageRequest(localLanguageList: List<LanguageEntity>): String {
+        var requestString: StringBuilder = StringBuilder()
+        var request: String = "2"
+        if (localLanguageList.isNotEmpty()) {
+            localLanguageList.forEach {
+                requestString.append("${it.id}-")
+            }
+        } else request = "2"
+        if(requestString.contains("-")){
+            request= requestString.substring(0,requestString.length-1)
+        }
+        return request
+    }
+
+    fun downloadImageItem(context: Context, image: String) {
+        repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                if (!getImagePath(context, image).exists()) {
+                    val localDownloader = (context as MainActivity).downloader
+                    val downloadManager = context.getSystemService(DownloadManager::class.java)
+                    val downloadId = localDownloader?.downloadImageFile(image, FileType.IMAGE)
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                Log.e("VideoListViewModel", "downloadItem exception", ex)
+            }
+        }
+
+    }
+
+    private fun downloadAuthorizedImageItem(id:Int, downloader: AndroidDownloader, image: String, prefRepo: PrefRepo) {
+        repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val imageFile = getAuthImagePath(downloader.mContext, image)
+                if (!imageFile.exists()) {
+                    val localDownloader = downloader
+                    val downloadManager = downloader.mContext.getSystemService(DownloadManager::class.java)
+                    localDownloader?.currentDownloadingId?.value = id
+                    val downloadId = localDownloader?.downloadAuthorizedImageFile(
+                        image,
+                        FileType.IMAGE,
+                        prefRepo
+                    )
+                    if (downloadId != null) {
+                        localDownloader.checkDownloadStatus(downloadId,
+                            id,
+                            downloadManager,
+                            onDownloadComplete = {
+                                didiDao.updateImageLocalPath(id,imageFile.absolutePath)
+                                didiDao.updateNeedsToPostImage(id, false)
+                            }, onDownloadFailed = {
+                                NudgeLogger.d("VillageSelectorViewModel", "downloadAuthorizedImageItem -> onDownloadFailed")
+                            })
+                    }
+                } else {
+                    didiDao.updateImageLocalPath(id,imageFile.absolutePath)
+                    didiDao.updateNeedsToPostImage(id, false)
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                NudgeLogger.e("VillageSelectorViewModel", "downloadAuthorizedImageItem -> downloadItem exception", ex)
+            }
+        }
+    }
+
+    fun saveVideosToDb(context: Context) {
+        repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val trainingVideos = trainingVideoDao.getVideoList()
+            if (trainingVideos.isEmpty()) {
+                videoList.forEach {
+                    val trainingVideoEntity = TrainingVideoEntity(
+                        id = it.id,
+                        title = it.title,
+                        description = it.description,
+                        url = it.url,
+                        thumbUrl = it.thumbUrl,
+                        isDownload = if (getVideoPath(
+                                context, it.id, fileType = FileType.VIDEO
+                            ).exists()
+                        ) DownloadStatus.DOWNLOADED.value else DownloadStatus.UNAVAILABLE.value
+                    )
+                    trainingVideoDao.insert(trainingVideoEntity)
+                }
+            } else {
+                trainingVideos.forEach {
+                    val videoIsDownloaded = if (getVideoPath(
+                            context, it.id, fileType = FileType.VIDEO
+                        ).exists()
+                    ) DownloadStatus.DOWNLOADED.value else DownloadStatus.UNAVAILABLE.value
+                    if (it.isDownload != videoIsDownloaded) {
+                        val trainingVideoEntity = TrainingVideoEntity(
+                            id = it.id,
+                            title = it.title,
+                            description = it.description,
+                            url = it.url,
+                            thumbUrl = it.thumbUrl,
+                            isDownload = videoIsDownloaded
+                        )
+                        trainingVideoDao.insert(trainingVideoEntity)
+                    }
+                }
+            }
+        }
+    }
+
+    fun refreshStepListData(
+        taskCompleted: (success: Boolean) -> Unit
+    ) {
+
+        repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
+            val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
+            villageList.forEach { village ->
+                try {
+
+                    //Fetch Step List Data try {
+                    NudgeLogger.d(
+                        "VillageSelectionRepository",
+                        "refreshBpcData getStepsList request -> village.id = ${village.id}"
+                    )
+
+                    if (stepsListDao.getAllStepsForVillage(village.id).isEmpty()) {
+                    val response = apiService.getStepsList(village.id)
+                    NudgeLogger.d(
+                        "VillageSelectionRepository", "refreshBpcData getStepsList " +
+                                "response status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}"
+                    )
+                    if (response.status.equals(SUCCESS, true)) {
+                        response.data?.let { it ->
+                            if (it.stepList.isNotEmpty()) {
+                                it.stepList.forEach { steps ->
+                                    steps.villageId = village.id
+                                    /*steps.isComplete =
+                                    findCompleteValue(steps.status).ordinal*/
+                                    if (steps.id == 40) {
+                                        prefRepo.savePref(
+                                            PREF_TRANSECT_WALK_COMPLETION_DATE_ + village.id,
+                                            steps.localModifiedDate ?: System.currentTimeMillis()
+                                        )
+                                    }
+
+                                    if (steps.id == 41) {
+                                        prefRepo.savePref(
+                                            PREF_SOCIAL_MAPPING_COMPLETION_DATE_ + village.id,
+                                            steps.localModifiedDate ?: System.currentTimeMillis()
+                                        )
+                                    }
+
+                                    if (steps.id == 46) {
+                                        prefRepo.savePref(
+                                            PREF_WEALTH_RANKING_COMPLETION_DATE_ + village.id,
+                                            steps.localModifiedDate ?: System.currentTimeMillis()
+                                        )
+                                    }
+
+                                    if (steps.id == 43) {
+                                        prefRepo.savePref(
+                                            PREF_PAT_COMPLETION_DATE_ + village.id,
+                                            steps.localModifiedDate ?: System.currentTimeMillis()
+                                        )
+                                    }
+                                    if (steps.id == 44) {
+                                        prefRepo.savePref(
+                                            PREF_VO_ENDORSEMENT_COMPLETION_DATE_ + village.id,
+                                            steps.localModifiedDate ?: System.currentTimeMillis()
+                                        )
+                                    }
+
+                                    if (steps.id == 45) {
+                                        prefRepo.savePref(
+                                            PREF_BPC_PAT_COMPLETION_DATE_ + village.id,
+                                            steps.localModifiedDate
+                                                ?: System.currentTimeMillis()
+                                        )
+                                    }
+                                }
+                                val localStepListForVillage =
+                                    stepsListDao.getAllStepsForVillage(village.id)
+                                NudgeLogger.d(
+                                    "VillageSelectionRepository", "refreshBpcData getStepsList " +
+                                            "stepsListDao.insertAll(it.stepList) before"
+                                )
+
+                                val updatedStepList = mutableListOf<StepListEntity>()
+                                localStepListForVillage.forEach { step ->
+                                    updatedStepList.add(step.getUpdatedStep(it.stepList[it.stepList.map { it.id }
+                                        .indexOf(step.id)]))
+                                }
+                                if (localStepListForVillage.size != it.stepList.size) {
+                                    if (localStepListForVillage.size < it.stepList.size) {
+                                        val tempStepList = mutableListOf<StepListEntity>()
+                                        tempStepList.addAll(it.stepList)
+                                        tempStepList.sortedBy { it.orderNumber }
+                                        localStepListForVillage.forEach { localStep ->
+                                            if (it.stepList.map { remoteStep -> remoteStep.id }
+                                                    .contains(localStep.id)) {
+                                                tempStepList.remove(it.stepList.sortedBy { it.orderNumber }[it.stepList.map { it.id }
+                                                    .indexOf(localStep.id)])
+                                            }
+                                        }
+                                        updatedStepList.addAll(tempStepList)
+                                    } else {
+                                        val tempStepList = mutableListOf<StepListEntity>()
+                                        tempStepList.addAll(localStepListForVillage)
+                                        tempStepList.sortedBy { it.orderNumber }
+                                        it.stepList.forEach { remoteStep ->
+                                            if (localStepListForVillage.map { localStep -> remoteStep.id }
+                                                    .contains(remoteStep.id)) {
+                                                tempStepList.remove(localStepListForVillage.sortedBy { it.orderNumber }[localStepListForVillage.map { it.id }
+                                                    .indexOf(remoteStep.id)])
+                                            }
+                                        }
+                                        updatedStepList.addAll(tempStepList)
+                                    }
+                                }
+                                if (updatedStepList.isNotEmpty()) {
+                                    stepsListDao.deleteAllStepsForVillage(village.id)
+                                    delay(100)
+                                    stepsListDao.insertAll(updatedStepList)
+                                }
+
+                                NudgeLogger.d(
+                                    "VillageSelectionRepository", "refreshBpcData getStepsList " +
+                                            "stepsListDao.insertAll(it.stepList) after"
+                                )
+                            }
+                            prefRepo.savePref(
+                                PREF_PROGRAM_NAME, it.programName
+                            )
+                        }
+                    } else {
+                        val ex = ApiResponseFailException(response.message)
+                        if (!RetryHelper.retryApiList.contains(ApiType.STEP_LIST_API)) RetryHelper.retryApiList.add(
+                            ApiType.STEP_LIST_API
+                        )
+                        RetryHelper.stepListApiVillageId.add(village.id)
+                        onCatchError(ex, ApiType.STEP_LIST_API)
+                    }
+                    }
+                } catch (ex: Exception) {
+                    if (ex !is JsonSyntaxException) {
+                        if (!RetryHelper.retryApiList.contains(ApiType.STEP_LIST_API)) RetryHelper.retryApiList.add(
+                            ApiType.STEP_LIST_API
+                        )
+                        RetryHelper.stepListApiVillageId.add(village.id)
+                    }
+                    onCatchError(ex, ApiType.STEP_LIST_API)
+                    withContext(Dispatchers.Main) {
+                        taskCompleted(false)
+                    }
+                }
+
+            }
+            withContext(Dispatchers.Main) {
+                taskCompleted(true)
+            }
+        }
+    }
+
+    fun fetchUserAndVillageDetails(forceRefresh: Boolean = false, apiSuccess: (success: UserAndVillageDetailsModel) -> Unit) {
+        repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                var userAndVillageDetailsModel: UserAndVillageDetailsModel? = null
+                val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
+                val localLanguageList = languageListDao.getAllLanguages()
+                val villageReq= createMultiLanguageVillageRequest(localLanguageList)
+                if (!forceRefresh && !localVillageList.isNullOrEmpty()) {
+                if (!localVillageList.isNullOrEmpty()) {
+                    val stateId = localVillageList[0].stateId
+                    userAndVillageDetailsModel = UserAndVillageDetailsModel(true, localVillageList, stateId = stateId)
+//                    _villagList.value = localVillageList
+//                    _filterVillageList.value = villageList.value
+                    withContext(Dispatchers.Main) {
+                        apiSuccess(userAndVillageDetailsModel!!)
+                    }
+                }
+                } else {
+                    NudgeLogger.d("VillageSelectionRepository", "fetchUserAndVillageDetails -> villageReq: $villageReq")
+                    val response = apiService.userAndVillageListAPI(villageReq)
+                    NudgeLogger.d("VillageSelectionRepository", "fetchUserAndVillageDetails -> response: ${response.json()}")
+                    withContext(Dispatchers.IO) {
+                        if (response.status.equals(SUCCESS, true)) {
+                            response.data?.let {
+                                saveUserDetailsInPref(UserDetailsModel(it.username ?: "", it.name ?: "", it.email ?: "", it.identityNumber  ?: "", it.profileImage ?: "", it.roleName ?: "", it.typeName ?: ""))
+                                villageListDao.insertOnlyNewData(
+                                    it.villageList ?: listOf(),
+                                    prefRepo.isUserBPC()
+                                )
+                                val stateId = if (it.villageList?.isNotEmpty() == true) it.villageList?.get(0)?.stateId?:1 else -1
+                                val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
+                                val defaultLanguageVillageList = villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID)
+                                /*if (localVillageList.isNotEmpty()) {
+                                    _villagList.emit(localVillageList)
+                                } else {
+                                    _villagList.emit(villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID))
+                                }*/
+                                userAndVillageDetailsModel = if (localVillageList.isNotEmpty()) {
+                                    UserAndVillageDetailsModel(true, localVillageList, stateId = stateId)
+                                } else {
+                                    UserAndVillageDetailsModel(true, getEmitLanguageList(defaultLanguageVillageList, localVillageList, prefRepo.getAppLanguageId() ?: 2), stateId)
+                                }
+                                withContext(Dispatchers.Main) {
+                                    apiSuccess(userAndVillageDetailsModel!!)
+                                }
+                            }
+
+                            if (response.data == null) {
+                                withContext(Dispatchers.Main) {
+                                apiSuccess(UserAndVillageDetailsModel.getFailedResponseModel())
+                            }
+                            }
+
+
+                            if(!response.lastSyncTime.isNullOrEmpty()){
+                                updateLastSyncTime(prefRepo,response.lastSyncTime)
+                            }
+
+                            Log.d("TAG", "fetchUserDetails: ${prefRepo.getPref(LAST_SYNC_TIME,0L)}")
+
+                        } else if (response.status.equals(FAIL, true)) {
+                            withContext(Dispatchers.Main) {
+                                NudgeLogger.d("VillageSelectionScreen", "fetchUserDetails response.status.equals(FAIL, true) -> viewModel.showLoader.value = false")
+                            }
+                            withContext(Dispatchers.Main) {
+                            apiSuccess(UserAndVillageDetailsModel.getFailedResponseModel())
+                            }
+                            NudgeLogger.d("VillageSelectionViewModel", "fetchUserDetails -> response.status: ${response.status}, message: ${response.message}")
+                        } else {
+                            NudgeLogger.d("VillageSelectionViewModel", "fetchUserDetails -> Error: ${response.message}")
+                            onError(tag = "VillageSelectionViewModel", "Error : ${response.message}")
+                            withContext(Dispatchers.Main) {
+                                NudgeLogger.d("VillageSelectionScreen", "fetchUserDetails else 1 -> viewModel.showLoader.value = false")
+                            }
+                        }
+                    }
+                }
+                NudgeLogger.d("VillageSelectionViewModel", "UserDetails => " + "\n" +
+                        "MOBILE NUMBER: ${prefRepo.getMobileNumber()}\n" +
+                        "PREF_KEY_USER_NAME: ${prefRepo.getPref(PREF_KEY_USER_NAME, "")}\n" +
+                        "PREF_KEY_NAME: ${prefRepo.getPref(PREF_KEY_NAME, "")}\n" +
+                        "PREF_KEY_EMAIL: ${prefRepo.getPref(PREF_KEY_EMAIL, "")}\n" +
+                        "PREF_KEY_IDENTITY_NUMBER: ${prefRepo.getPref(PREF_KEY_IDENTITY_NUMBER, "")}\n" +
+                        "PREF_KEY_PROFILE_IMAGE: ${prefRepo.getPref(PREF_KEY_PROFILE_IMAGE, "")}\n" +
+                        "PREF_KEY_ROLE_NAME: ${prefRepo.getPref(PREF_KEY_ROLE_NAME, "")}\n" +
+                        "PREF_KEY_TYPE_NAME: ${prefRepo.getPref(PREF_KEY_TYPE_NAME, "")}")
+            } catch (ex: Exception) {
+                NudgeLogger.e("VillageSelectionViewModel", "fetchUserDetails -> catch called", ex)
+                withContext(Dispatchers.Main){
+                    NudgeLogger.d("VillageSelectionScreen", "fetchUserDetails catch (ex: Exception) -> viewModel.showLoader.value = false")
+                    apiSuccess(UserAndVillageDetailsModel.getFailedResponseModel())
+                }
+                onCatchError(ex, ApiType.VILLAGE_LIST_API)
+                if (ex is HttpException) {
+                    if (ex.response()?.code() == RESPONSE_CODE_UNAUTHORIZED || ex.response()
+                            ?.code() == RESPONSE_CODE_CONFLICT
+                    ) {
+                        RetryHelper.retryApiList.add(ApiType.VILLAGE_LIST_API)
+                        withContext(Dispatchers.Main) {
+                            RetryHelper.tokenExpired.value = true
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun preserveOldRecord(oldVillageList: List<VillageEntity>) {
+        if (oldVillageList.isNotEmpty()) {
+            oldVillageList.forEach { oldVillageItem ->
+                villageListDao.updateVillageDataLoadStatus(oldVillageItem.id, oldVillageItem.isDataLoadTriedOnce)
+            }
+        }
+    }
+
+    private fun saveUserDetailsInPref(userDetailsModel: UserDetailsModel) {
+        prefRepo.savePref(PREF_KEY_USER_NAME, userDetailsModel.username ?: "")
+        prefRepo.savePref(PREF_KEY_NAME, userDetailsModel.name ?: "")
+        prefRepo.savePref(PREF_KEY_EMAIL, userDetailsModel.email ?: "")
+        prefRepo.savePref(PREF_KEY_IDENTITY_NUMBER, userDetailsModel.identityNumber ?: "")
+        prefRepo.savePref(PREF_KEY_PROFILE_IMAGE, userDetailsModel.profileImage ?: "")
+        prefRepo.savePref(PREF_KEY_ROLE_NAME, userDetailsModel.roleName ?: "")
+        prefRepo.savePref(PREF_KEY_TYPE_NAME, userDetailsModel.typeName ?: "")
+
+        if (userDetailsModel.typeName.equals(BPC_USER_TYPE, true)) {
+            prefRepo.setIsUserBPC(true)
+        } else {
+            prefRepo.setIsUserBPC(false)
+        }
+
+    }
+
+    fun saveSelectedVillage(villageEntity: VillageEntity) {
+        prefRepo.saveSelectedVillage(villageEntity)
+    }
+
+    fun isUserBPC() = prefRepo.isUserBPC()
+    fun saveSettingOpenFrom(fromPage: Int) {
+        prefRepo.saveSettingOpenFrom(fromPage)
+    }
+
+    fun fetchPatQuestionsFromNetwork() {
+        fetchQuestions(prefRepo)
     }
 
 }

@@ -14,6 +14,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.calculateMatchPercentage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -68,12 +69,12 @@ class ScoreComparisonViewModel @Inject constructor(
             val localDidList = didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id)
             val filterdLocalList = localDidList.filter {it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }
             _didiList.value = filterdLocalList
-
             val passingScore = questionListDao.getPassingScore()
             _questionPassingScore.value = passingScore
 
             _filterDidiList.value = didiList.value
-            _passPercentage.value = calculateMatchPercentage(didiList.value)
+            _passPercentage.value =
+                calculateMatchPercentage(didiList.value, questionPassingScore.value)
             val exclusionList = localDidList.filter { it.section1Status == PatSurveyStatus.COMPLETED.ordinal && it.section2Status == PatSurveyStatus.NOT_STARTED.ordinal }
             if (exclusionList.isNotEmpty()) {
                 val questionList = questionListDao.getQuestionForType(TYPE_EXCLUSION, prefRepo.getAppLanguageId() ?: 2)
@@ -92,14 +93,6 @@ class ScoreComparisonViewModel @Inject constructor(
         }
     }
 
-    private fun calculateMatchPercentage(didiList: List<DidiEntity>): Int {
-        val matchedCount = didiList.filter {
-            (it.score ?: 0.0) >= questionPassingScore.value.toDouble()
-                    && (it.crpScore ?: 0.0) >= questionPassingScore.value.toDouble() }.size
-
-        return if (didiList.isNotEmpty() && matchedCount != 0) ((matchedCount.toFloat()/didiList.size.toFloat()) * 100).toInt() else 0
-
-    }
 
     override fun onServerError(error: ErrorModel?) {
         Log.e("ScoreComparisonViewModel", "onServerError: ${error?.message}")

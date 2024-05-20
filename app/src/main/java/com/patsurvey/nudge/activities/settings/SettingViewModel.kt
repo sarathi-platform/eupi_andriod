@@ -1,17 +1,34 @@
 package com.patsurvey.nudge.activities.settings
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.CountDownTimer
 import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.facebook.network.connectionclass.DeviceBandwidthSampler
+import com.nudge.core.NUDGE_DATABASE
+import com.nudge.core.ZIP_MIME_TYPE
+import com.nudge.core.compression.ZipFileCompression
+import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.enums.NetworkSpeed
+import com.nudge.core.exportOldData
+import com.nudge.core.getDefaultBackUpFileName
+import com.nudge.core.getDefaultImageBackUpFileName
+import com.nudge.core.json
+import com.nudge.core.preference.CoreSharedPrefs
+import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.SettingRepository
 import com.patsurvey.nudge.SyncBPCDataOnServer
 import com.patsurvey.nudge.SyncHelper
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.CasteEntity
+import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
@@ -30,26 +47,37 @@ import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.network.isInternetAvailable
 import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.ConnectionMonitor
+import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
+import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
 import com.patsurvey.nudge.utils.LogWriter
+import com.patsurvey.nudge.utils.LogWriter.getLogFile
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_
+import com.patsurvey.nudge.utils.PREF_KEY_NAME
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_FORM_C_AND_D_
+import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.PdfUtils
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TolaStatus
 import com.patsurvey.nudge.utils.WealthRank
-import com.patsurvey.nudge.utils.json
+import com.patsurvey.nudge.utils.changeMilliDateToDate
+import com.patsurvey.nudge.utils.uriFromFile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -59,9 +87,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.IOException
+import java.net.URL
 import java.util.Timer
 import java.util.TimerTask
 import javax.inject.Inject
+import android.net.Uri as Uri1
+
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
@@ -79,7 +111,9 @@ class SettingViewModel @Inject constructor(
     val questionDao: QuestionListDao,
     val bpcSummaryDao: BpcSummaryDao,
     val poorDidiListDao: PoorDidiListDao,
-    val exportHelper: ExportHelper
+    val exportHelper: ExportHelper,
+    val eventDao: EventsDao,
+    val settingRepository: SettingRepository
 ) : BaseViewModel() {
     val formAAvailabe = mutableStateOf(false)
     val formBAvailabe = mutableStateOf(false)
@@ -94,16 +128,20 @@ class SettingViewModel @Inject constructor(
     var stepFifthSyncStatus = mutableStateOf(0)
     var bpcSyncStatus = mutableStateOf(0)
     var hitApiStatus = mutableStateOf(0)
+    var showLogoutDialog = mutableStateOf(false)
+    var showAppRestartDialog = mutableStateOf(false)
     var syncErrorMessage = mutableStateOf("")
+    val showLoadConfimationDialog = mutableStateOf(false)
     private val _optionList = MutableStateFlow(listOf<SettingOptionModel>())
     val optionList: StateFlow<List<SettingOptionModel>> get() = _optionList
     val showLoader = mutableStateOf(false)
+    val showExportLoader = mutableStateOf(false)
     val showAPILoader = mutableStateOf(false)
     var showSyncDialog = mutableStateOf(false)
     var showBPCSyncDialog = mutableStateOf(false)
 
     val lastSyncTime = mutableStateOf(prefRepo.getPref(LAST_SYNC_TIME, 0L))
-
+    var currentRetryCount = 3
     var syncHelper = SyncHelper(
         this@SettingViewModel,
         prefRepo,
@@ -171,17 +209,7 @@ class SettingViewModel @Inject constructor(
                 }
             }
         }
-        /*val formAFilePath = File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_A_PDF_NAME}_${villageId}.pdf")
-        formAAvailabe.value = formAFilePath.isFile && formAFilePath.exists()*/
-        /*job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val stepList = stepsListDao.getAllStepsForVillage(villageId)
-            val filteredStepList = stepList.filter { it.name.equals("Participatory Wealth Ranking", true) }
-            if (filteredStepList[0] != null) {
-                formAAvailabe.value = filteredStepList[0].isComplete == StepStatus.COMPLETED.ordinal
-            } else {
-                formAAvailabe.value = false
-            }
-        }*/
+
     }
 
     fun isFormBAvailableForVillage(context: Context, villageId: Int) {
@@ -221,17 +249,7 @@ class SettingViewModel @Inject constructor(
             }
         }
 
-        /*val formBFilePath = File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_B_PDF_NAME}_${villageId}.pdf")
-        formBAvailabe.value = formBFilePath.isFile && formBFilePath.exists()*/
-        /*job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val stepList = stepsListDao.getAllStepsForVillage(villageId)
-            val filteredStepList = stepList.filter { it.name.equals("Pat Survey", true) }
-            if (filteredStepList[0] != null) {
-                formBAvailabe.value = filteredStepList[0].isComplete == StepStatus.COMPLETED.ordinal
-            } else {
-                formBAvailabe.value = false
-            }
-        }*/
+
     }
 
     fun isFormCAvailableForVillage(context: Context, villageId: Int) {
@@ -253,16 +271,6 @@ class SettingViewModel @Inject constructor(
                 }
             }
         }
-
-        /*job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val stepList = stepsListDao.getAllStepsForVillage(villageId)
-            val filteredStepList = stepList.filter { it.name.equals("VO Endorsement", true) }
-            if (filteredStepList[0] != null) {
-                formCAvailabe.value = filteredStepList[0].isComplete == StepStatus.COMPLETED.ordinal
-            } else {
-                formCAvailabe.value = false
-            }
-        }*/
     }
 
     fun createSettingMenu(list: ArrayList<SettingOptionModel>) {
@@ -322,10 +330,17 @@ class SettingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val fetchAllDidiNeedToPostList = didiDao.fetchAllDidiNeedToPost(true, "", 0)
             val fetchPendingDidiList = didiDao.fetchPendingDidi(true, "")
-            val fetchAllDidiNeedToDeleteList = didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, true, "", 0)
-            val fetchAllPendingDidiNeedToDeleteList = didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, "", 0)
-            val fetchAllDidiNeedToUpdateList = didiDao.fetchAllDidiNeedToUpdate(true, "", 0)
-            val fetchAllPendingDidiNeedToUpdateList = didiDao.fetchAllPendingDidiNeedToUpdate(true, "", 0)
+            val fetchAllDidiNeedToDeleteList =
+                didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, true, "", 0)
+            val fetchAllPendingDidiNeedToDeleteList = didiDao.fetchAllPendingDidiNeedToDelete(
+                DidiStatus.DIID_DELETED.ordinal,
+                ""
+            )
+            val fetchAllDidiNeedToUpdateList = didiDao.fetchAllDidiNeedToUpdate(true, "")
+            val fetchAllPendingDidiNeedToUpdateList = didiDao.fetchAllPendingDidiNeedToUpdate(
+                true,
+                ""
+            )
             NudgeLogger.d(
                 "SettingViewModel",
                 "isSecondStepNeedToBeSync -> fetchAllDidiNeedToPostList -> ${fetchAllDidiNeedToPostList.json()};; \n\n fetchPendingDidiList -> ${fetchPendingDidiList.json()};; " +
@@ -333,7 +348,7 @@ class SettingViewModel @Inject constructor(
                         "\n\n fetchAllDidiNeedToUpdateList -> ${fetchAllDidiNeedToUpdateList.json()};; \n\n fetchAllPendingDidiNeedToUpdateList -> ${fetchAllPendingDidiNeedToUpdateList.json()}"
             )
             NudgeLogger.d(
-                "\n\nSettingViewModel",
+                "SettingViewModel",
                 "isSecondStepNeedToBeSync -> \n" +
                         "            fetchAllDidiNeedToPostList.isEmpty() -> ${fetchAllDidiNeedToPostList.isEmpty()}\n" +
                         "            && fetchPendingDidiList.isEmpty() -> ${fetchPendingDidiList.isEmpty()}\n" +
@@ -376,7 +391,10 @@ class SettingViewModel @Inject constructor(
                 PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + village.id,
                 false
             )
-            NudgeLogger.d("SettingViewModel", "isBPCScoreSaved: village.id -> ${village.id}, isBPCScoreSaved -> $isBpcScoreSaved")
+            NudgeLogger.d(
+                "SettingViewModel",
+                "isBPCScoreSaved: village.id -> ${village.id}, isBPCScoreSaved -> $isBpcScoreSaved"
+            )
             isBpcScoreSavedList.add(isBpcScoreSaved)
         }
         if (isBpcScoreSavedList.contains(false))
@@ -412,9 +430,27 @@ class SettingViewModel @Inject constructor(
     fun isFourthStepNeedToBeSync(isNeedToBeSync: MutableState<Int>) {
         stepFourSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            if (answerDao.fetchPATSurveyDidiList().isEmpty()
-                && didiDao.fetchPendingPatStatusDidi(true, "").isEmpty()
-                && didiDao.fetchAllDidiNeedsToPostImage(true).isEmpty()
+            val fetchPATSurveyDidiList = answerDao.fetchPATSurveyDidiList()
+            val fetchPendingPatStatusDidi = didiDao.fetchPendingPatStatusDidi(true, "")
+            val fetchAllDidiNeedsToPostImage = didiDao.fetchAllDidiNeedsToPostImage(true)
+
+            NudgeLogger.d(
+                "SettingViewModel",
+                "isFourthStepNeedToBeSync -> fetchPATSurveyDidiList -> ${fetchPATSurveyDidiList.json()};;" +
+                        "\n\n fetchPendingPatStatusDidi -> ${fetchPendingPatStatusDidi.json()};; " +
+                        "\n\n fetchAllDidiNeedsToPostImage -> ${fetchAllDidiNeedsToPostImage.json()};; "
+            )
+
+            NudgeLogger.d(
+                "SettingViewModel",
+                "isFourthStepNeedToBeSync -> fetchPATSurveyDidiList.isEmpty() -> ${fetchPATSurveyDidiList.isEmpty()};;" +
+                        "\n\n fetchPendingPatStatusDidi.isEmpty() -> ${fetchPendingPatStatusDidi.isEmpty()};; " +
+                        "\n\n fetchAllDidiNeedsToPostImage.isEmpty() -> ${fetchAllDidiNeedsToPostImage.isEmpty()};; "
+            )
+
+            if (fetchPATSurveyDidiList.isEmpty()
+                && fetchPendingPatStatusDidi.isEmpty()
+                && fetchAllDidiNeedsToPostImage.isEmpty()
                 && isStepStatusSync(4)
             ) {
                 NudgeLogger.d(
@@ -437,8 +473,23 @@ class SettingViewModel @Inject constructor(
     fun isFifthStepNeedToBeSync(isNeedToBeSync: MutableState<Int>) {
         stepFifthSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            if (didiDao.getAllNeedToPostVoDidis(true, "").isEmpty()
-                && didiDao.fetchPendingVOStatusStatusDidi(true,"").isEmpty()
+            val getAllNeedToPostVoDidis = didiDao.getAllNeedToPostVoDidis(true, "")
+            val fetchPendingVOStatusStatusDidi = didiDao.fetchPendingVOStatusStatusDidi(true, "")
+            NudgeLogger.d(
+                "SettingViewModel",
+                "isFifthStepNeedToBeSync -> getAllNeedToPostVoDidis -> ${getAllNeedToPostVoDidis.json()};;" +
+                        "\n\n fetchPendingVOStatusStatusDidi -> ${getAllNeedToPostVoDidis.json()};; "
+            )
+            NudgeLogger.d(
+                "SettingViewModel",
+                "isFifthStepNeedToBeSync -> getAllNeedToPostVoDidis.isEmpty() -> ${getAllNeedToPostVoDidis.isEmpty()};;" +
+                        "\n\n fetchPendingVOStatusStatusDidi.isEmpty() -> ${getAllNeedToPostVoDidis.isEmpty()};; " +
+                        "\n\n isStepStatusSync(5) -> ${isStepStatusSync(5)}" +
+                        "\n\n !isFormNeedToBeUpload() -> ${!isFormNeedToBeUpload()}"
+            )
+
+            if (getAllNeedToPostVoDidis.isEmpty()
+                && fetchPendingVOStatusStatusDidi.isEmpty()
                 && isStepStatusSync(5)
                 && !isFormNeedToBeUpload()
             ) {
@@ -462,14 +513,22 @@ class SettingViewModel @Inject constructor(
     private fun isFormNeedToBeUpload(): Boolean {
         val languageId = prefRepo.getAppLanguageId() ?: 2
         val villageList = villegeListDao.getAllVillages(languageId)
+        val isFormUploadedList = mutableListOf<Boolean>()
         for (village in villageList) {
-            if (prefRepo.getPref(
-                    PREF_NEED_TO_POST_FORM_C_AND_D_ + prefRepo.getSelectedVillage().id, false
-                )
+            val isFormUploadedForVillage = prefRepo.getPref(
+                PREF_NEED_TO_POST_FORM_C_AND_D_ + prefRepo.getSelectedVillage().id, false
             )
-                return true
+            NudgeLogger.d(
+                "SettingViewModel",
+                "isFormNeedToBeUpload: village.id -> ${village.id}, isFormUploadedForVillage -> $isFormUploadedForVillage"
+            )
+
+            isFormUploadedList.add(isFormUploadedForVillage)
         }
-        return false
+        if (isFormUploadedList.contains(false))
+            return false
+
+        return true
     }
 
     override fun onServerError(error: ErrorModel?) {
@@ -536,26 +595,6 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    /*    fun getStepOneSize(stepOneSize : MutableState<String>) {
-            syncHelper.getStepOneDataSizeInSync(stepOneSize)
-        }
-
-        fun getStepTwoSize(stepTwoSize : MutableState<String>) {
-            syncHelper.getStepTwoDataSizeInSync(stepTwoSize)
-        }
-
-        fun getStepThreeSize(stepThreeSize : MutableState<String>) {
-            syncHelper.getStepThreeDataSizeInSync(stepThreeSize)
-        }
-
-        fun getStepFourSize(stepFourSize : MutableState<String>) {
-            syncHelper.getStepFourDataSizeInSync(stepFourSize)
-        }
-
-        fun getStepFiveSize(stepFiveSize : MutableState<String>) {
-            syncHelper.getStepFiveDataSizeInSync(stepFiveSize)
-        }*/
-
     fun syncDataOnServer(cxt: Context, syncDialog: MutableState<Boolean>) {
         NudgeLogger.e("SettingViewModel", "syncDataOnServer -> start")
         hitApiStatus.value = 2
@@ -586,12 +625,29 @@ class SettingViewModel @Inject constructor(
                 }
 
                 override fun onFailed() {
-                    networkErrorMessage.value = SYNC_FAILED
-                    syncErrorMessage.value = SYNC_FAILED
-                    syncPercentage.value = 1f
+                    if (currentRetryCount > 0) {
+                        try {
+                            syncHelper.startSyncTimer(this)
+                            currentRetryCount--;
+
+                        } catch (exception: Exception) {
+                            syncHelper.startSyncTimer(this)
+                            currentRetryCount--
+                        }
+
+                        NudgeLogger.e(
+                            "SettingViewModel",
+                            "syncDataOnServer -> onFailed Retrying current count is ${currentRetryCount}"
+                        )
+                    } else {
+                        networkErrorMessage.value = SYNC_FAILED
+                        syncErrorMessage.value = SYNC_FAILED
+                        syncPercentage.value = 1f
+                        NudgeLogger.e("SettingViewModel", "syncDataOnServer -> onFailed")
+                    }
 //                        showSyncDialog.value = false
 //                        showLoader.value = false
-                    NudgeLogger.e("SettingViewModel", "syncDataOnServer -> onFailed")
+
                 }
             })
         } else {
@@ -776,9 +832,8 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    fun clearLocalDB(context: Context, logout: MutableState<Boolean>) {
+    fun clearLocalDB(onPageChange:()->Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            casteListDao.deleteCasteTable()
             tolaDao.deleteAllTola()
             didiDao.deleteAllDidi()
             lastSelectedTolaDao.deleteAllLastSelectedTola()
@@ -786,20 +841,17 @@ class SettingViewModel @Inject constructor(
             answerDao.deleteAllAnswers()
             questionDao.deleteQuestionTable()
             stepsListDao.deleteAllStepsFromDB()
-            userDao.deleteAllUserDetail()
             villegeListDao.deleteAllVilleges()
             bpcSummaryDao.deleteAllSummary()
             poorDidiListDao.deleteAllDidis()
-            clearSharedPreference()
-            //cleared cache in case of logout
-//            context.cacheDir.deleteRecursively()
+            prefRepo.savePref(LAST_UPDATE_TIME, 0L)
+            clearEventWriterFileName()
             withContext(Dispatchers.Main) {
-                showAPILoader.value = false
-                logout.value = true
-                onLogoutError.value = false
+                onPageChange()
             }
         }
     }
+
 
     private fun clearSharedPreference() {
         val languageId = prefRepo.getAppLanguageId()
@@ -807,6 +859,28 @@ class SettingViewModel @Inject constructor(
         prefRepo.clearSharedPreference()
         prefRepo.saveAppLanguage(language)
         prefRepo.saveAppLanguageId(languageId)
+    }
+
+    fun clearAccessToken() {
+        prefRepo.saveAccessToken("")
+        clearEventWriterFileName()
+        prefRepo.setPreviousUserMobile(mobileNumber = prefRepo.getMobileNumber())
+        prefRepo.saveSettingOpenFrom(0)
+
+    }
+
+    private fun clearEventWriterFileName() {
+        CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setBackupFileName(
+            getDefaultBackUpFileName(
+                prefRepo.getMobileNumber() ?: ""
+            )
+        )
+        CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setImageBackupFileName(
+            getDefaultImageBackUpFileName(
+                prefRepo.getMobileNumber() ?: ""
+            )
+        )
+        CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setFileExported(false)
     }
 
     fun buildAndShareLogs() {
@@ -821,4 +895,236 @@ class SettingViewModel @Inject constructor(
     suspend fun exportLocalData(context: Context) {
         exportHelper.exportAllData(context)
     }
+
+    fun syncAllPending(networkSpeed: NetworkSpeed) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
+            try {
+                DeviceBandwidthSampler.getInstance().startSampling()
+                // Open a stream to download the image from our URL.
+                val connection =
+                    URL("https://sarathi.lokos.in/write-api/file/view?fileName=25882_shibani%20Nama%20_CRP_2023-12-10.png").openConnection()
+                connection.setUseCaches(false)
+                connection.connect()
+                val input = connection.getInputStream()
+                try {
+                    val buffer = ByteArray(1024)
+
+                    // Do some busy waiting while the stream is open.
+                    while (input.read(buffer) != -1) {
+                    }
+                } finally {
+                    input.close()
+                    DeviceBandwidthSampler.getInstance().stopSampling()
+
+                }
+            } catch (e: IOException) {
+                Log.e("TAG", "Error while downloading image.")
+            }
+            Log.d("D", ConnectionMonitor.DoesNetworkHaveInternet.getNetworkStrength().toString())
+            NudgeCore.getEventObserver()?.syncPendingEvent(NudgeCore.getAppContext(), networkSpeed)
+        }
+    }
+
+    fun compressEventData(title: String) {
+
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                showExportLoader.value = true
+                val compression = ZipFileCompression()
+                val fileUri = compression.compressBackupFiles(
+                    NudgeCore.getAppContext(),
+                    getFormPdfAndLogUri(),
+                    prefRepo.getMobileNumber(),
+                    userName = prefRepo.getPref(PREF_KEY_NAME, BLANK_STRING) ?: BLANK_STRING,
+
+                )
+
+                val imageUri = compression.compressBackupImages(
+                    NudgeCore.getAppContext(),
+                    prefRepo.getMobileNumber(),
+                    userName = prefRepo.getPref(PREF_KEY_NAME, BLANK_STRING) ?: BLANK_STRING,
+                )
+
+                openShareSheet(imageUri, fileUri, title)
+                CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setFileExported(true)
+                showExportLoader.value = false
+
+
+            } catch (exception: Exception) {
+                NudgeLogger.e("Compression", exception.message ?: BLANK_STRING)
+                exception.printStackTrace()
+                showExportLoader.value = false
+
+            }
+
+        }
+    }
+
+    private suspend fun getFormPdfAndLogUri(): List<Pair<String, Uri?>> {
+        val uris = ArrayList<Pair<String, Uri?>>()
+
+        try {
+
+            if (!prefRepo.isUserBPC()) {
+                val selectedVillageId = prefRepo.getSelectedVillage().id
+                val casteList = casteListDao.getAllCasteForLanguage(
+                    prefRepo.getAppLanguageId() ?: 2
+                )
+                var didiList: List<DidiEntity> =
+                    didiDao.getAllDidisForVillage(selectedVillageId)
+
+                val isFormAGenerated = generateFormA(casteList, selectedVillageId, didiList)
+                addFormToUriList(isFormAGenerated, selectedVillageId, FORM_A_PDF_NAME, uris)
+
+                val isFormBGenerated = generateFormB(casteList, selectedVillageId, didiList)
+                addFormToUriList(isFormBGenerated, selectedVillageId, FORM_B_PDF_NAME, uris)
+
+                val isFormCGenerated = generateFormc(casteList, selectedVillageId, didiList)
+                addFormToUriList(isFormCGenerated, selectedVillageId, FORM_C_PDF_NAME, uris)
+
+            }
+        } catch (exception: Exception) {
+            NudgeLogger.e("GeneratingForm", exception.message ?: "")
+        }
+        try {
+            addLogFileIntoUriList(uris)
+
+        } catch (exception: Exception) {
+            NudgeLogger.e("GeneratingForm", exception.message ?: "")
+        }
+        return uris
+    }
+
+    private suspend fun addLogFileIntoUriList(uris: ArrayList<Pair<String, Uri?>>) {
+        val logFile = getLogFile()
+        if (logFile != null) {
+            uris.add(
+                Pair(
+                    logFile.name, uriFromFile(
+                        NudgeCore.getAppContext(),
+                        logFile
+                    )
+                )
+            )
+        }
+    }
+
+    private fun addFormToUriList(
+        isFormGenerated: Boolean,
+        selectedVillageId: Int,
+        formName: String,
+        uris: ArrayList<Pair<String, Uri?>>
+    ) {
+        if (isFormGenerated) {
+            val formFile = PdfUtils.getPdfPath(
+                context = NudgeCore.getAppContext(),
+                formName = formName,
+                selectedVillageId
+            )
+
+            uris.add(
+                Pair(
+                    formFile.name, uriFromFile(
+                        NudgeCore.getAppContext(),
+                        formFile
+                    )
+                )
+            )
+        }
+    }
+
+    private suspend fun generateFormc(
+        casteList: List<CasteEntity>,
+        selectedVillageId: Int,
+        didiList: List<DidiEntity>
+    ) =
+        PdfUtils.getFormCPdf(
+            NudgeCore.getAppContext(), villageEntity = prefRepo.getSelectedVillage(),
+            didiDetailList = didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal },
+            casteList = casteList,
+            completionDate = changeMilliDateToDate(
+                prefRepo.getPref(
+                    PREF_VO_ENDORSEMENT_COMPLETION_DATE_ + selectedVillageId,
+                    0L
+                )
+            ) ?: BLANK_STRING
+        )
+
+
+    private suspend fun generateFormB(
+        casteList: List<CasteEntity>,
+        selectedVillageId: Int,
+        didiList: List<DidiEntity>
+    ) =
+        PdfUtils.getFormBPdf(
+            NudgeCore.getAppContext(), villageEntity = prefRepo.getSelectedVillage(),
+            didiDetailList = didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit },
+            casteList = casteList,
+            completionDate = changeMilliDateToDate(
+                prefRepo.getPref(
+                    PREF_PAT_COMPLETION_DATE_ + selectedVillageId,
+                    0L
+                )
+            ) ?: BLANK_STRING
+        )
+
+
+    private suspend fun generateFormA(
+        casteList: List<CasteEntity>,
+        selectedVillageId: Int,
+        didiList: List<DidiEntity>
+    ) = PdfUtils.getFormAPdf(
+        NudgeCore.getAppContext(),
+        villageEntity = prefRepo.getSelectedVillage(),
+        casteList = casteList,
+        didiDetailList = didiList,
+        completionDate = changeMilliDateToDate(
+            prefRepo.getPref(
+                PREF_WEALTH_RANKING_COMPLETION_DATE_ + selectedVillageId, 0L
+            )
+        ) ?: BLANK_STRING
+    )
+
+
+    private fun openShareSheet(imageUri: Uri1?, fileUri: Uri1?, title: String) {
+        val fileUris = listOf(fileUri, imageUri)
+        val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
+        shareIntent.setType(ZIP_MIME_TYPE)
+        shareIntent.putExtra(Intent.EXTRA_STREAM, ArrayList(fileUris))
+        shareIntent.putExtra(Intent.EXTRA_TITLE, title)
+        val chooserIntent = Intent.createChooser(shareIntent, title)
+        NudgeCore.startExternalApp(chooserIntent)
+    }
+
+    fun isSyncEnabled(): Boolean {
+        return prefRepo.getISSyncEnabled()
+
+    }
+
+    fun clearSettingOpenFrom() {
+        //    prefRepo.saveSettingOpenFrom(0)
+    }
+
+    fun exportDbAndImages(onExportSuccess: () -> Unit) {
+        val userUniqueId = "${prefRepo.getUserId()}_${prefRepo.getMobileNumber()}"
+        exportOldData(
+            appContext = NudgeCore.getAppContext(),
+            applicationID = BuildConfig.APPLICATION_ID,
+            mobileNo = userUniqueId,
+            databaseName = NUDGE_DATABASE,
+            userName = ""
+        ) {
+            onExportSuccess()
+        }
+    }
+
+    fun regenerateEventFile(title: String) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            settingRepository.regenerateAllEvent(CoreSharedPrefs.getInstance(NudgeCore.getAppContext()))
+            compressEventData(title)
+        }
+    }
+
+
 }

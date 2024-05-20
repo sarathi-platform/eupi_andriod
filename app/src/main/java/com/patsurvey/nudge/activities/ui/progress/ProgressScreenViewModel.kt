@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.DidiEntity
@@ -241,9 +243,13 @@ class ProgressScreenViewModel @Inject constructor(
     }
 
     fun callWorkFlowAPI(villageId: Int, stepId: Int, programId: Int) {
+        if (!isSyncEnabled(prefRepo = progressScreenRepository.prefRepo)) {
+            return
+        }
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val dbResponse = progressScreenRepository.getStepForVillage(villageId, stepId)
+
                 NudgeLogger.d(
                     "ProgressScreenViewModel",
                     "callWorkFlowAPI -> dbResponse: ${dbResponse.toString()}"
@@ -338,5 +344,35 @@ class ProgressScreenViewModel @Inject constructor(
     fun saveFromPage(pageFrom: String) {
         progressScreenRepository.saveFromPage(pageFrom)
     }
+
+    fun updateWorkflowStatusInEvent(stepStatus: StepStatus, stepId: Int, villageId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            updateWorkflowStatus(stepStatus = stepStatus, villageId = villageId, stepId = stepId)
+        }
+    }
+
+    override suspend fun updateWorkflowStatus(stepStatus: StepStatus, villageId: Int, stepId: Int) {
+
+        val stepEntity =
+            progressScreenRepository.getStepForVillage(villageId = villageId, stepId = stepId)
+        if (stepEntity.workFlowId == 0) {
+
+            val updateWorkflowEvent = progressScreenRepository.createWorkflowEvent(
+                eventItem = stepEntity,
+                StepStatus.INPROGRESS,
+                EventName.WORKFLOW_STATUS_UPDATE,
+                EventType.STATEFUL,
+                progressScreenRepository.prefRepo
+            )
+            updateWorkflowEvent?.let {
+                progressScreenRepository.saveEventToMultipleSources(
+                    it,
+                    listOf()
+                )
+            }
+        }
+
+    }
+
 
 }
