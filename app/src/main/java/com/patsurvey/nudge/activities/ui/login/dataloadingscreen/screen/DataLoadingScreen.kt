@@ -20,6 +20,7 @@ fun DataLoadingScreen(viewModel: DataLoadingScreenViewModel) {
         viewModel.fetchAllData {
             context.startActivity(Intent(context, MatActivity::class.java))
         }
+        viewModel.downloadContentData(context = context)
     }
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         LoaderComponent(visible = loaderState.isLoaderVisible)

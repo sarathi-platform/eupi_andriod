@@ -8,12 +8,14 @@ import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.activities.ui.login.dataloadingscreen.domain.DataLoadingScreenRepositoryImpl
 import com.patsurvey.nudge.activities.ui.login.dataloadingscreen.domain.FetchDataUseCase
+import com.patsurvey.nudge.activities.ui.login.dataloadingscreen.domain.use_case.FetchContentDataFromNetworkUseCase
 import com.patsurvey.nudge.activities.ui.login.dataloadingscreen.domain.use_case.FetchMissionDataFromNetworkUseCase
 import com.patsurvey.nudge.activities.ui.login.dataloadingscreen.repository.IDataLoadingScreenRepository
 import com.patsurvey.nudge.database.NudgeDatabase
 import com.patsurvey.nudge.database.NudgeGrantDatabase
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.sarathi.missionactivitytask.data.dao.ActivityTaskDao
+import com.sarathi.missionactivitytask.data.dao.ContentDao
 import com.sarathi.missionactivitytask.data.dao.MissionActivityDao
 import com.sarathi.missionactivitytask.data.dao.MissionDao
 import dagger.Module
@@ -32,7 +34,8 @@ object DatabaseModule {
     fun provideDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, NudgeDatabase::class.java, NUDGE_DATABASE)
             // Add Migrations for each migration object created.
-            .addMigrations(NudgeDatabase.MIGRATION_1_2).addCallback(NudgeDatabase.NudgeDatabaseCallback())
+            .addMigrations(NudgeDatabase.MIGRATION_1_2)
+            .addCallback(NudgeDatabase.NudgeDatabaseCallback())
             .fallbackToDestructiveMigration()
             .build()
 
@@ -121,9 +124,14 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideMissionDao(db: NudgeGrantDatabase) = db.missionDao()
+
     @Provides
     @Singleton
     fun provideActivityDao(db: NudgeGrantDatabase) = db.activityDao()
+
+    @Provides
+    @Singleton
+    fun provideContentDao(db: NudgeGrantDatabase) = db.contentDao()
 
     @Provides
     @Singleton
@@ -135,7 +143,8 @@ object DatabaseModule {
         repository: IDataLoadingScreenRepository,
     ): FetchDataUseCase {
         return FetchDataUseCase(
-            fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository)
+            fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository),
+            fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(repository)
         )
     }
 
@@ -145,9 +154,16 @@ object DatabaseModule {
         missionDao: MissionDao,
         activityDao: MissionActivityDao,
         activityTaskDao: ActivityTaskDao,
-        apiService: ApiService
+        apiService: ApiService,
+        contentDao: ContentDao
     ): IDataLoadingScreenRepository {
-        return DataLoadingScreenRepositoryImpl(apiService, missionDao, activityDao, activityTaskDao)
+        return DataLoadingScreenRepositoryImpl(
+            apiService,
+            missionDao,
+            activityDao,
+            activityTaskDao,
+            contentDao
+        )
     }
 
 }

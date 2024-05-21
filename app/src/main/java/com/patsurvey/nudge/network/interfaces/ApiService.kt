@@ -38,6 +38,8 @@ import com.patsurvey.nudge.model.response.UserDetailsResponse
 import com.patsurvey.nudge.model.response.WorkFlowResponse
 import com.patsurvey.nudge.utils.KEY_HEADER_MOBILE
 import com.patsurvey.nudge.utils.KEY_HEADER_TYPE
+import com.sarathi.contentmodule.model.ContentResponse
+import com.sarathi.contentmodule.request.ContentRequest
 import com.sarathi.missionactivitytask.models.response.MissionResponseModel
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -52,10 +54,11 @@ import retrofit2.http.Query
 interface ApiService {
 
     @GET("/read-api/config/language/get")
-    suspend fun configDetails() : ApiResponseModel<ConfigResponseModel>
+    suspend fun configDetails(): ApiResponseModel<ConfigResponseModel>
 
     @POST("/auth-api/user/generate-otp")
-    suspend fun generateOtp(@Body loginRequest: LoginRequest
+    suspend fun generateOtp(
+        @Body loginRequest: LoginRequest
     ): ApiResponseModel<String>
 
     @POST("/auth-api/user/validate-otp")
@@ -93,9 +96,11 @@ interface ApiService {
 
     @POST("write-api/beneficiary/view")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun getDidisWithRankingFromNetwork(@Query("villageId") villageId: Int,
-                                                @Query("type") type:String,
-                                               @Body stepResultTypeRequest: StepResultTypeRequest): DidiWealthRankingResponse
+    suspend fun getDidisWithRankingFromNetwork(
+        @Query("villageId") villageId: Int,
+        @Query("type") type: String,
+        @Body stepResultTypeRequest: StepResultTypeRequest
+    ): DidiWealthRankingResponse
 
     @POST("/write-api/beneficiary/add")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
@@ -108,17 +113,17 @@ interface ApiService {
     // Add WorkFlow
     @POST("/write-api/workflow/add")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun addWorkFlow(@Body addWorkFlowRequest: List<AddWorkFlowRequest>):ApiResponseModel<List<WorkFlowResponse>>
+    suspend fun addWorkFlow(@Body addWorkFlowRequest: List<AddWorkFlowRequest>): ApiResponseModel<List<WorkFlowResponse>>
 
     // Edit WorkFlow
     @POST("/write-api/workflow/edit")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun editWorkFlow(@Body addWorkFlowRequest: List<EditWorkFlowRequest>):ApiResponseModel<List<WorkFlowResponse>>
+    suspend fun editWorkFlow(@Body addWorkFlowRequest: List<EditWorkFlowRequest>): ApiResponseModel<List<WorkFlowResponse>>
 
     // Get Questions List
     @POST("/pat-api/pat/view")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun fetchQuestionListFromServer(@Body getQuestionListRequest: GetQuestionListRequest):ApiResponseModel<QuestionListResponse>
+    suspend fun fetchQuestionListFromServer(@Body getQuestionListRequest: GetQuestionListRequest): ApiResponseModel<QuestionListResponse>
 
     // Edit Didi and updating Wealth Ranking
     @POST("/write-api/beneficiary/edit")
@@ -147,7 +152,7 @@ interface ApiService {
 
     @POST("/auth-api/user/logout")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun performLogout() : ApiResponseModel<String>
+    suspend fun performLogout(): ApiResponseModel<String>
 
     @POST("/write-api/beneficiary/edit")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
@@ -161,6 +166,7 @@ interface ApiService {
     @GET("/read-api/bpc/view-summary")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getBpcSummary(@Query("villageId") villageId: Int): ApiResponseModel<BpcSummaryResponse>
+
     @GET("/write-api/bpc/beneficiary-list")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getDidiForBpcFromNetwork(@Query("villageId") villageId: Int): ApiResponseModel<List<DidiEntity>>
@@ -178,32 +184,40 @@ interface ApiService {
     @Multipart
     @POST("/write-api/beneficiary/upload-image")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun uploadDidiImage(@Part image:MultipartBody.Part,
-                                 @Part ("id") didiId:RequestBody,
-                                 @Part ("userType") userType:RequestBody,
-                                 @Part ("location") location: RequestBody): ApiResponseModel<Object>
+    suspend fun uploadDidiImage(
+        @Part image: MultipartBody.Part,
+        @Part("id") didiId: RequestBody,
+        @Part("userType") userType: RequestBody,
+        @Part("location") location: RequestBody
+    ): ApiResponseModel<Object>
 
     @Multipart
     @POST("/write-api/beneficiary/upload-bulkImages")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun uploadDidiBulkImage(@Part  image:ArrayList<MultipartBody.Part>,
-                                @Part ("ids") didiId:ArrayList<RequestBody>,
-                                @Part ("userTypes") userType:ArrayList<RequestBody>,
-                                @Part ("locations") location: ArrayList<RequestBody>): ApiResponseModel<Object>
+    suspend fun uploadDidiBulkImage(
+        @Part image: ArrayList<MultipartBody.Part>,
+        @Part("ids") didiId: ArrayList<RequestBody>,
+        @Part("userTypes") userType: ArrayList<RequestBody>,
+        @Part("locations") location: ArrayList<RequestBody>
+    ): ApiResponseModel<Object>
 
     @Multipart
     @POST("/write-api/form/uploadDocument")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun uploadDocument(@Part imageList:List<MultipartBody.Part>,
-                                 @Part ("villageId") villageId:RequestBody,
-                                 @Part ("flowType") userType:RequestBody): ApiResponseModel<Object>
+    suspend fun uploadDocument(
+        @Part imageList: List<MultipartBody.Part>,
+        @Part("villageId") villageId: RequestBody,
+        @Part("flowType") userType: RequestBody
+    ): ApiResponseModel<Object>
 
     @Multipart
     @POST("/write-api/form/uploadDocument")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun uploadDataDump(@Part dataDump: MultipartBody.Part,
-                                 @Part ("villageId") villageId:RequestBody,
-                                 @Part ("flowType") userType:RequestBody): ApiResponseModel<Object>
+    suspend fun uploadDataDump(
+        @Part dataDump: MultipartBody.Part,
+        @Part("villageId") villageId: RequestBody,
+        @Part("flowType") userType: RequestBody
+    ): ApiResponseModel<Object>
 
 
     @POST("/read-api/custom/log")
@@ -213,4 +227,6 @@ interface ApiService {
     @Headers("${KEY_HEADER_TYPE}:${KEY_HEADER_MOBILE}")
     suspend fun getBaseLineMission(@Body missionRequest: MissionRequest): ApiResponseModel<List<MissionResponseModel>>
 
+    @POST("/content-manager/content/getContent")
+    suspend fun getContent(@Body contentMangerRequest: ContentRequest): ApiResponseModel<List<ContentResponse>>
 }
