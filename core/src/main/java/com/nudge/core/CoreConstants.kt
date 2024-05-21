@@ -45,6 +45,11 @@ const val REGENERATE_PREFIX = "regenerate_"
 const val PREF_KEY_IS_SETTING_SCREEN_OPEN= "is_setting_open"
 const val ENGLISH_LANGUAGE_CODE="en"
 
+const val SUFFIX_IMAGE_ZIP_FILE = "Image"
+const val SUFFIX_EVENT_ZIP_FILE = "file"
+
+const val ZIP_EXTENSION = "zip"
+
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),
     DbEventWrite(),

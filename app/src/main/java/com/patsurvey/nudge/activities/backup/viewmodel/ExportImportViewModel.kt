@@ -2,16 +2,13 @@ package com.patsurvey.nudge.activities.backup.viewmodel
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.core.net.toFile
 import androidx.core.content.FileProvider
+import androidx.core.net.toFile
 import com.google.gson.Gson
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BuildConfig
@@ -21,6 +18,8 @@ import com.nrlm.baselinesurvey.PREF_KEY_NAME
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
+import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
@@ -35,15 +34,16 @@ import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LogWriter
-import com.nrlm.baselinesurvey.utils.json
 import com.nrlm.baselinesurvey.utils.openShareSheet
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.EXCEL_TYPE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.datamodel.BaseLineQnATableCSV
 import com.nudge.core.datamodel.HamletQnATableCSV
+import com.nudge.core.enums.EventType
 import com.nudge.core.exportAllOldImages
 import com.nudge.core.exportLogFile
 import com.nudge.core.exportOldData
@@ -55,6 +55,7 @@ import com.nudge.core.getFirstName
 import com.nudge.core.importDbFile
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.toDate
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
@@ -77,6 +78,7 @@ class ExportImportViewModel @Inject constructor(
     val prefBSRepo: PrefBSRepo,
     private val optionItemDao: OptionItemDao,
     private val questionEntityDao: QuestionEntityDao,
+    private val missionActivityDao: MissionActivityDao,
 ): BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val optionList: State<List<SettingOptionModel>> get() = _optionList
@@ -421,12 +423,54 @@ fun exportOnlyLogFile(context: Context){
         }
         return uri
     }
-    fun checkCSVList(hamletListQna: List<HamletQnATableCSV>?, baseLineListQna: List<BaseLineQnATableCSV>?): List<Exportable> {
+
+    fun checkCSVList(
+        hamletListQna: List<HamletQnATableCSV>?,
+        baseLineListQna: List<BaseLineQnATableCSV>?
+    ): List<Exportable> {
         val list = if (hamletListQna.isNullOrEmpty()) {
             baseLineListQna
         } else {
             hamletListQna
         }
         return list ?: emptyList()
+    }
+
+    fun markAllActivityInProgress(context: Context) {
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val userId = prefRepo.getUniqueUserIdentifier()
+
+            val activities = missionActivityDao.getAllActivities(userId)
+
+            activities.forEach { activity ->
+
+                missionActivityDao.markActivityStart(
+                    userId,
+                    activity.missionId,
+                    activity.activityId,
+                    SectionStatus.INPROGRESS.name,
+                    System.currentTimeMillis().toDate().toString()
+                )
+
+                val updateTaskStatusEvent =
+                    eventWriterHelperImpl.createActivityStatusUpdateEvent(
+                        missionId = activity.missionId,
+                        activityId = activity.activityId,
+                        status = SectionStatus.INPROGRESS
+                    )
+                exportImportUseCase.eventsWriterUseCase.invoke(
+                    events = updateTaskStatusEvent,
+                    eventType = EventType.STATEFUL
+                )
+            }
+
+            withContext(Dispatchers.Main) {
+                showCustomToast(
+                    context,
+                    context.getString(R.string.all_activities_marked_as_in_progress)
+                )
+            }
+        }
     }
 }
