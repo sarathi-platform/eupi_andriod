@@ -110,7 +110,7 @@ fun getContentData(
     contents?.let { contentsData ->
         for (content in contentsData) {
             if (content?.contentType.equals(contentType, true)) {
-                return content!!
+                return content
             }
         }
     }

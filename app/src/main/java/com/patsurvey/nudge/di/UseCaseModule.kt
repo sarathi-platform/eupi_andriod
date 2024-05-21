@@ -3,17 +3,24 @@ package com.patsurvey.nudge.di
 
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
+import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
+import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
+import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.EventsWriterRepository
+import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.EventsWriterUserCase
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepositoryImpl
 import com.patsurvey.nudge.activities.backup.domain.use_case.ClearLocalDBExportUseCase
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
 import com.patsurvey.nudge.activities.backup.domain.use_case.GetExportOptionListUseCase
 import com.patsurvey.nudge.activities.backup.domain.use_case.GetUserDetailsExportUseCase
+import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepository
+import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepositoryImpl
 import com.patsurvey.nudge.activities.settings.domain.repository.SettingBSRepository
 import com.patsurvey.nudge.activities.settings.domain.repository.SettingBSRepositoryImpl
 import com.patsurvey.nudge.activities.settings.domain.use_case.ExportHandlerSettingUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.GetAllPoorDidiForVillageUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.GetSettingOptionListUseCase
+import com.patsurvey.nudge.activities.settings.domain.use_case.GetSummaryFileUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.GetUserDetailsUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.LogoutUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SaveLanguageScreenOpenFromUseCase
@@ -47,7 +54,8 @@ object UseCaseModule {
     @Provides
     @Singleton
     fun providesSettingScreenUseCase(
-        repository: SettingBSRepository
+        repository: SettingBSRepository,
+        getSummaryFileRepository: GetSummaryFileRepository
     ): SettingBSUserCase {
         return SettingBSUserCase(
             getSettingOptionListUseCase = GetSettingOptionListUseCase(repository),
@@ -55,7 +63,8 @@ object UseCaseModule {
             saveLanguageScreenOpenFromUseCase = SaveLanguageScreenOpenFromUseCase(repository),
             getAllPoorDidiForVillageUseCase = GetAllPoorDidiForVillageUseCase(repository),
             exportHandlerSettingUseCase = ExportHandlerSettingUseCase(repository),
-            getUserDetailsUseCase = GetUserDetailsUseCase(repository)
+            getUserDetailsUseCase = GetUserDetailsUseCase(repository),
+            getSummaryFileUseCase = GetSummaryFileUseCase(getSummaryFileRepository)
 
         )
     }
@@ -75,12 +84,24 @@ object UseCaseModule {
     @Provides
     @Singleton
     fun providesExportImportUseCase(
-        repository: ExportImportRepository
+        repository: ExportImportRepository,
+        eventsWriterRepository: EventsWriterRepository
     ): ExportImportUseCase {
         return ExportImportUseCase(
             clearLocalDBExportUseCase = ClearLocalDBExportUseCase(repository),
             getExportOptionListUseCase = GetExportOptionListUseCase(repository),
-            getUserDetailsExportUseCase = GetUserDetailsExportUseCase(repository)
+            getUserDetailsExportUseCase = GetUserDetailsExportUseCase(repository),
+            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository)
+
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetSummaryFileRepository(
+        activityTaskDao: ActivityTaskDao,
+        missionActivityDao: MissionActivityDao
+    ): GetSummaryFileRepository {
+        return GetSummaryFileRepositoryImpl(activityTaskDao, missionActivityDao)
     }
 }

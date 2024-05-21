@@ -35,7 +35,7 @@ import com.nudge.navigationmanager.graphs.navigateToSurveyListWithParamsScreen
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MissionSummaryScreen(
-    navController: NavController = rememberNavController(),
+    navController: NavController,
     missionId: Int = 0,
     missionName: String,
     missionDate: String,

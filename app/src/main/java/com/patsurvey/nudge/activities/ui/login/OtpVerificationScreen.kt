@@ -242,7 +242,6 @@ fun OtpVerificationScreen(
 
                         if (success){
                             if(userType.equals(UPCM_USER)){
-                                Log.d("TAG", "OtpVerificationScreen: ${userType} :: ${navController.graph.route} ")
                                 if (navController.graph.route?.equals(NudgeNavigationGraph.HOME, true) == true) {
                                     navController.navigate(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
                                         launchSingleTop = true
@@ -258,7 +257,6 @@ fun OtpVerificationScreen(
                                 }
                             }else{
                                 if (navController.graph.route?.equals(NudgeNavigationGraph.HOME, true) == true) {
-                                    Log.d("TAG", "OtpVerificationScreen: NudgeNavigationGraph.HOME true")
                                     navController.navigate(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route) {
                                         launchSingleTop = true
                                         popUpTo(AuthScreen.START_SCREEN.route) {
@@ -266,8 +264,6 @@ fun OtpVerificationScreen(
                                         }
                                     }
                                 } else {
-                                    Log.d("TAG", "OtpVerificationScreen: NudgeNavigationGraph.HOME false")
-
                                     navController.navigate(route = AuthScreen.VILLAGE_SELECTION_SCREEN
                                         .route) {
                                         launchSingleTop = true

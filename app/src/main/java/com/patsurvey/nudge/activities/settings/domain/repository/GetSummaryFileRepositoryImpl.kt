@@ -1,4 +1,4 @@
-package com.nrlm.baselinesurvey.ui.setting.domain.repository
+package com.patsurvey.nudge.activities.settings.domain.repository
 
 import android.net.Uri
 import android.os.Environment

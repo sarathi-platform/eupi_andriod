@@ -101,7 +101,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SectionListScreen(
     navController: NavController,
@@ -171,7 +171,7 @@ fun SectionListScreen(
         })
     BackHandler {
         BaselineCore.setCurrentActivityName(BLANK_STRING)
-        navController.navigateBackToSurveyeeListScreen()
+        navController.popBackStack()
     }
 
     Scaffold(
@@ -184,7 +184,7 @@ fun SectionListScreen(
                 IconButton(
                     onClick = {
                         BaselineCore.setCurrentActivityName(BLANK_STRING)
-                        navController.navigateBackToSurveyeeListScreen()
+                        navController.popBackStack()
                     },
                     modifier = Modifier
                 ) {
@@ -306,7 +306,7 @@ fun SectionListScreen(
                                 )
                             )
                             BaselineCore.setCurrentActivityName(BLANK_STRING)
-                            navController.navigateBackToSurveyeeListScreen()
+                            navController.popBackStack()
 
                         }
                     }

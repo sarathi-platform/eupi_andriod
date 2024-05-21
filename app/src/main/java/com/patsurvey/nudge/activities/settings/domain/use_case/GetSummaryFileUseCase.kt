@@ -1,9 +1,9 @@
-package com.nrlm.baselinesurvey.ui.setting.domain.use_case
+package com.patsurvey.nudge.activities.settings.domain.use_case
 
 import android.net.Uri
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.model.datamodel.SummaryFileDto
-import com.nrlm.baselinesurvey.ui.setting.domain.repository.GetSummaryFileRepository
+import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepository
 import javax.inject.Inject
 
 class GetSummaryFileUseCase @Inject constructor(private val getSummaryFileRepository: GetSummaryFileRepository) {

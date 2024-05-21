@@ -21,9 +21,13 @@ import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LogWriter
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nudge.core.LOCAL_BACKUP_EXTENSION
 import com.nudge.core.SARATHI_DIRECTORY_NAME
+import com.nudge.core.SUFFIX_EVENT_ZIP_FILE
+import com.nudge.core.SUFFIX_IMAGE_ZIP_FILE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
+import com.nudge.core.exportAllOldImages
 import com.nudge.core.exportDbFile
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getFirstName
@@ -176,25 +180,37 @@ class SettingBSViewModel @Inject constructor(
                 val fileAndDbZipList = ArrayList<Pair<String, Uri?>>()
                 val compression = ZipFileCompression()
 
-                // Image Files and Zip
-                val imageUri = compression.compressBackupImages(
-                    BaselineCore.getAppContext(),
-                    settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber(),
-                    userName = settingBSUserCase.getUserDetailsUseCase.getUserName(),
+                //Delete Old Image zips.
+                compression.deleteOldFiles(
+                    context = BaselineCore.getAppContext(),
+                    fileNameReference = "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_Sarathi_Image",
+                    folderName = getUserMobileNumber(),
+                    fileType = SUFFIX_IMAGE_ZIP_FILE,
+                    applicationId = BuildConfig.APPLICATION_ID,
+                    checkInAppDirectory = true
+                )
 
-                    )
+                //Delete old event zips.
+                compression.deleteOldFiles(
+                    context = BaselineCore.getAppContext(),
+                    fileNameReference = "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_sarathi_",
+                    folderName = getUserMobileNumber(),
+                    fileType = SUFFIX_EVENT_ZIP_FILE
+                )
+
+                // Image Files and Zip
+                val imageUri = exportAllOldImages(
+                    appContext = BaselineCore.getAppContext(),
+                    applicationID = BuildConfig.APPLICATION_ID,
+                    mobileNo = settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber(),
+                    timeInMillSec = System.currentTimeMillis().toString(),
+                    userName = getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())
+                )
 
                 if(imageUri!=Uri.EMPTY) {
                     imageUri?.let {
-                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                            fileUriList.add(it)
-                        else
-                            fileUriList.add(
-                                uriFromFile(context = BaselineCore.getAppContext(),
-                                applicationID = BuildConfig.APPLICATION_ID,
-                                file = it.toFile())
-                            )
-                        BaselineLogger.d("SettingBSViewModel", "Image File Uri: ${it.path}---------------")
+                        fileUriList.add(it)
+                        BaselineLogger.d("SettingBSViewModel_URI", "Image File Uri: ${it.path}---------------")
                     }
                 }
 
@@ -233,20 +249,33 @@ class SettingBSViewModel @Inject constructor(
 
                 val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext()){}
                 if (logFile != null) {
-                    val logFileUri= uriFromFile(BaselineCore.getAppContext(),logFile, BuildConfig.APPLICATION_ID)
-                    if(logFileUri!=Uri.EMPTY) {
+                    val logFileUri = uriFromFile(
+                        BaselineCore.getAppContext(),
+                        logFile,
+                        BuildConfig.APPLICATION_ID
+                    )
+                    if (logFileUri != Uri.EMPTY) {
                         logFileUri.let {
-                            fileAndDbZipList.add(Pair(logFile.name,it))
-                            BaselineLogger.d("SettingBSViewModel", "Log File Uri: ${it.path}---------------")
+                            fileAndDbZipList.add(Pair(logFile.name, it))
+                            BaselineLogger.d(
+                                "SettingBSViewModel",
+                                "Log File Uri: ${it.path}---------------"
+                            )
 
                         }
                     }
                 }
+
+                // Add Summary File
+                getSummaryFile()?.let {
+                    fileAndDbZipList.add(it)
+                }
+
                 val zipFileName =
                     "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_sarathi_${System.currentTimeMillis()}"
 
-                if(fileUriList.isNotEmpty()){
-                    val zipLogDbFileUri= compression.compressData(
+                if (fileUriList.isNotEmpty()) {
+                    val zipLogDbFileUri = compression.compressData(
                         BaselineCore.getAppContext(),
                         zipFileName,
                         Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + getUserMobileNumber(),
@@ -254,14 +283,12 @@ class SettingBSViewModel @Inject constructor(
                         getUserMobileNumber()
                     )
                     zipLogDbFileUri?.let {
-                        if(it != Uri.EMPTY){
-                            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                        if (it != Uri.EMPTY) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                                 fileUriList.add(it)
-                            else fileUriList.add(
-                                uriFromFile(context = BaselineCore.getAppContext(),
+                            else fileUriList.add(uriFromFile(context = BaselineCore.getAppContext(),
                                 applicationID = BuildConfig.APPLICATION_ID,
-                                file = it.toFile())
-                            )
+                                file = it.toFile()))
                         }
                     }
                 }
@@ -371,6 +398,20 @@ class SettingBSViewModel @Inject constructor(
 
         }
 
+    }
+    private suspend fun getSummaryFile(): Pair<String, Uri?>? {
+        val summaryFileNameWithoutExtension = "Sarathi_${
+            getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())
+        }_${prefBSRepo.getUniqueUserIdentifier()}_summary_file"
+
+        val summaryFileNameWithExtension = summaryFileNameWithoutExtension + LOCAL_BACKUP_EXTENSION
+
+        return settingBSUserCase.getSummaryFileUseCase.invoke(
+            userId = prefBSRepo.getUniqueUserIdentifier(),
+            mobileNo = getUserMobileNumber(),
+            fileNameWithoutExtension = summaryFileNameWithoutExtension,
+            fileNameWithExtension = summaryFileNameWithExtension
+        )
     }
 
     fun buildAndShareLogsForSelection() {

@@ -56,6 +56,7 @@ import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleWithNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.showCustomToast
+import com.nudge.core.json
 import java.util.Locale
 
 @Composable
@@ -568,11 +569,6 @@ fun DidiInfoCard(
                 }
                 .then(modifier)
         ) {
-
-            val dividerHeight = remember {
-                mutableStateOf(0.dp)
-            }
-
             Column(
                 modifier = Modifier
                     .background(white)

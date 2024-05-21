@@ -43,10 +43,7 @@ import com.patsurvey.nudge.utils.UPCM_USER
 fun HomeNavScreen(navController: NavHostController = rememberNavController(), prefRepo: PrefRepo) {
     Scaffold(
         bottomBar = {
-            if(prefRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING).equals(UPCM_USER)){
-                BottomNavigationBar(navController = navController)
-            }else BottomBar(navController = navController, prefRepo)
-
+            BottomBar(navController = navController, prefRepo)
         }
     ) {
         Log.d("TAG", "HomeNavScreen: ${prefRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING)}")
@@ -57,25 +54,35 @@ fun HomeNavScreen(navController: NavHostController = rememberNavController(), pr
 
 @Composable
 fun BottomBar(navController: NavHostController, prefRepo: PrefRepo) {
-    val screens = listOf(
-        BottomNavItem(
-            stringResource(R.string.progress_item_text),
-            if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true))
-                HomeScreens.BPC_PROGRESS_SEL_SCREEN.route
-            else
-                HomeScreens.PROGRESS_SEL_SCREEN.route,
-            painterResource(R.drawable.progress_icon)
-        ),
-        BottomNavItem(
-            stringResource(R.string.didis_item_text_plural),
-            HomeScreens.DIDI_SEL_SCREEN.route,
-            painterResource(R.drawable.didi_icon)
+    var screenList = emptyList<BottomNavItem>()
+    if(prefRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING).equals(UPCM_USER)){
+        screenList = listOf(
+            BottomNavItem(
+                stringResource(R.string.mission),
+                    HomeScreens.Home_SCREEN.route,
+                painterResource(R.drawable.ic_mission_icon)
+            )
         )
-    )
+    }else{
+        screenList = listOf(
+            BottomNavItem(
+                stringResource(R.string.progress_item_text),
+                if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true))
+                    HomeScreens.BPC_PROGRESS_SEL_SCREEN.route
+                else
+                    HomeScreens.PROGRESS_SEL_SCREEN.route,
+                painterResource(R.drawable.progress_icon)
+            ),
+            BottomNavItem(
+                stringResource(R.string.didis_item_text_plural),
+                HomeScreens.DIDI_SEL_SCREEN.route,
+                painterResource(R.drawable.didi_icon)
+            )
+        )
+    }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-
-    val bottomBarDestination = screens.any { it.route == currentDestination?.route }
+    val bottomBarDestination = screenList.any { it.route == currentDestination?.route }
     if (bottomBarDestination) {
         BottomNavigation(
             modifier = Modifier.shadow(
@@ -83,7 +90,7 @@ fun BottomBar(navController: NavHostController, prefRepo: PrefRepo) {
             ),
             backgroundColor = Color.White
         ) {
-            screens.forEach { screen ->
+            screenList.forEach { screen ->
                 AddItem(
                     screen = screen,
                     currentDestination = currentDestination,

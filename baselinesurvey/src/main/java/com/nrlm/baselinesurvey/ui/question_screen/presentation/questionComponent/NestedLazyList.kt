@@ -243,13 +243,7 @@ fun NestedLazyList(
                         null,
                         tint = textColorDark,
                         modifier = Modifier.clickable {
-                            if (!sectionDetails.sectionName.equals(NO_SECTION, true))
-                                navController.popBackStack()
-                            else
-                                navController.popBackStack(
-                                    HomeScreens.SURVEYEE_LIST_SCREEN.route,
-                                    false
-                                )
+                            navController.popBackStack()
                         })
 
                     Spacer(modifier = Modifier.size(dimen_8_dp))

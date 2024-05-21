@@ -18,7 +18,6 @@ import com.nrlm.baselinesurvey.PREF_KEY_NAME
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
@@ -439,7 +438,7 @@ fun exportOnlyLogFile(context: Context){
     fun markAllActivityInProgress(context: Context) {
         CoroutineScope(Dispatchers.IO).launch {
 
-            val userId = prefRepo.getUniqueUserIdentifier()
+            val userId = prefBSRepo.getUniqueUserIdentifier()
 
             val activities = missionActivityDao.getAllActivities(userId)
 
