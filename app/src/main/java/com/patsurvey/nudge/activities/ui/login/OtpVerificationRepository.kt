@@ -10,6 +10,7 @@ import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.OtpVerificationModel
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import javax.inject.Inject
 
 class OtpVerificationRepository @Inject constructor(
@@ -48,8 +49,7 @@ class OtpVerificationRepository @Inject constructor(
     fun getMobileNumber(): String?{
        return prefRepo.getMobileNumber();
     }
-
-    fun isUpCmUser(): Boolean {
-        return prefRepo.isUpCmUser()
+    fun saveLoggedInUserType(userType: String) {
+        prefRepo.savePref(PREF_KEY_TYPE_NAME, userType)
     }
 }

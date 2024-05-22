@@ -1,6 +1,6 @@
 package com.sarathi.missionactivitytask.domain.usecases
 
-import com.sarathi.missionactivitytask.data.entities.MissionEntity
+import com.sarathi.dataloadingmangement.data.entities.MissionEntity
 import com.sarathi.missionactivitytask.domain.repository.GetMissionRepositoryImpl
 import javax.inject.Inject
 

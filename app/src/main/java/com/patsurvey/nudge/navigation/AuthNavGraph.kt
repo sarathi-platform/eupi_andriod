@@ -16,7 +16,6 @@ import com.patsurvey.nudge.activities.settings.BugLogggingMechanismScreen
 import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
-import com.patsurvey.nudge.activities.ui.login.dataloadingscreen.screen.DataLoadingScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
@@ -107,11 +106,6 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
         composable(route = AuthScreen.PROFILE_SCREEN.route) {
             ProfileScreen(profileScreenVideModel = hiltViewModel(), navController = navController)
         }
-        composable(route = AuthScreen.MatDataLoadingScreen.route) {
-            DataLoadingScreen(viewModel = hiltViewModel())
-        }
-
-
     }
 
 }
