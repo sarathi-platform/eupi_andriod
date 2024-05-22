@@ -2,7 +2,7 @@ package com.sarathi.missionactivitytask.ui.grant_activity_screen.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import com.sarathi.missionactivitytask.data.entities.MissionActivityEntity
+import com.sarathi.dataloadingmangement.data.entities.MissionActivityEntity
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.domain.usecase.GetActivityUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent

@@ -12,8 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.sarathi.dataloadingmangement.data.entities.MissionActivityEntity
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.data.entities.MissionActivityEntity
 import com.sarathi.missionactivitytask.ui.components.BasicContentComponent
 import com.sarathi.missionactivitytask.ui.components.ButtonComponent
 import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent

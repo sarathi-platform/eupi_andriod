@@ -11,7 +11,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.navigation.home.navigateToActivityScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.BasicMissionCard
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.mission_screen.viewmodel.MissionScreenViewModel
@@ -56,7 +55,7 @@ fun GrantMissionScreen(
                             needToShowProgressBar = true,
                             primaryButtonText = "Start",
                             onPrimaryClick = {
-                                navigateToActivityScreen(navController)
+//                                navigateToActivityScreen(navController)
                             }
 
                         )
