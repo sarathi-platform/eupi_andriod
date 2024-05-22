@@ -1,7 +1,7 @@
 package com.sarathi.missionactivitytask.domain.repository
 
-import com.sarathi.missionactivitytask.data.dao.MissionDao
-import com.sarathi.missionactivitytask.data.entities.MissionEntity
+import com.sarathi.dataloadingmangement.data.dao.MissionDao
+import com.sarathi.dataloadingmangement.data.entities.MissionEntity
 import javax.inject.Inject
 
 class GetMissionRepositoryImpl @Inject constructor(val missionDao: MissionDao) : BaseRepository(),

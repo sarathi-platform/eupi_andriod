@@ -1,7 +1,7 @@
 package com.sarathi.missionactivitytask.ui.grant_activity_screen.domain.repository
 
-import com.sarathi.missionactivitytask.data.dao.MissionActivityDao
-import com.sarathi.missionactivitytask.data.entities.MissionActivityEntity
+import com.sarathi.dataloadingmangement.data.dao.MissionActivityDao
+import com.sarathi.dataloadingmangement.data.entities.MissionActivityEntity
 import com.sarathi.missionactivitytask.domain.repository.BaseRepository
 import javax.inject.Inject
 

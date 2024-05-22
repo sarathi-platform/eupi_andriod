@@ -57,10 +57,13 @@ import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.navigation.AuthScreen
+import com.patsurvey.nudge.navigation.home.LogoutScreens
+import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.OTP_LENGTH
 import com.patsurvey.nudge.utils.OTP_RESEND_DURATION
 import com.patsurvey.nudge.utils.SEC_30_STRING
+import com.patsurvey.nudge.utils.UPCM_USER
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -239,32 +242,35 @@ fun OtpVerificationScreen(
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_25)))
             Button(
                 onClick = {
-                    viewModel.validateOtp { success, message ->
+                    viewModel.validateOtp { userType, success, message ->
                         if (success){
-                            navController.navigate(route = AuthScreen.MatDataLoadingScreen.route)
+                            if (userType.equals(UPCM_USER)) {
+                                navController.popBackStack()
+                                navController.navigate(
+                                    Graph.HOME
+                                )
 
-//                                if(viewModel.isUpCmUser()){
-//                                    navController.navigate(route = LogoutScreens.MatDataLoadingScreen.route)
-//                                }else{
-//                                    if (navController.graph.route?.equals(Graph.HOME, true) == true) {
-//                                        navController.navigate(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route) {
-//                                            launchSingleTop = true
-//                                            popUpTo(AuthScreen.START_SCREEN.route) {
-//                                                inclusive = true
-//                                            }
-//                                        }
-//                                    } else {
-//                                        navController.navigate(route = AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
-//                                            launchSingleTop = true
-//                                            popUpTo(AuthScreen.START_SCREEN.route) {
-//                                                inclusive = true
-//                                            }
-//                                        }
-//                                    }
-//                                }
-////                            context.startActivity(Intent(context, MatActivity::class.java))
-//
-//                            RetryHelper.autoReadOtp.value = ""
+                            } else {
+                                if (navController.graph.route?.equals(Graph.HOME, true) == true) {
+                                    navController.navigate(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route) {
+                                        launchSingleTop = true
+                                        popUpTo(AuthScreen.START_SCREEN.route) {
+                                            inclusive = true
+                                        }
+                                    }
+                                } else {
+                                    navController.navigate(
+                                        route = AuthScreen.VILLAGE_SELECTION_SCREEN
+                                            .route
+                                    ) {
+                                        launchSingleTop = true
+                                        popUpTo(AuthScreen.START_SCREEN.route) {
+                                            inclusive = true
+                                        }
+                                    }
+                                }
+                            }
+                            RetryHelper.autoReadOtp.value = ""
                         }
                         else {
                             snackState.addMessage(
