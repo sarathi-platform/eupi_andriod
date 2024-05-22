@@ -6,6 +6,8 @@ import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.SUCCESS
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,7 +29,7 @@ class OtpVerificationViewModel @Inject constructor(
     private val _villageList= MutableStateFlow<List<VillageEntity>?>(emptyList())
     val villageList=_villageList.asStateFlow()
 
-    fun validateOtp(onOtpResponse: (success: Boolean, message: String) -> Unit) {
+    fun validateOtp(onOtpResponse: (userType: String, success: Boolean, message: String) -> Unit) {
         showLoader.value = true
         val otpNum = if (otpNumber.value == "") RetryHelper.autoReadOtp.value else otpNumber.value
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -35,19 +37,21 @@ class OtpVerificationViewModel @Inject constructor(
             if (response.status.equals(SUCCESS, true)) {
                 response.data?.let {
                     otpVerificationRepository.saveAccessToken(it.token)
+                    otpVerificationRepository.saveLoggedInUserType(
+                        userType = it.typeName ?: BLANK_STRING
+                    )
                     otpVerificationRepository.setIsUserBPC(it.typeName ?: "")
+                    showLoader.value = false
+                    withContext(Dispatchers.Main) {
+                        onOtpResponse(it?.typeName ?: CRP_USER_TYPE, true, response.message)
+                    }
                 }
-                showLoader.value = false
-                withContext(Dispatchers.Main) {
-                    onOtpResponse(true, response.message)
 
-
-                }
             } else {
                 onError(tag = "OtpVerificationViewModel", "Error : ${response.message}")
                 withContext(Dispatchers.Main) {
                     showLoader.value = false
-                    onOtpResponse(false, response.message)
+                    onOtpResponse(CRP_USER_TYPE, false, response.message)
                 }
             }
         }
@@ -76,6 +80,4 @@ class OtpVerificationViewModel @Inject constructor(
     override fun onServerError(errorModel: ErrorModelWithApi?) {
         TODO("Not yet implemented")
     }
-
-    fun isUpCmUser(): Boolean = otpVerificationRepository.isUpCmUser()
 }

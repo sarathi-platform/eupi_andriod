@@ -39,6 +39,7 @@ fun RootNavigationGraph(navController: NavHostController,prefRepo: PrefRepo){
 object Graph {
     const val ROOT = "root_graph"
     const val AUTHENTICATION = "auth_graph"
+    const val MAT_GRAPH = "mat_graph"
     const val HOME = "home_graph/{$ARG_USER_TYPE}"
     const val DETAILS = "details_graph/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}/{$ARG_STEP_INDEX}"
     const val ADD_DIDI = "add_didi_graph/{$ARG_DIDI_DETAILS_ID}"

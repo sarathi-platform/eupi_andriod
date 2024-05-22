@@ -21,7 +21,6 @@ import com.patsurvey.nudge.activities.PatSurvaySectionSummaryScreen
 import com.patsurvey.nudge.activities.PatSurveyCompleteSummary
 import com.patsurvey.nudge.activities.StepCompletionScreen
 import com.patsurvey.nudge.activities.VillageScreen
-import com.patsurvey.nudge.activities.VillageSelectionScreen
 import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.survey.PatSuccessScreen
 import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
@@ -52,6 +51,7 @@ import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.navigation.AuthScreen
+import com.patsurvey.nudge.navigation.MatNavigation
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.ADD_DIDI_BLANK_ID
 import com.patsurvey.nudge.utils.ARG_COMPLETION_MESSAGE
@@ -140,6 +140,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         voEndorsmentNavGraph(navController = navController)
         logoutGraph(navController =navController,prefRepo)
         bpcDidiListNavGraph(navController = navController)
+        MatNavigation(navController = navController)
     }
 }
 

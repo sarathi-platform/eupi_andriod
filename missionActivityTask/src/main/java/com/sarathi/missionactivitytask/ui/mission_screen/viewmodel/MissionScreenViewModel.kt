@@ -2,7 +2,9 @@ package com.sarathi.missionactivitytask.ui.mission_screen.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import com.sarathi.missionactivitytask.data.entities.MissionEntity
+import androidx.lifecycle.viewModelScope
+import com.sarathi.dataloadingmangement.data.entities.MissionEntity
+import com.sarathi.dataloadingmangement.domain.FetchDataUseCase
 import com.sarathi.missionactivitytask.domain.usecases.GetMissionsUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
@@ -16,6 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MissionScreenViewModel @Inject constructor(
+    private val fetchDataUseCase: FetchDataUseCase,
     private val missionsUseCase: GetMissionsUseCase
 ) : BaseViewModel() {
     private val _missionList = mutableStateOf<List<MissionEntity>>(emptyList())
@@ -23,7 +26,7 @@ class MissionScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
-                initMissionScreen()
+                loadGrantData()
             }
 
             is LoaderEvent.UpdateLoaderState -> {
@@ -42,4 +45,36 @@ class MissionScreenViewModel @Inject constructor(
             }
         }
     }
+
+    private fun loadGrantData() {
+        fetchAllData {
+            initMissionScreen()
+        }
+    }
+
+    private fun fetchAllData(callBack: () -> Unit) {
+        try {
+            viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+                fetchMissionData(fetchDataUseCase) { callBack() }
+            }
+        } catch (ex: Exception) {
+            onEvent(LoaderEvent.UpdateLoaderState(false))
+            callBack()
+        }
+    }
+
+    private fun fetchMissionData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
+            updateLoaderEvent(callBack)
+        }
+    }
+
+    private suspend fun updateLoaderEvent(callBack: () -> Unit) {
+        withContext(Dispatchers.Main) {
+            onEvent(LoaderEvent.UpdateLoaderState(false))
+            callBack()
+        }
+    }
+
 }

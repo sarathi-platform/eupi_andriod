@@ -6,7 +6,6 @@ import com.google.gson.JsonObject
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponse
 import com.patsurvey.nudge.activities.settings.TransactionIdResponseForPatStatus
-import com.patsurvey.nudge.activities.ui.login.dataloadingscreen.domain.MissionRequest
 import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.TolaEntity
@@ -38,7 +37,6 @@ import com.patsurvey.nudge.model.response.UserDetailsResponse
 import com.patsurvey.nudge.model.response.WorkFlowResponse
 import com.patsurvey.nudge.utils.KEY_HEADER_MOBILE
 import com.patsurvey.nudge.utils.KEY_HEADER_TYPE
-import com.sarathi.missionactivitytask.models.response.MissionResponseModel
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -208,9 +206,4 @@ interface ApiService {
 
     @POST("/read-api/custom/log")
     suspend fun addLogs(@Body logsBody: String): JsonObject?
-
-    @POST("/mission-service/mission/view")
-    @Headers("${KEY_HEADER_TYPE}:${KEY_HEADER_MOBILE}")
-    suspend fun getBaseLineMission(@Body missionRequest: MissionRequest): ApiResponseModel<List<MissionResponseModel>>
-
 }

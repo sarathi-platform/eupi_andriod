@@ -12,8 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.navigation.compose.rememberNavController
-import com.sarathi.missionactivitytask.navigation.RootNavigationGraph
 import com.sarathi.missionactivitytask.ui.mission_screen.viewmodel.MissionScreenViewModel
 import com.sarathi.missionactivitytask.ui.theme.The_nudgeTheme
 import com.sarathi.missionactivitytask.ui.theme.white
@@ -53,7 +51,7 @@ class MatActivity : ComponentActivity() {
                                 height = Dimension.fillToConstraints
                             }
                             .fillMaxSize()) {
-                            RootNavigationGraph(navController = rememberNavController())
+//                            RootNavigationGraph(navController = rememberNavController())
                         }
                     }
                 }

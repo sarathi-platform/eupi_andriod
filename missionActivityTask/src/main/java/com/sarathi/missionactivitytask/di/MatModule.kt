@@ -21,13 +21,6 @@ class MatModule {
         return retrofit.create(MatApiService::class.java)
     }
 
-//    @Singleton
-//    @Provides
-//    fun provideMissionRepository(): IMissionRepository {
-//        return GetMissionRepositoryImpl()
-//    }
-
-
     @Singleton
     @Provides
     fun provideMissionUseCase(missionRepository: GetMissionRepositoryImpl): GetMissionsUseCase {

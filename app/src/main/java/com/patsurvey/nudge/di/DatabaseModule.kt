@@ -3,19 +3,9 @@ package com.patsurvey.nudge.di
 import android.content.Context
 import androidx.room.Room
 import com.nudge.core.NUDGE_DATABASE
-import com.nudge.core.NUDGE_GRANT_DATABASE
 import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.syncmanager.database.SyncManagerDatabase
-import com.patsurvey.nudge.activities.ui.login.dataloadingscreen.domain.DataLoadingScreenRepositoryImpl
-import com.patsurvey.nudge.activities.ui.login.dataloadingscreen.domain.FetchDataUseCase
-import com.patsurvey.nudge.activities.ui.login.dataloadingscreen.domain.use_case.FetchMissionDataFromNetworkUseCase
-import com.patsurvey.nudge.activities.ui.login.dataloadingscreen.repository.IDataLoadingScreenRepository
 import com.patsurvey.nudge.database.NudgeDatabase
-import com.patsurvey.nudge.database.NudgeGrantDatabase
-import com.patsurvey.nudge.network.interfaces.ApiService
-import com.sarathi.missionactivitytask.data.dao.ActivityTaskDao
-import com.sarathi.missionactivitytask.data.dao.MissionActivityDao
-import com.sarathi.missionactivitytask.data.dao.MissionDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -110,44 +100,4 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun providesEventDependencyDao(syncDb: SyncManagerDatabase) = syncDb.eventsDependencyDao()
-
-    @Provides
-    @Singleton
-    fun provideGrantDatabase(@ApplicationContext context: Context) =
-        Room.databaseBuilder(context, NudgeGrantDatabase::class.java, NUDGE_GRANT_DATABASE)
-            .fallbackToDestructiveMigration()
-            .build()
-
-    @Provides
-    @Singleton
-    fun provideMissionDao(db: NudgeGrantDatabase) = db.missionDao()
-    @Provides
-    @Singleton
-    fun provideActivityDao(db: NudgeGrantDatabase) = db.activityDao()
-
-    @Provides
-    @Singleton
-    fun provideTaskDao(db: NudgeGrantDatabase) = db.taskDao()
-
-    @Provides
-    @Singleton
-    fun provideFetchDataUseCaseUseCase(
-        repository: IDataLoadingScreenRepository,
-    ): FetchDataUseCase {
-        return FetchDataUseCase(
-            fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository)
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideDataLoadingScreenRepository(
-        missionDao: MissionDao,
-        activityDao: MissionActivityDao,
-        activityTaskDao: ActivityTaskDao,
-        apiService: ApiService
-    ): IDataLoadingScreenRepository {
-        return DataLoadingScreenRepositoryImpl(apiService, missionDao, activityDao, activityTaskDao)
-    }
-
 }
