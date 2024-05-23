@@ -3,7 +3,7 @@ package com.sarathi.missionactivitytask.ui.mission_screen.viewmodel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.sarathi.dataloadingmangement.data.entities.MissionEntity
+import com.sarathi.dataloadingmangement.data.entities.Mission
 import com.sarathi.dataloadingmangement.domain.FetchDataUseCase
 import com.sarathi.missionactivitytask.domain.usecases.GetMissionsUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -21,8 +21,8 @@ class MissionScreenViewModel @Inject constructor(
     private val fetchDataUseCase: FetchDataUseCase,
     private val missionsUseCase: GetMissionsUseCase
 ) : BaseViewModel() {
-    private val _missionList = mutableStateOf<List<MissionEntity>>(emptyList())
-    val missionList: State<List<MissionEntity>> get() = _missionList
+    private val _missionList = mutableStateOf<List<Mission>>(emptyList())
+    val missionList: State<List<Mission>> get() = _missionList
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
