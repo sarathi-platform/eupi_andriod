@@ -3,9 +3,11 @@ package com.sarathi.dataloadingmangement.data.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.sarathi.dataloadingmangement.data.dao.ActivityTaskDao
+import com.sarathi.dataloadingmangement.data.dao.ContentDao
 import com.sarathi.dataloadingmangement.data.dao.MissionActivityDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
+import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.data.entities.MissionActivityEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
 

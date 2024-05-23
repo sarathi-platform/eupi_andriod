@@ -1,16 +1,20 @@
-package com.patsurvey.nudge.activities.ui.login.dataloadingscreen.domain.use_case
+package com.sarathi.dataloadingmangement.domain.use_case
 
-import com.google.common.reflect.TypeToken
+import android.app.Application
 import com.google.gson.Gson
-import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.ui.login.dataloadingscreen.repository.IDataLoadingScreenRepository
-import com.patsurvey.nudge.model.mapper.ContentMapper
-import com.patsurvey.nudge.utils.NudgeCore
-import com.sarathi.contentmodule.model.ContentResponse
-import com.sarathi.missionactivitytask.data.entities.Content
+import com.google.gson.reflect.TypeToken
+import com.sarathi.dataloadingmangement.R
+import com.sarathi.dataloadingmangement.data.entities.Content
+import com.sarathi.dataloadingmangement.model.ContentResponse
+import com.sarathi.dataloadingmangement.model.mapper.ContentMapper
+import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepository
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 
-class FetchContentDataFromNetworkUseCase(private val repository: IDataLoadingScreenRepository) {
+class FetchContentDataFromNetworkUseCase(
+    private val repository: IDataLoadingScreenRepository,
+    @ApplicationContext private val mContext: Application,
+) {
     suspend fun invoke(): Boolean {
         try {
 //            val languageId = "en"
@@ -24,17 +28,17 @@ class FetchContentDataFromNetworkUseCase(private val repository: IDataLoadingScr
 //            ) {
 //                contentResponse.data?.let { content ->
 //                    repository.deleteContentFromDB()
-//                    for (content in contentResponse.data) {
+//                   for (content in contentResponse.data) {
 //                        contentEntities.add(ContentMapper.getContent(content))
-//                    }
+//                   }
 //                    repository.saveContentToDB(contentEntities)
 //                    return true
 //                }
 //                return false
 //            } else {
-//                return false
-//            }
-            val contentResponse = getContentData()
+//               return false
+//            }false
+            val contentResponse = getContentData(mContext)
             contentResponse.forEach {
                 repository.deleteContentFromDB()
                 for (content in contentResponse) {
@@ -54,13 +58,12 @@ class FetchContentDataFromNetworkUseCase(private val repository: IDataLoadingScr
     }
 }
 
-fun getContentData(): List<ContentResponse> {
+fun getContentData(context: Application): List<ContentResponse> {
     var contentResponse: List<ContentResponse>
-    NudgeCore.getAppContext().resources.openRawResource(R.raw.content).use {
+    context.resources.openRawResource(R.raw.content).use {
         val listType = object : TypeToken<List<ContentResponse>>() {}.type
         contentResponse =
             Gson().fromJson(it.reader(), listType)
     }
-
     return contentResponse
 }

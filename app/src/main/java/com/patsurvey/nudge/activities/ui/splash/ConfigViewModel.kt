@@ -109,4 +109,7 @@ class ConfigViewModel @Inject constructor(
                 addDefaultLanguage(configRepository.languageListDao)
         }
     }
+    fun getLoggedInUserType(): String {
+        return configRepository.getLoggedInUserType()
+    }
 }

@@ -1,7 +1,7 @@
-package com.patsurvey.nudge.model.mapper
+package com.sarathi.dataloadingmangement.model.mapper
 
-import com.sarathi.contentmodule.model.ContentResponse
-import com.sarathi.missionactivitytask.data.entities.Content
+import com.sarathi.dataloadingmangement.data.entities.Content
+import com.sarathi.dataloadingmangement.model.ContentResponse
 
 object ContentMapper {
     fun getContent(

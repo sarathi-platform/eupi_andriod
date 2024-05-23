@@ -6,7 +6,6 @@ import com.google.gson.JsonObject
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponse
 import com.patsurvey.nudge.activities.settings.TransactionIdResponseForPatStatus
-import com.patsurvey.nudge.activities.ui.login.dataloadingscreen.domain.MissionRequest
 import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.TolaEntity
@@ -208,10 +207,4 @@ interface ApiService {
     @POST("/read-api/custom/log")
     suspend fun addLogs(@Body logsBody: String): JsonObject?
 
-    @POST("/mission-service/mission/view")
-    @Headers("${KEY_HEADER_TYPE}:${KEY_HEADER_MOBILE}")
-    suspend fun getBaseLineMission(@Body missionRequest: MissionRequest): ApiResponseModel<List<MissionResponseModel>>
-
-    @POST("/content-manager/content/getContent")
-    suspend fun getContent(@Body contentMangerRequest: ContentRequest): ApiResponseModel<List<ContentResponse>>
 }

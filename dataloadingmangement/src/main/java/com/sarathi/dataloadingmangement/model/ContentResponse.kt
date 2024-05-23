@@ -1,4 +1,4 @@
-package com.sarathi.contentmodule.model
+package com.sarathi.dataloadingmangement.model
 
 data class ContentResponse(
     val contentId: Int,

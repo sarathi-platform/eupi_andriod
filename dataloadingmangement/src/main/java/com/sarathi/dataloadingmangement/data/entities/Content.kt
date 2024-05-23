@@ -1,9 +1,9 @@
-package com.sarathi.missionactivitytask.data.entities
+package com.sarathi.dataloadingmangement.data.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.sarathi.missionactivitytask.constants.MissionActivityConstants.CONTENT_TABLE_NAME
+import com.sarathi.dataloadingmangement.util.CONTENT_TABLE_NAME
 
 @Entity(tableName = CONTENT_TABLE_NAME)
 data class Content(

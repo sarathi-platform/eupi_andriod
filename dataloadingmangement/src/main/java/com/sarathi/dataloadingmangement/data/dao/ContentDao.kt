@@ -1,11 +1,11 @@
-package com.sarathi.missionactivitytask.data.dao
+package com.sarathi.dataloadingmangement.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.sarathi.missionactivitytask.constants.MissionActivityConstants.CONTENT_TABLE_NAME
-import com.sarathi.missionactivitytask.data.entities.Content
+import com.sarathi.dataloadingmangement.data.entities.Content
+import com.sarathi.dataloadingmangement.util.CONTENT_TABLE_NAME
 
 @Dao
 interface ContentDao {

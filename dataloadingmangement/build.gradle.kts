@@ -45,7 +45,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":core"))
     val retrofit = "2.9.0"
     val okhttp3 = "4.9.0"
     val compose_version = "1.4.1"
