@@ -56,6 +56,7 @@ class MissionScreenViewModel @Inject constructor(
         try {
             viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
                 fetchMissionData(fetchDataUseCase) { callBack() }
+                fetchContentnData(fetchDataUseCase) { callBack }
             }
         } catch (ex: Exception) {
             onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -67,6 +68,13 @@ class MissionScreenViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
             updateLoaderEvent(callBack)
+        }
+    }
+
+    private fun fetchContentnData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            fetchDataUseCase.fetchContentDataFromNetworkUseCase.invoke()
+            //updateLoaderEvent(callBack)
         }
     }
 

@@ -1,6 +1,9 @@
 package com.sarathi.dataloadingmangement.repository
 
+import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.model.ApiResponseModel
+import com.sarathi.dataloadingmangement.model.ContentResponse
+import com.sarathi.dataloadingmangement.network.request.ContentRequest
 import com.sarathi.dataloadingmangement.response.MissionActivityModel
 import com.sarathi.dataloadingmangement.response.MissionResponseModel
 import com.sarathi.dataloadingmangement.response.MissionTaskModel
@@ -25,4 +28,11 @@ interface IDataLoadingScreenRepository {
         activityName: String,
         activities: List<MissionTaskModel>
     )
+
+    suspend fun fetchContentsFromServer(contentMangerRequest: ContentRequest): ApiResponseModel<List<ContentResponse>>
+
+    suspend fun saveContentToDB(contents: List<Content>)
+    suspend fun deleteContentFromDB()
+    suspend fun getContentData(): List<Content>
+
 }

@@ -52,6 +52,8 @@ class ConfigRepository @Inject constructor(
     fun addDefaultLanguage(){
         addDefaultLanguage(languageListDao)
     }
-
+    fun getLoggedInUserType(): String {
+        return prefRepo.getLoggedInUserType()
+    }
 
 }

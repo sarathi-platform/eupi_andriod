@@ -1,17 +1,20 @@
 package com.sarathi.dataloadingmangement.di
 
+import android.app.Application
 import android.content.Context
 import androidx.room.Room
-import com.nudge.core.NUDGE_GRANT_DATABASE
 import com.sarathi.dataloadingmangement.data.dao.ActivityTaskDao
+import com.sarathi.dataloadingmangement.data.dao.ContentDao
 import com.sarathi.dataloadingmangement.data.dao.MissionActivityDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.domain.DataLoadingScreenRepositoryImpl
 import com.sarathi.dataloadingmangement.domain.FetchDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepository
+import com.sarathi.dataloadingmangement.util.NUDGE_GRANT_DATABASE
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -51,22 +54,38 @@ class DataLoadingModule {
 
     @Provides
     @Singleton
+    fun provideContentDao(db: NudgeGrantDatabase) = db.contentDao()
+
+    @Provides
+    @Singleton
     fun provideDataLoadingScreenRepository(
         missionDao: MissionDao,
         activityDao: MissionActivityDao,
         activityTaskDao: ActivityTaskDao,
-        apiService: DataLoadingApiService
+        apiService: DataLoadingApiService,
+        contentDao: ContentDao,
     ): IDataLoadingScreenRepository {
-        return DataLoadingScreenRepositoryImpl(apiService, missionDao, activityDao, activityTaskDao)
+        return DataLoadingScreenRepositoryImpl(
+            apiService,
+            missionDao,
+            activityDao,
+            activityTaskDao,
+            contentDao
+        )
     }
 
     @Provides
     @Singleton
     fun provideFetchDataUseCaseUseCase(
         repository: DataLoadingScreenRepositoryImpl,
+        application: Application
     ): FetchDataUseCase {
         return FetchDataUseCase(
             fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository),
+            fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
+                repository,
+                application
+            )
         )
     }
 
