@@ -32,7 +32,7 @@ import com.nrlm.baselinesurvey.model.datamodel.toCsvR
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
-import com.nrlm.baselinesurvey.utils.LogWriter
+import com.nrlm.baselinesurvey.utils.BSLogWriter
 import com.nrlm.baselinesurvey.utils.openShareSheet
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
@@ -178,7 +178,7 @@ fun exportOnlyLogFile(context: Context){
    try {
     CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
         onEvent(LoaderEvent.UpdateLoaderState(true))
-       val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext()){
+       val logFile= BSLogWriter.buildLogFile(appContext = BaselineCore.getAppContext()){
            onEvent(LoaderEvent.UpdateLoaderState(false))
                onEvent(ToastMessageEvent.ShowToastMessage(context.getString(R.string.no_logs_available)))
        }
@@ -267,8 +267,6 @@ fun exportOnlyLogFile(context: Context){
 
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-
-
                 eventWriterHelperImpl.regenerateAllEvent()
                 compressEventData(title)
                 withContext(Dispatchers.Main) {

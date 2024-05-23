@@ -7,5 +7,7 @@ data class SettingBSUserCase (
     val getAllPoorDidiForVillageUseCase: GetAllPoorDidiForVillageUseCase,
     val exportHandlerSettingUseCase: ExportHandlerSettingUseCase,
     val getUserDetailsUseCase: GetUserDetailsUseCase,
-    val getSummaryFileUseCase: GetSummaryFileUseCase
+    val getSummaryFileUseCase: GetSummaryFileUseCase,
+    val getCasteUseCase: GetCasteUseCase,
+    val clearSelectionDBExportUseCase: ClearSelectionDBExportUseCase
 )

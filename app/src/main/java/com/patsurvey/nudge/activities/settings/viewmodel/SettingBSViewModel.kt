@@ -14,14 +14,14 @@ import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
-import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
-import com.nrlm.baselinesurvey.utils.LogWriter
+import com.nrlm.baselinesurvey.utils.BSLogWriter
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.LOCAL_BACKUP_EXTENSION
+import com.nudge.core.NUDGE_DATABASE
 import com.nudge.core.SARATHI_DIRECTORY_NAME
 import com.nudge.core.SUFFIX_EVENT_ZIP_FILE
 import com.nudge.core.SUFFIX_IMAGE_ZIP_FILE
@@ -29,27 +29,41 @@ import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.exportAllOldImages
 import com.nudge.core.exportDbFile
-import com.nudge.core.getDefaultBackUpFileName
+import com.nudge.core.exportLogFile
+import com.nudge.core.exportOldData
 import com.nudge.core.getFirstName
 import com.nudge.core.json
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
+import com.nudge.core.utils.LogWriter
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
+import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.CasteEntity
+import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.service.csv.ExportHelper
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
+import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PageFrom
+import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.PdfUtils
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.UPCM_USER
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_CONSTANT
 import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.changeMilliDateToDate
 import com.patsurvey.nudge.utils.openShareSheet
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -65,14 +79,15 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingBSViewModel @Inject constructor(
     private val settingBSUserCase: SettingBSUserCase,
-    private val nudgeBaselineDatabase: NudgeBaselineDatabase,
     val exportHelper: ExportHelper,
-    val prefBSRepo: PrefBSRepo
+    val prefBSRepo: PrefBSRepo,
+    val prefRepo: PrefRepo
 ):BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     var showLogoutDialog = mutableStateOf(false)
+    var showLoadConfimationDialog = mutableStateOf(false)
     var showLoader = mutableStateOf(false)
-
+    var applicationId= mutableStateOf(BLANK_STRING)
     val optionList: State<List<SettingOptionModel>> get() = _optionList
     var userType:String= BLANK_STRING
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState(isLoaderVisible = false))
@@ -82,6 +97,7 @@ class SettingBSViewModel @Inject constructor(
     val formCAvailable = mutableStateOf(false)
     val loaderState: State<LoaderState> get() = _loaderState
     fun initOptions(context:Context) {
+        applicationId.value= CoreAppDetails.getApplicationDetails()?.applicationID ?: BuildConfig.APPLICATION_ID
         userType = settingBSUserCase.getSettingOptionListUseCase.getUserType().toString()
         val villageId=settingBSUserCase.getSettingOptionListUseCase.getSelectedVillageId()
         val settingOpenFrom=settingBSUserCase.getSettingOptionListUseCase.settingOpenFrom()
@@ -124,22 +140,51 @@ class SettingBSViewModel @Inject constructor(
                 SettingTagEnum.LANGUAGE.name
             )
         )
-        list.add(
-            SettingOptionModel(
-                5,
-                context.getString(R.string.export_backup_file),
-                BLANK_STRING,
-                SettingTagEnum.EXPORT_BACKUP_FILE.name
+        if(userType != UPCM_USER){
+            list.add(
+                SettingOptionModel(
+                    5,
+                    context.getString(R.string.share_logs),
+                    BLANK_STRING,
+                    SettingTagEnum.SHARE_LOGS.name
+                )
             )
-        )
-        list.add(
-            SettingOptionModel(
-                6,
-                context.getString(R.string.backup_recovery),
-                BLANK_STRING,
-                SettingTagEnum.BACKUP_RECOVERY.name
+
+            list.add(
+                SettingOptionModel(
+                    6,
+                    context.getString(R.string.export_file),
+                    BLANK_STRING,
+                    SettingTagEnum.EXPORT_FILE.name
+                )
             )
-        )
+
+            list.add(
+                SettingOptionModel(
+                    7,
+                    context.getString(R.string.load_server_data),
+                    BLANK_STRING,
+                    SettingTagEnum.LOAD_SERVER_DATA.name
+                )
+            )
+        }else {
+            list.add(
+                SettingOptionModel(
+                    5,
+                    context.getString(R.string.export_backup_file),
+                    BLANK_STRING,
+                    SettingTagEnum.EXPORT_BACKUP_FILE.name
+                )
+            )
+            list.add(
+                SettingOptionModel(
+                    6,
+                    context.getString(R.string.backup_recovery),
+                    BLANK_STRING,
+                    SettingTagEnum.BACKUP_RECOVERY.name
+                )
+            )
+        }
 
 
         _optionList.value=list
@@ -186,7 +231,7 @@ class SettingBSViewModel @Inject constructor(
                     fileNameReference = "${getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())}_${getUserMobileNumber()}_Sarathi_Image",
                     folderName = getUserMobileNumber(),
                     fileType = SUFFIX_IMAGE_ZIP_FILE,
-                    applicationId = BuildConfig.APPLICATION_ID,
+                    applicationId = applicationId.value,
                     checkInAppDirectory = true
                 )
 
@@ -201,7 +246,7 @@ class SettingBSViewModel @Inject constructor(
                 // Image Files and Zip
                 val imageUri = exportAllOldImages(
                     appContext = BaselineCore.getAppContext(),
-                    applicationID = BuildConfig.APPLICATION_ID,
+                    applicationID = applicationId.value,
                     mobileNo = settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber(),
                     timeInMillSec = System.currentTimeMillis().toString(),
                     userName = getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())
@@ -217,15 +262,15 @@ class SettingBSViewModel @Inject constructor(
                 // Database File and URI
                 val dbUri = exportDbFile(
                     appContext = BaselineCore.getAppContext(),
-                    applicationID = BuildConfig.APPLICATION_ID,
-                    databaseName = NUDGE_BASELINE_DATABASE
+                    applicationID = applicationId.value,
+                    databaseName = if(userType != UPCM_USER) NUDGE_DATABASE else NUDGE_BASELINE_DATABASE
                 )
 
 
                 if(dbUri!= Uri.EMPTY){
                     dbUri?.let {
                         BaselineLogger.d("SettingBSViewModel", "Database File Uri: ${it.path}---------------")
-                        fileAndDbZipList.add(Pair(NUDGE_BASELINE_DATABASE,it))
+                        fileAndDbZipList.add(Pair(if(userType != UPCM_USER) NUDGE_DATABASE else NUDGE_BASELINE_DATABASE,it))
                     }
                 }
 
@@ -247,12 +292,12 @@ class SettingBSViewModel @Inject constructor(
 
 
 
-                val logFile= LogWriter.buildLogFile(appContext = BaselineCore.getAppContext()){}
+                val logFile= BSLogWriter.buildLogFile(appContext = BaselineCore.getAppContext()){}
                 if (logFile != null) {
                     val logFileUri = uriFromFile(
                         BaselineCore.getAppContext(),
                         logFile,
-                        BuildConfig.APPLICATION_ID
+                        applicationId.value
                     )
                     if (logFileUri != Uri.EMPTY) {
                         logFileUri.let {
@@ -287,7 +332,7 @@ class SettingBSViewModel @Inject constructor(
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                                 fileUriList.add(it)
                             else fileUriList.add(uriFromFile(context = BaselineCore.getAppContext(),
-                                applicationID = BuildConfig.APPLICATION_ID,
+                                applicationID = applicationId.value,
                                 file = it.toFile()))
                         }
                     }
@@ -414,6 +459,7 @@ class SettingBSViewModel @Inject constructor(
         )
     }
 
+    //TODO: Needs to update code for Common Export and Export Event File functionality for the Selection and Baseline
     fun buildAndShareLogsForSelection() {
         NudgeLogger.d("SettingBSViewModel", "buildAndShareLogs SELECTION---------------")
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -423,9 +469,257 @@ class SettingBSViewModel @Inject constructor(
         }
     }
 
+    fun exportOnlyLogFile(context: Context){
+        BaselineLogger.d("ExportImportViewModel","exportOnlyLogFile: ----")
+        try {
+            CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+                onEvent(LoaderEvent.UpdateLoaderState(true))
+                val logFile= LogWriter.buildLogFile(appContext = NudgeCore.getAppContext()){
+                    onEvent(LoaderEvent.UpdateLoaderState(false))
+                    onEvent(ToastMessageEvent.ShowToastMessage(context.getString(R.string.no_logs_available)))
+                }
+                if (logFile != null) {
+                    exportLogFile(
+                        logFile,
+                        appContext = NudgeCore.getAppContext(),
+                        applicationID = applicationId.value,
+                        userName = getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName()),
+                        mobileNo = settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
+                    ) {
+                        onEvent(LoaderEvent.UpdateLoaderState(false))
+                        openShareSheet(convertURIAccToOS(it) ,"", type = ZIP_MIME_TYPE)
+                    }
+
+
+                }
+            }
+        }catch (e:Exception){
+            onEvent(LoaderEvent.UpdateLoaderState(false))
+            BaselineLogger.e("ExportImportViewModel","exportOnlyLogFile :${e.message}",e)
+        }
+    }
+
+
+    fun compressEventDataForSelection(title: String) {
+
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                onEvent(LoaderEvent.UpdateLoaderState(true))
+                val fileUriList: ArrayList<Uri> = arrayListOf()
+                val compression = ZipFileCompression()
+                val fileUri = compression.compressBackupFiles(
+                    NudgeCore.getAppContext(),
+                    listOf(),
+                    settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber(),
+                    settingBSUserCase.getUserDetailsUseCase.getUserName()
+                )
+
+                // Image Files and Zip
+                val imageUri = exportAllOldImages(
+                    appContext = NudgeCore.getAppContext(),
+                    applicationID = applicationId.value,
+                    mobileNo = settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber(),
+                    timeInMillSec = System.currentTimeMillis().toString(),
+                    userName = getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())
+                )
+                imageUri?.let {
+                    if(it != Uri.EMPTY){
+                        fileUriList.add(it)
+                    }
+                }
+                fileUri?.let {
+                    if(it!=Uri.EMPTY){
+                        fileUriList.add(
+                            uriFromFile(
+                                context = NudgeCore.getAppContext(),
+                                applicationID = applicationId.value,
+                                file = it.toFile()
+                            )
+                        )
+                    }
+                }
+
+                openShareSheet(fileUriList, title, ZIP_MIME_TYPE)
+                CoreSharedPrefs.getInstance(NudgeCore.getAppContext()).setFileExported(true)
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+
+
+            } catch (exception: Exception) {
+                NudgeLogger.e(" Selection Compression", exception.message ?: BLANK_STRING)
+                exception.printStackTrace()
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+
+
+            }
+
+        }
+    }
+
+    private suspend fun getFormPdfAndLogUri(): List<Pair<String, Uri?>> {
+
+        val uris = ArrayList<Pair<String, Uri?>>()
+        CoroutineScope(Dispatchers.IO +exceptionHandler).launch {
+            try {
+                if (!prefRepo.isUserBPC()) {
+                    val selectedVillageId = prefRepo.getSelectedVillage().id
+                    val casteList = settingBSUserCase.getCasteUseCase.getAllCasteForLanguage(
+                        prefRepo.getAppLanguageId() ?: 2
+                    )
+                    var didiList: List<DidiEntity> =
+                        settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(
+                            selectedVillageId
+                        )
+
+                    val isFormAGenerated = generateFormA(casteList, selectedVillageId, didiList)
+                    addFormToUriList(isFormAGenerated, selectedVillageId, FORM_A_PDF_NAME, uris)
+
+                    val isFormBGenerated = generateFormB(casteList, selectedVillageId, didiList)
+                    addFormToUriList(isFormBGenerated, selectedVillageId, FORM_B_PDF_NAME, uris)
+
+                    val isFormCGenerated = generateFormc(casteList, selectedVillageId, didiList)
+                    addFormToUriList(isFormCGenerated, selectedVillageId, FORM_C_PDF_NAME, uris)
+
+                }
+            } catch (exception: Exception) {
+                NudgeLogger.e("GeneratingForm", exception.message ?: "")
+            }
+            try {
+                addLogFileIntoUriList(uris)
+
+            } catch (exception: Exception) {
+                NudgeLogger.e("GeneratingForm", exception.message ?: "")
+            }
+        }
+        return uris
+    }
+
+    private suspend fun generateFormA(
+        casteList: List<CasteEntity>,
+        selectedVillageId: Int,
+        didiList: List<DidiEntity>
+    ) = PdfUtils.getFormAPdf(
+        NudgeCore.getAppContext(),
+        villageEntity = prefRepo.getSelectedVillage(),
+        casteList = casteList,
+        didiDetailList = didiList,
+        completionDate = changeMilliDateToDate(
+            prefRepo.getPref(
+                PREF_WEALTH_RANKING_COMPLETION_DATE_ + selectedVillageId, 0L
+            )
+        ) ?: com.patsurvey.nudge.utils.BLANK_STRING
+    )
+
+    private suspend fun generateFormB(
+        casteList: List<CasteEntity>,
+        selectedVillageId: Int,
+        didiList: List<DidiEntity>
+    ) =
+        PdfUtils.getFormBPdf(
+            NudgeCore.getAppContext(), villageEntity = prefRepo.getSelectedVillage(),
+            didiDetailList = didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit },
+            casteList = casteList,
+            completionDate = changeMilliDateToDate(
+                prefRepo.getPref(
+                    PREF_PAT_COMPLETION_DATE_ + selectedVillageId,
+                    0L
+                )
+            ) ?: com.patsurvey.nudge.utils.BLANK_STRING
+        )
+
+    private suspend fun generateFormc(
+        casteList: List<CasteEntity>,
+        selectedVillageId: Int,
+        didiList: List<DidiEntity>
+    ) =
+        PdfUtils.getFormCPdf(
+            NudgeCore.getAppContext(), villageEntity = prefRepo.getSelectedVillage(),
+            didiDetailList = didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal },
+            casteList = casteList,
+            completionDate = changeMilliDateToDate(
+                prefRepo.getPref(
+                    PREF_VO_ENDORSEMENT_COMPLETION_DATE_ + selectedVillageId,
+                    0L
+                )
+            ) ?: com.patsurvey.nudge.utils.BLANK_STRING
+        )
+
+    private fun addFormToUriList(
+        isFormGenerated: Boolean,
+        selectedVillageId: Int,
+        formName: String,
+        uris: ArrayList<Pair<String, Uri?>>
+    ) {
+        if (isFormGenerated) {
+            val formFile = PdfUtils.getPdfPath(
+                context = NudgeCore.getAppContext(),
+                formName = formName,
+                selectedVillageId
+            )
+
+            uris.add(
+                Pair(
+                    formFile.name, com.patsurvey.nudge.utils.uriFromFile(
+                        NudgeCore.getAppContext(),
+                        formFile
+                    )
+                )
+            )
+        }
+    }
+
+    private suspend fun addLogFileIntoUriList(uris: ArrayList<Pair<String, Uri?>>) {
+        val logFile = com.patsurvey.nudge.utils.LogWriter.getLogFile()
+        if (logFile != null) {
+            uris.add(
+                Pair(
+                    logFile.name,
+                    uriFromFile(
+                        context = NudgeCore.getAppContext(),
+                        file = logFile,
+                        applicationID = applicationId.value
+                    )
+                )
+            )
+        }
+    }
 
 
     fun getUserMobileNumber():String{
         return settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
+    }
+    fun exportDbAndImages(onExportSuccess: () -> Unit) {
+        val userUniqueId = "${prefRepo.getUserId()}_${prefRepo.getMobileNumber()}"
+        exportOldData(
+            appContext = NudgeCore.getAppContext(),
+            applicationID = applicationId.value,
+            mobileNo = userUniqueId,
+            databaseName = NUDGE_DATABASE,
+            userName = ""
+        ) {
+            onExportSuccess()
+        }
+    }
+
+    fun clearSelectionLocalDatabase(onPageChange:()->Unit){
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val result=settingBSUserCase.clearSelectionDBExportUseCase.invoke()
+                if(result){
+                    settingBSUserCase.clearSelectionDBExportUseCase.setAllDataSyncStatus()
+                    withContext(Dispatchers.Main){
+                        onPageChange()
+                    }
+                }
+            }catch (ex:Exception){
+                ex.printStackTrace()
+                NudgeLogger.e("SettingBSViewModel","clearSelectionLocalDatabase : ${ex.message}",ex)
+            }
+        }
+    }
+
+    private fun convertURIAccToOS(uri: Uri): ArrayList<Uri> {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            return arrayListOf(uri)
+        return arrayListOf(uriFromFile(NudgeCore.getAppContext(),uri.toFile(),applicationId.value))
     }
 }

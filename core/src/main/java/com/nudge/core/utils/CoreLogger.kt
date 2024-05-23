@@ -530,4 +530,28 @@ object LogWriter {
             e(TAG, "cleanup $checkForSize", ex)
         }
     }
+
+    suspend fun buildLogFile(appContext: Context,onFailed:()->Unit): File? {
+        try {
+
+            val logDir = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+            val logFile = File(logDir, getSupportLogFileName())
+            if (logFile.isFile) logFile.delete()
+
+            if (!getSyslogFile(context = appContext, output = logFile)) {
+                withContext(Dispatchers.Main) {
+                    onFailed()
+                }
+                return null
+            }
+            return logFile
+        } catch (ex: Exception) {
+            e(TAG, "buildSupportLogAndShare", ex)
+            withContext(Dispatchers.Main) {
+                onFailed()
+            }
+            return null
+        }
+    }
+
 }

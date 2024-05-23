@@ -1,18 +1,15 @@
 package com.nrlm.baselinesurvey.utils
 
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.Environment
 import android.text.TextUtils
 import android.text.format.Formatter.formatShortFileSize
 import android.util.Log
-import android.widget.Toast
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.BuildConfig.DEBUG
 import com.nrlm.baselinesurvey.BuildConfig.VERSION_NAME
 import com.nrlm.baselinesurvey.utils.BaselineLogger.e
-import com.nudge.core.uriFromFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,21 +32,21 @@ object BaselineLogger {
 
     fun d(tag: String, msg: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            LogWriter.log(Level.FINE.intValue(), tag, msg)
+            BSLogWriter.log(Level.FINE.intValue(), tag, msg)
             Log.d(tag, msg)
         }
     }
 
     fun i(tag: String, msg: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            LogWriter.log(Level.INFO.intValue(), tag, msg)
+            BSLogWriter.log(Level.INFO.intValue(), tag, msg)
             if (DEBUG) Log.i(tag, msg)
         }
     }
 
     fun e(tag: String, msg: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            LogWriter.log(Level.SEVERE.intValue(), tag, msg)
+            BSLogWriter.log(Level.SEVERE.intValue(), tag, msg)
             if (DEBUG) Log.e(tag, msg)
         }
     }
@@ -76,7 +73,7 @@ object BaselineLogger {
 
     fun cleanup(checkForSize: Boolean) {
         CoroutineScope(Dispatchers.IO).launch {
-            LogWriter.cleanup(checkForSize)
+            BSLogWriter.cleanup(checkForSize)
         }
     }
 
@@ -89,7 +86,7 @@ class EchoPacket(
     val timestamp: Date = Date()
 )
 
-object LogWriter {
+object BSLogWriter {
     private const val TAG = "syslog"
     //private const val TAG_WIDTH_MAX = 75
 

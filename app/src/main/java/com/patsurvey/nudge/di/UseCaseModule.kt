@@ -17,8 +17,10 @@ import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileR
 import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepositoryImpl
 import com.patsurvey.nudge.activities.settings.domain.repository.SettingBSRepository
 import com.patsurvey.nudge.activities.settings.domain.repository.SettingBSRepositoryImpl
+import com.patsurvey.nudge.activities.settings.domain.use_case.ClearSelectionDBExportUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.ExportHandlerSettingUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.GetAllPoorDidiForVillageUseCase
+import com.patsurvey.nudge.activities.settings.domain.use_case.GetCasteUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.GetSettingOptionListUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.GetSummaryFileUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.GetUserDetailsUseCase
@@ -26,6 +28,8 @@ import com.patsurvey.nudge.activities.settings.domain.use_case.LogoutUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SaveLanguageScreenOpenFromUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.NudgeDatabase
+import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.service.csv.ExportHelper
@@ -46,9 +50,19 @@ object UseCaseModule {
         apiService: ApiService,
         didiDao: DidiDao,
         stepsListDao: StepsListDao,
-        exportHelper:ExportHelper
+        casteListDao: CasteListDao,
+        exportHelper:ExportHelper,
+        nudgeDatabase: NudgeDatabase
     ): SettingBSRepository {
-        return SettingBSRepositoryImpl(prefRepo, apiService,didiDao,stepsListDao, exportHelper)
+        return SettingBSRepositoryImpl(
+            prefRepo = prefRepo,
+            apiService = apiService,
+            didiDao = didiDao,
+            stepsListDao = stepsListDao,
+            exportHelper = exportHelper,
+            casteListDao = casteListDao,
+            nudgeDatabase = nudgeDatabase
+        )
     }
 
     @Provides
@@ -64,7 +78,9 @@ object UseCaseModule {
             getAllPoorDidiForVillageUseCase = GetAllPoorDidiForVillageUseCase(repository),
             exportHandlerSettingUseCase = ExportHandlerSettingUseCase(repository),
             getUserDetailsUseCase = GetUserDetailsUseCase(repository),
-            getSummaryFileUseCase = GetSummaryFileUseCase(getSummaryFileRepository)
+            getSummaryFileUseCase = GetSummaryFileUseCase(getSummaryFileRepository),
+            getCasteUseCase = GetCasteUseCase(repository),
+            clearSelectionDBExportUseCase = ClearSelectionDBExportUseCase(repository)
 
         )
     }

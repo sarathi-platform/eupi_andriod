@@ -4,28 +4,37 @@ import android.content.Context
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.LANGUAGE_OPEN_FROM_SETTING
 import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.NudgeDatabase
 import com.patsurvey.nudge.database.StepListEntity
+import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.service.csv.ExportHelper
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_EMAIL
 import com.patsurvey.nudge.utils.PREF_KEY_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.UPCM_USER
+import kotlinx.coroutines.Dispatchers
 
 class SettingBSRepositoryImpl(
     private val prefRepo: PrefRepo,
     private val apiService: ApiService,
     private val didiDao: DidiDao,
     private val stepsListDao: StepsListDao,
-    private val  exportHelper: ExportHelper
+    private val casteListDao: CasteListDao,
+    private val  exportHelper: ExportHelper,
+    private val nudgeDatabase: NudgeDatabase
 ): SettingBSRepository {
 
     override suspend fun performLogout(): ApiResponseModel<String> {
@@ -108,5 +117,27 @@ class SettingBSRepositoryImpl(
     override fun getUserName(): String {
         return prefRepo.getPref(PREF_KEY_NAME, BLANK_STRING) ?: BLANK_STRING
 
+    }
+
+    override fun getAllCasteForLanguage(languageId: Int): List<CasteEntity> {
+        return casteListDao.getAllCasteForLanguage(languageId)
+    }
+
+    override fun clearSelectionLocalDB() {
+       try {
+           nudgeDatabase.tolaDao().deleteAllTola()
+           nudgeDatabase.didiDao().deleteAllDidi()
+           nudgeDatabase.lastSelectedTola().deleteAllLastSelectedTola()
+           nudgeDatabase.numericAnswerDao().deleteAllNumericAnswers()
+           nudgeDatabase.answerDao().deleteAllAnswers()
+           nudgeDatabase.questionListDao().deleteQuestionTable()
+           nudgeDatabase.stepsListDao().deleteAllStepsFromDB()
+           nudgeDatabase.villageListDao().deleteAllVilleges()
+           nudgeDatabase.bpcSummaryDao().deleteAllSummary()
+           nudgeDatabase.poorDidiListDao().deleteAllDidis()
+           prefRepo.savePref(LAST_UPDATE_TIME, 0L)
+       }catch (ex:Exception){
+           NudgeLogger.d("SettingBSRepositoryImpl","clearSelectionLocalDB: ${ex.message}")
+       }
     }
 }

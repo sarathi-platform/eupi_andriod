@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.settings.domain.repository
 
 import android.content.Context
+import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.model.response.ApiResponseModel
@@ -33,5 +34,7 @@ interface SettingBSRepository {
     fun getUserEmail():String
 
     fun getUserName(): String
+    fun getAllCasteForLanguage(languageId:Int):List<CasteEntity>
+    fun clearSelectionLocalDB()
 
 }

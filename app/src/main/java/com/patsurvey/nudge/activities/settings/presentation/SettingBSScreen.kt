@@ -11,11 +11,14 @@ import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
+import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 import com.patsurvey.nudge.activities.settings.viewmodel.SettingBSViewModel
 import com.nrlm.baselinesurvey.utils.showCustomToast
+import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
+import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.settings.domain.DigitalFormEnum
 import com.patsurvey.nudge.utils.showCustomDialog
 import com.patsurvey.nudge.utils.showToast
@@ -60,6 +63,28 @@ fun SettingBSScreen(
 
 
     }
+
+    if(viewModel.showLoadConfimationDialog.value){
+        showCustomDialog(
+            title = stringResource(id = R.string.are_you_sure),
+            message =stringResource(id = R.string.are_you_sure_you_want_to_load_data_from_server),
+            positiveButtonTitle = stringResource(id = R.string.yes_text),
+            negativeButtonTitle = stringResource(id = R.string.option_no),
+            onNegativeButtonClick = {viewModel.showLoadConfimationDialog.value =false},
+            onPositiveButtonClick = {
+                viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
+                viewModel.exportDbAndImages{
+                    viewModel.clearSelectionLocalDatabase{
+                        viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+                        if (navController.graph.route == NudgeNavigationGraph.ROOT) {
+                            navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route)
+                        } else {
+                            navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
+                        }
+                    }
+                }
+            })
+    }
   if(!loaderState.value.isLoaderVisible) {
       CommonSettingScreen(
           title = stringResource(id = R.string.settings_screen_title),
@@ -97,6 +122,25 @@ fun SettingBSScreen(
 
                   SettingTagEnum.BACKUP_RECOVERY.name -> {
                       navController.navigate(SettingScreens.BACKUP_RECOVERY_SCREEN.route)
+                  }
+
+                  SettingTagEnum.SHARE_LOGS.name -> {
+                      viewModel.exportOnlyLogFile(context)
+                  }
+
+                  SettingTagEnum.EXPORT_FILE.name -> {
+                      viewModel.compressEventData(context.getString(R.string.share_export_file))
+                  }
+
+                  SettingTagEnum.LOAD_SERVER_DATA.name -> {
+                      if ((context as MainActivity).isOnline.value) {
+                          viewModel.showLoadConfimationDialog.value = true
+                      }else{
+                          showToast(
+                              context,
+                              context.getString(R.string.logout_no_internet_error_message)
+                          )
+                      }
                   }
               }
           },

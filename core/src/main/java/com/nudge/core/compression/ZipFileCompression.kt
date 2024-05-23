@@ -41,7 +41,6 @@ class ZipFileCompression : IFileCompressor {
             "${getFirstName(userName)}_${mobileNo}_Sarathi_",
             mobileNo,
             SUFFIX_EVENT_ZIP_FILE,
-
             )
 
         return compressData(

@@ -1434,8 +1434,6 @@ fun restartApp(context: Context) {
 fun openShareSheet(fileUriList: ArrayList<Uri>?, title: String, type: String,) {
     if(fileUriList?.isNotEmpty() == true){
         try {
-
-
             val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
             shareIntent.setType(type)
             shareIntent.putExtra(Intent.EXTRA_STREAM, fileUriList)
