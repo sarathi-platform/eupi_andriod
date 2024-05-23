@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.home
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,6 +16,7 @@ fun HomeVillageScreen(
     navController: NavHostController,
     prefRepo: PrefRepo
 ) {
+    Log.d("TAG", "HomeVillageScreen: ${prefRepo.getAccessToken()}")
     if (prefRepo.getAccessToken()?.isNotEmpty()==true) {
         VillageScreen(navController = navController) {
             navController.navigate(AuthScreen.AUTH_SETTING_SCREEN.route)

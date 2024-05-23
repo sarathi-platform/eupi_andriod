@@ -11,7 +11,6 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toFile
 import com.google.gson.Gson
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.PREF_KEY_NAME
@@ -52,12 +51,15 @@ import com.nudge.core.exportcsv.Exportable
 import com.nudge.core.exportcsv.Exports
 import com.nudge.core.getFirstName
 import com.nudge.core.importDbFile
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toDate
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
+import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
+import com.patsurvey.nudge.utils.NudgeCore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -79,6 +81,8 @@ class ExportImportViewModel @Inject constructor(
     private val questionEntityDao: QuestionEntityDao,
     private val missionActivityDao: MissionActivityDao,
 ): BaseViewModel() {
+    var mAppContext:Context
+
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val optionList: State<List<SettingOptionModel>> get() = _optionList
 
@@ -86,16 +90,18 @@ class ExportImportViewModel @Inject constructor(
     val showRestartAppDialog = mutableStateOf(false)
     private val userUniqueKey= mutableStateOf(BLANK_STRING)
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState(false))
-
+    val applicationId = mutableStateOf(BLANK_STRING)
     val loaderState: State<LoaderState> get() = _loaderState
 
     init {
+        mAppContext=NudgeCore.getAppContext()
+        applicationId.value = CoreAppDetails.getApplicationDetails()?.applicationID ?: BuildConfig.APPLICATION_ID
         _optionList.value=exportImportUseCase.getExportOptionListUseCase.fetchExportOptionList()
     }
     override fun <T> onEvent(event: T) {
         when(event){
             is ToastMessageEvent.ShowToastMessage ->{
-              showCustomToast(BaselineCore.getAppContext(),event.message)
+              showCustomToast(mAppContext,event.message)
             }
 
             is LoaderEvent.UpdateLoaderState -> {
@@ -128,8 +134,8 @@ class ExportImportViewModel @Inject constructor(
          try {
              onEvent(LoaderEvent.UpdateLoaderState(true))
              exportOldData(
-                 appContext = BaselineCore.getAppContext(),
-                 applicationID = BuildConfig.APPLICATION_ID,
+                 appContext = mAppContext,
+                 applicationID = applicationId.value,
                  mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
                  databaseName = NUDGE_BASELINE_DATABASE,
                  userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName())
@@ -156,8 +162,8 @@ class ExportImportViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             onEvent(LoaderEvent.UpdateLoaderState(true))
             val imageZipUri= exportAllOldImages(
-                appContext = BaselineCore.getAppContext(),
-                applicationID = BuildConfig.APPLICATION_ID,
+                appContext = mAppContext,
+                applicationID = applicationId.value,
                 mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
                 timeInMillSec = System.currentTimeMillis().toString(),
                 userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName())
@@ -178,15 +184,15 @@ fun exportOnlyLogFile(context: Context){
    try {
     CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
         onEvent(LoaderEvent.UpdateLoaderState(true))
-       val logFile= BSLogWriter.buildLogFile(appContext = BaselineCore.getAppContext()){
+       val logFile= BSLogWriter.buildLogFile(appContext = mAppContext){
            onEvent(LoaderEvent.UpdateLoaderState(false))
                onEvent(ToastMessageEvent.ShowToastMessage(context.getString(R.string.no_logs_available)))
        }
         if (logFile != null) {
             exportLogFile(
                 logFile,
-                appContext = BaselineCore.getAppContext(),
-                applicationID = BuildConfig.APPLICATION_ID,
+                appContext = mAppContext,
+                applicationID = applicationId.value,
                 userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName()),
                 mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
             ) {
@@ -210,7 +216,7 @@ fun exportOnlyLogFile(context: Context){
                 onEvent(LoaderEvent.UpdateLoaderState(true))
                 val compression = ZipFileCompression()
                 val fileUri = compression.compressBackupFiles(
-                    BaselineCore.getAppContext(),
+                    mAppContext,
                     listOf(),
                     exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
                     exportImportUseCase.getUserDetailsExportUseCase.getUserName()
@@ -219,7 +225,7 @@ fun exportOnlyLogFile(context: Context){
                    BaselineLogger.d("ExportImportViewModel","compressEventData ${fileUri.path}----")
                    openShareSheet(convertURIAccToOS(fileUri), title, type = ZIP_MIME_TYPE)
                }
-                CoreSharedPrefs.getInstance(BaselineCore.getAppContext()).setFileExported(true)
+                CoreSharedPrefs.getInstance(mAppContext).setFileExported(true)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             } catch (exception: Exception) {
                 BaselineLogger.e("Compression", exception.message ?: "",exception)
@@ -232,13 +238,13 @@ fun exportOnlyLogFile(context: Context){
     private fun convertURIAccToOS(uri: Uri): ArrayList<Uri> {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             return arrayListOf(uri)
-       return arrayListOf(uriFromFile(BaselineCore.getAppContext(),uri.toFile(),BuildConfig.APPLICATION_ID))
+       return arrayListOf(uriFromFile(mAppContext,uri.toFile(),applicationId.value))
     }
 
     fun restartApp(context: Context, cls: Class<*>) {
         BaselineLogger.d("ExportImportViewModel","Restarting Application")
         context.startActivity(
-            Intent(BaselineCore.getAppContext(), cls)
+            Intent(mAppContext, cls)
         )
         exitProcess(0)
     }
@@ -248,10 +254,10 @@ fun exportOnlyLogFile(context: Context){
         try {
 
         importDbFile(
-            appContext = BaselineCore.getAppContext(),
+            appContext = mAppContext,
             importedDbUri = uri,
             deleteDBName = NUDGE_BASELINE_DATABASE,
-            applicationID = BuildConfig.APPLICATION_ID
+            applicationID = applicationId.value
         ) {
             BaselineLogger.d("ExportImportViewModel","importSelectedDB Success ----")
             onImportSuccess()
@@ -267,7 +273,7 @@ fun exportOnlyLogFile(context: Context){
 
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                eventWriterHelperImpl.regenerateAllEvent()
+                eventWriterHelperImpl.regenerateAllEvent(appContext = mAppContext)
                 compressEventData(title)
                 withContext(Dispatchers.Main) {
                     onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -362,7 +368,7 @@ fun exportOnlyLogFile(context: Context){
                     baseLinePath?.let {
                         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                             listPath?.add(it)
-                        else listPath?.add(uriFromFile(applicationID = BuildConfig.APPLICATION_ID, context = context, file = it.toFile()))
+                        else listPath?.add(uriFromFile(applicationID = applicationId.value, context = context, file = it.toFile()))
                     }
                 }
 
@@ -375,7 +381,7 @@ fun exportOnlyLogFile(context: Context){
                     hamletPath?.let {
                         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                             listPath?.add(it)
-                        else listPath?.add(uriFromFile(applicationID = BuildConfig.APPLICATION_ID, context = context, file = it.toFile()))
+                        else listPath?.add(uriFromFile(applicationID = applicationId.value, context = context, file = it.toFile()))
                     }
                 }
 
@@ -401,7 +407,7 @@ fun exportOnlyLogFile(context: Context){
             type = Exports.CSV(
                 CsvConfig(
                     prefix = title,
-                    hostPath = BaselineCore.getAppContext()
+                    hostPath = mAppContext
                         .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath
                         ?: ""
                 )
@@ -413,8 +419,8 @@ fun exportOnlyLogFile(context: Context){
         }.collect { path ->
             val file = File(path)
             uri = FileProvider.getUriForFile(
-                BaselineCore.getAppContext(),
-                BaselineCore.getAppContext().packageName + ".provider",
+                mAppContext,
+                CoreAppDetails.getApplicationDetails()?.packageName + ".provider",
                 file
             )
         }

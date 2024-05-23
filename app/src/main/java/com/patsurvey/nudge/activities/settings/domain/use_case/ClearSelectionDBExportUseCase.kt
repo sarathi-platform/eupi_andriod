@@ -9,7 +9,7 @@ class ClearSelectionDBExportUseCase @Inject constructor(
 ) {
     suspend operator fun invoke():Boolean{
         return try {
-            repository.clearLocalData()
+            repository.clearSelectionLocalDB()
             true
         }catch (exception:Exception){
             NudgeLogger.e("ClearSelectionDBExportUseCase", "invoke", exception)

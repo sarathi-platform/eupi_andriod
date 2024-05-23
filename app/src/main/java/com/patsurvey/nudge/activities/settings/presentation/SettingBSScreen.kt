@@ -8,8 +8,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.nrlm.baselinesurvey.BuildConfig
-import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
@@ -18,6 +16,8 @@ import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
+import com.patsurvey.nudge.BuildConfig
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.settings.domain.DigitalFormEnum
 import com.patsurvey.nudge.utils.showCustomDialog
@@ -76,10 +76,10 @@ fun SettingBSScreen(
                 viewModel.exportDbAndImages{
                     viewModel.clearSelectionLocalDatabase{
                         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
-                        if (navController.graph.route == NudgeNavigationGraph.ROOT) {
-                            navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route)
-                        } else {
-                            navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
+                        when(navController.graph.route){
+                            NudgeNavigationGraph.ROOT-> navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route)
+                            NudgeNavigationGraph.HOME-> navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route)
+                          else -> navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
                         }
                     }
                 }

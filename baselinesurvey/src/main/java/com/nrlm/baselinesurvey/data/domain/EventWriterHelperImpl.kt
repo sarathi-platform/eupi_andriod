@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.data.domain
 
+import android.content.Context
 import android.text.TextUtils
 import androidx.core.net.toUri
 import com.nrlm.baselinesurvey.BLANK_STRING
@@ -663,21 +664,21 @@ class EventWriterHelperImpl @Inject constructor(
     }
 
 
-    override suspend fun regenerateAllEvent() {
+    override suspend fun regenerateAllEvent(appContext:Context) {
 
-        changeFileName(REGENERATE_PREFIX)
+        changeFileName(appContext,REGENERATE_PREFIX)
         generateResponseEvent().forEach {
             repositoryImpl.saveEventToMultipleSources(event = it, eventDependencies =  listOf(), eventType = EventType.STATEFUL)
         }
         regenerateDidiInfoResponseEvent().forEach {
             repositoryImpl.saveEventToMultipleSources(event = it, eventDependencies =  listOf(), eventType = EventType.STATEFUL)
         }
-        regenerateImageUploadEvent()
+        regenerateImageUploadEvent(appContext)
         regenerateFromResponseEvent().forEach {
             repositoryImpl.saveEventToMultipleSources(event = it, eventDependencies =  listOf(), eventType = EventType.STATEFUL)
         }
         regenerateMATStatusEvent()
-        changeFileName("")
+        changeFileName(appContext,"")
 
     }
 
@@ -756,8 +757,8 @@ class EventWriterHelperImpl @Inject constructor(
         }
     }
 
-    private fun changeFileName(prefix: String) {
-        val coreSharedPrefs = CoreSharedPrefs.getInstance(BaselineCore.getAppContext())
+    private fun changeFileName(appContext: Context,prefix: String) {
+        val coreSharedPrefs = CoreSharedPrefs.getInstance(appContext)
         coreSharedPrefs.setBackupFileName(getDefaultBackUpFileName(prefix + prefBSRepo.getMobileNumber()))
         coreSharedPrefs.setImageBackupFileName(getDefaultImageBackUpFileName(prefix + prefBSRepo.getMobileNumber()))
         if (!TextUtils.isEmpty(prefix))
@@ -800,7 +801,7 @@ class EventWriterHelperImpl @Inject constructor(
         return saveAnswerEventOptionItemDtoList
     }
 
-    private suspend fun regenerateImageUploadEvent() {
+    private suspend fun regenerateImageUploadEvent(appContext: Context) {
 
         val didiInfoEntityList =
             baselineDatabase.didiInfoEntityDao().getAllDidi(prefBSRepo.getUniqueUserIdentifier())
@@ -840,7 +841,7 @@ class EventWriterHelperImpl @Inject constructor(
             val path = surveyeeEntity.crpImageLocalPath.split("|").first().toString()
             val compressedDidi = compressImage(
                 path,
-                BaselineCore.getAppContext(),
+                appContext,
                 getFileNameFromURL(path)
             )
             val photoUri = File(compressedDidi).toUri()
