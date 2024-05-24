@@ -1,4 +1,4 @@
-package com.sarathi.missionactivitytask.ui.components
+package com.sarathi.contentmodule.ui.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,15 +26,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
-import com.sarathi.missionactivitytask.ui.basic_content.constants.ContentShape
-import com.sarathi.missionactivitytask.ui.basic_content.constants.ContentType
-import com.sarathi.missionactivitytask.ui.theme.black1
-import com.sarathi.missionactivitytask.ui.theme.lightGray2
-import com.sarathi.missionactivitytask.ui.theme.smallTextStyleMediumWeight2
-import com.sarathi.missionactivitytask.ui.theme.textColorDark
-import com.sarathi.missionactivitytask.ui.theme.white
+import com.sarathi.contentmodule.R
+import com.sarathi.contentmodule.download_manager.FileType
+import com.sarathi.contentmodule.ui.theme.black1
+import com.sarathi.contentmodule.ui.theme.lightGray2
+import com.sarathi.contentmodule.ui.theme.smallTextStyleMediumWeight2
+import com.sarathi.contentmodule.ui.theme.textColorDark
+import com.sarathi.contentmodule.ui.theme.white
+import com.sarathi.contentmodule.utils.ContentShape
+import com.sarathi.dataloadingmangement.util.BLANK_STRING
 
 
 @Composable
@@ -42,14 +42,13 @@ import com.sarathi.missionactivitytask.ui.theme.white
 fun BasicContentComponent(
     contentType: String = BLANK_STRING,
     contentUrl: String = BLANK_STRING,
+    contentValue: String = BLANK_STRING,
     contentShape: ContentShape = ContentShape.CIRCLE,
-    contentTitle: String = "",
-    moreContentData: String = "+5 More Data"
+    contentTitle: String = ""
 ) {
     ContentView(
         contentType = contentType,
         contentTitle = contentTitle,
-        moreContentData = moreContentData
     )
 }
 
@@ -57,7 +56,6 @@ fun BasicContentComponent(
 private fun ContentView(
     contentType: String,
     contentTitle: String = BLANK_STRING,
-    moreContentData: String = BLANK_STRING
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
@@ -75,7 +73,7 @@ private fun ContentView(
                 .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            ContentData(contentType = contentType, moreContentData = moreContentData)
+            ContentData(contentType = contentType)
         }
         if (contentTitle.isNotBlank()) {
             Text(
@@ -88,20 +86,20 @@ private fun ContentView(
 }
 
 @Composable
-fun ContentData(contentType: String, moreContentData: String) {
+fun ContentData(contentType: String) {
     when (contentType) {
-        ContentType.IMAGE.name -> {
+        FileType.Image.name -> {
             val painter: Painter = painterResource(id = R.drawable.ic_sarathi_logo)
             Image(painter = painter, contentDescription = null)
         }
 
-        ContentType.VIDEO.name -> {
-            ImageOverlay(resId = R.drawable.ic_mission_inprogress)
+        FileType.Video.name -> {
+            ImageOverlay(resId = R.drawable.ic_sarathi_logo)
         }
 
-        ContentType.FILE.name -> {
+        FileType.File.name -> {
             val painter: Painter =
-                painterResource(id = R.drawable.ic_mission_inprogress)
+                painterResource(id = R.drawable.ic_sarathi_logo)
             Image(painter = painter, contentDescription = null)
         }
     }
