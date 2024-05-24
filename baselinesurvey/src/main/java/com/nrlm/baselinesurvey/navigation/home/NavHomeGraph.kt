@@ -55,6 +55,7 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScree
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.ui.video_player.presentation.FullscreenView
 import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.sarathi.smallgroupmodule.ui.didiTab.presentation.DidiTabScreen
 
 @Composable
 fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier: Modifier) {
@@ -258,6 +259,10 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier:
             // MissionScreen(navController = navController, viewModel = hiltViewModel())
             MissionScreen_1(navController = navController, viewModel = hiltViewModel())
 
+        }
+
+        composable("didi_tab_screen") {
+            DidiTabScreen()
         }
 
         composable(route = HomeScreens.DIDI_SCREEN.route) {

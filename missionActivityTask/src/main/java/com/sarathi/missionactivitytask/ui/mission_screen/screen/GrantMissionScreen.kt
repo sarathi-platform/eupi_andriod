@@ -43,6 +43,8 @@ fun GrantMissionScreen(
         onSearchValueChange = {},
         onBottomUI = {
         },
+        isFilterSelected = {},
+        tabBarView = {},
         onContentUI = {
             if (viewModel.missionList.value.isNotEmpty()) {
                 LazyColumn {

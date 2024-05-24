@@ -14,8 +14,10 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/baselinesurvey" />
             <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/dataLoadingManager" />
             <option value="$PROJECT_DIR$/internetSpeedChecker" />
             <option value="$PROJECT_DIR$/missionActivityTask" />
+            <option value="$PROJECT_DIR$/smallGroupModule" />
             <option value="$PROJECT_DIR$/syncManager" />
           </set>
         </option>

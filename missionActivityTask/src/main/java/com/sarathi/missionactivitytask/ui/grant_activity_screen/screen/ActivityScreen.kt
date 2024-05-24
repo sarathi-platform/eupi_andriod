@@ -33,6 +33,8 @@ fun ActivityScreen(
         },
         onBottomUI = {
         },
+        isFilterSelected = {},
+        tabBarView = {},
         onContentUI = {
             if (viewModel.activityList.value.isNotEmpty()) {
                 ActivityRowCard(

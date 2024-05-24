@@ -29,6 +29,7 @@ import androidx.navigation.compose.rememberNavController
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.theme.blueDark
 import com.sarathi.missionactivitytask.ui.theme.defaultTextStyle
+import com.sarathi.missionactivitytask.ui.theme.dimen_10_dp
 import com.sarathi.missionactivitytask.ui.theme.largeTextStyle
 import com.sarathi.missionactivitytask.ui.theme.textColorDark
 import com.sarathi.missionactivitytask.ui.theme.white
@@ -44,8 +45,10 @@ fun ToolBarWithMenuComponent(
     navController: NavController? = rememberNavController(),
     onBackIconClick: () -> Unit,
     onSearchValueChange: (String) -> Unit,
+    isFilterSelected: (Boolean) -> Unit,
     isDataAvailable: Boolean = true,
     onBottomUI: @Composable () -> Unit,
+    tabBarView: @Composable () -> Unit,
     onContentUI: @Composable (PaddingValues) -> Unit
 ) {
     val dataAvailableState = mutableStateOf(isDataAvailable)
@@ -106,9 +109,10 @@ fun ToolBarWithMenuComponent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 75.dp)
+                .padding(top = 75.dp),
+            verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
         ) {
-            if (dataAvailableState.value) {
+            if (!dataAvailableState.value) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -132,6 +136,9 @@ fun ToolBarWithMenuComponent(
                         })
                 }
             } else {
+
+                tabBarView()
+
                 if (isSearch) {
                     SearchWithFilterViewComponent(placeholderString = "Search",
                         filterSelected = false,
@@ -139,8 +146,10 @@ fun ToolBarWithMenuComponent(
                         showFilter = false,
                         onFilterSelected = {},
                         onSearchValueChange = { queryTerm ->
-                        })
+                        }
+                    )
                 }
+
                 onContentUI(it)
             }
         }

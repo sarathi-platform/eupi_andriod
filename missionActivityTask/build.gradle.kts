@@ -42,10 +42,12 @@ android {
 }
 
 dependencies {
-    implementation(project(":dataloadingmangement"))
     val retrofit = "2.9.0"
     val okhttp3 = "4.9.0"
     val compose_version = "1.4.1"
+
+    implementation(project(":dataLoadingManager"))
+    implementation(project(":core"))
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -96,6 +98,9 @@ dependencies {
 
     //CSV Export
     implementation("com.opencsv:opencsv:5.3")
+
+    //coil
+    implementation("io.coil-kt:coil-compose:2.0.0-rc01")
 
 
 }

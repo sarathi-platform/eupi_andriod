@@ -2,6 +2,7 @@ package com.nudge.core.preference
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 
@@ -13,6 +14,12 @@ class CoreSharedPrefs private constructor(val context: Context) :
         const val PREF_FILE_BACKUP_NAME = "file_backup_name"
         const val PREF_IMAGE_FILE_BACKUP_NAME = "image_file_backup_name"
         const val PREF_IMAGE_FILE_EXPORTED_NAME = "is_file_exorted"
+
+        const val PREF_KEY_USER_NAME = "key_user_name"
+
+        const val PREF_USER_TYPE = "pref_user_type"
+        const val PREF_MOBILE_NUMBER = "pref_mobile_number"
+
 
         @Volatile
         private var INSTANCE: CoreSharedPrefs? = null
@@ -69,6 +76,20 @@ class CoreSharedPrefs private constructor(val context: Context) :
 
     override fun setFileExported(isExported: Boolean) {
         prefs.edit().putBoolean(PREF_IMAGE_FILE_EXPORTED_NAME, isExported).apply()
+    }
+
+    override fun getUserId(): String {
+        return prefs.getString(PREF_KEY_USER_NAME, BLANK_STRING) ?: BLANK_STRING
+    }
+
+    override fun saveUserId(userId: String) {
+        prefs.edit().putString(PREF_KEY_USER_NAME, userId).apply()
+    }
+
+    override fun getUniqueUserIdentifier(): String {
+        val userType = prefs.getString(PREF_USER_TYPE, BLANK_STRING) ?: BLANK_STRING
+        val userMobile = prefs.getString(PREF_MOBILE_NUMBER, BLANK_STRING) ?: BLANK_STRING
+        return "${userType}_${userMobile}"
     }
 
 }
