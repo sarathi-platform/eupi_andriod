@@ -2,12 +2,30 @@ package com.sarathi.dataloadingmangement.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.sarathi.dataloadingmangement.data.dao.ActivityTaskDao
+import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
+import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
+import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
+import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.MissionActivityDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
+import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.TaskAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.TaskDao
+import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
+import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.ActivityConfigLanguageAttributesEntity
+import com.sarathi.dataloadingmangement.data.entities.ActivityLanguageAttributesEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
+import com.sarathi.dataloadingmangement.data.entities.AttributeValueReferenceEntity
+import com.sarathi.dataloadingmangement.data.entities.ContentConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionActivityEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
+import com.sarathi.dataloadingmangement.data.entities.MissionLanguageEntity
+import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
+import com.sarathi.dataloadingmangement.data.entities.TaskAttributesEntity
+import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
 
 const val NUDGE_GRANT_DATABASE_VERSION = 1
 
@@ -15,7 +33,16 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
     entities = [
         MissionEntity::class,
         MissionActivityEntity::class,
-        ActivityTaskEntity::class
+        ActivityTaskEntity::class,
+        ActivityConfigEntity::class,
+        ActivityLanguageAttributesEntity::class,
+        ActivityConfigLanguageAttributesEntity::class,
+        AttributeValueReferenceEntity::class,
+        MissionLanguageEntity::class,
+        SubjectAttributeEntity::class,
+        TaskAttributesEntity::class,
+        UiConfigEntity::class,
+        ContentConfigEntity::class,
     ],
     version = NUDGE_GRANT_DATABASE_VERSION,
     exportSchema = false
@@ -24,7 +51,18 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
 
     abstract fun missionDao(): MissionDao
     abstract fun activityDao(): MissionActivityDao
-    abstract fun taskDao(): ActivityTaskDao
+    abstract fun taskDao(): TaskDao
+    abstract fun activityConfigDao(): ActivityConfigDao
+    abstract fun activityLanguageAttributeDao(): ActivityLanguageAttributeDao
+    abstract fun activityLanguageDao(): ActivityLanguageDao
+    abstract fun attributeValueReferenceDao(): AttributeValueReferenceDao
+    abstract fun contentConfigDao(): ContentConfigDao
+    abstract fun missionLanguageAttributeDao(): MissionLanguageAttributeDao
+    abstract fun subjectAttributeDao(): SubjectAttributeDao
+    abstract fun taskAttributeDao(): TaskAttributeDao
+    abstract fun uiConfigDao(): UiConfigDao
+
+
     class NudgeDatabaseCallback : Callback()
 
 }

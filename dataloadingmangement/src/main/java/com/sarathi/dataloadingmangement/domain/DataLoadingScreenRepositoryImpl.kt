@@ -1,111 +1,308 @@
 package com.sarathi.dataloadingmangement.domain
 
-import com.sarathi.dataloadingmangement.data.dao.ActivityTaskDao
+import com.nudge.core.preference.CoreSharedPrefs
+import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
+import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
+import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
+import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.MissionActivityDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
+import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.TaskAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.TaskDao
+import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
+import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.ActivityLanguageAttributesEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
+import com.sarathi.dataloadingmangement.data.entities.AttributeValueReferenceEntity
+import com.sarathi.dataloadingmangement.data.entities.ContentConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionActivityEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
+import com.sarathi.dataloadingmangement.data.entities.MissionLanguageEntity
+import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
+import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
 import com.sarathi.dataloadingmangement.model.ApiResponseModel
+import com.sarathi.dataloadingmangement.model.mat.response.ActivityConfig
+import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
+import com.sarathi.dataloadingmangement.model.mat.response.ActivityTitle
+import com.sarathi.dataloadingmangement.model.mat.response.ContentResponse
+import com.sarathi.dataloadingmangement.model.mat.response.MissionResponse
+import com.sarathi.dataloadingmangement.model.mat.response.TaskData
+import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
+import com.sarathi.dataloadingmangement.model.mat.response.UiConfig
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepository
-import com.sarathi.dataloadingmangement.response.MissionActivityModel
-import com.sarathi.dataloadingmangement.response.MissionResponseModel
-import com.sarathi.dataloadingmangement.response.MissionTaskModel
 import javax.inject.Inject
 
 class DataLoadingScreenRepositoryImpl @Inject constructor(
     val apiInterface: DataLoadingApiService,
     val missionDao: MissionDao,
     val missionActivityDao: MissionActivityDao,
-    val activityTaskDao: ActivityTaskDao
+    val taskDao: TaskDao,
+    val activityConfigDao: ActivityConfigDao,
+    val activityLanguageAttributeDao: ActivityLanguageAttributeDao,
+    val activityLanguageDao: ActivityLanguageDao,
+    val attributeValueReferenceDao: AttributeValueReferenceDao,
+    val contentConfigDao: ContentConfigDao,
+    val missionLanguageAttributeDao: MissionLanguageAttributeDao,
+    val subjectAttributeDao: SubjectAttributeDao,
+    val taskAttributeDao: TaskAttributeDao,
+    val uiConfigDao: UiConfigDao,
+    val sharedPrefs: CoreSharedPrefs
 ) : IDataLoadingScreenRepository {
     override suspend fun fetchMissionDataFromServer(
         languageCode: String,
         missionName: String
-    ): ApiResponseModel<List<MissionResponseModel>> {
+    ): ApiResponseModel<List<MissionResponse>> {
         val missionRequest = MissionRequest(languageCode, missionName)
-        return apiInterface.getBaseLineMission(missionRequest)
+        return apiInterface.getMissions(missionRequest)
     }
 
-    override suspend fun saveMissionToDB(missions: List<MissionResponseModel>) {
-        missionDao.softDeleteMission("")
+    override suspend fun saveMissionToDB(missions: List<MissionResponse>) {
+        missionDao.softDeleteMission(sharedPrefs.getUniqueUserIdentifier())
         missions.forEach { mission ->
             val missionCount = missionDao.getMissionCount(
-                userId = "99",
-                missionId = mission.missionId
+                userId = sharedPrefs.getUniqueUserIdentifier(),
+                missionId = mission.id
             )
             if (missionCount == 0) {
+                saveMissionsLanguageAttributes(mission)
+                saveContentConfig(mission.id, mission.missionConfig.contents, 1)
                 missionDao.insertMission(
                     MissionEntity.getMissionEntity(
-                        userId = "99",
+                        userId = sharedPrefs.getUniqueUserIdentifier(),
                         activityTaskSize = mission.activities.size,
-                        mission = mission
-                    )
+                        mission = mission,
+
+                        )
                 )
+
+
             } else {
-                missionDao.updateMissionActiveStatus(mission.missionId, "99")
+                missionDao.updateMissionActiveStatus(
+                    mission.id,
+                    sharedPrefs.getUniqueUserIdentifier()
+                )
             }
         }
 
     }
 
+    private fun saveMissionsLanguageAttributes(mission: MissionResponse) {
+
+        mission.languages.forEach {
+
+            missionLanguageAttributeDao.insertMissionLanguageAttribute(
+                MissionLanguageEntity.getMissionLanguageEntity(
+                    mission.id,
+                    it,
+                    sharedPrefs.getUniqueUserIdentifier()
+                )
+            )
+
+        }
+    }
+
+    private fun saveActivityLanguageAttributes(
+        missionId: Int,
+        id: Int,
+        activityTitle: List<ActivityTitle>
+    ) {
+
+        activityTitle.forEach {
+
+            activityLanguageDao.insertActivityLanguage(
+                ActivityLanguageAttributesEntity.getActivityLanguageAttributesEntity(
+                    missionId = missionId,
+                    activityId = id,
+                    userId = sharedPrefs.getUniqueUserIdentifier(),
+                    activityTitle = it
+                )
+            )
+        }
+    }
+
     override suspend fun saveMissionsActivityToDB(
-        activities: List<MissionActivityModel>,
+        activities: List<ActivityResponse>,
         missionId: Int
     ) {
         activities.forEach { missionActivityModel ->
             val activityCount = missionActivityDao.getActivityCount(
-                userId = "99",
-                missionActivityModel.activityId
+                userId = sharedPrefs.getUniqueUserIdentifier(),
+                missionActivityModel.id
             )
             if (activityCount == 0) {
+
                 missionActivityDao.insertMissionActivity(
                     MissionActivityEntity.getMissionActivityEntity(
-                        "99",
+                        sharedPrefs.getUniqueUserIdentifier(),
                         missionId,
-                        missionActivityModel.tasks.size,
+                        missionActivityModel.taskResponses.size,
                         missionActivityModel
                     )
+                )
+                saveContentConfig(
+                    missionActivityModel.id,
+                    missionActivityModel.activityConfig.content,
+                    2
+                )
+                saveActivityConfig(
+                    missionActivityModel.activityConfig,
+                    missionActivityModel.id,
+                    missionId
+                )
+                saveActivityUiConfig(
+                    missionActivityModel.id,
+                    missionId,
+                    missionActivityModel.activityConfig.uiConfig
+                )
+                saveActivityLanguageAttributes(
+                    missionId,
+                    missionActivityModel.id,
+                    missionActivityModel.activityConfig.activityTitle
                 )
             } else {
                 missionActivityDao.updateActivityActiveStatus(
                     missionId,
-                    "99",
+                    sharedPrefs.getUniqueUserIdentifier(),
                     1,
-                    missionActivityModel.activityId
+                    missionActivityModel.id
                 )
             }
+        }
+    }
+
+    private suspend fun saveActivityConfig(
+        activityConfig: ActivityConfig,
+        activityId: Int,
+        missionId: Int
+    ) {
+        activityConfigDao.insertActivityConfig(
+            ActivityConfigEntity.getActivityConfigEntity(
+                activityId = activityId,
+                missionId = missionId,
+                activityConfig,
+                sharedPrefs.getUniqueUserIdentifier()
+            )
+        )
+
+
+    }
+
+    private suspend fun saveActivityUiConfig(
+        activityId: Int,
+        missionId: Int,
+        uiConfig: UiConfig,
+    ) {
+        uiConfig.languageAttributes.forEach { language ->
+            language.attributes.forEach {
+
+                uiConfigDao.insertUiConfig(
+                    UiConfigEntity.getUiConfigEntity(
+                        missionId = missionId,
+                        activityId = activityId,
+                        userId = sharedPrefs.getUniqueUserIdentifier(),
+                        language = language.languageId,
+                        attributes = it
+                    )
+                )
+            }
+
+        }
+
+    }
+
+    private suspend fun saveContentConfig(
+        id: Int,
+        contents: List<ContentResponse>,
+        contentCategory: Int
+    ) {
+        contents.forEach {
+            contentConfigDao.insertContentConfig(
+                ContentConfigEntity.getContentConfigEntity(
+                    userId = sharedPrefs.getUniqueUserIdentifier(),
+                    matId = id,
+                    it,
+                    contentCategory
+                )
+            )
+        }
+    }
+
+    private fun saveTaskAttributes(
+        missionId: Int,
+        activityId: Int,
+        id: Int,
+        taskData: List<TaskData>,
+        subjectId: Int,
+        subject: String
+    ) {
+        val refrenceId = subjectAttributeDao.insertSubjectAttribute(
+            SubjectAttributeEntity.getSubjectAttributeEntity(
+                userId = sharedPrefs.getUniqueUserIdentifier(),
+
+                missionId = missionId,
+                activityId = activityId,
+                taskId = id,
+                subjectId = subjectId,
+                subjectType = subject,
+                attribute = "",
+            )
+        )
+        taskData.forEach {
+
+            attributeValueReferenceDao.insertAttributesValueReferences(
+                AttributeValueReferenceEntity.getAttributeValueReferenceEntity(
+                    userId = sharedPrefs.getUniqueUserIdentifier(),
+                    parentReferenceId = refrenceId,
+                    taskData = it,
+                )
+            )
         }
     }
 
     override fun saveMissionsActivityTaskToDB(
         missionId: Int,
         activityId: Int,
-        activityName: String,
-        activities: List<MissionTaskModel>
+        subject: String,
+        tasks: List<TaskResponse>
     ) {
-        activityTaskDao.softDeleteActivityTask("99", activityId, missionId)
-        activities.forEach { task ->
+        taskDao.softDeleteActivityTask(sharedPrefs.getUniqueUserIdentifier(), activityId, missionId)
+        tasks.forEach { task ->
             val taskCount =
-                activityTaskDao.getTaskByIdCount(
-                    userId = "99",
+                taskDao.getTaskByIdCount(
+                    userId = sharedPrefs.getUniqueUserIdentifier(),
                     taskId = task.id ?: 0
                 )
             if (taskCount == 0) {
-                activityTaskDao.insertActivityTask(
+                taskDao.insertActivityTask(
                     ActivityTaskEntity.getActivityTaskEntity(
-                        userId = "99",
+                        userId = sharedPrefs.getUniqueUserIdentifier(),
                         missionId = missionId,
                         activityId = activityId,
-                        activityName = activityName,
                         task = task,
                     )
                 )
+                saveTaskAttributes(
+                    missionId,
+                    activityId,
+                    task.id,
+                    task.taskData,
+                    task.subjectId,
+                    subject
+                )
             } else {
-                activityTaskDao.updateActiveTaskStatus(1, task.id ?: 0, "99")
+                taskDao.updateActiveTaskStatus(
+                    1,
+                    task.id ?: 0,
+                    sharedPrefs.getUniqueUserIdentifier()
+                )
             }
 
         }
     }
+
+
 }

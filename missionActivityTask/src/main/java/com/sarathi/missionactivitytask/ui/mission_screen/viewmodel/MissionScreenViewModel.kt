@@ -1,5 +1,6 @@
 package com.sarathi.missionactivitytask.ui.mission_screen.viewmodel
 
+import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
@@ -10,6 +11,7 @@ import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MissionScreenViewModel @Inject constructor(
     private val fetchDataUseCase: FetchDataUseCase,
-    private val missionsUseCase: GetMissionsUseCase
+    private val missionsUseCase: GetMissionsUseCase,
+    @ApplicationContext val context: Context
 ) : BaseViewModel() {
     private val _missionList = mutableStateOf<List<MissionEntity>>(emptyList())
     val missionList: State<List<MissionEntity>> get() = _missionList
@@ -65,7 +68,7 @@ class MissionScreenViewModel @Inject constructor(
 
     private fun fetchMissionData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
+            fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke(context)
             updateLoaderEvent(callBack)
         }
     }

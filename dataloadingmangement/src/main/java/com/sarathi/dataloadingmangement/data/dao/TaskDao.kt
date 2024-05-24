@@ -10,7 +10,7 @@ import com.sarathi.dataloadingmangement.util.TASK_TABLE_NAME
 
 
 @Dao
-interface ActivityTaskDao {
+interface TaskDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertActivityTask(activities: ActivityTaskEntity)
 
@@ -42,14 +42,6 @@ interface ActivityTaskDao {
     @Query("SELECT * FROM $TASK_TABLE_NAME where  userId=:userId and  activityId=:activityId and isActive=1 ")
     suspend fun getActivityTaskFromIds(userId: String, activityId: Int): List<ActivityTaskEntity>
 
-    @Query("Select * FROM $TASK_TABLE_NAME where  userId=:userId and  isActive=1 and missionId in(:missionId) and activityName in(:activityName)")
-    fun isTaskExist(userId: String, missionId: Int, activityName: String): Boolean
-
-    @Query("Select * from $TASK_TABLE_NAME where userId=:userId and  didiId = :subjectId and isActive=1")
-    fun getTaskFromSubjectId(userId: String, subjectId: Int): ActivityTaskEntity?
-
-    @Query("UPDATE $TASK_TABLE_NAME set activityState = :surveyStatus where userId=:userId and didiId = :subjectId")
-    fun updateTaskStatus(userId: String, subjectId: Int, surveyStatus: Int)
 
     @Query("UPDATE $TASK_TABLE_NAME set status = :status where userId=:userId and taskId = :taskId AND activityId = :activityId AND missionId = :missionId")
     fun updateTaskStatus(

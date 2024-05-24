@@ -6,7 +6,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import com.sarathi.dataloadingmangement.response.MissionActivityModel
+import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
 import com.sarathi.dataloadingmangement.util.ACTIVITY_TABLE_NAME
 import com.sarathi.dataloadingmangement.util.BLANK_STRING
 
@@ -20,22 +20,15 @@ data class MissionActivityEntity(
     var userId: String? = BLANK_STRING,
     var missionId: Int,
     var activityId: Int,
-    var activityName: String,
-    var activityType: String,
-    var activityTypeId: Int,
-    var doer: String,
-    var endDate: String,
-    var reviewer: String,
-    var startDate: String,
+    var startOffset: Int,
+    var endOffset: Int,
     var actualStartDate: String = BLANK_STRING,
-    val actualCompleteDate: String = BLANK_STRING,
-    var subject: String,
+    val actualEndDate: String = BLANK_STRING,
     var status: String?,
     var activityTaskSize: Int,
-    var activityStatus: Int,
-    var pendingDidi: Int,
+    var activityStatus: String,
+    var taskSize: Int,
     val isAllTask: Boolean,
-    var language: String?,
     var isActive: Int
 ) {
     companion object {
@@ -43,27 +36,22 @@ data class MissionActivityEntity(
             userId: String,
             missionId: Int,
             activityTaskSize: Int,
-            activity: MissionActivityModel
+            activity: ActivityResponse,
         ): MissionActivityEntity {
             return MissionActivityEntity(
                 userId = userId,
                 missionId = missionId,
-                activityId = activity.activityId,
-                activityTypeId = activity.activityTypeId,
-                activityName = activity.activityName,
-                activityType = activity.activityType,
-                doer = activity.doer,
-                startDate = activity.startDate,
-                endDate = activity.endDate,
-                reviewer = activity.reviewer,
-                subject = activity.subject,
-                status = "",
+                activityId = activity.id,
+                actualStartDate = activity.actualStartDate,
+                actualEndDate = activity.actualEndDate,
+                status = activity.activityStatus,
                 activityTaskSize = activityTaskSize,
-                activityStatus = 0,
-                pendingDidi = activityTaskSize,
+                activityStatus = activity.activityStatus,
+                taskSize = activityTaskSize,
                 isAllTask = false,
-                language = activity.language,
-                isActive = 1
+                isActive = 1,
+                startOffset = activity.startOffset,
+                endOffset = activity.endOffset
             )
         }
 

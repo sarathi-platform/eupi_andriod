@@ -1,0 +1,145 @@
+[
+  {
+    "id": 2,
+    "name": "",
+    "languages": [
+      {
+        "description": "Grant",
+        "language": "en"
+      }
+    ],
+    "missionConfig": {
+      "content": [
+        {
+          "contentKey": "image1",
+          "contentType": "Image"
+        }
+      ]
+    },
+    "startOffset": 0,
+    "endOffset": 10,
+    "missionStatus": "NOT_STARTED",
+    "actualStartDate": null,
+    "actualEndDate": null,
+    "conditions": [],
+    "validations": [],
+    "content": [
+      {
+        "contentKey": "image1",
+        "contentType": "Image"
+      }
+    ],
+    "activities": [
+      {
+        "id": 3,
+        "startOffset": 0,
+        "endOffset": 10,
+        "activityStatus": "NOT_STARTED",
+        "actualStartDate": null,
+        "actualEndDate": null,
+        "activityConfig": {
+          "activity_type": "Basic",
+          "activity_type_id": 3,
+          "conditions": [],
+          "validations": [],
+          "content": [
+            {
+              "contentKey": "image1",
+              "contentType": "Image"
+            }
+          ],
+          "survey_id": "1",
+          "doer": "UPCM",
+          "subject": "VO",
+          "reviewer": "BPC",
+          "activity_title": [
+            {
+              "name": "Receipt of funds",
+              "language": "en"
+            }
+          ],
+          "ui_config": {
+            "form": "true",
+            "laguage_attributes": [
+              {
+                "language_id": "en",
+                "attributes": [
+                  {
+                    "key": "title",
+                    "type": "dynamic",
+                    "value": "subjectName",
+                    "component_type": "Card"
+                  },
+                  {
+                    "key": "subtitle",
+                    "type": "dynamic",
+                    "value": "villageName",
+                    "component_type": "Card"
+                  },
+                  {
+                    "key": "button1",
+                    "type": "static",
+                    "value": "Start",
+                    "component_type": "Card"
+                  },
+                  {
+                    "key": "searchOn",
+                    "type": "dynamic",
+                    "value": "subjectName",
+                    "component_type": "Search"
+                  },
+                  {
+                    "key": "searchLabel",
+                    "type": "static",
+                    "value": "Search by Vo",
+                    "component_type": "Search"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "tasks": [
+          {
+            "id": 3026,
+            "subjectId": 3030,
+            "startOffset": 0,
+            "endOffset": 10,
+            "taskStatus": "COMPLETED",
+            "actualStartDate": "17 May 2024",
+            "actualEndDate": "18 May 2024",
+            "task_data": [
+              {
+                "key": "subjectName",
+                "value": "VO Test"
+              },
+              {
+                "key": "villageName",
+                "value": "Village Test"
+              }
+            ]
+          },
+          {
+            "id": 3027,
+            "subjectId": 3031,
+            "startOffset": 0,
+            "endOffset": 10,
+            "taskStatus": "COMPLETED",
+            "actualStartDate": "17 May 2024",
+            "actualEndDate": "18 May 2024",
+            "task_data": [
+              {
+                "key": "subjectName",
+                "value": "VO Test1"
+              },
+              {
+                "key": "villageName",
+                "value": "Village Test1"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

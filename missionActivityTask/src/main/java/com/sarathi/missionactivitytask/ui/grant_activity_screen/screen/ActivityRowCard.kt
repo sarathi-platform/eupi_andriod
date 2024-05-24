@@ -61,16 +61,16 @@ fun ActivityRowCard(
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun PreviewBasicContentScreen() {
-    val basicContent1 = BasicContent("IMAGE", "Content Image")
-    val basicContent2 = BasicContent("VIDEO", "Content Video")
-    val basicContent3 = BasicContent("FILE", "Content File")
-    val basicContent4 = BasicContent("IMAGE", "Content Image")
-    val basicContent5 = BasicContent("IMAGE", "Content Image")
-    val basicContent6 = BasicContent("IMAGE", "Content Image")
-    val basicContent7 = BasicContent("IMAGE", "Content Image")
-    val basicContent8 = BasicContent("IMAGE", "Content Image")
-    val basicContent9 = BasicContent("IMAGE", "Content Image")
-    val basicContent10 = BasicContent("IMAGE", "Content Image")
+    val basicContent1 = BasicContent("IMAGE", "ContentResponse Image")
+    val basicContent2 = BasicContent("VIDEO", "ContentResponse Video")
+    val basicContent3 = BasicContent("FILE", "ContentResponse File")
+    val basicContent4 = BasicContent("IMAGE", "ContentResponse Image")
+    val basicContent5 = BasicContent("IMAGE", "ContentResponse Image")
+    val basicContent6 = BasicContent("IMAGE", "ContentResponse Image")
+    val basicContent7 = BasicContent("IMAGE", "ContentResponse Image")
+    val basicContent8 = BasicContent("IMAGE", "ContentResponse Image")
+    val basicContent9 = BasicContent("IMAGE", "ContentResponse Image")
+    val basicContent10 = BasicContent("IMAGE", "ContentResponse Image")
     val contents = listOf(
         basicContent1,
         basicContent2,
