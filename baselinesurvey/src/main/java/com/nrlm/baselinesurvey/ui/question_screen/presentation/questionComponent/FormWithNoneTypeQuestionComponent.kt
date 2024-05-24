@@ -289,6 +289,31 @@ fun FormWithNoneTypeQuestionComponent(
                                                 .fillMaxWidth()
                                                 .height(dimen_10_dp)
                                         )
+                                        if (contests?.isNotEmpty() == true) {
+                                            Divider(
+                                                thickness = dimen_1_dp,
+                                                color = lightGray2,
+                                                modifier = Modifier.fillMaxWidth()
+                                            )
+                                            ExpandableDescriptionContentComponent(
+                                                questionDetailExpanded,
+                                                questionIndex,
+                                                contents = contests,
+                                                subTitle = BLANK_STRING,
+                                                imageClickListener = { imageTypeDescriptionContent ->
+                                                    onMediaTypeDescriptionAction(
+                                                        DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
+                                                        imageTypeDescriptionContent
+                                                    )
+                                                },
+                                                videoLinkClicked = { videoTypeDescriptionContent ->
+                                                    onMediaTypeDescriptionAction(
+                                                        DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
+                                                        videoTypeDescriptionContent
+                                                    )
+                                                }
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -465,31 +490,6 @@ fun FormWithNoneTypeQuestionComponent(
                                                     .fillMaxWidth()
                                                     .padding(bottom = 10.dp)
                                             )
-                                            if (contests?.isNotEmpty() == true) {
-                                                Divider(
-                                                    thickness = dimen_1_dp,
-                                                    color = lightGray2,
-                                                    modifier = Modifier.fillMaxWidth()
-                                                )
-                                                ExpandableDescriptionContentComponent(
-                                                    questionDetailExpanded,
-                                                    questionIndex,
-                                                    contents = contests,
-                                                    subTitle = BLANK_STRING,
-                                                    imageClickListener = { imageTypeDescriptionContent ->
-                                                        onMediaTypeDescriptionAction(
-                                                            DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
-                                                            imageTypeDescriptionContent
-                                                        )
-                                                    },
-                                                    videoLinkClicked = { videoTypeDescriptionContent ->
-                                                        onMediaTypeDescriptionAction(
-                                                            DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
-                                                            videoTypeDescriptionContent
-                                                        )
-                                                    }
-                                                )
-                                            }
                                         }
                                     }
                                 }
