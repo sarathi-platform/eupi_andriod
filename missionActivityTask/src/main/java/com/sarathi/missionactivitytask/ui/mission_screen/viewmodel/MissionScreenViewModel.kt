@@ -13,6 +13,7 @@ import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -59,6 +60,7 @@ class MissionScreenViewModel @Inject constructor(
             viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
                 fetchMissionData(fetchDataUseCase) { callBack() }
                 fetchContentnData(fetchDataUseCase) { callBack }
+                delay(1000)
                 downloadContentData(contentUseCase) { callBack }
 
             }

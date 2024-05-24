@@ -21,7 +21,7 @@ class ContentDownloaderUseCase(
                         FileType.Image.name,
                         FileType.File.name,
                         FileType.Audio.name -> {
-                            downloaderManager.downloadItem(content.contentValue, content.contentId)
+                            downloaderManager.downloadItem(content.contentValue)
                         }
                     }
                 }

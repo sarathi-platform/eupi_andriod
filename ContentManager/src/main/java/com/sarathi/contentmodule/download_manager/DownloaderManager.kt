@@ -36,7 +36,7 @@ class DownloaderManager @Inject constructor(@ApplicationContext private val cont
         return downloadManager.enqueue(request)
     }
 
-    fun getMimeType(url: String?): String? {
+    private fun getMimeType(url: String?): String? {
         var type: String? = null
         val extension = MimeTypeMap.getFileExtensionFromUrl(url)
         if (extension != null) {
@@ -119,18 +119,12 @@ class DownloaderManager @Inject constructor(@ApplicationContext private val cont
         }
     }
 
-    fun downloadItem(url: String, _id: Int) {
+    fun downloadItem(url: String) {
         if (!isFilePathExists(url)) {
-            val downloadId = downloadFile(
+            downloadFile(
                 url,
                 "Downloading files..."
             )
-//            currentDownloadingId.value = _id
-//            monitorDownloadStatus(
-//                downloadId = downloadId,
-//                id = _id,
-//                downloadManager = downloadManager
-//            )
         }
     }
 }

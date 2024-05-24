@@ -38,15 +38,13 @@ class FetchContentDataFromNetworkUseCase(
 //            } else {
 //               return false
 //            }false
+            repository.deleteContentFromDB()
             val contentResponse = getContentData(mContext)
-            contentResponse.forEach {
-                repository.deleteContentFromDB()
-                for (content in contentResponse) {
-                    contentEntities.add(ContentMapper.getContent(content))
-                }
-                repository.saveContentToDB(contentEntities)
-                return true
+            contentResponse.forEach { respone ->
+                contentEntities.add(ContentMapper.getContent(respone))
             }
+            repository.saveContentToDB(contentEntities)
+            return true
         } catch (ex: Exception) {
             throw ex
         }
