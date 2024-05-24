@@ -1,8 +1,8 @@
 package com.sarathi.contentmodule.download_manager
 
 enum class FileType {
-    IMAGE,
-    VIDEO,
+    Image,
+    Video,
     PDF,
     File,
     Audio

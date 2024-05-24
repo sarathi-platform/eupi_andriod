@@ -3,6 +3,7 @@ package com.sarathi.missionactivitytask.ui.mission_screen.viewmodel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import com.sarathi.contentmodule.content_downloder.domain.usecase.ContentUseCase
 import com.sarathi.dataloadingmangement.data.entities.Mission
 import com.sarathi.dataloadingmangement.domain.FetchDataUseCase
 import com.sarathi.missionactivitytask.domain.usecases.GetMissionsUseCase
@@ -19,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MissionScreenViewModel @Inject constructor(
     private val fetchDataUseCase: FetchDataUseCase,
-    private val missionsUseCase: GetMissionsUseCase
+    private val missionsUseCase: GetMissionsUseCase,
+    private val contentUseCase: ContentUseCase
 ) : BaseViewModel() {
     private val _missionList = mutableStateOf<List<Mission>>(emptyList())
     val missionList: State<List<Mission>> get() = _missionList
@@ -57,6 +59,8 @@ class MissionScreenViewModel @Inject constructor(
             viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
                 fetchMissionData(fetchDataUseCase) { callBack() }
                 fetchContentnData(fetchDataUseCase) { callBack }
+                downloadContentData(contentUseCase) { callBack }
+
             }
         } catch (ex: Exception) {
             onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -77,6 +81,15 @@ class MissionScreenViewModel @Inject constructor(
             //updateLoaderEvent(callBack)
         }
     }
+
+    private fun downloadContentData(contentUseCase: ContentUseCase, callBack: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            contentUseCase.contentDownloaderUseCase.contentDownloader()
+            //updateLoaderEvent(callBack)
+        }
+    }
+
+
 
     private suspend fun updateLoaderEvent(callBack: () -> Unit) {
         withContext(Dispatchers.Main) {

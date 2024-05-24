@@ -6,5 +6,5 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataFromNetw
 
 data class FetchDataUseCase(
     val fetchMissionDataFromNetworkUseCase: FetchMissionDataFromNetworkUseCase,
-    val fetchContentDataFromNetworkUseCase: FetchContentDataFromNetworkUseCase
+    val fetchContentDataFromNetworkUseCase: FetchContentDataFromNetworkUseCase,
 )

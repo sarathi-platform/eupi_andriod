@@ -1044,57 +1044,9 @@
     "languageCode": 6
   },
   {
-    "contentKey": "M3AppOverview",
-    "contentType": "Video",
-    "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3AppOverview.mp4",
-    "languageCode": 6
-  },
-  {
-    "contentKey": "M2LoggingIntoSarathiApp",
-    "contentType": "Video",
-    "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2LoggingIntoSarathiApp.mp4",
-    "languageCode": 6
-  },
-  {
-    "contentKey": "M4TransectWalk",
-    "contentType": "Video",
-    "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4TransectWalk.mp4",
-    "languageCode": 6
-  },
-  {
-    "contentKey": "M5SocialMapping",
-    "contentType": "Video",
-    "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5SocialMapping.mp4",
-    "languageCode": 6
-  },
-  {
-    "contentKey": "M6ParticipatoryWealthRanking",
-    "contentType": "Video",
-    "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6ParticipatoryWealthRanking.mp4",
-    "languageCode": 6
-  },
-  {
-    "contentKey": "M7PATSurveyOverview",
-    "contentType": "Video",
-    "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7PATSurveyOverview.mp4",
-    "languageCode": 6
-  },
-  {
-    "contentKey": "M8FillingPATSurveyPart1",
-    "contentType": "Video",
-    "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8FillingPATSurveyPart1.mp4",
-    "languageCode": 6
-  },
-  {
-    "contentKey": "M8FillingPATSurveyPart2",
-    "contentType": "Video",
-    "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8FillingPATSurveyPart2.mp4",
-    "languageCode": 6
-  },
-  {
-    "contentKey": "M8FillingPATSurveyPart2",
-    "contentType": "Video",
-    "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8FillingPATSurveyPart2.mp4",
-    "languageCode": 6
+    "contentKey": "M8.2",
+    "contentType": "Image",
+    "languageCode": 6,
+    "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.2.png"
   }
 ]

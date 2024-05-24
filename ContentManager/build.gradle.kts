@@ -85,7 +85,6 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.5.3")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     implementation(project(":internetSpeedChecker"))
-    implementation(project(":internetSpeedChecker"))
     //Material
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material:1.3.1")
@@ -99,4 +98,6 @@ dependencies {
 
     //CSV Export
     implementation("com.opencsv:opencsv:5.3")
+    implementation(project(":DataManager"))
+
 }
