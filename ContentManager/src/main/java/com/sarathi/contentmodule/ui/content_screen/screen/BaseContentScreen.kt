@@ -29,7 +29,10 @@ fun BaseContentScreen(
                         contentType = item.contentType,
                         contentTitle = item.contentType,
                         contentValue = item.contentValue
-                    )
+                    ) {
+                        //  ExoMediaPlayer()
+
+                    }
                 } else if (index == 3) {
                     ButtonComponent(title = "+ ${viewModel.contentList.value.size - index} More Data")
                 }

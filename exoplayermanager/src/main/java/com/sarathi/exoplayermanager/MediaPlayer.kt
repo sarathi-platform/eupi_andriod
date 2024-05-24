@@ -18,17 +18,18 @@ import androidx.media3.common.MediaItem
 import org.project.exocompose.SimpleController
 
 @Composable
-fun MediaPlayer(urls: List<String>) {
+fun ExoMediaPlayer(url: String) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        var url by rememberSaveable { mutableStateOf(urls[0]) }
+        var url by rememberSaveable { mutableStateOf(url) }
         val player by rememberManagedExoPlayer()
         var setPlayer by rememberSaveable { mutableStateOf(true) }
         val mediaItem = remember(url) { MediaItem.Builder().setMediaId(url).setUri(url).build() }
         DisposableEffect(mediaItem, player) {
-            player?.run {
+
+        player?.run {
                 setMediaItem(mediaItem)
                 prepare()
             }

@@ -3,6 +3,7 @@ package com.sarathi.contentmodule.ui.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,7 +24,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sarathi.contentmodule.R
@@ -38,17 +38,18 @@ import com.sarathi.dataloadingmangement.util.BLANK_STRING
 
 
 @Composable
-@Preview(showBackground = true)
 fun BasicContentComponent(
     contentType: String = BLANK_STRING,
     contentUrl: String = BLANK_STRING,
     contentValue: String = BLANK_STRING,
     contentShape: ContentShape = ContentShape.CIRCLE,
-    contentTitle: String = ""
+    contentTitle: String = "",
+    onClick: () -> Unit,
 ) {
     ContentView(
         contentType = contentType,
         contentTitle = contentTitle,
+        onClick = onClick
     )
 }
 
@@ -56,10 +57,14 @@ fun BasicContentComponent(
 private fun ContentView(
     contentType: String,
     contentTitle: String = BLANK_STRING,
+    onClick: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable {
+            onClick()
+        }
     ) {
         Box(
             modifier = Modifier
