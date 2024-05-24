@@ -51,7 +51,6 @@ import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.navigation.AuthScreen
-import com.patsurvey.nudge.navigation.MatNavigation
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.ADD_DIDI_BLANK_ID
 import com.patsurvey.nudge.utils.ARG_COMPLETION_MESSAGE
@@ -76,6 +75,7 @@ import com.patsurvey.nudge.utils.ARG_VIDEO_ID
 import com.patsurvey.nudge.utils.ARG_VILLAGE_ID
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.sarathi.missionactivitytask.navigation.MatNavigation
 
 @Composable
 fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
