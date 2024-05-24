@@ -10,7 +10,7 @@ plugins {
     id("org.sonarqube")
 }
 
-def version = "2.0.14"
+def version = "2.0.15"
 android {
     namespace 'com.nrlm.baselinesurvey'
     compileSdk 34
@@ -19,12 +19,18 @@ android {
         applicationId "com.nrlm.sarathi"
         minSdk 23
         targetSdk 33
-        versionCode 18
+        versionCode 19
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true
+        }
+    }
+
+    bundle {
+        language {
+            enableSplit = false
         }
     }
 
