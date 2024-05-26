@@ -19,8 +19,8 @@
     "startOffset": 0,
     "endOffset": 10,
     "missionStatus": "NOT_STARTED",
-    "actualStartDate": null,
-    "actualEndDate": null,
+    "actualStartDate": "",
+    "actualEndDate": "",
     "conditions": [],
     "validations": [],
     "content": [
@@ -35,8 +35,8 @@
         "startOffset": 0,
         "endOffset": 10,
         "activityStatus": "NOT_STARTED",
-        "actualStartDate": null,
-        "actualEndDate": null,
+        "actualStartDate": "",
+        "actualEndDate": "",
         "activityConfig": {
           "activity_type": "Basic",
           "activity_type_id": 3,
@@ -60,7 +60,7 @@
           ],
           "ui_config": {
             "form": "true",
-            "laguage_attributes": [
+            "language_attributes": [
               {
                 "language_id": "en",
                 "attributes": [

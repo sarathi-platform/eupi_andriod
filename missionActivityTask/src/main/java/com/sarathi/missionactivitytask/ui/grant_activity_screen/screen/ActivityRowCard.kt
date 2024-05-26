@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.sarathi.dataloadingmangement.data.entities.Activity
+import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.components.BasicContentComponent
 import com.sarathi.missionactivitytask.ui.components.ButtonComponent
@@ -21,7 +21,7 @@ import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
 @Composable
 fun ActivityRowCard(
     contents: List<BasicContent> = listOf(),
-    activities: List<Activity>
+    activities: List<ActivityEntity>
 ) {
     Column {
         Row(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp, start = 20.dp, end = 20.dp)) {

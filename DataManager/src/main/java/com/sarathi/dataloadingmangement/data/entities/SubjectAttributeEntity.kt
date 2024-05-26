@@ -5,9 +5,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import com.nudge.core.toTimeDateString
-import com.sarathi.dataloadingmangement.util.BLANK_STRING
-import com.sarathi.dataloadingmangement.util.SUBJECT_ATTRIBUTE_TABLE_NAME
+import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.SUBJECT_ATTRIBUTE_TABLE_NAME
 
 @Entity(tableName = SUBJECT_ATTRIBUTE_TABLE_NAME)
 data class SubjectAttributeEntity(
@@ -50,7 +49,7 @@ data class SubjectAttributeEntity(
                 taskId = taskId,
                 tagId = 0,
                 tagType = "",
-                date = System.currentTimeMillis().toTimeDateString()
+                date = System.currentTimeMillis().toString()
             )
         }
     }

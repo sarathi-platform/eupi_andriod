@@ -5,9 +5,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.CONTENT_CONFIG_TABLE_NAME
 import com.sarathi.dataloadingmangement.model.mat.response.ContentResponse
-import com.sarathi.dataloadingmangement.util.BLANK_STRING
-import com.sarathi.dataloadingmangement.util.CONTENT_CONFIG_TABLE_NAME
 
 @Entity(tableName = CONTENT_CONFIG_TABLE_NAME)
 data class ContentConfigEntity(

@@ -1,9 +1,12 @@
 package com.sarathi.dataloadingmangement.repository
 
+import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.model.ApiResponseModel
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
+import com.sarathi.dataloadingmangement.model.mat.response.ContentResponse
 import com.sarathi.dataloadingmangement.model.mat.response.MissionResponse
 import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
+import com.sarathi.dataloadingmangement.network.request.ContentRequest
 
 
 interface IDataLoadingScreenRepository {

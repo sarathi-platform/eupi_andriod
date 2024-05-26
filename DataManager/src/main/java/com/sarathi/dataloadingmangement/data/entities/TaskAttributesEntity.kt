@@ -5,8 +5,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import com.sarathi.dataloadingmangement.util.BLANK_STRING
-import com.sarathi.dataloadingmangement.util.TASK_ATTRIBUTE_TABLE_NAME
+import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.TASK_ATTRIBUTE_TABLE_NAME
 
 @Entity(tableName = TASK_ATTRIBUTE_TABLE_NAME)
 data class TaskAttributesEntity(

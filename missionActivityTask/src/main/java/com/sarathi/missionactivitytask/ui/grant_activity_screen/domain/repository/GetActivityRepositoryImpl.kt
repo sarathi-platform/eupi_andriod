@@ -1,15 +1,15 @@
 package com.sarathi.missionactivitytask.ui.grant_activity_screen.domain.repository
 
-import com.sarathi.dataloadingmangement.data.dao.MissionActivityDao
-import com.sarathi.dataloadingmangement.data.entities.MissionActivityEntity
+import com.sarathi.dataloadingmangement.data.dao.ActivityDao
+import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
 import com.sarathi.missionactivitytask.domain.repository.BaseRepository
 import javax.inject.Inject
 
 
-class GetActivityRepositoryImpl @Inject constructor(val activityDao: MissionActivityDao) :
+class GetActivityRepositoryImpl @Inject constructor(val activityDao: ActivityDao) :
     BaseRepository(),
     IActivityRepository {
-    override suspend fun getActivity(): List<MissionActivityEntity> {
+    override suspend fun getActivity(): List<ActivityEntity> {
         return activityDao.getActivities("99")
     }
 

@@ -6,12 +6,12 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.sarathi.dataloadingmangement.ACTIVITY_TABLE_NAME
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
-import com.sarathi.dataloadingmangement.util.ACTIVITY_TABLE_NAME
-import com.sarathi.dataloadingmangement.util.BLANK_STRING
 
 @Entity(tableName = ACTIVITY_TABLE_NAME)
-data class MissionActivityEntity(
+data class ActivityEntity(
     @PrimaryKey(autoGenerate = true)
     @SerializedName("id")
     @Expose
@@ -37,8 +37,8 @@ data class MissionActivityEntity(
             missionId: Int,
             activityTaskSize: Int,
             activity: ActivityResponse,
-        ): MissionActivityEntity {
-            return MissionActivityEntity(
+        ): ActivityEntity {
+            return ActivityEntity(
                 userId = userId,
                 missionId = missionId,
                 activityId = activity.id,

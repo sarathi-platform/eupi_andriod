@@ -25,7 +25,7 @@ class FetchMissionDataFromNetworkUseCase(
                         dumyyResponse = Gson().fromJson(it.reader(), listType)
                     }
                     repository.saveMissionToDB(dumyyResponse!!)
-                    missionApiResponse.forEach { mission ->
+                    dumyyResponse?.forEach { mission ->
                         repository.saveMissionsActivityToDB(
                             missionId = mission.id,
                             activities = mission.activities
