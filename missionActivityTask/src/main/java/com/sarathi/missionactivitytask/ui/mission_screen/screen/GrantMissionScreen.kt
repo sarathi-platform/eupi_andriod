@@ -51,7 +51,7 @@ fun GrantMissionScreen(
                             countStatusText = "Activities Completed",
                             topHeaderText = "Due by 22 March",
                             totalCount = 2,
-                            title = mission.missionName,
+                            title = "a",//mission.missionName,
                             needToShowProgressBar = true,
                             primaryButtonText = "Start",
                             onPrimaryClick = {

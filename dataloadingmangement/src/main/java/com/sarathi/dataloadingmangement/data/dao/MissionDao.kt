@@ -30,6 +30,8 @@ interface MissionDao {
     @Query("DELETE FROM $MISSION_TABLE_NAME where userId=:userId")
     fun deleteMissions(userId: String)
 
+    @Query("select * from mission_table where userId=:userId")
+    fun getMissions(userId: String): List<MissionEntity>
 
     @Query("Update $MISSION_TABLE_NAME set isActive=0 where userId=:userId ")
     fun softDeleteMission(userId: String)

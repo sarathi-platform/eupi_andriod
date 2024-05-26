@@ -43,7 +43,7 @@ fun ActivityRowCard(
                 items = activities
             ) { index, activity ->
                 StepsBoxGrantComponent(
-                    boxTitle = activity.activityName,
+                    boxTitle = "A",// activity.activityName,
                     subTitle = "0/5 VOs completed",
                     stepNo = index + 1,
                     index = index,

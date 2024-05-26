@@ -22,7 +22,7 @@ import javax.inject.Inject
 class MissionScreenViewModel @Inject constructor(
     private val fetchDataUseCase: FetchDataUseCase,
     private val missionsUseCase: GetMissionsUseCase,
-    @ApplicationContext val context: Context
+    @ApplicationContext val context: Context,
 ) : BaseViewModel() {
     private val _missionList = mutableStateOf<List<MissionEntity>>(emptyList())
     val missionList: State<List<MissionEntity>> get() = _missionList

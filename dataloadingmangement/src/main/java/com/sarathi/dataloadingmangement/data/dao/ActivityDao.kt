@@ -30,6 +30,9 @@ interface MissionActivityDao {
     @Query("SELECT count(*) FROM $ACTIVITY_TABLE_NAME where  userId=:userId and activityId=:activityId ")
     suspend fun getActivityCount(userId: String, activityId: Int): Int
 
+    @Query("SELECT * FROM $ACTIVITY_TABLE_NAME where  userId=:userId")
+    suspend fun getActivities(userId: String): List<MissionActivityEntity>
+
     @Query("SELECT COUNT(*) from $ACTIVITY_TABLE_NAME where userId=:userId and missionId = :missionId AND status NOT in (:status) and isActive=1")
     fun getPendingActivity(
         userId: String,

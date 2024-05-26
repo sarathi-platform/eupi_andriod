@@ -10,7 +10,7 @@ class GetActivityRepositoryImpl @Inject constructor(val activityDao: MissionActi
     BaseRepository(),
     IActivityRepository {
     override suspend fun getActivity(): List<MissionActivityEntity> {
-        return activityDao.getActivities("99", 1)
+        return activityDao.getActivities("99")
     }
 
 }
