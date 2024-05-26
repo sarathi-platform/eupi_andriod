@@ -43,6 +43,7 @@ android {
 
 dependencies {
     implementation(project(":DataManager"))
+    implementation(project(":ContentManager"))
     val retrofit = "2.9.0"
     val okhttp3 = "4.9.0"
     val compose_version = "1.4.1"

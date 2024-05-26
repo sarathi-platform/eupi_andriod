@@ -43,6 +43,8 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
         TaskAttributesEntity::class,
         UiConfigEntity::class,
         ContentConfigEntity::class,
+        Content::class
+
     ],
     version = NUDGE_GRANT_DATABASE_VERSION,
     exportSchema = false
@@ -52,6 +54,7 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun missionDao(): MissionDao
     abstract fun activityDao(): MissionActivityDao
     abstract fun taskDao(): TaskDao
+    abstract fun contentDao(): ContentDao
     abstract fun activityConfigDao(): ActivityConfigDao
     abstract fun activityLanguageAttributeDao(): ActivityLanguageAttributeDao
     abstract fun activityLanguageDao(): ActivityLanguageDao

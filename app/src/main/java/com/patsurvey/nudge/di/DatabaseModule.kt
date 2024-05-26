@@ -100,4 +100,5 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun providesEventDependencyDao(syncDb: SyncManagerDatabase) = syncDb.eventsDependencyDao()
+
 }

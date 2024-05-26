@@ -25,4 +25,11 @@ interface IDataLoadingScreenRepository {
         subject: String,
         activities: List<TaskResponse>
     )
+
+    suspend fun fetchContentsFromServer(contentMangerRequest: ContentRequest): ApiResponseModel<List<ContentResponse>>
+
+    suspend fun saveContentToDB(contents: List<Content>)
+    suspend fun deleteContentFromDB()
+    suspend fun getContentData(): List<Content>
+
 }
