@@ -40,7 +40,12 @@ import com.sarathi.missionactivitytask.ui.theme.white
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
-fun ReceiptFoundCard(
+fun GrantTaskCard(
+    title: String,
+    subTitle: String,
+    primaryButtonText: String,
+    secondaryButtonText: String,
+    status: String,
     modifier: Modifier = Modifier,
     isHamletIcon: Boolean = false,
     isCompleted: Boolean = true
@@ -80,7 +85,7 @@ fun ReceiptFoundCard(
                 }
 
                 Text(
-                    text = "Ganbari Sikla (VO)",
+                    text = title,
                     style = defaultTextStyle,
                     modifier = Modifier
                         .padding(horizontal = 5.dp),
@@ -108,7 +113,7 @@ fun ReceiptFoundCard(
                     tint = blueDark,
                 )
                 Text(
-                    text = "Sundar Pahari, Rose Pahari",
+                    text = subTitle,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 5.dp),
@@ -186,7 +191,7 @@ fun ReceiptFoundCard(
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(
-                            text = "Start",
+                            text = primaryButtonText,
                             style = smallTextStyleMediumWeight,
                             color = white
                         )

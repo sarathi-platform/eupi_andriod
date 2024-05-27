@@ -15,8 +15,8 @@ class FetchMissionDataFromNetworkUseCase(
         try {
 
             val apiResponse = repository.fetchMissionDataFromServer("en", "BASELINE")
-            if (apiResponse.status.equals("SUCCESS", true)) {
-                apiResponse.data?.let { missionApiResponse ->
+//            if (apiResponse.status.equals("SUCCESS", true)) {
+            //            apiResponse.data?.let { missionApiResponse ->
 
                     var dumyyResponse: List<MissionResponse>? = null
                     context.resources.openRawResource(R.raw.mission_response).use {
@@ -40,12 +40,14 @@ class FetchMissionDataFromNetworkUseCase(
                             )
                         }
                     }
-                    return true
-                }
-                return false
-            } else {
-                return false
-            }
+            //       return true
+            // }
+            // return false
+            // }
+//            else {
+//                return false
+//            }
+            return true
         } catch (apiException: ApiException) {
             throw apiException
         } catch (ex: Exception) {

@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.sarathi.dataloadingmangement.TASK_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
+import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
 
 
 @Dao
@@ -32,12 +33,12 @@ interface TaskDao {
     @Query("UPDATE $TASK_TABLE_NAME set isActive = 0 where userId=:userId and activityId=:activityId and missionId = :missionId ")
     fun softDeleteActivityTask(userId: String, activityId: Int, missionId: Int)
 
-    @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId and missionId=:missionId and activityId = :activityId and isActive=1")
-    suspend fun getActivityTask(
+    @Query("SELECT taskId FROM $TASK_TABLE_NAME where userId=:userId and missionId=:missionId and activityId = :activityId and isActive=1")
+    suspend fun getActiveTask(
         userId: String,
         missionId: Int,
         activityId: Int
-    ): List<ActivityTaskEntity>
+    ): List<TaskUiModel>
 
     @Query("SELECT * FROM $TASK_TABLE_NAME where  userId=:userId and  activityId=:activityId and isActive=1 ")
     suspend fun getActivityTaskFromIds(userId: String, activityId: Int): List<ActivityTaskEntity>

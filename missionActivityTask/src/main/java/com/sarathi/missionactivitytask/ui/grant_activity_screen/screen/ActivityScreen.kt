@@ -15,14 +15,17 @@ import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 @Composable
 fun ActivityScreen(
     navController: NavController = rememberNavController(),
-    viewModel: ActivityScreenViewModel = hiltViewModel()
+    viewModel: ActivityScreenViewModel = hiltViewModel(),
+    missionId: Int,
+    missionName: String
 ) {
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(InitDataEvent.InitDataState)
+        viewModel.setMissionDetail(missionId)
     }
     ToolBarWithMenuComponent(
-        title = "CSG disbursement to Didi",
+        title = missionName,
         modifier = Modifier.fillMaxSize(),
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
@@ -36,8 +39,10 @@ fun ActivityScreen(
         onContentUI = {
             if (viewModel.activityList.value.isNotEmpty()) {
                 ActivityRowCard(
+
                     activities = viewModel.activityList.value,
-                    contents = getContent()
+                    contents = getContent(),
+                    navController = navController
                 )
             }
         }

@@ -57,7 +57,11 @@ fun GrantMissionScreen(
                             needToShowProgressBar = true,
                             primaryButtonText = "Start",
                             onPrimaryClick = {
-                                navigateToActivityScreen(navController)
+                                navigateToActivityScreen(
+                                    navController,
+                                    missionName = mission.description,
+                                    missionId = mission.missionId
+                                )
                             }
                         )
                     }

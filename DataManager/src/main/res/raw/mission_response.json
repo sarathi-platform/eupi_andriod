@@ -65,32 +65,32 @@
                 "language_id": "en",
                 "attributes": [
                   {
-                    "key": "title",
-                    "type": "dynamic",
+                    "key": "GRANT_TASK_TITLE",
+                    "type": "DYNAMIC",
                     "value": "subjectName",
                     "component_type": "Card"
                   },
                   {
-                    "key": "subtitle",
-                    "type": "dynamic",
+                    "key": "GRANT_TASK_SUBTITLE",
+                    "type": "DYNAMIC",
                     "value": "villageName",
                     "component_type": "Card"
                   },
                   {
-                    "key": "button1",
-                    "type": "static",
+                    "key": "GRANT_TASK_PRIMARY_BUTTON",
+                    "type": "STATIC",
                     "value": "Start",
                     "component_type": "Card"
                   },
                   {
                     "key": "searchOn",
-                    "type": "dynamic",
+                    "type": "DYNAMIC",
                     "value": "subjectName",
                     "component_type": "Search"
                   },
                   {
                     "key": "searchLabel",
-                    "type": "static",
+                    "type": "STATIC",
                     "value": "Search by Vo",
                     "component_type": "Search"
                   }

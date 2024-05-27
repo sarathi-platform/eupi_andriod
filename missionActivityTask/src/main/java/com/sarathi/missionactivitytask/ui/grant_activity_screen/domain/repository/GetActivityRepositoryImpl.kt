@@ -13,8 +13,8 @@ class GetActivityRepositoryImpl @Inject constructor(
 ) :
     BaseRepository(),
     IActivityRepository {
-    override suspend fun getActivity(): List<ActivityUiModel> {
-        return activityDao.getActivities(coreSharedPrefs.getUniqueUserIdentifier(), "en")
+    override suspend fun getActivity(missionId: Int): List<ActivityUiModel> {
+        return activityDao.getActivities(coreSharedPrefs.getUniqueUserIdentifier(), "en", missionId)
     }
 
 }

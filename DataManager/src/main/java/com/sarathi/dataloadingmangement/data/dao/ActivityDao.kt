@@ -40,9 +40,13 @@ interface ActivityDao {
                 " from activity_table\n" +
                 "inner join activity_language_attribute_table on activity_table.activityId = activity_language_attribute_table.activityId  \n" +
                 "left join task_table on activity_table.activityId = activity_table.activityId \n" +
-                " where activity_language_attribute_table.languageCode =:languageCode and activity_table.isActive=1 and task_table.isActive=1 and activity_table.userId =:userId"
+                " where activity_language_attribute_table.languageCode =:languageCode and activity_table.isActive=1 and task_table.isActive=1 and activity_table.userId =:userId and activity_table.missionId=:missionId"
     )
-    suspend fun getActivities(userId: String, languageCode: String): List<ActivityUiModel>
+    suspend fun getActivities(
+        userId: String,
+        languageCode: String,
+        missionId: Int
+    ): List<ActivityUiModel>
 
     @Query("SELECT COUNT(*) from $ACTIVITY_TABLE_NAME where userId=:userId and missionId = :missionId AND status NOT in (:status) and isActive=1")
     fun getPendingActivity(
