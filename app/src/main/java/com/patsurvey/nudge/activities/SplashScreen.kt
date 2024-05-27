@@ -32,10 +32,12 @@ import com.patsurvey.nudge.activities.ui.splash.ConfigViewModel
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
 import com.patsurvey.nudge.navigation.AuthScreen
+import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.ONE_SECOND
 import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
+import com.patsurvey.nudge.utils.UPCM_USER
 import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.delay
 
@@ -60,16 +62,21 @@ fun SplashScreen(
             if (isLoggedIn) {
                 NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = true")
                 delay(ONE_SECOND)
-                viewModel.showLoader.value=true
+                viewModel.showLoader.value = true
                 delay(SPLASH_SCREEN_DURATION)
-                viewModel.showLoader.value=false
-                navController.navigate(route = AuthScreen.MatDataLoadingScreen.route)
-
-//                navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
-//                    popUpTo(AuthScreen.START_SCREEN.route) {
-//                        inclusive = true
-//                    }
-//                }
+                viewModel.showLoader.value = false
+                if (viewModel.getLoggedInUserType() == UPCM_USER) {
+                    navController.popBackStack()
+                    navController.navigate(
+                        Graph.HOME
+                    )
+                } else {
+                    navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
+                        popUpTo(AuthScreen.START_SCREEN.route) {
+                            inclusive = true
+                        }
+                    }
+                }
             } else {
                 NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = false")
                 delay(ONE_SECOND)
@@ -92,14 +99,22 @@ fun SplashScreen(
                     (context as MainActivity).quesImageList = it as MutableList<String>
                 }
                 if (isLoggedIn) {
-                    NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = true")
-                    navController.navigate(route = AuthScreen.MatDataLoadingScreen.route)
-
-//                    navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
-//                        popUpTo(AuthScreen.START_SCREEN.route) {
-//                            inclusive = true
-//                        }
-//                    }
+                    NudgeLogger.d(
+                        "SplashScreen",
+                        "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = true"
+                    )
+                    if (viewModel.getLoggedInUserType() == UPCM_USER) {
+                        navController.popBackStack()
+                        navController.navigate(
+                            Graph.HOME
+                        )
+                    } else {
+                        navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
+                            popUpTo(AuthScreen.START_SCREEN.route) {
+                                inclusive = true
+                            }
+                        }
+                    }
                 } else {
                     NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = false")
                     navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)

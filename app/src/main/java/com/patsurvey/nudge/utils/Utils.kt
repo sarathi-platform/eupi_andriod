@@ -161,26 +161,30 @@ fun dpToPx(iContext: Context, dp: Int): Int {
         .toInt()
 }
 
-fun getDeviceId(context: Context) : String{
-    return Settings.Secure.getString(context.contentResolver,
-        Settings.Secure.ANDROID_ID) ?: ""
+fun getDeviceId(context: Context): String {
+    return Settings.Secure.getString(
+        context.contentResolver,
+        Settings.Secure.ANDROID_ID
+    ) ?: ""
 }
 
 fun getUniqueIdForEntity(): String {
     return UUID.randomUUID().toString().replace("-", "") + "|" + System.currentTimeMillis()
 }
 
-fun findCompleteValue(status:String): StepStatus {
-    return when(status){
-        BLANK_STRING->StepStatus.NOT_STARTED
-        INPROGRESS_STRING->StepStatus.INPROGRESS
-        COMPLETED_STRING->StepStatus.COMPLETED
-        else -> {StepStatus.NOT_STARTED}
+fun findCompleteValue(status: String): StepStatus {
+    return when (status) {
+        BLANK_STRING -> StepStatus.NOT_STARTED
+        INPROGRESS_STRING -> StepStatus.INPROGRESS
+        COMPLETED_STRING -> StepStatus.COMPLETED
+        else -> {
+            StepStatus.NOT_STARTED
+        }
     }
 }
 
-fun getStepStatusFromOrdinal(status : Int) : String{
-    return when(status){
+fun getStepStatusFromOrdinal(status: Int): String {
+    return when (status) {
         StepStatus.NOT_STARTED.ordinal -> StepStatus.NOT_STARTED.name
         StepStatus.INPROGRESS.ordinal -> StepStatus.INPROGRESS.name
         StepStatus.COMPLETED.ordinal -> StepStatus.COMPLETED.name
@@ -189,6 +193,7 @@ fun getStepStatusFromOrdinal(status : Int) : String{
         }
     }
 }
+
 fun Context.findActivity(): ComponentActivity? = when (this) {
     is ComponentActivity -> this
     is ContextWrapper -> baseContext.findActivity()
@@ -259,7 +264,8 @@ fun Context.hideSystemUi() {
     WindowCompat.setDecorFitsSystemWindows(window, false)
     WindowInsetsControllerCompat(window, window.decorView).let { controller ->
         controller.hide(WindowInsetsCompat.Type.systemBars())
-        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
     }
 }
 
@@ -273,7 +279,7 @@ fun Context.showSystemUi() {
     ).show(WindowInsetsCompat.Type.systemBars())
 }
 
-fun uriFromFile(context:Context, file:File): Uri {
+fun uriFromFile(context: Context, file: File): Uri {
     try {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file)
@@ -287,7 +293,10 @@ fun uriFromFile(context:Context, file:File): Uri {
 }
 
 fun openSettings(context: Context) {
-    val appSettingsIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}")).apply {
+    val appSettingsIntent = Intent(
+        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+        Uri.parse("package:${context.packageName}")
+    ).apply {
         addCategory(Intent.CATEGORY_DEFAULT)
     }
     appSettingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -329,13 +338,13 @@ var videoList = listOf(
         description = "How to record Didi's wealth ranking",
         url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6ParticipatoryWealthRanking.mp4",
         thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6.png"
-    ),VideoItem(
+    ), VideoItem(
         id = 6,
         title = "PAT Survey - Overview",
         description = "Introduction to PAT survey on Sarathi app",
         url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7PATSurveyOverview.mp4",
         thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7.png"
-    ),VideoItem(
+    ), VideoItem(
         id = 7,
         title = "Filling PAT Survey - Part 1",
         description = "How to fill PAT survey - Part 1",
@@ -406,13 +415,13 @@ var videoList = listOf(
         description = "দিদির সম্পদের র্যাঙ্কিং কিভাবে রেকর্ড করবেন",
         url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6Bengali.mp4",
         thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6.png"
-    ),VideoItem(
+    ), VideoItem(
         id = 17,
         title = "PAT সার্ভে - সংক্ষিপ্ত বিবরণ",
         description = "সারথি অ্যাপে PAT সার্ভে সূচনা",
         url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7PATBengali.mp4",
         thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7.png"
-    ),VideoItem(
+    ), VideoItem(
         id = 18,
         title = "PAT সার্ভে পূরণ করা-অংশ 1",
         description = "PAT সার্ভে কিভাবে পূরণ করা যায়-প্রথম অংশ",
@@ -483,13 +492,13 @@ var videoList = listOf(
         description = "বাইদেউৰ সম্পদৰ ৰেংকিং কেনেকৈ ৰেকৰ্ড কৰিব",
         url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6Assamese.mp4",
         thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6.png"
-    ),VideoItem(
+    ), VideoItem(
         id = 28,
         title = "PAT সমীক্ষা - সংক্ষিপ্তত",
         description = "সাৰথি এপত PAT সমীক্ষাৰ পৰিচয়",
         url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7Assamese.mp4",
         thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7.png"
-    ),VideoItem(
+    ), VideoItem(
         id = 29,
         title = "PAT সমীক্ষা পূৰণ কৰা - ভাগ ১",
         description = "PAT সমীক্ষা কেনেকৈ পূৰণ কৰিব - ভাগ ১",
@@ -625,6 +634,7 @@ var videoList = listOf(
     ),*/
 
 )
+
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 internal fun AnimatedScaleInTransition(
@@ -642,11 +652,11 @@ internal fun AnimatedScaleInTransition(
         ),
         exit = slideOutHorizontally(
             targetOffsetX = { -300 },
-                animationSpec = tween(
+            animationSpec = tween(
                 durationMillis = EXPANSTION_TRANSITION_DURATION,
-        easing = LinearEasing
-       )
-     ),
+                easing = LinearEasing
+            )
+        ),
         content = content
     )
 }
@@ -664,79 +674,102 @@ fun toWeightageRatio(listInString: String): List<WeightageRatioModal> {
 }
 
 
-fun checkStringOperator(operator:String) = when(operator){
-      "==" ->Operator.EQUAL_TO
-      "=" ->Operator.EQUAL_TO
-      "<" ->Operator.LESS_THAN
-      "<=" ->Operator.LESS_THAN_EQUAL_TO
-      ">" ->Operator.MORE_THAN
-      ">=" ->Operator.MORE_THAN_EQUAL_TO
-      else->{}
-  }
-fun stringToDouble(string: String):Double{
-    var doubleAmount=0.0
-    if(string!=null){
-        doubleAmount = if(string.isEmpty())
+fun checkStringOperator(operator: String) = when (operator) {
+    "==" -> Operator.EQUAL_TO
+    "=" -> Operator.EQUAL_TO
+    "<" -> Operator.LESS_THAN
+    "<=" -> Operator.LESS_THAN_EQUAL_TO
+    ">" -> Operator.MORE_THAN
+    ">=" -> Operator.MORE_THAN_EQUAL_TO
+    else -> {}
+}
+
+fun stringToDouble(string: String): Double {
+    var doubleAmount = 0.0
+    if (string != null) {
+        doubleAmount = if (string.isEmpty())
             0.0
         else string.toDouble()
     }
-   return doubleAmount
+    return doubleAmount
 }
 
-fun stringToInt(string: String):Int{
-    var intValue=0
-    if(string!=null){
-        intValue = if(string.isEmpty())
+fun stringToInt(string: String): Int {
+    var intValue = 0
+    if (string != null) {
+        intValue = if (string.isEmpty())
             0
         else string.toInt()
     }
     return intValue
 }
-fun doubleToString(double: Double):String{
-    var string= BLANK_STRING
-    if(double>0.0){
+
+fun doubleToString(double: Double): String {
+    var string = BLANK_STRING
+    if (double > 0.0) {
         string = double.toString()
     }
     return string
 }
-fun calculateScore(list: List<WeightageRatioModal>,totalAmount:Double,isRatio:Boolean):Double{
-    var score:Double = 0.0
+
+fun calculateScore(list: List<WeightageRatioModal>, totalAmount: Double, isRatio: Boolean): Double {
+    var score: Double = 0.0
     run breaking@{
         list.forEach {
-            when(checkStringOperator(it.operator)){
+            when (checkStringOperator(it.operator)) {
                 Operator.EQUAL_TO -> {
 
-                    if(totalAmount == (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){
+                    if (totalAmount == (if (!isRatio) stringToDouble(it.weightage) else stringToDouble(
+                            it.ratio
+                        ))
+                    ) {
                         score = it.score.toDouble()
                         return@breaking
                     }
                 }
+
                 Operator.LESS_THAN -> {
-                    if(totalAmount < (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){
+                    if (totalAmount < (if (!isRatio) stringToDouble(it.weightage) else stringToDouble(
+                            it.ratio
+                        ))
+                    ) {
                         score = it.score.toDouble()
                         return@breaking
                     }
                 }
-                Operator.LESS_THAN_EQUAL_TO ->{
-                    if(totalAmount <= (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){
+
+                Operator.LESS_THAN_EQUAL_TO -> {
+                    if (totalAmount <= (if (!isRatio) stringToDouble(it.weightage) else stringToDouble(
+                            it.ratio
+                        ))
+                    ) {
                         score = it.score.toDouble()
                         return@breaking
                     }
                 }
+
                 Operator.MORE_THAN -> {
-                    if(totalAmount > (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){
+                    if (totalAmount > (if (!isRatio) stringToDouble(it.weightage) else stringToDouble(
+                            it.ratio
+                        ))
+                    ) {
                         score = it.score.toDouble()
                         return@breaking
                     }
                 }
+
                 Operator.MORE_THAN_EQUAL_TO -> {
-                    if(totalAmount >= (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){
+                    if (totalAmount >= (if (!isRatio) stringToDouble(it.weightage) else stringToDouble(
+                            it.ratio
+                        ))
+                    ) {
                         score = it.score.toDouble()
                         return@breaking
                     }
                 }
+
                 else -> {
-                    score =0.0
+                    score = 0.0
                 }
             }
         }
@@ -744,10 +777,11 @@ fun calculateScore(list: List<WeightageRatioModal>,totalAmount:Double,isRatio:Bo
     return score
 }
 
-fun getFileNameFromURL(url: String): String{
+fun getFileNameFromURL(url: String): String {
     return url.substring(url.lastIndexOf('/') + 1, url.length)
 }
-fun getAuthImageFileNameFromURL(url: String): String{
+
+fun getAuthImageFileNameFromURL(url: String): String {
     return url.substring(url.lastIndexOf('=') + 1, url.length)
 }
 
@@ -780,7 +814,7 @@ fun roundOffDecimal(number: Double): Double? {
         val df = DecimalFormat("#.##", DecimalFormatSymbols(Locale.ENGLISH))
         df.roundingMode = RoundingMode.CEILING
         df.format(number).toDouble()
-    }catch (ex:Exception){
+    } catch (ex: Exception) {
         NudgeLogger.e("Utils", "roundOffDecimal -> exception", ex)
         0.00
     }
@@ -789,20 +823,20 @@ fun roundOffDecimal(number: Double): Double? {
 }
 
 fun roundOffDecimalPoints(number: Double): String {
-    return String.format(Locale.ENGLISH,"%.2f", number)
+    return String.format(Locale.ENGLISH, "%.2f", number)
 }
 
-fun getImagePath(context: Context, imagePath:String): File {
+fun getImagePath(context: Context, imagePath: String): File {
     val imageName = getFileNameFromURL(imagePath)
     return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${imageName}")
 }
 
-fun getAuthImagePath(context: Context, imagePath:String): File {
+fun getAuthImagePath(context: Context, imagePath: String): File {
     val imageName = getAuthImageFileNameFromURL(imagePath)
     return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${imageName}")
 }
 
-fun getImageRequestBody(sourceFile: File) : RequestBody? {
+fun getImageRequestBody(sourceFile: File): RequestBody? {
     var requestBody: RequestBody? = null
     Thread {
         val mimeType = getMimeType(sourceFile);
@@ -830,15 +864,15 @@ private fun getMimeType(file: File): String? {
     return type
 }
 
-fun updateLastSyncTime(prefRepo:PrefRepo,lastSyncTime:String){
-    val saveSyncTime= prefRepo.getPref(LAST_SYNC_TIME,0L)
-    if(saveSyncTime>0){
-        val compValue=lastSyncTime.toLong().compareTo(saveSyncTime)
-        if(compValue>0){
-            prefRepo.savePref(LAST_SYNC_TIME,lastSyncTime.toLong())
+fun updateLastSyncTime(prefRepo: PrefRepo, lastSyncTime: String) {
+    val saveSyncTime = prefRepo.getPref(LAST_SYNC_TIME, 0L)
+    if (saveSyncTime > 0) {
+        val compValue = lastSyncTime.toLong().compareTo(saveSyncTime)
+        if (compValue > 0) {
+            prefRepo.savePref(LAST_SYNC_TIME, lastSyncTime.toLong())
         }
 
-    }else prefRepo.savePref(LAST_SYNC_TIME,lastSyncTime.toLong())
+    } else prefRepo.savePref(LAST_SYNC_TIME, lastSyncTime.toLong())
 }
 
 
@@ -875,7 +909,7 @@ fun BulletList(
     }
 }
 
-fun compressImage(imageUri: String, activity: Context,name:String): String? {
+fun compressImage(imageUri: String, activity: Context, name: String): String? {
     var filename: String? = ""
     try {
         val filePath = imageUri /*getRealPathFromURI(imageUri, activity)*/
@@ -965,12 +999,15 @@ fun compressImage(imageUri: String, activity: Context,name:String): String? {
         val out: FileOutputStream
         filename = name
         try {
-            val path =File("${activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}",filename).absolutePath
+            val path = File(
+                "${activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}",
+                filename
+            ).absolutePath
             out = FileOutputStream(path)
-           val success= scaledBitmap?.compress(Bitmap.CompressFormat.JPEG, 80, out)
-            return if(success == true){
+            val success = scaledBitmap?.compress(Bitmap.CompressFormat.JPEG, 80, out)
+            return if (success == true) {
                 path
-            }else BLANK_STRING
+            } else BLANK_STRING
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
         }
@@ -1013,32 +1050,35 @@ private fun getRealPathFromURI(contentURI: String, activity: Context): String? {
     }
 }
 
-fun formatDateAndTime(page:String,lastSyncTime: String):String{
+fun formatDateAndTime(page: String, lastSyncTime: String): String {
     return try {
-        val currentTime = if(lastSyncTime.isEmpty()) 0L else lastSyncTime.toLong()
+        val currentTime = if (lastSyncTime.isEmpty()) 0L else lastSyncTime.toLong()
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
         dateFormat.format(currentTime)
-    }catch (ex:Exception){
+    } catch (ex: Exception) {
         ex.message?.let { NudgeLogger.d("$page DateTimeParse Issue : ", it) }
         BLANK_STRING
     }
 }
 
-fun findImageFilePath(uri:String):String{
-    if(uri.isNotEmpty()){
-        return if(uri.contains("|")){
-            if(uri.split("|")[0].contains("content:/")) uri.split("|")[0].replace("content:/","file:/") else uri.split("|")[0]
-        }else{
-            if(uri.contains("content:/")) uri.replace("content:/","file:/") else uri
+fun findImageFilePath(uri: String): String {
+    if (uri.isNotEmpty()) {
+        return if (uri.contains("|")) {
+            if (uri.split("|")[0].contains("content:/")) uri.split("|")[0].replace(
+                "content:/",
+                "file:/"
+            ) else uri.split("|")[0]
+        } else {
+            if (uri.contains("content:/")) uri.replace("content:/", "file:/") else uri
         }
 
     }
     return BLANK_STRING
 }
 
-fun findImageLocationFromPath(uri:String):List<String>{
-    if(uri.isNotEmpty()){
-        if(uri.contains("|")) {
+fun findImageLocationFromPath(uri: String): List<String> {
+    if (uri.isNotEmpty()) {
+        if (uri.contains("|")) {
             val path: List<String> = uri.split("|")
             if (path[0].contains("content:/"))
                 path[0].replace("content:/", "file:/")
@@ -1052,49 +1092,50 @@ fun findImageLocationFromPath(uri:String):List<String>{
     return ArrayList()
 }
 
-fun findStepNameForSelectedLanguage(context: Context,stepId:Int):String{
-   return when(stepId){
-       40-> context.getString(R.string.step_transect_walk)
-       41-> context.getString(R.string.step_social_mapping)
-       43-> context.getString(R.string.step_pat_survey)
-       44-> context.getString(R.string.step_vo_endorsement)
-       45-> context.getString(R.string.step_bpc_verification)
-       46-> context.getString(R.string.step_participatory_wealth_ranking)
-       else -> {
-           BLANK_STRING}
-   }
+fun findStepNameForSelectedLanguage(context: Context, stepId: Int): String {
+    return when (stepId) {
+        40 -> context.getString(R.string.step_transect_walk)
+        41 -> context.getString(R.string.step_social_mapping)
+        43 -> context.getString(R.string.step_pat_survey)
+        44 -> context.getString(R.string.step_vo_endorsement)
+        45 -> context.getString(R.string.step_bpc_verification)
+        46 -> context.getString(R.string.step_participatory_wealth_ranking)
+        else -> {
+            BLANK_STRING
+        }
+    }
 }
 
-fun onlyNumberField(value:String):Boolean{
-    if(value.isDigitsOnly() && value != "_" && value != "N"){
+fun onlyNumberField(value: String): Boolean {
+    if (value.isDigitsOnly() && value != "_" && value != "N") {
         return true
     }
     return false
 }
 
-fun changeMilliDateToDate(millDate:Long):String?{
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
-        return dateFormat.format(millDate)
+fun changeMilliDateToDate(millDate: Long): String? {
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
+    return dateFormat.format(millDate)
 }
 
-fun longToString(value:Long):String{
+fun longToString(value: Long): String {
     return try {
         value.toString()
-    }catch (ex:Exception){
+    } catch (ex: Exception) {
         BLANK_STRING
     }
 }
 
-fun intToString(value:Int):String{
+fun intToString(value: Int): String {
     return try {
         value.toString()
-    }catch (ex:Exception){
+    } catch (ex: Exception) {
         BLANK_STRING
     }
 }
 
-fun formatRatio(ratio:String):String{
-    return if(ratio.isNullOrEmpty() || ratio.equals("Nan",true))
+fun formatRatio(ratio: String): String {
+    return if (ratio.isNullOrEmpty() || ratio.equals("Nan", true))
         "0.00"
     else ratio
 
@@ -1116,8 +1157,10 @@ fun ShowLoadingDialog(
                 .height(80.dp),
             color = Color.White,
         ) {
-            Box(modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
                 Column(
                     modifier = Modifier
                         .padding(14.dp)
@@ -1138,9 +1181,11 @@ fun ShowLoadingDialog(
                         )
                     }
 
-                    Spacer(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(15.dp))
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(15.dp)
+                    )
 
                 }
             }
@@ -1148,6 +1193,7 @@ fun ShowLoadingDialog(
 //      }
     }
 }
+
 fun singleClick(onClick: () -> Unit): () -> Unit {
     var latest: Long = 0
     return {
@@ -1158,32 +1204,44 @@ fun singleClick(onClick: () -> Unit): () -> Unit {
         }
     }
 }
+
 fun containsEmoji(str: String?) =
     Pattern
         .compile("\\p{So}+", Pattern.CASE_INSENSITIVE)
         .matcher(str.toString()).find()
 
 
-
-fun updateStepStatus(stepsListDao: StepsListDao, didiDao: DidiDao,didiId:Int,prefRepo: PrefRepo, printTag:String){
-       CoroutineScope(Dispatchers.IO).launch {
-        val step = stepsListDao.getStepByOrder(4,prefRepo.getSelectedVillage().id)
+fun updateStepStatus(
+    stepsListDao: StepsListDao,
+    didiDao: DidiDao,
+    didiId: Int,
+    prefRepo: PrefRepo,
+    printTag: String
+) {
+    CoroutineScope(Dispatchers.IO).launch {
+        val step = stepsListDao.getStepByOrder(4, prefRepo.getSelectedVillage().id)
         NudgeLogger.d(printTag, "setPATSurveyINProgress -> stepsList: $step \n\n")
-           didiDao.updatePATEditStatus(didiId,true)
-        NudgeLogger.d(printTag, "setPATSurveyINProgress -> stepsListDao.markStepAsCompleteOrInProgress before " +
-                "stepId = ${step.id},\n" +
-                "isComplete = StepStatus.INPROGRESS.ordinal,\n" +
-                "villageId = ${prefRepo.getSelectedVillage().id} \n")
+        didiDao.updatePATEditStatus(didiId, true)
+        NudgeLogger.d(
+            printTag,
+            "setPATSurveyINProgress -> stepsListDao.markStepAsCompleteOrInProgress before " +
+                    "stepId = ${step.id},\n" +
+                    "isComplete = StepStatus.INPROGRESS.ordinal,\n" +
+                    "villageId = ${prefRepo.getSelectedVillage().id} \n"
+        )
 
         stepsListDao.markStepAsCompleteOrInProgress(
             stepId = step.id,
             isComplete = StepStatus.INPROGRESS.ordinal,
             villageId = prefRepo.getSelectedVillage().id
         )
-        NudgeLogger.d(printTag, "setPATSurveyINProgress -> stepsListDao.markStepAsCompleteOrInProgress after " +
-                "stepId = ${step.id},\n" +
-                "isComplete = StepStatus.INPROGRESS.ordinal,\n" +
-                "villageId = ${prefRepo.getSelectedVillage().id} \n")
+        NudgeLogger.d(
+            printTag,
+            "setPATSurveyINProgress -> stepsListDao.markStepAsCompleteOrInProgress after " +
+                    "stepId = ${step.id},\n" +
+                    "isComplete = StepStatus.INPROGRESS.ordinal,\n" +
+                    "villageId = ${prefRepo.getSelectedVillage().id} \n"
+        )
         stepsListDao.updateNeedToPost(step.id, prefRepo.getSelectedVillage().id, true)
     }
 }
@@ -1229,11 +1287,12 @@ fun addDefaultLanguage(languageListDao: LanguageListDao) {
         )
     )
 }
+
 fun getFormSubPath(formName: String, pageNumber: Int): String {
     return "${formName}_page_$pageNumber"
 }
 
-fun getFormPathKey(subPath: String,villageId: Int): String {
+fun getFormPathKey(subPath: String, villageId: Int): String {
     return "${PREF_FORM_PATH}_${villageId}_${subPath}"
 }
 
@@ -1241,7 +1300,11 @@ fun getVideoPath(context: Context, videoItemId: Int, fileType: FileType): File {
     return File("${context.getExternalFilesDir(if (fileType == FileType.VIDEO) Environment.DIRECTORY_MOVIES else if (fileType == FileType.IMAGE) Environment.DIRECTORY_DCIM else Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${videoItemId}.mp4")
 }
 
-fun getEmitLanguageList(defaultLanguageVillageList: List<VillageEntity>, localLanguageVillageList: List<VillageEntity>, localLanguageId: Int): List<VillageEntity> {
+fun getEmitLanguageList(
+    defaultLanguageVillageList: List<VillageEntity>,
+    localLanguageVillageList: List<VillageEntity>,
+    localLanguageId: Int
+): List<VillageEntity> {
     val listToEmit = mutableListOf<VillageEntity>()
     val tempList = mutableListOf<VillageEntity>()
     tempList.addAll(defaultLanguageVillageList)
@@ -1425,4 +1488,9 @@ fun restartApp(context: Context) {
         Intent(NudgeCore.getAppContext().applicationContext, MainActivity::class.java)
     )
     exitProcess(0)
+}
+
+fun isFilePathExists(context: Context, filePath: String): Boolean {
+    val fileName = getFileNameFromURL(filePath)
+    return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}").exists()
 }

@@ -5,11 +5,11 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
+import com.sarathi.dataloadingmangement.ACTIVITY_TABLE_NAME
+import com.sarathi.dataloadingmangement.MISSION_TABLE_NAME
+import com.sarathi.dataloadingmangement.TASK_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
-import com.sarathi.dataloadingmangement.util.ACTIVITY_TABLE_NAME
-import com.sarathi.dataloadingmangement.util.MISSION_TABLE_NAME
-import com.sarathi.dataloadingmangement.util.TASK_TABLE_NAME
+import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 
 
 const val missionActivityTaskDto =
@@ -31,61 +31,25 @@ interface MissionDao {
     @Query("DELETE FROM $MISSION_TABLE_NAME where userId=:userId")
     fun deleteMissions(userId: String)
 
-    @Query("SELECT * FROM $MISSION_TABLE_NAME where userId=:userId and isActive=1")
-    suspend fun getMissions(userId: String): List<MissionEntity>
-
-    @Query("SELECT * FROM $MISSION_TABLE_NAME where  userId=:userId and missionId=:missionId ")
-    suspend fun getMission(userId: String, missionId: Int): MissionEntity
-
-    @Query("SELECT count(*) FROM $MISSION_TABLE_NAME where  userId=:userId and missionId=:missionId ")
-    suspend fun getMissionCount(userId: String, missionId: Int): Int
-
-    @Query("Update $MISSION_TABLE_NAME set pendingActivity=:pendingActivity, activityComplete=:activityComplete where  userId=:userId and missionId = :missionId")
-    fun updateMissionStatus(
-        userId: String,
-        missionId: Int,
-        activityComplete: Int,
-        pendingActivity: Int
+    @Query(
+        "select mission_table.missionId, mission_language_table.description,  mission_table.missionStatus , \n" +
+                "count(activity_table.activityId) as activityCount,\n" +
+                " SUM(CASE WHEN activity_table.status = 'completed' THEN 1 ELSE 0 END) AS pendingActivityCount\n" +
+                " from mission_table\n" +
+                "\n" +
+                "inner join mission_language_table on mission_table.missionId = mission_language_table.missionId  \n" +
+                "left join activity_table on mission_table.missionId = activity_table.missionId\n" +
+                " where mission_language_table.languageCode =:languageCode and mission_table.isActive=1 and activity_table.isActive=1 and mission_table.userId=:userId"
     )
-
-//    @Query("SELECT $missionActivityTaskDto from $MISSION_TABLE_NAME JOIN $ACTIVITY_TABLE_NAME on $ACTIVITY_TABLE_NAME.missionId = $MISSION_TABLE_NAME.missionId JOIN $TASK_TABLE_NAME on $TASK_TABLE_NAME.missionId = $MISSION_TABLE_NAME.missionId where $TASK_TABLE_NAME.taskId = :taskId AND $TASK_TABLE_NAME.activityId = :activityId AND $TASK_TABLE_NAME.missionId = :missionId")
-//    fun getMissionActivityTaskDto(missionId: Int, activityId: Int, taskId: Int): MissionActivityDao
-
-    @Query("UPDATE $MISSION_TABLE_NAME SET status = :status where  userId=:userId and missionId = :missionId")
-    fun updateMissionStatus(userId: String, missionId: Int, status: String)
-
-    @Query("UPDATE $MISSION_TABLE_NAME SET actualStartDate = :actualStartDate where  userId=:userId and missionId = :missionId")
-    fun updateActualStartDate(userId: String, missionId: Int, actualStartDate: String)
-
-    @Query("UPDATE $MISSION_TABLE_NAME SET actualCompletedDate = :actualCompletedDate where  userId=:userId and missionId = :missionId")
-    fun updateActualCompletedDate(userId: String, missionId: Int, actualCompletedDate: String)
-
-    @Transaction
-    fun markMissionCompleted(
-        userId: String,
-        missionId: Int,
-        status: String,
-        actualCompletedDate: String
-    ) {
-        updateMissionStatus(userId, missionId, status)
-        updateActualCompletedDate(userId, missionId, actualCompletedDate)
-    }
-
-    @Transaction
-    fun markMissionInProgress(
-        userId: String,
-        missionId: Int,
-        status: String,
-        actualStartDate: String
-    ) {
-        updateMissionStatus(userId, missionId, status)
-        updateActualStartDate(userId, missionId, actualStartDate)
-    }
+    fun getMissions(userId: String, languageCode: String): List<MissionUiModel>
 
     @Query("Update $MISSION_TABLE_NAME set isActive=0 where userId=:userId ")
     fun softDeleteMission(userId: String)
 
     @Query("Update $MISSION_TABLE_NAME set isActive=1 where userId=:userId  and missionId=:missionId")
     fun updateMissionActiveStatus(missionId: Int, userId: String)
+
+    @Query("SELECT count(*) FROM $MISSION_TABLE_NAME where  userId=:userId and missionId=:missionId ")
+    suspend fun getMissionCount(userId: String, missionId: Int): Int
 
 }

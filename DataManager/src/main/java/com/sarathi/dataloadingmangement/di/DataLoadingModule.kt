@@ -1,25 +1,30 @@
 package com.sarathi.dataloadingmangement.di
 
+import android.app.Application
 import android.content.Context
 import androidx.room.Room
-import com.nudge.core.NUDGE_GRANT_DATABASE
-import com.sarathi.dataloadingmangement.data.dao.ActivityTaskDao
-import com.sarathi.dataloadingmangement.data.dao.MissionActivityDao
+import com.nudge.core.preference.CoreSharedPrefs
+import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
+import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
+import com.sarathi.dataloadingmangement.data.dao.ActivityDao
+import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
+import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
+import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
+import com.sarathi.dataloadingmangement.data.dao.ContentDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
-import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
-import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
+import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.TaskAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.TaskDao
+import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
 import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.domain.DataLoadingScreenRepositoryImpl
 import com.sarathi.dataloadingmangement.domain.FetchDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataFromNetworkUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupFromNetworkUseCase
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepository
-import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepository
-import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepositoryImpl
-import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepository
-import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -59,27 +64,93 @@ class DataLoadingModule {
 
     @Provides
     @Singleton
+    fun provideActivityConfigDao(db: NudgeGrantDatabase) = db.activityConfigDao()
+
+    @Provides
+    @Singleton
+    fun provideActivityLanguageAttributeDao(db: NudgeGrantDatabase) =
+        db.activityLanguageAttributeDao()
+
+    @Provides
+    @Singleton
+    fun provideActivityLanguageDao(db: NudgeGrantDatabase) = db.activityLanguageDao()
+
+    @Provides
+    @Singleton
+    fun provideAttributeValueReferenceDao(db: NudgeGrantDatabase) = db.attributeValueReferenceDao()
+
+    @Provides
+    @Singleton
+    fun provideContentConfigDao(db: NudgeGrantDatabase) = db.contentConfigDao()
+
+    @Provides
+    @Singleton
+    fun provideMissionLanguageAttributeDao(db: NudgeGrantDatabase) =
+        db.missionLanguageAttributeDao()
+
+    @Provides
+    @Singleton
+    fun provideSubjectAttributeDao(db: NudgeGrantDatabase) = db.subjectAttributeDao()
+
+    @Provides
+    @Singleton
+    fun provideTaskAttributeDao(db: NudgeGrantDatabase) = db.taskAttributeDao()
+
+    @Provides
+    @Singleton
+    fun provideUiConfigDao(db: NudgeGrantDatabase) = db.uiConfigDao()
+
+    @Provides
+    @Singleton
     fun provideDataLoadingScreenRepository(
-//        corePrefRepo: CorePrefRepo,
         missionDao: MissionDao,
-        activityDao: MissionActivityDao,
-        activityTaskDao: ActivityTaskDao,
-        apiService: DataLoadingApiService
+        activityDao: ActivityDao,
+        taskDao: TaskDao,
+        activityConfigDao: ActivityConfigDao,
+        activityLanguageAttributeDao: ActivityLanguageAttributeDao,
+        activityLanguageDao: ActivityLanguageDao,
+        attributeValueReferenceDao: AttributeValueReferenceDao,
+        contentConfigDao: ContentConfigDao,
+        missionLanguageAttributeDao: MissionLanguageAttributeDao,
+        subjectAttributeDao: SubjectAttributeDao,
+        taskAttributeDao: TaskAttributeDao,
+        uiConfigDao: UiConfigDao,
+        apiService: DataLoadingApiService,
+        sharedPrefs: CoreSharedPrefs,
+        contentDao: ContentDao,
     ): IDataLoadingScreenRepository {
-        return DataLoadingScreenRepositoryImpl(/*corePrefRepo, */apiService,
-            missionDao,
-            activityDao,
-            activityTaskDao
+        return DataLoadingScreenRepositoryImpl(
+            apiService, missionDao, activityDao, taskDao,
+            activityConfigDao,
+            activityLanguageAttributeDao,
+            activityLanguageDao,
+            attributeValueReferenceDao,
+            contentConfigDao,
+            missionLanguageAttributeDao,
+            subjectAttributeDao,
+            taskAttributeDao,
+            uiConfigDao,
+            contentDao,
+            sharedPrefs,
         )
     }
 
     @Provides
     @Singleton
+    fun provideContentDao(db: NudgeGrantDatabase) = db.contentDao()
+
+    @Provides
+    @Singleton
     fun provideFetchDataUseCaseUseCase(
         repository: DataLoadingScreenRepositoryImpl,
+        application: Application
     ): FetchDataUseCase {
         return FetchDataUseCase(
             fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository),
+            fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
+                repository,
+                application
+            )
         )
     }
 

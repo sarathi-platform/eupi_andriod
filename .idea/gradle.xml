@@ -10,7 +10,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/CommunicationModule" />
+            <option value="$PROJECT_DIR$/ContentManager" />
             <option value="$PROJECT_DIR$/CoreModule" />
+            <option value="$PROJECT_DIR$/DataManager" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/baselinesurvey" />
             <option value="$PROJECT_DIR$/core" />

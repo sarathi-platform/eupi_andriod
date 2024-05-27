@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.ui.login
 
 import com.google.gson.Gson
+import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.model.request.LoginRequest
@@ -10,6 +11,7 @@ import javax.inject.Inject
 
 class LoginRepository @Inject constructor(
     val prefRepo: PrefRepo,
+    val coreSharedPrefs: CoreSharedPrefs
 ) : BaseRepository() {
 
     suspend fun generateOtp(mobileNumber: String): ApiResponseModel<String> {
@@ -20,6 +22,7 @@ class LoginRepository @Inject constructor(
 
     fun saveMobileNumber(mobileNumber: String) {
         prefRepo.saveMobileNumber(mobileNumber)
+        coreSharedPrefs.setMobileNo(mobileNumber)
     }
 
 }

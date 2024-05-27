@@ -14,5 +14,10 @@ interface CorePrefRepo {
 
     fun saveUserId(userId: String)
 
+    fun setMobileNo(mobileNo: String)
+    fun getMobileNo(): String
+    fun getUserType(): String
+    fun setUserType(userTypes: String)
     fun getUniqueUserIdentifier(): String
+
 }

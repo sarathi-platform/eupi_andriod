@@ -5,9 +5,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import com.sarathi.dataloadingmangement.model.response.MissionResponseModel
-import com.sarathi.dataloadingmangement.util.BLANK_STRING
-import com.sarathi.dataloadingmangement.util.MISSION_TABLE_NAME
+import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.MISSION_TABLE_NAME
+import com.sarathi.dataloadingmangement.model.mat.response.MissionResponse
+
 
 @Entity(tableName = MISSION_TABLE_NAME)
 data class MissionEntity(
@@ -18,15 +19,15 @@ data class MissionEntity(
     var id: Int = 0,
     var userId: String? = BLANK_STRING,
     var missionId: Int,
-    var missionName: String,
+    var startOffset: Int,
+    var endOffset: Int,
     var startDate: String,
     var endDate: String,
     var status: String,
     var activityTaskSize: Int,
-    var missionStatus: Int,
+    var missionStatus: String,
     var pendingActivity: Int,
     var activityComplete: Int,
-    var language: String?,
     var actualStartDate: String = BLANK_STRING,
     var actualCompletedDate: String = BLANK_STRING,
     var isActive: Int = 1
@@ -35,21 +36,22 @@ data class MissionEntity(
         fun getMissionEntity(
             userId: String,
             activityTaskSize: Int,
-            mission: MissionResponseModel
+            mission: MissionResponse,
         ): MissionEntity {
+
             return MissionEntity(
                 id = 0,
                 userId = userId,
-                missionId = mission.missionId,
-                missionName = mission.missionName,
-                startDate = mission.startDate,
-                endDate = mission.endDate,
-                status = "",
+                missionId = mission.id,
+                startDate = mission.actualStartDate,
+                endDate = mission.actualEndDate,
+                status = mission.missionStatus,
                 activityTaskSize = activityTaskSize,
-                missionStatus = 0,
+                missionStatus = mission.missionStatus,
                 pendingActivity = activityTaskSize,
                 activityComplete = 0,
-                language = mission.language
+                startOffset = mission.startOffset,
+                endOffset = mission.endOffset
             )
         }
 

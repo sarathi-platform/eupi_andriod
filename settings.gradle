@@ -16,5 +16,7 @@ include ':CoreModule'
 include ':core'
 include ':internetSpeedChecker'
 include ':missionActivityTask'
+include ':ContentManager'
 include ':DataManager'
 include ':smallGroupModule'
+

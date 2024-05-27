@@ -2,7 +2,7 @@ package com.sarathi.missionactivitytask.ui.grant_activity_screen.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import com.sarathi.dataloadingmangement.data.entities.MissionActivityEntity
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.domain.usecase.GetActivityUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
@@ -19,8 +19,8 @@ import javax.inject.Inject
 class ActivityScreenViewModel @Inject constructor(
     private val getActivityUseCase: GetActivityUseCase
 ) : BaseViewModel() {
-    private val _activityList = mutableStateOf<List<MissionActivityEntity>>(emptyList())
-    val activityList: State<List<MissionActivityEntity>> get() = _activityList
+    private val _activityList = mutableStateOf<List<ActivityUiModel>>(emptyList())
+    val activityList: State<List<ActivityUiModel>> get() = _activityList
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {

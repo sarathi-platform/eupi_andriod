@@ -1,4 +1,3 @@
-
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
@@ -62,7 +61,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             manifestPlaceholders.crashlyticsCollectionEnabled = "true"
         }
-        debug{
+        debug {
             shrinkResources false
             minifyEnabled false
             jniDebuggable = true
@@ -71,30 +70,30 @@ android {
         }
     }
     flavorDimensions "default"
-    productFlavors{
-        uat{
+    productFlavors {
+        uat {
             applicationIdSuffix = ".uat"
             manifestPlaceholders = [
-                    appName: "@string/app_name_uat",
-                    appIcon: "@mipmap/ic_launcher_uat",
+                    appName     : "@string/app_name_uat",
+                    appIcon     : "@mipmap/ic_launcher_uat",
                     appIconRound: "@mipmap/ic_launcher_uat_round"
             ]
             buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
         }
-        staging{
+        staging {
             applicationIdSuffix = ".stage"
             manifestPlaceholders = [
-                    appName: "@string/app_name_uat",
-                    appIcon: "@mipmap/ic_launcher_uat",
+                    appName     : "@string/app_name_uat",
+                    appIcon     : "@mipmap/ic_launcher_uat",
                     appIconRound: "@mipmap/ic_launcher_uat_round"
             ]
             buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
         }
-        production{
+        production {
             versionName prodVersion
             manifestPlaceholders = [
-                    appName: "@string/app_name",
-                    appIcon: "@mipmap/ic_launcher",
+                    appName     : "@string/app_name",
+                    appIcon     : "@mipmap/ic_launcher",
                     appIconRound: "@mipmap/ic_launcher_round"
             ]
             buildConfigField 'String', 'BASE_URL', '"https://sarathi.lokos.in/"'
@@ -280,11 +279,11 @@ dependencies {
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 
     //CSV Export
-    implementation ("com.opencsv:opencsv:5.3")
+    implementation("com.opencsv:opencsv:5.3")
 
     implementation 'com.google.firebase:firebase-storage:20.3.0'
-    implementation (project(":syncManager"))
-    implementation (project(":core"))
+    implementation(project(":syncManager"))
+    implementation(project(":core"))
     implementation(project(":internetSpeedChecker"))
     implementation(project(":CommunicationModule"))
     implementation(project(":missionActivityTask"))

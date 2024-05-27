@@ -47,18 +47,18 @@ fun ActivityScreen(
 }
 
 fun getContent(): List<BasicContent> {
-    val basicContent1 = BasicContent("IMAGE", "Content Image")
-    val basicContent2 = BasicContent("VIDEO", "Content Video")
-    val basicContent3 = BasicContent("FILE", "Content File")
-    val basicContent4 = BasicContent("IMAGE", "Content Image")
-    val basicContent5 = BasicContent("IMAGE", "Content Image")
-    val basicContent6 = BasicContent("IMAGE", "Content Image")
-    val basicContent7 = BasicContent("IMAGE", "Content Image")
-    val basicContent8 = BasicContent("IMAGE", "Content Image")
-    val basicContent9 = BasicContent("IMAGE", "Content Image")
-    val basicContent10 = BasicContent("IMAGE", "Content Image")
+    val basicContentResponse1 = BasicContent("IMAGE", "ContentResponse Image")
+    val basicContent2 = BasicContent("VIDEO", "ContentResponse Video")
+    val basicContent3 = BasicContent("FILE", "ContentResponse File")
+    val basicContent4 = BasicContent("IMAGE", "ContentResponse Image")
+    val basicContent5 = BasicContent("IMAGE", "ContentResponse Image")
+    val basicContent6 = BasicContent("IMAGE", "ContentResponse Image")
+    val basicContent7 = BasicContent("IMAGE", "ContentResponse Image")
+    val basicContent8 = BasicContent("IMAGE", "ContentResponse Image")
+    val basicContent9 = BasicContent("IMAGE", "ContentResponse Image")
+    val basicContent10 = BasicContent("IMAGE", "ContentResponse Image")
     return listOf(
-        basicContent1,
+        basicContentResponse1,
         basicContent2,
         basicContent3,
         basicContent4,

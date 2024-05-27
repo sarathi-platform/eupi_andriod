@@ -1,7 +1,8 @@
 package com.sarathi.missionactivitytask.domain.repository
 
-import com.sarathi.dataloadingmangement.data.entities.MissionEntity
+import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
+
 
 interface IMissionRepository {
-    suspend fun getAllActiveMission(): List<MissionEntity>
+    suspend fun getAllActiveMission(): List<MissionUiModel>
 }

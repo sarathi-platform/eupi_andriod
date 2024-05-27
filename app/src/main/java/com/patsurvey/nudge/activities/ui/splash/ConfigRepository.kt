@@ -43,15 +43,20 @@ class ConfigRepository @Inject constructor(
         }
     }
 
-    fun getAccessToken(): String?{
+    fun getAccessToken(): String? {
         return prefRepo.getAccessToken()
     }
+
     override fun onServerError(errorModel: ErrorModelWithApi?) {
         addDefaultLanguage(languageListDao)
     }
-    fun addDefaultLanguage(){
+
+    fun addDefaultLanguage() {
         addDefaultLanguage(languageListDao)
     }
 
+    fun getLoggedInUserType(): String {
+        return prefRepo.getLoggedInUserType()
+    }
 
 }
