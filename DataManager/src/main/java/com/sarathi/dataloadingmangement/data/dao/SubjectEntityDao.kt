@@ -3,8 +3,8 @@ package com.sarathi.dataloadingmangement.data.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import com.sarathi.dataloadingmangement.SUBJECT_TABLE
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
-import com.sarathi.dataloadingmangement.util.SUBJECT_TABLE
 
 @Dao
 interface SubjectEntityDao {

@@ -31,6 +31,7 @@ import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.BottomNavItem
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
+import com.patsurvey.nudge.utils.UPCM_USER
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -51,11 +52,13 @@ fun BottomBar(navController: NavHostController, prefRepo: PrefRepo) {
                 HomeScreens.BPC_PROGRESS_SCREEN.route
             else
                 HomeScreens.PROGRESS_SCREEN.route,
-            painterResource(R.drawable.progress_icon)
+            if (prefRepo.getLoggedInUserType() == UPCM_USER) painterResource(id = R.drawable.ic_mission_icon) else painterResource(
+                R.drawable.progress_icon
+            )
         ),
         BottomNavItem(
             stringResource(R.string.didis_item_text_plural),
-            HomeScreens.DIDI_SCREEN.route,
+            if (prefRepo.getLoggedInUserType() == UPCM_USER) HomeScreens.DIDI_TAB_SCREEN.route else HomeScreens.DIDI_SCREEN.route,
             painterResource(R.drawable.didi_icon)
         )
     )

@@ -30,7 +30,7 @@ import com.sarathi.missionactivitytask.ui.theme.dimen_8_dp
 fun BasicTextWithIconComponent(
     modifier: Modifier = Modifier,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
-    verticalAlignment: Alignment.Vertical = Alignment.Top,
+    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     spacerWidth: Dp = dimen_8_dp,
     iconContent: @Composable () -> Unit,
     textContent: @Composable () -> Unit

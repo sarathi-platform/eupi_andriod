@@ -30,6 +30,6 @@ class FetchDidiDetailsFromDbRepositoryImpl @Inject constructor(
     }
 
     override fun getUniqueUserId() = /*prefRepo.getUniqueUserIdentifier()*/
-        "Ultra Poor change maker (UPCM)_6789543210"
+        "Ultra Poor change maker (UPCM)_6789543210" //TODO Temp code remove after integrating corePref
 
 }

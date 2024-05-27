@@ -26,7 +26,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
-import com.sarathi.dataloadingmangement.util.BLANK_STRING
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.missionactivitytask.ui.theme.brownDark
 import com.sarathi.missionactivitytask.ui.theme.defaultCardElevation
 import com.sarathi.missionactivitytask.ui.theme.dimen_10_dp

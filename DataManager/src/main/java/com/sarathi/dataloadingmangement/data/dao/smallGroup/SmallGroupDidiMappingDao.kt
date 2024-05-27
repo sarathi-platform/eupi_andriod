@@ -3,8 +3,9 @@ package com.sarathi.dataloadingmangement.data.dao.smallGroup
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import com.sarathi.dataloadingmangement.SMALL_GROUP_DIDI_MAPPING_TABLE
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
-import com.sarathi.dataloadingmangement.util.SMALL_GROUP_DIDI_MAPPING_TABLE
+import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
 
 @Dao
 interface SmallGroupDidiMappingDao {
@@ -17,6 +18,9 @@ interface SmallGroupDidiMappingDao {
 
     @Query("SELECT * from $SMALL_GROUP_DIDI_MAPPING_TABLE where userId = :userId")
     suspend fun getAllMappingForUser(userId: String): List<SmallGroupDidiMappingEntity>
+
+    @Query("SELECT userId, smallGroupId, smallGroupName, count(*) as didiCount from small_group_didi_mapping_table where userId = :userId and status = 1 group by smallGroupId")
+    suspend fun getAllMappingForUserGroupBySmallGroupId(userId: String): List<SmallGroupSubTabUiModel>
 
     @Query("SELECT * from $SMALL_GROUP_DIDI_MAPPING_TABLE where userId = :userId and smallGroupId = :smallGroupId")
     suspend fun getAllMappingForSmallGroup(

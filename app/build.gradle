@@ -287,6 +287,7 @@ dependencies {
     implementation(project(":internetSpeedChecker"))
     implementation(project(":CommunicationModule"))
     implementation(project(":missionActivityTask"))
+    implementation(project(":smallGroupModule"))
     implementation 'androidx.work:work-runtime-ktx:2.7.1'
     kapt("androidx.hilt:hilt-compiler:1.0.0")
 

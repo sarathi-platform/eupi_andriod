@@ -12,9 +12,11 @@ import com.sarathi.dataloadingmangement.data.dao.ContentDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
+import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigLanguageAttributesEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
@@ -26,8 +28,10 @@ import com.sarathi.dataloadingmangement.data.entities.ContentConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionLanguageEntity
 import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
+import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.data.entities.TaskAttributesEntity
 import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 
 const val NUDGE_GRANT_DATABASE_VERSION = 1
 
@@ -45,8 +49,9 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
         TaskAttributesEntity::class,
         UiConfigEntity::class,
         ContentConfigEntity::class,
-        Content::class
-
+        Content::class,
+        SubjectEntity::class,
+        SmallGroupDidiMappingEntity::class
     ],
     version = NUDGE_GRANT_DATABASE_VERSION,
     exportSchema = false
@@ -67,6 +72,10 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun taskAttributeDao(): TaskAttributeDao
     abstract fun uiConfigDao(): UiConfigDao
 
+
+    abstract fun subjectEntityDao(): SubjectEntityDao
+
+    abstract fun smallGroupDidiMappingDao(): SmallGroupDidiMappingDao
 
     class NudgeDatabaseCallback : Callback()
 

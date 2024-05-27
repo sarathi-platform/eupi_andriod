@@ -99,5 +99,6 @@ dependencies {
     implementation("com.opencsv:opencsv:5.3")
     implementation(project(":core"))
 
-
+    //Coil
+    implementation("io.coil-kt:coil-compose:2.0.0-rc01")
 }

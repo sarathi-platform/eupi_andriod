@@ -17,3 +17,6 @@ const val ACTIVITY_CONFIG_LANGUAGE_ATTRIBUTE_TABLE_NAME = "activity_config_langu
 const val TASK_ATTRIBUTE_TABLE_NAME = "task_attribute_table"
 const val SUBJECT_ATTRIBUTE_TABLE_NAME = "subject_attribute_table"
 const val ATTRIBUTE_VALUE_REFERENCE_ENTITY_TABLE_NAME = "attribute_value_reference_table"
+
+const val SUBJECT_TABLE = "subject_table"
+const val SMALL_GROUP_DIDI_MAPPING_TABLE = "small_group_didi_mapping_table"

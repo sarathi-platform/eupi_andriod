@@ -48,10 +48,6 @@ import com.nrlm.baselinesurvey.database.entity.SurveyEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.database.entity.VillageEntity
 import com.nrlm.baselinesurvey.utils.BaselineLogger
-import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
-import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
-import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
-import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 import java.sql.SQLException
 
 // Increase DB Version everytime any change is made to any table or a new table is added.
@@ -74,9 +70,7 @@ const val NUDGE_BASELINE_DATABASE_VERSION = 2
         SectionAnswerEntity::class,
         FormQuestionResponseEntity::class,
         InputTypeQuestionAnswerEntity::class,
-        ContentEntity::class,
-        SubjectEntity::class,     //TODO Temp code tp be removed when MAT is completed
-        SmallGroupDidiMappingEntity::class     //TODO Temp code tp be removed when MAT is completed
+        ContentEntity::class
     ],
     version = NUDGE_BASELINE_DATABASE_VERSION,
     exportSchema = false
@@ -120,12 +114,6 @@ abstract class NudgeBaselineDatabase: RoomDatabase()  {
     abstract fun formQuestionResponseDao(): FormQuestionResponseDao
 
     abstract fun inputTypeQuestionAnswerDao(): InputTypeQuestionAnswerDao
-
-    //TODO Temp code tp be removed when MAT is completed
-    abstract fun subjectEntityDao(): SubjectEntityDao
-
-    //TODO Temp code tp be removed when MAT is completed
-    abstract fun smallGroupDidiMappingDao(): SmallGroupDidiMappingDao
 
     companion object {
 

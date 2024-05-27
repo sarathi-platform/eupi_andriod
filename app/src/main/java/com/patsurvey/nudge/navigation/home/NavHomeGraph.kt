@@ -76,6 +76,8 @@ import com.patsurvey.nudge.utils.ARG_VILLAGE_ID
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.sarathi.missionactivitytask.navigation.MatNavigation
+import com.sarathi.smallgroupmodule.navigation.SmallGroupNavigation
+import com.sarathi.smallgroupmodule.ui.didiTab.presentation.DidiTabScreen
 
 @Composable
 fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
@@ -131,6 +133,11 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 }
             )
         }
+
+        composable(route = HomeScreens.DIDI_TAB_SCREEN.route) {
+            DidiTabScreen(navHostController = navController)
+        }
+
         detailsNavGraph(navController = navController)
         addDidiNavGraph(navController = navController)
         socialMappingNavGraph(navController = navController)
@@ -138,9 +145,10 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         patNavGraph(navController = navController)
         settingNavGraph(navController = navController)
         voEndorsmentNavGraph(navController = navController)
-        logoutGraph(navController =navController,prefRepo)
+        logoutGraph(navController = navController, prefRepo)
         bpcDidiListNavGraph(navController = navController)
         MatNavigation(navController = navController)
+        SmallGroupNavigation(navController = navController)
     }
 }
 
@@ -150,6 +158,8 @@ sealed class HomeScreens(val route: String) {
     object BPC_PROGRESS_SCREEN : HomeScreens(route = "bpc_progress_screen")
 
     object DIDI_SCREEN : HomeScreens(route = "didi_screen/{$ARG_PAGE_FROM}")
+
+    object DIDI_TAB_SCREEN : HomeScreens("didi_tab_screen")
 
     object VILLAGE_SELECTION_SCREEN : HomeScreens(route = "home_village_selection_screen")
 }

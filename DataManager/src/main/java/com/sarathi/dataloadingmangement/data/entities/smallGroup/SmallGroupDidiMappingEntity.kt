@@ -3,8 +3,8 @@ package com.sarathi.dataloadingmangement.data.entities.smallGroup
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.sarathi.dataloadingmangement.SMALL_GROUP_DIDI_MAPPING_TABLE
 import com.sarathi.dataloadingmangement.model.response.SmallGroupMappingResponseModel
-import com.sarathi.dataloadingmangement.util.SMALL_GROUP_DIDI_MAPPING_TABLE
 
 @Entity(tableName = SMALL_GROUP_DIDI_MAPPING_TABLE)
 data class SmallGroupDidiMappingEntity(

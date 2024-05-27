@@ -46,7 +46,7 @@ fun ToolBarWithMenuComponent(
     onBackIconClick: () -> Unit,
     onSearchValueChange: (String) -> Unit,
     isFilterSelected: (Boolean) -> Unit,
-    isDataAvailable: Boolean = true,
+    isDataAvailable: Boolean = false,
     onBottomUI: @Composable () -> Unit,
     tabBarView: @Composable () -> Unit,
     onContentUI: @Composable (PaddingValues) -> Unit

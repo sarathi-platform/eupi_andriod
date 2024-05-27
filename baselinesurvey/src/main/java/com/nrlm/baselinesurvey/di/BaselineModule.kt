@@ -148,16 +148,6 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivity
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
-import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
-import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
-import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupFromNetworkUseCase
-import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepository
-import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepository
-import com.sarathi.smallgroupmodule.ui.didiTab.domain.repository.FetchDidiDetailsFromDbRepository
-import com.sarathi.smallgroupmodule.ui.didiTab.domain.repository.FetchDidiDetailsFromDbRepositoryImpl
-import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.DidiTabUseCase
-import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.FetchDidiDetailsFromDbUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -806,44 +796,5 @@ object BaselineModule {
         )
     }
 
-    @Provides
-    @Singleton
-    fun provideFetchDidiDetailsFromDbRepository(
-//        corePrefRepo: CorePrefRepo,
-        subjectEntityDao: SubjectEntityDao,
-        smallGroupDidiMappingDao: SmallGroupDidiMappingDao
-    ): FetchDidiDetailsFromDbRepository {
-        return FetchDidiDetailsFromDbRepositoryImpl(/*corePrefRepo, */subjectEntityDao,
-            smallGroupDidiMappingDao
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideFetchDidiDetailsFromDbUseCase(
-        fetchDidiDetailsFromDbRepository: FetchDidiDetailsFromDbRepository
-    ): FetchDidiDetailsFromDbUseCase {
-        return FetchDidiDetailsFromDbUseCase(fetchDidiDetailsFromDbRepository)
-    }
-
-    @Provides
-    @Singleton
-    fun provideDidiTabUseCase(
-        fetchDidiDetailsFromDbRepository: FetchDidiDetailsFromDbRepository,
-        fetchDidiDetailsFromNetworkRepository: FetchDidiDetailsFromNetworkRepository,
-        fetchSmallGroupDetailsFromNetworkRepository: FetchSmallGroupDetailsFromNetworkRepository
-    ): DidiTabUseCase {
-        return DidiTabUseCase(
-            fetchDidiDetailsFromDbUseCase = FetchDidiDetailsFromDbUseCase(
-                fetchDidiDetailsFromDbRepository
-            ),
-            fetchDidiDetailsFromNetworkUseCase = FetchDidiDetailsFromNetworkUseCase(
-                fetchDidiDetailsFromNetworkRepository
-            ),
-            fetchSmallGroupFromNetworkUseCase = FetchSmallGroupFromNetworkUseCase(
-                fetchSmallGroupDetailsFromNetworkRepository
-            )
-        )
-    }
 
 }

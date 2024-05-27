@@ -15,16 +15,25 @@ import com.sarathi.dataloadingmangement.data.dao.ContentDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
+import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.domain.DataLoadingScreenRepositoryImpl
 import com.sarathi.dataloadingmangement.domain.FetchDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailsUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupFromNetworkUseCase
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -100,6 +109,16 @@ class DataLoadingModule {
     @Singleton
     fun provideUiConfigDao(db: NudgeGrantDatabase) = db.uiConfigDao()
 
+
+    @Provides
+    @Singleton
+    fun providesSubjectEntityDao(db: NudgeGrantDatabase) = db.subjectEntityDao()
+
+    @Provides
+    @Singleton
+    fun providesSmallGroupDidiMappingDao(db: NudgeGrantDatabase) = db.smallGroupDidiMappingDao()
+
+
     @Provides
     @Singleton
     fun provideDataLoadingScreenRepository(
@@ -150,7 +169,8 @@ class DataLoadingModule {
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 repository,
                 application
-            )
+            ),
+            fetchUserDetailsUseCase = FetchUserDetailsUseCase(repository)
         )
     }
 

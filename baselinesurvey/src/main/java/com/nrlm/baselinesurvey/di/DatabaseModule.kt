@@ -117,15 +117,4 @@ object DatabaseModule {
     fun providesApiStatusDao(syncDb: SyncManagerDatabase) = syncDb.apiStatusDao()
 
 
-    //TODO Temp code tp be removed when MAT is completed
-    @Provides
-    @Singleton
-    fun providesSubjectEntityDao(db: NudgeBaselineDatabase) = db.subjectEntityDao()
-
-    //TODO Temp code tp be removed when MAT is completed
-    @Provides
-    @Singleton
-    fun providesSmallGroupDidiMappingDao(db: NudgeBaselineDatabase) = db.smallGroupDidiMappingDao()
-
-
 }

@@ -58,6 +58,7 @@ class MissionScreenViewModel @Inject constructor(
     private fun fetchAllData(callBack: () -> Unit) {
         try {
             viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+                fetchUserDetails(fetchDataUseCase)
                 fetchMissionData(fetchDataUseCase) { callBack() }
             }
         } catch (ex: Exception) {
@@ -65,6 +66,10 @@ class MissionScreenViewModel @Inject constructor(
             callBack()
         }
 
+    }
+
+    private suspend fun fetchUserDetails(fetchDataUseCase: FetchDataUseCase) {
+        fetchDataUseCase.fetchUserDetailsUseCase.invoke()
     }
 
     private fun fetchMissionData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {

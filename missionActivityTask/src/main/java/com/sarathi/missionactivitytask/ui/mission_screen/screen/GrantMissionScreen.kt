@@ -40,7 +40,7 @@ fun GrantMissionScreen(
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
         isSearch = true,
-        isDataAvailable = viewModel.missionList.value.isEmpty(),
+        isDataAvailable = viewModel.missionList.value.isNotEmpty(),
         onSearchValueChange = {},
         onBottomUI = {
         },

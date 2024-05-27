@@ -20,10 +20,17 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_MOBILE_NO_NAME = "mobileNo"
         const val PREF_USER_TYPE = "userType"
 
+        const val PREF_KEY_NAME = "key_name"
+        const val PREF_KEY_EMAIL = "key_email"
+        const val PREF_KEY_IDENTITY_NUMBER = "key_identity_number"
+        const val PREF_KEY_PROFILE_IMAGE = "profile_image"
+        const val PREF_KEY_ROLE_NAME = "role_name"
+        const val PREF_KEY_TYPE_NAME = "type_name"
+        const val PREF_STATE_ID = "stateId"
 
         const val PREF_KEY_USER_NAME = "key_user_name"
 
-        const val PREF_USER_TYPE = "pref_user_type"
+        //        const val PREF_USER_TYPE = "pref_user_type"
         const val PREF_MOBILE_NUMBER = "pref_mobile_number"
 
 
@@ -114,10 +121,44 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         prefs.edit().putString(PREF_KEY_USER_NAME, userId).apply()
     }
 
-    override fun getUniqueUserIdentifier(): String {
-        val userType = prefs.getString(PREF_USER_TYPE, BLANK_STRING) ?: BLANK_STRING
-        val userMobile = prefs.getString(PREF_MOBILE_NUMBER, BLANK_STRING) ?: BLANK_STRING
-        return "${userType}_${userMobile}"
+    override fun savePref(key: String, value: String) {
+        prefs.edit().putString(key, value).apply()
+    }
+
+    override fun savePref(key: String, value: Int) {
+        prefs.edit().putInt(key, value).apply()
+    }
+
+    override fun savePref(key: String, value: Boolean) {
+        prefs.edit().putBoolean(key, value).apply()
+    }
+
+    override fun savePref(key: String, value: Long) {
+        prefs.edit().putLong(key, value).apply()
+    }
+
+    override fun savePref(key: String, value: Float) {
+        prefs.edit().putFloat(key, value).apply()
+    }
+
+    override fun getPref(key: String, defaultValue: Int): Int {
+        return prefs.getInt(key, defaultValue)
+    }
+
+    override fun getPref(key: String, defaultValue: String): String? {
+        return prefs.getString(key, defaultValue)
+    }
+
+    override fun getPref(key: String, defaultValue: Boolean): Boolean {
+        return prefs.getBoolean(key, defaultValue)
+    }
+
+    override fun getPref(key: String, defaultValue: Long): Long {
+        return prefs.getLong(key, defaultValue)
+    }
+
+    override fun getPref(key: String, defaultValue: Float): Float {
+        return prefs.getFloat(key, defaultValue)
     }
 
 }

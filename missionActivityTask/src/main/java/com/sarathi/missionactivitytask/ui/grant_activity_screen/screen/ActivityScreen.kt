@@ -27,7 +27,7 @@ fun ActivityScreen(
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
         isSearch = true,
-        isDataAvailable = viewModel.activityList.value.isEmpty(),
+        isDataAvailable = viewModel.activityList.value.isNotEmpty(),
         onSearchValueChange = {
 
         },

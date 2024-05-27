@@ -3,37 +3,34 @@ package com.sarathi.smallgroupmodule.ui.didiTab.presentation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.sarathi.missionactivitytask.ui.components.CustomVerticalSpacer
+import androidx.navigation.NavHostController
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
-import com.sarathi.smallgroupmodule.ui.CustomTabLayout
+import com.sarathi.smallgroupmodule.ui.TabItem
 import com.sarathi.smallgroupmodule.ui.didiTab.viewModel.DidiTabViewModel
 import com.sarathi.smallgroupmodule.ui.didiTab.viewModel.TestClass
-import com.sarathi.smallgroupmodule.ui.theme.blueDark
+import com.sarathi.smallgroupmodule.ui.smallGroupSubTab.presentation.SmallGroupSubTab
 import com.sarathi.smallgroupmodule.ui.theme.dimen_10_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_16_dp
-import com.sarathi.smallgroupmodule.ui.theme.dimen_8_dp
 import com.sarathi.dataloadingmangement.R as DataLoadingRes
-import com.sarathi.missionactivitytask.R as MatRes
 import com.sarathi.smallgroupmodule.R as Res
 
 @Composable
 fun DidiTabScreen(
     modifier: Modifier = Modifier,
+    navHostController: NavHostController,
     didiTabViewModel: DidiTabViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -46,12 +43,17 @@ fun DidiTabScreen(
 
     val didiList = didiTabViewModel.didiList
 
+    val tabs = listOf("Didi", "Small Group")
+    var tabIndex by remember { mutableStateOf(0) }
+
+
     ToolBarWithMenuComponent(
         title = stringResource(id = DataLoadingRes.string.app_name),
         modifier = Modifier,
         isSearch = true,
         iconResId = Res.drawable.ic_sarathi_logo,
         onBackIconClick = { /*TODO*/ },
+        isDataAvailable = didiList.value.isNotEmpty(),
         isFilterSelected = {},
         onSearchValueChange = {
 
@@ -70,43 +72,52 @@ fun DidiTabScreen(
             verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
         ) {
 
-            CustomTabLayout()
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
 
+                tabs.forEachIndexed { index, tab ->
 
-            Row(Modifier.fillMaxWidth()) {
+                    val isSelected = remember {
+                        derivedStateOf {
+                            tabIndex == index
+                        }
+                    }
 
-                Icon(
-                    painter = painterResource(id = MatRes.drawable.didi_icon),
-                    contentDescription = "",
-                    tint = blueDark
-                )
-
-                Spacer(
-                    modifier = Modifier
-                        .width(dimen_8_dp)
-                )
-
-                Text(text = "Total Didis - ${didiTabViewModel.totalCount.value}")
+                    val count = getCount(index, didiTabViewModel)
+                    TabItem(
+                        isSelected = isSelected.value,
+                        onClick = {
+                            tabIndex = index
+                        },
+                        text = tab + " ($count)"
+                    )
+                }
 
             }
 
-            CustomVerticalSpacer()
-
-            LazyColumn(modifier = Modifier) {
-
-                itemsIndexed(didiList.value) { index, item ->
-
-                    DidiTabCard(subjectEntity = item) {
-
-                    }
-
-
-                }
-
+            when (tabIndex) {
+                0 -> DidiSubTab(didiTabViewModel = didiTabViewModel, didiList = didiList.value)
+                1 -> SmallGroupSubTab(
+                    didiTabViewModel = didiTabViewModel,
+                    smallGroupList = didiTabViewModel.smallGroupList.value,
+                    navHostController = navHostController
+                )
             }
 
         }
 
     }
 
+}
+
+fun getCount(tabIndex: Int, didiTabViewModel: DidiTabViewModel): Int {
+    return when (tabIndex) {
+        0 -> didiTabViewModel.totalCount.value
+        1 -> didiTabViewModel.totalSmallGroupCount.value
+        else -> {
+            0
+        }
+    }
 }

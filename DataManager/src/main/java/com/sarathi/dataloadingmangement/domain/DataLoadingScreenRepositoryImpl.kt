@@ -3,6 +3,12 @@ package com.sarathi.dataloadingmangement.domain
 
 import android.util.Log
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_EMAIL
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_IDENTITY_NUMBER
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_PROFILE_IMAGE
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_ROLE_NAME
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_TYPE_NAME
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_STATE_ID
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageAttributeDao
@@ -38,6 +44,7 @@ import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
 import com.sarathi.dataloadingmangement.model.mat.response.UiConfig
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
+import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
 import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepository
 import javax.inject.Inject
 
@@ -330,6 +337,21 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
 
     override suspend fun getContentData(): List<Content> {
         return contentDao.getContentData()
+    }
+
+    override suspend fun getUserDetailsFromNetwork(languageId: String): ApiResponseModel<UserDetailsResponse> {
+        return apiInterface.userAndVillageListAPI(languageId)
+    }
+
+    override fun saveUserDetails(userDetails: UserDetailsResponse) {
+        sharedPrefs.saveUserId(userDetails.username ?: "")
+        sharedPrefs.savePref(PREF_KEY_EMAIL, userDetails.email ?: "")
+        sharedPrefs.savePref(PREF_KEY_IDENTITY_NUMBER, userDetails.identityNumber ?: "")
+        sharedPrefs.savePref(PREF_KEY_PROFILE_IMAGE, userDetails.profileImage ?: "")
+        sharedPrefs.savePref(PREF_KEY_ROLE_NAME, userDetails.roleName ?: "")
+        sharedPrefs.savePref(PREF_KEY_TYPE_NAME, userDetails.typeName ?: "")
+        sharedPrefs.savePref(PREF_STATE_ID, userDetails.referenceId.first().stateId ?: -1)
+
     }
 
 }
