@@ -99,5 +99,10 @@ dependencies {
     //CSV Export
     implementation("com.opencsv:opencsv:5.3")
     implementation(project(":DataManager"))
-    implementation(project(":exoplayermanager"))
+    implementation("com.google.android.exoplayer:exoplayer:2.18.1")
+    implementation("com.github.barteksc:android-pdf-viewer:3.2.0-beta.1")
+    implementation("com.google.accompanist:accompanist-coil:0.15.0")
+    implementation("io.coil-kt:coil-compose:2.1.0")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+
 }

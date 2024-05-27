@@ -10,5 +10,16 @@ class ContentDownloaderRepositoryImpl @Inject constructor(
 ) : BaseRepository(),
     IContentDownloader {
     override suspend fun getContentDataFromDb(): List<Content> = contentDao.getContentData()
+    override suspend fun getContentValue(contentKey: String): String {
+        return contentDao.getContentValue(contentKey, 2)
+    }
+
+    override suspend fun getLimitedContentData(limit: Int): List<Content> {
+        return contentDao.getLimitedData(limit)
+    }
+
+    override suspend fun getContentCount(): Int {
+        return contentDao.getContentCount()
+    }
 
 }

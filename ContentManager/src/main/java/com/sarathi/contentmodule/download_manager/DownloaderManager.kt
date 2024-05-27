@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.Context
 import android.database.Cursor
+import android.net.Uri
 import android.os.Environment
 import android.webkit.MimeTypeMap
 import androidx.compose.runtime.mutableStateMapOf
@@ -52,6 +53,10 @@ class DownloaderManager @Inject constructor(@ApplicationContext private val cont
     fun isFilePathExists(filePath: String): Boolean {
         val fileName = getFileNameFromURL(filePath)
         return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}").exists()
+    }
+    fun getFilePath(filePath: String): File {
+        val fileName = getFileNameFromURL(filePath)
+        return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}")
     }
 
     @SuppressLint("Range")
@@ -126,5 +131,10 @@ class DownloaderManager @Inject constructor(@ApplicationContext private val cont
                 "Downloading files..."
             )
         }
+    }
+
+    fun getFilePathUri(filePath: String): Uri? {
+        val isFilePathExists = isFilePathExists(filePath)
+        return if (isFilePathExists) Uri.fromFile(getFilePath(filePath)) else null
     }
 }

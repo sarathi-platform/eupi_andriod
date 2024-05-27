@@ -43,12 +43,16 @@ fun BasicContentComponent(
     contentUrl: String = BLANK_STRING,
     contentValue: String = BLANK_STRING,
     contentShape: ContentShape = ContentShape.CIRCLE,
-    contentTitle: String = "",
-    onClick: () -> Unit,
+    isLimitContentData: Boolean = false,
+    totalContent: Int = 0,
+    contentTitle: String = BLANK_STRING,
+    onClick: () -> Unit
 ) {
     ContentView(
         contentType = contentType,
         contentTitle = contentTitle,
+        isLimitContentData = isLimitContentData,
+        totalContent = totalContent,
         onClick = onClick
     )
 }
@@ -56,7 +60,9 @@ fun BasicContentComponent(
 @Composable
 private fun ContentView(
     contentType: String,
-    contentTitle: String = BLANK_STRING,
+    contentTitle: String,
+    isLimitContentData: Boolean,
+    totalContent: Int,
     onClick: () -> Unit
 ) {
     Column(
@@ -66,26 +72,30 @@ private fun ContentView(
             onClick()
         }
     ) {
-        Box(
-            modifier = Modifier
-                .padding(start = 16.dp, end = 16.dp)
-                .size(60.dp)
-                .clip(shape = CircleShape)
-                .border(
-                    1.dp, color = lightGray2, RoundedCornerShape(100.dp)
+        if (isLimitContentData) {
+            ButtonComponent(title = "+${totalContent} More")
+        } else {
+            Box(
+                modifier = Modifier
+                    .padding(start = 16.dp, end = 16.dp)
+                    .size(60.dp)
+                    .clip(shape = CircleShape)
+                    .border(
+                        1.dp, color = lightGray2, RoundedCornerShape(100.dp)
+                    )
+                    .background(color = Color.Transparent)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                ContentData(contentType = contentType)
+            }
+            if (contentTitle.isNotBlank()) {
+                Text(
+                    text = contentTitle,
+                    fontSize = 10.sp,
+                    style = smallTextStyleMediumWeight2
                 )
-                .background(color = Color.Transparent)
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            ContentData(contentType = contentType)
-        }
-        if (contentTitle.isNotBlank()) {
-            Text(
-                text = contentTitle,
-                fontSize = 10.sp,
-                style = smallTextStyleMediumWeight2
-            )
+            }
         }
     }
 }
@@ -104,7 +114,7 @@ fun ContentData(contentType: String) {
 
         FileType.File.name -> {
             val painter: Painter =
-                painterResource(id = R.drawable.ic_sarathi_logo)
+                painterResource(id = R.drawable.ic_file_place_holder_icon)
             Image(painter = painter, contentDescription = null)
         }
     }

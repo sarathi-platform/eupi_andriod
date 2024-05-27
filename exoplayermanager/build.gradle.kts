@@ -127,4 +127,6 @@ dependencies {
     implementation("androidx.media3:media3-common:$media3_version")
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
+    implementation(project(":ContentManager"))
+
 }

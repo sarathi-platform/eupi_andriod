@@ -1,104 +1,135 @@
 [
   {
-    "contentKey": "B_Household-Info",
-    "contentType": "text",
-    "contentValue": "Make sure that the respondent is made comfortable during the process as this part involves a lot of personal information that the Didi needs to divulge.",
-    "languageCode": 2
+    "contentKey": "Kalimba",
+    "contentType": "Audio",
+    "contentValue": "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3",
+    "languageCode": 2,
+    "contentName": "Audio"
+
   },
   {
-    "contentKey": "M2LoggingIntoSarathiApp",
-    "contentType": "Video",
-    "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2LoggingIntoSarathiApp.mp4",
-    "languageCode": 2
+    "contentKey": "sample",
+    "contentType": "File",
+    "contentValue": "https://www.sharedfilespro.com/shared-files/38/sample.pdf",
+    "languageCode": 2,
+    "contentName": "File"
   },
   {
     "contentKey": "M2",
     "contentType": "Image",
     "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2.png",
-    "languageCode": 2
+    "languageCode": 2,
+    "contentName": "Image"
+  },
+  {
+    "contentKey": "M2LoggingIntoSarathiApp",
+    "contentType": "Video",
+    "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2LoggingIntoSarathiApp.mp4",
+    "languageCode": 2,
+    "contentName": "Video"
+
   },
   {
     "contentKey": "B3.2_Fully-Immunized",
     "contentType": "text",
     "contentValue": "Ask whether the child has gotten all the vaccines till 12 months cross-check from the MCP card.",
-    "languageCode": 2
+    "languageCode": 2,
+    "contentName": "text"
+
   },
   {
     "contentKey": "C_Food-Security-Nutritional-Diversity",
     "contentType": "text",
     "contentValue": "Section level: Try asking: What is the most common meal? How many meals does everyone have? (breakfast, lunch, dinner)",
-    "languageCode": 2
+    "languageCode": 2,
+    "contentName": "text"
+
   },
   {
     "contentKey": "C2.1_Food-Shortage",
     "contentType": "text",
     "contentValue": "Autumn means the time after rains during Durga Pooja time. \nSpring means Basant Pachami ka time after Winter.",
-    "languageCode": 2
+    "languageCode": 2,
+    "contentName": "text"
+
   },
   {
     "contentKey": "C3_Kitchen-garden",
     "contentType": "text",
     "contentValue": "Do you grow something in  your home/ Aangan?",
-    "languageCode": 2
+    "languageCode": 2,
+    "contentName": "text"
   },
   {
     "contentKey": "M3AppOverview",
     "contentType": "Video",
     "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3AppOverview.mp4",
-    "languageCode": 2
+    "languageCode": 2,
+    "contentName": "Video"
+
   },
   {
     "contentKey": "M5SocialMapping",
     "contentType": "Video",
     "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5SocialMapping.mp4",
-    "languageCode": 2
+    "languageCode": 2,
+    "contentName": "Video"
+
   },
   {
     "contentKey": "M6ParticipatoryWealthRanking",
     "contentType": "Video",
     "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6ParticipatoryWealthRanking.mp4",
-    "languageCode": 2
+    "languageCode": 2,
+    "contentName": "Video"
+
   },
   {
     "contentKey": "M7PATSurveyOverview",
     "contentType": "Video",
     "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7PATSurveyOverview.mp4",
-    "languageCode": 2
+    "languageCode": 2,
+    "contentName": "Video"
+
   },
   {
     "contentKey": "M8FillingPATSurveyPart1",
     "contentType": "Video",
     "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8FillingPATSurveyPart1.mp4",
-    "languageCode": 2
+    "languageCode": 2,
+    "contentName": "Video"
+
   },
   {
     "contentKey": "M3",
     "contentType": "Image",
     "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3.png",
-    "languageCode": 2
+    "languageCode": 2,
+    "contentName": "Image"
+
   },
   {
     "contentKey": "M4",
     "contentType": "Image",
     "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4.png",
-    "languageCode": 2
+    "languageCode": 2,
+    "contentName": "Image"
+
   },
   {
     "contentKey": "M5",
     "contentType": "Image",
     "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5.png",
-    "languageCode": 2
+    "languageCode": 2,
+    "contentName": "Image"
+
   },
   {
     "contentKey": "M6",
     "contentType": "Image",
     "contentValue": "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6.png",
-    "languageCode": 2
-  },
-  {
-    "contentKey": "sample",
-    "contentType": "File",
-    "contentValue": "https://www.sharedfilespro.com/shared-files/38/?sample.pdf",
-    "languageCode": 2
+    "languageCode": 2,
+    "contentName": "Image"
+
   }
 ]

@@ -15,5 +15,6 @@ data class Content(
     val contentType: String,
     var languageCode: Int,
     var thumbUrl: String,
-    var isDownload: Int
+    var isDownload: Int,
+    var contentName: String
 )

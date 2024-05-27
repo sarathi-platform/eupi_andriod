@@ -138,3 +138,4 @@ val liteRed = Color(0xFFFCF3E2)
 val searchSectionTitleColor = Color(0xFF7D7572)
 
 val summaryCardViewBlue = Color(0xFF325DF6)
+
