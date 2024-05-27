@@ -58,8 +58,9 @@ fun TabItem(
     val tabBgColor: Color = if (isSelected) tabBgColor else white
     val borderColor: Color = if (isSelected) tabBgColor else borderGrey
     Box(
-        modifier = Modifier.. border (dimen_1_dp, borderColor, RoundedCornerShape(dimen_6_dp)
-    )
+        modifier = Modifier.border(
+            dimen_1_dp, borderColor, RoundedCornerShape(dimen_6_dp)
+        )
     ) {
 
 
@@ -78,3 +79,4 @@ fun TabItem(
             textAlign = TextAlign.Center,
         )
     }
+}
