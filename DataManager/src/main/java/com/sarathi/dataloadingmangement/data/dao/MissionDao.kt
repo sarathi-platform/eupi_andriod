@@ -9,6 +9,7 @@ import com.sarathi.dataloadingmangement.ACTIVITY_TABLE_NAME
 import com.sarathi.dataloadingmangement.MISSION_TABLE_NAME
 import com.sarathi.dataloadingmangement.TASK_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
+import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 
 
 const val missionActivityTaskDto =
@@ -30,8 +31,17 @@ interface MissionDao {
     @Query("DELETE FROM $MISSION_TABLE_NAME where userId=:userId")
     fun deleteMissions(userId: String)
 
-    @Query("select * from $MISSION_TABLE_NAME where userId=:userId")
-    fun getMissions(userId: String): List<MissionEntity>
+    @Query(
+        "select mission_table.missionId, mission_language_table.description,  mission_table.missionStatus , \n" +
+                "count(activity_table.activityId) as activityCount,\n" +
+                " SUM(CASE WHEN activity_table.status = 'completed' THEN 1 ELSE 0 END) AS pendingActivityCount\n" +
+                " from mission_table\n" +
+                "\n" +
+                "inner join mission_language_table on mission_table.missionId = mission_language_table.missionId  \n" +
+                "left join activity_table on mission_table.missionId = activity_table.missionId\n" +
+                " where mission_language_table.languageCode =:languageCode and mission_table.isActive=1 and activity_table.isActive=1 and mission_table.userId=:userId"
+    )
+    fun getMissions(userId: String, languageCode: String): List<MissionUiModel>
 
     @Query("Update $MISSION_TABLE_NAME set isActive=0 where userId=:userId ")
     fun softDeleteMission(userId: String)

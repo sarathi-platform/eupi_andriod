@@ -1,8 +1,8 @@
 package com.sarathi.missionactivitytask.ui.grant_activity_screen.domain.repository
 
-import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 
 interface IActivityRepository {
-    suspend fun getActivity(): List<ActivityEntity>
+    suspend fun getActivity(): List<ActivityUiModel>
 
 }
