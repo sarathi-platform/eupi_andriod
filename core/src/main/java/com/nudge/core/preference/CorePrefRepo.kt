@@ -9,4 +9,10 @@ interface CorePrefRepo {
     fun setImageBackupFileName(fileName: String)
     fun isFileExported(): Boolean
     fun setFileExported(isExported: Boolean)
+    fun setMobileNo(mobileNo: String)
+    fun getMobileNo(): String
+    fun getUserType(): String
+    fun setUserType(userTypes: String)
+    fun getUniqueUserIdentifier(): String
+
 }

@@ -69,7 +69,7 @@ fun CheckMissionScreen(){
 //        pendingCount = 2,
 //        totalCount = 10,
 //        primaryButtonText = "Start",
-//        countStatusText = "Activity Pending",
+//        countStatusText = "ActivityResponse Pending",
 //        topHeaderText = "Due on 22nd March",
 //        needToShowProgressBar = true,
 //    )

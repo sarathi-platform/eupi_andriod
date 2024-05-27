@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.ui.login
 
 import com.google.gson.Gson
+import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.VillageListDao
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 class OtpVerificationRepository @Inject constructor(
     val prefRepo: PrefRepo,
-    val villageListDao: VillageListDao
+    val villageListDao: VillageListDao,
+    val coreSharedPrefs: CoreSharedPrefs
 )  :BaseRepository() {
 
     suspend fun validateOtp(otpNumber: String): ApiResponseModel<OtpVerificationModel>{
@@ -50,6 +52,7 @@ class OtpVerificationRepository @Inject constructor(
        return prefRepo.getMobileNumber();
     }
     fun saveLoggedInUserType(userType: String) {
+        coreSharedPrefs.setUserType(userType)
         prefRepo.savePref(PREF_KEY_TYPE_NAME, userType)
     }
 }
