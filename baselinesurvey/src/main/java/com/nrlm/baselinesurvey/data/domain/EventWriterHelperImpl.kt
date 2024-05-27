@@ -564,8 +564,6 @@ class EventWriterHelperImpl @Inject constructor(
             request_payload = payload,
             status = EventSyncStatus.OPEN.eventSyncStatus,
             modified_date = System.currentTimeMillis().toDate(),
-            result = null,
-
             payloadLocalId = UUID.randomUUID().toString(),
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,
@@ -646,7 +644,6 @@ class EventWriterHelperImpl @Inject constructor(
             request_payload = payload,
             status = EventSyncStatus.OPEN.eventSyncStatus,
             modified_date = System.currentTimeMillis().toDate(),
-            result = null,
             payloadLocalId = UUID.randomUUID().toString(),
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,

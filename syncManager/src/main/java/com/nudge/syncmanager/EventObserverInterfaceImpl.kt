@@ -2,39 +2,53 @@ package com.nudge.syncmanager
 
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.Data
-import androidx.work.ListenableWorker
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkInfo
+import androidx.work.PeriodicWorkRequest
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
-import com.google.common.util.concurrent.ListenableFuture
 import com.nudge.communicationModule.EventObserverInterface
+import com.nudge.core.BLANK_STRING
+import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
+import com.nudge.core.database.entities.EventStatusEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.NetworkSpeed
-import com.nudge.core.json
 import com.nudge.syncmanager.workers.SyncUploadWorker
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class EventObserverInterfaceImpl @Inject constructor(
     val eventsDao: EventsDao,
-    val eventDependencyDao: EventDependencyDao
+    val eventDependencyDao: EventDependencyDao,
+    val eventStatusDao: EventStatusDao
 ) : EventObserverInterface {
 
     override fun <T> onEventCallback(event: T) {
-
+        //TODO: Needs to implement after sync integration
     }
 
     override suspend fun addEvent(event: Events) {
         eventsDao.insert(event)
+        eventStatusDao.insert(EventStatusEntity(
+            clientId = event.id,
+            name = event.name,
+            errorMessage = BLANK_STRING,
+            type = event.type,
+            status = EventSyncStatus.OPEN.eventSyncStatus,
+            mobileNumber = event.mobile_number,
+            createdBy = event.createdBy,
+            eventStatusId = 0
+         )
+        )
     }
 
     override suspend fun addEvents(events: List<Events>) {
@@ -66,19 +80,20 @@ class EventObserverInterfaceImpl @Inject constructor(
             OneTimeWorkRequestBuilder<SyncUploadWorker>().setConstraints(constraints)
                 .setBackoffCriteria(
                     BackoffPolicy.LINEAR,
-                    10000,
+                    200,
                     TimeUnit.MILLISECONDS
                 ).setInputData(data.build())
                 .build()
        val workManager=WorkManager.getInstance(context)
 
         val workerInfo=  workManager.getWorkInfoByIdLiveData(uploadWorkRequest.id)
-        Log.d("TAG", "syncPendingEvent workerInfo: ${workerInfo.value?.json()}")
+        Log.d("TAG", "syncPendingEvent workerInfo: ${workerInfo.value}")
         workManager
             .enqueue(uploadWorkRequest)
+
+
+
     }
-
-
 
     fun getBatchSize(networkSpeed: NetworkSpeed): Int {
         return when (networkSpeed) {

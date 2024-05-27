@@ -124,7 +124,7 @@ fun SyncEventScreen(
                         SyncEventCard(
                             title = item.id,
                             subTitle = item.name,
-                            status = item.status,
+                            status = "OPEN",
                         ) {
                         }
                     }

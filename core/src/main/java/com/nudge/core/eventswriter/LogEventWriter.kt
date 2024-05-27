@@ -3,6 +3,7 @@ package com.nudge.core.eventswriter
 import android.content.Context
 import android.net.Uri
 import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
@@ -19,6 +20,7 @@ class LogEventWriter() : IEventWriter {
         uri: Uri?,
         dependencyEntity: List<EventDependencyEntity>,
         eventsDao: EventsDao,
+        eventStatusDao: EventStatusDao,
         eventDependencyDao: EventDependencyDao
     ) {
 

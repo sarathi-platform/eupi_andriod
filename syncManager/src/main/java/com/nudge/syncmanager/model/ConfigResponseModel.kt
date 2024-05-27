@@ -13,7 +13,7 @@ data class ConfigResponseModel(
 
     @SerializedName("questionImageUrlList")
     @Expose
-    val image_profile_link: List<String>,
+    val imageProfileLink: List<String>,
 
     )
 

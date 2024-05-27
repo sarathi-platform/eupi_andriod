@@ -147,6 +147,7 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivityStatusUseCase
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import dagger.Module
 import dagger.Provides
@@ -714,7 +715,8 @@ object BaselineModule {
         eventsDao: EventsDao,
         eventDependencyDao: EventDependencyDao,
         nudgeBaselineDatabase: NudgeBaselineDatabase,
-        eventWriterHelper: EventWriterHelperImpl
+        eventWriterHelper: EventWriterHelperImpl,
+        eventStatusDao: EventStatusDao
     ): EventsWriterRepository {
         return EventsWriterRepositoryImpl(
             prefRepo = prefRepo,
@@ -723,6 +725,7 @@ object BaselineModule {
             eventsDao = eventsDao,
             eventDependencyDao = eventDependencyDao,
             missionEntityDao = missionEntityDao,
+            eventStatusDao = eventStatusDao
         )
     }
 

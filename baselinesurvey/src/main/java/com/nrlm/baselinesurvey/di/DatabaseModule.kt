@@ -116,5 +116,9 @@ object DatabaseModule {
     @Singleton
     fun providesApiStatusDao(syncDb: SyncManagerDatabase) = syncDb.apiStatusDao()
 
+    @Provides
+    @Singleton
+    fun providesEventStatusDao(syncDb: SyncManagerDatabase) = syncDb.eventStatusDao()
+
 
 }

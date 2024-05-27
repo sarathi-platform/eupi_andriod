@@ -5,6 +5,7 @@ import com.google.gson.JsonSyntaxException
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.SELECTION_MISSION
 import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
@@ -85,7 +86,8 @@ abstract class BaseRepository{
     @Inject
     lateinit var eventDependencyDao: EventDependencyDao
 
-
+    @Inject
+    lateinit var eventStatusDao: EventStatusDao
 
     open fun onServerError(error: ErrorModel?){
 
@@ -182,7 +184,6 @@ abstract class BaseRepository{
             request_payload = requestPayload,
             status = EventSyncStatus.OPEN.eventSyncStatus,
             modified_date = System.currentTimeMillis().toDate(),
-            result = null,
             payloadLocalId = patSummarySaveRequest.deviceId,
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,
@@ -211,7 +212,6 @@ abstract class BaseRepository{
             request_payload = requestPayload,
             status = EventSyncStatus.OPEN.eventSyncStatus,
             modified_date = System.currentTimeMillis().toDate(),
-            result = null,
             payloadLocalId = patScoreSaveEvent.deviceId,
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,
@@ -272,7 +272,6 @@ abstract class BaseRepository{
             request_payload = requestPayload,
             status = EventSyncStatus.OPEN.eventSyncStatus,
             modified_date = System.currentTimeMillis().toDate(),
-            result = null,
             payloadLocalId = "",
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,
@@ -413,7 +412,8 @@ abstract class BaseRepository{
             NudgeCore.getAppContext(),
             EventFormatterName.JSON_FORMAT_EVENT,
             eventsDao = eventsDao,
-            eventDependencyDao
+            eventDependencyDao,
+            eventStatusDao = eventStatusDao
         )
     }
 
@@ -501,7 +501,6 @@ abstract class BaseRepository{
             request_payload = payload,
             status = EventSyncStatus.OPEN.eventSyncStatus,
             modified_date = System.currentTimeMillis().toDate(),
-            result = null,
             payloadLocalId = "",
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,
@@ -528,7 +527,6 @@ abstract class BaseRepository{
             request_payload = payload,
             status = EventSyncStatus.OPEN.eventSyncStatus,
             modified_date = System.currentTimeMillis().toDate(),
-            result = null,
             payloadLocalId = payloadlocalId,
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,

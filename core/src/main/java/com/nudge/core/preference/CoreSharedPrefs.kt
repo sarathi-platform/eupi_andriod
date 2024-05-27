@@ -13,6 +13,8 @@ class CoreSharedPrefs private constructor(val context: Context) :
         const val PREF_FILE_BACKUP_NAME = "file_backup_name"
         const val PREF_IMAGE_FILE_BACKUP_NAME = "image_file_backup_name"
         const val PREF_IMAGE_FILE_EXPORTED_NAME = "is_file_exorted"
+        const val PREF_KEY_USER_NAME="key_user_name"
+        const val PREF_MOBILE_NUMBER = "pref_mobile_number"
 
         @Volatile
         private var INSTANCE: CoreSharedPrefs? = null
@@ -71,4 +73,11 @@ class CoreSharedPrefs private constructor(val context: Context) :
         prefs.edit().putBoolean(PREF_IMAGE_FILE_EXPORTED_NAME, isExported).apply()
     }
 
+    override fun getUserId(): String {
+        return prefs.getString(PREF_KEY_USER_NAME, "") ?: ""
+    }
+
+    override fun getMobileNumber(): String {
+        return prefs.getString(PREF_MOBILE_NUMBER, "") ?: ""
+    }
 }

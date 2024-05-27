@@ -14,6 +14,7 @@ import com.nudge.core.EVENT_DELIMETER
 import com.nudge.core.LOCAL_BACKUP_EXTENSION
 import com.nudge.core.SARATHI_DIRECTORY_NAME
 import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
@@ -37,6 +38,7 @@ open class TextFileEventWriter : IEventWriter {
         uri: Uri?,
         dependencyEntity: List<EventDependencyEntity>,
         eventsDao: EventsDao,
+        eventStatusDao: EventStatusDao,
         eventDependencyDao: EventDependencyDao
     ) {
         writeEventInFile(context, event.toEventRequest().json(), mobileNo, uri)

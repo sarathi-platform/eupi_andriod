@@ -44,9 +44,6 @@ data class Events (
     @ColumnInfo("status")
     val status: String,
 
-    @ColumnInfo("result")
-    val result: String?,
-
     @ColumnInfo("retry_count")
     val retry_count: Int = 0,
 
@@ -75,7 +72,6 @@ data class Events (
                 modified_date = System.currentTimeMillis().toDate(),
                 request_payload = BLANK_STRING,
                 status = BLANK_STRING,
-                result = BLANK_STRING,
                 metadata = null,
                 mobile_number = BLANK_STRING,
                 payloadLocalId = BLANK_STRING

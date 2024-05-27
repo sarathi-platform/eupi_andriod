@@ -10,6 +10,7 @@ import com.nudge.core.eventswriter.entities.ImageEventWriter
 const val BLANK_STRING = ""
 
 const val EventsTable = "events_table"
+const val EventsStatusTable = "events_status_table"
 const val EventDependencyTable = "event_dependency_table"
 const val ApiStatusTable = "api_status_table"
 
@@ -42,6 +43,7 @@ const val EVENT_DELIMETER = "~@-"
 const val ZIP_MIME_TYPE = "application/zip"
 const val EXCEL_TYPE = "text/csv"
 const val REGENERATE_PREFIX = "regenerate_"
+const val SOMETHING_WENT_WRONG="Something Went Wrong"
 
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),

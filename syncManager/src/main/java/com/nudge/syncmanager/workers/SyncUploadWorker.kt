@@ -7,9 +7,14 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.facebook.network.connectionclass.ConnectionClassManager
 import com.facebook.network.connectionclass.DeviceBandwidthSampler
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventSyncStatus
+import com.nudge.core.SOMETHING_WENT_WRONG
+import com.nudge.core.database.entities.Events
 import com.nudge.core.getBatchSize
 import com.nudge.core.json
+import com.nudge.core.model.response.EventResult
+import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.utils.CoreLogger
 import com.nudge.syncmanager.SyncApiRepository
 import com.nudge.syncmanager.utils.SUCCESS
@@ -26,6 +31,7 @@ class SyncUploadWorker @AssistedInject constructor(
     private var batchLimit = 5
     private val retryCount=3
     override suspend fun doWork(): Result {
+        var mPendingEventList = listOf<Events>()
         return if (runAttemptCount < 5) { // runAttemptCount starts from 0
             try {
 
@@ -33,26 +39,27 @@ class SyncUploadWorker @AssistedInject constructor(
                  DeviceBandwidthSampler.getInstance().startSampling()
 
                 if (runAttemptCount > 0) {
-                    batchLimit = getBatchSize(connectionQuality)
+                    batchLimit = 1//getBatchSize(connectionQuality)
                 }
                 CoreLogger.d(applicationContext,TAG,"doWork Started: batchLimit: $batchLimit  runAttemptCount: $runAttemptCount")
                 var totalPendingEventCount = syncApiRepository.getPendingEventCount()
                 CoreLogger.d(applicationContext,TAG,"doWork: totalPendingEventCount: $totalPendingEventCount")
                 while (totalPendingEventCount > 0){
-                    val pendingEvents = syncApiRepository.getPendingEventFromDb(
+                    mPendingEventList = syncApiRepository.getPendingEventFromDb(
                         batchLimit = batchLimit,
                         retryCount = retryCount
                     )
-                    if(pendingEvents.isNotEmpty()) {
-                        CoreLogger.d(applicationContext,TAG,"doWork: pendingEvents List: ${pendingEvents.json()}")
-                        val apiResponse = syncApiRepository.syncProducerEventToServer(pendingEvents)
+                    if(mPendingEventList.isNotEmpty()) {
+                        CoreLogger.d(applicationContext,TAG,"doWork: pendingEvents List: ${mPendingEventList.json()}")
+                        val apiResponse = syncApiRepository.syncProducerEventToServer(mPendingEventList)
+
                         if (apiResponse.status.equals(SUCCESS)) {
                             apiResponse.data?.let { eventList ->
                                 if (eventList.isNotEmpty()) {
                                     val eventSuccessList =
-                                        eventList.filter { it.status.equals(EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus) }
+                                        eventList.filter { it.status == EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus }
                                     val eventFailedList =
-                                        eventList.filter { it.status.equals(EventSyncStatus.PRODUCER_FAILED.eventSyncStatus) }
+                                        eventList.filter { it.status == EventSyncStatus.PRODUCER_FAILED.eventSyncStatus }
 
                                     if (eventSuccessList.isNotEmpty()) {
                                         CoreLogger.d(applicationContext,TAG,"doWork: eventSuccessList List: ${eventSuccessList.json()}")
@@ -77,17 +84,44 @@ class SyncUploadWorker @AssistedInject constructor(
                 Result.success()
                 // do long running work
             } catch (ex: Exception) {
-                CoreLogger.e(applicationContext,TAG,"doWork :Exception: ${ex.message}",ex,true)
+                CoreLogger.e(applicationContext,TAG,"doWork :Exception: ${ex.message} :: ${mPendingEventList.json()}",ex,true)
                 DeviceBandwidthSampler.getInstance().stopSampling()
                 if(runAttemptCount<3)
                  Result.retry()
-                else Result.failure()
+                else {
+                    if(mPendingEventList.isNotEmpty()){
+                        syncApiRepository.updateFailedEventStatus(createEventResponseList(mPendingEventList,ex.message ?: SOMETHING_WENT_WRONG))
+                    }
+                    Result.failure()
+                }
             }
         } else {
             Result.failure()
         }
     }
 
+}
 
+fun createEventResponseList(eventList:List<Events>,errorMessage:String): List<SyncEventResponse> {
+    val aList= arrayListOf<SyncEventResponse>()
+    eventList.forEach {
+        aList.add(
+            SyncEventResponse(
+                clientId =it.id,
+                status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
+                type = it.id,
+                mobileNumber = it.mobile_number,
+                errorMessage = errorMessage,
+                eventName = it.name,
+                eventResult = EventResult(
+                    eventId = BLANK_STRING,
+                    status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
+                    message = errorMessage
+                ),
+                requestId = BLANK_STRING
+            )
+        )
+    }
+    return aList
 }
 

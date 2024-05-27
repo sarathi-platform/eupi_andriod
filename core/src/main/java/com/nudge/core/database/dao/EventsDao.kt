@@ -28,11 +28,11 @@ interface EventsDao {
     @Query("SELECT * from $EventsTable where name = :eventName ORDER BY created_date DESC")
     fun getAllEventsForEventName(eventName: String): List<Events>
 
-    @Query("SELECT * from $EventsTable where status in (:status) AND retry_count<= :retryCount ORDER BY modified_date DESC LIMIT :batchLimit")
-    fun getAllPendingEvent(status: List<String>,batchLimit:Int,retryCount: Int): List<Events>
+    @Query("SELECT * from $EventsTable where status in (:status) AND retry_count<= :retryCount AND mobile_number =:mobileNumber ORDER BY modified_date DESC LIMIT :batchLimit")
+    fun getAllPendingEvent(status: List<String>,batchLimit:Int,retryCount: Int,mobileNumber:String): List<Events>
 
-    @Query("SELECT  COUNT(*) from $EventsTable where status in (:status)")
-    fun getTotalPendingEventCount(status: List<String>): Int
+    @Query("SELECT  COUNT(*) from $EventsTable where status in (:status) AND mobile_number =:mobileNumber")
+    fun getTotalPendingEventCount(status: List<String>,mobileNumber:String): Int
 
     @Query("DELETE FROM events_table")
     fun deleteAllEvents()
