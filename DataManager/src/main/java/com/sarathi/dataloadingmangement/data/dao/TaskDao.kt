@@ -5,23 +5,23 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.sarathi.dataloadingmangement.data.entities.Task
-import com.sarathi.dataloadingmangement.util.TASK_TABLE_NAME
+import com.sarathi.dataloadingmangement.TASK_TABLE_NAME
+import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 
 
 @Dao
 interface TaskDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertActivityTask(activities: Task)
+    fun insertActivityTask(activities: ActivityTaskEntity)
 
     @Query("DELETE FROM $TASK_TABLE_NAME where userId=:userId ")
     fun deleteActivityTask(userId: String)
 
     @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId and isActive=1")
-    suspend fun getAllActivityTask(userId: String): List<Task>
+    suspend fun getAllActivityTask(userId: String): List<ActivityTaskEntity>
 
     @Query("SELECT * FROM $TASK_TABLE_NAME where  userId=:userId and taskId = :taskId and isActive=1")
-    fun getTaskById(userId: String, taskId: Int): Task
+    fun getTaskById(userId: String, taskId: Int): ActivityTaskEntity
 
     @Query("SELECT count(*) FROM $TASK_TABLE_NAME where  userId=:userId and taskId = :taskId")
     fun getTaskByIdCount(userId: String, taskId: Int): Int
@@ -37,19 +37,11 @@ interface TaskDao {
         userId: String,
         missionId: Int,
         activityId: Int
-    ): List<Task>
+    ): List<ActivityTaskEntity>
 
     @Query("SELECT * FROM $TASK_TABLE_NAME where  userId=:userId and  activityId=:activityId and isActive=1 ")
-    suspend fun getActivityTaskFromIds(userId: String, activityId: Int): List<Task>
+    suspend fun getActivityTaskFromIds(userId: String, activityId: Int): List<ActivityTaskEntity>
 
-    @Query("Select * FROM $TASK_TABLE_NAME where  userId=:userId and  isActive=1 and missionId in(:missionId) and activityName in(:activityName)")
-    fun isTaskExist(userId: String, missionId: Int, activityName: String): Boolean
-
-    @Query("Select * from $TASK_TABLE_NAME where userId=:userId and  didiId = :subjectId and isActive=1")
-    fun getTaskFromSubjectId(userId: String, subjectId: Int): Task?
-
-    @Query("UPDATE $TASK_TABLE_NAME set activityState = :surveyStatus where userId=:userId and didiId = :subjectId")
-    fun updateTaskStatus(userId: String, subjectId: Int, surveyStatus: Int)
 
     @Query("UPDATE $TASK_TABLE_NAME set status = :status where userId=:userId and taskId = :taskId AND activityId = :activityId AND missionId = :missionId")
     fun updateTaskStatus(
@@ -61,7 +53,7 @@ interface TaskDao {
     )
 
     @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId and  activityId=:activityId AND missionId = :missionId and taskId = :taskId")
-    fun getTask(userId: String, activityId: Int, missionId: Int, taskId: Int): Task
+    fun getTask(userId: String, activityId: Int, missionId: Int, taskId: Int): ActivityTaskEntity
 
     @Query("UPDATE $TASK_TABLE_NAME SET actualStartDate = :actualStartDate where  userId=:userId and taskId = :taskId")
     fun updateTaskStartDate(userId: String, taskId: Int, actualStartDate: String)

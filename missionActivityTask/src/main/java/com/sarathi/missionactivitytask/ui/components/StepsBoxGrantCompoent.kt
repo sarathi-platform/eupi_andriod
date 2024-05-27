@@ -61,13 +61,15 @@ fun StepsBoxGrantComponent(
     stepNo: Int,
     index: Int,
     painter: Painter,
+    totalCount: Int = 0,
+    pendingCount: Int = 0,
     isCompleted: Boolean = false,
     isDividerVisible: Boolean = true,
     onclick: (Int) -> Unit
 ) {
     val curPercentage = animateFloatAsState(
         targetValue =
-        0.toFloat(),
+        (pendingCount / totalCount).toFloat(),
         label = "",
         animationSpec = tween()
     )

@@ -97,6 +97,7 @@ dependencies {
 
     //CSV Export
     implementation("com.opencsv:opencsv:5.3")
+    implementation(project(":core"))
     implementation("androidx.compose.ui:ui-tooling-preview")
 
 

@@ -1,4 +1,4 @@
-package com.sarathi.dataloadingmangement.network.response
+package com.sarathi.dataloadingmangement.model
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
