@@ -52,7 +52,7 @@ dependencies {
     implementation(project(":internetSpeedChecker"))
     implementation(project(":CommunicationModule"))
     implementation(project(":missionActivityTask"))
-    implementation(project(":dataLoadingManager"))
+    implementation(project(":DataManager"))
 
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.6.1")

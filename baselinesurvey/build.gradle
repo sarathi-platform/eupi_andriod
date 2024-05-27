@@ -196,7 +196,7 @@ dependencies {
     implementation(project(":CommunicationModule"))
     //TODO temp code remove after MAT is comlete
     implementation(project(":smallGroupModule"))
-    implementation(project(":dataLoadingManager"))
+    implementation implementation(project(':DataManager',))
 
     implementation "com.airbnb.android:lottie-compose:6.1.0"
     implementation 'nl.dionsegijn:konfetti-compose:2.0.2'

@@ -45,8 +45,8 @@ dependencies {
     val retrofit = "2.9.0"
     val okhttp3 = "4.9.0"
     val compose_version = "1.4.1"
+    implementation(project(":DataManager"))
 
-    implementation(project(":dataLoadingManager"))
     implementation(project(":core"))
 
     implementation("androidx.core:core-ktx:1.12.0")
