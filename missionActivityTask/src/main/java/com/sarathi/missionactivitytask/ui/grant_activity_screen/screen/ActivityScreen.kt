@@ -29,7 +29,7 @@ fun ActivityScreen(
         modifier = Modifier.fillMaxSize(),
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
-        isSearch = true,
+        isSearch = false,
         isDataAvailable = viewModel.activityList.value.isEmpty(),
         onSearchValueChange = {
 

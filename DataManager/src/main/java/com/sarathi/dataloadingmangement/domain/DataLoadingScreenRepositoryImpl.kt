@@ -12,8 +12,8 @@ import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
-import com.sarathi.dataloadingmangement.data.dao.TaskAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
@@ -25,17 +25,19 @@ import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.data.entities.ContentConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionLanguageEntity
+import com.sarathi.dataloadingmangement.data.entities.ProgrammeEntity
 import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
 import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
 import com.sarathi.dataloadingmangement.model.ApiResponseModel
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityConfig
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityTitle
+import com.sarathi.dataloadingmangement.model.mat.response.AttributeResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ContentResponse
 import com.sarathi.dataloadingmangement.model.mat.response.MissionResponse
+import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.mat.response.TaskData
 import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
-import com.sarathi.dataloadingmangement.model.mat.response.UiConfig
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
 import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepository
@@ -53,20 +55,18 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     val contentConfigDao: ContentConfigDao,
     val missionLanguageAttributeDao: MissionLanguageAttributeDao,
     val subjectAttributeDao: SubjectAttributeDao,
-    val taskAttributeDao: TaskAttributeDao,
+    val programmeDao: ProgrammeDao,
     val uiConfigDao: UiConfigDao,
     val contentDao: ContentDao,
     val sharedPrefs: CoreSharedPrefs
 ) : IDataLoadingScreenRepository {
     override suspend fun fetchMissionDataFromServer(
-        languageCode: String,
-        missionName: String
-    ): ApiResponseModel<List<MissionResponse>> {
-        val missionRequest = MissionRequest(languageCode, missionName)
+    ): ApiResponseModel<List<ProgrameResponse>> {
+        val missionRequest = MissionRequest(stateId = 31)
         return apiInterface.getMissions(missionRequest)
     }
 
-    override suspend fun saveMissionToDB(missions: List<MissionResponse>) {
+    override suspend fun saveMissionToDB(missions: List<MissionResponse>, programmeId: Int) {
         missionDao.softDeleteMission(sharedPrefs.getUniqueUserIdentifier())
         missions.forEach { mission ->
             val missionCount = missionDao.getMissionCount(
@@ -75,12 +75,13 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
             )
             if (missionCount == 0) {
                 saveMissionsLanguageAttributes(mission)
-                saveContentConfig(mission.id, mission.missionConfig.contents, 1)
+                saveContentConfig(mission.id, mission.missionConfig?.contents ?: listOf(), 1)
                 missionDao.insertMission(
                     MissionEntity.getMissionEntity(
                         userId = sharedPrefs.getUniqueUserIdentifier(),
                         activityTaskSize = mission.activities.size,
                         mission = mission,
+                        programmeId = programmeId
 
                         )
                 )
@@ -148,30 +149,34 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                         ActivityEntity.getMissionActivityEntity(
                             sharedPrefs.getUniqueUserIdentifier(),
                             missionId,
-                            missionActivityModel.taskResponses.size,
+                            missionActivityModel.taskResponses?.size ?: 0,
                             missionActivityModel
                         )
                     )
                     saveContentConfig(
                         missionActivityModel.id,
-                        missionActivityModel.activityConfig.content,
+                        missionActivityModel.activityConfig?.content ?: listOf(),
                         2
                     )
-                    saveActivityConfig(
-                        missionActivityModel.activityConfig,
-                        missionActivityModel.id,
-                        missionId
-                    )
+                    missionActivityModel.activityConfig?.let {
+                        saveActivityConfig(
+                            it,
+                            missionActivityModel.id,
+                            missionId
+                        )
+                    }
                     saveActivityUiConfig(
                         missionActivityModel.id,
                         missionId,
-                        missionActivityModel.activityConfig.uiConfig
+                        missionActivityModel.activityConfig?.uiConfig ?: listOf()
                     )
-                    saveActivityLanguageAttributes(
-                        missionId,
-                        missionActivityModel.id,
-                        missionActivityModel.activityConfig.activityTitle
-                    )
+                    missionActivityModel.activityConfig?.activityTitle?.let {
+                        saveActivityLanguageAttributes(
+                            missionId,
+                            missionActivityModel.id,
+                            it
+                        )
+                    }
                 } else {
                     missionActivityDao.updateActivityActiveStatus(
                         missionId,
@@ -206,21 +211,20 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     private suspend fun saveActivityUiConfig(
         activityId: Int,
         missionId: Int,
-        uiConfig: UiConfig,
+        uiConfig: List<AttributeResponse>,
     ) {
-        uiConfig.languageAttributes.forEach { language ->
-            language.attributes.forEach {
+        uiConfig.forEach { attribute ->
 
-                uiConfigDao.insertUiConfig(
-                    UiConfigEntity.getUiConfigEntity(
-                        missionId = missionId,
-                        activityId = activityId,
-                        userId = sharedPrefs.getUniqueUserIdentifier(),
-                        language = language.languageId,
-                        attributes = it
-                    )
+
+            uiConfigDao.insertUiConfig(
+                UiConfigEntity.getUiConfigEntity(
+                    missionId = missionId,
+                    activityId = activityId,
+                    userId = sharedPrefs.getUniqueUserIdentifier(),
+                    attributes = attribute
                 )
-            }
+            )
+
 
         }
 
@@ -286,7 +290,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
             val taskCount =
                 taskDao.getTaskByIdCount(
                     userId = sharedPrefs.getUniqueUserIdentifier(),
-                    taskId = task.id ?: 0
+                    taskId = task.id
                 )
             if (taskCount == 0) {
                 taskDao.insertActivityTask(
@@ -301,14 +305,14 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                     missionId,
                     activityId,
                     task.id,
-                    task.taskData,
+                    task.taskData ?: listOf(),
                     task.subjectId,
                     subject
                 )
             } else {
                 taskDao.updateActiveTaskStatus(
                     1,
-                    task.id ?: 0,
+                    task.id,
                     sharedPrefs.getUniqueUserIdentifier()
                 )
             }
@@ -330,6 +334,10 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
 
     override suspend fun getContentData(): List<Content> {
         return contentDao.getContentData()
+    }
+
+    override suspend fun saveProgrammeToDb(programme: ProgrameResponse) {
+        programmeDao.insertProgramme(ProgrammeEntity.getProgrammeEntity(programme))
     }
 
 }

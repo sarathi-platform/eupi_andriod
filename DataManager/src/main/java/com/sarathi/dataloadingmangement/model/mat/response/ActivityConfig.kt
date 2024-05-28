@@ -4,11 +4,11 @@ package com.sarathi.dataloadingmangement.model.mat.response
 import com.google.gson.annotations.SerializedName
 
 data class ActivityConfig(
-    @SerializedName("activity_title")
+    @SerializedName("languages")
     val activityTitle: List<ActivityTitle>,
-    @SerializedName("activity_type")
+    @SerializedName("activityType")
     val activityType: String,
-    @SerializedName("activity_type_id")
+    @SerializedName("activityTypeId")
     val activityTypeId: Int,
     @SerializedName("conditions")
     val conditions: List<Any>,
@@ -20,10 +20,10 @@ data class ActivityConfig(
     val reviewer: String,
     @SerializedName("subject")
     val subject: String,
-    @SerializedName("survey_id")
+    @SerializedName("surveyId")
     val surveyId: Int,
-    @SerializedName("ui_config")
-    val uiConfig: UiConfig,
+    @SerializedName("uiConfig")
+    val uiConfig: List<AttributeResponse>,
     @SerializedName("validations")
     val validations: List<Any>
 )

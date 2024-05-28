@@ -29,7 +29,6 @@ data class UiConfigEntity(
             missionId: Int,
             activityId: Int,
             attributes: AttributeResponse,
-            language: String,
             userId: String
         ): UiConfigEntity {
             return UiConfigEntity(
@@ -40,7 +39,7 @@ data class UiConfigEntity(
                 componentType = attributes.componentType,
                 missionId = missionId,
                 activityId = activityId,
-                language = language,
+                language = attributes.languageCode ?: "en",
                 userId = userId
             )
 

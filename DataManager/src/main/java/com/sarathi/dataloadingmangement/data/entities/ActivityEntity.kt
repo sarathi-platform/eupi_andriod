@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.ACTIVITY_TABLE_NAME
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
@@ -42,16 +43,16 @@ data class ActivityEntity(
                 userId = userId,
                 missionId = missionId,
                 activityId = activity.id,
-                actualStartDate = activity.actualStartDate,
-                actualEndDate = activity.actualEndDate,
+                actualStartDate = activity.actualStartDate ?: BLANK_STRING,
+                actualEndDate = activity.actualEndDate ?: BLANK_STRING,
                 status = activity.activityStatus,
                 activityTaskSize = activityTaskSize,
                 activityStatus = activity.activityStatus,
                 taskSize = activityTaskSize,
                 isAllTask = false,
                 isActive = 1,
-                startOffset = activity.startOffset,
-                endOffset = activity.endOffset
+                startOffset = activity.startOffset ?: DEFAULT_ID,
+                endOffset = activity.endOffset ?: DEFAULT_ID
             )
         }
 

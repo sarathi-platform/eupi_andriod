@@ -42,7 +42,8 @@ class GrantTaskScreenViewModel @Inject constructor(
 
     private fun initTaskScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val taskUiModel = getTaskUseCase.getActiveTasks(missionId = 2, activityId = 3)
+            val taskUiModel =
+                getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
             taskUiModel.forEach {
 
                 _taskList.value[it.taskId] = getUiComponentValues(it.taskId)
