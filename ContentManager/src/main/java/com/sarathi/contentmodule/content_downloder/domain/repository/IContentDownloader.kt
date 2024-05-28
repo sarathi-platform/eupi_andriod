@@ -7,5 +7,4 @@ interface IContentDownloader {
     suspend fun getContentValue(contentKey: String): String
     suspend fun getLimitedContentData(limit: Int): List<Content>
     suspend fun getContentCount(): Int
-
 }

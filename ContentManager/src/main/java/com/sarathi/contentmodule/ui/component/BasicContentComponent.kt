@@ -27,14 +27,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sarathi.contentmodule.R
+import com.sarathi.contentmodule.constants.Constants.BLANK_STRING
 import com.sarathi.contentmodule.download_manager.FileType
 import com.sarathi.contentmodule.ui.theme.black1
+import com.sarathi.contentmodule.ui.theme.blueDark
 import com.sarathi.contentmodule.ui.theme.lightGray2
 import com.sarathi.contentmodule.ui.theme.smallTextStyleMediumWeight2
 import com.sarathi.contentmodule.ui.theme.textColorDark
 import com.sarathi.contentmodule.ui.theme.white
 import com.sarathi.contentmodule.utils.ContentShape
-import com.sarathi.dataloadingmangement.util.BLANK_STRING
 
 
 @Composable
@@ -93,7 +94,7 @@ private fun ContentView(
                 Text(
                     text = contentTitle,
                     fontSize = 10.sp,
-                    style = smallTextStyleMediumWeight2
+                    style = smallTextStyleMediumWeight2.copy(color = blueDark)
                 )
             }
         }

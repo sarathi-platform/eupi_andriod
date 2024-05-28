@@ -7,8 +7,9 @@ import com.sarathi.contentmodule.download_manager.FileType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ContentDownloaderUseCase(
+class ContentDownloaderUseCase @Inject constructor(
     private val repository: IContentDownloader,
     private val downloaderManager: DownloaderManager,
 ) {

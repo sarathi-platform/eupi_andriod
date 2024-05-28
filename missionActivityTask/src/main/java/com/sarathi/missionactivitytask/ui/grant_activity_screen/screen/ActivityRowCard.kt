@@ -8,13 +8,11 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
-import com.sarathi.dataloadingmangement.data.entities.Activity
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen

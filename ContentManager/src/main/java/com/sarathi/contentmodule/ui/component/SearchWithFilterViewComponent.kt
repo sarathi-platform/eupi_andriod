@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sarathi.contentmodule.R
+import com.sarathi.contentmodule.constants.Constants.BLANK_STRING
 import com.sarathi.contentmodule.ui.theme.NotoSans
 import com.sarathi.contentmodule.ui.theme.blueDark
 import com.sarathi.contentmodule.ui.theme.borderGrey
@@ -43,7 +44,6 @@ import com.sarathi.contentmodule.ui.theme.placeholderGrey
 import com.sarathi.contentmodule.ui.theme.roundedCornerRadiusDefault
 import com.sarathi.contentmodule.ui.theme.textColorDark
 import com.sarathi.contentmodule.ui.theme.white
-import com.sarathi.dataloadingmangement.util.BLANK_STRING
 
 
 @Composable

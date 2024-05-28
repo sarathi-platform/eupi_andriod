@@ -1,7 +1,9 @@
 package com.sarathi.contentmodule.ui.content_detail_screen.viewmodel
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.contentmodule.ui.viewmodel.BaseViewModel
 import com.sarathi.contentmodule.utils.event.SearchEvent
@@ -23,8 +25,10 @@ class ContentDetailViewModel @Inject constructor(
     val contentList: State<List<Content>> get() = _contentList
     var contentCount = mutableStateOf(0)
     private val _filterContentList = mutableStateOf<List<Content>>(emptyList())
-
+    var filterSelected = mutableStateOf(false)
     val filterContentList: State<List<Content>> get() = _filterContentList
+    var filterContentMap by mutableStateOf(mapOf<String, List<Content>>())
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
@@ -48,7 +52,7 @@ class ContentDetailViewModel @Inject constructor(
             contentCount.value = fetchContentUseCase.getContentCount()
             _contentList.value = fetchContentUseCase.getContentData()
             _filterContentList.value = fetchContentUseCase.getContentData()
-            var contentMap = contentList.value.groupBy { it.contentType }
+            filterContentMap = contentList.value.groupBy { it.contentType }
 
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -70,6 +74,10 @@ class ContentDetailViewModel @Inject constructor(
             filteredList.addAll(contentList.value)
         }
         _filterContentList.value = filteredList
+    }
+
+    fun isFilePathExists(filePath: String): Boolean {
+        return fetchContentUseCase.isFilePathExists(filePath)
     }
 
 }

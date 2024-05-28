@@ -33,4 +33,7 @@ class FetchContentUseCase @Inject constructor(
     suspend fun getContentCount(): Int {
         return repository.getContentCount()
     }
+    fun isFilePathExists(filePath: String): Boolean {
+        return downloaderManager.isFilePathExists(filePath)
+    }
 }
