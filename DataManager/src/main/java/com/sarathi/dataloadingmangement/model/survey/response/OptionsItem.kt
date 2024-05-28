@@ -24,8 +24,6 @@ data class OptionsItem(
     @SerializedName("count")
     var count: Int? = 0,
 
-    @SerializedName("optionImage")
-    var optionImage: String? = BLANK_STRING,
 
     @SerializedName("optionImage")
     var optionImage: String? = BLANK_STRING,
