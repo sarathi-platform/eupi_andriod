@@ -1,140 +1,171 @@
 [
   {
-    "id": 2,
-    "name": "",
-    "languages": [
+    "id": 1,
+    "name": "Program1 Tripura",
+    "startDate": "2024-05-27T20:57:59.938+00:00",
+    "actualStartDate": null,
+    "missions": [
       {
-        "description": "Grant",
-        "language": "en"
-      }
-    ],
-    "missionConfig": {
-      "content": [
-        {
-          "contentKey": "image1",
-          "contentType": "Image"
-        }
-      ]
-    },
-    "startOffset": 0,
-    "endOffset": 10,
-    "missionStatus": "NOT_STARTED",
-    "actualStartDate": "",
-    "actualEndDate": "",
-    "conditions": [],
-    "validations": [],
-    "content": [
-      {
-        "contentKey": "image1",
-        "contentType": "Image"
-      }
-    ],
-    "activities": [
-      {
-        "id": 3,
+        "id": 1,
+        "name": "CSG disbursement to Didis",
+        "languages": [
+          {
+            "description": "CSG disbursement to Didis",
+            "language": "en"
+          }
+        ],
         "startOffset": 0,
-        "endOffset": 10,
-        "activityStatus": "NOT_STARTED",
-        "actualStartDate": "",
-        "actualEndDate": "",
-        "activityConfig": {
-          "activity_type": "Basic",
-          "activity_type_id": 3,
-          "conditions": [],
-          "validations": [],
-          "content": [
-            {
-              "contentKey": "image1",
-              "contentType": "Image"
-            }
-          ],
-          "survey_id": "1",
-          "doer": "UPCM",
-          "subject": "VO",
-          "reviewer": "BPC",
-          "activity_title": [
-            {
-              "name": "Receipt of funds",
-              "language": "en"
-            }
-          ],
-          "ui_config": {
-            "form": "true",
-            "language_attributes": [
-              {
-                "language_id": "en",
-                "attributes": [
-                  {
+        "endOffset": 2,
+        "missionStatus": "NOT_STARTED",
+        "actualStartDate": null,
+        "actualEndDate": null,
+        "conditions": [],
+        "validations": [],
+        "missionConfig": null,
+        "activities": [
+          {
+            "id": 1,
+            "name": "Receipt of funds",
+            "startOffset": 0,
+            "endOffset": 5,
+            "activityStatus": "NOT_STARTED",
+            "actualStartDate": null,
+            "actualEndDate": null,
+            "activityConfig": {
+              "activityType": "Grant",
+              "activityTypeId": 1,
+              "conditions": [],
+              "validations": [],
+              "content": [
+                {
+                  "contentKey": "image1",
+                  "contentType": "Image"
+                }
+              ],
+              "surveyId": 1,
+              "doer": "UPCM",
+              "subject": "VO",
+              "reviewer": "BPC",
+              "languages": [
+                {
+                  "description": "Receipt of funds",
+                  "language": "en"
+                }
+              ],
+              "uiConfig": [
+                {
+                  "languageId": "en",
                     "key": "GRANT_TASK_TITLE",
                     "type": "DYNAMIC",
                     "value": "subjectName",
-                    "component_type": "Card"
+                  "componentType": "Card"
                   },
                   {
+                    "languageId": null,
                     "key": "GRANT_TASK_SUBTITLE",
                     "type": "DYNAMIC",
                     "value": "villageName",
-                    "component_type": "Card"
+                    "componentType": "Card"
                   },
                   {
+                    "languageId": "en",
                     "key": "GRANT_TASK_PRIMARY_BUTTON",
                     "type": "STATIC",
                     "value": "Start",
-                    "component_type": "Card"
+                    "componentType": "Card"
                   },
                   {
+                    "languageId": null,
                     "key": "searchOn",
                     "type": "DYNAMIC",
                     "value": "subjectName",
-                    "component_type": "Search"
+                    "componentType": "Search"
                   },
                   {
+                    "languageId": null,
                     "key": "searchLabel",
                     "type": "STATIC",
                     "value": "Search by Vo",
-                    "component_type": "Search"
+                    "componentType": "Search"
+                  }
+              ]
+            },
+            "tasks": [
+              {
+                "id": 1,
+                "subjectId": 512,
+                "startOffset": 0,
+                "endOffset": 5,
+                "taskStatus": "NOT_STARTED",
+                "actualStartDate": null,
+                "actualEndDate": null,
+                "taskData": [
+                  {
+                    "key": "subjectName",
+                    "value": "Achaikta "
+                  },
+                  {
+                    "key": "villageName",
+                    "value": "HELENPUR W 4"
                   }
                 ]
-              }
-            ]
-          }
-        },
-        "tasks": [
-          {
-            "id": 3026,
-            "subjectId": 3030,
-            "startOffset": 0,
-            "endOffset": 10,
-            "taskStatus": "COMPLETED",
-            "actualStartDate": "17 May 2024",
-            "actualEndDate": "18 May 2024",
-            "task_data": [
-              {
-                "key": "subjectName",
-                "value": "VO Test"
               },
               {
-                "key": "villageName",
-                "value": "Village Test"
-              }
-            ]
-          },
-          {
-            "id": 3027,
-            "subjectId": 3031,
-            "startOffset": 0,
-            "endOffset": 10,
-            "taskStatus": "COMPLETED",
-            "actualStartDate": "17 May 2024",
-            "actualEndDate": "18 May 2024",
-            "task_data": [
-              {
-                "key": "subjectName",
-                "value": "VO Test1"
+                "id": 2,
+                "subjectId": 787,
+                "startOffset": 0,
+                "endOffset": 5,
+                "taskStatus": "NOT_STARTED",
+                "actualStartDate": null,
+                "actualEndDate": null,
+                "taskData": [
+                  {
+                    "key": "subjectName",
+                    "value": "HELENPUR VO"
+                  },
+                  {
+                    "key": "villageName",
+                    "value": "HELENPUR"
+                  }
+                ]
               },
               {
-                "key": "villageName",
-                "value": "Village Test1"
+                "id": 3,
+                "subjectId": 694,
+                "startOffset": 0,
+                "endOffset": 5,
+                "taskStatus": "NOT_STARTED",
+                "actualStartDate": null,
+                "actualEndDate": null,
+                "taskData": [
+                  {
+                    "key": "subjectName",
+                    "value": "Achaikta"
+                  },
+                  {
+                    "key": "villageName",
+                    "value": "HELENPUR W 4"
+                  }
+                ]
+              },
+              {
+                "id": 4,
+                "subjectId": 730,
+                "startOffset": 0,
+                "endOffset": 5,
+                "taskStatus": "NOT_STARTED",
+                "actualStartDate": null,
+                "actualEndDate": null,
+                "taskData": [
+                  {
+                    "key": "subjectName",
+                    "value": "Achaikta"
+                  },
+                  {
+                    "key": "villageName",
+                    "value": "HELENPUR W 4"
+                  }
+                ]
               }
             ]
           },
@@ -213,9 +244,21 @@
                 "value": "Village Test4"
               }
             ]
+          },
+          {
+            "id": 2,
+            "name": "Disbursement",
+            "startOffset": 0,
+            "endOffset": 5,
+            "activityStatus": "NOT_STARTED",
+            "actualStartDate": null,
+            "actualEndDate": null,
+            "activityConfig": null,
+            "tasks": null
           }
         ]
       }
     ]
   }
 ]
+

@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName
 
 data class TaskResponse(
     @SerializedName("actualEndDate")
-    val actualEndDate: String,
+    val actualEndDate: String?,
     @SerializedName("actualStartDate")
-    val actualStartDate: String,
+    val actualStartDate: String?,
     @SerializedName("endOffset")
     val endOffset: Int,
     @SerializedName("id")
@@ -16,8 +16,8 @@ data class TaskResponse(
     val startOffset: Int,
     @SerializedName("subjectId")
     val subjectId: Int,
-    @SerializedName("task_data")
-    val taskData: List<TaskData>,
+    @SerializedName("taskData")
+    val taskData: List<TaskData>?,
     @SerializedName("taskStatus")
     val taskStatus: String
 )

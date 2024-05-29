@@ -14,8 +14,8 @@ import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
-import com.sarathi.dataloadingmangement.data.dao.TaskAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
 import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
@@ -102,6 +102,26 @@ class DataLoadingModule {
 
     @Provides
     @Singleton
+    fun provideSurveyEntityDao(db: NudgeGrantDatabase) = db.surveyEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideSectionEntityDao(db: NudgeGrantDatabase) = db.sectionEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideQuestionEntityDao(db: NudgeGrantDatabase) = db.questionEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideOptionItemDao(db: NudgeGrantDatabase) = db.optionItemDao()
+
+    @Provides
+    @Singleton
+    fun provideProgrammeDao(db: NudgeGrantDatabase) = db.programmeDao()
+
+    @Provides
+    @Singleton
     fun provideDataLoadingScreenRepository(
         missionDao: MissionDao,
         activityDao: ActivityDao,
@@ -113,7 +133,7 @@ class DataLoadingModule {
         contentConfigDao: ContentConfigDao,
         missionLanguageAttributeDao: MissionLanguageAttributeDao,
         subjectAttributeDao: SubjectAttributeDao,
-        taskAttributeDao: TaskAttributeDao,
+        programmeDao: ProgrammeDao,
         uiConfigDao: UiConfigDao,
         apiService: DataLoadingApiService,
         sharedPrefs: CoreSharedPrefs,
@@ -128,7 +148,7 @@ class DataLoadingModule {
             contentConfigDao,
             missionLanguageAttributeDao,
             subjectAttributeDao,
-            taskAttributeDao,
+            programmeDao,
             uiConfigDao,
             contentDao,
             sharedPrefs,

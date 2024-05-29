@@ -8,6 +8,8 @@ import com.nudge.core.eventswriter.entities.ImageEventWriter
 
 
 const val BLANK_STRING = ""
+const val DEFAULT_ID = 0
+const val NO_SECTION = "NO_SECTION"
 
 const val EventsTable = "events_table"
 const val EventDependencyTable = "event_dependency_table"

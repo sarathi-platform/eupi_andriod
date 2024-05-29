@@ -17,6 +17,7 @@ import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.mission_screen.viewmodel.MissionScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
+import com.sarathi.missionactivitytask.utils.event.SearchEvent
 
 @Composable
 fun GrantMissionScreen(
@@ -40,14 +41,16 @@ fun GrantMissionScreen(
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
         isSearch = true,
-        isDataAvailable = viewModel.missionList.value.isEmpty(),
-        onSearchValueChange = {},
+        isDataAvailable = viewModel.filterMissionList.value.isEmpty(),
+        onSearchValueChange = { searchedTerm ->
+            viewModel.onEvent(SearchEvent.PerformSearch(searchedTerm, true))
+        },
         onBottomUI = {
         },
         onContentUI = {
             if (viewModel.missionList.value.isNotEmpty()) {
                 LazyColumn {
-                    items(viewModel.missionList.value) { mission ->
+                    items(viewModel.filterMissionList.value) { mission ->
                         BasicMissionCard(
                             countStatusText = "Activities Completed",
                             topHeaderText = "Due by 22 March",

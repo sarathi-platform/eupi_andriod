@@ -1,3 +1,5 @@
 package com.sarathi.dataloadingmangement.domain
 
-data class MissionRequest(val languageCode: String, val missionName: String)
+import com.google.gson.annotations.SerializedName
+
+data class MissionRequest(@SerializedName("stateId") val stateId: Int)

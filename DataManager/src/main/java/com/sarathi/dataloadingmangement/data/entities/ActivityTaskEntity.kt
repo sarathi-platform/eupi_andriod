@@ -41,12 +41,14 @@ data class ActivityTaskEntity(
                 userId = userId,
                 missionId = missionId,
                 activityId = activityId,
-                taskId = task.id ?: 0,
+                taskId = task.id,
                 status = task.taskStatus,
-                subjectId = task.subjectId ?: -1,
+                subjectId = task.subjectId,
                 startOffset = task.startOffset,
                 endOffset = task.endOffset,
-                localTaskId = ""
+                localTaskId = "",
+                actualStartDate = task.actualStartDate ?: BLANK_STRING,
+                actualCompletedDate = task.actualEndDate ?: BLANK_STRING
             )
         }
 
