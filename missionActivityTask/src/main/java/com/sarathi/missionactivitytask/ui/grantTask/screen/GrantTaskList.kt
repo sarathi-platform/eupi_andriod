@@ -10,13 +10,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.nudge.core.BLANK_STRING
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
 import com.sarathi.missionactivitytask.ui.basic_content.component.GrantTaskCard
 import com.sarathi.missionactivitytask.ui.components.BasicContentComponent
 import com.sarathi.missionactivitytask.ui.components.ButtonComponent
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.BasicContent
-import com.sarathi.missionactivitytask.utils.StatusEnum
 
 @Composable
 fun GrantTaskList(
@@ -37,11 +36,11 @@ fun GrantTaskList(
             }
         }
         Spacer(modifier = Modifier.height(20.dp))
-        LazyColumn(
-        ) {
+        LazyColumn {
             itemsIndexed(
                 items = taskList.entries.toList()
             ) { index, task ->
+
                 GrantTaskCard(
                     title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name] ?: BLANK_STRING,
                     subTitle = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name]
@@ -50,8 +49,8 @@ fun GrantTaskList(
                         ?: BLANK_STRING,
                     secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name]
                         ?: BLANK_STRING,
-                    status = StatusEnum.Active.name
-
+                    status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]
+                        ?: BLANK_STRING,
                 )
 
 

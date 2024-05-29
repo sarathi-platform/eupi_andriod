@@ -6,7 +6,8 @@ import com.sarathi.missionactivitytask.ui.theme.mediumRankColor
 fun statusColor(status: StatusEnum): Color = when (status) {
     StatusEnum.Active -> Color.Green
     StatusEnum.Inactive -> Color.Red
-    StatusEnum.InProgress -> mediumRankColor
-    StatusEnum.Completed -> Color.Green
-    StatusEnum.Pending -> Color.Gray
+    StatusEnum.INPROGRESS -> mediumRankColor
+    StatusEnum.COMPLETED -> Color.Green
+    StatusEnum.PENDING -> Color.Gray
+    StatusEnum.NOT_STARTED -> Color.Gray
 }
