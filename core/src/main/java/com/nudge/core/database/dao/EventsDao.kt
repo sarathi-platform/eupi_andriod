@@ -8,6 +8,7 @@ import androidx.room.Transaction
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.EventsTable
+import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.database.entities.Events
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.toDate
@@ -66,7 +67,7 @@ interface EventsDao {
                     clientId = it.clientId,
                     newStatus = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
                     modifiedDate = modifiedDate,
-                    errorMessage = it.eventResult.message ?: "Something Went Wrong",
+                    errorMessage = it.eventResult.message ?: SOMETHING_WENT_WRONG,
                     retryCount=retryCount
                 )
             }
