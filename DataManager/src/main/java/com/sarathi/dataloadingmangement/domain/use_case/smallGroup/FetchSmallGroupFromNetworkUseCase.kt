@@ -7,8 +7,8 @@ class FetchSmallGroupFromNetworkUseCase @Inject constructor(
     private val fetchSmallGroupDetailsFromNetworkRepository: FetchSmallGroupDetailsFromNetworkRepository
 ) {
 
-    suspend operator fun invoke(userId: Int) {
-        fetchSmallGroupDetailsFromNetworkRepository.fetchSmallGroupDetails(userId)
+    suspend operator fun invoke() {
+        fetchSmallGroupDetailsFromNetworkRepository.fetchSmallGroupDetails()
     }
 
 }

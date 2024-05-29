@@ -1,15 +1,18 @@
-package com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation
+package com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.components.ButtonPositiveComponent
 import com.sarathi.missionactivitytask.ui.components.IconProperties
@@ -18,25 +21,35 @@ import com.sarathi.missionactivitytask.ui.components.TextWithIconComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.theme.defaultTextStyle
 import com.sarathi.missionactivitytask.ui.theme.dimen_10_dp
-import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.viewModel.SmallGroupAttendanceHistoryViewMode
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation.event.SmallGroupAttendanceHistoryEvent
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.viewModel.SmallGroupAttendanceHistoryViewModel
 import com.sarathi.smallgroupmodule.ui.theme.blueDark
 
 @Composable
 fun SmallGroupAttendanceHistoryScreen(
     modifier: Modifier = Modifier,
+    navController: NavHostController,
     smallGroupId: Int,
-    smallGroupAttendanceHistoryViewMode: SmallGroupAttendanceHistoryViewMode
+    smallGroupAttendanceHistoryViewModel: SmallGroupAttendanceHistoryViewModel
 ) {
 
-    //TODO fetch small group details for the smallGroupId based on date.
+    LaunchedEffect(key1 = Unit) {
+
+        smallGroupAttendanceHistoryViewModel.onEvent(
+            SmallGroupAttendanceHistoryEvent.LoadSmallGroupDetailsForSmallGroupIdEvent(
+                smallGroupId
+            )
+        )
+
+    }
 
     ToolBarWithMenuComponent(
-        title = "", //TODO add small group name for title
+        title = smallGroupAttendanceHistoryViewModel.smallGroupDetails.value.smallGroupName,
         modifier = Modifier,
-        onBackIconClick = { /*TODO*/ },
+        onBackIconClick = { navController.popBackStack() },
         onSearchValueChange = {},
         isFilterSelected = {},
-        isDataAvailable = false,
+        isDataAvailable = true,
         onBottomUI = { /*TODO*/ },
         tabBarView = { /*TODO*/ }
     ) {
@@ -55,12 +68,14 @@ fun SmallGroupAttendanceHistoryScreen(
                 verticalArrangement = Arrangement.Center,
             ) {
                 TextWithIconComponent(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
                     iconProperties = IconProperties(
                         painterResource(id = R.drawable.didi_icon),
                         contentDescription = "",
                         blueDark,
                     ), textProperties = TextProperties(
-                        text = "Total Didis - ",
+                        text = "Total Didis - ${smallGroupAttendanceHistoryViewModel.smallGroupDetails.value.didiCount}",
                         color = blueDark,
                         style = defaultTextStyle
                     )
@@ -69,9 +84,9 @@ fun SmallGroupAttendanceHistoryScreen(
                 ButtonPositiveComponent(
                     buttonTitle = "Take Attendance",
                     isActive = true,
-                    isArrowRequired = false,
+                    isArrowRequired = true,
                     onClick = {
-
+                        //TODO Handle Navigation
                     }
                 )
             }

@@ -9,7 +9,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.sarathi.smallgroupmodule.constatns.SmallGroupConstants.ARG_SMALL_GROUP_ID
 import com.sarathi.smallgroupmodule.constatns.SmallGroupConstants.SMALL_GROUP_GRAPH
-import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation.SmallGroupAttendanceHistoryScreen
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation.ui.SmallGroupAttendanceHistoryScreen
 
 fun NavGraphBuilder.SmallGroupNavigation(navController: NavHostController) {
     navigation(
@@ -24,7 +24,8 @@ fun NavGraphBuilder.SmallGroupNavigation(navController: NavHostController) {
                 }
             )) {
             SmallGroupAttendanceHistoryScreen(
-                smallGroupAttendanceHistoryViewMode = hiltViewModel(),
+                navController = navController,
+                smallGroupAttendanceHistoryViewModel = hiltViewModel(),
                 smallGroupId = it.arguments?.getInt(
                     ARG_SMALL_GROUP_ID
                 ) ?: 0

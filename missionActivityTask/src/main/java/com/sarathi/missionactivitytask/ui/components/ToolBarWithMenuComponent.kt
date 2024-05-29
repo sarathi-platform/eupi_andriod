@@ -42,7 +42,7 @@ fun ToolBarWithMenuComponent(
     modifier: Modifier,
     isSearch: Boolean = false,
     iconResId: Int = R.drawable.arrow_left,
-    navController: NavController? = rememberNavController(),
+    navController: NavController = rememberNavController(),
     onBackIconClick: () -> Unit,
     onSearchValueChange: (String) -> Unit,
     isFilterSelected: (Boolean) -> Unit,
@@ -88,6 +88,8 @@ fun ToolBarWithMenuComponent(
                 },
                 actions = {
                     IconButton(onClick = {
+                        //TODO Create extension function to navigate to screen and pass correct navController
+                        //navController.navigateToSettings()
                     }) {
                         Icon(
                             painter = painterResource(id = R.drawable.more_icon),

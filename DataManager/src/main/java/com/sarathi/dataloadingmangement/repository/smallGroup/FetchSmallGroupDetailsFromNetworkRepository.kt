@@ -4,7 +4,7 @@ import com.sarathi.dataloadingmangement.model.response.SmallGroupMappingResponse
 
 interface FetchSmallGroupDetailsFromNetworkRepository {
 
-    suspend fun fetchSmallGroupDetails(userId: Int)
+    suspend fun fetchSmallGroupDetails()
 
     suspend fun saveSmallGroupMapping(smallGroupMapping: List<SmallGroupMappingResponseModel>)
 

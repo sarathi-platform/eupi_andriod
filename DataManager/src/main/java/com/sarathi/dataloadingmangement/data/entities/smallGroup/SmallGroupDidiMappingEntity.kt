@@ -32,9 +32,29 @@ data class SmallGroupDidiMappingEntity(
 ) {
 
     companion object {
+
+        fun getSmallGroupDidiMappingEntityForDidi(
+            userId: String,
+            smallGroupId: Int,
+            smallGroupName: String, status: Int, didiId: Int
+        ): SmallGroupDidiMappingEntity {
+
+            return SmallGroupDidiMappingEntity(
+                id = 0,
+                userId = userId,
+                smallGroupId = smallGroupId,
+                smallGroupName = smallGroupName,
+                didiId = didiId,
+                date = System.currentTimeMillis(),
+                status = status
+            )
+
+        }
+
         fun getSmallGroupDidiMappingEntityListForSmallGroup(
             smallGroupMappingResponseModel: SmallGroupMappingResponseModel,
-            userId: String
+            userId: String,
+            date: Long
         ): List<SmallGroupDidiMappingEntity> {
 
             val smallGroupDidiMappingEntityList = ArrayList<SmallGroupDidiMappingEntity>()
@@ -48,7 +68,7 @@ data class SmallGroupDidiMappingEntity(
                         smallGroupId = smallGroupMappingResponseModel.id,
                         smallGroupName = smallGroupMappingResponseModel.name,
                         didiId = benId,
-                        date = System.currentTimeMillis(),
+                        date = date,
                         status = smallGroupMappingResponseModel.status
                     )
                 )

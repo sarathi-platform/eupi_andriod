@@ -54,14 +54,17 @@ fun BasicTextWithIconComponent(
 fun <T, U> TextWithIconComponent(
     modifier: Modifier = Modifier,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
-    verticalAlignment: Alignment.Vertical = Alignment.Top,
+    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     spacerWidth: Dp = dimen_8_dp,
     iconProperties: IconProperties<T>,
     textProperties: TextProperties<U>
 ) {
 
     BasicTextWithIconComponent(
+        modifier = modifier,
         verticalAlignment = verticalAlignment,
+        horizontalArrangement = horizontalArrangement,
+        spacerWidth = spacerWidth,
         iconContent = {
             when (iconProperties.icon) {
                 is Painter -> {

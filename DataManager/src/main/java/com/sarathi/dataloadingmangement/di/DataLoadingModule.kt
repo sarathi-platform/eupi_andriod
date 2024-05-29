@@ -177,11 +177,12 @@ class DataLoadingModule {
     @Provides
     @Singleton
     fun fetchDidiDetailsFromNetworkRepository(
-//        corePrefRepo: CorePrefRepo,
+        coreSharedPrefs: CoreSharedPrefs,
         dataLoadingApiService: DataLoadingApiService,
         subjectEntityDao: SubjectEntityDao
     ): FetchDidiDetailsFromNetworkRepository {
-        return FetchDidiDetailsFromNetworkRepositoryImpl(/*corePrefRepo, */dataLoadingApiService,
+        return FetchDidiDetailsFromNetworkRepositoryImpl(
+            coreSharedPrefs, dataLoadingApiService,
             subjectEntityDao
         )
     }
@@ -197,11 +198,12 @@ class DataLoadingModule {
     @Provides
     @Singleton
     fun provideFetchSmallGroupDetailsFromNetworkRepository(
-//        corePrefRepo: CorePrefRepo,
+        coreSharedPrefs: CoreSharedPrefs,
         dataLoadingApiService: DataLoadingApiService,
         smallGroupDidiMappingDao: SmallGroupDidiMappingDao
     ): FetchSmallGroupDetailsFromNetworkRepository {
-        return FetchSmallGroupDetailsFromNetworkRepositoryImpl(/*corePrefRepo, */
+        return FetchSmallGroupDetailsFromNetworkRepositoryImpl(
+            coreSharedPrefs,
             dataLoadingApiService,
             smallGroupDidiMappingDao
         )

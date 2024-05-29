@@ -7,8 +7,8 @@ class FetchDidiDetailsFromNetworkUseCase @Inject constructor(
     private val fetchDidiDetailsFromNetworkRepository: FetchDidiDetailsFromNetworkRepository
 ) {
 
-    suspend operator fun invoke(userId: Int) {
-        fetchDidiDetailsFromNetworkRepository.fetchDidiDetailsFromNetwork(userId)
+    suspend operator fun invoke() {
+        fetchDidiDetailsFromNetworkRepository.fetchDidiDetailsFromNetwork()
     }
 
 }

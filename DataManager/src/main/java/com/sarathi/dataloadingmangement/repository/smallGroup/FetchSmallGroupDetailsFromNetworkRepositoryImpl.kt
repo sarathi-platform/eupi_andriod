@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.repository.smallGroup
 
 import android.util.Log
 import com.nudge.core.SUCCESS_CODE
+import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 import com.sarathi.dataloadingmangement.model.request.SmallGroupApiRequest
@@ -10,17 +11,16 @@ import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import javax.inject.Inject
 
 class FetchSmallGroupDetailsFromNetworkRepositoryImpl @Inject constructor(
-//    private val corePrefRepo: CorePrefRepo,
+    private val coreSharedPrefs: CoreSharedPrefs,
     private val dataLoadingApiService: DataLoadingApiService,
     private val smallGroupDidiMappingDao: SmallGroupDidiMappingDao
 ) : FetchSmallGroupDetailsFromNetworkRepository {
 
     private val TAG = FetchSmallGroupDetailsFromNetworkRepositoryImpl::class.java.simpleName
 
-    override suspend fun fetchSmallGroupDetails(userId: Int) {
-//        val userId = corePrefRepo.getUserId()
-
+    override suspend fun fetchSmallGroupDetails() {
         try {
+            val userId = coreSharedPrefs.getUserId().toInt()
             val smallGroupApiRequest = SmallGroupApiRequest(userList = listOf(userId))
             val response =
                 dataLoadingApiService.getSmallGroupBeneficiaryMapping(smallGroupApiRequest)
@@ -41,18 +41,24 @@ class FetchSmallGroupDetailsFromNetworkRepositoryImpl @Inject constructor(
 
     override suspend fun saveSmallGroupMapping(smallGroupMapping: List<SmallGroupMappingResponseModel>) {
 
-        val uniqueUserId = /*corePrefRepo.getUniqueUserIdentifier()*/
-            "Ultra Poor change maker (UPCM)_6789543210"
+        try {
+            val uniqueUserId = coreSharedPrefs.getUniqueUserIdentifier()
 
-        smallGroupMapping.forEach {
+            val date = System.currentTimeMillis()
 
-            smallGroupDidiMappingDao.insertAllSmallGroupDidiMapping(
-                SmallGroupDidiMappingEntity.getSmallGroupDidiMappingEntityListForSmallGroup(
-                    it,
-                    uniqueUserId
+            smallGroupMapping.forEach {
+
+                smallGroupDidiMappingDao.insertAllSmallGroupDidiMapping(
+                    SmallGroupDidiMappingEntity.getSmallGroupDidiMappingEntityListForSmallGroup(
+                        it,
+                        uniqueUserId,
+                        date
+                    )
                 )
-            )
 
+            }
+        } catch (ex: Exception) {
+            Log.e(TAG, "fetchSmallGroupDetails -> exception = ${ex.message}", ex)
         }
 
     }

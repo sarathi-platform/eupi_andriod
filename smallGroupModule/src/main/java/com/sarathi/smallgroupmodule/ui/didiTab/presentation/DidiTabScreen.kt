@@ -17,10 +17,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.smallgroupmodule.ui.TabItem
 import com.sarathi.smallgroupmodule.ui.didiTab.viewModel.DidiTabViewModel
-import com.sarathi.smallgroupmodule.ui.didiTab.viewModel.TestClass
 import com.sarathi.smallgroupmodule.ui.smallGroupSubTab.presentation.SmallGroupSubTab
 import com.sarathi.smallgroupmodule.ui.theme.dimen_10_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_16_dp
@@ -37,7 +37,7 @@ fun DidiTabScreen(
 
     LaunchedEffect(key1 = true) {
 
-        didiTabViewModel.onEvent(TestClass.TestDataLoadingEvent(context))
+        didiTabViewModel.onEvent(InitDataEvent.InitDataState)
 
     }
 
