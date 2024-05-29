@@ -1,4 +1,4 @@
-package com.nrlm.baselinesurvey.ui.theme
+package com.nudge.syncmanager.ui.sync_event_screen.theme
 
 import androidx.compose.ui.unit.dp
 

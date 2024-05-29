@@ -34,9 +34,9 @@
 //import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 //import com.nrlm.baselinesurvey.ui.common_components.common_setting.SyncEventCard
 //import com.nrlm.baselinesurvey.ui.sync_event.viewmodel.SyncEventViewModel
-//import com.nrlm.baselinesurvey.ui.theme.blueDark
-//import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
-//import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
+//import com.nudge.syncmanager.ui.sync_event_screen.theme.getBlueDark
+//import com.nudge.syncmanager.ui.sync_event_screen.theme.getDimen_10_dp
+//import com.nudge.syncmanager.ui.sync_event_screen.theme.getDimen_18_dp
 //import com.nrlm.baselinesurvey.ui.theme.mediumTextStyle
 //import com.nrlm.baselinesurvey.ui.theme.textColorDark
 //import com.nrlm.baselinesurvey.utils.ConnectionMonitor
