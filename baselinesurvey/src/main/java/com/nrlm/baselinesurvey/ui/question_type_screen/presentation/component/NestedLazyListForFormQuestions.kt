@@ -144,7 +144,8 @@ fun NestedLazyListForFormQuestions(
                             .filter {
                                 it
                                     .optionItemEntity?.optionType != QuestionType.Form.name && it.optionItemEntity?.optionType != QuestionType.FormWithNone.name
-                            }.filter { it.showQuestion } ?: emptyList()
+                            }.filter { it.showQuestion }.sortedBy { it.optionItemEntity?.order }
+                            ?: emptyList()
                     ) { index, option ->
                         when (option.optionItemEntity?.optionType) {
                             QuestionType.SingleSelectDropdown.name,
