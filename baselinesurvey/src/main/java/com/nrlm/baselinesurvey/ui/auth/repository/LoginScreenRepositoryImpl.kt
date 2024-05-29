@@ -5,11 +5,13 @@ import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.model.request.LoginRequest
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
+import com.nudge.core.preference.CorePrefRepo
 import javax.inject.Inject
 
 class LoginScreenRepositoryImpl @Inject constructor(
     private val prefRepo: PrefRepo,
-    private val apiService: ApiService
+    private val apiService: ApiService,
+    private val corePrefRepo: CorePrefRepo
 ): LoginScreenRepository {
 
 
@@ -20,6 +22,7 @@ class LoginScreenRepositoryImpl @Inject constructor(
 
     override fun saveMobileNumber(mobileNumber: String) {
         prefRepo.savePref(PREF_MOBILE_NUMBER, mobileNumber)
+        corePrefRepo.savePref(PREF_MOBILE_NUMBER, mobileNumber)
     }
 
 

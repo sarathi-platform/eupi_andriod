@@ -1,6 +1,7 @@
 package com.nudge.syncmanager
 
 
+import android.util.Log
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.dao.EventStatusDao
@@ -41,6 +42,7 @@ class SyncApiRepository @Inject constructor(
     }
 
     suspend fun getPendingEventCount(): Int {
+        Log.d("TAG", "getPendingEventCount: ${prefRepo.getMobileNumber()}")
         return eventDao.getTotalPendingEventCount(
             listOf(
                 EventSyncStatus.OPEN.eventSyncStatus,

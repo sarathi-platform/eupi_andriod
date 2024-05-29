@@ -2,6 +2,7 @@ package com.nudge.syncmanager
 
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.Data
@@ -10,6 +11,7 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import com.nudge.communicationModule.EventObserverInterface
@@ -22,7 +24,11 @@ import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.EventStatusEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.NetworkSpeed
+import com.nudge.syncmanager.utils.PRODUCER_WORKER_TAG
 import com.nudge.syncmanager.workers.SyncUploadWorker
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -77,22 +83,18 @@ class EventObserverInterfaceImpl @Inject constructor(
         val data = Data.Builder()
         data.putInt("batchCount", getBatchSize(networkSpeed))
         val uploadWorkRequest: WorkRequest =
-            OneTimeWorkRequestBuilder<SyncUploadWorker>().setConstraints(constraints)
+            PeriodicWorkRequestBuilder<SyncUploadWorker>(2, TimeUnit.MINUTES)
+                .setConstraints(
+                    constraints
+                ).addTag(PRODUCER_WORKER_TAG)
                 .setBackoffCriteria(
                     BackoffPolicy.LINEAR,
-                    200,
+                    90000,
                     TimeUnit.MILLISECONDS
                 ).setInputData(data.build())
                 .build()
-       val workManager=WorkManager.getInstance(context)
 
-        val workerInfo=  workManager.getWorkInfoByIdLiveData(uploadWorkRequest.id)
-        Log.d("TAG", "syncPendingEvent workerInfo: ${workerInfo.value}")
-        workManager
-            .enqueue(uploadWorkRequest)
-
-
-
+        WorkManager.getInstance(context).enqueue(uploadWorkRequest)
     }
 
     fun getBatchSize(networkSpeed: NetworkSpeed): Int {

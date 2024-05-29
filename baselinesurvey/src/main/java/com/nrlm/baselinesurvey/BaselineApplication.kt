@@ -100,8 +100,8 @@ class BaselineApplication: Application(), androidx.work.Configuration.Provider {
     override fun getResources(): Resources {
         return localizationDelegate.getResources(baseContext, super.getResources())
     }
-    override fun getWorkManagerConfiguration(): androidx.work.Configuration {
-        return androidx.work.Configuration.Builder()
+
+    override val workManagerConfiguration: androidx.work.Configuration
+        get() =  androidx.work.Configuration.Builder()
             .setWorkerFactory(workerFactory).build()
-    }
 }

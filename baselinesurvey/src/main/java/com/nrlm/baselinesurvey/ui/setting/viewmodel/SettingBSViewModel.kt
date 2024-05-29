@@ -248,7 +248,7 @@ class SettingBSViewModel @Inject constructor(
     fun syncAllPending(networkSpeed: NetworkSpeed) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                BaselineCore.getEventObserver()?.syncPendingEvent(BaselineCore.getAppContext(), networkSpeed)
+//                BaselineCore.getEventObserver()?.syncPendingEvent(BaselineCore.getAppContext(), networkSpeed)
             }catch (ex:Exception){
                 BaselineLogger.d("SettingBSViewModel"," syncAllPending: ${ex.printStackTrace()} ")
             }

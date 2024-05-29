@@ -2,6 +2,11 @@ package com.nrlm.baselinesurvey.ui.sync_event.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import androidx.work.WorkInfo
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
@@ -16,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 @HiltViewModel
 class SyncEventViewModel @Inject constructor(
@@ -45,10 +51,11 @@ class SyncEventViewModel @Inject constructor(
         }
     }
 
-    fun syncAllPending(networkSpeed: NetworkSpeed) {
+   fun syncAllPending(networkSpeed: NetworkSpeed) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                BaselineCore.getEventObserver()?.syncPendingEvent(BaselineCore.getAppContext(), networkSpeed)
+                BaselineCore.getEventObserver()
+                    ?.syncPendingEvent(BaselineCore.getAppContext(), networkSpeed)
             }catch (ex:Exception){
                 BaselineLogger.d("SettingBSViewModel"," syncAllPending: ${ex.printStackTrace()} ")
             }
