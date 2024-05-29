@@ -52,7 +52,13 @@ import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_NAME
+import com.nrlm.baselinesurvey.DELIMITER_TIME
+import com.nrlm.baselinesurvey.DELIMITER_YEAR
+import com.nrlm.baselinesurvey.HOURS
+import com.nrlm.baselinesurvey.MINUTE
+import com.nrlm.baselinesurvey.MONTHS
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.YEAR
 import com.nrlm.baselinesurvey.ZERO_RESULT
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
@@ -337,6 +343,7 @@ fun QuestionList.convertQuestionListToOptionItemEntity(sectionId: Int, surveyId:
         display = this.questionDisplay,
         weight = if (options?.isEmpty() == true) 0 else this.options?.first()?.weight,
         optionType = this.type,
+        order = this.order ?: -1,
         summary = this.questionSummary,
         values = emptyList(),
         contentEntities = this.contentList ?: listOf(),
@@ -383,7 +390,7 @@ fun QuestionList.convertFormTypeQuestionListToOptionItemEntity(sectionId: Int, s
             optionImage = optionsItem?.optionImage,
             optionType = optionsItem?.optionType,
             conditional = true,
-            order = optionsItem?.order ?: -1,
+            order = this.order ?: -1,
             values = optionsItem?.values,
             languageId = languageId,
             optionTag = this.attributeTag ?: 0,
@@ -779,7 +786,37 @@ fun <T> getParentEntityMapForEvent(eventItem: T, eventName: EventName): Map<Stri
         }
     }
 }
-
+fun String.evaluateValue(): Boolean {
+    return this.isBlank() || this == "00" || this == "0"
+}
+fun formatHrsYearEventData(selectedValue: String): String {
+    val response: List<String>
+    if (selectedValue.contains(DELIMITER_YEAR)) {
+        response = selectedValue.split(DELIMITER_YEAR)
+        val evaluateYearVal: String =
+            if (response.first().evaluateValue()) {
+                "${response[1]} $MONTHS"
+            } else if (response[1].evaluateValue()) {
+                "${response.first()} $YEAR"
+            } else {
+                "${response.first()} $YEAR ${response[1]} $MONTHS"
+            }
+        return evaluateYearVal
+    } else if (selectedValue.contains(DELIMITER_TIME)) {
+        response = selectedValue.split(DELIMITER_TIME)
+        val evaluateTimeVal: String =
+            if (response.first().evaluateValue()
+            ) {
+                "${response[1]} $MINUTE"
+            } else if (response[1].evaluateValue()) {
+                "${response.first()} $HOURS"
+            } else {
+                "${response.first()} $HOURS ${response[1]} $MINUTE"
+            }
+        return evaluateTimeVal
+    }
+    return selectedValue
+}
 fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType?): List<SaveAnswerEventOptionItemDto> {
     val saveAnswerEventOptionItemDtoList = mutableListOf<SaveAnswerEventOptionItemDto>()
 
@@ -818,7 +855,7 @@ fun OptionItemEntity.convertToSaveAnswerEventOptionItemDto(type: QuestionType?):
             val mSaveAnswerEventOptionItemDto =
                 SaveAnswerEventOptionItemDto(
                     this.optionId ?: 0,
-                    this.selectedValue,
+                    formatHrsYearEventData(this.selectedValue ?: BLANK_STRING),
                     tag = this.optionTag
                 )
             saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)
@@ -897,7 +934,7 @@ fun List<OptionItemEntity>.convertToSaveAnswerEventOptionItemsDto(type: Question
                 val mSaveAnswerEventOptionItemDto =
                     SaveAnswerEventOptionItemDto(
                         it.optionId ?: 0,
-                        it.selectedValue,
+                        formatHrsYearEventData(it.selectedValue ?: BLANK_STRING),
                         tag = it.optionTag
                     )
                 saveAnswerEventOptionItemDtoList.add(mSaveAnswerEventOptionItemDto)

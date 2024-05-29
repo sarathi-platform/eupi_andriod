@@ -45,6 +45,11 @@ const val EXCEL_TYPE = "text/csv"
 const val REGENERATE_PREFIX = "regenerate_"
 const val SOMETHING_WENT_WRONG="Something Went Wrong"
 
+const val SUFFIX_IMAGE_ZIP_FILE = "Image"
+const val SUFFIX_EVENT_ZIP_FILE = "file"
+
+const val ZIP_EXTENSION = "zip"
+
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),
     DbEventWrite(),
