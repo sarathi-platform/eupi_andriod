@@ -4,9 +4,12 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
 
-class CoreSharedPrefs private constructor(val context: Context) :
+class CoreSharedPrefs @Inject constructor(@ApplicationContext private val context: Context)
+ :
     CorePrefRepo {
     companion object {
         const val PREFS_NAME = "secured_nudge_prefs"

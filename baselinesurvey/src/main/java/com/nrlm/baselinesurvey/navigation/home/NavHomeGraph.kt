@@ -52,10 +52,10 @@ import com.nrlm.baselinesurvey.ui.splash.presentaion.SplashScreenComponent
 import com.nrlm.baselinesurvey.ui.start_screen.presentation.BaseLineStartScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreen
-import com.nrlm.baselinesurvey.ui.sync_event.presentation.SyncEventScreen
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.ui.video_player.presentation.FullscreenView
 import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nudge.syncmanager.ui.sync_event_screen.presentation.SyncEventScreen
 
 @Composable
 fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo, modifier: Modifier) {
@@ -416,7 +416,7 @@ fun NavGraphBuilder.settingNavGraph(navHostController: NavHostController){
             ExportImportScreen(navController = navHostController, viewModel = hiltViewModel())
         }
         composable(route = SettingBSScreens.SYNC_EVENT_SCREEN.route){
-            SyncEventScreen(navController = navHostController, viewModel = hiltViewModel())
+            SyncEventScreen(navController = navHostController)
         }
     }
 }
