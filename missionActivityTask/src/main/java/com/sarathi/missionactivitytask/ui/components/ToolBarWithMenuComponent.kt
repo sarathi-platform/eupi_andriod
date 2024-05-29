@@ -46,7 +46,7 @@ fun ToolBarWithMenuComponent(
     onSearchValueChange: (String) -> Unit,
     isDataAvailable: Boolean = true,
     onBottomUI: @Composable () -> Unit,
-    onContentUI: @Composable (PaddingValues) -> Unit
+    onContentUI: @Composable (PaddingValues, Boolean) -> Unit
 ) {
     val dataAvailableState = mutableStateOf(isDataAvailable)
 
@@ -143,8 +143,7 @@ fun ToolBarWithMenuComponent(
                         })
                 }
             } else {
-
-                onContentUI(it)
+                onContentUI(it, isSearch)
             }
         }
     }

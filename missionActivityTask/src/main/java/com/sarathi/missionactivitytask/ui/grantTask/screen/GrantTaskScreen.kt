@@ -38,11 +38,12 @@ fun GrantTaskScreen(
         },
         onBottomUI = {
         },
-        onContentUI = {
+        onContentUI = { paddingValues, isSearch ->
             if (viewModel.taskList.value.isNotEmpty()) {
                 GrantTaskList(
                     taskList = viewModel.taskList.value,
-                    contents = getContent()
+                    contents = getContent(),
+                    isSearch = isSearch
                 )
             }
         }
