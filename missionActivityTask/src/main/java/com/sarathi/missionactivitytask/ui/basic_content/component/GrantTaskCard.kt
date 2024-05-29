@@ -3,6 +3,7 @@ package com.sarathi.missionactivitytask.ui.basic_content.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -24,19 +27,32 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sarathi.missionactivitytask.R
+import com.sarathi.missionactivitytask.ui.components.PrimaryButton
 import com.sarathi.missionactivitytask.ui.theme.blueDark
 import com.sarathi.missionactivitytask.ui.theme.defaultTextStyle
 import com.sarathi.missionactivitytask.ui.theme.dimen_10_dp
+import com.sarathi.missionactivitytask.ui.theme.dimen_16_dp
 import com.sarathi.missionactivitytask.ui.theme.dimen_18_dp
+import com.sarathi.missionactivitytask.ui.theme.dimen_2_dp
+import com.sarathi.missionactivitytask.ui.theme.dimen_5_dp
+import com.sarathi.missionactivitytask.ui.theme.dimen_8_dp
+import com.sarathi.missionactivitytask.ui.theme.green
+import com.sarathi.missionactivitytask.ui.theme.greenActiveIcon
+import com.sarathi.missionactivitytask.ui.theme.greenOnline
+import com.sarathi.missionactivitytask.ui.theme.greyBorderColor
 import com.sarathi.missionactivitytask.ui.theme.newMediumTextStyle
 import com.sarathi.missionactivitytask.ui.theme.roundedCornerRadiusDefault
 import com.sarathi.missionactivitytask.ui.theme.smallTextStyleMediumWeight
+import com.sarathi.missionactivitytask.ui.theme.unmatchedOrangeColor
 import com.sarathi.missionactivitytask.ui.theme.white
+import com.sarathi.missionactivitytask.utils.StatusEnum
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
@@ -48,18 +64,17 @@ fun GrantTaskCard(
     status: String,
     modifier: Modifier = Modifier,
     isHamletIcon: Boolean = false,
-    isCompleted: Boolean = true
 ) {
     androidx.compose.material3.Card(
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 10.dp
+            defaultElevation = 30.dp
         ), modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
             .clip(RoundedCornerShape(6.dp))
             .border(
                 width = 1.dp,
-                color = white,
+                color = if (status == StatusEnum.COMPLETED.name) greenOnline else greyBorderColor,
                 shape = RoundedCornerShape(6.dp)
             )
             .background(Color.Transparent)
@@ -72,7 +87,7 @@ fun GrantTaskCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, top = 16.dp),
+                    .padding(start = 16.dp, end = 16.dp, top = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (isHamletIcon) {
@@ -80,7 +95,6 @@ fun GrantTaskCard(
                         painter = painterResource(id = R.drawable.ic_vo_name_icon),
                         contentDescription = "more action button",
                         modifier = Modifier.size(30.dp),
-                        tint = blueDark,
                     )
                 }
 
@@ -91,122 +105,138 @@ fun GrantTaskCard(
                         .padding(horizontal = 5.dp),
                     color = blueDark
                 )
-                if (isCompleted) {
-                    Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.weight(1f))
+                if (status == (StatusEnum.COMPLETED.name)) {
                     Icon(
-                        painter = painterResource(id = R.drawable.icon_check),
+                        painter = painterResource(id = R.drawable.ic_check_circle),
                         contentDescription = "more action button",
-                        modifier = Modifier.size(30.dp),
-                        tint = blueDark,
+                        modifier = Modifier.size(20.dp),
+                        tint = greenOnline,
+                    )
+                }else if (status == StatusEnum.INPROGRESS.name){
+                    Text(
+                        text = "In Progress",
+                        style = defaultTextStyle,
+                        modifier = Modifier
+                            .padding(horizontal = 5.dp),
+                        color = unmatchedOrangeColor
                     )
                 }
             }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, top = 16.dp),
+                    .padding(start = 16.dp, top = 5.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.home_icn),
-                    contentDescription = "more action button",
-                    tint = blueDark,
-                )
-                Text(
-                    text = subTitle,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 5.dp),
-                    color = blueDark,
-                    style = newMediumTextStyle
-                )
+                if (subTitle.isNotBlank()) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.home_icn),
+                        contentDescription = "more action button",
+                        tint = blueDark,
+                    )
+                    Text(
+                        text = subTitle,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 5.dp),
+                        color = blueDark,
+                        style = newMediumTextStyle
+                    )
+                }
             }
-            if (isCompleted) {
+            if (status == (StatusEnum.COMPLETED.name) || status == (StatusEnum.INPROGRESS.name)) {
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, top = 16.dp),
+                        .padding(start = 16.dp, end = 16.dp, top = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
+                        Text(
+                            text = "10",
+                            color = blueDark,
+                            style = newMediumTextStyle,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .padding(dimen_2_dp)
+                                .drawBehind {
+                                    drawCircle(
+                                        color = greyBorderColor,
+                                        radius = this.size.maxDimension / 2.0f
+                                    )
+                                },
+                        )
+                    Spacer(modifier = Modifier.width(dimen_8_dp))
                     Text(
-                        text = " 10 Didis ",
+                        text = "Didis",
                         modifier = Modifier.weight(.4f),
                         color = blueDark,
                         style = newMediumTextStyle
                     )
                     Icon(
-                        painter = painterResource(id = R.drawable.home_icn),
+                        painter = painterResource(id = R.drawable.ic_received_money),
                         contentDescription = "Received: ₹40,000",
                         tint = blueDark,
                     )
                     Text(
                         text = "Received: ₹40,000",
                         modifier = Modifier
-                            .padding(horizontal = 5.dp),
+                            .padding(horizontal = dimen_5_dp),
                         color = blueDark,
                         style = newMediumTextStyle
                     )
                 }
             }
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 5.dp, bottom = 5.dp)) {
-                Divider(
+            if (status == StatusEnum.NOTSTARTED.name){
+                Row(
                     modifier = Modifier
-                        .height(1.dp)
-                        .weight(1f)
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimen_18_dp),
-                horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
-            ) {
-                if (isCompleted) {
-                    Text(
-                        text = "View",
-                        modifier = Modifier
-                            .padding(horizontal = 5.dp),
-                        color = blueDark,
-                        style = newMediumTextStyle
-                    )
+                        .fillMaxWidth()
+                        .padding(dimen_16_dp),
+                    horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
+                ){
                     Spacer(modifier = Modifier.weight(1f))
-                    Icon(
-                        imageVector = Icons.Default.ArrowForward,
-                        contentDescription = "more action button",
-                        tint = blueDark,
-                    )
-                } else {
-                    Spacer(modifier = Modifier.weight(1f))
-                    Button(
-                        onClick = {
-                            //  onStartClick()
-                        },
-                        enabled = true,
-                        shape = RoundedCornerShape(roundedCornerRadiusDefault),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = blueDark, contentColor = white
-                        ),
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text(
-                            text = primaryButtonText,
-                            style = smallTextStyleMediumWeight,
-                            color = white
-                        )
-                        Icon(
-                            Icons.Default.ArrowForward,
-                            contentDescription = "Positive Button",
-                            tint = white,
-                            modifier = Modifier.absolutePadding(top = 2.dp, left = 2.dp)
-                        )
-                    }
+                    PrimaryButton(text = "Start", onClick = { /*TODO*/ }, modifier = Modifier.weight(1f))
                 }
-
             }
+           else{
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 5.dp, bottom = 5.dp)) {
+                    Divider(
+                        modifier = Modifier
+                            .height(1.dp)
+                            .weight(1f)
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(dimen_16_dp),
+                    horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
+                ) {
+                    if (status == StatusEnum.COMPLETED.name) {
+                        Text(
+                            text = "View",
+                            modifier = Modifier
+                                .padding(horizontal = 5.dp),
+                            color = blueDark,
+                            style = newMediumTextStyle
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Icon(
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = "more action button",
+                            tint = blueDark,
+                        )
+                    } else {
+                        Spacer(modifier = Modifier.weight(1f))
+                        PrimaryButton(text = "Continue", onClick = { /*TODO*/ }, modifier = Modifier.weight(1f))
+                    }
 
-
+                }  
+           }
         }
 
     }

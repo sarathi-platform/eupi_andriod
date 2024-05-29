@@ -43,29 +43,18 @@ fun GrantTaskList(
             itemsIndexed(
                 items = taskList.entries.toList()
             ) { index, task ->
-                TaskDisbursementCard(
-                    profileImage = painterResource(id = R.drawable.profile_img),
-                    name = "Shanti Devi",
-                    address = "#45, Killu dada",
-                    location = "Sundar Pahari",
-                    sanctionedAmount = "₹2,000",
-                    disbursedAmount = "₹2,000",
-                    modifier = Modifier,
+
+                GrantTaskCard(
+                    title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name] ?: BLANK_STRING,
+                    subTitle = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name]
+                        ?: BLANK_STRING,
+                    primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name]
+                        ?: BLANK_STRING,
+                    secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name]
+                        ?: BLANK_STRING,
                     status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]
                         ?: BLANK_STRING,
                 )
-
-//                GrantTaskCard(
-//                    title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name] ?: BLANK_STRING,
-//                    subTitle = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name]
-//                        ?: BLANK_STRING,
-//                    primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name]
-//                        ?: BLANK_STRING,
-//                    secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name]
-//                        ?: BLANK_STRING,
-//                    status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]
-//                        ?: BLANK_STRING,
-//                )
 
 
             }
