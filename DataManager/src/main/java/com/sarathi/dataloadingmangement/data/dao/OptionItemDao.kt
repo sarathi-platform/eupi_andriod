@@ -18,7 +18,7 @@ interface OptionItemDao {
         questionId: Int,
         sectionId: Int,
         surveyId: Int,
-        languageId: Int
+        languageId: String
     )
 
     @Query("Select * from $OPTION_TABLE where  userId=:userId and  sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")

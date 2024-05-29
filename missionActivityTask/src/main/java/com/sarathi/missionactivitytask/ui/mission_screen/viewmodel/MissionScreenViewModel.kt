@@ -78,6 +78,7 @@ class MissionScreenViewModel @Inject constructor(
         try {
             viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
                 fetchMissionData(fetchDataUseCase) { callBack() }
+                fetchDataUseCase.fetchSurveyDataFromNetworkUseCase.invoke()
             }
         } catch (ex: Exception) {
             onEvent(LoaderEvent.UpdateLoaderState(false))

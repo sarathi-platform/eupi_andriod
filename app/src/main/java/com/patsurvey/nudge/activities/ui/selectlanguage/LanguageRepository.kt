@@ -1,6 +1,6 @@
 package com.patsurvey.nudge.activities.ui.selectlanguage
 
-import com.nudge.core.preference.CorePrefRepo
+import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.LanguageEntity
@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 class LanguageRepository @Inject constructor(
     val prefRepo: PrefRepo,
-    val corePrefRepo: CorePrefRepo,
+    val corePrefRepo: CoreSharedPrefs,
     val languageListDao: LanguageListDao,
     val villageListDao: VillageListDao
 ) : BaseRepository() {

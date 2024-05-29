@@ -13,6 +13,7 @@ import com.sarathi.dataloadingmangement.data.converters.ValuesDtoConverter
 import com.sarathi.dataloadingmangement.model.survey.response.ConditionsDto
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ContentListConverter
+import com.sarathi.dataloadingmangement.model.survey.response.OptionsItem
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 
 @Entity(tableName = OPTION_TABLE)
@@ -84,7 +85,7 @@ data class OptionItemEntity(
     @SerializedName("languageId")
     @Expose
     @ColumnInfo(name = "languageId")
-    var languageId: Int? = 1,
+    var languageId: String? = BLANK_STRING,
 
     @SerializedName("optionTag")
     @Expose
@@ -120,5 +121,40 @@ data class OptionItemEntity(
                 surveyId = 0
             )
         }
+
+
+        fun getOptionItemEntity(
+            userId: String,
+            optionsItem: OptionsItem,
+            sectionId: Int,
+            surveyId: Int,
+            questionId: Int?,
+            languageId: String
+        ): OptionItemEntity {
+            return OptionItemEntity(
+                id = 0,
+                userId = userId,
+                optionId = optionsItem.optionId,
+                questionId = questionId,
+                sectionId = sectionId,
+                surveyId = surveyId,
+                display = optionsItem.display,
+                weight = optionsItem.weight,
+                optionValue = optionsItem.optionValue,
+                summary = optionsItem.summary,
+                count = optionsItem.count,
+                optionImage = optionsItem.optionImage,
+                optionType = optionsItem.optionType,
+                conditional = optionsItem.conditional,
+                order = optionsItem.order,
+                values = optionsItem.values,
+                languageId = languageId,
+                conditions = optionsItem.conditions,
+                optionTag = optionsItem.tag ?: 0,
+                contentEntities = optionsItem.contentList
+            )
+        }
     }
 }
+
+

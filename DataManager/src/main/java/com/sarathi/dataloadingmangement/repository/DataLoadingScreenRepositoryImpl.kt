@@ -1,7 +1,8 @@
-package com.sarathi.dataloadingmangement.domain
+package com.sarathi.dataloadingmangement.repository
 
 
 import android.util.Log
+import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
@@ -28,7 +29,7 @@ import com.sarathi.dataloadingmangement.data.entities.MissionLanguageEntity
 import com.sarathi.dataloadingmangement.data.entities.ProgrammeEntity
 import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
 import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
-import com.sarathi.dataloadingmangement.model.ApiResponseModel
+import com.sarathi.dataloadingmangement.domain.MissionRequest
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityConfig
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityTitle
@@ -40,7 +41,6 @@ import com.sarathi.dataloadingmangement.model.mat.response.TaskData
 import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
-import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepository
 import javax.inject.Inject
 
 class DataLoadingScreenRepositoryImpl @Inject constructor(
