@@ -98,6 +98,5 @@ dependencies {
     //CSV Export
     implementation("com.opencsv:opencsv:5.3")
     implementation(project(":core"))
-
-
+    implementation(project(":surveymanager"))
 }

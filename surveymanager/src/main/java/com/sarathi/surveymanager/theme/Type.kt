@@ -1,4 +1,4 @@
-package com.sarathi.missionactivitytask.ui.theme
+package com.sarathi.surveymanager.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

@@ -1,9 +1,9 @@
 package com.sarathi.surveymanager.ui.component
 
-import android.app.Activity
-import android.content.Intent
+import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
-import android.provider.MediaStore
+import android.os.Environment
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -30,46 +30,46 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.FileProvider
-import com.sarathi.missionactivitytask.ui.theme.borderGreyLight
-import com.sarathi.missionactivitytask.ui.theme.largeTextStyle
-import com.sarathi.missionactivitytask.ui.theme.white
-import com.sarathi.surveymanager.R
+import coil.compose.rememberAsyncImagePainter
+import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.uriFromFile
+import com.sarathi.surveymanager.theme.borderGreyLight
+import com.sarathi.surveymanager.theme.largeTextStyle
+import com.sarathi.surveymanager.theme.white
 import java.io.File
 
 
+@SuppressLint("UnrememberedMutableState")
 @Preview(showSystemUi = true)
 @Composable
 fun AddImageComponent(
-    isImageAvailable: Boolean = true, photoUri: MutableState<Uri> = mutableStateOf(
-        Uri.EMPTY
-    )
+    isImageAvailable: Boolean = true
 ) {
-    val context = LocalContext.current as Activity
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
-    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyGridState = rememberLazyGridState()
-    var imageList = listOf(
-        ImageEntity(R.drawable.ic_mission_inprogress),
-        ImageEntity(R.drawable.ic_mission_inprogress),
-        ImageEntity(R.drawable.ic_mission_inprogress),
-        ImageEntity(R.drawable.ic_mission_inprogress),
-        ImageEntity(R.drawable.ic_mission_inprogress)
+    var imageList by remember { mutableStateOf(listOf<Uri?>()) }
+    var currentImageUri by remember { mutableStateOf<Uri?>(null) }
+
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture(),
+        onResult = { success ->
+            if (success) {
+                imageList = (imageList + currentImageUri)
+            }
+        }
     )
     Column {
         BoxWithConstraints(
@@ -105,13 +105,19 @@ fun AddImageComponent(
                         contentAlignment = Alignment.Center
                     ) {
                         Text("+ Add Image", style = largeTextStyle, modifier = Modifier.clickable {
-                            openCamera(context)
-                            // Toast.makeText(context, "Mobile Number:", Toast.LENGTH_LONG).show()
+                            currentImageUri = getImageUri(
+                                context, "${
+                                    System.currentTimeMillis().toString()
+                                }.jpg"
+                            )
+                            cameraLauncher.launch(
+                                currentImageUri
+                            )
                         })
                     }
                 }
                 itemsIndexed(imageList) { _index, image ->
-                    ImageView()
+                    image?.let { ImageView(it) }
                 }
             }
         }
@@ -120,45 +126,21 @@ fun AddImageComponent(
 
 }
 
-
-@Composable
-fun getPhotoUri() {
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
-    val context = LocalContext.current
-
-    val photoFile = remember {
-        File(context.cacheDir, "photo.jpg").apply {
-            createNewFile()
-            deleteOnExit()
-        }
-    }
-
-    val photoUri: Uri = FileProvider.getUriForFile(
-        context,
-        "${context.packageName}.provider",
-        photoFile
-    )
-
-    val takePicture = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicture()
-    ) { success ->
-        if (success) {
-            imageUri = photoUri
-        }
+fun getImageUri(context: Context, fileName: String): Uri? {
+    val file =
+        File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}")
+    return CoreAppDetails.getApplicationDetails()?.applicationID?.let {
+        uriFromFile(
+            context, file,
+            it
+        )
     }
 }
 
-
-fun openCamera(activity: Activity) {
-    val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-    activity.startActivityForResult(cameraIntent, 300)
-}
-
 @Composable
-fun ImageView() {
+fun ImageView(uri: Uri) {
     Image(
-        // painter = rememberAsyncImagePainter(getPhotoUri()),
-        painter = painterResource(id = R.drawable.ic_mission_inprogress),
+        painter = rememberAsyncImagePainter(uri),
         contentDescription = null,
         modifier = Modifier
             .size(150.dp)
@@ -168,5 +150,5 @@ fun ImageView() {
     )
 }
 
-data class ImageEntity(var resId: Int)
+data class ImageEntity(var imageUri: Uri, var isImageAvailable: Boolean)
 

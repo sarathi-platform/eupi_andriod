@@ -20,10 +20,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
-import com.sarathi.missionactivitytask.ui.theme.borderGrey
-import com.sarathi.missionactivitytask.ui.theme.placeholderGrey
-import com.sarathi.missionactivitytask.ui.theme.textColorDark
 import com.sarathi.surveymanager.MAXIMUM_RANGE_LENGTH
+import com.sarathi.surveymanager.theme.borderGrey
+import com.sarathi.surveymanager.theme.placeholderGrey
+import com.sarathi.surveymanager.theme.textColorDark
 import com.sarathi.surveymanager.utils.onlyNumberField
 
 @OptIn(ExperimentalComposeUiApi::class)

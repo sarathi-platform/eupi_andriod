@@ -25,10 +25,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.sarathi.missionactivitytask.ui.theme.buttonTextStyle
-import com.sarathi.missionactivitytask.ui.theme.greyColor
-import com.sarathi.missionactivitytask.ui.theme.placeholderGrey
-import com.sarathi.missionactivitytask.ui.theme.white
+import com.sarathi.surveymanager.theme.buttonTextStyle
+import com.sarathi.surveymanager.theme.greyColor
+import com.sarathi.surveymanager.theme.placeholderGrey
+import com.sarathi.surveymanager.theme.white
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
