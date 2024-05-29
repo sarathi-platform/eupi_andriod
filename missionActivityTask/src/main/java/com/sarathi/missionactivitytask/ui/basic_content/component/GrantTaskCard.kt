@@ -3,24 +3,19 @@ package com.sarathi.missionactivitytask.ui.basic_content.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
@@ -39,17 +34,12 @@ import com.sarathi.missionactivitytask.ui.theme.blueDark
 import com.sarathi.missionactivitytask.ui.theme.defaultTextStyle
 import com.sarathi.missionactivitytask.ui.theme.dimen_10_dp
 import com.sarathi.missionactivitytask.ui.theme.dimen_16_dp
-import com.sarathi.missionactivitytask.ui.theme.dimen_18_dp
 import com.sarathi.missionactivitytask.ui.theme.dimen_2_dp
 import com.sarathi.missionactivitytask.ui.theme.dimen_5_dp
 import com.sarathi.missionactivitytask.ui.theme.dimen_8_dp
-import com.sarathi.missionactivitytask.ui.theme.green
-import com.sarathi.missionactivitytask.ui.theme.greenActiveIcon
 import com.sarathi.missionactivitytask.ui.theme.greenOnline
 import com.sarathi.missionactivitytask.ui.theme.greyBorderColor
 import com.sarathi.missionactivitytask.ui.theme.newMediumTextStyle
-import com.sarathi.missionactivitytask.ui.theme.roundedCornerRadiusDefault
-import com.sarathi.missionactivitytask.ui.theme.smallTextStyleMediumWeight
 import com.sarathi.missionactivitytask.ui.theme.unmatchedOrangeColor
 import com.sarathi.missionactivitytask.ui.theme.white
 import com.sarathi.missionactivitytask.utils.StatusEnum
@@ -113,7 +103,7 @@ fun GrantTaskCard(
                         modifier = Modifier.size(20.dp),
                         tint = greenOnline,
                     )
-                }else if (status == StatusEnum.INPROGRESS.name){
+                } else if (status == StatusEnum.INPROGRESS.name) {
                     Text(
                         text = "In Progress",
                         style = defaultTextStyle,
@@ -154,20 +144,20 @@ fun GrantTaskCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                        Text(
-                            text = "10",
-                            color = blueDark,
-                            style = newMediumTextStyle,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .padding(dimen_2_dp)
-                                .drawBehind {
-                                    drawCircle(
-                                        color = greyBorderColor,
-                                        radius = this.size.maxDimension / 2.0f
-                                    )
-                                },
-                        )
+                    Text(
+                        text = "10",
+                        color = blueDark,
+                        style = newMediumTextStyle,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .padding(dimen_2_dp)
+                            .drawBehind {
+                                drawCircle(
+                                    color = greyBorderColor,
+                                    radius = this.size.maxDimension / 2.0f
+                                )
+                            },
+                    )
                     Spacer(modifier = Modifier.width(dimen_8_dp))
                     Text(
                         text = "Didis",
@@ -189,21 +179,28 @@ fun GrantTaskCard(
                     )
                 }
             }
-            if (status == StatusEnum.NOTSTARTED.name){
+            if (status == StatusEnum.NOT_STARTED.name) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(dimen_16_dp),
                     horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
-                ){
+                ) {
                     Spacer(modifier = Modifier.weight(1f))
-                    PrimaryButton(text = "Start", onClick = { /*TODO*/ }, modifier = Modifier.weight(1f))
+                    if (primaryButtonText.isNotBlank()) {
+                        PrimaryButton(
+                            text = "Start",
+                            onClick = { /*TODO*/ },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
-            }
-           else{
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 5.dp, bottom = 5.dp)) {
+            } else {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 5.dp, bottom = 5.dp)
+                ) {
                     Divider(
                         modifier = Modifier
                             .height(1.dp)
@@ -232,11 +229,17 @@ fun GrantTaskCard(
                         )
                     } else {
                         Spacer(modifier = Modifier.weight(1f))
-                        PrimaryButton(text = "Continue", onClick = { /*TODO*/ }, modifier = Modifier.weight(1f))
+                        if (primaryButtonText.isNotBlank()) {
+                            PrimaryButton(
+                                text = "Continue",
+                                onClick = { /*TODO*/ },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
                     }
 
-                }  
-           }
+                }
+            }
         }
 
     }

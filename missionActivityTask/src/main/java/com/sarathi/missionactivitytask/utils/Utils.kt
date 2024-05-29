@@ -9,5 +9,5 @@ fun statusColor(status: StatusEnum): Color = when (status) {
     StatusEnum.INPROGRESS -> mediumRankColor
     StatusEnum.COMPLETED -> Color.Green
     StatusEnum.PENDING -> Color.Gray
-    StatusEnum.NOTSTARTED -> Color.Gray
+    StatusEnum.NOT_STARTED -> Color.Gray
 }
