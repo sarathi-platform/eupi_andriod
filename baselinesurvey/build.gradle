@@ -7,7 +7,7 @@ plugins {
     id 'kotlin-kapt'
 }
 
-def version = "2.0.14"
+def version = "2.0.15"
 android {
     namespace 'com.nrlm.baselinesurvey'
     compileSdk 34
@@ -15,12 +15,18 @@ android {
     defaultConfig {
         minSdk 24
         targetSdk 33
-        versionCode 18
+        versionCode 19
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true
+        }
+    }
+
+    bundle {
+        language {
+            enableSplit = false
         }
     }
 
