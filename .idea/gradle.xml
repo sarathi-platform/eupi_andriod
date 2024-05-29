@@ -18,6 +18,7 @@
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/internetSpeedChecker" />
             <option value="$PROJECT_DIR$/missionActivityTask" />
+            <option value="$PROJECT_DIR$/surveymanager" />
             <option value="$PROJECT_DIR$/syncManager" />
           </set>
         </option>
