@@ -4,16 +4,26 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.activity.compose.BackHandler
-
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,13 +43,24 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
-import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
+import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBorderBg
+import com.patsurvey.nudge.activities.ui.theme.languageItemInActiveBorderBg
+import com.patsurvey.nudge.activities.ui.theme.textColorBlueLight
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.navigation.home.SettingScreens
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.ARG_FROM_HOME
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_CODE
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_OPEN_FROM_HOME
+import com.patsurvey.nudge.utils.PageFrom
+import com.patsurvey.nudge.utils.showCustomToast
 
 @OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -156,8 +177,12 @@ fun LanguageScreen(
                         it.langCode?.let { code ->
                             if(isLanguageVillageAvailable.value){
                                 viewModel.languageRepository.prefRepo.saveAppLanguage(code)
+                                viewModel.languageRepository.corePrefRepo.saveAppLanguage(code)
                                 (context as MainActivity).setLanguage(code)
                             }else{
+                                viewModel.languageRepository.corePrefRepo.saveAppLanguage(
+                                    DEFAULT_LANGUAGE_CODE
+                                )
                                 viewModel.languageRepository.prefRepo.saveAppLanguage("en")
                                 (context as MainActivity).setLanguage("en")
                             }

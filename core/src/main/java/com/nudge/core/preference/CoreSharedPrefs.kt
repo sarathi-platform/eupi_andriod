@@ -3,6 +3,7 @@ package com.nudge.core.preference
 import android.content.Context
 import android.content.SharedPreferences
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -19,6 +20,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_IMAGE_FILE_EXPORTED_NAME = "is_file_exorted"
         const val PREF_MOBILE_NO_NAME = "mobileNo"
         const val PREF_USER_TYPE = "userType"
+        const val PREF_KEY_LANGUAGE_CODE = "language_code"
 
 
         @Volatile
@@ -97,6 +99,14 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         val userType = getUserType()
         val userMobile = getMobileNo()
         return "${userType}_${userMobile}"
+    }
+    override fun getAppLanguage(): String {
+        return prefs.getString(PREF_KEY_LANGUAGE_CODE, DEFAULT_LANGUAGE_CODE)
+            ?: DEFAULT_LANGUAGE_CODE
+    }
+
+    override fun saveAppLanguage(code: String?) {
+        prefs.edit().putString(PREF_KEY_LANGUAGE_CODE, code).apply()
     }
 
 }
