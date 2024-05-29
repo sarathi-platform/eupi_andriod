@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.BLANK_STRING
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityUiConfigUseCase
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetTaskUseCase
+import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
 import com.sarathi.missionactivitytask.ui.grantTask.model.UiConfigAttributeType
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
@@ -45,7 +46,7 @@ class GrantTaskScreenViewModel @Inject constructor(
             val taskUiModel = getTaskUseCase.getActiveTasks(missionId = 2, activityId = 3)
             taskUiModel.forEach {
 
-                _taskList.value[it.taskId] = getUiComponentValues(it.taskId)
+                _taskList.value[it.taskId] = getUiComponentValues(it.taskId, it.status.toString())
             }
 
             withContext(Dispatchers.Main) {
@@ -55,8 +56,9 @@ class GrantTaskScreenViewModel @Inject constructor(
     }
 
 
-    private suspend fun getUiComponentValues(taskId: Int): HashMap<String, String> {
+    private suspend fun getUiComponentValues(taskId: Int, taskStatus: String): HashMap<String, String> {
         val cardAttributesWithValue = HashMap<String, String>()
+        cardAttributesWithValue[GrantTaskCardSlots.GRANT_TASK_STATUS.name]= taskStatus
         val activityConfig = getActivityUiConfigUseCase.getActivityUiConfig(
             missionId = missionId, activityId = activityId
         )

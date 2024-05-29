@@ -50,7 +50,7 @@ import com.sarathi.missionactivitytask.utils.statusColor
 fun BasicMissionCard(
     title: String = BLANK_STRING,
     needToShowProgressBar: Boolean = false,
-    status: StatusEnum = StatusEnum.Pending,
+    status: StatusEnum = StatusEnum.PENDING,
     pendingCount: Int = 0,
     totalCount: Int = 0,
     countStatusText: String = BLANK_STRING,

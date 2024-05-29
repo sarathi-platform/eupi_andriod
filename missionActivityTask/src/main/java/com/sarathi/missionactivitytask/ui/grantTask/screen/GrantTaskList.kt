@@ -9,14 +9,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.nudge.core.BLANK_STRING
+import com.sarathi.missionactivitytask.R
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
 import com.sarathi.missionactivitytask.ui.basic_content.component.GrantTaskCard
 import com.sarathi.missionactivitytask.ui.components.BasicContentComponent
 import com.sarathi.missionactivitytask.ui.components.ButtonComponent
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.BasicContent
-import com.sarathi.missionactivitytask.utils.StatusEnum
+import com.sarathi.missionactivitytask.ui.task.TaskDisbursementCard
 
 @Composable
 fun GrantTaskList(
@@ -37,22 +39,33 @@ fun GrantTaskList(
             }
         }
         Spacer(modifier = Modifier.height(20.dp))
-        LazyColumn(
-        ) {
+        LazyColumn {
             itemsIndexed(
                 items = taskList.entries.toList()
             ) { index, task ->
-                GrantTaskCard(
-                    title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name] ?: BLANK_STRING,
-                    subTitle = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name]
+                TaskDisbursementCard(
+                    profileImage = painterResource(id = R.drawable.profile_img),
+                    name = "Shanti Devi",
+                    address = "#45, Killu dada",
+                    location = "Sundar Pahari",
+                    sanctionedAmount = "₹2,000",
+                    disbursedAmount = "₹2,000",
+                    modifier = Modifier,
+                    status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]
                         ?: BLANK_STRING,
-                    primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name]
-                        ?: BLANK_STRING,
-                    secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name]
-                        ?: BLANK_STRING,
-                    status = StatusEnum.Active.name
-
                 )
+
+//                GrantTaskCard(
+//                    title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name] ?: BLANK_STRING,
+//                    subTitle = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name]
+//                        ?: BLANK_STRING,
+//                    primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name]
+//                        ?: BLANK_STRING,
+//                    secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name]
+//                        ?: BLANK_STRING,
+//                    status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]
+//                        ?: BLANK_STRING,
+//                )
 
 
             }

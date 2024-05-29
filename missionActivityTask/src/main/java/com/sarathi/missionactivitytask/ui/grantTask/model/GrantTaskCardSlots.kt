@@ -7,6 +7,6 @@ enum class GrantTaskCardSlots(val type: String) {
     GRANT_TASK_SUBTITLE(type = "text"),
     GRANT_TASK_PRIMARY_BUTTON(type = "text"),
     GRANT_TASK_SECONDARY_BUTTON(type = "text"),
-
+    GRANT_TASK_STATUS(type = "text")
 
 }
