@@ -36,7 +36,7 @@ import com.nrlm.baselinesurvey.ui.common_components.FinalStepCompletionScreen
 import com.nrlm.baselinesurvey.ui.common_components.StepCompletionScreen
 import com.nrlm.baselinesurvey.ui.form_response_summary_screen.presentation.FormQuestionSummaryScreen
 import com.nrlm.baselinesurvey.ui.language.presentation.LanguageScreenComponent
-import com.nrlm.baselinesurvey.ui.mission_screen.presentation.MissionScreen_1
+import com.nrlm.baselinesurvey.ui.mission_screen.presentation.MissionScreen
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.presentation.MissionSummaryScreen
 import com.nrlm.baselinesurvey.ui.profile.presentation.ProfileBSScreen
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenHandler
@@ -248,11 +248,14 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
         }
 
         composable(route = HomeScreens.Home_SCREEN.route) {
-            MissionScreen_1(navController = navController, viewModel = hiltViewModel())
+            //  HomeScreen(navController=navController)
+            //   MissionScreen(navController = navController, viewModel = hiltViewModel())
+            MissionScreen(navController = navController, viewModel = hiltViewModel())
         }
 
         composable(route = HomeScreens.MISSION_SCREEN.route) {
-            MissionScreen_1(navController = navController, viewModel = hiltViewModel())
+            // MissionScreen(navController = navController, viewModel = hiltViewModel())
+            MissionScreen(navController = navController, viewModel = hiltViewModel())
 
         }
 
