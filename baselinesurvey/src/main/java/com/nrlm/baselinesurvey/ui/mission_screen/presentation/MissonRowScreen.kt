@@ -52,7 +52,7 @@ import com.nrlm.baselinesurvey.utils.states.SectionStatus
 
 
 @Composable
-fun MissonRowScreen_1(
+fun MissionRowScreen(
     modifier: Modifier = Modifier,
     mission: MissionEntity,
     viewModel: MissionViewModel,
