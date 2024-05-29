@@ -24,12 +24,6 @@ android {
         }
     }
 
-    bundle {
-        language {
-            enableSplit = false
-        }
-    }
-
     packagingOptions {
         exclude 'META-INF/beans.xml'
         exclude 'META-INF/DEPENDENCIES'

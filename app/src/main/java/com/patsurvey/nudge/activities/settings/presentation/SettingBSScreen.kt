@@ -45,7 +45,7 @@ fun SettingBSScreen(
     if (viewModel.showLogoutDialog.value) {
         showCustomDialog(
             title = context.getString(com.patsurvey.nudge.R.string.logout),
-            message = context.getString(com.patsurvey.nudge.R.string.logout_confirmation),
+            message = context.getString(R.string.logout_confirmation),
             positiveButtonTitle = stringResource(id = com.patsurvey.nudge.R.string.logout),
             negativeButtonTitle = stringResource(id = com.patsurvey.nudge.R.string.cancel),
             onNegativeButtonClick = {
@@ -95,7 +95,7 @@ fun SettingBSScreen(
               navController.popBackStack()
           },
           expanded = expanded.value,
-          onItemClick = { index, option ->
+          onItemClick = { _, option ->
               when (option.tag) {
                   SettingTagEnum.LANGUAGE.name -> {
                       viewModel.saveLanguagePageFrom()
