@@ -43,6 +43,7 @@ import com.nudge.core.ui.events.theme.placeholderGrey
 import com.nudge.core.ui.events.theme.textColorDark
 import com.nudge.core.ui.events.theme.white
 import com.sarathi.missionactivitytask.R
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
 import com.sarathi.surveymanager.theme.roundedCornerRadiusDefault
 
 @Composable
