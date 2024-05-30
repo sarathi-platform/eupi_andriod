@@ -2,6 +2,7 @@ package com.nudge.core.preference
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -76,11 +77,15 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     }
 
     override fun getUserId(): String {
-        return prefs.getString(PREF_KEY_USER_NAME, "") ?: ""
+        return prefs.getString(PREF_KEY_USER_NAME, BLANK_STRING) ?: BLANK_STRING
     }
 
     override fun getMobileNumber(): String {
-        return prefs.getString(PREF_MOBILE_NUMBER, "") ?: ""
+        return prefs.getString(PREF_MOBILE_NUMBER, BLANK_STRING) ?: BLANK_STRING
+    }
+
+    override fun savePref(key: String, value: String) {
+        prefs.edit().putString(key, value).apply()
     }
     override fun savePref(key: String, value: String) {
         prefs.edit().putString(key, value).apply()

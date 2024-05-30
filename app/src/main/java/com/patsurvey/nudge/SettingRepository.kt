@@ -399,8 +399,7 @@ class SettingRepository @Inject constructor(
                 mission = SELECTION_MISSION,
                 depends_on = emptyList(),
                 request_payload_size = requestPayload.getSizeInLong(),
-            ).json(),
-            result = null
+            ).json()
         )
         val dependsOn = createEventDependency(eventItem, eventName, event)
         val metadata = event.metadata?.getMetaDataDtoFromString()

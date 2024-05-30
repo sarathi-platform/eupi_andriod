@@ -252,7 +252,7 @@ object BaselineModule {
         apiService: ApiService,
         corePrefRepo: CorePrefRepo
     ): LoginScreenRepository {
-        return LoginScreenRepositoryImpl(prefRepo, apiService,corePrefRepo)
+        return LoginScreenRepositoryImpl(prefRepo, apiService, corePrefRepo = corePrefRepo)
     }
 
     @Provides

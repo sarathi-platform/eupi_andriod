@@ -6,6 +6,7 @@ import com.nudge.core.Core
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.preference.CorePrefRepo
 import javax.inject.Inject
 
 class SyncManager @Inject constructor(
@@ -17,7 +18,6 @@ class SyncManager @Inject constructor(
     private var core: Core? = null
 
     init {
-        Log.d("SyncManager", " SyncManager:init ")
         initCore()
     }
 

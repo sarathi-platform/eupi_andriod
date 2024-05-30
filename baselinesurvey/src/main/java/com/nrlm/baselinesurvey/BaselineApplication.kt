@@ -10,6 +10,7 @@ import com.akexorcist.localizationactivity.core.LocalizationApplicationDelegate
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.preference.CorePrefRepo
 import com.nudge.syncmanager.SyncManager
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
@@ -102,6 +103,6 @@ class BaselineApplication: Application(), androidx.work.Configuration.Provider {
     }
 
     override val workManagerConfiguration: androidx.work.Configuration
-        get() =  androidx.work.Configuration.Builder()
+        get() = androidx.work.Configuration.Builder()
             .setWorkerFactory(workerFactory).build()
 }

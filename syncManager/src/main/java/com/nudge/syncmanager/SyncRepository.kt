@@ -8,6 +8,7 @@ import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventStatusEntity
 import com.nudge.core.database.entities.Events
+import com.nudge.core.json
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.request.EventRequest
 import com.nudge.core.model.request.toEventRequest
@@ -36,12 +37,12 @@ class SyncApiRepository @Inject constructor(
                 EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus
             ),
             batchLimit = batchLimit,
-            retryCount=retryCount,
+            retryCount = retryCount,
             mobileNumber = prefRepo.getMobileNumber()
         )
     }
 
-    suspend fun getPendingEventCount(): Int {
+    fun getPendingEventCount(): Int {
         Log.d("TAG", "getPendingEventCount: ${prefRepo.getMobileNumber()}")
         return eventDao.getTotalPendingEventCount(
             listOf(
@@ -54,21 +55,28 @@ class SyncApiRepository @Inject constructor(
     }
 
     fun updateSuccessEventStatus(eventList: List<SyncEventResponse>) {
-        eventDao.updateSuccessEventStatus(eventList)
-        eventList.forEach {
-            eventStatusDao.insert(
-                EventStatusEntity(
-                    clientId = it.clientId,
-                    name = it.eventName,
-                    errorMessage = BLANK_STRING,
-                    type = it.type,
-                    status = EventSyncStatus.OPEN.eventSyncStatus,
-                    mobileNumber = it.mobileNumber,
-                    createdBy = prefRepo.getUserId(),
-                    eventStatusId = 0
+        try {
+            eventDao.updateSuccessEventStatus(eventList)
+            eventList.forEach {
+                Log.d("TAG", "updateSuccessEventStatus: ${it.json()} ")
+                eventStatusDao.insert(
+                    EventStatusEntity(
+                        clientId = it.clientId,
+                        name = it.eventName,
+                        errorMessage = BLANK_STRING,
+                        type = it.type,
+                        status = it.status,
+                        mobileNumber = it.mobileNumber,
+                        createdBy = prefRepo.getUserId(),
+                        eventStatusId = 0
+                    )
                 )
-            )
+            }
+        }catch (ex:Exception){
+            ex.printStackTrace()
+            Log.d("TAG", "updateSuccessEventStatus: Exception: ${ex.message}")
         }
+
     }
 
     fun updateFailedEventStatus(eventList:List<SyncEventResponse>){
@@ -80,7 +88,7 @@ class SyncApiRepository @Inject constructor(
                     name = it.eventName,
                     errorMessage = BLANK_STRING,
                     type = it.type,
-                    status = EventSyncStatus.OPEN.eventSyncStatus,
+                    status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
                     mobileNumber = it.mobileNumber,
                     createdBy = prefRepo.getUserId(),
                     eventStatusId = 0

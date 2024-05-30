@@ -1,7 +1,6 @@
 package com.nudge.syncmanager.workers
 
 import android.content.Context
-import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -9,6 +8,9 @@ import com.facebook.network.connectionclass.ConnectionClassManager
 import com.facebook.network.connectionclass.DeviceBandwidthSampler
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventSyncStatus
+import com.nudge.core.RESPONSE_DATA_IS_NULL_EXCEPTION
+import com.nudge.core.RESPONSE_DATA_LIST_IS_EMPTY_EXCEPTION
+import com.nudge.core.RESPONSE_STATUS_FAILED_EXCEPTION
 import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.database.entities.Events
 import com.nudge.core.getBatchSize
@@ -28,11 +30,11 @@ class SyncUploadWorker @AssistedInject constructor(
     private val syncApiRepository: SyncApiRepository
 ) : CoroutineWorker(appContext, workerParams) {
     private val TAG=SyncUploadWorker::class.java.simpleName
-    private var batchLimit = 5
+    private var batchLimit = 1
     private val retryCount=3
     override suspend fun doWork(): Result {
         var mPendingEventList = listOf<Events>()
-        return if (runAttemptCount < 5) { // runAttemptCount starts from 0
+        return if (runAttemptCount < 5) {
             try {
 
                 val connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
@@ -72,11 +74,29 @@ class SyncUploadWorker @AssistedInject constructor(
                                     totalPendingEventCount = syncApiRepository.getPendingEventCount()
                                     CoreLogger.d(applicationContext,TAG,"doWork: After totalPendingEventCount: $totalPendingEventCount")
                                     DeviceBandwidthSampler.getInstance().stopSampling()
-                                }else throw NullPointerException("Response Data List Empty")
-                            } ?: throw NullPointerException("Response Data Null")
+                                }else {
+                                    if (mPendingEventList.isNotEmpty()) syncApiRepository.updateFailedEventStatus(
+                                        createEventResponseList(
+                                            mPendingEventList,
+                                            RESPONSE_DATA_LIST_IS_EMPTY_EXCEPTION
+                                        )
+                                    )
+                                }
+
+                            } ?: syncApiRepository.updateFailedEventStatus(
+                                createEventResponseList(
+                                    mPendingEventList,
+                                    RESPONSE_DATA_IS_NULL_EXCEPTION
+                                )
+                            )
                         } else {
                             DeviceBandwidthSampler.getInstance().stopSampling()
-                            throw NullPointerException("Response Status is Failed")
+                            if (mPendingEventList.isNotEmpty()) syncApiRepository.updateFailedEventStatus(
+                                createEventResponseList(
+                                    mPendingEventList,
+                                    RESPONSE_STATUS_FAILED_EXCEPTION
+                                )
+                            )
                         }
                     }else Result.success()
                 }
@@ -103,9 +123,9 @@ class SyncUploadWorker @AssistedInject constructor(
 }
 
 fun createEventResponseList(eventList:List<Events>,errorMessage:String): List<SyncEventResponse> {
-    val aList= arrayListOf<SyncEventResponse>()
+    val failedEventList= arrayListOf<SyncEventResponse>()
     eventList.forEach {
-        aList.add(
+        failedEventList.add(
             SyncEventResponse(
                 clientId =it.id,
                 status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
@@ -122,6 +142,6 @@ fun createEventResponseList(eventList:List<Events>,errorMessage:String): List<Sy
             )
         )
     }
-    return aList
+    return failedEventList
 }
 
