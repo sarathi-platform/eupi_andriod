@@ -26,15 +26,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nudge.core.theme.black1
+import com.nudge.core.theme.lightGray2
+import com.nudge.core.theme.smallTextStyleMediumWeight2
+import com.nudge.core.theme.textColorDark
+import com.nudge.core.theme.white
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
 import com.sarathi.missionactivitytask.ui.basic_content.constants.ContentShape
 import com.sarathi.missionactivitytask.ui.basic_content.constants.ContentType
-import com.sarathi.missionactivitytask.ui.theme.black1
-import com.sarathi.missionactivitytask.ui.theme.lightGray2
-import com.sarathi.missionactivitytask.ui.theme.smallTextStyleMediumWeight2
-import com.sarathi.missionactivitytask.ui.theme.textColorDark
-import com.sarathi.missionactivitytask.ui.theme.white
 
 
 @Composable

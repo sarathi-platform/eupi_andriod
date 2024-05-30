@@ -35,15 +35,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nudge.core.theme.NotoSans
+import com.nudge.core.theme.blueDark
+import com.nudge.core.theme.borderGrey
+import com.nudge.core.theme.placeholderGrey
+import com.nudge.core.theme.roundedCornerRadiusDefault
+import com.nudge.core.theme.textColorDark
+import com.nudge.core.theme.white
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
-import com.sarathi.missionactivitytask.ui.theme.NotoSans
-import com.sarathi.missionactivitytask.ui.theme.blueDark
-import com.sarathi.missionactivitytask.ui.theme.borderGrey
-import com.sarathi.missionactivitytask.ui.theme.placeholderGrey
-import com.sarathi.missionactivitytask.ui.theme.textColorDark
-import com.sarathi.missionactivitytask.ui.theme.white
-import com.sarathi.surveymanager.theme.roundedCornerRadiusDefault
 
 @Composable
 fun SearchWithFilterViewComponent(

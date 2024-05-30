@@ -13,9 +13,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import com.sarathi.surveymanager.theme.NotoSans
-import com.sarathi.surveymanager.theme.red
-import com.sarathi.surveymanager.theme.textColorDark
+import com.nudge.core.theme.NotoSans
+import com.nudge.core.theme.red
+import com.nudge.core.theme.textColorDark
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

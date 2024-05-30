@@ -1,4 +1,4 @@
-package com.sarathi.missionactivitytask.ui.theme
+package com.nudge.core.theme
 
 import androidx.compose.ui.unit.dp
 

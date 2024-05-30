@@ -1,4 +1,4 @@
-package com.sarathi.surveymanager.theme
+package com.nudge.core.theme
 
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme

@@ -26,12 +26,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.theme.blueDark
+import com.nudge.core.theme.defaultTextStyle
+import com.nudge.core.theme.largeTextStyle
+import com.nudge.core.theme.textColorDark
+import com.nudge.core.theme.white
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.ui.theme.blueDark
-import com.sarathi.missionactivitytask.ui.theme.defaultTextStyle
-import com.sarathi.missionactivitytask.ui.theme.largeTextStyle
-import com.sarathi.missionactivitytask.ui.theme.textColorDark
-import com.sarathi.missionactivitytask.ui.theme.white
 
 
 @SuppressLint("UnrememberedMutableState")
