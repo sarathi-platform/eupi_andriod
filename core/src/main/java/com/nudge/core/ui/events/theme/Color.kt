@@ -1,4 +1,4 @@
-package com.sarathi.missionactivitytask.ui.theme
+package com.nudge.core.ui.events.theme
 
 import androidx.compose.ui.graphics.Color
 
@@ -128,3 +128,5 @@ val searchSectionTitleColor = Color(0xFF7D7572)
 
 val summaryCardViewBlue = Color(0xFF325DF6)
 val trackLinearColor = Color(0xFFD1D5DE)
+val greyBorder = Color(0xFF707070)
+
