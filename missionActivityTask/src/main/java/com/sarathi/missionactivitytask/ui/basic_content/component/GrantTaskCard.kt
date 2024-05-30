@@ -41,8 +41,12 @@ import com.sarathi.missionactivitytask.ui.theme.greenOnline
 import com.sarathi.missionactivitytask.ui.theme.greyBorderColor
 import com.sarathi.missionactivitytask.ui.theme.newMediumTextStyle
 import com.sarathi.missionactivitytask.ui.theme.unmatchedOrangeColor
+import com.sarathi.missionactivitytask.ui.theme.smallTextStyleMediumWeight
 import com.sarathi.missionactivitytask.ui.theme.white
 import com.sarathi.missionactivitytask.utils.StatusEnum
+import com.sarathi.surveymanager.theme.dimen_10_dp
+import com.sarathi.surveymanager.theme.dimen_18_dp
+import com.sarathi.surveymanager.theme.roundedCornerRadiusDefault
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)

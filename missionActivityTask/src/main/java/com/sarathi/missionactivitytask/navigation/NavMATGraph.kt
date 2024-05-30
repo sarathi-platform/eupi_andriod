@@ -9,6 +9,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nudge.core.BLANK_STRING
+import androidx.navigation.navArgument
+import com.sarathi.contentmodule.media.MediaScreen
+import com.sarathi.contentmodule.ui.content_detail_screen.screen.ContentDetailScreen
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_KEY
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_TYPE
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MAT_GRAPH
 import com.sarathi.missionactivitytask.ui.grantTask.screen.GrantTaskScreen
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.ActivityScreen
@@ -70,6 +76,43 @@ fun NavGraphBuilder.MatNavigation(navController: NavHostController) {
                 ) ?: BLANK_STRING
             )
         }
+
+        composable(route = MATHomeScreens.MediaPlayerScreen.route, arguments = listOf(
+            navArgument(
+                name = ARG_CONTENT_KEY
+            ) {
+                type = NavType.StringType
+            },
+            navArgument(
+                name = ARG_CONTENT_TYPE
+            ) {
+                type = NavType.StringType
+            }
+        )
+        ) {
+            MediaScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                fileType = it.arguments?.getString(
+                    ARG_CONTENT_TYPE
+                ) ?: BLANK_STRING,
+                key = it.arguments?.getString(
+                    ARG_CONTENT_KEY
+                ) ?: BLANK_STRING
+            )
+        }
+
+
+        composable(route = MATHomeScreens.ContentDetailScreen.route) {
+            ContentDetailScreen(navController = navController, viewModel = hiltViewModel(),
+                onNavigateToMediaScreen = { fileType, key ->
+                    navigateToMediaPlayerScreen(
+                        navController = navController,
+                        contentKey = key,
+                        contentType = fileType
+                    )
+                })
+        }
     }
 
 }
@@ -82,10 +125,24 @@ sealed class MATHomeScreens(val route: String) {
 
     object GrantTaskScreen :
         MATHomeScreens(route = "$GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME/{$ARG_MISSION_ID}/{$ARG_ACTIVITY_ID}/{$ARG_ACTIVITY_NAME}")
+    object ContentDetailScreen : MATHomeScreens(route = CONTENT_DETAIL_SCREEN_ROUTE_NAME)
+    object MediaPlayerScreen :
+        MATHomeScreens(route = "$MEDIA_PLAYER_SCREEN_ROUTE_NAME/{$ARG_CONTENT_KEY}/{$ARG_CONTENT_TYPE}")
 
 }
 
-fun navigateToActivityScreen(navController: NavController, missionId: Int, missionName: String) {
+fun navigateToContentDetailScreen(navController: NavController) {
+    navController.navigate(CONTENT_DETAIL_SCREEN_ROUTE_NAME)
+}
+
+fun navigateToMediaPlayerScreen(
+    navController: NavController,
+    contentKey: String,
+    contentType: String
+) {
+    navController.navigate("$MEDIA_PLAYER_SCREEN_ROUTE_NAME/${contentKey}/${contentType}")
+
+    fun navigateToActivityScreen(navController: NavController, missionId: Int, missionName: String) {
     navController.navigate("$ACTIVITY_SCREEN_SCREEN_ROUTE_NAME/$missionId/$missionName")
 }
 
@@ -101,6 +158,8 @@ fun navigateToTaskScreen(
 const val MISSION_SCREEN_ROUTE_NAME = "mission_screen"
 const val ACTIVITY_SCREEN_SCREEN_ROUTE_NAME = "activity_screen"
 const val GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME = "grant_task_screen"
+const val MEDIA_PLAYER_SCREEN_ROUTE_NAME = "media_player_screen"
+const val CONTENT_DETAIL_SCREEN_ROUTE_NAME = "content_detail_screen"
 
 const val ARG_ACTIVITY_ID = "activity_id"
 const val ARG_MISSION_ID = "mission_id"

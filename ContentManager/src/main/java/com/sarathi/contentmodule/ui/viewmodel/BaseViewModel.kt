@@ -1,4 +1,4 @@
-package com.sarathi.contentmodule.ui.theme.viewmodel
+package com.sarathi.contentmodule.ui.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
