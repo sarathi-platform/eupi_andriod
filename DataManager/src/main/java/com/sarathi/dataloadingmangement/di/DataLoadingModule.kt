@@ -14,17 +14,24 @@ import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
+import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
+import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
+import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
-import com.sarathi.dataloadingmangement.data.dao.TaskAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
 import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
-import com.sarathi.dataloadingmangement.domain.DataLoadingScreenRepositoryImpl
 import com.sarathi.dataloadingmangement.domain.FetchDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
+import com.sarathi.dataloadingmangement.repository.DataLoadingScreenRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepository
+import com.sarathi.dataloadingmangement.repository.ISurveyDownloadRepository
+import com.sarathi.dataloadingmangement.repository.SurveyDownloadRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -102,6 +109,52 @@ class DataLoadingModule {
 
     @Provides
     @Singleton
+    fun provideSurveyEntityDao(db: NudgeGrantDatabase) = db.surveyEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideSectionEntityDao(db: NudgeGrantDatabase) = db.sectionEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideQuestionEntityDao(db: NudgeGrantDatabase) = db.questionEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideOptionItemDao(db: NudgeGrantDatabase) = db.optionItemDao()
+
+    @Provides
+    @Singleton
+    fun provideProgrammeDao(db: NudgeGrantDatabase) = db.programmeDao()
+
+    @Provides
+    @Singleton
+    fun provideSurveyAnswersDao(db: NudgeGrantDatabase) = db.surveyAnswersDao()
+
+    @Provides
+    @Singleton
+    fun provideSurveyDownloadRepository(
+        dataLoadingApiService: DataLoadingApiService,
+        surveyDao: SurveyEntityDao,
+        sectionEntityDao: SectionEntityDao,
+        coreSharedPrefs: CoreSharedPrefs,
+        optionItemDao: OptionItemDao,
+        questionEntityDao: QuestionEntityDao
+    ): ISurveyDownloadRepository {
+        return SurveyDownloadRepository(
+            dataLoadingApiService = dataLoadingApiService,
+            surveyDao = surveyDao,
+            sectionEntityDao = sectionEntityDao,
+            coreSharedPrefs = coreSharedPrefs,
+            optionItemDao = optionItemDao,
+            questionEntityDao = questionEntityDao
+
+        )
+    }
+
+
+    @Provides
+    @Singleton
     fun provideDataLoadingScreenRepository(
         missionDao: MissionDao,
         activityDao: ActivityDao,
@@ -113,7 +166,7 @@ class DataLoadingModule {
         contentConfigDao: ContentConfigDao,
         missionLanguageAttributeDao: MissionLanguageAttributeDao,
         subjectAttributeDao: SubjectAttributeDao,
-        taskAttributeDao: TaskAttributeDao,
+        programmeDao: ProgrammeDao,
         uiConfigDao: UiConfigDao,
         apiService: DataLoadingApiService,
         sharedPrefs: CoreSharedPrefs,
@@ -128,7 +181,7 @@ class DataLoadingModule {
             contentConfigDao,
             missionLanguageAttributeDao,
             subjectAttributeDao,
-            taskAttributeDao,
+            programmeDao,
             uiConfigDao,
             contentDao,
             sharedPrefs,
@@ -143,10 +196,12 @@ class DataLoadingModule {
     @Singleton
     fun provideFetchDataUseCaseUseCase(
         repository: DataLoadingScreenRepositoryImpl,
+        surveyRepo: SurveyDownloadRepository,
         application: Application
     ): FetchDataUseCase {
         return FetchDataUseCase(
             fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository),
+            fetchSurveyDataFromNetworkUseCase = FetchSurveyDataFromNetworkUseCase(surveyRepo),
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 repository,
                 application

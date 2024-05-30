@@ -18,6 +18,7 @@ data class MissionEntity(
     @ColumnInfo(name = "id")
     var id: Int = 0,
     var userId: String? = BLANK_STRING,
+    var programmeId: Int,
     var missionId: Int,
     var startOffset: Int,
     var endOffset: Int,
@@ -36,6 +37,7 @@ data class MissionEntity(
         fun getMissionEntity(
             userId: String,
             activityTaskSize: Int,
+            programmeId: Int,
             mission: MissionResponse,
         ): MissionEntity {
 
@@ -43,15 +45,16 @@ data class MissionEntity(
                 id = 0,
                 userId = userId,
                 missionId = mission.id,
-                startDate = mission.actualStartDate,
-                endDate = mission.actualEndDate,
+                startDate = mission.actualStartDate ?: BLANK_STRING,
+                endDate = mission.actualEndDate ?: BLANK_STRING,
                 status = mission.missionStatus,
                 activityTaskSize = activityTaskSize,
                 missionStatus = mission.missionStatus,
                 pendingActivity = activityTaskSize,
                 activityComplete = 0,
                 startOffset = mission.startOffset,
-                endOffset = mission.endOffset
+                endOffset = mission.endOffset,
+                programmeId = programmeId
             )
         }
 

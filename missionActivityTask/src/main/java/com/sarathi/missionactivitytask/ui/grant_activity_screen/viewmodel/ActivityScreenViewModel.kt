@@ -19,6 +19,7 @@ import javax.inject.Inject
 class ActivityScreenViewModel @Inject constructor(
     private val getActivityUseCase: GetActivityUseCase
 ) : BaseViewModel() {
+    var missionId: Int = 0
     private val _activityList = mutableStateOf<List<ActivityUiModel>>(emptyList())
     val activityList: State<List<ActivityUiModel>> get() = _activityList
     override fun <T> onEvent(event: T) {
@@ -37,11 +38,15 @@ class ActivityScreenViewModel @Inject constructor(
 
     private fun initActivityScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            _activityList.value = getActivityUseCase.getActivities()
+            _activityList.value = getActivityUseCase.getActivities(missionId)
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
+    }
+
+    fun setMissionDetail(missionId: Int) {
+        this.missionId = missionId
     }
 
 }

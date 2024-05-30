@@ -7,9 +7,9 @@ data class MissionResponse(
     @SerializedName("activities")
     val activities: List<ActivityResponse>,
     @SerializedName("actualEndDate")
-    val actualEndDate: String,
+    val actualEndDate: String?,
     @SerializedName("actualStartDate")
-    val actualStartDate: String,
+    val actualStartDate: String?,
     @SerializedName("conditions")
     val conditions: List<Any>,
     @SerializedName("endOffset")
@@ -19,7 +19,7 @@ data class MissionResponse(
     @SerializedName("languages")
     val languages: List<Language>,
     @SerializedName("missionConfig")
-    val missionConfig: MissionConfig,
+    val missionConfig: MissionConfig?,
     @SerializedName("missionStatus")
     val missionStatus: String,
     @SerializedName("name")

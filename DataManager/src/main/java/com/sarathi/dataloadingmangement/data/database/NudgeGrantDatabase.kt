@@ -1,7 +1,18 @@
 package com.sarathi.dataloadingmangement.data.database
 
+
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.sarathi.dataloadingmangement.data.converters.ConditionsDtoConvertor
+import com.sarathi.dataloadingmangement.data.converters.ContentListConverter
+import com.sarathi.dataloadingmangement.data.converters.ContentMapConverter
+import com.sarathi.dataloadingmangement.data.converters.IntConverter
+import com.sarathi.dataloadingmangement.data.converters.OptionQuestionConverter
+import com.sarathi.dataloadingmangement.data.converters.QuestionsOptionsConverter
+import com.sarathi.dataloadingmangement.data.converters.StringConverter
+
+import com.sarathi.dataloadingmangement.data.converters.ValuesDtoConverter
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageAttributeDao
@@ -11,7 +22,13 @@ import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
+import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
+import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
+import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
@@ -25,7 +42,13 @@ import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.data.entities.ContentConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionLanguageEntity
+import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
+import com.sarathi.dataloadingmangement.data.entities.ProgrammeEntity
+import com.sarathi.dataloadingmangement.data.entities.QuestionEntity
+import com.sarathi.dataloadingmangement.data.entities.SectionEntity
 import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
+import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
+import com.sarathi.dataloadingmangement.data.entities.SurveyEntity
 import com.sarathi.dataloadingmangement.data.entities.TaskAttributesEntity
 import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
 
@@ -45,11 +68,27 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
         TaskAttributesEntity::class,
         UiConfigEntity::class,
         ContentConfigEntity::class,
-        Content::class
+        Content::class,
+        SurveyEntity::class,
+        SectionEntity::class,
+        QuestionEntity::class,
+        OptionItemEntity::class,
+        ProgrammeEntity::class,
+        SurveyAnswerEntity::class
 
     ],
     version = NUDGE_GRANT_DATABASE_VERSION,
     exportSchema = false
+)
+@TypeConverters(
+    IntConverter::class,
+    QuestionsOptionsConverter::class,
+    OptionQuestionConverter::class,
+    StringConverter::class,
+    ConditionsDtoConvertor::class,
+    ContentListConverter::class,
+    ContentMapConverter::class,
+    ValuesDtoConverter::class,
 )
 abstract class NudgeGrantDatabase : RoomDatabase() {
 
@@ -66,6 +105,14 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun subjectAttributeDao(): SubjectAttributeDao
     abstract fun taskAttributeDao(): TaskAttributeDao
     abstract fun uiConfigDao(): UiConfigDao
+    abstract fun surveyEntityDao(): SurveyEntityDao
+
+    abstract fun sectionEntityDao(): SectionEntityDao
+
+    abstract fun questionEntityDao(): QuestionEntityDao
+    abstract fun optionItemDao(): OptionItemDao
+    abstract fun programmeDao(): ProgrammeDao
+    abstract fun surveyAnswersDao(): SurveyAnswersDao
 
 
     class NudgeDatabaseCallback : Callback()

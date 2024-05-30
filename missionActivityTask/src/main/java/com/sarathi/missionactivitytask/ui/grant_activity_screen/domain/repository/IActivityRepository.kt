@@ -3,6 +3,6 @@ package com.sarathi.missionactivitytask.ui.grant_activity_screen.domain.reposito
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 
 interface IActivityRepository {
-    suspend fun getActivity(): List<ActivityUiModel>
+    suspend fun getActivity(missionId: Int): List<ActivityUiModel>
 
 }

@@ -12,6 +12,9 @@ class GetMissionRepositoryImpl @Inject constructor(
     IMissionRepository {
 
     override suspend fun getAllActiveMission(): List<MissionUiModel> =
-        missionDao.getMissions(coreSharedPreferences.getUniqueUserIdentifier(), "en")
+        missionDao.getMissions(
+            coreSharedPreferences.getUniqueUserIdentifier(),
+            coreSharedPreferences.getAppLanguage()
+        )
 
 }

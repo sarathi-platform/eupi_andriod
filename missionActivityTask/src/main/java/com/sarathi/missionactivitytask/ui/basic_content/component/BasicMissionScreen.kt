@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.events.theme.blueDark
 import com.nudge.core.ui.events.theme.dimen_10_dp
 import com.nudge.core.ui.events.theme.dimen_16_dp
@@ -39,7 +40,6 @@ import com.nudge.core.ui.events.theme.smallerTextStyle
 import com.nudge.core.ui.events.theme.weight_100_percent
 import com.nudge.core.ui.events.theme.white
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
 import com.sarathi.missionactivitytask.ui.components.LinearProgressBarComponent
 import com.sarathi.missionactivitytask.ui.components.PrimaryButton
 import com.sarathi.missionactivitytask.ui.components.SecondaryButton
@@ -50,7 +50,7 @@ import com.sarathi.missionactivitytask.utils.statusColor
 fun BasicMissionCard(
     title: String = BLANK_STRING,
     needToShowProgressBar: Boolean = false,
-    status: StatusEnum = StatusEnum.Pending,
+    status: StatusEnum = StatusEnum.PENDING,
     pendingCount: Int = 0,
     totalCount: Int = 0,
     countStatusText: String = BLANK_STRING,

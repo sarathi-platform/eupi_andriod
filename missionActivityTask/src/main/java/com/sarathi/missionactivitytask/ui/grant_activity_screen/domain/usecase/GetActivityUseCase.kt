@@ -7,6 +7,7 @@ import javax.inject.Inject
 
 class GetActivityUseCase @Inject constructor(private val activityRepositoryImpl: GetActivityRepositoryImpl) {
 
-    suspend fun getActivities(): List<ActivityUiModel> = activityRepositoryImpl.getActivity()
+    suspend fun getActivities(missionId: Int): List<ActivityUiModel> =
+        activityRepositoryImpl.getActivity(missionId)
 
 }
