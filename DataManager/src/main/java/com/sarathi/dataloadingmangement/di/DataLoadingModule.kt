@@ -129,6 +129,10 @@ class DataLoadingModule {
 
     @Provides
     @Singleton
+    fun provideSurveyAnswersDao(db: NudgeGrantDatabase) = db.surveyAnswersDao()
+
+    @Provides
+    @Singleton
     fun provideSurveyDownloadRepository(
         dataLoadingApiService: DataLoadingApiService,
         surveyDao: SurveyEntityDao,

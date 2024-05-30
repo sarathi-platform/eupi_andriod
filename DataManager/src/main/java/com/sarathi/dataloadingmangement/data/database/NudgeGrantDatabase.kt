@@ -27,6 +27,7 @@ import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
@@ -46,6 +47,7 @@ import com.sarathi.dataloadingmangement.data.entities.ProgrammeEntity
 import com.sarathi.dataloadingmangement.data.entities.QuestionEntity
 import com.sarathi.dataloadingmangement.data.entities.SectionEntity
 import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
+import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyEntity
 import com.sarathi.dataloadingmangement.data.entities.TaskAttributesEntity
 import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
@@ -71,7 +73,8 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
         SectionEntity::class,
         QuestionEntity::class,
         OptionItemEntity::class,
-        ProgrammeEntity::class
+        ProgrammeEntity::class,
+        SurveyAnswerEntity::class
 
     ],
     version = NUDGE_GRANT_DATABASE_VERSION,
@@ -85,7 +88,7 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
     ConditionsDtoConvertor::class,
     ContentListConverter::class,
     ContentMapConverter::class,
-    ValuesDtoConverter::class
+    ValuesDtoConverter::class,
 )
 abstract class NudgeGrantDatabase : RoomDatabase() {
 
@@ -109,6 +112,7 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun questionEntityDao(): QuestionEntityDao
     abstract fun optionItemDao(): OptionItemDao
     abstract fun programmeDao(): ProgrammeDao
+    abstract fun surveyAnswersDao(): SurveyAnswersDao
 
 
     class NudgeDatabaseCallback : Callback()
