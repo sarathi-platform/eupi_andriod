@@ -24,11 +24,11 @@ data class SyncEventResponse(
     @Expose
     val errorMessage: String,
 
-    @SerializedName("mobile_number")
+    @SerializedName("mobileNumber")
     @Expose
     val mobileNumber: String,
 
-    @SerializedName("name")
+    @SerializedName("eventName")
     @Expose
     val eventName: String,
 

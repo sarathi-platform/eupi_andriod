@@ -152,6 +152,7 @@ import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.preference.CorePrefRepo
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -248,9 +249,10 @@ object BaselineModule {
     @Singleton
     fun provideLoginScreenRepository(
         prefRepo: PrefRepo,
-        apiService: ApiService
+        apiService: ApiService,
+        corePrefRepo: CorePrefRepo
     ): LoginScreenRepository {
-        return LoginScreenRepositoryImpl(prefRepo, apiService)
+        return LoginScreenRepositoryImpl(prefRepo, apiService, corePrefRepo = corePrefRepo)
     }
 
     @Provides
@@ -477,7 +479,8 @@ object BaselineModule {
         contentDao: ContentDao,
         baselineDatabase: NudgeBaselineDatabase,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
-        apiStatusDao: ApiStatusDao
+        apiStatusDao: ApiStatusDao,
+        corePrefRepo: CorePrefRepo
 
     ): DataLoadingScreenRepository {
         return DataLoadingScreenRepositoryImpl(
@@ -495,7 +498,8 @@ object BaselineModule {
             contentDao,
             baselineDatabase,
             didiSectionProgressEntityDao,
-            apiStatusDao
+            apiStatusDao,
+            corePrefRepo
         )
     }
 

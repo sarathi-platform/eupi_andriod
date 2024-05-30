@@ -1,5 +1,6 @@
 package com.nudge.core.database.dao
 
+import android.annotation.SuppressLint
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -57,6 +58,7 @@ interface EventsDao {
     @Query("SELECT retry_count from $EventsTable where id =:clientId")
     fun fetchRetryCountForEvent(clientId: String):Int
 
+   @SuppressLint("SuspiciousIndentation")
    @Transaction
     fun updateFailedEventStatus(failedEventList:List<SyncEventResponse>){
         val modifiedDate=System.currentTimeMillis().toDate()

@@ -74,6 +74,7 @@ import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.entities.ApiStatusEntity
 import com.nudge.core.enums.ApiStatus
+import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.toDate
 import javax.inject.Inject
 
@@ -92,7 +93,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     val contentDao: ContentDao,
     val baselineDatabase: NudgeBaselineDatabase,
     val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
-    val apiStatusDao: ApiStatusDao
+    val apiStatusDao: ApiStatusDao,
+    val corePrefRepo: CorePrefRepo
 ) : DataLoadingScreenRepository {
     override suspend fun fetchLocalLanguageList(): List<LanguageEntity> {
 
@@ -413,6 +415,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         BaselineLogger.d("User Details        ","Mobile Number: ${prefRepo.getPref(PREF_MOBILE_NUMBER,BLANK_STRING)}")
         BaselineLogger.d("User Details        ","User Email: ${userDetailsResponse.email}")
         prefRepo.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: "")
+        corePrefRepo.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: "")
         prefRepo.savePref(PREF_KEY_NAME, userDetailsResponse.name ?: "")
         prefRepo.savePref(PREF_KEY_EMAIL, userDetailsResponse.email ?: "")
         prefRepo.savePref(PREF_KEY_IDENTITY_NUMBER, userDetailsResponse.identityNumber ?: "")

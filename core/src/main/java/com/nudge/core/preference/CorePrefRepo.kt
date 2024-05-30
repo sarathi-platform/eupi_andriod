@@ -12,4 +12,5 @@ interface CorePrefRepo {
 
     fun getUserId():String
     fun getMobileNumber():String
+    fun savePref(key: String, value: String)
 }
