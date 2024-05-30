@@ -1,8 +1,9 @@
-package com.sarathi.missionactivitytask.ui.components
+package com.sarathi.contentmodule.ui.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,85 +24,98 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
-import com.sarathi.missionactivitytask.ui.basic_content.constants.ContentShape
-import com.sarathi.missionactivitytask.ui.basic_content.constants.ContentType
-import com.sarathi.missionactivitytask.ui.theme.black1
-import com.sarathi.missionactivitytask.ui.theme.lightGray2
-import com.sarathi.missionactivitytask.ui.theme.smallTextStyleMediumWeight2
-import com.sarathi.missionactivitytask.ui.theme.textColorDark
-import com.sarathi.missionactivitytask.ui.theme.white
+import com.sarathi.contentmodule.R
+import com.sarathi.contentmodule.constants.Constants.BLANK_STRING
+import com.sarathi.contentmodule.download_manager.FileType
+import com.sarathi.contentmodule.ui.theme.black1
+import com.sarathi.contentmodule.ui.theme.blueDark
+import com.sarathi.contentmodule.ui.theme.lightGray2
+import com.sarathi.contentmodule.ui.theme.smallTextStyleMediumWeight2
+import com.sarathi.contentmodule.ui.theme.textColorDark
+import com.sarathi.contentmodule.ui.theme.white
+import com.sarathi.contentmodule.utils.ContentShape
 
 
 @Composable
-@Preview(showBackground = true)
 fun BasicContentComponent(
     contentType: String = BLANK_STRING,
     contentUrl: String = BLANK_STRING,
+    contentValue: String = BLANK_STRING,
     contentShape: ContentShape = ContentShape.CIRCLE,
-    contentTitle: String = "",
-    moreContentData: String = "+5 More Data"
+    isLimitContentData: Boolean = false,
+    totalContent: Int = 0,
+    contentTitle: String = BLANK_STRING,
+    onClick: () -> Unit
 ) {
     ContentView(
         contentType = contentType,
         contentTitle = contentTitle,
-        moreContentData = moreContentData
+        isLimitContentData = isLimitContentData,
+        totalContent = totalContent,
+        onClick = onClick
     )
 }
 
 @Composable
 private fun ContentView(
     contentType: String,
-    contentTitle: String = BLANK_STRING,
-    moreContentData: String = BLANK_STRING
+    contentTitle: String,
+    isLimitContentData: Boolean,
+    totalContent: Int,
+    onClick: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(start = 16.dp, end = 16.dp)
-                .size(60.dp)
-                .clip(shape = CircleShape)
-                .border(
-                    1.dp, color = lightGray2, RoundedCornerShape(100.dp)
-                )
-                .background(color = Color.Transparent)
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            ContentData(contentType = contentType, moreContentData = moreContentData)
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable {
+            onClick()
         }
-        if (contentTitle.isNotBlank()) {
-            Text(
-                text = contentTitle,
-                fontSize = 10.sp,
-                style = smallTextStyleMediumWeight2
-            )
+    ) {
+        if (isLimitContentData) {
+            ButtonComponent(title = "+${totalContent} More")
+        } else {
+            Box(
+                modifier = Modifier
+                    .padding(start = 16.dp, end = 16.dp)
+                    .size(60.dp)
+                    .clip(shape = CircleShape)
+                    .border(
+                        1.dp, color = lightGray2, RoundedCornerShape(100.dp)
+                    )
+                    .background(color = Color.Transparent)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                ContentData(contentType = contentType)
+            }
+            if (contentTitle.isNotBlank()) {
+                Text(
+                    text = contentTitle,
+                    fontSize = 10.sp,
+                    style = smallTextStyleMediumWeight2.copy(color = blueDark)
+                )
+            }
         }
     }
 }
 
 @Composable
-fun ContentData(contentType: String, moreContentData: String) {
+fun ContentData(contentType: String) {
     when (contentType) {
-        ContentType.IMAGE.name -> {
+        FileType.Image.name -> {
             val painter: Painter = painterResource(id = R.drawable.ic_sarathi_logo)
             Image(painter = painter, contentDescription = null)
         }
 
-        ContentType.VIDEO.name -> {
-            ImageOverlay(resId = R.drawable.ic_mission_inprogress)
+        FileType.Video.name -> {
+            ImageOverlay(resId = R.drawable.ic_sarathi_logo)
         }
 
-        ContentType.FILE.name -> {
+        FileType.File.name -> {
             val painter: Painter =
-                painterResource(id = R.drawable.ic_mission_inprogress)
+                painterResource(id = R.drawable.ic_file_place_holder_icon)
             Image(painter = painter, contentDescription = null)
         }
     }

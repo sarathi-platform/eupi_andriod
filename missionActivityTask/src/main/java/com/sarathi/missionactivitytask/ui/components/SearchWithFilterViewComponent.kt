@@ -41,9 +41,9 @@ import com.sarathi.missionactivitytask.ui.theme.NotoSans
 import com.sarathi.missionactivitytask.ui.theme.blueDark
 import com.sarathi.missionactivitytask.ui.theme.borderGrey
 import com.sarathi.missionactivitytask.ui.theme.placeholderGrey
-import com.sarathi.missionactivitytask.ui.theme.roundedCornerRadiusDefault
 import com.sarathi.missionactivitytask.ui.theme.textColorDark
 import com.sarathi.missionactivitytask.ui.theme.white
+import com.sarathi.surveymanager.theme.roundedCornerRadiusDefault
 
 @Composable
 fun SearchWithFilterViewComponent(

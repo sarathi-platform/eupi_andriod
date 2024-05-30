@@ -1,4 +1,4 @@
-package com.sarathi.contentmodule.ui.theme.repository
+package com.sarathi.contentmodule.ui.repository
 
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Job
