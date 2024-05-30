@@ -1,38 +1,34 @@
 package com.sarathi.missionactivitytask.ui.grant_activity_screen.screen
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.ui.components.BasicContentComponent
-import com.sarathi.missionactivitytask.ui.components.ButtonComponent
+import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
+import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
 
 @Composable
 fun ActivityRowCard(
-    contents: List<BasicContent> = listOf(),
+    navController: NavController = rememberNavController(),
     activities: List<ActivityUiModel>
 ) {
     Column {
-        Row(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp, start = 20.dp, end = 20.dp)) {
-            contents.forEachIndexed { index, item ->
-                if (index < 3) {
-                    BasicContentComponent(
-                        contentType = item.contentType,
-                        contentTitle = item.contentTitle
-                    )
-                } else if (index == 3) {
-                    ButtonComponent(title = "+ ${contents.size - index} More Data")
-                }
+        BaseContentScreen { contentKey, contentType, isLimitContentData ->
+            if (!isLimitContentData) {
+                navigateToMediaPlayerScreen(navController, contentKey, contentType)
+            } else {
+                navigateToContentDetailScreen(navController)
             }
         }
         Spacer(modifier = Modifier.height(20.dp))

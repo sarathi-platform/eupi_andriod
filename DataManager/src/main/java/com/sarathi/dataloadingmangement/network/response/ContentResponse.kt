@@ -5,6 +5,7 @@ data class ContentResponse(
     val contentKey: String,
     val contentType: String,
     val contentValue: String,
+    val contentName: String,
     val languageCode: Int
 ) {
 }
