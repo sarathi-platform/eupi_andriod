@@ -46,7 +46,6 @@ android {
 
 dependencies {
     implementation(project(":DataManager"))
-    implementation(project(":ContentManager"))
     val retrofit = "2.9.0"
     val okhttp3 = "4.9.0"
     val compose_version = "1.4.1"
@@ -88,7 +87,6 @@ dependencies {
     implementation("androidx.navigation:navigation-runtime-ktx:2.5.3")
     implementation("androidx.navigation:navigation-compose:2.5.3")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation(project(":internetSpeedChecker"))
     //Material
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material:1.3.1")
@@ -105,15 +103,8 @@ dependencies {
     implementation(project(":core"))
     implementation("androidx.compose.material3:material3:1.0.0-alpha12")
 
-//Coil
     implementation("io.coil-kt:coil-compose:2.0.0-rc01")
-
-
-
     implementation("androidx.camera:camera-camera2:1.1.0")
     implementation("androidx.camera:camera-lifecycle:1.1.0")
     implementation("androidx.camera:camera-view:1.0.0-alpha30")
-    implementation(project(":core"))
-
-
 }
