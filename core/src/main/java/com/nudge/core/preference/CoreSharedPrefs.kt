@@ -18,6 +18,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_IMAGE_FILE_EXPORTED_NAME = "is_file_exorted"
         const val PREF_KEY_USER_NAME="key_user_name"
         const val PREF_MOBILE_NUMBER = "pref_mobile_number"
+        const val PREF_PRODUCER_WORKER_ID= "producer_worker_id"
 
         @Volatile
         private var INSTANCE: CoreSharedPrefs? = null
@@ -87,7 +88,9 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     override fun savePref(key: String, value: String) {
         prefs.edit().putString(key, value).apply()
     }
-    override fun savePref(key: String, value: String) {
-        prefs.edit().putString(key, value).apply()
+
+    override fun getPref(key: String, defaultValue: String): String? {
+        return prefs.getString(key, defaultValue) ?: defaultValue
+
     }
 }

@@ -7,13 +7,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -22,6 +21,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,14 +39,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Observer
+import androidx.lifecycle.LiveData
 import androidx.navigation.NavController
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import androidx.work.await
+import com.google.android.datatransport.runtime.firebase.transport.LogEventDropped
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
-import com.nrlm.baselinesurvey.ui.common_components.common_setting.SyncEventCard
 import com.nrlm.baselinesurvey.ui.sync_event.viewmodel.SyncEventViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
@@ -68,16 +67,13 @@ fun SyncEventScreen(
     val context= LocalContext.current
     val workManager = WorkManager.getInstance(context)
     var workInfo by remember { mutableStateOf<WorkInfo?>(null) }
-    
+    var workDetails :LiveData<List<WorkInfo>> ?=null
     val loaderState = viewModel.loaderState
     LaunchedEffect(key1 = true) {
         viewModel.getAllEvents()
     }
-    LaunchedEffect(Unit) {
-        val info = workManager.getWorkInfosForUniqueWork(PRODUCER_WORKER_TAG).await()
-        if(info.isNotEmpty()){
-            workInfo=info[0]
-        }
+    LaunchedEffect(key1 = Unit) {
+        workDetails = workManager.getWorkInfosByTagLiveData(PRODUCER_WORKER_TAG)
     }
 
     Scaffold(
@@ -112,10 +108,6 @@ fun SyncEventScreen(
                 .padding(top = it.calculateTopPadding())
                 .fillMaxSize()
         ) {
-            Column(modifier = Modifier.wrapContentSize()) {
-                Text(text = "WorkManager Status:")
-                Text(text = workInfo?.state?.name ?: "No WorkInfo Available")
-            }
             Row( modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 10.dp)
@@ -140,7 +132,6 @@ fun SyncEventScreen(
                     isArrowRequired = false,
                     isActive = true,
                     onClick = {
-//                         viewModel.syncAllPending(ConnectionMonitor.DoesNetworkHaveInternet.getNetworkStrength(),lifecycleOwner)
                         viewModel.getAllEvents()
                     },
                     modifier = Modifier
@@ -149,17 +140,7 @@ fun SyncEventScreen(
                 )
             }
 
-
-           LazyColumn {
-                    itemsIndexed(syncEventList.value) { index, item ->
-                        SyncEventCard(
-                            title = item.id,
-                            subTitle = item.name,
-                            status = "OPEN",
-                        ) {
-                        }
-                    }
-                }
+            workDetails?.let { it1 -> WorkStatusScreen(workStatus = it1) }
 
         }
 
@@ -179,5 +160,36 @@ fun SyncEventScreen(
                     .align(Alignment.Center)
             )
         }
+    }
+}
+
+@Composable
+fun WorkStatusScreen(workStatus: LiveData<List<WorkInfo>>) {
+    val workInfo = workStatus.observeAsState()
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(text = "Work Status:", style = MaterialTheme.typography.titleLarge)
+        Spacer(modifier = Modifier.height(16.dp))
+        workInfo.value?.let {
+            if(it.isNotEmpty()){
+                it.forEach { work->
+                    when (work.state) {
+                        WorkInfo.State.ENQUEUED -> Text(text = "Enqueued")
+                        WorkInfo.State.RUNNING -> Text(text = "Running")
+                        WorkInfo.State.SUCCEEDED -> Text(text = "Succeeded")
+                        WorkInfo.State.FAILED -> Text(text = "Failed")
+                        WorkInfo.State.BLOCKED -> Text(text = "Blocked")
+                        WorkInfo.State.CANCELLED -> Text(text = "Cancelled")
+                    }
+                }
+            }else {
+                Log.d("TAG", "WorkStatusScreen: Work Info List empty ")
+            }
+
+        } ?: Text(text = "Unknown")
     }
 }
