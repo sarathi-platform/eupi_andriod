@@ -45,13 +45,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.ui.events.theme.blueDark
+import com.nudge.core.ui.events.theme.white
 import com.sarathi.contentmodule.R
 import com.sarathi.contentmodule.ui.component.BasicContentComponent
 import com.sarathi.contentmodule.ui.component.ButtonPositive
 import com.sarathi.contentmodule.ui.component.SearchWithFilterViewComponent
 import com.sarathi.contentmodule.ui.content_detail_screen.viewmodel.ContentDetailViewModel
-import com.sarathi.contentmodule.ui.theme.blueDark
-import com.sarathi.contentmodule.ui.theme.white
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
