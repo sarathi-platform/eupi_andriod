@@ -39,7 +39,6 @@ fun ActivityScreen(
         onContentUI = {
             if (viewModel.activityList.value.isNotEmpty()) {
                 ActivityRowCard(
-
                     activities = viewModel.activityList.value,
                     navController = navController
                 )

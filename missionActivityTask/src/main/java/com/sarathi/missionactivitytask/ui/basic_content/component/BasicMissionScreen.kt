@@ -24,8 +24,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.nudge.core.BLANK_STRING
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
 import com.sarathi.missionactivitytask.ui.components.LinearProgressBarComponent
 import com.sarathi.missionactivitytask.ui.components.PrimaryButton
 import com.sarathi.missionactivitytask.ui.components.SecondaryButton

@@ -9,13 +9,20 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nudge.core.BLANK_STRING
-import androidx.navigation.navArgument
 import com.sarathi.contentmodule.media.MediaScreen
 import com.sarathi.contentmodule.ui.content_detail_screen.screen.ContentDetailScreen
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ACTIVITY_SCREEN_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_ID
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_KEY
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_TYPE
-import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_ID
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.CONTENT_DETAIL_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MAT_GRAPH
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MEDIA_PLAYER_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MISSION_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.ui.grantTask.screen.GrantTaskScreen
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.ActivityScreen
 import com.sarathi.missionactivitytask.ui.mission_screen.screen.GrantMissionScreen
@@ -125,6 +132,7 @@ sealed class MATHomeScreens(val route: String) {
 
     object GrantTaskScreen :
         MATHomeScreens(route = "$GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME/{$ARG_MISSION_ID}/{$ARG_ACTIVITY_ID}/{$ARG_ACTIVITY_NAME}")
+
     object ContentDetailScreen : MATHomeScreens(route = CONTENT_DETAIL_SCREEN_ROUTE_NAME)
     object MediaPlayerScreen :
         MATHomeScreens(route = "$MEDIA_PLAYER_SCREEN_ROUTE_NAME/{$ARG_CONTENT_KEY}/{$ARG_CONTENT_TYPE}")
@@ -141,8 +149,9 @@ fun navigateToMediaPlayerScreen(
     contentType: String
 ) {
     navController.navigate("$MEDIA_PLAYER_SCREEN_ROUTE_NAME/${contentKey}/${contentType}")
+}
 
-    fun navigateToActivityScreen(navController: NavController, missionId: Int, missionName: String) {
+fun navigateToActivityScreen(navController: NavController, missionId: Int, missionName: String) {
     navController.navigate("$ACTIVITY_SCREEN_SCREEN_ROUTE_NAME/$missionId/$missionName")
 }
 
@@ -155,16 +164,8 @@ fun navigateToTaskScreen(
     navController.navigate("$GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName")
 }
 
-const val MISSION_SCREEN_ROUTE_NAME = "mission_screen"
-const val ACTIVITY_SCREEN_SCREEN_ROUTE_NAME = "activity_screen"
-const val GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME = "grant_task_screen"
-const val MEDIA_PLAYER_SCREEN_ROUTE_NAME = "media_player_screen"
-const val CONTENT_DETAIL_SCREEN_ROUTE_NAME = "content_detail_screen"
 
-const val ARG_ACTIVITY_ID = "activity_id"
-const val ARG_MISSION_ID = "mission_id"
-const val ARG_MISSION_NAME = "mission_name"
-const val ARG_ACTIVITY_NAME = "activity_name"
+
 
 
 

@@ -35,8 +35,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nudge.core.BLANK_STRING
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
 import com.sarathi.missionactivitytask.ui.theme.NotoSans
 import com.sarathi.missionactivitytask.ui.theme.blueDark
 import com.sarathi.missionactivitytask.ui.theme.borderGrey

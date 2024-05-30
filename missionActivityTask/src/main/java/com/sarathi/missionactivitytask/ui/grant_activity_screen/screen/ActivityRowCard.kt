@@ -11,14 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.navigation.navigateToTaskScreen
-import com.sarathi.missionactivitytask.ui.components.BasicContentComponent
-import com.sarathi.missionactivitytask.ui.components.ButtonComponent
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
+import com.sarathi.missionactivitytask.navigation.navigateToTaskScreen
 import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
 
 @Composable
