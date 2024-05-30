@@ -20,10 +20,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.theme.borderGrey
-import com.nudge.core.theme.placeholderGrey
-import com.nudge.core.theme.textColorDark
-import com.sarathi.surveymanager.SURVEY_MAXIMUM_RANGE_LENGTH
+import com.sarathi.surveymanager.MAXIMUM_RANGE_LENGTH
+import com.sarathi.surveymanager.theme.borderGrey
+import com.sarathi.surveymanager.theme.placeholderGrey
+import com.sarathi.surveymanager.theme.textColorDark
 import com.sarathi.surveymanager.utils.onlyNumberField
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -58,7 +58,7 @@ fun NumberTextComponent(
                 if (it.length <= maxLength) {
                     if (isOnlyNumber) {
                         if (onlyNumberField(it)) {
-                            if (it.length <= SURVEY_MAXIMUM_RANGE_LENGTH) {
+                            if (it.length <= MAXIMUM_RANGE_LENGTH) {
                                 txt.value = it
                             }
                         }

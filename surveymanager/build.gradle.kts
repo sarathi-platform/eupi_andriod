@@ -100,6 +100,8 @@ dependencies {
     //Firebase Firestore
     implementation("com.google.firebase:firebase-firestore")
 
+    //CSV Export
+    implementation("com.opencsv:opencsv:5.3")
     implementation(project(":core"))
     implementation("androidx.compose.material3:material3:1.0.0-alpha12")
 

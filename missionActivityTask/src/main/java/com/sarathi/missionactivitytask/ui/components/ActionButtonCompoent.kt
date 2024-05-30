@@ -35,19 +35,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.nudge.core.theme.NotoSans
-import com.nudge.core.theme.blueDark
-import com.nudge.core.theme.borderGreyLight
-import com.nudge.core.theme.dimen_1_dp
-import com.nudge.core.theme.dimen_2_dp
-import com.nudge.core.theme.greyColor
-import com.nudge.core.theme.languageItemActiveBg
-import com.nudge.core.theme.lightGray2
-import com.nudge.core.theme.roundedCornerRadiusDefault
-import com.nudge.core.theme.smallTextStyleMediumWeight
-import com.nudge.core.theme.smallTextStyleNormalWeight
-import com.nudge.core.theme.smallerTextStyle
-import com.nudge.core.theme.white
+import com.sarathi.missionactivitytask.ui.theme.NotoSans
+import com.sarathi.missionactivitytask.ui.theme.blueDark
+import com.sarathi.missionactivitytask.ui.theme.borderGreyLight
+import com.sarathi.missionactivitytask.ui.theme.dimen_1_dp
+import com.sarathi.missionactivitytask.ui.theme.dimen_2_dp
+import com.sarathi.missionactivitytask.ui.theme.greyColor
+import com.sarathi.missionactivitytask.ui.theme.languageItemActiveBg
+import com.sarathi.missionactivitytask.ui.theme.lightGray2
+import com.sarathi.missionactivitytask.ui.theme.roundedCornerRadiusDefault
+import com.sarathi.missionactivitytask.ui.theme.smallTextStyleMediumWeight
+import com.sarathi.missionactivitytask.ui.theme.smallTextStyleNormalWeight
+import com.sarathi.missionactivitytask.ui.theme.smallerTextStyle
+import com.sarathi.missionactivitytask.ui.theme.white
 
 @Composable
 fun PrimaryButton(

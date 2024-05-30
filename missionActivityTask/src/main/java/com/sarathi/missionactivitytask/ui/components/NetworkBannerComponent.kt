@@ -13,10 +13,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
-import com.nudge.core.theme.NotoSans
-import com.nudge.core.theme.greenOnline
-import com.nudge.core.theme.redOffline
 import com.sarathi.missionactivitytask.R
+import com.sarathi.missionactivitytask.ui.theme.NotoSans
+import com.sarathi.missionactivitytask.ui.theme.greenOnline
+import com.sarathi.missionactivitytask.ui.theme.redOffline
 
 @Composable
 fun NetworkBannerComponent(
