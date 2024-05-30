@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.events.theme.NotoSans
 import com.nudge.core.ui.events.theme.blueDark
 import com.nudge.core.ui.events.theme.borderGrey
@@ -43,7 +44,6 @@ import com.nudge.core.ui.events.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.events.theme.textColorDark
 import com.nudge.core.ui.events.theme.white
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
 
 @Composable
 fun SearchWithFilterViewComponent(
