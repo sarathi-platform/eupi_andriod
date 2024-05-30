@@ -28,12 +28,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.nudge.core.ui.events.theme.blueDark
+import com.nudge.core.ui.events.theme.defaultTextStyle
+import com.nudge.core.ui.events.theme.newMediumTextStyle
+import com.nudge.core.ui.events.theme.smallTextStyleMediumWeight
+import com.nudge.core.ui.events.theme.white
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.ui.theme.blueDark
-import com.sarathi.missionactivitytask.ui.theme.defaultTextStyle
-import com.sarathi.missionactivitytask.ui.theme.newMediumTextStyle
-import com.sarathi.missionactivitytask.ui.theme.smallTextStyleMediumWeight
-import com.sarathi.missionactivitytask.ui.theme.white
 import com.sarathi.surveymanager.theme.dimen_10_dp
 import com.sarathi.surveymanager.theme.dimen_18_dp
 import com.sarathi.surveymanager.theme.roundedCornerRadiusDefault

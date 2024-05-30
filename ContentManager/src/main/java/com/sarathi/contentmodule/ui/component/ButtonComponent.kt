@@ -19,8 +19,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sarathi.contentmodule.ui.theme.lightGray2
-import com.sarathi.contentmodule.ui.theme.smallerTextStyle
+import com.nudge.core.ui.events.theme.lightGray2
+import com.nudge.core.ui.events.theme.smallerTextStyle
 import com.sarathi.dataloadingmangement.BLANK_STRING
 
 @Composable
