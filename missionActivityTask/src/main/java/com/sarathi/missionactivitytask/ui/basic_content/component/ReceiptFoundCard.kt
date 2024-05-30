@@ -31,12 +31,12 @@ import androidx.compose.ui.unit.dp
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.theme.blueDark
 import com.sarathi.missionactivitytask.ui.theme.defaultTextStyle
-import com.sarathi.missionactivitytask.ui.theme.dimen_10_dp
-import com.sarathi.missionactivitytask.ui.theme.dimen_18_dp
 import com.sarathi.missionactivitytask.ui.theme.newMediumTextStyle
-import com.sarathi.missionactivitytask.ui.theme.roundedCornerRadiusDefault
 import com.sarathi.missionactivitytask.ui.theme.smallTextStyleMediumWeight
 import com.sarathi.missionactivitytask.ui.theme.white
+import com.sarathi.surveymanager.theme.dimen_10_dp
+import com.sarathi.surveymanager.theme.dimen_18_dp
+import com.sarathi.surveymanager.theme.roundedCornerRadiusDefault
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)

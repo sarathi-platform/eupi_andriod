@@ -25,7 +25,6 @@ import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.utils.CoreLogger
-import com.nudge.core.utils.FileUtils
 import com.nudge.core.utils.LogWriter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
