@@ -12,10 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.sarathi.missionactivitytask.R
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
+import com.sarathi.missionactivitytask.ui.basic_content.component.GrantTaskCard
 import com.sarathi.missionactivitytask.ui.components.BasicContentComponent
 import com.sarathi.missionactivitytask.ui.components.ButtonComponent
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
+import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.BasicContent
 
 @Composable
@@ -54,32 +57,18 @@ fun GrantTaskList(
             itemsIndexed(
                 items = taskList.entries.toList()
             ) { index, task ->
-                StepsBoxGrantComponent(
-                    modifier = Modifier,
-                    boxTitle = "Working 1",
-                    subTitle = "0/5 ",
-                    stepNo = index + 1,
-                    pendingCount = 10,
-                    totalCount = 25,
-                    index = index,
-                    isDividerVisible = index != 25,
-                    painter = painterResource(id = R.drawable.ic_mission_inprogress)
-                ) {
 
-                }
-
-
-//                GrantTaskCard(
-//                    title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name] ?: BLANK_STRING,
-//                    subTitle = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name]
-//                        ?: BLANK_STRING,
-//                    primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name]
-//                        ?: BLANK_STRING,
-//                    secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name]
-//                        ?: BLANK_STRING,
-//                    status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]
-//                        ?: BLANK_STRING,
-//                )
+                GrantTaskCard(
+                    title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name] ?: BLANK_STRING,
+                    subTitle = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name]
+                        ?: BLANK_STRING,
+                    primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name]
+                        ?: BLANK_STRING,
+                    secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name]
+                        ?: BLANK_STRING,
+                    status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]
+                        ?: BLANK_STRING,
+                )
 
 
             }
