@@ -9,7 +9,8 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.sarathi.smallgroupmodule.constatns.SmallGroupConstants.ARG_SMALL_GROUP_ID
 import com.sarathi.smallgroupmodule.constatns.SmallGroupConstants.SMALL_GROUP_GRAPH
-import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation.ui.SmallGroupAttendanceHistoryScreen
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation.SmallGroupAttendanceScreen
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.ui.SmallGroupAttendanceHistoryScreen
 
 fun NavGraphBuilder.SmallGroupNavigation(navController: NavHostController) {
     navigation(
@@ -32,6 +33,10 @@ fun NavGraphBuilder.SmallGroupNavigation(navController: NavHostController) {
             )
         }
 
+        composable(route = SmallGroupScreens.SmallGroupAttendanceScreen.route) {
+            SmallGroupAttendanceScreen()
+        }
+
     }
 
 
@@ -41,6 +46,9 @@ sealed class SmallGroupScreens(val route: String) {
 
     object SmallGroupAttendanceHistoryScreen :
         SmallGroupScreens(route = SMALL_GROUP_ATTENDANCE_HISTORY_SCREEN)
+
+    object SmallGroupAttendanceScreen :
+        SmallGroupScreens(route = SMALL_GROUP_ATTENDANCE_SCREEN_ROUTE)
 
 }
 
@@ -53,3 +61,7 @@ fun NavHostController.navigateToAttendanceHistoryScreen(smallGroupId: Int) {
 const val SMALL_GROUP_ATTENDANCE_HISTORY_SCREEN =
     "small_group_attendance_history_screen/{$ARG_SMALL_GROUP_ID}"
 const val SMALL_GROUP_ATTENDANCE_HISTORY_SCREEN_ROUTE = "small_group_attendance_history_screen"
+
+const val SMALL_GROUP_ATTENDANCE_SCREEN_ROUTE = "small_group_attendance_screen"
+const val SMALL_GROUP_ATTENDANCE_SCREEN =
+    "small_group_attendance_screen/{$ARG_SMALL_GROUP_ID}"

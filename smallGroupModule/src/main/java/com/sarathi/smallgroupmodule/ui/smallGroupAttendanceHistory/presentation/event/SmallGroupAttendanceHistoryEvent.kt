@@ -1,4 +1,4 @@
-package com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation.event
+package com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.event
 
 sealed class SmallGroupAttendanceHistoryEvent {
 

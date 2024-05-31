@@ -1,7 +1,7 @@
-package com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase
+package com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.useCase
 
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
-import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.FetchSmallGroupDetailsFromDbRepository
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.repository.FetchSmallGroupDetailsFromDbRepository
 import javax.inject.Inject
 
 class FetchSmallGroupDetailsFromDbUseCase @Inject constructor(

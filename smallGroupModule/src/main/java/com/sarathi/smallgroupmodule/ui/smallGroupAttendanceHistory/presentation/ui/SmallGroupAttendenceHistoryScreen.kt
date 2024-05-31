@@ -1,4 +1,4 @@
-package com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation.ui
+package com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,8 +21,9 @@ import com.sarathi.missionactivitytask.ui.components.TextWithIconComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.theme.defaultTextStyle
 import com.sarathi.missionactivitytask.ui.theme.dimen_10_dp
-import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation.event.SmallGroupAttendanceHistoryEvent
-import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.viewModel.SmallGroupAttendanceHistoryViewModel
+import com.sarathi.smallgroupmodule.navigation.SMALL_GROUP_ATTENDANCE_SCREEN_ROUTE
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.event.SmallGroupAttendanceHistoryEvent
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.viewModel.SmallGroupAttendanceHistoryViewModel
 import com.sarathi.smallgroupmodule.ui.theme.blueDark
 
 @Composable
@@ -87,6 +88,7 @@ fun SmallGroupAttendanceHistoryScreen(
                     isArrowRequired = true,
                     onClick = {
                         //TODO Handle Navigation
+                        navController.navigate(SMALL_GROUP_ATTENDANCE_SCREEN_ROUTE)
                     }
                 )
             }

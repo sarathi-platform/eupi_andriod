@@ -1,4 +1,4 @@
-package com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase
+package com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.useCase
 
 import javax.inject.Inject
 

@@ -1,4 +1,4 @@
-package com.sarathi.smallgroupmodule.ui.smallGroupAttendance.viewModel
+package com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.viewModel
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -6,8 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
-import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.SmallGroupAttendanceHistoryUseCase
-import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation.event.SmallGroupAttendanceHistoryEvent
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.useCase.SmallGroupAttendanceHistoryUseCase
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.event.SmallGroupAttendanceHistoryEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

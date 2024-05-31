@@ -1,4 +1,4 @@
-package com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository
+package com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.repository
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao

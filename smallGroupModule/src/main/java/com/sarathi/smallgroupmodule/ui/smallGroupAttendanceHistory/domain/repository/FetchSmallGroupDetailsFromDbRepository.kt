@@ -1,4 +1,4 @@
-package com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository
+package com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.repository
 
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
 

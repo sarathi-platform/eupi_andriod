@@ -14,10 +14,10 @@ import com.sarathi.smallgroupmodule.ui.didiTab.domain.repository.FetchSmallGroup
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.DidiTabUseCase
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.FetchDidiDetailsFromDbUseCase
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.FetchSmallGroupListsFromDbUseCase
-import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.FetchSmallGroupDetailsFromDbRepository
-import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.FetchSmallGroupDetailsFromDbRepositoryImpl
-import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.FetchSmallGroupDetailsFromDbUseCase
-import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.SmallGroupAttendanceHistoryUseCase
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.repository.FetchSmallGroupDetailsFromDbRepository
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.repository.FetchSmallGroupDetailsFromDbRepositoryImpl
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.useCase.FetchSmallGroupDetailsFromDbUseCase
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.useCase.SmallGroupAttendanceHistoryUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
