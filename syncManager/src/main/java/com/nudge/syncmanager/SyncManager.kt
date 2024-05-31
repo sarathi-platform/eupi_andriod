@@ -1,6 +1,7 @@
 package com.nudge.syncmanager
 
 import android.util.Log
+import androidx.work.WorkManager
 import com.nudge.communicationModule.EventObserverInterface
 import com.nudge.core.Core
 import com.nudge.core.database.dao.EventDependencyDao
@@ -12,7 +13,8 @@ import javax.inject.Inject
 class SyncManager @Inject constructor(
     val eventsDao: EventsDao,
     val eventDependencyDao: EventDependencyDao,
-    val eventStatusDao: EventStatusDao
+    val eventStatusDao: EventStatusDao,
+    val syncWorkManager: WorkManager
 ) {
 
     private var core: Core? = null
@@ -28,7 +30,7 @@ class SyncManager @Inject constructor(
     private var eventObserverInterface: EventObserverInterface? = null
 
     fun initEventObserver(): EventObserverInterface? {
-        eventObserverInterface = EventObserverInterfaceImpl(eventsDao, eventDependencyDao,eventStatusDao)
+        eventObserverInterface = EventObserverInterfaceImpl(eventsDao, eventDependencyDao,eventStatusDao,syncWorkManager)
         return eventObserverInterface
     }
 

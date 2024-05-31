@@ -65,17 +65,10 @@ fun SyncEventScreen(
     val syncEventList = viewModel.syncEventList.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context= LocalContext.current
-    val workManager = WorkManager.getInstance(context)
-    var workInfo by remember { mutableStateOf<WorkInfo?>(null) }
-    var workDetails :LiveData<List<WorkInfo>> ?=null
     val loaderState = viewModel.loaderState
     LaunchedEffect(key1 = true) {
         viewModel.getAllEvents()
     }
-    LaunchedEffect(key1 = Unit) {
-        workDetails = workManager.getWorkInfosByTagLiveData(PRODUCER_WORKER_TAG)
-    }
-
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -139,8 +132,6 @@ fun SyncEventScreen(
                         .weight(1f)
                 )
             }
-
-            workDetails?.let { it1 -> WorkStatusScreen(workStatus = it1) }
 
         }
 

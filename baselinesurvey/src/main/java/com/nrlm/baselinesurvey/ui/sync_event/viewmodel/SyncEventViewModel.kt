@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.sync_event.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LifecycleOwner
@@ -16,6 +17,7 @@ import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.NetworkSpeed
 import com.nudge.core.preference.CorePrefRepo
+import com.nudge.syncmanager.utils.WORKER_RESULT
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -56,7 +58,12 @@ class SyncEventViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 BaselineCore.getEventObserver()
-                    ?.syncPendingEvent(BaselineCore.getAppContext(), networkSpeed)
+                    ?.syncPendingEvent(BaselineCore.getAppContext(), networkSpeed)?.collect{
+                        if(it!=null){
+                            Log.d("TAG", "syncAllPendingEvents: ${it.state.name} :: ${it.state.isFinished} :: ${it.outputData.getString(
+                                WORKER_RESULT)} ")
+                        }
+                    }
             }catch (ex:Exception){
                 BaselineLogger.d("SettingBSViewModel"," syncAllPending: ${ex.printStackTrace()} ")
             }

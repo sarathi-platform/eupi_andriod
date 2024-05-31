@@ -28,6 +28,7 @@ import com.nudge.syncmanager.utils.PRODUCER_WORKER_TAG
 import com.nudge.syncmanager.workers.SyncUploadWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -35,7 +36,8 @@ import javax.inject.Inject
 class EventObserverInterfaceImpl @Inject constructor(
     val eventsDao: EventsDao,
     val eventDependencyDao: EventDependencyDao,
-    val eventStatusDao: EventStatusDao
+    val eventStatusDao: EventStatusDao,
+    private val workManager: WorkManager
 ) : EventObserverInterface {
 
     override fun <T> onEventCallback(event: T) {
@@ -74,7 +76,7 @@ class EventObserverInterfaceImpl @Inject constructor(
     }
 
 
-    override suspend fun syncPendingEvent(context: Context, networkSpeed: NetworkSpeed) {
+    override suspend fun syncPendingEvent(context: Context, networkSpeed: NetworkSpeed): Flow<WorkInfo> {
 
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -94,7 +96,8 @@ class EventObserverInterfaceImpl @Inject constructor(
                 ).setInputData(data.build())
                 .build()
 
-        WorkManager.getInstance(context).enqueue(uploadWorkRequest)
+        workManager.enqueue(uploadWorkRequest)
+        return workManager.getWorkInfoByIdFlow(uploadWorkRequest.id)
     }
 
     fun getBatchSize(networkSpeed: NetworkSpeed): Int {

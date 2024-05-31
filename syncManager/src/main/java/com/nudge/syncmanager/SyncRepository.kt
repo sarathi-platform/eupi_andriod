@@ -14,6 +14,8 @@ import com.nudge.core.model.request.EventRequest
 import com.nudge.core.model.request.toEventRequest
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.preference.CorePrefRepo
+import com.nudge.core.model.request.EventConsumerRequest
+import com.nudge.core.model.response.EventConsumerResponse
 import com.nudge.syncmanager.network.SyncApiService
 import javax.inject.Inject
 
@@ -30,7 +32,11 @@ class SyncApiRepository @Inject constructor(
         return apiService.syncEvent(eventRequest)
     }
 
-    fun getPendingEventFromDb(batchLimit:Int,retryCount:Int): List<Events> {
+    suspend fun fetchConsumerEventStatus(eventConsumerRequest: EventConsumerRequest): ApiResponseModel<List<SyncEventResponse>> {
+        return apiService.syncConsumerStatusApi(eventConsumerRequest)
+    }
+
+    fun getPendingEventFromDb(batchLimit: Int, retryCount: Int): List<Events> {
         return eventDao.getAllPendingEvent(
             listOf(
                 EventSyncStatus.OPEN.eventSyncStatus,
@@ -43,7 +49,6 @@ class SyncApiRepository @Inject constructor(
     }
 
     fun getPendingEventCount(): Int {
-        Log.d("TAG", "getPendingEventCount: ${prefRepo.getMobileNumber()}")
         return eventDao.getTotalPendingEventCount(
             listOf(
                 EventSyncStatus.OPEN.eventSyncStatus,
@@ -72,14 +77,14 @@ class SyncApiRepository @Inject constructor(
                     )
                 )
             }
-        }catch (ex:Exception){
+        } catch (ex: Exception) {
             ex.printStackTrace()
             Log.d("TAG", "updateSuccessEventStatus: Exception: ${ex.message}")
         }
 
     }
 
-    fun updateFailedEventStatus(eventList:List<SyncEventResponse>){
+    fun updateFailedEventStatus(eventList: List<SyncEventResponse>) {
         eventDao.updateFailedEventStatus(eventList)
         eventList.forEach {
             eventStatusDao.insert(
@@ -96,6 +101,26 @@ class SyncApiRepository @Inject constructor(
             )
         }
     }
+
+    fun updateEventConsumerStatus(eventList: List<SyncEventResponse>) {
+        eventDao.updateConsumerStatus(eventList)
+        eventList.forEach {
+            eventStatusDao.insert(
+                EventStatusEntity(
+                    clientId = it.clientId,
+                    name = it.eventName,
+                    errorMessage = it.errorMessage,
+                    type = it.type,
+                    status = it.status,
+                    mobileNumber = it.mobileNumber,
+                    createdBy = prefRepo.getUserId(),
+                    eventStatusId = 0
+                )
+            )
+        }
+    }
+
+    fun getLoggedInMobileNumber():String = prefRepo.getMobileNumber()
 }
 
 

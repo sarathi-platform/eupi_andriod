@@ -11,6 +11,7 @@ import com.nudge.core.EventSyncStatus
 import com.nudge.core.EventsTable
 import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.database.entities.Events
+import com.nudge.core.model.response.EventConsumerResponse
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.toDate
 import java.util.Date
@@ -41,6 +42,7 @@ interface EventsDao {
     @Query("UPDATE $EventsTable SET status = :newStatus, modified_date =:modifiedDate,error_message = :errorMessage, retry_count =:retryCount WHERE id = :clientId")
     fun updateEventStatus(clientId: String, newStatus: String,modifiedDate:Date,errorMessage:String,retryCount:Int)
 
+    @SuppressLint("SuspiciousIndentation")
     @Transaction
     fun updateSuccessEventStatus(successEventList:List<SyncEventResponse>){
         val modifiedDate=System.currentTimeMillis().toDate()
@@ -76,4 +78,17 @@ interface EventsDao {
 
     }
 
+    @Transaction
+    fun updateConsumerStatus(eventList:List<SyncEventResponse>){
+        val modifiedDate=System.currentTimeMillis().toDate()
+        eventList.forEach {
+            updateEventStatus(
+                clientId = it.clientId,
+                newStatus = it.status,
+                modifiedDate = modifiedDate,
+                errorMessage = it.errorMessage,
+                retryCount = 0
+            )
+        }
+    }
 }

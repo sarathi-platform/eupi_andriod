@@ -1,8 +1,10 @@
 package com.nudge.syncmanager.workers
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
+import androidx.work.Data
 import androidx.work.WorkerParameters
 import com.facebook.network.connectionclass.ConnectionClassManager
 import com.facebook.network.connectionclass.DeviceBandwidthSampler
@@ -19,9 +21,13 @@ import com.nudge.core.model.response.EventResult
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.utils.CoreLogger
 import com.nudge.syncmanager.SyncApiRepository
+import com.nudge.core.model.request.EventConsumerRequest
 import com.nudge.syncmanager.utils.SUCCESS
+import com.nudge.syncmanager.utils.WORKER_RESULT
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @HiltWorker
 class SyncUploadWorker @AssistedInject constructor(
@@ -30,7 +36,7 @@ class SyncUploadWorker @AssistedInject constructor(
     private val syncApiRepository: SyncApiRepository
 ) : CoroutineWorker(appContext, workerParams) {
     private val TAG=SyncUploadWorker::class.java.simpleName
-    private var batchLimit = 1
+    private var batchLimit = 5
     private val retryCount=3
     override suspend fun doWork(): Result {
         var mPendingEventList = listOf<Events>()
@@ -41,7 +47,7 @@ class SyncUploadWorker @AssistedInject constructor(
                  DeviceBandwidthSampler.getInstance().startSampling()
 
                 if (runAttemptCount > 0) {
-                    batchLimit = 1//getBatchSize(connectionQuality)
+                    batchLimit = getBatchSize(connectionQuality)
                 }
                 CoreLogger.d(applicationContext,TAG,"doWork Started: batchLimit: $batchLimit  runAttemptCount: $runAttemptCount")
                 var totalPendingEventCount = syncApiRepository.getPendingEventCount()
@@ -98,10 +104,14 @@ class SyncUploadWorker @AssistedInject constructor(
                                 )
                             )
                         }
-                    }else Result.success()
+                    }else {
+                        val outputData = Data.Builder().putString(WORKER_RESULT,"Success : All Producer Completed").build()
+                        Result.success(outputData)
+                    }
                 }
-
-                Result.success()
+                fetchConsumerStatus(syncApiRepository = syncApiRepository, mobileNumber =syncApiRepository.getLoggedInMobileNumber() )
+                CoreLogger.d(applicationContext,TAG,"doWork: success totalPendingEventCount: $totalPendingEventCount")
+                Result.success(Data.Builder().putString(WORKER_RESULT,"Success : All Producer Completed and Count 0").build())
                 // do long running work
             } catch (ex: Exception) {
                 CoreLogger.e(applicationContext,TAG,"doWork :Exception: ${ex.message} :: ${mPendingEventList.json()}",ex,true)
@@ -112,11 +122,11 @@ class SyncUploadWorker @AssistedInject constructor(
                     if(mPendingEventList.isNotEmpty()){
                         syncApiRepository.updateFailedEventStatus(createEventResponseList(mPendingEventList,ex.message ?: SOMETHING_WENT_WRONG))
                     }
-                    Result.failure()
+                    Result.failure(Data.Builder().putString(WORKER_RESULT,"Failed : Producer Failed with Exception: ${ex.message}").build())
                 }
             }
         } else {
-            Result.failure()
+            Result.failure(Data.Builder().putString(WORKER_RESULT,"Failed : Producer Failed with Attempt Count").build())
         }
     }
 
@@ -143,5 +153,19 @@ fun createEventResponseList(eventList:List<Events>,errorMessage:String): List<Sy
         )
     }
     return failedEventList
+}
+
+@SuppressLint("SimpleDateFormat")
+suspend fun fetchConsumerStatus(syncApiRepository:SyncApiRepository, mobileNumber:String){
+    val date= SimpleDateFormat("yyyy-MM-dd").format(Date())
+    val eventConsumerRequest= EventConsumerRequest(requestId = BLANK_STRING, mobile = mobileNumber, endDate = date, startDate = date)
+    val consumerAPIResponse= syncApiRepository.fetchConsumerEventStatus(eventConsumerRequest)
+    if(consumerAPIResponse.status == SUCCESS){
+            consumerAPIResponse.data?.let {
+                if(it.isNotEmpty()){
+                    syncApiRepository.updateEventConsumerStatus(it)
+                }
+            }
+    }
 }
 
