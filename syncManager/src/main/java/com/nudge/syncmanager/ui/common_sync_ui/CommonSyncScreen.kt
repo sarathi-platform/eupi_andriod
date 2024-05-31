@@ -23,19 +23,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.nudge.syncmanager.ui.sync_event_screen.theme.blueDark
 import com.nudge.syncmanager.ui.sync_event_screen.theme.dimen_10_dp
 import com.nudge.syncmanager.ui.sync_event_screen.theme.dimen_16_dp
 import com.nudge.syncmanager.ui.sync_event_screen.theme.dimen_20_dp
 import com.nudge.syncmanager.ui.sync_event_screen.theme.dimen_5_dp
-import com.nudge.syncmanager.ui.sync_event_screen.theme.languageItemActiveBg
 import com.nudge.syncmanager.ui.sync_event_screen.theme.roundedCornerRadiusDefault
 import com.nudge.syncmanager.R
 
 @Composable
-fun CommonSyncScreen (  title: String,
-                        ProgBarState :Float,
-                        onClick: () -> Unit){
+fun CommonSyncScreen(
+    title: String, ProgBarState: Float, onClick: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -51,9 +49,9 @@ fun CommonSyncScreen (  title: String,
             Row {
                 Icon(
                     painter = painterResource(
-                        id =  R.drawable.sync_icon
+                        id = R.drawable.sync_icon
                     ),
-                    contentDescription = stringResource( R.string.sync_Icon),
+                    contentDescription = stringResource(R.string.sync_Icon),
                     tint = Color.Black,
                     modifier = Modifier.height(dimen_20_dp)
                 )
@@ -61,19 +59,16 @@ fun CommonSyncScreen (  title: String,
 
                 Text(
 
-                    text = title,
-                    style = TextStyle(
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 20.sp
-                    ),
-                    color = Color.Black
+                    text = title, style = TextStyle(
+                        fontWeight = FontWeight.Medium, fontSize = 20.sp
+                    ), color = Color.Black
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Icon(
                     painter = painterResource(
-                        id =  R.drawable.right_arrow
+                        id = R.drawable.right_arrow
                     ),
-                    contentDescription = stringResource( R.string.arrow_Icon),
+                    contentDescription = stringResource(R.string.arrow_Icon),
                     tint = Color.Black,
                     modifier = Modifier.height(dimen_20_dp)
                 )
@@ -89,8 +84,8 @@ fun CommonSyncScreen (  title: String,
                     .fillMaxWidth()
                     .height(dimen_20_dp)
                     .clip(RoundedCornerShape(roundedCornerRadiusDefault)),
-                backgroundColor = languageItemActiveBg,
-                color = blueDark,
+                backgroundColor = Color(0xFFF7F7F7),
+                color = Color(0xFF222E50),
             )
         }
     }

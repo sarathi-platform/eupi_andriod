@@ -1,4 +1,4 @@
-//package com.nrlm.baselinesurvey.ui.sync_event.presentation
+package com.nrlm.baselinesurvey.ui.sync_event.presentation//package com.nrlm.baselinesurvey.ui.sync_event.presentation
 //
 //import androidx.compose.foundation.background
 //import androidx.compose.foundation.layout.Arrangement

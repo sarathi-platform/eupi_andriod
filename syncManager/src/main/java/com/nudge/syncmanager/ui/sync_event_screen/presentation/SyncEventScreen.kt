@@ -1,6 +1,7 @@
 package com.nudge.syncmanager.ui.sync_event_screen.presentation
 
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,12 +31,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.nudge.syncmanager.ui.sync_event_screen.theme.blueDark
-import com.nudge.syncmanager.ui.sync_event_screen.theme.buttonBgColor
 import com.nudge.syncmanager.ui.sync_event_screen.theme.dimen_10_dp
 import com.nudge.syncmanager.R
 import com.nudge.syncmanager.ui.common_sync_ui.CommonSyncScreen
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun SyncEventScreen(
     navController: NavController,
@@ -43,32 +43,26 @@ fun SyncEventScreen(
 ) {
     var ProgBarState by remember { mutableStateOf(0.91f) }
 
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .then(modifier),
-        topBar = {
-            TopAppBar(
-                title = {
-                        Text(text =stringResource( R.string.sync),
-                            style = TextStyle(
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 20.sp
-                            ),
-                           )
-
-
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Filled.ArrowBack, null)
-                    }
-                },
-                backgroundColor = Color.White
+    Scaffold(modifier = Modifier
+        .fillMaxSize()
+        .background(Color.White)
+        .then(modifier), topBar = {
+        TopAppBar(title = {
+            Text(
+                text = stringResource(R.string.sync),
+                style = TextStyle(
+                    fontWeight = FontWeight.Medium, fontSize = 20.sp
+                ),
             )
-        }
-    ) {
+
+
+        }, navigationIcon = {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(Icons.Filled.ArrowBack, null)
+            }
+        }, backgroundColor = Color.White
+        )
+    }) {
         Column(
             modifier = Modifier
                 .background(Color.White)
@@ -76,28 +70,32 @@ fun SyncEventScreen(
                 .fillMaxWidth()
 
         ) {
-            Button(onClick = {}, shape = RoundedCornerShape(30), colors = ButtonDefaults.buttonColors(
-                blueDark
-            ),
-                modifier = Modifier.fillMaxWidth()) {
-                Text(text = stringResource( R.string.sync),
+            Button(
+                onClick = {}, shape = RoundedCornerShape(30), colors = ButtonDefaults.buttonColors(
+                    Color(0xFF222E50)
+                ), modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(R.string.sync),
                     style = TextStyle(
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 20.sp,
-                        color =  buttonBgColor
-                    ),)
+                        fontWeight = FontWeight.Medium, fontSize = 20.sp, color = Color(0xFFEFF2FC)
+                    ),
+                )
             }
-            CommonSyncScreen(title =stringResource( R.string.baseLine) , ProgBarState =ProgBarState ) {
+            CommonSyncScreen(
+                title = stringResource(R.string.baseLine), ProgBarState = ProgBarState
+            ) {
 
             }
-            CommonSyncScreen(title =stringResource( R.string.image) , ProgBarState =ProgBarState ) {
+            CommonSyncScreen(title = stringResource(R.string.image), ProgBarState = ProgBarState) {
 
             }
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
-fun SyncEventScreenPreview(){
+fun SyncEventScreenPreview() {
     SyncEventScreen(navController = rememberNavController())
 }

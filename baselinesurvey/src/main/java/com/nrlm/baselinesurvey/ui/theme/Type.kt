@@ -112,7 +112,7 @@ val smallestTextStyle = TextStyle(
 val didiDetailItemStyle = TextStyle(
     fontFamily = NotoSans,
     fontWeight = FontWeight.SemiBold,
-    color = textColorDark80,
+//    color = textColorDark80,
     fontSize = 16.sp
 )
 
