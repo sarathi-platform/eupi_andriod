@@ -28,9 +28,10 @@ fun ActivityScreen(
     ToolBarWithMenuComponent(
         title = missionName,
         modifier = Modifier.fillMaxSize(),
-        isSearch = false,
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
+        isSearch = false,
+        isDataAvailable = viewModel.activityList.value.isEmpty(),
         onSearchValueChange = {
 
         },

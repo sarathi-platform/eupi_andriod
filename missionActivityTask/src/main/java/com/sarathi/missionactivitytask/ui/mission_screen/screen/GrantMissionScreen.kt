@@ -43,14 +43,14 @@ fun GrantMissionScreen(
     ToolBarWithMenuComponent(
         title = "SARATHI",
         modifier = Modifier.fillMaxSize(),
-        isSearch = true,
         iconResId = R.drawable.ic_sarathi_logo,
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
+        isSearch = true,
+        isDataAvailable = viewModel.filterMissionList.value.isEmpty(),
         onSearchValueChange = { searchedTerm ->
             viewModel.onEvent(SearchEvent.PerformSearch(searchedTerm, true))
         },
-        isDataAvailable = viewModel.filterMissionList.value.isEmpty(),
         onBottomUI = {
         },
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
