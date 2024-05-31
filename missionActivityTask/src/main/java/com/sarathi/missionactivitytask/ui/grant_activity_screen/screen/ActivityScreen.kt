@@ -35,7 +35,6 @@ fun ActivityScreen(
         onSearchValueChange = {
 
         },
-        isDataAvailable = viewModel.activityList.value.isEmpty(),
         onBottomUI = {
         },
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
