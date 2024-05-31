@@ -11,6 +11,7 @@ import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
+import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
@@ -24,6 +25,7 @@ import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.AttributeValueReferenceEntity
 import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.data.entities.ContentConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.GrantConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionLanguageEntity
 import com.sarathi.dataloadingmangement.data.entities.ProgrammeEntity
@@ -35,6 +37,7 @@ import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityTitle
 import com.sarathi.dataloadingmangement.model.mat.response.AttributeResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ContentResponse
+import com.sarathi.dataloadingmangement.model.mat.response.GrantConfigResponse
 import com.sarathi.dataloadingmangement.model.mat.response.MissionResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.mat.response.TaskData
@@ -58,6 +61,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     val programmeDao: ProgrammeDao,
     val uiConfigDao: UiConfigDao,
     val contentDao: ContentDao,
+    val grantConfigDao: GrantConfigDao,
     val sharedPrefs: CoreSharedPrefs
 ) : IDataLoadingScreenRepository {
     override suspend fun fetchMissionDataFromServer(
@@ -83,7 +87,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                         mission = mission,
                         programmeId = programmeId
 
-                        )
+                    )
                 )
 
 
@@ -164,6 +168,14 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
                             missionActivityModel.id,
                             missionId
                         )
+                        it.grantConfig?.let { it1 ->
+                            saveGrantActivityConfig(
+                                it1,
+                                it.surveyId,
+                                it.activityTypeId
+                            )
+                        }
+
                     }
                     saveActivityUiConfig(
                         missionActivityModel.id,
@@ -189,6 +201,21 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         } catch (exception: Exception) {
             Log.e("Exception", exception.localizedMessage)
         }
+    }
+
+    private fun saveGrantActivityConfig(
+        grantConfig: GrantConfigResponse,
+        surveyId: Int,
+        activityTypeId: Int
+    ) {
+        grantConfigDao.insertGrantActivityConfig(
+            GrantConfigEntity.getGrantConfigEntity(
+                userId = sharedPrefs.getUniqueUserIdentifier(),
+                activityConfigId = activityTypeId,
+                surveyId = surveyId,
+                grantConfigResponse = grantConfig
+            )
+        )
     }
 
     private suspend fun saveActivityConfig(

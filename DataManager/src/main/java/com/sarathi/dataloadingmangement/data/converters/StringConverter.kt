@@ -18,8 +18,8 @@ class StringConverter {
     }
 
     @TypeConverter
-    fun toOptionValuesList(optionValuesString: String?): List<String>? {
-        if (optionValuesString == null || optionValuesString.equals("null", false)) {
+    fun toOptionValuesList(optionValuesString: String): List<String>? {
+        if (optionValuesString.isNotEmpty()) {
             return listOf()
         }
         val gson = Gson()

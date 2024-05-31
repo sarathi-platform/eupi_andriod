@@ -9,13 +9,14 @@ import com.sarathi.dataloadingmangement.repository.ISurveyDownloadRepository
 class FetchSurveyDataFromNetworkUseCase(
     private val repository: ISurveyDownloadRepository,
 ) {
-    suspend operator fun invoke(): Boolean {
+    suspend operator fun invoke(surveyId: Int): Boolean {
         try {
 
             val apiResponse = repository.fetchSurveyFromNetwork(
                 SurveyRequest(
                     referenceId = 31,
-                    referenceType = "state"
+                    referenceType = "STATE",
+                    surveyId = surveyId
                 )
             )
             if (apiResponse.status.equals(SUCCESS_CODE, true)) {

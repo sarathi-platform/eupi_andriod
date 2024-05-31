@@ -23,7 +23,7 @@ interface DataLoadingApiService {
 
     //  @POST("http://10.0.2.2:3001/home")
     @POST(SUBPATH_FETCH_SURVEY_FROM_NETWORK)
-    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    // @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getSurveyFromNetwork(@Body request: SurveyRequest): ApiResponseModel<SurveyResponseModel>
 
 
