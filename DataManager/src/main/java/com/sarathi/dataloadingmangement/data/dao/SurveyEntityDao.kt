@@ -16,17 +16,17 @@ interface SurveyEntityDao {
     fun getSurveyIds(userId: String): List<Int>
 
     @Query("Select * from $SURVEY_TABLE where userId=:userId and surveyId = :surveyId and languageId = :languageId")
-    fun getSurveyDetailForLanguage(userId: String, surveyId: Int, languageId: Int): SurveyEntity?
+    fun getSurveyDetailForLanguage(userId: String, surveyId: Int, languageId: String): SurveyEntity?
 
     @Query("Select * from $SURVEY_TABLE where userId=:userId and surveyName = :surveyName and languageId = :languageId")
     fun getSurveyDetailForLanguage(
         userId: String,
         surveyName: String,
-        languageId: Int
+        languageId: String
     ): SurveyEntity?
 
-    @Query("Delete from $SURVEY_TABLE where userId=:userId and surveyId = :surveyId and languageId = :languageId")
-    fun deleteSurveyFroLanguage(userId: String, surveyId: Int, languageId: Int)
+    @Query("Delete from $SURVEY_TABLE where userId=:userId and surveyId = :surveyId")
+    fun deleteSurveyFroLanguage(userId: String, surveyId: Int)
 
     @Query("Delete from $SURVEY_TABLE where userId=:userId")
     fun deleteAllSurvey(userId: String)

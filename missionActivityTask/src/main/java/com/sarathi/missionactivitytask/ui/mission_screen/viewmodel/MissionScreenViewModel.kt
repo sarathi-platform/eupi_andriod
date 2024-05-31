@@ -1,8 +1,10 @@
 package com.sarathi.missionactivitytask.ui.mission_screen.viewmodel
 
+import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import com.sarathi.contentmodule.content_downloder.domain.usecase.ContentDownloaderUseCase
 import com.sarathi.dataloadingmangement.domain.FetchDataUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.missionactivitytask.domain.usecases.GetMissionsUseCase
@@ -11,6 +13,7 @@ import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.utils.event.SearchEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,6 +24,8 @@ import javax.inject.Inject
 class MissionScreenViewModel @Inject constructor(
     private val fetchDataUseCase: FetchDataUseCase,
     private val missionsUseCase: GetMissionsUseCase,
+    @ApplicationContext val context: Context,
+    private val contentDownloaderUseCase: ContentDownloaderUseCase
 
 ) : BaseViewModel() {
     private val _missionList = mutableStateOf<List<MissionUiModel>>(emptyList())
@@ -77,7 +82,11 @@ class MissionScreenViewModel @Inject constructor(
     private fun fetchAllData(callBack: () -> Unit) {
         try {
             viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+                fetchContentData(fetchDataUseCase) {}
+                contentDataDownloader(contentDownloaderUseCase) {}
                 fetchMissionData(fetchDataUseCase) { callBack() }
+
+                fetchDataUseCase.fetchSurveyDataFromNetworkUseCase.invoke()
             }
         } catch (ex: Exception) {
             onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -90,6 +99,20 @@ class MissionScreenViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
             updateLoaderEvent(callBack)
+        }
+    }
+    private fun fetchContentData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            fetchDataUseCase.fetchContentDataFromNetworkUseCase.invoke()
+        }
+    }
+
+    private fun contentDataDownloader(
+        contentDownloaderUseCase: ContentDownloaderUseCase,
+        callBack: () -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            contentDownloaderUseCase.contentDownloader()
         }
     }
 

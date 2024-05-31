@@ -9,7 +9,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.GrantTaskScreenViewModel
-import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.getContent
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 

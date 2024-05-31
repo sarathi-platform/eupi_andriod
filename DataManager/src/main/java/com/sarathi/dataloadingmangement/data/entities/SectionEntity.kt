@@ -11,6 +11,7 @@ import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.SECTION_TABLE
 import com.sarathi.dataloadingmangement.data.converters.ContentListConverter
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
+import com.sarathi.dataloadingmangement.model.survey.response.Sections
 
 @Entity(tableName = SECTION_TABLE)
 data class SectionEntity(
@@ -52,8 +53,32 @@ data class SectionEntity(
     @SerializedName("languageId")
     @Expose
     @ColumnInfo(name = "languageId")
-    val languageId: Int,
+    val languageId: String,
     val questionSize: Int = 0,
     @TypeConverters(ContentListConverter::class)
     val contentEntities: List<ContentList>
-)
+) {
+    companion object {
+        fun getSectionEntity(
+            userId: String,
+            section: Sections,
+            languageCode: String,
+            surveyId: Int
+        ): SectionEntity {
+            return SectionEntity(
+                id = 0,
+                userId = userId,
+                sectionId = section.sectionId,
+                surveyId = surveyId,
+                sectionName = section.sectionName,
+                sectionOrder = section.sectionOrder,
+                sectionDetails = section.sectionDetails,
+                sectionIcon = section.sectionIcon,
+                languageId = languageCode,
+                questionSize = section.questionList.size,
+                contentEntities = section.contentList
+            )
+
+        }
+    }
+}

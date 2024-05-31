@@ -30,19 +30,19 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.nudge.core.ui.events.theme.blueDark
+import com.nudge.core.ui.events.theme.defaultTextStyle
+import com.nudge.core.ui.events.theme.greenOnline
+import com.nudge.core.ui.events.theme.greyBorderColor
+import com.nudge.core.ui.events.theme.newMediumTextStyle
+import com.nudge.core.ui.events.theme.red
+import com.nudge.core.ui.events.theme.smallTextStyle
+import com.nudge.core.ui.events.theme.smallTextStyleWithNormalWeight
+import com.nudge.core.ui.events.theme.unmatchedOrangeColor
+import com.nudge.core.ui.events.theme.white
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.components.PrimaryButton
 import com.sarathi.missionactivitytask.ui.components.SecondaryButton
-import com.sarathi.missionactivitytask.ui.theme.blueDark
-import com.sarathi.missionactivitytask.ui.theme.defaultTextStyle
-import com.sarathi.missionactivitytask.ui.theme.greenOnline
-import com.sarathi.missionactivitytask.ui.theme.greyBorderColor
-import com.sarathi.missionactivitytask.ui.theme.newMediumTextStyle
-import com.sarathi.missionactivitytask.ui.theme.red
-import com.sarathi.missionactivitytask.ui.theme.smallTextStyle
-import com.sarathi.missionactivitytask.ui.theme.smallTextStyleWithNormalWeight
-import com.sarathi.missionactivitytask.ui.theme.unmatchedOrangeColor
-import com.sarathi.missionactivitytask.ui.theme.white
 import com.sarathi.missionactivitytask.utils.StatusEnum
 
 @Composable

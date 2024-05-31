@@ -40,38 +40,11 @@ fun ActivityScreen(
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
             if (viewModel.activityList.value.isNotEmpty()) {
                 ActivityRowCard(
-
                     activities = viewModel.activityList.value,
-                    contents = getContent(),
                     navController = navController
                 )
             }
         },
         onSettingClick = onSettingClick
-    )
-}
-
-fun getContent(): List<BasicContent> {
-    val basicContentResponse1 = BasicContent("IMAGE", "ContentResponse Image")
-    val basicContent2 = BasicContent("VIDEO", "ContentResponse Video")
-    val basicContent3 = BasicContent("FILE", "ContentResponse File")
-    val basicContent4 = BasicContent("IMAGE", "ContentResponse Image")
-    val basicContent5 = BasicContent("IMAGE", "ContentResponse Image")
-    val basicContent6 = BasicContent("IMAGE", "ContentResponse Image")
-    val basicContent7 = BasicContent("IMAGE", "ContentResponse Image")
-    val basicContent8 = BasicContent("IMAGE", "ContentResponse Image")
-    val basicContent9 = BasicContent("IMAGE", "ContentResponse Image")
-    val basicContent10 = BasicContent("IMAGE", "ContentResponse Image")
-    return listOf(
-        basicContentResponse1,
-        basicContent2,
-        basicContent3,
-        basicContent4,
-        basicContent5,
-        basicContent6,
-        basicContent7,
-        basicContent8,
-        basicContent9,
-        basicContent10
     )
 }

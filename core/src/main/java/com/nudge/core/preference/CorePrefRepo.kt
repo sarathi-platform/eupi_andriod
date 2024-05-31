@@ -14,5 +14,7 @@ interface CorePrefRepo {
     fun getUserType(): String
     fun setUserType(userTypes: String)
     fun getUniqueUserIdentifier(): String
+    fun getAppLanguage(): String?
+    fun saveAppLanguage(code: String?)
 
 }

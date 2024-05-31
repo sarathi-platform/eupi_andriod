@@ -32,7 +32,7 @@ interface SectionEntityDao {
         userId: String,
         sectionId: Int,
         surveyId: Int,
-        languageId: Int
+        languageId: String
     )
 
     @Query("Select * from $SECTION_TABLE where userId=:userId")

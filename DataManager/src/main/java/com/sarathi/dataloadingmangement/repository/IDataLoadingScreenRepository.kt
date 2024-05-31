@@ -1,7 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
+import com.nudge.core.model.ApiResponseModel
 import com.sarathi.dataloadingmangement.data.entities.Content
-import com.sarathi.dataloadingmangement.model.ApiResponseModel
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ContentResponse
 import com.sarathi.dataloadingmangement.model.mat.response.MissionResponse

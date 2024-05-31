@@ -14,7 +14,11 @@ class GetActivityRepositoryImpl @Inject constructor(
     BaseRepository(),
     IActivityRepository {
     override suspend fun getActivity(missionId: Int): List<ActivityUiModel> {
-        return activityDao.getActivities(coreSharedPrefs.getUniqueUserIdentifier(), "en", missionId)
+        return activityDao.getActivities(
+            coreSharedPrefs.getUniqueUserIdentifier(),
+            coreSharedPrefs.getAppLanguage(),
+            missionId
+        )
     }
 
 }

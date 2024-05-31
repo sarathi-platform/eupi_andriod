@@ -7,6 +7,7 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nudge.core.BLANK_STRING
 import com.sarathi.dataloadingmangement.SURVEY_TABLE
+import com.sarathi.dataloadingmangement.model.survey.response.SurveyResponseModel
 
 @Entity(tableName = SURVEY_TABLE)
 data class SurveyEntity(
@@ -40,10 +41,31 @@ data class SurveyEntity(
     @SerializedName("languageId")
     @Expose
     @ColumnInfo(name = "languageId")
-    val languageId: Int,
+    val languageId: String,
 
     @SerializedName("referenceId")
     @Expose
     @ColumnInfo(name = "referenceId")
     val referenceId: Int
-)
+) {
+
+    companion object {
+        fun getSurveyEntity(
+            userId: String,
+            surveyName: String,
+            languageCode: String,
+            surveyApiResponseModel: SurveyResponseModel
+        ): SurveyEntity {
+            return SurveyEntity(
+                userId = userId,
+                id = 0,
+                surveyId = surveyApiResponseModel.surveyId,
+                surveyName = surveyName,
+                languageId = languageCode,
+                surveyPassingMark = surveyApiResponseModel.surveyPassingMark,
+                thresholdScore = surveyApiResponseModel.thresholdScore,
+                referenceId = surveyApiResponseModel.referenceId
+            )
+        }
+    }
+}

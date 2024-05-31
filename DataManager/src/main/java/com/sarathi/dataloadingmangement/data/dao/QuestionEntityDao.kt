@@ -19,7 +19,7 @@ interface QuestionEntityDao {
         questionId: Int,
         sectionId: Int,
         surveyId: Int,
-        languageId: Int
+        languageId: String
     )
 
     @Query("Select * from $QUESTION_TABLE where userId=:userId and sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
@@ -27,14 +27,14 @@ interface QuestionEntityDao {
         userId: String,
         sectionId: Int,
         surveyId: Int,
-        languageId: Int
+        languageId: String
     ): List<QuestionEntity>
 
     @Query("Select * from $QUESTION_TABLE where userId=:userid and surveyId = :surveyId and languageId = :languageId")
     fun getAllQuestionsForLanguage(
         userid: String,
         surveyId: Int,
-        languageId: Int
+        languageId: String
     ): List<QuestionEntity>
 
     @Query("SELECT * from $QUESTION_TABLE where userId=:userid and questionId = :questionId and sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
@@ -43,7 +43,7 @@ interface QuestionEntityDao {
         questionId: Int,
         sectionId: Int,
         surveyId: Int,
-        languageId: Int
+        languageId: String
     ): QuestionEntity?
 
     @Query("Select * from $QUESTION_TABLE where userId=:userid ")
@@ -55,7 +55,7 @@ interface QuestionEntityDao {
         surveyId: Int,
         sectionId: Int,
         questionId: Int,
-        languageId: Int
+        languageId: String
     ): QuestionEntity?
 
 

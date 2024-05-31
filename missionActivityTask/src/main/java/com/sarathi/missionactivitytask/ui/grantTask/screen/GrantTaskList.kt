@@ -10,9 +10,9 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
+import com.nudge.core.BLANK_STRING
+import com.sarathi.contentmodule.ui.component.BasicContentComponent
 import com.sarathi.missionactivitytask.ui.basic_content.component.GrantTaskCard
-import com.sarathi.missionactivitytask.ui.components.BasicContentComponent
 import com.sarathi.missionactivitytask.ui.components.ButtonComponent
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
@@ -31,7 +31,8 @@ fun GrantTaskList(
                 if (index < 3) {
                     BasicContentComponent(
                         contentType = item.contentType,
-                        contentTitle = item.contentTitle
+                        contentTitle = item.contentTitle,
+                        onClick = {}
                     )
                 } else if (index == 3) {
                     ButtonComponent(title = "+ ${contents.size - index} More Data")

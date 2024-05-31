@@ -10,6 +10,7 @@ import com.nudge.core.BLANK_STRING
 import com.sarathi.dataloadingmangement.QUESTION_TABLE
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ContentListConverter
+import com.sarathi.dataloadingmangement.model.survey.response.QuestionList
 
 
 @Entity(tableName = QUESTION_TABLE)
@@ -68,7 +69,7 @@ data class QuestionEntity(
     @SerializedName("languageId")
     @Expose
     @ColumnInfo(name = "languageId")
-    var languageId: Int? = 1,
+    var languageId: String? = BLANK_STRING,
 
     @SerializedName("isConditional")
     @Expose
@@ -84,4 +85,35 @@ data class QuestionEntity(
 
     @ColumnInfo(name = "parentQuestionId")
     val parentQuestionId: Int? = 0
-)
+) {
+    companion object {
+        fun getQuestionEntity(
+            userId: String,
+            languageId: String,
+            sectionId: Int,
+            surveyId: Int,
+            isCondition: Boolean,
+            parentId: Int,
+            question: QuestionList
+        ): QuestionEntity {
+            return QuestionEntity(
+                id = 0,
+                userId = userId,
+                questionId = question.questionId,
+                sectionId = sectionId,
+                surveyId = surveyId,
+                questionDisplay = question.questionDisplay,
+                questionSummary = question.questionSummary,
+                gotoQuestionId = question.gotoQuestionId,
+                order = question.order,
+                type = question.type,
+                languageId = languageId,
+                isConditional = isCondition,
+                tag = question.attributeTag ?: 0,
+                contentEntities = question.contentList,
+                parentQuestionId = parentId
+            )
+        }
+
+    }
+}

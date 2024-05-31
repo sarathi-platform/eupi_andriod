@@ -10,6 +10,7 @@ object ContentMapper {
         return Content(
             contentKey = contentResponse.contentKey,
             contentId = 0,
+            contentName = contentResponse.contentName,
             contentValue = contentResponse.contentValue,
             contentType = contentResponse.contentType,
             languageCode = contentResponse.languageCode,
