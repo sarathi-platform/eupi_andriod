@@ -15,14 +15,15 @@ import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.ActivityS
 import com.sarathi.missionactivitytask.ui.mission_screen.screen.GrantMissionScreen
 
 
-fun NavGraphBuilder.MatNavigation(navController: NavHostController) {
+fun NavGraphBuilder.MatNavigation(navController: NavHostController, onSettingIconClick: () -> Unit) {
     navigation(
         route = MAT_GRAPH,
         startDestination = MATHomeScreens.MissionScreen.route
     ) {
 
         composable(route = MATHomeScreens.MissionScreen.route) {
-            GrantMissionScreen(navController = navController, viewModel = hiltViewModel())
+            GrantMissionScreen(navController = navController, viewModel = hiltViewModel(),
+                onSettingClick = onSettingIconClick)
         }
         composable(
             route = MATHomeScreens.ActivityScreen.route, arguments = listOf(
@@ -41,7 +42,8 @@ fun NavGraphBuilder.MatNavigation(navController: NavHostController) {
                 ) ?: 0,
                 missionName = it.arguments?.getString(
                     ARG_MISSION_NAME
-                ) ?: BLANK_STRING
+                ) ?: BLANK_STRING,
+                onSettingClick = onSettingIconClick
             )
         }
         composable(
@@ -67,7 +69,8 @@ fun NavGraphBuilder.MatNavigation(navController: NavHostController) {
                 ) ?: 0,
                 activityName = it.arguments?.getString(
                     ARG_ACTIVITY_NAME
-                ) ?: BLANK_STRING
+                ) ?: BLANK_STRING,
+                onSettingClick = onSettingIconClick
             )
         }
     }
@@ -106,6 +109,7 @@ const val ARG_ACTIVITY_ID = "activity_id"
 const val ARG_MISSION_ID = "mission_id"
 const val ARG_MISSION_NAME = "mission_name"
 const val ARG_ACTIVITY_NAME = "activity_name"
+const val SETTING_GRAPH = "setting_graph"
 
 
 

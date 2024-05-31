@@ -17,7 +17,8 @@ fun ActivityScreen(
     navController: NavController = rememberNavController(),
     viewModel: ActivityScreenViewModel = hiltViewModel(),
     missionId: Int,
-    missionName: String
+    missionName: String,
+    onSettingClick: () -> Unit
 ) {
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -27,16 +28,16 @@ fun ActivityScreen(
     ToolBarWithMenuComponent(
         title = missionName,
         modifier = Modifier.fillMaxSize(),
+        isSearch = false,
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
-        isSearch = false,
-        isDataAvailable = viewModel.activityList.value.isEmpty(),
         onSearchValueChange = {
 
         },
+        isDataAvailable = viewModel.activityList.value.isEmpty(),
         onBottomUI = {
         },
-        onContentUI = {
+        onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
             if (viewModel.activityList.value.isNotEmpty()) {
                 ActivityRowCard(
 
@@ -45,7 +46,8 @@ fun ActivityScreen(
                     navController = navController
                 )
             }
-        }
+        },
+        onSettingClick = onSettingClick
     )
 }
 

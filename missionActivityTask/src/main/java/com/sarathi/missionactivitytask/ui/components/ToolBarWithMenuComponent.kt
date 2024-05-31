@@ -46,7 +46,8 @@ fun ToolBarWithMenuComponent(
     onSearchValueChange: (String) -> Unit,
     isDataAvailable: Boolean = true,
     onBottomUI: @Composable () -> Unit,
-    onContentUI: @Composable (PaddingValues, Boolean) -> Unit
+    onContentUI: @Composable (PaddingValues, Boolean, (String) -> Unit) -> Unit,
+    onSettingClick: () -> Unit
 ) {
     val dataAvailableState = mutableStateOf(isDataAvailable)
 
@@ -84,8 +85,7 @@ fun ToolBarWithMenuComponent(
                     }
                 },
                 actions = {
-                    IconButton(onClick = {
-                    }) {
+                    IconButton(onClick = onSettingClick) {
                         Icon(
                             painter = painterResource(id = R.drawable.more_icon),
                             contentDescription = "more action button",
@@ -108,17 +108,6 @@ fun ToolBarWithMenuComponent(
                 .fillMaxSize()
                 .padding(top = 75.dp)
         ) {
-            if (isSearch) {
-                SearchWithFilterViewComponent(placeholderString = "Search",
-                    filterSelected = false,
-                    modifier = Modifier.padding(horizontal = 10.dp),
-                    showFilter = false,
-                    onFilterSelected = {},
-                    onSearchValueChange = { queryTerm ->
-                        onSearchValueChange(queryTerm)
-
-                    })
-            }
             if (dataAvailableState.value) {
                 Column(
                     modifier = Modifier
@@ -143,7 +132,7 @@ fun ToolBarWithMenuComponent(
                         })
                 }
             } else {
-                onContentUI(it, isSearch)
+                onContentUI(it, isSearch, onSearchValueChange)
             }
         }
     }
