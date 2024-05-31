@@ -20,6 +20,7 @@ import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.settings.domain.DigitalFormEnum
+import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.showCustomDialog
 import com.patsurvey.nudge.utils.showToast
 import java.util.Locale
@@ -55,8 +56,17 @@ fun SettingBSScreen(
                 viewModel.showLogoutDialog.value = false
                 viewModel.showLoader.value=true
                 viewModel.performLogout(context) {
-                    if (it)
-                        navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
+                    if (it){
+                        if (viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal) {
+                            navController.navigate(AuthScreen.LOGIN.route)
+                        } else {
+                            if (navController.graph.route == NudgeNavigationGraph.ROOT) {
+                                navController.navigate(AuthScreen.LOGIN.route)
+                            } else {
+                                navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
+                            }
+                        }
+                    }
                     else showCustomToast(context, context.getString(R.string.something_went_wrong))
                 }
             })

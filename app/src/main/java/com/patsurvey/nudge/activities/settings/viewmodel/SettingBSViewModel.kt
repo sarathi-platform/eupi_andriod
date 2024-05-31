@@ -18,7 +18,6 @@ import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
-import com.nrlm.baselinesurvey.utils.BSLogWriter
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.LOCAL_BACKUP_EXTENSION
 import com.nudge.core.NUDGE_DATABASE
@@ -38,7 +37,6 @@ import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
-import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.LogWriter
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
@@ -193,7 +191,7 @@ class SettingBSViewModel @Inject constructor(
 
 
         _optionList.value=list
-        if(userType != UPCM_USER) {
+        if(userType != UPCM_USER && settingOpenFrom != PageFrom.VILLAGE_PAGE.ordinal) {
             checkFormsAvailabilityForVillage(context, villageId)
         }
     }
@@ -588,7 +586,7 @@ class SettingBSViewModel @Inject constructor(
             prefRepo.getPref(
                 PREF_WEALTH_RANKING_COMPLETION_DATE_ + selectedVillageId, 0L
             )
-        ) ?: com.patsurvey.nudge.utils.BLANK_STRING
+        ) ?: BLANK_STRING
     )
 
     private suspend fun generateFormB(
@@ -605,7 +603,7 @@ class SettingBSViewModel @Inject constructor(
                     PREF_PAT_COMPLETION_DATE_ + selectedVillageId,
                     0L
                 )
-            ) ?: com.patsurvey.nudge.utils.BLANK_STRING
+            ) ?: BLANK_STRING
         )
 
     private suspend fun generateFormc(
@@ -622,7 +620,7 @@ class SettingBSViewModel @Inject constructor(
                     PREF_VO_ENDORSEMENT_COMPLETION_DATE_ + selectedVillageId,
                     0L
                 )
-            ) ?: com.patsurvey.nudge.utils.BLANK_STRING
+            ) ?: BLANK_STRING
         )
 
     private fun addFormToUriList(
