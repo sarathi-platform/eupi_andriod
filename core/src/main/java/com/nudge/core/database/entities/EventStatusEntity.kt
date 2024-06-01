@@ -21,12 +21,6 @@ data class EventStatusEntity(
     @ColumnInfo(name = "client_id")
     val clientId: String,
 
-    @ColumnInfo("name")
-    val name: String,
-
-    @ColumnInfo("type")
-    val type: String,
-
     @ColumnInfo("created_date")
     @TypeConverters(DateConverter::class)
     val createdDate: Date = System.currentTimeMillis().toDate(),

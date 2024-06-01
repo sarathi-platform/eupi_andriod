@@ -1,15 +1,10 @@
 package com.nudge.syncmanager
 
 import android.content.Context
-import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.Data
-import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -26,10 +21,7 @@ import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.NetworkSpeed
 import com.nudge.syncmanager.utils.PRODUCER_WORKER_TAG
 import com.nudge.syncmanager.workers.SyncUploadWorker
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -48,9 +40,7 @@ class EventObserverInterfaceImpl @Inject constructor(
         eventsDao.insert(event)
         eventStatusDao.insert(EventStatusEntity(
             clientId = event.id,
-            name = event.name,
             errorMessage = BLANK_STRING,
-            type = event.type,
             status = EventSyncStatus.OPEN.eventSyncStatus,
             mobileNumber = event.mobile_number,
             createdBy = event.createdBy,

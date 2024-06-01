@@ -67,9 +67,7 @@ class SyncApiRepository @Inject constructor(
                 eventStatusDao.insert(
                     EventStatusEntity(
                         clientId = it.clientId,
-                        name = it.eventName,
                         errorMessage = BLANK_STRING,
-                        type = it.type,
                         status = it.status,
                         mobileNumber = it.mobileNumber,
                         createdBy = prefRepo.getUserId(),
@@ -90,9 +88,7 @@ class SyncApiRepository @Inject constructor(
             eventStatusDao.insert(
                 EventStatusEntity(
                     clientId = it.clientId,
-                    name = it.eventName,
                     errorMessage = BLANK_STRING,
-                    type = it.type,
                     status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
                     mobileNumber = it.mobileNumber,
                     createdBy = prefRepo.getUserId(),
@@ -108,9 +104,7 @@ class SyncApiRepository @Inject constructor(
             eventStatusDao.insert(
                 EventStatusEntity(
                     clientId = it.clientId,
-                    name = it.eventName,
                     errorMessage = it.errorMessage,
-                    type = it.type,
                     status = it.status,
                     mobileNumber = it.mobileNumber,
                     createdBy = prefRepo.getUserId(),

@@ -31,9 +31,7 @@ class DbEventWrite() : IEventWriter {
             eventStatusDao.insert(
                 EventStatusEntity(
                     clientId = event.id,
-                    name = event.name,
                     errorMessage = BLANK_STRING,
-                    type = event.type,
                     status = EventSyncStatus.OPEN.eventSyncStatus,
                     mobileNumber = event.mobile_number,
                     createdBy = event.createdBy,
