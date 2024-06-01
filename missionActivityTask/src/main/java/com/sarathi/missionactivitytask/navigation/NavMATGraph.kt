@@ -23,9 +23,11 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MAT_GRAPH
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MEDIA_PLAYER_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MISSION_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.SURVEY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.ui.grantTask.screen.GrantTaskScreen
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.ActivityScreen
 import com.sarathi.missionactivitytask.ui.mission_screen.screen.GrantMissionScreen
+import com.sarathi.surveymanager.ui.screen.SurveyScreen
 
 
 fun NavGraphBuilder.MatNavigation(navController: NavHostController) {
@@ -120,6 +122,9 @@ fun NavGraphBuilder.MatNavigation(navController: NavHostController) {
                     )
                 })
         }
+        composable(route = MATHomeScreens.SurveyScreen.route) {
+            SurveyScreen(navController = navController, viewModel = hiltViewModel())
+        }
     }
 
 }
@@ -137,10 +142,16 @@ sealed class MATHomeScreens(val route: String) {
     object MediaPlayerScreen :
         MATHomeScreens(route = "$MEDIA_PLAYER_SCREEN_ROUTE_NAME/{$ARG_CONTENT_KEY}/{$ARG_CONTENT_TYPE}")
 
+    object SurveyScreen :
+        MATHomeScreens(route = SURVEY_SCREEN_ROUTE_NAME)
 }
 
 fun navigateToContentDetailScreen(navController: NavController) {
     navController.navigate(CONTENT_DETAIL_SCREEN_ROUTE_NAME)
+}
+
+fun navigateToSurveyScreen(navController: NavController) {
+    navController.navigate(SURVEY_SCREEN_ROUTE_NAME)
 }
 
 fun navigateToMediaPlayerScreen(

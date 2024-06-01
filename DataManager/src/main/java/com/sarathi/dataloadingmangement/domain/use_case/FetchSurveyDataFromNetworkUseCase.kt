@@ -15,7 +15,8 @@ class FetchSurveyDataFromNetworkUseCase(
             val apiResponse = repository.fetchSurveyFromNetwork(
                 SurveyRequest(
                     referenceId = 31,
-                    referenceType = "state"
+                    referenceType = "STATE",
+                    surveyId = 3
                 )
             )
             if (apiResponse.status.equals(SUCCESS_CODE, true)) {

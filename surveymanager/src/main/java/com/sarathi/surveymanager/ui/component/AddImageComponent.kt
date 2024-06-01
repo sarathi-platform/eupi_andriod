@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.nudge.core.model.CoreAppDetails
@@ -47,6 +48,7 @@ import com.nudge.core.ui.events.theme.borderGreyLight
 import com.nudge.core.ui.events.theme.largeTextStyle
 import com.nudge.core.ui.events.theme.white
 import com.nudge.core.uriFromFile
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import java.io.File
 
 
@@ -54,8 +56,10 @@ import java.io.File
 @Preview(showSystemUi = true)
 @Composable
 fun AddImageComponent(
-    isImageAvailable: Boolean = true
-) {
+    maxCustomHeight: Dp = 200.dp,
+    title: String = BLANK_STRING,
+
+    ) {
     val context = LocalContext.current
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyGridState = rememberLazyGridState()
@@ -72,6 +76,9 @@ fun AddImageComponent(
         }
     )
     Column {
+        if (title.isNotBlank()) {
+            QuestionComponent(title = title, isRequiredField = true)
+        }
         BoxWithConstraints(
             modifier = Modifier
                 .scrollable(
@@ -87,7 +94,7 @@ fun AddImageComponent(
                     .wrapContentWidth()
                     .heightIn(
                         min = 110.dp,
-                        max = maxHeight
+                        max = maxCustomHeight
                     ),
                 horizontalArrangement = Arrangement.Center
             ) {
@@ -107,7 +114,7 @@ fun AddImageComponent(
                         Text("+ Add Image", style = largeTextStyle, modifier = Modifier.clickable {
                             currentImageUri = getImageUri(
                                 context, "${
-                                    System.currentTimeMillis().toString()
+                                    System.currentTimeMillis()
                                 }.jpg"
                             )
                             cameraLauncher.launch(
@@ -149,6 +156,4 @@ fun ImageView(uri: Uri) {
         contentScale = ContentScale.Crop
     )
 }
-
-data class ImageEntity(var imageUri: Uri, var isImageAvailable: Boolean)
 

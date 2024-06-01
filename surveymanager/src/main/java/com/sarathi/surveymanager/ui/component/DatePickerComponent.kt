@@ -23,23 +23,33 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nudge.core.ui.events.theme.buttonTextStyle
 import com.nudge.core.ui.events.theme.greyColor
 import com.nudge.core.ui.events.theme.placeholderGrey
 import com.nudge.core.ui.events.theme.white
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showSystemUi = true)
 @Composable
-fun DatePickerComponent() {
+fun DatePickerComponent(
+    title: String = BLANK_STRING,
+    hintText: String = BLANK_STRING,
+    onAnswerSelection: (selectValue: String) -> Unit,
+) {
     var text by remember { mutableStateOf("") }
     val context = LocalContext.current
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(10.dp)) {
+    //val datePickerDialogTheme = android.R.style.Theme_Holo_Light_Dialog_NoActionBar_MinWidth
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+    ) {
+        if (title?.isNotBlank() == true) {
+            QuestionComponent(title = title, isRequiredField = true)
+        }
         TextField(
             modifier = Modifier
                 .fillMaxWidth()
@@ -50,7 +60,7 @@ fun DatePickerComponent() {
             onValueChange = { text = it },
             placeholder = {
                 Text(
-                    "DD/MM//YYYY",
+                    hintText,
                     style = buttonTextStyle.copy(color = placeholderGrey)
                 )
             },

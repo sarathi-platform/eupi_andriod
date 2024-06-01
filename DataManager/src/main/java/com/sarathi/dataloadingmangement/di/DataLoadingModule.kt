@@ -26,12 +26,15 @@ import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.domain.FetchDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.DataLoadingScreenRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepository
 import com.sarathi.dataloadingmangement.repository.ISurveyDownloadRepository
+import com.sarathi.dataloadingmangement.repository.ISurveyRepository
 import com.sarathi.dataloadingmangement.repository.SurveyDownloadRepository
+import com.sarathi.dataloadingmangement.repository.SurveyRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -197,11 +200,13 @@ class DataLoadingModule {
     fun provideFetchDataUseCaseUseCase(
         repository: DataLoadingScreenRepositoryImpl,
         surveyRepo: SurveyDownloadRepository,
+        surveyRepositoryImpl: SurveyRepositoryImpl,
         application: Application
     ): FetchDataUseCase {
         return FetchDataUseCase(
             fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository),
             fetchSurveyDataFromNetworkUseCase = FetchSurveyDataFromNetworkUseCase(surveyRepo),
+            fetchSurveyDataFromDB = FetchSurveyDataFromDB(surveyRepositoryImpl),
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 repository,
                 application
@@ -209,4 +214,12 @@ class DataLoadingModule {
         )
     }
 
+    @Singleton
+    fun provideSurveyRepository(
+        questionEntityDao: QuestionEntityDao
+    ): ISurveyRepository {
+        return SurveyRepositoryImpl(
+            questionDao = questionEntityDao
+        )
+    }
 }

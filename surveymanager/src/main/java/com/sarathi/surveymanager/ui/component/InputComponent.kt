@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -21,18 +22,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.events.theme.borderGrey
+import com.nudge.core.ui.events.theme.buttonTextStyle
 import com.nudge.core.ui.events.theme.placeholderGrey
 import com.nudge.core.ui.events.theme.textColorDark
-import com.sarathi.surveymanager.MAXIMUM_RANGE_LENGTH
+import com.sarathi.surveymanager.constants.MAXIMUM_RANGE_LENGTH
 import com.sarathi.surveymanager.utils.onlyNumberField
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun NumberTextComponent(
+fun InputComponent(
     title: String? = "select",
     defaultValue: String = BLANK_STRING,
     isOnlyNumber: Boolean = false,
     maxLength: Int = 150,
+    hintText: String = BLANK_STRING,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
     val txt = remember {
@@ -68,6 +71,7 @@ fun NumberTextComponent(
                 }
                 onAnswerSelection(txt.value)
             },
+            label = { Text(hintText, style = buttonTextStyle.copy(color = placeholderGrey)) },
             keyboardOptions = if (isOnlyNumber) {
                 KeyboardOptions(
                     imeAction = ImeAction.Done,
@@ -100,5 +104,5 @@ fun NumberTextComponent(
 @Preview(showSystemUi = true)
 @Composable
 fun NumberTextComponentPreview() {
-    NumberTextComponent(onAnswerSelection = {}, isOnlyNumber = true)
+    InputComponent(onAnswerSelection = {}, isOnlyNumber = true)
 }

@@ -8,6 +8,7 @@ object MissionActivityConstants {
     const val ACTIVITY_SCREEN_SCREEN_ROUTE_NAME = "activity_screen"
     const val GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME = "grant_task_screen"
     const val MEDIA_PLAYER_SCREEN_ROUTE_NAME = "media_player_screen"
+    const val SURVEY_SCREEN_ROUTE_NAME = "survey_screen"
     const val CONTENT_DETAIL_SCREEN_ROUTE_NAME = "content_detail_screen"
 
     const val ARG_ACTIVITY_ID = "activity_id"

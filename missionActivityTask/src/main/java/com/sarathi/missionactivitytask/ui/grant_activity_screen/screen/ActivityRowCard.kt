@@ -16,6 +16,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
+import com.sarathi.missionactivitytask.navigation.navigateToSurveyScreen
 import com.sarathi.missionactivitytask.navigation.navigateToTaskScreen
 import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
 
@@ -24,11 +25,12 @@ fun ActivityRowCard(
     navController: NavController,
     contents: List<BasicContent> = listOf(),
     activities: List<ActivityUiModel>,
-
+    onContentData: (contentValue: String, contentKey: String, contentType: String) -> Unit
 ) {
     Column {
-        BaseContentScreen { contentKey, contentType, isLimitContentData ->
+        BaseContentScreen { contentValue, contentKey, contentType, isLimitContentData ->
             if (!isLimitContentData) {
+                onContentData(contentValue, contentKey, contentType)
                 navigateToMediaPlayerScreen(navController, contentKey, contentType)
             } else {
                 navigateToContentDetailScreen(navController)
@@ -59,14 +61,13 @@ fun ActivityRowCard(
                     isDividerVisible = index != activities.lastIndex,
                     painter = painterResource(id = R.drawable.ic_mission_inprogress)
                 ) {
-
+                    navigateToSurveyScreen(navController)
                 }
             }
         }
     }
 
 }
-
 
 
 data class BasicContent(val contentType: String, val contentTitle: String)

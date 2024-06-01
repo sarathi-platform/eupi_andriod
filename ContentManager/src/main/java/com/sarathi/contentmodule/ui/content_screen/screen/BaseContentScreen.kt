@@ -15,7 +15,7 @@ import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 @Composable
 fun BaseContentScreen(
     viewModel: BaseContentScreenViewModel = hiltViewModel(),
-    onClick: (contentKey: String, contentType: String, isLimitContentData: Boolean) -> Unit
+    onClick: (contentValue: String, contentKey: String, contentType: String, isLimitContentData: Boolean) -> Unit
 ) {
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -31,7 +31,7 @@ fun BaseContentScreen(
                     isLimitContentData = index == 3,
                     totalContent = viewModel.contentCount.value - 3,
                     onClick = {
-                        onClick(item.contentKey, item.contentType, index == 3)
+                        onClick(item.contentValue, item.contentKey, item.contentType, index == 3)
                     }
                 )
             }
