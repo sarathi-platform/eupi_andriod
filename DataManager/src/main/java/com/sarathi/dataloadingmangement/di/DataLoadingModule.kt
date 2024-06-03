@@ -19,6 +19,7 @@ import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
@@ -28,13 +29,16 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetw
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.DataLoadingScreenRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepository
 import com.sarathi.dataloadingmangement.repository.ISurveyDownloadRepository
 import com.sarathi.dataloadingmangement.repository.ISurveyRepository
+import com.sarathi.dataloadingmangement.repository.ISurveySaveRepository
 import com.sarathi.dataloadingmangement.repository.SurveyDownloadRepository
 import com.sarathi.dataloadingmangement.repository.SurveyRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.SurveySaveRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -214,12 +218,31 @@ class DataLoadingModule {
         )
     }
 
+    @Provides
+    @Singleton
+    fun provideSaveSurveyUseCase(
+        repositoryImpl: SurveySaveRepositoryImpl
+    ): SaveSurveyAnswerUseCase {
+        return SaveSurveyAnswerUseCase(repositoryImpl)
+    }
+
+    @Provides
     @Singleton
     fun provideSurveyRepository(
         questionEntityDao: QuestionEntityDao
     ): ISurveyRepository {
         return SurveyRepositoryImpl(
             questionDao = questionEntityDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSaveSurveyRepository(
+        surveyAnswersDao: SurveyAnswersDao
+    ): ISurveySaveRepository {
+        return SurveySaveRepositoryImpl(
+            surveyAnswersDao = surveyAnswersDao
         )
     }
 }

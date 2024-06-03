@@ -40,8 +40,6 @@ fun DatePickerComponent(
 ) {
     var text by remember { mutableStateOf("") }
     val context = LocalContext.current
-    //val datePickerDialogTheme = android.R.style.Theme_Holo_Light_Dialog_NoActionBar_MinWidth
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -72,6 +70,7 @@ fun DatePickerComponent(
                     val day = calendar.get(Calendar.DAY_OF_MONTH)
                     DatePickerDialog(context, { _, selectedYear, selectedMonth, selectedDay ->
                         text = "$selectedDay/${selectedMonth + 1}/$selectedYear"
+                        onAnswerSelection(text)
                     }, year, month, day).show()
                 }) {
                     Icon(

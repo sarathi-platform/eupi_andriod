@@ -98,6 +98,7 @@ fun SurveyScreen(
                 LazyColumn(
                     userScrollEnabled = false,
                     state = outerState,
+
                     modifier = Modifier
                         .heightIn(maxHeight)
                         .padding(
@@ -114,7 +115,8 @@ fun SurveyScreen(
                                     title = question.questionDisplay,
                                     isOnlyNumber = true,
                                     hintText = question.display
-                                ) {
+                                ) { selectedValue ->
+                                    viewModel.saveAnswerIntoDB(question, selectedValue)
                                 }
                             }
 
@@ -122,8 +124,8 @@ fun SurveyScreen(
                                 DatePickerComponent(
                                     title = question.questionDisplay,
                                     hintText = question.display
-                                ) {
-
+                                ) { selectedValue ->
+                                    viewModel.saveAnswerIntoDB(question, selectedValue)
                                 }
                             }
 

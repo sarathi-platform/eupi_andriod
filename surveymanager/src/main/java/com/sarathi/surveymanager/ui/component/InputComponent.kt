@@ -69,7 +69,7 @@ fun InputComponent(
                         txt.value = it
                     }
                 }
-                onAnswerSelection(txt.value)
+                // onAnswerSelection(txt.value)
             },
             label = { Text(hintText, style = buttonTextStyle.copy(color = placeholderGrey)) },
             keyboardOptions = if (isOnlyNumber) {
@@ -95,7 +95,7 @@ fun InputComponent(
                 focusedBorderColor = placeholderGrey,
                 unfocusedBorderColor = borderGrey,
                 textColor = textColorDark
-            )
+            ),
         )
 
     }
