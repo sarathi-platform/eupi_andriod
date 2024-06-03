@@ -6,6 +6,7 @@ import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepos
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nudge.core.model.SettingOptionModel
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
+import com.patsurvey.nudge.utils.UPCM_USER
 
 class GetExportOptionListUseCase(private val repository: ExportImportRepository) {
 
@@ -38,23 +39,25 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
             )
         list.add(
             SettingOptionModel(
-                6,
+                4,
                 context.getString(R.string.export_log_file),
                 BLANK_STRING,
                 SettingTagEnum.EXPORT_LOG_FILE.name
             )
         )
-        list.add(
-            SettingOptionModel(
-                8,
-                context.getString(R.string.export_baseline_qna),
-                BLANK_STRING,
-                SettingTagEnum.EXPORT_BASELINE_QNA.name
+        if(repository.getLoggedInUserType()== UPCM_USER) {
+            list.add(
+                SettingOptionModel(
+                    5,
+                    context.getString(R.string.export_baseline_qna),
+                    BLANK_STRING,
+                    SettingTagEnum.EXPORT_BASELINE_QNA.name
+                )
             )
-        )
+        }
         list.add(
             SettingOptionModel(
-                5,
+                6,
                 context.getString(R.string.import_data),
                 BLANK_STRING,
                 SettingTagEnum.IMPORT_DATA.name
@@ -63,7 +66,7 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
 
         list.add(
                 SettingOptionModel(
-                    4,
+                    7,
                     context.getString(R.string.load_server_data),
                     BLANK_STRING,
                     SettingTagEnum.LOAD_SERVER_DATA.name
@@ -72,22 +75,22 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
 
         list.add(
             SettingOptionModel(
-                7,
+                8,
                 context.getString(R.string.regenerate_all_events),
                 BLANK_STRING,
                 SettingTagEnum.REGENERATE_EVENTS.name
             )
         )
-
-        list.add(
-            SettingOptionModel(
-                8,
-                context.getString(R.string.mark_activity_inprogress_label),
-                BLANK_STRING,
-                SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name
+        if(repository.getLoggedInUserType()== UPCM_USER) {
+            list.add(
+                SettingOptionModel(
+                    9,
+                    context.getString(R.string.mark_activity_inprogress_label),
+                    BLANK_STRING,
+                    SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name
+                )
             )
-        )
-
+        }
         return list.ifEmpty { arrayListOf() }
     }
 }

@@ -89,11 +89,13 @@ object UseCaseModule {
     @Singleton
     fun providesExportImportScreenRepository(
         nudgeBaselineDatabase: NudgeBaselineDatabase,
-        prefRepo: PrefBSRepo
+        prefRepo: PrefBSRepo,
+        nudgeDatabase: NudgeDatabase
     ):ExportImportRepository{
         return ExportImportRepositoryImpl(
             nudgeBaselineDatabase = nudgeBaselineDatabase,
-            prefBSRepo = prefRepo
+            prefBSRepo = prefRepo,
+            nudgeDatabase = nudgeDatabase
         )
     }
 

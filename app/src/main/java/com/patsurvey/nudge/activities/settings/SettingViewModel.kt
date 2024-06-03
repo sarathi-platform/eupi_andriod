@@ -18,6 +18,7 @@ import com.nudge.core.exportOldData
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.json
+import com.nudge.core.moduleNameAccToLoggedInUser
 import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.MyApplication
@@ -937,7 +938,7 @@ class SettingViewModel @Inject constructor(
                     getFormPdfAndLogUri(),
                     prefRepo.getMobileNumber(),
                     userName = prefRepo.getPref(PREF_KEY_NAME, BLANK_STRING) ?: BLANK_STRING,
-
+                    moduleName = BLANK_STRING
                 )
 
                 val imageUri = compression.compressBackupImages(
@@ -1113,7 +1114,8 @@ class SettingViewModel @Inject constructor(
             applicationID = BuildConfig.APPLICATION_ID,
             mobileNo = userUniqueId,
             databaseName = NUDGE_DATABASE,
-            userName = BLANK_STRING
+            userName = BLANK_STRING,
+            moduleName = BLANK_STRING
         ) {
             onExportSuccess()
         }

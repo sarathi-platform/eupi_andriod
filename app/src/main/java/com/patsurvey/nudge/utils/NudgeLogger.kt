@@ -389,7 +389,6 @@ object LogWriter {
                     arrayOf(
                         "anupam.bhardwaj@tothenew.com",
                         "anas.mansoori@tothenew.com",
-                        "yukti.arora@tothenew.com",
                         "ankit.jain3@tothenew.com",
                         "nitish.bhardwaj@tothenew.com",
                         "naren.srinivasan@thenudge.org"
@@ -438,22 +437,6 @@ object LogWriter {
             Date()
         ) + SUPPORT_LOG_FILE_NAME_SUFFIX
     }
-
-    /*private suspend fun getLogs(supportLogFileName: String, lastLog: String, logFileNames: ArrayList<String>): File? {
-        val context = NudgeCore.getAppContext()
-        try {
-            val logDir = context.cacheDir
-            val logFile = File(logDir, supportLogFileName)
-            if (logFile.isFile) logFile.delete()
-            if (!getSyslogFile(logFile, lastLog, logFileNames)) {
-                return null
-            }
-            return logFile
-        } catch (ignore: Exception) {
-            Toast.makeText(context, "Logs unavailable", Toast.LENGTH_SHORT).show()
-            return null
-        }
-    }*/
 
     fun cleanup(checkForSize: Boolean) {
         val context = NudgeCore.getAppContext()

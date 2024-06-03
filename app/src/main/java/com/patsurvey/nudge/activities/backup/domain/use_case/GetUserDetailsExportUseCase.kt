@@ -22,5 +22,8 @@ class GetUserDetailsExportUseCase(
         return repository.getUserName()
     }
 
+    fun getLoggedInUserType():String{
+        return repository.getLoggedInUserType()
+    }
 
 }

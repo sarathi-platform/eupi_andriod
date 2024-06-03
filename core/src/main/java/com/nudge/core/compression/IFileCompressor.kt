@@ -11,7 +11,8 @@ interface IFileCompressor {
         context: Context,
         extraUris: List<Pair<String, Uri?>>,
         mobileNo: String,
-        userName: String
+        userName: String,
+        moduleName:String
     ): Uri?
 
     suspend fun compressBackupImages(
