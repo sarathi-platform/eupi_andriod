@@ -1,6 +1,5 @@
 package com.sarathi.missionactivitytask.ui.grant_activity_screen.screen
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -16,7 +15,6 @@ import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
-import com.sarathi.missionactivitytask.navigation.navigateToSurveyScreen
 import com.sarathi.missionactivitytask.navigation.navigateToTaskScreen
 import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
 
@@ -44,14 +42,6 @@ fun ActivityRowCard(
             ) { index, activity ->
 
                 StepsBoxGrantComponent(
-                    modifier = Modifier.clickable {
-                        navigateToTaskScreen(
-                            navController,
-                            missionId = activity.missionId,
-                            activityId = activity.activityId,
-                            activityName = activity.description
-                        )
-                    },
                     boxTitle = activity.description,
                     subTitle = "${activity.pendingTaskCount}/${activity.taskCount}",
                     stepNo = index + 1,
@@ -61,8 +51,15 @@ fun ActivityRowCard(
                     isDividerVisible = index != activities.lastIndex,
                     painter = painterResource(id = R.drawable.ic_mission_inprogress)
                 ) {
-                    navigateToSurveyScreen(navController)
+                    navigateToTaskScreen(
+                        navController,
+                        missionId = activity.missionId,
+                        activityId = activity.activityId,
+                        activityName = activity.description
+                    )
                 }
+
+
             }
         }
     }

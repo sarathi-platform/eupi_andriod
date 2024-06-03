@@ -29,6 +29,7 @@ import com.nudge.core.ui.events.theme.greyColor
 import com.nudge.core.ui.events.theme.placeholderGrey
 import com.nudge.core.ui.events.theme.white
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.surveymanager.R
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,17 +37,19 @@ import java.util.Calendar
 fun DatePickerComponent(
     title: String = BLANK_STRING,
     hintText: String = BLANK_STRING,
+    defaultValue: String = BLANK_STRING,
+    isMandatory: Boolean = false,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
-    var text by remember { mutableStateOf("") }
+    var text by remember { mutableStateOf(defaultValue) }
     val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
     ) {
-        if (title?.isNotBlank() == true) {
-            QuestionComponent(title = title, isRequiredField = true)
+        if (title.isNotBlank() == true) {
+            QuestionComponent(title = title, isRequiredField = isMandatory)
         }
         TextField(
             modifier = Modifier
@@ -65,10 +68,13 @@ fun DatePickerComponent(
             trailingIcon = {
                 IconButton(onClick = {
                     val calendar = Calendar.getInstance()
-                    val year = calendar.get(Calendar.YEAR)
-                    val month = calendar.get(Calendar.MONTH)
-                    val day = calendar.get(Calendar.DAY_OF_MONTH)
-                    DatePickerDialog(context, { _, selectedYear, selectedMonth, selectedDay ->
+                    val year = calendar[Calendar.YEAR]
+                    val month = calendar[Calendar.MONTH]
+                    val day = calendar[Calendar.DAY_OF_MONTH]
+                    DatePickerDialog(
+                        context,
+                        R.style.my_dialog_theme,
+                        { _, selectedYear, selectedMonth, selectedDay ->
                         text = "$selectedDay/${selectedMonth + 1}/$selectedYear"
                         onAnswerSelection(text)
                     }, year, month, day).show()

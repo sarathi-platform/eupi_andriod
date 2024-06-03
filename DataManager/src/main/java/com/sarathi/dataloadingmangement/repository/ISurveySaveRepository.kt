@@ -1,8 +1,8 @@
 package com.sarathi.dataloadingmangement.repository
 
-import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
+import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 
 interface ISurveySaveRepository {
-    suspend fun saveSurveyAnswer(surveyAnswerEntity: SurveyAnswerEntity)
+    suspend fun saveSurveyAnswer(question: QuestionUiModel, subjectId: Int)
 
 }

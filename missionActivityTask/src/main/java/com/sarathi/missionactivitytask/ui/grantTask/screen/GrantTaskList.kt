@@ -10,8 +10,10 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
 import com.sarathi.contentmodule.ui.component.BasicContentComponent
+import com.sarathi.missionactivitytask.navigation.navigateToSurveyScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.GrantTaskCard
 import com.sarathi.missionactivitytask.ui.components.ButtonComponent
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
@@ -21,6 +23,7 @@ import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.BasicCont
 fun GrantTaskList(
     taskList: HashMap<Int, HashMap<String, String>>,
     contents: List<BasicContent> = listOf(),
+    navController: NavController
 ) {
     Column {
         Row(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp, start = 20.dp, end = 20.dp)) {
@@ -43,6 +46,9 @@ fun GrantTaskList(
             ) { index, task ->
 
                 GrantTaskCard(
+                    onPrimaryButtonClick = {
+                        navigateToSurveyScreen(navController)
+                    },
                     title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name] ?: BLANK_STRING,
                     subTitle = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name]
                         ?: BLANK_STRING,

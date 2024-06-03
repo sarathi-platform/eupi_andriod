@@ -1,5 +1,6 @@
 package com.sarathi.surveymanager.ui.screen
 
+import android.text.TextUtils
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollBy
@@ -24,6 +25,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.ui.events.theme.dimen_16_dp
 import com.nudge.core.ui.events.theme.dimen_8_dp
+import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
+import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.surveymanager.constants.QuestionType
@@ -42,6 +46,7 @@ fun SurveyScreen(
     val outerState = rememberLazyListState()
     val innerState = rememberLazyListState()
     val scope = rememberCoroutineScope()
+
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(InitDataEvent.InitDataState)
@@ -65,11 +70,14 @@ fun SurveyScreen(
             ) {
                 ButtonPositive(
                     buttonTitle = "Submit",
-                    isActive = true,
-                    isLeftArrow = false
+                    isActive = viewModel.isButtonEnable.value,
+                    isLeftArrow = false,
+                    onClick = {
+                        viewModel.saveButtonClicked()
+                    }
 
-                ) {
-                }
+                )
+
             }
 
 
@@ -112,28 +120,47 @@ fun SurveyScreen(
                         when (question.type) {
                             QuestionType.InputNumber.name -> {
                                 InputComponent(
+                                    isMandatory = question.isMandatory,
+                                    defaultValue = question.options?.firstOrNull()?.selectedValue
+                                        ?: BLANK_STRING,
                                     title = question.questionDisplay,
                                     isOnlyNumber = true,
                                     hintText = question.display
                                 ) { selectedValue ->
-                                    viewModel.saveAnswerIntoDB(question, selectedValue)
+                                    saveInputTypeAnswer(selectedValue, question, viewModel)
                                 }
                             }
 
                             QuestionType.DateType.name -> {
                                 DatePickerComponent(
+                                    isMandatory = question.isMandatory,
+                                    defaultValue = question.options?.firstOrNull()?.selectedValue
+                                        ?: BLANK_STRING,
                                     title = question.questionDisplay,
-                                    hintText = question.display
+                                    hintText = question.display,
                                 ) { selectedValue ->
-                                    viewModel.saveAnswerIntoDB(question, selectedValue)
+                                    saveInputTypeAnswer(selectedValue, question, viewModel)
+
                                 }
                             }
 
                             QuestionType.MultiImage.name -> {
                                 AddImageComponent(
+                                    filePaths = commaSeparatedStringToList(
+                                        question.options?.firstOrNull()?.selectedValue
+                                            ?: BLANK_STRING
+                                    ),
+                                    isMandatory = question.isMandatory,
                                     title = question.questionDisplay,
-                                    maxCustomHeight = maxHeight
-                                )
+                                    maxCustomHeight = maxHeight,
+
+                                    ) { selectedValue ->
+                                    saveMultiImageTypeAnswer(selectedValue, question.options)
+                                    viewModel.saveAnswerIntoDB(question)
+
+
+                                }
+
                             }
                         }
                     }
@@ -144,3 +171,41 @@ fun SurveyScreen(
         }
     )
 }
+
+private fun saveInputTypeAnswer(
+    selectedValue: String,
+    question: QuestionUiModel,
+    viewModel: SurveyScreenViewModel
+) {
+    if (TextUtils.isEmpty(selectedValue)) {
+        question.options?.firstOrNull()?.isSelected = false
+    } else {
+        question.options?.firstOrNull()?.isSelected = true
+
+    }
+    question.options?.firstOrNull()?.selectedValue = selectedValue
+    viewModel.saveAnswerIntoDB(question)
+}
+
+fun saveMultiImageTypeAnswer(filePath: String, options: List<OptionItemEntity>?) {
+    val list: ArrayList<String> = ArrayList<String>()
+    list.add(filePath)
+    list.addAll(commaSeparatedStringToList(options?.firstOrNull()?.selectedValue ?: BLANK_STRING))
+
+
+
+    options?.firstOrNull()?.selectedValue = listToCommaSeparatedString(list)
+    options?.firstOrNull()?.isSelected = true
+
+}
+
+
+fun listToCommaSeparatedString(list: List<String>): String {
+    return list.joinToString(",")
+}
+
+fun commaSeparatedStringToList(commaSeparatedString: String): List<String> {
+    return commaSeparatedString.split(",")
+}
+
+

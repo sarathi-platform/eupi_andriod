@@ -36,9 +36,11 @@ import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepository
 import com.sarathi.dataloadingmangement.repository.ISurveyDownloadRepository
 import com.sarathi.dataloadingmangement.repository.ISurveyRepository
 import com.sarathi.dataloadingmangement.repository.ISurveySaveRepository
+import com.sarathi.dataloadingmangement.repository.ITaskStatusRepository
 import com.sarathi.dataloadingmangement.repository.SurveyDownloadRepository
 import com.sarathi.dataloadingmangement.repository.SurveyRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveySaveRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.TaskStatusRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -229,20 +231,43 @@ class DataLoadingModule {
     @Provides
     @Singleton
     fun provideSurveyRepository(
-        questionEntityDao: QuestionEntityDao
+        questionEntityDao: QuestionEntityDao,
+        surveyAnswersDao: SurveyAnswersDao,
+        optionItemDao: OptionItemDao,
+        coreSharedPrefs: CoreSharedPrefs
     ): ISurveyRepository {
         return SurveyRepositoryImpl(
-            questionDao = questionEntityDao
+            questionDao = questionEntityDao,
+            surveyAnswersDao = surveyAnswersDao,
+            optionItemDao = optionItemDao,
+            coreSharedPrefs = coreSharedPrefs
+
         )
     }
 
     @Provides
     @Singleton
     fun provideSaveSurveyRepository(
-        surveyAnswersDao: SurveyAnswersDao
+        surveyAnswersDao: SurveyAnswersDao,
+        coreSharedPrefs: CoreSharedPrefs
+
     ): ISurveySaveRepository {
         return SurveySaveRepositoryImpl(
-            surveyAnswersDao = surveyAnswersDao
+            surveyAnswersDao = surveyAnswersDao,
+            coreSharedPrefs = coreSharedPrefs
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideTaskStatusRepository(
+        taskDao: TaskDao,
+        coreSharedPrefs: CoreSharedPrefs
+
+    ): ITaskStatusRepository {
+        return TaskStatusRepositoryImpl(
+            taskDao = taskDao,
+            coreSharedPrefs = coreSharedPrefs
         )
     }
 }
