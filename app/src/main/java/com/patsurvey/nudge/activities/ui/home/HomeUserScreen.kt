@@ -17,10 +17,15 @@ import com.sarathi.missionactivitytask.ui.mission_screen.screen.GrantMissionScre
 fun HomeUserScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    prefRepo: PrefRepo
+    prefRepo: PrefRepo,
+    onSettingIconClick: () -> Unit
 ) {
     if (prefRepo.getLoggedInUserType() == UPCM_USER) {
-        GrantMissionScreen(navController = navController, viewModel = hiltViewModel())
+        GrantMissionScreen(
+            navController = navController,
+            viewModel = hiltViewModel(),
+            onSettingClick = onSettingIconClick
+        )
     } else {
         if (prefRepo.isUserBPC()) {
             BpcProgressScreen(

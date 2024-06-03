@@ -77,6 +77,7 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.sarathi.missionactivitytask.navigation.MatNavigation
 
+
 @Composable
 fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
     NavHost(
@@ -85,7 +86,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         startDestination = HomeScreens.PROGRESS_SCREEN.route
     ) {
         composable(route = HomeScreens.PROGRESS_SCREEN.route) {
-            HomeUserScreen(navController = navController, prefRepo = prefRepo)
+            HomeUserScreen(navController = navController, prefRepo = prefRepo, onSettingIconClick = {navController.navigate(Graph.SETTING_GRAPH)})
         }
 
         composable(route = HomeScreens.BPC_PROGRESS_SCREEN.route) {
@@ -140,7 +141,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         voEndorsmentNavGraph(navController = navController)
         logoutGraph(navController =navController,prefRepo)
         bpcDidiListNavGraph(navController = navController)
-        MatNavigation(navController = navController)
+        MatNavigation(navController = navController,  onSettingIconClick = {navController.navigate(Graph.SETTING_GRAPH)})
     }
 }
 
@@ -849,7 +850,8 @@ sealed class VoEndorsmentScreeens(val route: String) {
 }
 
 fun NavGraphBuilder.logoutGraph(navController: NavHostController,prefRepo: PrefRepo){
-    navigation(route = Graph.LOGOUT_GRAPH,
+    navigation(
+        route = Graph.LOGOUT_GRAPH,
         startDestination = LogoutScreens.LOG_HOME_SCREEN.route,
     ) {
 
