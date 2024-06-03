@@ -99,4 +99,6 @@ dependencies {
     implementation(project(":core"))
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation(project(":surveymanager"))
+    //Coil
+    implementation("io.coil-kt:coil-compose:2.0.0-rc01")
 }
