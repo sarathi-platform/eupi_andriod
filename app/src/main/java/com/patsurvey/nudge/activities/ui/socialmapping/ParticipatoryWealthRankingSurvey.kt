@@ -82,6 +82,7 @@ import androidx.navigation.NavController
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.RetryHelper.stateId
 import com.patsurvey.nudge.activities.CircularDidiImage
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.WealthRankingSurveyViewModel
@@ -112,6 +113,7 @@ import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
+import com.patsurvey.nudge.utils.NudgeCore.getBengalString
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.WealthRank
@@ -348,7 +350,9 @@ fun ParticipatoryWealthRankingSurvey(
                             item { Spacer(modifier = Modifier.height(4.dp)) }
                             if (didiListForCategory.isNotEmpty()) {
                                 itemsIndexed(didiListForCategory) { index, didi ->
-                                    DidiItemCardForWealthRanking(didi,
+                                    DidiItemCardForWealthRanking(
+                                        stateId=viewModel.getStateId(),
+                                        didi,
                                         expandedCardIds.contains(didi.id),
                                         Modifier.padding(horizontal = 0.dp),
                                         onExpendClick = { expand, didiDetailModel ->
@@ -358,6 +362,7 @@ fun ParticipatoryWealthRankingSurvey(
                                                 listState.animateScrollToItem(index+1)
                                             }
                                         },
+
                                         onItemClick = {},
                                         onCircularImageClick = { didi->
                                             viewModel.dialogDidiEntity.value = didi
@@ -746,6 +751,7 @@ fun RoundedImage(
 
 @Composable
 fun DidiItemCardForWealthRanking(
+    stateId:Int,
     didi: DidiEntity,
     expanded: Boolean,
     modifier: Modifier,
@@ -854,7 +860,8 @@ fun DidiItemCardForWealthRanking(
                     DidiDetailExpendableContentForWealthRanking(
                         modifier = Modifier.layoutId("didiDetailLayout"),
                         didi,
-                        animateInt == 1
+                        animateInt == 1,
+                        stateId=stateId
                     )
                 }
             }
@@ -863,7 +870,7 @@ fun DidiItemCardForWealthRanking(
 }
 
 @Composable
-fun DidiDetailExpendableContentForWealthRanking(modifier: Modifier, didi: DidiEntity, expended: Boolean) {
+fun DidiDetailExpendableContentForWealthRanking(modifier: Modifier, didi: DidiEntity, expended: Boolean,stateId: Int) {
     val constraintSet = didiDetailConstraintsForWealthCard()
 
     val context = LocalContext.current
@@ -965,7 +972,7 @@ fun DidiDetailExpendableContentForWealthRanking(modifier: Modifier, didi: DidiEn
             )
 
             Text(
-                text = getLatestStatusTextForWealthRankingCard(context, didi),
+                text = getLatestStatusTextForWealthRankingCard(context, didi,stateId),
                 style = didiDetailItemStyle,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("latestStatus")
@@ -980,7 +987,7 @@ fun DidiDetailExpendableContentForWealthRanking(modifier: Modifier, didi: DidiEn
     }
 }
 
-fun getLatestStatusTextForWealthRankingCard(context: Context, didi: DidiEntity): String {
+fun getLatestStatusTextForWealthRankingCard(context: Context, didi: DidiEntity,stateId: Int): String {
     var status = BLANK_STRING
     if (didi.wealth_ranking == WealthRank.NOT_RANKED.rank) {
         status = context.getString(R.string.social_mapping_complete_status_text)
@@ -990,10 +997,14 @@ fun getLatestStatusTextForWealthRankingCard(context: Context, didi: DidiEntity):
                 status = if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.forVoEndorsement == 1) {
                     when (didi.voEndorsementStatus) {
                         DidiEndorsementStatus.ENDORSED.ordinal, DidiEndorsementStatus.ACCEPTED.ordinal -> {
-                            context.getString(R.string.vo_selected_status_text)
+                            getBengalString(context, stateId,R.plurals.vo_selected_status_text)
+
+                 //           context.getString(R.string.vo_selected_status_text)
                         }
                         DidiEndorsementStatus.REJECTED.ordinal -> {
-                            context.getString(R.string.vo_rejected_status_text)
+getBengalString(context, stateId,R.plurals.vo_rejected_status_text)
+
+                           // context.getString(R.string.vo_rejected_status_text)
                         }
                         else -> {
                             context.getString(R.string.pat_selected_status_text)

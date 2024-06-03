@@ -21,6 +21,7 @@ import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
@@ -69,6 +70,10 @@ class WealthRankingSurveyViewModel @Inject constructor(
         }
     }
 
+    fun getStateId(): Int {
+        return repository.prefRepo.getPref(PREF_KEY_TYPE_STATE_ID, 4)
+    }
+
     fun fetchDidisFromDB() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
@@ -111,7 +116,8 @@ class WealthRankingSurveyViewModel @Inject constructor(
                 )
                 if (dbResponse.workFlowId > 0) {
                     val primaryWorkFlowRequest = listOf(
-                        EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(3)].workFlowId,
+                        EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }
+                            .indexOf(3)].workFlowId,
                             StepStatus.COMPLETED.name,
                             longToString(
                                 repository.prefRepo.getPref(
@@ -136,7 +142,8 @@ class WealthRankingSurveyViewModel @Inject constructor(
 
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let {
-                            NudgeLogger.d("WealthRankingSurveyViewModel",
+                            NudgeLogger.d(
+                                "WealthRankingSurveyViewModel",
                                 "callWorkFlowAPI -> stepsListDao.updateWorkflowId before: id: ${
                                     stepList[stepList.map { it.orderNumber }.indexOf(3)].id
                                 }, workFlowId: ${
@@ -235,7 +242,10 @@ class WealthRankingSurveyViewModel @Inject constructor(
                                         "callWorkFlowAPI -> stepsListDao.updateNeedToPost before stepId: ${step.id}"
                                     )
                                     repository.updateNeedToPost(step.id, villageId, false)
-                                    NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost after")
+                                    NudgeLogger.d(
+                                        "WealthRankingSurveyViewModel",
+                                        "callWorkFlowAPI -> stepsListDao.updateNeedToPost after"
+                                    )
 
                                 }
 

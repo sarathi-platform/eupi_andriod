@@ -30,6 +30,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -62,7 +63,9 @@ import com.patsurvey.nudge.utils.BottomButtonBox
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiItemCardForPat
 import com.patsurvey.nudge.utils.DidiItemCardForVoForSummary
+import com.patsurvey.nudge.utils.NudgeCore.getBengalString
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
@@ -581,8 +584,14 @@ fun SurveySummary(
                                                                 )
                                                             ) {
                                                                 val emptyMessage = when (showDidiListForStatus.second) {
-                                                                    DidiEndorsementStatus.REJECTED.ordinal -> stringResource(R.string.vo_summary_rejected_empty_text)
-                                                                    DidiEndorsementStatus.ENDORSED.ordinal -> stringResource(R.string.vo_summary_endorsed_empty_text)
+                                                                    DidiEndorsementStatus.REJECTED.ordinal ->
+                                                                        getBengalString(context,surveySummaryViewModel.getStateId(),R.plurals.vo_summary_rejected_empty_text)
+
+//                                                                   stringResource(R.string.vo_summary_rejected_empty_text)
+                                                                    DidiEndorsementStatus.ENDORSED.ordinal ->
+                                                                        getBengalString(context,surveySummaryViewModel.getStateId(),R.plurals.vo_summary_endorsed_empty_text)
+
+//                                                                        stringResource(R.string.vo_summary_endorsed_empty_text)
                                                                     else -> {""}
                                                                 }
                                                                 append(emptyMessage)
@@ -709,7 +718,14 @@ fun SurveySummary(
                         if (showDidiListForStatus.first)
                             stringResource(id = R.string.done_text)
                         else
-                            stringResource(id = R.string.send_for_vo_text)
+                            if(surveySummaryViewModel.repository.prefRepo.getPref(PREF_KEY_TYPE_STATE_ID,4)==34) pluralStringResource(
+                                id = R.plurals.send_for_vo_text,
+                                1
+                            )  else pluralStringResource(
+                                id = R.plurals.send_for_vo_text,
+                                2
+                            )
+//    stringResource(id = R.string.send_for_vo_text)
                     } else {
                         if (showDidiListForStatus.first)
                             stringResource(id = R.string.done_text)

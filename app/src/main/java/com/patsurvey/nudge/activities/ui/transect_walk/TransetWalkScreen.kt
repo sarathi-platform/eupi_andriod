@@ -70,6 +70,7 @@ import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
 import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.utils.LocationUtil
+import com.patsurvey.nudge.utils.NudgeCore.getBengalString
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.Tola
@@ -539,7 +540,7 @@ fun VillageDetailView(
                 .padding(end = 16.dp)
         ) {
             Text(
-                text = "VO: ",
+                text = getBengalString(context,viewModel.),
                 modifier = Modifier,
                 color = textColorDark,
                 style = smallTextStyle

@@ -70,6 +70,8 @@ const val PREF_KEY_IDENTITY_NUMBER="key_identity_number"
 const val PREF_KEY_PROFILE_IMAGE="profile_image"
 const val PREF_KEY_ROLE_NAME = "role_name"
 const val PREF_KEY_TYPE_NAME = "type_name"
+const val PREF_KEY_TYPE_STATE_ID = "type_state_id"
+
 const val PREF_KEY_VO_ENDORSEMENT_STATUS = "voEndorsementStatus"
 const val SNACKBAR_TAG = "snackbar"
 const val SNACKBAR_MESSAGE = "snackbarMessage"

@@ -39,6 +39,7 @@ import com.patsurvey.nudge.utils.HUSBAND_STRING
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_DIDI_UNAVAILABLE
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_SOCIAL_MAPPING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QuestionType
@@ -111,7 +112,9 @@ class AddDidiViewModel @Inject constructor(
     private var _markedNotAvailable = MutableStateFlow(mutableListOf<Int>())
 
     val villageEntity = mutableStateOf<VillageEntity?>(null)
-
+    fun getStateId():Int{
+        return addDidiRepository.prefRepo.getPref(PREF_KEY_TYPE_STATE_ID, 4)
+    }
     init {
         setVillage(addDidiRepository.getSelectedVillage().id)
         villageId = addDidiRepository.getSelectedVillage().id

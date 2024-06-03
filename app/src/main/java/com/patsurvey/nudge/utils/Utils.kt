@@ -120,6 +120,7 @@ import com.patsurvey.nudge.model.dataModel.WeightageRatioModal
 import com.patsurvey.nudge.model.request.AnswerDetailDTOListItem
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.PATSummarySaveRequest
+import com.patsurvey.nudge.utils.NudgeCore.getBengalString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
@@ -1056,12 +1057,15 @@ fun findImageLocationFromPath(uri:String):List<String>{
     return ArrayList()
 }
 
-fun findStepNameForSelectedLanguage(context: Context,stepId:Int):String{
+fun findStepNameForSelectedLanguage(context: Context,stepId:Int,stateId:Int):String{
    return when(stepId){
        40-> context.getString(R.string.step_transect_walk)
        41-> context.getString(R.string.step_social_mapping)
        43-> context.getString(R.string.step_pat_survey)
-       44-> context.getString(R.string.step_vo_endorsement)
+       44->
+       {
+           getBengalString(context,stateId,R.plurals.step_vo_endorsement)
+       }
        45-> context.getString(R.string.step_bpc_verification)
        46-> context.getString(R.string.step_participatory_wealth_ranking)
        else -> {

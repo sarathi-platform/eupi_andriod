@@ -56,7 +56,10 @@
     <string name="not_added">Not added</string>
     <string name="mark_as_completed">Mark as completed</string>
     <string name="village_text">Village</string>
-    <string name="vo_name">VO Name</string>
+    <plurals name="vo_name">
+        <item quantity="one">CLF Name</item>
+        <item quantity="other">VO Name</item>
+    </plurals>
     <string name="total">Total</string>
     <string name="participation_date_wealth_ranking">Date </string>
     <string name="add_didi">Add Didi</string>
@@ -88,9 +91,10 @@
     <string name="cancel_tola_text">Cancel</string>
     <string name="get_location_text">Get Location</string>
     <string name="location_unavailable">Location not available</string>
-
-    <string name="seletc_village_screen_text">Select Village &amp; VO</string>
-
+    <plurals name="seletc_village_screen_text">
+        <item quantity="one">Select Village &amp; CLF</item>
+        <item quantity="other">Select Village &amp; VO</item>
+    </plurals>
     <string name="complete_didi_addition">Complete Didi Addition</string>
     <string name="user_id_text">"ID: "</string>
     <string name="empty_tola_string">No Paras / Tolas Added</string>
@@ -110,8 +114,18 @@
 
     <string name="social_mapping_sub_text_plural">%1$s Didis Identified</string>
     <string name="wealth_ranking_sub_text_plural">%1$s Poor Didis Identified</string>
-    <string name="pat_sub_text_singular">%1$s Ultra Poor Didi sent for VO Endorsement</string>
-    <string name="pat_sub_text_plural">%1$s Ultra Poor Didis sent for VO Endorsement</string>
+
+    <plurals name="pat_sub_text_singular">
+        <item quantity="one">%1$s Ultra Poor Didi sent for CLF Endorsement</item>
+        <item quantity="other">%1$s Ultra Poor Didi sent for VO Endorsement</item>
+    </plurals>
+
+<!--    <string name="pat_sub_text_singular">%1$s Ultra Poor Didi sent for VO Endorsement</string>-->
+    <plurals name="pat_sub_text_plural">
+        <item quantity="one">%1$s Ultra Poor Didis sent for CLF Endorsement</item>
+        <item quantity="other">%1$s Ultra Poor Didis sent for VO Endorsement</item>
+    </plurals>
+<!--    <string name="pat_sub_text_plural">%1$s Ultra Poor Didis sent for VO Endorsement</string>-->
     <string name="vo_endorsement_sub_text_singular">%1$s Ultra Poor Didi Endorsed</string>
     <string name="vo_endorsement_sub_text_plural">%1$s Ultra Poor Didis Endorsed</string>
 
@@ -176,22 +190,47 @@
     <string name="confirmation_dialog_titile">Are you sure?</string>
     <string name="section_1_text">"Section 1: "</string>
     <string name="section_2_text">"Section 2: "</string>
-    <string name="vo_endorsement_screen_title">List of Didis for VO Endorsement</string>
+    <plurals name="vo_endorsement_screen_title">
+        <item quantity="one">List of Didis for CLF Endorsement</item>
+        <item quantity="other">List of Didis for VO Endorsement</item>
+    </plurals>
+<!--    <string name="vo_endorsement_screen_title">List of Didis for VO Endorsement</string>-->
     <string name="start_endorsement">Start Endorsement</string>
     <string name="pat_completed">PAT Completed</string>
     <string name="didi_not_available">Didi not available</string>
     <string name="are_you_sure">Are you sure?</string>
     <string name="you_are_submitting_wealth_ranking_for_count_didis">You are submitting the wealth ranking for %1$s Didis.</string>
-    <string name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">You are sending %1$s PAT completed Didis for VO Endorsement</string>
-    <string name="send_all_for_vo_endorsement">Send All For VO Endorsement</string>
+    <plurals name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">
+        <item quantity="one">You are sending %1$s PAT completed Didis for CLF Endorsement</item>
+        <item quantity="other">You are sending %1$s PAT completed Didis for VO Endorsementt</item>
+    </plurals>
+
+<!--    <string name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">You are sending %1$s PAT completed Didis for VO Endorsement</string>-->
+    <plurals name="send_all_for_vo_endorsement">
+        <item quantity="one">Send All For CLF Endorsement</item>
+        <item quantity="other">Send All For VO Endorsement</item>
+    </plurals>
+
+<!--    <string name="send_all_for_vo_endorsement">Send All For VO Endorsement</string>-->
     <string name="pat_survey_completed_message">PAT Survey for {VILLAGE_NAME} \nis completed</string>
-    <string name="vo_endorsement_completed_message">VO Endorsement for {VILLAGE_NAME} \nis completed</string>
+    <plurals name="vo_endorsement_completed_message">
+        <item quantity="one">CLF Endorsement for {VILLAGE_NAME} \nis completed</item>
+        <item quantity="other">VO Endorsement for {VILLAGE_NAME} \nis completed</item>
+    </plurals>
+<!--    <string name="vo_endorsement_completed_message">VO Endorsement for {VILLAGE_NAME} \nis completed</string>-->
     <string name="form_c_photo_button_text">Take picture of form C</string>
     <string name="form_d_photo_button_text">Take picture of form D</string>
     <string name="pat_completed_box_title">PAT Completed</string>
     <string name="didi_not_available_text_singular">Didi not available</string>
     <string name="didi_not_available_text_plural">Didis not available</string>
-    <string name="send_for_vo_text">Send All For VO Endorsement</string>
+    <plurals name="send_for_vo_text">
+        <item quantity="one">Send All For CLF Endorsement</item>
+        <item quantity="other">Send All For VO Endorsement</item>
+    </plurals>
+
+<!--    <string name="send_for_vo_text">Send All For VO Endorsement</string>-->
+
+
     <string name="didi_pat_complete_text">Didis PAT completed</string>
     <string name="didi_endorsed_text_plural">Didis Endorsed</string>
     <string name="didi_endorsed_text_singula">Didi Endorsed</string>
@@ -233,7 +272,12 @@
     <string name="pat_in_progress_status_text">PAT Survey in Progress</string>
     <string name="pat_completed_status_text">PAT Survey Completed - {PAT_STATUS}</string>
     <string name="vo_endorsement_status_text">VO Endorsement Completed - {VO_STATUS}</string>
-    <string name="no_didis_availble_for_vo_endorsement">No Didis available for VO Endorsement.</string>
+
+    <plurals name="no_didis_availble_for_vo_endorsement">
+        <item quantity="one">No Didis available for VO Endorsement.</item>
+        <item quantity="other">No Didis available for CLF Endorsement.</item>
+    </plurals>
+<!--    <string name="no_didis_availble_for_vo_endorsement">No Didis available for VO Endorsement.</string>-->
     <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
 
     <string name="step_1">Step 1</string>
@@ -242,7 +286,13 @@
     <string name="step_3">Step 3</string>
     <string name="step_4">Step 4</string>
     <string name="step_5">Step 5</string>
-    <string name="vo_endorsement">VO Endorsement</string>
+
+    <plurals name="vo_endorsement">
+        <item quantity="one">CLF Endorsement</item>
+        <item quantity="other">VO Endorsement</item>
+    </plurals>
+
+<!--    <string name="vo_endorsement">VO Endorsement</string>-->
     <string name="close">Close</string>
     <string name="add_more">Add More</string>
     <string name="bpc_didi_screen_title">Didis available for verification</string>
@@ -261,7 +311,12 @@
     <string name="summary_tolas_added_text_plural">Paras / Tolas Added</string>
     <string name="summary_didis_mobilised_text_plural">Didis Mobilised</string>
     <string name="summary_wealth_ranking_text_plural">Didis Marked as poor in PWR</string>
-    <string name="summary_vo_endoresement_text_plural">Didis sent for VO Endorsement</string>
+
+    <plurals name="summary_vo_endoresement_text_plural">
+        <item quantity="one">Didis sent for CLF Endorsement</item>
+        <item quantity="other">Didis sent for VO Endorsement</item>
+    </plurals>
+<!--    <string name="summary_vo_endoresement_text_plural">Didis sent for VO Endorsement</string>-->
     <string name="unmatched_text">Unmatched</string>
     <string name="matched_text">Matched</string>
 
@@ -270,9 +325,24 @@
     <string name="showing_text">Showing</string>
     <string name="result_text_singular">result</string>
     <string name="result_text_plural">results</string>
-    <string name="didis_endorsed_by_vo_plural">Didis Endorsed by VO</string>
-    <string name="didi_endorsed_by_vo_singular">Didi Endorsed by VO</string>
-    <string name="summary_vo_endoresement_text_singular">Didi sent for VO Endorsement</string>
+
+    <plurals name="didis_endorsed_by_vo_plural">
+        <item quantity="one">Didis Endorsed by CLF</item>
+        <item quantity="other">Didis Endorsed by VO</item>
+    </plurals>
+
+    <plurals name="didi_endorsed_by_vo_singular">
+        <item quantity="one">Didi Endorsed by CLF</item>
+        <item quantity="other">Didi Endorsed by VO</item>
+    </plurals>
+
+<!--    <string name="didis_endorsed_by_vo_plural">Didis Endorsed by VO</string>-->
+<!--    <string name="didi_endorsed_by_vo_singular">Didi Endorsed by VO</string>-->
+    <plurals name="summary_vo_endoresement_text_singular">
+        <item quantity="one">Didi sent for CLF Endorsement</item>
+        <item quantity="other">Didi sent for VO Endorsement</item>
+    </plurals>
+<!--    <string name="summary_vo_endoresement_text_singular">Didi sent for VO Endorsement</string>-->
     <string name="summary_wealth_ranking_text_singular">Didi Marked as poor in PWR</string>
     <string name="summary_didis_mobilised_text_singular">Didi Mobilised</string>
     <string name="summary_tolas_added_text_singular">Para / Tola Added</string>
@@ -295,7 +365,12 @@
     <string name="logout_no_internet_error_message">No Internet Available, Please connect with internet</string>
     <string name="min_battery_text">(Min 30% required)</string>
     <string name="do_not_close_app_message">Please don\'t close the app or switch off the phone.</string>
-    <string name="vo_endorsement_completed_village_banner_text">VO Endorsement completed</string>
+    <plurals name="vo_endorsement_completed_village_banner_text">
+        <item quantity="one">CLF Endorsement completed</item>
+        <item quantity="other">VO Endorsement completed</item>
+    </plurals>
+
+<!--    <string name="vo_endorsement_completed_village_banner_text">CLF Endorsement completed</string>-->
     <string name="bpc_verification_completed_village_banner_text">BPC Verification Completed</string>
     <string name="bpc_verification_in_progress_village_banner_text">BPC Verification In Progress</string>
 
@@ -311,7 +386,12 @@
     <string name="take_photo_text">Take Photo</string>
     <string name="retake_photo_text">Retake Photo</string>
     <string name="previous_step_not_complete_messgae_text">Previous Step Not Complete.</string>
-    <string name="vo_endorsement_inprogress_village_banner_text">VO Endorsement In progress</string>
+    <plurals name="vo_endorsement_inprogress_village_banner_text">
+        <item quantity="one">CLF Endorsement In progress</item>
+        <item quantity="other">VO Endorsement In progress</item>
+    </plurals>
+
+<!--    <string name="vo_endorsement_inprogress_village_banner_text">VO Endorsement In progress</string>-->
     <string name="latest_status_text">"Latest Status: "</string>
     <string name="ranking_text_rich">RICH</string>
     <string name="ranking_text_medium">MEDIUM</string>
@@ -322,7 +402,17 @@
     <string name="pat_completed_for_didi_plural">PAT completed for %1$s new didis</string>
     <string name="pat_marked_not_available_singular">%1$s didi marked as Not Available</string>
     <string name="pat_marked_not_available_plural">%1$s didis marked as Not Available</string>
+<!--    <plurals name="pat_didi_sent_to_vo_endorsement_singular">-->
+<!--        <item quantity="one">%1$s Ultrapoor didis sent for CLF Endorsement.</item>-->
+<!--        <item quantity="other">V%1$s Ultrapoor didis sent for VO Endorsement.</item>-->
+<!--    </plurals>-->
     <string name="pat_didi_sent_to_vo_endorsement_singular">%1$s Ultrapoor didis sent for VO Endorsement.</string>
+
+<!--        <plurals name="pat_didi_sent_to_vo_endorsement_plural">-->
+<!--            <item quantity="one">%1$s Ultrapoor didis sent for CLF Endorsement.</item>-->
+<!--            <item quantity="other">%1$s Ultrapoor didis sent for VO Endorsement.</item>-->
+<!--        </plurals>-->
+
     <string name="pat_didi_sent_to_vo_endorsement_plural">%1$s Ultrapoor didis sent for VO Endorsement.</string>
 
     <string name="pat_didi_sent_to_bpm_approval_singular">%1$s Ultrapoor didi sent for BPM Approval.</string>
@@ -333,7 +423,12 @@
     <string name="step_social_mapping">Social Mapping</string>
     <string name="step_participatory_wealth_ranking">Participatory Wealth Ranking</string>
     <string name="step_pat_survey">Pat Survey</string>
-    <string name="step_vo_endorsement">VO Endorsement</string>
+
+    <plurals name="step_vo_endorsement">
+        <item quantity="one">CLF Endorsement</item>
+        <item quantity="other">VO Endorsement</item>
+    </plurals>
+<!--    <string name="step_vo_endorsement">VO Endorsement</string>-->
     <string name="step_bpc_verification">BPC Verification</string>
     <string name="profile_name">Name</string>
     <string name="profile_email">Email</string>
@@ -353,7 +448,11 @@
     <string name="match_percentage_should_be_more_than_70">The Match % should be more than 70%</string>
     <string name="delete_and_retake">Delete &amp; Retake</string>
     <string name="if_more_than_5_pages_please_uload_last_page">If more than 5 pages, please upload the last page.</string>
-    <string name="vo_endorsement_completed">VO Endorsement \nCompleted</string>
+        <plurals name="vo_endorsement_completed">
+            <item quantity="one">CLF Endorsement \nCompleted</item>
+            <item quantity="other">VO Endorsement \nCompleted</item>
+        </plurals>
+<!--    <string name="vo_endorsement_completed">VO Endorsement \nCompleted</string>-->
     <string name="no_didis_available_to_add_or_replace">No Didis available to add or replace.</string>
     <string name="online_sync_successful">Online Sync Successful</string>
     <string name="sync_failed">Sync Failed</string>
@@ -368,8 +467,18 @@
 
     <string name="pat_selected_status_text">PAT Selected</string>
     <string name="pat_rejected_status_text">PAT Rejected</string>
-    <string name="vo_selected_status_text">VO Endorsed</string>
-    <string name="vo_rejected_status_text">VO Rejected</string>
+
+        <plurals name="vo_selected_status_text">
+            <item quantity="one">CLF Endorsed</item>
+            <item quantity="other">VO Endorsed</item>
+        </plurals>
+
+<!--    <string name="vo_selected_status_text">VO Endorsed</string>-->
+        <plurals name="vo_rejected_status_text">
+            <item quantity="one">CLF Rejected</item>
+            <item quantity="other">VO Rejected</item>
+        </plurals>
+<!--    <string name="vo_rejected_status_text">VO Rejected</string>-->
     <string name="pat_not_available_status_text">PAT Not Available</string>
     <string name="cannot_delete_tola_message_text">Cannot delete this Para / Tola as Didis are assigned to it</string>
 
@@ -385,8 +494,18 @@
     <string name="wealth_ranking_summary_empty_text">No didi marked as {CATEGORY}</string>
     <string name="pat_summary_not_available_empty_text">No didi marked as not available</string>
     <string name="pat_summary_completed_empty_text">No didi whose PAT was completed</string>
-    <string name="vo_summary_rejected_empty_text">No didi rejected by VO</string>
-    <string name="vo_summary_endorsed_empty_text">No didi endorsed by VO</string>
+    <plurals name="vo_summary_rejected_empty_text">
+                <item quantity="one">No didi rejected by CLF</item>
+                <item quantity="other">No didi rejected by VO</item>
+            </plurals>
+
+<!--    <string name="vo_summary_rejected_empty_text">No didi rejected by VO</string>-->
+
+    <plurals name="vo_summary_endorsed_empty_text">
+        <item quantity="one">No didi endorsed by CLF</item>
+        <item quantity="other">No didi endorsed by VO</item>
+    </plurals>
+<!--    <string name="vo_summary_endorsed_empty_text">No didi endorsed by VO</string>-->
     <string name="social_mapping_complete_status_text">Social Mapping Done</string>
     <string name="page_name_text">Page</string>
 
@@ -406,7 +525,14 @@
     <string name="able_bodied_women_flag_text">Are there able-bodied \nwomen in the family?</string>
     <string name="something_went_wrong">Something went wrong.</string>
     <string name="score_comparison_section_1_text">Section 1</string>
-    <string name="village_is_not_vo_endorsed_right_now">Village is not VO Endorsed Right Now!</string>
+
+    <plurals name="village_is_not_vo_endorsed_right_now">
+        <item quantity="one">Village is not CLF Endorsed Right Now!</item>
+        <item quantity="other">Village is not VO Endorsed Right Now!</item>
+    </plurals>
+
+<!--    <string name="village_is_not_vo_endorsed_right_now">Village is not VO Endorsed Right Now!</string>-->
+
     <string name="refresh_failed_please_try_again">Refresh Failed, Please try again!</string>
     <string name="reference_of_forms">Reference of Forms :</string>
     <string name="link_of_a">Link For Form A</string>
@@ -416,7 +542,12 @@
     <string name="do_you_want_to_exit_the_app">Do you want to exit the app?</string>
     <string name="exit">Exit</string>
     <string name="cancel">Cancel</string>
-    <string name="vo_endorsement_not_started">VO Endorsement is not started</string>
+        <plurals name="vo_endorsement_not_started">
+            <item quantity="one">CLF Endorsement is not started</item>
+            <item quantity="other">VO Endorsement is not started</item>
+        </plurals>
+
+<!--    <string name="vo_endorsement_not_started">VO Endorsement is not started</string>-->
     <string name="export_data_test">Export Data</string>
     <string name="network_not_available_message">Network not available, Please try again later!</string>
     <string name="total_members_can_not_be_less_than_earning_members">Total family members can not be less than Earning members.</string>
@@ -430,5 +561,8 @@
     <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
     <string name="didi_verified_by_bpc">Didi verified by BPC</string>
     <string name="recover_old_data">Recover Old Data</string>
-
+    <plurals name="vo">
+        <item quantity="one">CLF: </item>
+        <item quantity="other">VO: </item>
+    </plurals>
 </resources>

@@ -92,7 +92,10 @@
     <string name="get_location_text">Get Location</string>
     <string name="location_unavailable">Location not available</string>
 
-    <string name="seletc_village_screen_text">Select Village &amp; VO</string>
+    <plurals name="seletc_village_screen_text">
+        <item quantity="one">Select Village &amp; CLF</item>
+        <item quantity="other">Select Village &amp; VO</item>
+    </plurals>
 
     <string name="complete_didi_addition">Complete Didi Addition</string>
     <string name="user_id_text">"ID: "</string>
