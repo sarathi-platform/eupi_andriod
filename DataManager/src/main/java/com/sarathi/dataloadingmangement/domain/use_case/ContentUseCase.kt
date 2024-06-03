@@ -1,3 +1,3 @@
-package com.sarathi.contentmodule.content_downloder.domain.usecase
+package com.sarathi.dataloadingmangement.domain.use_case
 
 data class ContentUseCase(val contentDownloaderUseCase: ContentDownloaderUseCase)
