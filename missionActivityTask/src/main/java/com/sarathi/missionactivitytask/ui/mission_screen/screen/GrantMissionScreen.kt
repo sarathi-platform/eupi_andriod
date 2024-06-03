@@ -1,18 +1,23 @@
 package com.sarathi.missionactivitytask.ui.mission_screen.screen
 
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToActivityScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.BasicMissionCard
+import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.mission_screen.viewmodel.MissionScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -22,7 +27,8 @@ import com.sarathi.missionactivitytask.utils.event.SearchEvent
 @Composable
 fun GrantMissionScreen(
     navController: NavController = rememberNavController(),
-    viewModel: MissionScreenViewModel = hiltViewModel()
+    viewModel: MissionScreenViewModel = hiltViewModel(),
+    onSettingClick: () -> Unit
 ) {
 
     LaunchedEffect(key1 = true) {
@@ -36,8 +42,8 @@ fun GrantMissionScreen(
     }
     ToolBarWithMenuComponent(
         title = "SARATHI",
-        iconResId = R.drawable.ic_sarathi_logo,
         modifier = Modifier.fillMaxSize(),
+        iconResId = R.drawable.ic_sarathi_logo,
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
         isSearch = true,
@@ -47,8 +53,20 @@ fun GrantMissionScreen(
         },
         onBottomUI = {
         },
-        onContentUI = {
+        onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
             if (viewModel.missionList.value.isNotEmpty()) {
+                if (isSearch) {
+                    SearchWithFilterViewComponent(placeholderString = "Search",
+                        filterSelected = false,
+                        modifier = Modifier.padding(horizontal = 10.dp),
+                        showFilter = false,
+                        onFilterSelected = {},
+                        onSearchValueChange = { queryTerm ->
+                            onSearchValueChanged(queryTerm)
+
+                        })
+                }
+                Spacer(modifier = Modifier.height(10.dp))
                 LazyColumn {
                     items(viewModel.filterMissionList.value) { mission ->
                         BasicMissionCard(
@@ -70,7 +88,8 @@ fun GrantMissionScreen(
                     }
                 }
             }
-        }
+        },
+        onSettingClick = onSettingClick
     )
 
 

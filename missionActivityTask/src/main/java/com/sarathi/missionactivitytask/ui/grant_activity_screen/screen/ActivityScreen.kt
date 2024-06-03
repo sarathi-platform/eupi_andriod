@@ -17,7 +17,8 @@ fun ActivityScreen(
     navController: NavController = rememberNavController(),
     viewModel: ActivityScreenViewModel = hiltViewModel(),
     missionId: Int,
-    missionName: String
+    missionName: String,
+    onSettingClick: () -> Unit
 ) {
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -36,13 +37,14 @@ fun ActivityScreen(
         },
         onBottomUI = {
         },
-        onContentUI = {
+        onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
             if (viewModel.activityList.value.isNotEmpty()) {
                 ActivityRowCard(
                     activities = viewModel.activityList.value,
                     navController = navController
                 )
             }
-        }
+        },
+        onSettingClick = onSettingClick
     )
 }
