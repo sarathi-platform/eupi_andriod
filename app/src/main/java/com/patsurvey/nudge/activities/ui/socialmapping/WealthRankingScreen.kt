@@ -179,7 +179,8 @@ fun WealthRankingScreen(
                 VillageDetailView(
                     villageName = viewModel.prefRepo.getSelectedVillage().name ?: "",
                     voName = (viewModel.prefRepo.getSelectedVillage().federationName) ?: "",
-                    modifier = Modifier
+                    modifier = Modifier,
+                    stateId = viewModel.getStateId()
                 )
                 LazyColumn(
                     modifier =

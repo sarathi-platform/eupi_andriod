@@ -82,7 +82,6 @@ import androidx.navigation.NavController
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.RetryHelper.stateId
 import com.patsurvey.nudge.activities.CircularDidiImage
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.WealthRankingSurveyViewModel
@@ -274,7 +273,8 @@ fun ParticipatoryWealthRankingSurvey(
                 VillageDetailView(
                     villageName = viewModel.selectedVillage?.name ?: "",
                     voName = (viewModel.selectedVillage?.federationName) ?: "",
-                    modifier = Modifier
+                    modifier = Modifier,
+                    stateId = viewModel.getStateId()
                 )
 
                 Box(

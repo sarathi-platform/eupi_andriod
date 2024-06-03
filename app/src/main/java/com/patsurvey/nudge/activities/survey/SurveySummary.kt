@@ -361,7 +361,8 @@ fun SurveySummary(
                     villageName = surveySummaryViewModel.repository.prefRepo.getSelectedVillage().name ?: "",
                     voName = (surveySummaryViewModel.repository.prefRepo.getSelectedVillage().federationName)
                         ?: "",
-                    modifier = Modifier
+                    modifier = Modifier,
+                    stateId = surveySummaryViewModel.getStateId()
                 )
 
                 Column( modifier = Modifier

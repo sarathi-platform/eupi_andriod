@@ -160,7 +160,8 @@ fun TransectWalkScreen(
                 VillageDetailView(
                     villageName = viewModel.getSelectedVillage().name ?: BLANK_STRING,
                     voName = viewModel.getSelectedVillage().federationName ?: BLANK_STRING,
-                    modifier = Modifier
+                    modifier = Modifier,
+                    stateId = viewModel.getStateId()
                 )
                 val tolaTolaCount = tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal }.size
                 val totalCountWithoutEmptyTola = tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal && it.name != EMPTY_TOLA_NAME }.size
@@ -517,6 +518,7 @@ fun TransectWalkScreen(
 fun VillageDetailView(
     villageName: String,
     voName: String,
+    stateId: Int,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -540,7 +542,7 @@ fun VillageDetailView(
                 .padding(end = 16.dp)
         ) {
             Text(
-                text = getBengalString(context,viewModel.),
+                text = getBengalString(LocalContext.current, stateId, R.plurals.vo),
                 modifier = Modifier,
                 color = textColorDark,
                 style = smallTextStyle

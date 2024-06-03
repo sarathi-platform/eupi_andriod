@@ -50,7 +50,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -89,8 +88,6 @@ import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidthWithoutIcon
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.NudgeCore.getBengalString
 import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.showCustomDialog
@@ -450,7 +447,11 @@ fun BpcVillageAndVoBoxForBottomSheet(
                 when (bpcVillageStatus) {
                     BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal, BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal -> showCustomToast(
                         context,
-                        getBengalString(context,stateId,R.plurals.village_is_not_vo_endorsed_right_now)
+                        getBengalString(
+                            context,
+                            stateId,
+                            R.plurals.village_is_not_vo_endorsed_right_now
+                        )
 //                        context.getString(R.string.village_is_not_vo_endorsed_right_now)
                     )
 
@@ -539,7 +540,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                         .padding(start = 16.dp, end = 16.dp)
                 ) {
                     Text(
-                        text = "VO: ",
+                        text = getBengalString(context, stateId, R.plurals.vo),
                         modifier = Modifier,
                         color = textColorDark,
                         fontSize = 14.sp,
