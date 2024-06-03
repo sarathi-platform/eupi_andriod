@@ -97,6 +97,9 @@ dependencies {
     //CSV Export
     implementation("com.opencsv:opencsv:5.3")
     implementation(project(":core"))
-    implementation("androidx.compose.ui:ui-tooling-preview")
     implementation(project(":surveymanager"))
+    implementation("com.airbnb.android:lottie-compose:6.1.0")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    debugImplementation("androidx.compose.ui:ui-tooling")
+
 }
