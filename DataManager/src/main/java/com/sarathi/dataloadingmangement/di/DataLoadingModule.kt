@@ -3,6 +3,8 @@ package com.sarathi.dataloadingmangement.di
 import android.app.Application
 import android.content.Context
 import androidx.room.Room
+import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
@@ -29,14 +31,22 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetw
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.DataLoadingScreenRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepository
+import com.sarathi.dataloadingmangement.repository.IEventWriterRepository
+import com.sarathi.dataloadingmangement.repository.IMATStatusEventRepository
+import com.sarathi.dataloadingmangement.repository.ISurveyAnswerEventRepository
 import com.sarathi.dataloadingmangement.repository.ISurveyDownloadRepository
 import com.sarathi.dataloadingmangement.repository.ISurveyRepository
 import com.sarathi.dataloadingmangement.repository.ISurveySaveRepository
 import com.sarathi.dataloadingmangement.repository.ITaskStatusRepository
+import com.sarathi.dataloadingmangement.repository.MATStatusEventRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.SurveyAnswerEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyDownloadRepository
 import com.sarathi.dataloadingmangement.repository.SurveyRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveySaveRepositoryImpl
@@ -270,6 +280,69 @@ class DataLoadingModule {
         return TaskStatusRepositoryImpl(
             taskDao = taskDao,
             coreSharedPrefs = coreSharedPrefs
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideMatStatusEventRepository(
+        coreSharedPrefs: CoreSharedPrefs
+
+    ): IMATStatusEventRepository {
+        return MATStatusEventRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideMatStatusEventUseCase(
+        repositoryImpl: MATStatusEventRepositoryImpl,
+        eventWriterRepositoryImpl: EventWriterRepositoryImpl
+    ): MATStatusEventWriterUseCase {
+        return MATStatusEventWriterUseCase(
+            repository = repositoryImpl,
+            eventWriterRepositoryImpl = eventWriterRepositoryImpl
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideEventWriterRepository(
+        @ApplicationContext context: Context,
+        eventsDao: EventsDao,
+        eventDependencyDao: EventDependencyDao,
+        coreSharedPrefs: CoreSharedPrefs
+
+    ): IEventWriterRepository {
+        return EventWriterRepositoryImpl(
+            eventsDao = eventsDao,
+            eventDependencyDao = eventDependencyDao,
+            coreSharedPrefs = coreSharedPrefs,
+            context = context
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSaveSurveyAnswerEventRepository(
+        coreSharedPrefs: CoreSharedPrefs
+
+    ): ISurveyAnswerEventRepository {
+        return SurveyAnswerEventRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSaveSurveyAnswerEventUseCase(
+        eventWriterRepositoryImpl: EventWriterRepositoryImpl,
+        surveyAnswerRepo: SurveyAnswerEventRepositoryImpl
+    ): SurveyAnswerEventWriterUseCase {
+        return SurveyAnswerEventWriterUseCase(
+            repository = surveyAnswerRepo,
+            eventWriterRepositoryImpl = eventWriterRepositoryImpl
         )
     }
 }

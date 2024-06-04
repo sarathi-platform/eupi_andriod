@@ -6,8 +6,9 @@ import com.nudge.core.enums.EventType
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.ISurveyAnswerEventRepository
+import javax.inject.Inject
 
-class SurveyAnswerEventWriterUseCase(
+class SurveyAnswerEventWriterUseCase @Inject constructor(
     private val repository: ISurveyAnswerEventRepository,
     private val eventWriterRepositoryImpl: EventWriterRepositoryImpl
 ) {
