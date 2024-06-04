@@ -44,7 +44,7 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
             questionType = questionUiModel.type,
             tag = questionUiModel.tagId,
             showQuestion = true,
-            questionDesc = questionUiModel.questionSummary ?: BLANK_STRING,
+            questionDesc = questionUiModel.questionDisplay ?: BLANK_STRING,
             options = getOption(questionUiModel.options!!, "")
         )
     }

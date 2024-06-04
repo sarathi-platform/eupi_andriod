@@ -28,7 +28,7 @@ class TaskStatusRepositoryImpl @Inject constructor(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             taskId = taskId,
             actualStartDate = System.currentTimeMillis().toTimeDateString(),
-            status = SurveyStatusEnum.COMPLETED.name,
+            status = SurveyStatusEnum.INPROGRESS.name,
             subjectId = subjectId
         )
     }
