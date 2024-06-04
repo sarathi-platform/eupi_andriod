@@ -65,7 +65,7 @@ class GrantTaskScreenViewModel @Inject constructor(
         )
         val cardConfig = activityConfig.filter { it.componentType == "Card" }
         cardConfig.forEach { cardAttribute ->
-            cardAttributesWithValue[cardAttribute.key] = when (cardAttribute.type) {
+            cardAttributesWithValue[cardAttribute.key] = when (cardAttribute.type.toUpperCase()) {
                 UiConfigAttributeType.STATIC.name -> cardAttribute.value
                 UiConfigAttributeType.DYNAMIC.name, UiConfigAttributeType.ATTRIBUTE.name -> getTaskAttributeValue(
                     cardAttribute.value, taskId

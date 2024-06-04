@@ -43,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
+import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.ui.events.theme.borderGreyLight
 import com.nudge.core.ui.events.theme.largeTextStyle
@@ -56,28 +57,32 @@ import java.io.File
 @Preview(showSystemUi = true)
 @Composable
 fun AddImageComponent(
+    isMandatory: Boolean = false,
     maxCustomHeight: Dp = 200.dp,
     title: String = BLANK_STRING,
+    filePaths: List<String> = listOf(),
+    onImageSelection: (selectValue: String) -> Unit,
+
 
     ) {
     val context = LocalContext.current
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyGridState = rememberLazyGridState()
-    var imageList by remember { mutableStateOf(listOf<Uri?>()) }
+    var imageList by remember { mutableStateOf(getSavedImageUri(context, filePaths)) }
     var currentImageUri by remember { mutableStateOf<Uri?>(null) }
-
-
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
             if (success) {
+
                 imageList = (imageList + currentImageUri)
+                onImageSelection(currentImageUri?.path ?: BLANK_STRING)
             }
         }
     )
     Column {
         if (title.isNotBlank()) {
-            QuestionComponent(title = title, isRequiredField = true)
+            QuestionComponent(title = title, isRequiredField = isMandatory)
         }
         BoxWithConstraints(
             modifier = Modifier
@@ -117,13 +122,14 @@ fun AddImageComponent(
                                     System.currentTimeMillis()
                                 }.jpg"
                             )
+
                             cameraLauncher.launch(
                                 currentImageUri
                             )
                         })
                     }
                 }
-                itemsIndexed(imageList) { _index, image ->
+                itemsIndexed(imageList) { _, image ->
                     image?.let { ImageView(it) }
                 }
             }
@@ -142,6 +148,16 @@ fun getImageUri(context: Context, fileName: String): Uri? {
             it
         )
     }
+}
+
+fun getSavedImageUri(
+    context: Context, filePaths: List<String> = listOf(),
+): List<Uri?> {
+    val uriList: ArrayList<Uri?> = ArrayList<Uri?>()
+    filePaths.forEach {
+        uriList.add(getImageUri(context = context, getFileNameFromURL(it)))
+    }
+    return uriList
 }
 
 @Composable

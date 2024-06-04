@@ -41,6 +41,7 @@ fun GrantTaskScreen(
             if (viewModel.taskList.value.isNotEmpty()) {
                 GrantTaskList(
                     taskList = viewModel.taskList.value,
+                    navController = navController
                 )
             }
         }

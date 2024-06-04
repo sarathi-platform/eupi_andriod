@@ -53,5 +53,8 @@ data class QuestionList(
     @SerializedName("conditional")
     @Expose
     val conditional: Boolean = false,
+    @SerializedName("isMandatory")
+    @Expose
+    val isMandatory: Boolean = false,
 
     )

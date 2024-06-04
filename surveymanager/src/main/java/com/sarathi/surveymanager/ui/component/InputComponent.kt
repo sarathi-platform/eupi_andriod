@@ -36,6 +36,7 @@ fun InputComponent(
     isOnlyNumber: Boolean = false,
     maxLength: Int = 150,
     hintText: String = BLANK_STRING,
+    isMandatory: Boolean = true,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
     val txt = remember {
@@ -50,7 +51,7 @@ fun InputComponent(
             .padding(horizontal = 2.dp)
     ) {
         if (title?.isNotBlank() == true) {
-            QuestionComponent(title = title, isRequiredField = true)
+            QuestionComponent(title = title, isRequiredField = isMandatory)
         }
         OutlinedTextField(
             modifier = Modifier
@@ -60,16 +61,14 @@ fun InputComponent(
             onValueChange = {
                 if (it.length <= maxLength) {
                     if (isOnlyNumber) {
-                        if (onlyNumberField(it)) {
-                            if (it.length <= MAXIMUM_RANGE_LENGTH) {
-                                txt.value = it
-                            }
+                        if (onlyNumberField(it) && it.length <= MAXIMUM_RANGE_LENGTH) {
+                            txt.value = it
                         }
                     } else {
                         txt.value = it
                     }
                 }
-                // onAnswerSelection(txt.value)
+                onAnswerSelection(txt.value)
             },
             label = { Text(hintText, style = buttonTextStyle.copy(color = placeholderGrey)) },
             keyboardOptions = if (isOnlyNumber) {
