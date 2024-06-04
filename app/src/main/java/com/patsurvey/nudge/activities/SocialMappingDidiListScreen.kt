@@ -130,6 +130,7 @@ import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.ExclusionType
+import com.patsurvey.nudge.utils.NudgeCore.getBengalString
 import com.patsurvey.nudge.utils.PAT_SURVEY
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
@@ -1069,7 +1070,7 @@ fun DidiItemCard(
                                 .layoutId("latestStatusCollapsed")
                         ) {
                             Text(
-                                text = getLatestStatusText(context, didi),
+                                text = getLatestStatusText(context, didi,didiViewModel),
                                 style = TextStyle(
                                     color = blueDark,
                                     fontSize = 12.sp,
@@ -1484,7 +1485,7 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: 
             )
 
             Text(
-                text = getLatestStatusText(context, didi),
+                text = getLatestStatusText(context, didi,didiViewModel),
                 style = didiDetailItemStyle,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("latestStatus")
@@ -1499,7 +1500,7 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: 
     }
 }
 
-fun getLatestStatusText(context: Context, didi: DidiEntity): String {
+fun getLatestStatusText(context: Context, didi: DidiEntity,viewModel:AddDidiViewModel): String {
     var status = BLANK_STRING
     if (didi.wealth_ranking == WealthRank.NOT_RANKED.rank) {
         status = context.getString(R.string.social_mapping_complete_status_text)
@@ -1509,10 +1510,10 @@ fun getLatestStatusText(context: Context, didi: DidiEntity): String {
                 status = if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.forVoEndorsement == 1) {
                     when (didi.voEndorsementStatus) {
                         DidiEndorsementStatus.ENDORSED.ordinal, DidiEndorsementStatus.ACCEPTED.ordinal -> {
-                            context.getString(R.string.vo_selected_status_text)
+                            getBengalString(context,viewModel.getStateId(),R.plurals.vo_selected_status_text)
                         }
                         DidiEndorsementStatus.REJECTED.ordinal -> {
-                           context.getString(R.string.vo_rejected_status_text)
+                            getBengalString(context,viewModel.getStateId(),R.plurals.vo_rejected_status_text)
                         }
                         else -> {
                             context.getString(R.string.pat_selected_status_text)

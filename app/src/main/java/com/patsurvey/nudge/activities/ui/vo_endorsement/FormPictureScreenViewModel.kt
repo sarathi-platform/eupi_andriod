@@ -39,6 +39,7 @@ import com.patsurvey.nudge.utils.PAT_SURVEY
 import com.patsurvey.nudge.utils.PREF_FORM_C_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_D_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_FORM_C_AND_D_
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.SUCCESS
@@ -120,7 +121,9 @@ class FormPictureScreenViewModel @Inject constructor(
     val formAAvailable = mutableStateOf(false)
     val formBAvailable = mutableStateOf(false)
     val showAPILoader = mutableStateOf(false)
-
+    fun getStateId():Int{
+        return repository.prefRepo.getPref(PREF_KEY_TYPE_STATE_ID, 4)
+    }
     init {
         cameraExecutor = Executors.newSingleThreadExecutor()
         setVillage(repository.prefRepo.getSelectedVillage().id)

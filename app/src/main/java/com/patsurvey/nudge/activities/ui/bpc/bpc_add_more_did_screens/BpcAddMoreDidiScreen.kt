@@ -81,6 +81,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.RetryHelper.stateId
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
@@ -99,6 +100,7 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
+import com.patsurvey.nudge.utils.NudgeCore.getBengalString
 import java.io.File
 
 @Composable
@@ -267,6 +269,7 @@ fun BpcAddMoreDidiScreen(
                             ) { index, didiKey ->
 
                                 ShowDidisFromTolaForBpcAddMoreScreen(
+                                    stateId = bpcAddMoreDidiViewModel.getStateId(),
                                     didiTola = didiKey,
                                     didiList = newFilteredTolaDidiList[didiKey] ?: emptyList(),
                                     modifier = modifier,
@@ -280,7 +283,8 @@ fun BpcAddMoreDidiScreen(
                                             expandedIds.add(didiDetailModel.id)
                                         }
                                     },
-                                    onItemClick = { isChecked, didi ->
+
+                                            onItemClick = { isChecked, didi ->
                                         if (forReplace) {
                                             isCheckedIds.clear()
                                             isCheckedIds.add(didi.id)
@@ -313,6 +317,7 @@ fun BpcAddMoreDidiScreen(
                         } else {
                             itemsIndexed(newFilteredDidiList) { index, didi ->
                                 ExpandableDidiItemCardForBpc(
+                                    stateId= stateId,
                                     didi = didi,
                                     expanded = expandedIds.contains(didi.id),
                                     modifier = modifier,
@@ -379,6 +384,7 @@ fun BpcAddMoreDidiScreen(
 
 @Composable
 fun ExpandableDidiItemCardForBpc(
+    stateId: Int,
     didi: DidiEntity,
     expanded: Boolean,
     modifier: Modifier,
@@ -489,7 +495,7 @@ fun ExpandableDidiItemCardForBpc(
                         DidiDetailExpendableContentForBpc(
                             modifier = Modifier.layoutId("didiDetailLayout"),
                             didi,
-                            animateInt == 1
+                            animateInt == 1, stateId
                         )
                     }
                 }
@@ -532,7 +538,8 @@ fun ExpandableDidiItemCardForBpc(
 fun DidiDetailExpendableContentForBpc(
     modifier: Modifier,
     didi: DidiEntity,
-    expended: Boolean
+    expended: Boolean,
+    stateId:Int
 ) {
     val constraintSet = didiDetailConstraints()
 
@@ -635,7 +642,7 @@ fun DidiDetailExpendableContentForBpc(
             )
 
             Text(
-                text = getLatestStatusTextForBpc(context, didi),
+                text = getLatestStatusTextForBpc(context, didi,stateId),
                 style = didiDetailItemStyle,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("latestStatus")
@@ -821,12 +828,13 @@ private fun didiDetailConstraints(): ConstraintSet {
     }
 }
 
-fun getLatestStatusTextForBpc(context: Context, didi: DidiEntity): String {
-    return context.getString(R.string.vo_selected_status_text)
+fun getLatestStatusTextForBpc(context: Context, didi: DidiEntity,stateId:Int): String {
+    return getBengalString(context,stateId,R.plurals.vo_selected_status_text)
 }
 
 @Composable
 fun ShowDidisFromTolaForBpcAddMoreScreen(
+    stateId:Int,
     didiTola: String,
     didiList: List<DidiEntity>,
     modifier: Modifier,
@@ -834,6 +842,7 @@ fun ShowDidisFromTolaForBpcAddMoreScreen(
     expandedIds: List<Int>,
     isCheckedIds: List<Int>,
     onExpendClick: (Boolean, DidiEntity) -> Unit,
+
     onItemClick: (Boolean, DidiEntity) -> Unit
 ) {
     Column(modifier = Modifier) {
@@ -899,6 +908,7 @@ fun ShowDidisFromTolaForBpcAddMoreScreen(
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             didiList.forEachIndexed { index, didi ->
                 ExpandableDidiItemCardForBpc(
+                    stateId=stateId,
                     didi = didi,
                     expanded = expandedIds.contains(didi.id),
                     modifier = modifier,

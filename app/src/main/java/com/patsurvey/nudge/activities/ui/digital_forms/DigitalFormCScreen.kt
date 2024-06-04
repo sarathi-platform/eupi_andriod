@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -68,6 +69,7 @@ import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_D
+import com.patsurvey.nudge.utils.NudgeCore.getBengalString
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.OutlineButtonCustom
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
@@ -266,7 +268,11 @@ fun DigitalFormCScreen(
                         }
                         Row(modifier = Modifier.fillMaxWidth()) {
                             Text(
-                                text = stringResource(id = R.string.vo_name) + ":",
+                                text = getBengalString(
+                                    context,
+                                    viewModel.getStateId(),
+                                    R.plurals.seletc_village_screen_text
+                                )+ ":",
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,

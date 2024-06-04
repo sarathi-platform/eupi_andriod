@@ -20,6 +20,7 @@ import com.patsurvey.nudge.utils.FLAG_RATIO
 import com.patsurvey.nudge.utils.FLAG_WEIGHT
 import com.patsurvey.nudge.utils.LOW_SCORE
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.SUCCESS
@@ -75,7 +76,9 @@ class BpcProgressScreenViewModel @Inject constructor(
         selectedText.value = repository.getSelectedVillage().name
         fetchDataFromServer()
     }
-
+    fun getStateId():Int{
+        return repository.prefRepo.getPref(PREF_KEY_TYPE_STATE_ID, 4)
+    }
     private fun fetchDataFromServer(forceRefresh: Boolean = false) {
         appScopeLaunch(Dispatchers.IO) {
             fetchBpcDataForVillage(forceRefresh, networkCallbackListener = object : NetworkCallbackListener {

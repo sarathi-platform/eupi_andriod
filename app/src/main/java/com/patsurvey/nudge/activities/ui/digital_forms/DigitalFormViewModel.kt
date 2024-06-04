@@ -21,6 +21,7 @@ import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
@@ -49,6 +50,9 @@ class DigitalFormViewModel @Inject constructor(
     val didiDetailListForBpc: StateFlow<List<PoorDidiEntity>> get() = _didiDetailListForBpc
     val casteList: StateFlow<List<CasteEntity>> get() = _casteList
     var villageId: Int = -1
+    fun getStateId():Int{
+        return digitalFormRepository.prefRepo.getPref(PREF_KEY_TYPE_STATE_ID, 4)
+    }
     init {
         villageId = digitalFormRepository.getSelectedVillage().id
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
