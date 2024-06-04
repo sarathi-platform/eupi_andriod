@@ -398,7 +398,6 @@ fun VillageSelectionScreen(
                                     0,2 -> showCustomToast(
                                         context,
                                         getBengalString(context,viewModel.getStateId(),R.plurals.village_is_not_vo_endorsed_right_now))
-//                                        context.getString(R.string.village_is_not_vo_endorsed_right_now))
                                     else -> {
                                         viewModel.updateSelectedVillage(villageList = villages)
                                         navController.navigateToProgressScreen()
@@ -605,8 +604,6 @@ fun VillageAndVoBoxForBottomSheet(
                     Text(
                         text =
                         getBengalString(context,stateId,R.plurals.vo_endorsement_completed_village_banner_text),
-
-//                        if(stateId==34)pluralStringResource(id = R.plurals.vo_endorsement_completed_village_banner_text, 1) else pluralStringResource(id = R.plurals.vo_endorsement_completed_village_banner_text, 2) ,
                         color = white,
                         style = smallerTextStyle,
                         modifier = Modifier.absolutePadding(bottom = 3.dp)
@@ -645,7 +642,6 @@ fun VillageAndVoBoxForBottomSheet(
                         if(fetchBorderColorForVillage(stepId, statusId)==2){
                             Text(
                                 text = getBengalString(context,stateId,R.plurals.vo_endorsement_not_started),
-//                                stringResource(id = R.string.vo_endorsement_not_started),
                                 color = textColorDark,
                                 style = smallerTextStyle,
                                 modifier = Modifier
@@ -665,21 +661,7 @@ fun VillageAndVoBoxForBottomSheet(
 
                                     }
                                 },
-//                                text = stringResource(
-//                                    if (stepId == 44)
-//                                    //bengal
-//                                    {
-//                                        getBengalString(context,viewModel.prefRepo, R.string.vo_endorsement_completed_village_banner_text)
 //
-//                                    }
-//                                    else {
-//                                        if (statusId == StepStatus.COMPLETED.ordinal) {
-//                                            R.string.bpc_verification_completed_village_banner_text
-//                                        }
-//                                        //bengal
-//                                        else R.string.vo_endorsement_completed_village_banner_text
-//                                    }
-//                                )
                                 color = if (fetchBorderColorForVillage(
                                         stepId,
                                         statusId
@@ -698,9 +680,7 @@ fun VillageAndVoBoxForBottomSheet(
                 if(isUserBPC){
                 Text(
 
-                    text = getBengalString(context,stateId,R.plurals.vo_endorsement_not_started)
-//                    stringResource(id = R.string.vo_endorsement_not_started)
-              ,
+                    text = getBengalString(context,stateId,R.plurals.vo_endorsement_not_started),
                     color = textColorDark,
                     style = smallerTextStyle,
                     modifier = Modifier

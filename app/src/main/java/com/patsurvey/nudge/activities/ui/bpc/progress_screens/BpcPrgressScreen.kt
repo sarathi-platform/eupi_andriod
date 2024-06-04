@@ -542,8 +542,6 @@ fun BpcProgressScreen(
                                                         stringResource(R.string.summary_vo_endoresement_text_plural)
                                                     else
                                                         getBengalString(context,bpcProgreesScreenViewModel.getStateId(),R.plurals.summary_vo_endoresement_text_singular),
-//
-//                                                                stringResource(R.string.summary_vo_endoresement_text_singular),
                                                     style = TextStyle(
                                                         color = textColorDark,
                                                         fontSize = 15.sp,
@@ -580,16 +578,12 @@ fun BpcProgressScreen(
                                                             R.plurals.didis_endorsed_by_vo_plural
                                                         )
                                                     }
-//                 stringResource(R.string.didis_endorsed_by_vo_plural)
                                                     else
                                                         getBengalString(
                                                             context,
                                                             bpcProgreesScreenViewModel.getStateId(),
                                                             R.plurals.didi_endorsed_by_vo_singular
-                                                        )
-
-//                                                        stringResource(R.string.didi_endorsed_by_vo_singular)
-                                                    ,
+                                                        ),
                                                     style = TextStyle(
                                                         color = textColorDark,
                                                         fontSize = 15.sp,
@@ -874,8 +868,6 @@ fun BpcProgressScreen(
                                                     Spacer(modifier = Modifier.height(10.dp))
                                                     Text(
                                                         text = getBengalString(context,bpcProgreesScreenViewModel.getStateId(),R.plurals.vo_endorsement_completed),
-
-//                                                        stringResource(id = R.string.vo_endorsement_completed),
                                                         fontSize = 12.sp,
                                                         fontFamily = NotoSans,
                                                         fontWeight = FontWeight.Medium,

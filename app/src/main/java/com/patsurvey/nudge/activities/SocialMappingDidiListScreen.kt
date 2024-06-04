@@ -1510,13 +1510,10 @@ fun getLatestStatusText(context: Context, didi: DidiEntity,viewModel:AddDidiView
                 status = if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.forVoEndorsement == 1) {
                     when (didi.voEndorsementStatus) {
                         DidiEndorsementStatus.ENDORSED.ordinal, DidiEndorsementStatus.ACCEPTED.ordinal -> {
-
                             getBengalString(context,viewModel.getStateId(),R.plurals.vo_selected_status_text)
-//                            context.getString(R.string.vo_selected_status_text)
                         }
                         DidiEndorsementStatus.REJECTED.ordinal -> {
                             getBengalString(context,viewModel.getStateId(),R.plurals.vo_rejected_status_text)
-//                           context.getString(R.string.vo_rejected_status_text)
                         }
                         else -> {
                             context.getString(R.string.pat_selected_status_text)

@@ -909,7 +909,6 @@ fun FormPictureScreen(
                             navController.navigate(
                                 "vo_endorsement_step_completion_screen/${
                                     getBengalString(context,formPictureScreenViewModel.getStateId(),R.plurals.vo_endorsement_completed_message)
-//                                    localContext.getString(R.string.vo_endorsement_completed_message)
                                         .replace(
                                             "{VILLAGE_NAME}",
                                             formPictureScreenViewModel.villageEntity.value?.name ?: BLANK_STRING

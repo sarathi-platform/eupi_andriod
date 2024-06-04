@@ -830,8 +830,6 @@ private fun didiDetailConstraints(): ConstraintSet {
 
 fun getLatestStatusTextForBpc(context: Context, didi: DidiEntity,stateId:Int): String {
     return getBengalString(context,stateId,R.plurals.vo_selected_status_text)
-
-//    context.getString(R.string.vo_selected_status_text)
 }
 
 @Composable

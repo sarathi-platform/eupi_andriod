@@ -197,10 +197,7 @@ fun VoEndorsementScreen(
 
                         item {
                             Text(
-                                getBengalString(context ,viewModel.getStateId(), R.plurals.vo_endorsement_screen_title)
-                               ,
-
-//                                        stringResource(id = R.string.vo_endorsement_screen_title),
+                                getBengalString(context ,viewModel.getStateId(), R.plurals.vo_endorsement_screen_title),
                                 color = Color.Black,
                                 fontSize = 16.sp,
                                 fontFamily = NotoSans,

@@ -183,7 +183,7 @@ fun ProgressScreen(
                 ) {
                     Text(
                         getBengalString(context,viewModel.getStateId(),R.plurals.seletc_village_screen_text),
-//                                stringResource(R.string.seletc_village_screen_text),
+
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp,
@@ -387,11 +387,8 @@ fun ProgressScreen(
                                     4 -> ultraPoorDidiCount.value.let {
                                         if (it > 1)
                                             getBengalString(context,viewModel.getStateId(), R.plurals.pat_sub_text_plural)
-//                                            stringResource(id = R.string.pat_sub_text_plural, it)
                                         else
                                             getBengalString(context,viewModel.getStateId(), R.plurals.pat_sub_text_singular)
-
-//                                            stringResource(id = R.string.pat_sub_text_singular, it)
                                     }
                                     5 -> endorsedDidiCount.value.let {
                                         if (it > 1)

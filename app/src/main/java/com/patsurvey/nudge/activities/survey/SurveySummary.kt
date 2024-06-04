@@ -373,7 +373,7 @@ fun SurveySummary(
                             .padding(vertical = 2.dp)
                     ) {
                         Text(
-                            text = stringResource(id = if (fromScreen == ARG_FROM_PAT_SURVEY) R.string.pat_survey else R.string.vo_endorsement),
+                            text = if (fromScreen == ARG_FROM_PAT_SURVEY){stringResource( R.string.pat_survey)} else {getBengalString(context,surveySummaryViewModel.getStateId(),R.plurals.vo_endorsement)},
                             modifier = Modifier
                                 .align(Alignment.Center)
                                 .fillMaxWidth(),
@@ -587,12 +587,8 @@ fun SurveySummary(
                                                                 val emptyMessage = when (showDidiListForStatus.second) {
                                                                     DidiEndorsementStatus.REJECTED.ordinal ->
                                                                         getBengalString(context,surveySummaryViewModel.getStateId(),R.plurals.vo_summary_rejected_empty_text)
-
-//                                                                   stringResource(R.string.vo_summary_rejected_empty_text)
                                                                     DidiEndorsementStatus.ENDORSED.ordinal ->
                                                                         getBengalString(context,surveySummaryViewModel.getStateId(),R.plurals.vo_summary_endorsed_empty_text)
-
-//                                                                        stringResource(R.string.vo_summary_endorsed_empty_text)
                                                                     else -> {""}
                                                                 }
                                                                 append(emptyMessage)
@@ -726,7 +722,6 @@ fun SurveySummary(
                                 id = R.plurals.send_for_vo_text,
                                 2
                             )
-//    stringResource(id = R.string.send_for_vo_text)
                     } else {
                         if (showDidiListForStatus.first)
                             stringResource(id = R.string.done_text)

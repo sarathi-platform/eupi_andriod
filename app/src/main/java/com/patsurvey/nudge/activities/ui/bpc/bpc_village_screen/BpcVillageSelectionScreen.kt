@@ -179,7 +179,6 @@ fun BpcVillageSelectionScreen(
                     title = {
                         Text(
                             getBengalString(context,viewModel.getStateId(),R.plurals.seletc_village_screen_text),
-//                                    stringResource(R.string.seletc_village_screen_text),
                             fontFamily = NotoSans,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.SemiBold,
@@ -231,8 +230,6 @@ fun BpcVillageSelectionScreen(
                         Text(
                             text =
                             getBengalString(context,viewModel.getStateId(),R.plurals.seletc_village_screen_text),
-
-//                                    stringResource(R.string.seletc_village_screen_text),
                             fontFamily = NotoSans,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.SemiBold,
@@ -451,9 +448,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                             context,
                             stateId,
                             R.plurals.village_is_not_vo_endorsed_right_now
-                        )
-//                        context.getString(R.string.village_is_not_vo_endorsed_right_now)
-                    )
+                        ))
 
                     else -> onVillageSeleted(index)
                 }
@@ -587,8 +582,6 @@ fun BpcVillageAndVoBoxForBottomSheet(
                     if (bpcVillageStatus < BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal) {
                         Text(
                             text =getBengalString(context,stateId,R.plurals.seletc_village_screen_text),
-
-//                            stringResource(id = R.string.vo_endorsement_not_started),
                             color = textColorDark,
                             style = smallerTextStyle,
                             modifier = Modifier
@@ -597,12 +590,10 @@ fun BpcVillageAndVoBoxForBottomSheet(
                     }else {
                         Text(
                             text =
-//
                                 if (villageEntity.stepId == 44)
                                 {
                                     getBengalString(context,stateId,R.plurals.vo_endorsement_completed_village_banner_text)
                                     }
-//                                    R.string.vo_endorsement_completed_village_banner_text
                                 else {
                                     if (villageEntity.statusId == StepStatus.COMPLETED.ordinal)
                                         stringResource(R.string.bpc_verification_completed_village_banner_text)
@@ -610,11 +601,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                                         stringResource( R.string.bpc_verification_in_progress_village_banner_text)
                                     else
                                         getBengalString(context,stateId,R.plurals.vo_endorsement_completed_village_banner_text)
-
-//                                    R.string.vo_endorsement_completed_village_banner_text
-                                }
-
-                            ,
+                                     },
                             color = textColorDark,
                             style = smallerTextStyle,
                             modifier = Modifier.absolutePadding(bottom = 3.dp)
@@ -630,7 +617,6 @@ fun BpcVillageAndVoBoxForBottomSheet(
                 )
                 Text(
                     text = getBengalString(context,stateId,R.plurals.vo_endorsement_not_started),
-//                    stringResource(id = R.string.vo_endorsement_not_started),
                     color = textColorDark,
                     style = smallerTextStyle,
                     modifier = Modifier
