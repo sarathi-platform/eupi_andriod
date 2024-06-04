@@ -666,8 +666,6 @@ fun BpcProgressScreen(
 
                                             }
 
-
-
                                             Text(
                                                 text = stringResource(R.string.current_status_text),
                                                 style = buttonTextStyle,

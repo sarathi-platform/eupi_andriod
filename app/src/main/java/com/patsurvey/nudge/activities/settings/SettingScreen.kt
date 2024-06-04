@@ -116,6 +116,7 @@ import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PageFrom
@@ -1094,14 +1095,8 @@ fun showSyncDialog(
                                         modifier = Modifier
                                     )
                                     Text(
-                                        text =if(settingViewModel.prefRepo.getStateId()==34) pluralStringResource(
-                                            id = R.plurals.vo_endorsement,
-                                            1
-                                        )  else pluralStringResource(
-                                            id = R.plurals.vo_endorsement,
-                                            2
-                                        ),
-//                                              stringResource(id = R.string.vo_endorsement),
+
+                                        text =getVoNameForState(context,settingViewModel.getStateId(),R.plurals.vo_endorsement),
                                         style = didiDetailItemStyle,
                                         fontSize = 12.sp,
                                         textAlign = TextAlign.Start,

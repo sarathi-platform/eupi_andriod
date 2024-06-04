@@ -99,6 +99,10 @@ class SettingBSViewModel @Inject constructor(
     val formBAvailable = mutableStateOf(false)
     val formCAvailable = mutableStateOf(false)
     val loaderState: State<LoaderState> get() = _loaderState
+
+    fun getStateId():Int{
+        return prefRepo.getStateId()
+    }
     fun initOptions(context:Context) {
         applicationId.value= CoreAppDetails.getApplicationDetails()?.applicationID ?: BuildConfig.APPLICATION_ID
         userType = settingBSUserCase.getSettingOptionListUseCase.getUserType().toString()
@@ -323,7 +327,7 @@ class SettingBSViewModel @Inject constructor(
                                 selectedVillageId
                             )
 
-                        val isFormAGenerated = generateFormA(casteList, selectedVillageId, didiList)
+                        val isFormAGenerated = generateFormA(prefRepo.getStateId(),casteList, selectedVillageId, didiList)
                         addFormToUriList(
                             isFormAGenerated,
                             selectedVillageId,
@@ -331,7 +335,7 @@ class SettingBSViewModel @Inject constructor(
                             fileAndDbZipList
                         )
 
-                        val isFormBGenerated = generateFormB(casteList, selectedVillageId, didiList)
+                        val isFormBGenerated = generateFormB(prefRepo.getStateId() ,casteList, selectedVillageId, didiList)
                         addFormToUriList(
                             isFormBGenerated,
                             selectedVillageId,
@@ -339,7 +343,7 @@ class SettingBSViewModel @Inject constructor(
                             fileAndDbZipList
                         )
 
-                        val isFormCGenerated = generateFormc(casteList, selectedVillageId, didiList)
+                        val isFormCGenerated = generateFormc(prefRepo.getStateId(),casteList, selectedVillageId, didiList)
                         addFormToUriList(
                             isFormCGenerated,
                             selectedVillageId,
@@ -552,13 +556,13 @@ class SettingBSViewModel @Inject constructor(
                             selectedVillageId
                         )
 
-                    val isFormAGenerated = generateFormA(casteList, selectedVillageId, didiList)
+                    val isFormAGenerated = generateFormA(prefRepo.getStateId(),casteList, selectedVillageId, didiList)
                     addFormToUriList(isFormAGenerated, selectedVillageId, FORM_A_PDF_NAME, uris)
 
-                    val isFormBGenerated = generateFormB(casteList, selectedVillageId, didiList)
+                    val isFormBGenerated = generateFormB(prefRepo.getStateId() ,casteList, selectedVillageId, didiList)
                     addFormToUriList(isFormBGenerated, selectedVillageId, FORM_B_PDF_NAME, uris)
 
-                    val isFormCGenerated = generateFormc(casteList, selectedVillageId, didiList)
+                    val isFormCGenerated = generateFormc(prefRepo.getStateId(),casteList, selectedVillageId, didiList)
                     addFormToUriList(isFormCGenerated, selectedVillageId, FORM_C_PDF_NAME, uris)
 
                 }
@@ -576,11 +580,13 @@ class SettingBSViewModel @Inject constructor(
     }
 
     private suspend fun generateFormA(
+        stateId: Int,
         casteList: List<CasteEntity>,
         selectedVillageId: Int,
         didiList: List<DidiEntity>
     ) = PdfUtils.getFormAPdf(
         mAppContext,
+        stateId,
         villageEntity = prefRepo.getSelectedVillage(),
         casteList = casteList,
         didiDetailList = didiList,
@@ -592,12 +598,16 @@ class SettingBSViewModel @Inject constructor(
     )
 
     private suspend fun generateFormB(
+        stateId:Int,
         casteList: List<CasteEntity>,
         selectedVillageId: Int,
-        didiList: List<DidiEntity>
+        didiList: List<DidiEntity>,
+
     ) =
         PdfUtils.getFormBPdf(
-            mAppContext, villageEntity = prefRepo.getSelectedVillage(),
+            mAppContext,
+            stateId,
+            villageEntity = prefRepo.getSelectedVillage(),
             didiDetailList = didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit },
             casteList = casteList,
             completionDate = changeMilliDateToDate(
@@ -609,12 +619,15 @@ class SettingBSViewModel @Inject constructor(
         )
 
     private suspend fun generateFormc(
+        stateId: Int,
         casteList: List<CasteEntity>,
         selectedVillageId: Int,
         didiList: List<DidiEntity>
     ) =
         PdfUtils.getFormCPdf(
-            mAppContext, villageEntity = prefRepo.getSelectedVillage(),
+            mAppContext,
+            stateId ,
+            villageEntity = prefRepo.getSelectedVillage(),
             didiDetailList = didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal },
             casteList = casteList,
             completionDate = changeMilliDateToDate(

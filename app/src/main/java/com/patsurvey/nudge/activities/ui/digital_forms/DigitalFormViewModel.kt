@@ -111,6 +111,7 @@ class DigitalFormViewModel @Inject constructor(
                 }
                 PdfUtils.getFormAPdfForBpc(
                     context = context,
+                    getStateId(),
                     villageEntity = villageEntity,
                     didiDetailList = didiDetailListForBpc.value,
                     casteList = casteList.value,
@@ -127,6 +128,7 @@ class DigitalFormViewModel @Inject constructor(
                 }
                 PdfUtils.getFormAPdf(
                     context = context,
+                    getStateId() ,
                     villageEntity = villageEntity,
                     didiDetailList = didiDetailList.value,
                     casteList = casteList.value,
@@ -160,7 +162,9 @@ class DigitalFormViewModel @Inject constructor(
                     )
                 }
                 PdfUtils.getFormBPdfForBpc(
-                    context, villageEntity = digitalFormRepository.getSelectedVillage(),
+                    context,
+                    getStateId(),
+                    villageEntity = digitalFormRepository.getSelectedVillage(),
                     didiDetailList = didiDetailListForBpc.value.filter { it.forVoEndorsement == 1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit },
                     casteList = casteList.value,
                     completionDate = changeMilliDateToDate(
@@ -182,7 +186,9 @@ class DigitalFormViewModel @Inject constructor(
                     )
                 }
                 PdfUtils.getFormBPdf(
-                    context, villageEntity = digitalFormRepository.getSelectedVillage(),
+                    context,
+                    getStateId(),
+                    villageEntity = digitalFormRepository.getSelectedVillage(),
                     didiDetailList = didiDetailList.value.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit },
                     casteList = casteList.value,
                     completionDate = changeMilliDateToDate(
@@ -216,7 +222,9 @@ class DigitalFormViewModel @Inject constructor(
                     )
                 }
                 PdfUtils.getFormCPdfForBpc(
-                    context, villageEntity = digitalFormRepository.getSelectedVillage(),
+                    context,
+                    getStateId(),
+                    villageEntity = digitalFormRepository.getSelectedVillage(),
                     didiDetailList = didiDetailListForBpc.value.filter { it.forVoEndorsement == 1 && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal },
                     casteList = casteList.value,
                     completionDate = changeMilliDateToDate(
@@ -238,7 +246,9 @@ class DigitalFormViewModel @Inject constructor(
                     )
                 }
                 PdfUtils.getFormCPdf(
-                    context, villageEntity = digitalFormRepository.getSelectedVillage(),
+                    context,
+                    getStateId(),
+                    villageEntity = digitalFormRepository.getSelectedVillage(),
                     didiDetailList = didiDetailList.value.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal },
                     casteList = casteList.value,
                     completionDate = changeMilliDateToDate(

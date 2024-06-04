@@ -519,4 +519,6 @@
         <item quantity="one">CLF: </item>
         <item quantity="other">VO: </item>
     </plurals>
+    <string name="summary_vo_endoresement_text_plural">Didis sent for VO Endorsement</string>
+
 </resources>
