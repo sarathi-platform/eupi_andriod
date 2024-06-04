@@ -16,6 +16,7 @@ import com.sarathi.contentmodule.ui.component.BasicContentComponent
 import com.sarathi.missionactivitytask.navigation.navigateToSurveyScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.GrantTaskCard
 import com.sarathi.missionactivitytask.ui.components.ButtonComponent
+import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.BasicContent
 
@@ -23,6 +24,8 @@ import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.BasicCont
 fun GrantTaskList(
     taskList: HashMap<Int, HashMap<String, String>>,
     contents: List<BasicContent> = listOf(),
+    isSearch: Boolean = true,
+    onSearchValueChange: (String) -> Unit
     navController: NavController
 ) {
     Column {
@@ -38,6 +41,17 @@ fun GrantTaskList(
                     ButtonComponent(title = "+ ${contents.size - index} More Data")
                 }
             }
+        }
+        if (isSearch) {
+            SearchWithFilterViewComponent(placeholderString = "Search",
+                filterSelected = false,
+                modifier = Modifier.padding(horizontal = 10.dp),
+                showFilter = false,
+                onFilterSelected = {},
+                onSearchValueChange = { queryTerm ->
+                    onSearchValueChange(queryTerm)
+
+                })
         }
         Spacer(modifier = Modifier.height(20.dp))
         LazyColumn {

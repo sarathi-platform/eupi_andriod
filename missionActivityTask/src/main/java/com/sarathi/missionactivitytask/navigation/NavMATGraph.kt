@@ -30,14 +30,15 @@ import com.sarathi.missionactivitytask.ui.mission_screen.screen.GrantMissionScre
 import com.sarathi.surveymanager.ui.screen.SurveyScreen
 
 
-fun NavGraphBuilder.MatNavigation(navController: NavHostController) {
+fun NavGraphBuilder.MatNavigation(navController: NavHostController, onSettingIconClick: () -> Unit) {
     navigation(
         route = MAT_GRAPH,
         startDestination = MATHomeScreens.MissionScreen.route
     ) {
 
         composable(route = MATHomeScreens.MissionScreen.route) {
-            GrantMissionScreen(navController = navController, viewModel = hiltViewModel())
+            GrantMissionScreen(navController = navController, viewModel = hiltViewModel(),
+                onSettingClick = onSettingIconClick)
         }
         composable(
             route = MATHomeScreens.ActivityScreen.route, arguments = listOf(
@@ -56,7 +57,8 @@ fun NavGraphBuilder.MatNavigation(navController: NavHostController) {
                 ) ?: 0,
                 missionName = it.arguments?.getString(
                     ARG_MISSION_NAME
-                ) ?: BLANK_STRING
+                ) ?: BLANK_STRING,
+                onSettingClick = onSettingIconClick
             )
         }
         composable(
@@ -82,7 +84,8 @@ fun NavGraphBuilder.MatNavigation(navController: NavHostController) {
                 ) ?: 0,
                 activityName = it.arguments?.getString(
                     ARG_ACTIVITY_NAME
-                ) ?: BLANK_STRING
+                ) ?: BLANK_STRING,
+                onSettingClick = onSettingIconClick
             )
         }
 

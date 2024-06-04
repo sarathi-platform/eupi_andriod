@@ -18,7 +18,8 @@ fun GrantTaskScreen(
     viewModel: GrantTaskScreenViewModel = hiltViewModel(),
     missionId: Int,
     activityName: String,
-    activityId: Int
+    activityId: Int,
+    onSettingClick: () -> Unit
 ) {
     LaunchedEffect(key1 = true) {
         viewModel.setMissionActivityId(missionId, activityId)
@@ -37,14 +38,18 @@ fun GrantTaskScreen(
         },
         onBottomUI = {
         },
-        onContentUI = {
+        onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
             if (viewModel.taskList.value.isNotEmpty()) {
                 GrantTaskList(
                     taskList = viewModel.taskList.value,
+                    isSearch = isSearch,
+                    onSearchValueChange = onSearchValueChanged,
                     navController = navController
+
                 )
             }
-        }
+        },
+        onSettingClick = onSettingClick
     )
 }
 
