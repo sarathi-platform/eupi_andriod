@@ -22,7 +22,7 @@ import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.theme.defaultTextStyle
 import com.sarathi.missionactivitytask.ui.theme.dimen_10_dp
 import com.sarathi.smallgroupmodule.navigation.SMALL_GROUP_ATTENDANCE_SCREEN_ROUTE
-import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.event.SmallGroupAttendanceHistoryEvent
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.event.SmallGroupAttendanceEvent
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.viewModel.SmallGroupAttendanceHistoryViewModel
 import com.sarathi.smallgroupmodule.ui.theme.blueDark
 
@@ -37,7 +37,7 @@ fun SmallGroupAttendanceHistoryScreen(
     LaunchedEffect(key1 = Unit) {
 
         smallGroupAttendanceHistoryViewModel.onEvent(
-            SmallGroupAttendanceHistoryEvent.LoadSmallGroupDetailsForSmallGroupIdEvent(
+            SmallGroupAttendanceEvent.LoadSmallGroupDetailsForSmallGroupIdEvent(
                 smallGroupId
             )
         )
@@ -87,8 +87,7 @@ fun SmallGroupAttendanceHistoryScreen(
                     isActive = true,
                     isArrowRequired = true,
                     onClick = {
-                        //TODO Handle Navigation
-                        navController.navigate(SMALL_GROUP_ATTENDANCE_SCREEN_ROUTE)
+                        navController.navigate("$SMALL_GROUP_ATTENDANCE_SCREEN_ROUTE/$smallGroupId")
                     }
                 )
             }

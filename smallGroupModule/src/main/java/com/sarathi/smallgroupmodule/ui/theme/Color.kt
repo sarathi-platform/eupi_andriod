@@ -130,3 +130,5 @@ val summaryCardViewBlue = Color(0xFF325DF6)
 val trackLinearColor = Color(0xFFD1D5DE)
 
 val tabBgColor = Color(0xFFDCE2FF)
+
+val uncheckedTrackColor = Color(0xFFC0C6CE)

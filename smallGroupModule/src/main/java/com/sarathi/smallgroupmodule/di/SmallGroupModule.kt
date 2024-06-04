@@ -1,12 +1,16 @@
 package com.sarathi.smallgroupmodule.di
 
+import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.syncmanager.EventWriterHelper
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupFromNetworkUseCase
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepository
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepository
+import com.sarathi.smallgroupmodule.data.domain.EventWriterHelperImpl
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.repository.FetchDidiDetailsFromDbRepository
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.repository.FetchDidiDetailsFromDbRepositoryImpl
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.repository.FetchSmallGroupListFromDbRepository
@@ -14,6 +18,10 @@ import com.sarathi.smallgroupmodule.ui.didiTab.domain.repository.FetchSmallGroup
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.DidiTabUseCase
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.FetchDidiDetailsFromDbUseCase
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.FetchSmallGroupListsFromDbUseCase
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.FetchDidiListForSmallGroupFromDbRepository
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.FetchDidiListForSmallGroupFromDbRepositoryImpl
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.FetchDidiListForSmallGroupFromDbUseCase
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.SmallGroupAttendanceUserCase
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.repository.FetchSmallGroupDetailsFromDbRepository
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.repository.FetchSmallGroupDetailsFromDbRepositoryImpl
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.useCase.FetchSmallGroupDetailsFromDbUseCase
@@ -31,11 +39,12 @@ class SmallGroupModule {
     @Provides
     @Singleton
     fun provideFetchDidiDetailsFromDbRepository(
-//        corePrefRepo: CorePrefRepo,
+        corePrefRepo: CoreSharedPrefs,
         subjectEntityDao: SubjectEntityDao,
         smallGroupDidiMappingDao: SmallGroupDidiMappingDao
     ): FetchDidiDetailsFromDbRepository {
-        return FetchDidiDetailsFromDbRepositoryImpl(/*corePrefRepo, */subjectEntityDao,
+        return FetchDidiDetailsFromDbRepositoryImpl(
+            corePrefRepo, subjectEntityDao,
             smallGroupDidiMappingDao
         )
     }
@@ -115,6 +124,60 @@ class SmallGroupModule {
     ): FetchSmallGroupDetailsFromDbRepository {
         return FetchSmallGroupDetailsFromDbRepositoryImpl(
             coreSharedPrefs, smallGroupDidiMappingDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSmallGroupAttendanceUserCase(
+        fetchSmallGroupDetailsFromDbRepository: FetchSmallGroupDetailsFromDbRepository,
+        fetchDidiListForSmallGroupFromDbRepository: FetchDidiListForSmallGroupFromDbRepository,
+    ): SmallGroupAttendanceUserCase {
+        return SmallGroupAttendanceUserCase(
+            fetchSmallGroupDetailsFromDbUseCase = FetchSmallGroupDetailsFromDbUseCase(
+                fetchSmallGroupDetailsFromDbRepository
+            ),
+            fetchDidiListForSmallGroupFromDbUseCase = FetchDidiListForSmallGroupFromDbUseCase(
+                fetchDidiListForSmallGroupFromDbRepository
+            )
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchDidiListForSmallGroupFromDbUseCase(
+        fetchDidiListForSmallGroupFromDbRepository: FetchDidiListForSmallGroupFromDbRepository,
+    ): FetchDidiListForSmallGroupFromDbUseCase {
+        return FetchDidiListForSmallGroupFromDbUseCase(fetchDidiListForSmallGroupFromDbRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchDidiListForSmallGroupFromDbRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        smallGroupDidiMappingDao: SmallGroupDidiMappingDao,
+        subjectEntityDao: SubjectEntityDao
+    ): FetchDidiListForSmallGroupFromDbRepository {
+        return FetchDidiListForSmallGroupFromDbRepositoryImpl(
+            coreSharedPrefs, smallGroupDidiMappingDao, subjectEntityDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideEventWriterHelper(
+        coreSharedPrefs: CoreSharedPrefs,
+        eventsDao: EventsDao,
+        eventDependencyDao: EventDependencyDao,
+        subjectEntityDao: SubjectEntityDao,
+        smallGroupDidiMappingDao: SmallGroupDidiMappingDao
+    ): EventWriterHelper {
+        return EventWriterHelperImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            eventsDao = eventsDao,
+            eventDependencyDao = eventDependencyDao,
+            subjectEntityDao = subjectEntityDao,
+            smallGroupDidiMappingDao = smallGroupDidiMappingDao
         )
     }
 

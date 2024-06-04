@@ -3,6 +3,8 @@ package com.nudge.core.preference
 import android.content.Context
 import android.content.SharedPreferences
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -32,6 +34,8 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
 
         //        const val PREF_USER_TYPE = "pref_user_type"
         const val PREF_MOBILE_NUMBER = "pref_mobile_number"
+        const val PREF_KEY_LANGUAGE_CODE = "language_code"
+        const val PREF_KEY_LANGUAGE_ID = "language_id"
 
 
         @Volatile
@@ -115,6 +119,15 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
 
     override fun getUserId(): String {
         return prefs.getString(PREF_KEY_USER_NAME, BLANK_STRING) ?: BLANK_STRING
+    }
+
+    override fun getSelectedLanguageCode(): String {
+        return prefs.getString(PREF_KEY_LANGUAGE_CODE, DEFAULT_LANGUAGE_CODE)
+            ?: DEFAULT_LANGUAGE_CODE
+    }
+
+    override fun getSelectedLanguageId(): Int {
+        return prefs.getInt(PREF_KEY_LANGUAGE_ID, DEFAULT_LANGUAGE_ID) ?: 2
     }
 
     override fun saveUserId(userId: String) {

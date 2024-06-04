@@ -33,8 +33,18 @@ fun NavGraphBuilder.SmallGroupNavigation(navController: NavHostController) {
             )
         }
 
-        composable(route = SmallGroupScreens.SmallGroupAttendanceScreen.route) {
-            SmallGroupAttendanceScreen()
+        composable(route = SmallGroupScreens.SmallGroupAttendanceScreen.route, arguments =
+        listOf(
+            navArgument(ARG_SMALL_GROUP_ID) {
+                type = NavType.IntType
+            }
+        )
+        ) {
+            SmallGroupAttendanceScreen(
+                smallGroupId = it.arguments?.getInt(ARG_SMALL_GROUP_ID) ?: 0,
+                smallGroupAttendanceScreenViewModel = hiltViewModel(),
+                navHostController = navController
+            )
         }
 
     }
@@ -48,7 +58,7 @@ sealed class SmallGroupScreens(val route: String) {
         SmallGroupScreens(route = SMALL_GROUP_ATTENDANCE_HISTORY_SCREEN)
 
     object SmallGroupAttendanceScreen :
-        SmallGroupScreens(route = SMALL_GROUP_ATTENDANCE_SCREEN_ROUTE)
+        SmallGroupScreens(route = SMALL_GROUP_ATTENDANCE_SCREEN)
 
 }
 
@@ -64,4 +74,4 @@ const val SMALL_GROUP_ATTENDANCE_HISTORY_SCREEN_ROUTE = "small_group_attendance_
 
 const val SMALL_GROUP_ATTENDANCE_SCREEN_ROUTE = "small_group_attendance_screen"
 const val SMALL_GROUP_ATTENDANCE_SCREEN =
-    "small_group_attendance_screen/{$ARG_SMALL_GROUP_ID}"
+    "$SMALL_GROUP_ATTENDANCE_SCREEN_ROUTE/{$ARG_SMALL_GROUP_ID}"

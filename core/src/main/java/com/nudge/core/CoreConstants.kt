@@ -51,6 +51,9 @@ const val FAIL = "FAIL"
 
 const val SUCCESS_CODE = "200"
 
+const val DEFAULT_LANGUAGE_CODE = "en"
+const val DEFAULT_LANGUAGE_ID = 2
+
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),
     DbEventWrite(),

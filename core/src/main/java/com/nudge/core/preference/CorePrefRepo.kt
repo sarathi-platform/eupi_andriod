@@ -20,6 +20,10 @@ interface CorePrefRepo {
     fun setUserType(userTypes: String)
     fun getUniqueUserIdentifier(): String
 
+    fun getSelectedLanguageId(): Int
+
+    fun getSelectedLanguageCode(): String
+
     fun savePref(key: String, value: String)
 
     fun savePref(key: String, value: Int)

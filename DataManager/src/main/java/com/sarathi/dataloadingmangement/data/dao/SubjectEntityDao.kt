@@ -16,13 +16,13 @@ interface SubjectEntityDao {
     fun addAllSubjects(subjectEntityList: List<SubjectEntity>)
 
     @Query("SELECT * from $SUBJECT_TABLE where subjectId = :subjectId and userId = :userId")
-    fun getSubjectForId(subjectId: Int, userId: String): SubjectEntity
+    suspend fun getSubjectForId(subjectId: Int, userId: String): SubjectEntity
 
     @Query("SELECT * from $SUBJECT_TABLE where userId = :userId")
     fun getAllSubjects(userId: String): List<SubjectEntity>
 
     @Query("SELECT * from $SUBJECT_TABLE where userId = :userId and subjectId in (:subjectIds)")
-    fun getAllSubjectForIds(userId: String, subjectIds: List<Int>): List<SubjectEntity>
+    suspend fun getAllSubjectForIds(userId: String, subjectIds: List<Int>): List<SubjectEntity>
 
     @Query("SELECT count(*) from $SUBJECT_TABLE where userId = :userId")
     fun getCountForSubject(userId: String): Int

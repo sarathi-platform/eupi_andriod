@@ -39,8 +39,8 @@ class FetchDidiDetailsFromNetworkRepositoryImpl @Inject constructor(
     }
 
     override suspend fun saveDidiDetailsToDb(beneficiaryApiResponse: BeneficiaryApiResponse) {
-        val uniqueUserId = /*corePrefRepo.getUniqueUserIdentifier()*/
-            "Ultra Poor change maker (UPCM)_6789543210"
+        val uniqueUserId = corePrefRepo.getUniqueUserIdentifier()
+//            "Ultra Poor change maker (UPCM)_6789543210"
 
         beneficiaryApiResponse.didiList.forEach {
             val isSubjectPresentInDb =

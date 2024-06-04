@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.useCase.SmallGroupAttendanceHistoryUseCase
-import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.event.SmallGroupAttendanceHistoryEvent
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.event.SmallGroupAttendanceEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,7 +25,7 @@ class SmallGroupAttendanceHistoryViewModel @Inject constructor(
 
     override fun <T> onEvent(event: T) {
         when (event) {
-            is SmallGroupAttendanceHistoryEvent.LoadSmallGroupDetailsForSmallGroupIdEvent -> {
+            is SmallGroupAttendanceEvent.LoadSmallGroupDetailsForSmallGroupIdEvent -> {
 
                 viewModelScope.launch(Dispatchers.IO) {
 

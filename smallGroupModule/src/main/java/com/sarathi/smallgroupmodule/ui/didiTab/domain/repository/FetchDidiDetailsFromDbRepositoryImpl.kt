@@ -1,12 +1,13 @@
 package com.sarathi.smallgroupmodule.ui.didiTab.domain.repository
 
+import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import javax.inject.Inject
 
 class FetchDidiDetailsFromDbRepositoryImpl @Inject constructor(
-//    private val prefRepo: CorePrefRepo,
+    private val prefRepo: CoreSharedPrefs,
     private val subjectEntityDao: SubjectEntityDao,
     private val smallGroupDidiMappingDao: SmallGroupDidiMappingDao
 ) : FetchDidiDetailsFromDbRepository {
@@ -29,7 +30,7 @@ class FetchDidiDetailsFromDbRepositoryImpl @Inject constructor(
         return subjectEntityDao.getCountForSubject(userId)
     }
 
-    override fun getUniqueUserId() = /*prefRepo.getUniqueUserIdentifier()*/
-        "Ultra Poor change maker (UPCM)_6789543210" //TODO Temp code remove after integrating corePref
+    override fun getUniqueUserId() = prefRepo.getUniqueUserIdentifier()
+    /*"Ultra Poor change maker (UPCM)_6789543210"*/ //TODO Temp code remove after integrating corePref
 
 }
