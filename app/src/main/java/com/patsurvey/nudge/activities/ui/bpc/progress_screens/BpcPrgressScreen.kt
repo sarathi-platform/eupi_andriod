@@ -539,7 +539,7 @@ fun BpcProgressScreen(
                                                 Spacer(modifier = Modifier.width(10.dp))
                                                 TableCell(
                                                     text = if ((bpcSummaryData.value.sentVoEndorsementCount ?: 0) > 1)
-                                                        stringResource(R.string.summary_vo_endoresement_text_plural)
+                                                        getVoNameForState(context,bpcProgreesScreenViewModel.getStateId(),R.plurals.summary_vo_endoresement_text_plural)
                                                     else getVoNameForState(context,bpcProgreesScreenViewModel.getStateId(),R.plurals.summary_vo_endoresement_text_singular),
                                                     style = TextStyle(
                                                         color = textColorDark,
