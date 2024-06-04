@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.GrantTaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -44,8 +45,10 @@ fun GrantTaskScreen(
                     taskList = viewModel.taskList.value,
                     isSearch = isSearch,
                     onSearchValueChange = onSearchValueChanged,
-                    navController = navController
-
+                    navController = navController,
+                    onContentData = { contentValue, contentKey, contentType ->
+                        navigateToMediaPlayerScreen(navController, contentKey, contentType)
+                    }
                 )
             }
         },
