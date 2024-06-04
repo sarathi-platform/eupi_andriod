@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.preference.CoreSharedPrefs
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
@@ -24,6 +25,20 @@ class SurveySaveRepositoryImpl @Inject constructor(
                 taskId = 0
             )
         )
+    }
+
+    override fun getSurveyAnswerForTag(taskId: Int, subjectId: Int, tagId: String): String {
+        val surveyAnswerEntity = surveyAnswersDao.getSurveyAnswerForTag(
+            taskId,
+            subjectId,
+            tagId.toInt(),
+            coreSharedPrefs.getUniqueUserIdentifier()
+        )
+        val result = ArrayList<String>()
+        surveyAnswerEntity.optionItems.forEach {
+            result.add(it.selectedValue ?: BLANK_STRING)
+        }
+        return result.joinToString(",")
     }
 
 

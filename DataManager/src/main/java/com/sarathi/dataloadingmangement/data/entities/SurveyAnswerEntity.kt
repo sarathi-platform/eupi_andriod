@@ -54,6 +54,10 @@ data class SurveyAnswerEntity(
     @Expose
     @ColumnInfo(name = "taskId")
     var taskId: Int,
+    @SerializedName("taskId")
+    @Expose
+    @ColumnInfo(name = "tagId")
+    var tagId: Int,
 
     @SerializedName("answerValue")
     @Expose
@@ -96,7 +100,8 @@ data class SurveyAnswerEntity(
                 answerValue = "",
                 questionSummary = question.questionSummary,
                 optionItems = question.options ?: listOf(),
-                subjectId = subjectId
+                subjectId = subjectId,
+                tagId = question.tagId
 
 
             )
