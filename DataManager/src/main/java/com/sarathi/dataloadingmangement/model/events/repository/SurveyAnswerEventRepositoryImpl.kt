@@ -68,6 +68,6 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
 
         }
 
-
+        return result
     }
 }

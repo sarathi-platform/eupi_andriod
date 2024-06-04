@@ -1,7 +1,6 @@
 package com.sarathi.dataloadingmangement.model.events
 
 import com.google.gson.annotations.SerializedName
-import com.nrlm.baselinesurvey.utils.states.SectionStatus
 
 data class UpdateMissionStatusEventDto(
     @SerializedName("missionId")
@@ -13,5 +12,5 @@ data class UpdateMissionStatusEventDto(
     @SerializedName("referenceType")
     val referenceType: String,
     @SerializedName("status")
-    val status: SectionStatus
+    val status: String
 )

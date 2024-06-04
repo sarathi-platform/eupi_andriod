@@ -41,13 +41,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun SurveyScreen(
     navController: NavController = rememberNavController(),
-    viewModel: SurveyScreenViewModel
+    viewModel: SurveyScreenViewModel,
+    surveyId: Int, sectionId: Int, taskId: Int, subjectType: String
 ) {
     val outerState = rememberLazyListState()
     val innerState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = true) {
+        viewModel.setPreviousScreenData(surveyId, sectionId, taskId, subjectType)
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(InitDataEvent.InitDataState)
     }

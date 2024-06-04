@@ -3,9 +3,11 @@ package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.BLANK_STRING
+import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
+import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityUiConfigUseCase
-import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetTaskUseCase
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
 import com.sarathi.missionactivitytask.ui.grantTask.model.UiConfigAttributeType
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -24,9 +26,11 @@ class GrantTaskScreenViewModel @Inject constructor(
     private val getTaskUseCase: GetTaskUseCase,
     private val surveyAnswerUseCase: SaveSurveyAnswerUseCase,
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
+    private val getActivityConfigUseCase: GetActivityConfigUseCase
 ) : BaseViewModel() {
     private var missionId = 0
     private var activityId = 0
+    var activityConfigUiModel: ActivityConfigUiModel? = null
     private val _taskList = mutableStateOf<HashMap<Int, HashMap<String, String>>>(hashMapOf())
     val taskList: State<HashMap<Int, HashMap<String, String>>> get() = _taskList
     override fun <T> onEvent(event: T) {
@@ -47,6 +51,7 @@ class GrantTaskScreenViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val taskUiModel =
                 getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
+            getSurveyDetail()
             taskUiModel.forEach {
 
                 _taskList.value[it.taskId] =
@@ -66,7 +71,7 @@ class GrantTaskScreenViewModel @Inject constructor(
         subjectId: Int
     ): HashMap<String, String> {
         val cardAttributesWithValue = HashMap<String, String>()
-        cardAttributesWithValue[GrantTaskCardSlots.GRANT_TASK_STATUS.name]= taskStatus
+        cardAttributesWithValue[GrantTaskCardSlots.GRANT_TASK_STATUS.name] = taskStatus
         val activityConfig = getActivityUiConfigUseCase.getActivityUiConfig(
             missionId = missionId, activityId = activityId
         )
@@ -83,6 +88,7 @@ class GrantTaskScreenViewModel @Inject constructor(
                     subjectId,
                     cardAttribute.value
                 )
+
                 else -> {
                     ""
                 }
@@ -105,6 +111,11 @@ class GrantTaskScreenViewModel @Inject constructor(
     fun setMissionActivityId(missionId: Int, activityId: Int) {
         this.missionId = missionId
         this.activityId = activityId
+    }
+
+    suspend fun getSurveyDetail() {
+        activityConfigUiModel = getActivityConfigUseCase.getActivityUiConfig(activityId)
+
     }
 
 }

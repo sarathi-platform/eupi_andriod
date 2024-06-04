@@ -6,6 +6,7 @@ import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
@@ -15,6 +16,7 @@ class SurveyRepositoryImpl @Inject constructor(
     private val questionDao: QuestionEntityDao,
     private val surveyAnswersDao: SurveyAnswersDao,
     private val optionItemDao: OptionItemDao,
+    private val surveyEntityDao: SurveyEntityDao,
     val coreSharedPrefs: CoreSharedPrefs
 ) :
     ISurveyRepository {
@@ -24,7 +26,11 @@ class SurveyRepositoryImpl @Inject constructor(
         sectionId: Int
     ): List<QuestionUiModel> {
 
-
+        val surveyName = surveyEntityDao.getSurveyDetailForLanguage(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            surveyId = surveyId,
+            languageId = coreSharedPrefs.getAppLanguage()
+        )?.surveyName
         val questionUiList = ArrayList<QuestionUiModel>()
         val optionItems = optionItemDao.getSurveySectionQuestionOptionsForLanguage(
             languageId = coreSharedPrefs.getAppLanguage(),
@@ -60,7 +66,8 @@ class SurveyRepositoryImpl @Inject constructor(
                     surveyAnswerList
                 ),
                 isMandatory = it.isMandatory,
-                tagId = it.tag
+                tagId = it.tag,
+                surveyName = surveyName ?: BLANK_STRING
             )
             questionUiList.add(questionUiModel)
 

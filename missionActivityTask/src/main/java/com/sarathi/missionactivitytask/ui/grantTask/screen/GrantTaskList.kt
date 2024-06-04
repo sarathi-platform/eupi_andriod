@@ -14,7 +14,6 @@ import com.nudge.core.BLANK_STRING
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
-import com.sarathi.missionactivitytask.navigation.navigateToSurveyScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.GrantTaskCard
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
@@ -27,6 +26,7 @@ fun GrantTaskList(
     isSearch: Boolean = true,
     onSearchValueChange: (String) -> Unit,
     navController: NavController,
+    onPrimaryButtonClick: (Int) -> Unit,
     onContentData: (contentValue: String, contentKey: String, contentType: String) -> Unit,
 ) {
     Column {
@@ -57,7 +57,7 @@ fun GrantTaskList(
 
                 GrantTaskCard(
                     onPrimaryButtonClick = {
-                        navigateToSurveyScreen(navController)
+                        onPrimaryButtonClick(task.key)
                     },
                     title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name] ?: BLANK_STRING,
                     subTitle = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name]

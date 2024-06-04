@@ -8,6 +8,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
+import com.sarathi.missionactivitytask.navigation.navigateToSurveyScreen
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.GrantTaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -48,6 +49,18 @@ fun GrantTaskScreen(
                     navController = navController,
                     onContentData = { contentValue, contentKey, contentType ->
                         navigateToMediaPlayerScreen(navController, contentKey, contentType)
+                    },
+                    onPrimaryButtonClick = { taskId ->
+                        viewModel.activityConfigUiModel?.let {
+                            navigateToSurveyScreen(
+                                navController,
+                                taskId = taskId,
+                                surveyId = it.surveyId,
+                                sectionId = it.sectionId,
+                                subjectType = it.subject
+                            )
+
+                        }
                     }
                 )
             }

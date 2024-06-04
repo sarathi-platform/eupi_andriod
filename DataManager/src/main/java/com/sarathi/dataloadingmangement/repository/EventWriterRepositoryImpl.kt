@@ -145,10 +145,7 @@ class EventWriterRepositoryImpl @Inject constructor(
                 event = event,
                 dependencyEntity = listOf(),
                 listOf(
-                    EventWriterName.FILE_EVENT_WRITER,
                     EventWriterName.IMAGE_EVENT_WRITER,
-                    EventWriterName.DB_EVENT_WRITER,
-                    EventWriterName.LOG_EVENT_WRITER
                 ), uri
             )
         } catch (exception: Exception) {

@@ -1,0 +1,73 @@
+package com.sarathi.dataloadingmangement.domain.use_case
+
+import com.nudge.core.enums.EventName
+import com.nudge.core.enums.EventType
+import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
+import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
+import com.sarathi.dataloadingmangement.data.entities.MissionEntity
+import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.IMATStatusEventRepository
+
+class MATStatusEventWriterUseCase(
+    private val repository: IMATStatusEventRepository,
+    private val eventWriterRepositoryImpl: EventWriterRepositoryImpl
+) {
+    suspend fun updateTaskStatus(
+        taskEntity: ActivityTaskEntity, surveyName: String, subjectType: String
+    ) {
+
+        val saveAnswerEventDto = repository.writeTaskStatusEvent(
+            taskEntity = taskEntity, subjectType = subjectType
+        )
+        eventWriterRepositoryImpl.createAndSaveEvent(
+            saveAnswerEventDto, EventName.UPDATE_TASK_STATUS_EVENT, EventType.STATEFUL, surveyName
+        )?.let {
+
+            eventWriterRepositoryImpl.saveEventToMultipleSources(
+                it, listOf(), EventType.STATEFUL
+            )
+        }
+    }
+
+    suspend fun updateActivityStatus(
+        activityEntity: ActivityEntity,
+        surveyName: String,
+    ) {
+
+        val saveAnswerEventDto = repository.writeActivityStatusEvent(
+            activityEntity
+        )
+        eventWriterRepositoryImpl.createAndSaveEvent(
+            saveAnswerEventDto,
+            EventName.UPDATE_ACTIVITY_STATUS_EVENT,
+            EventType.STATEFUL,
+            surveyName
+        )?.let {
+
+            eventWriterRepositoryImpl.saveEventToMultipleSources(
+                it, listOf(), EventType.STATEFUL
+            )
+
+
+        }
+    }
+
+    suspend fun updateMissionStatus(
+        missionEntity: MissionEntity,
+    ) {
+
+        val saveAnswerEventDto = repository.writeMissionStatusEvent(missionEntity)
+        eventWriterRepositoryImpl.createAndSaveEvent(
+            saveAnswerEventDto, EventName.UPDATE_MISSION_STATUS_EVENT, EventType.STATEFUL, ""
+        )?.let {
+
+            eventWriterRepositoryImpl.saveEventToMultipleSources(
+                it, listOf(), EventType.STATEFUL
+            )
+
+
+        }
+    }
+
+
+}

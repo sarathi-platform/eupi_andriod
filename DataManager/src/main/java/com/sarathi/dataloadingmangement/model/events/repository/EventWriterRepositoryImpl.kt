@@ -11,6 +11,10 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toDate
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventDto
+import com.sarathi.dataloadingmangement.model.events.SectionStatusUpdateEventDto
+import com.sarathi.dataloadingmangement.model.events.UpdateActivityStatusEventDto
+import com.sarathi.dataloadingmangement.model.events.UpdateMissionStatusEventDto
+import com.sarathi.dataloadingmangement.model.events.UpdateTaskStatusEventDto
 import javax.inject.Inject
 
 class EventWriterRepositoryImpl @Inject constructor(
@@ -37,22 +41,22 @@ class EventWriterRepositoryImpl @Inject constructor(
 
 
             EventName.UPDATE_TASK_STATUS_EVENT -> {
-                requestPayload = (eventItem as UpdateTaskStatusEventDto)
+                requestPayload = (eventItem as UpdateTaskStatusEventDto).json()
             }
 
             EventName.UPDATE_ACTIVITY_STATUS_EVENT -> {
-                requestPayload = (eventItem as UpdateActivityStatusEventDto)
+                requestPayload = (eventItem as UpdateActivityStatusEventDto).json()
             }
 
             EventName.UPDATE_MISSION_STATUS_EVENT -> {
-                requestPayload = (eventItem as UpdateMissionStatusEventDto)
+                requestPayload = (eventItem as UpdateMissionStatusEventDto).json()
 
             }
 
             EventName.ADD_SECTION_PROGRESS_FOR_DIDI_EVENT,
             EventName.UPDATE_SECTION_PROGRESS_FOR_DIDI_EVENT -> {
 
-                requestPayload = (eventItem as SectionStatusUpdateEventDto)
+                requestPayload = (eventItem as SectionStatusUpdateEventDto).json()
             }
 
             else -> {
