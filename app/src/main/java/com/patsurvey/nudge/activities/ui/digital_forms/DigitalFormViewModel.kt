@@ -51,7 +51,7 @@ class DigitalFormViewModel @Inject constructor(
     val casteList: StateFlow<List<CasteEntity>> get() = _casteList
     var villageId: Int = -1
     fun getStateId():Int{
-        return digitalFormRepository.prefRepo.getPref(PREF_KEY_TYPE_STATE_ID, 4)
+        return digitalFormRepository.prefRepo.getStateId()
     }
     init {
         villageId = digitalFormRepository.getSelectedVillage().id

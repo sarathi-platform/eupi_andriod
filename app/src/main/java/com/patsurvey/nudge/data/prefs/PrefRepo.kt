@@ -4,6 +4,7 @@ import com.patsurvey.nudge.database.VillageEntity
 
 
 interface PrefRepo {
+   fun getStateId():Int
    fun getAppLanguage():String?
    fun saveAppLanguage(code: String?)
 

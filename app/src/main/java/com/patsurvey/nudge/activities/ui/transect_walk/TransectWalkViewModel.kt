@@ -1312,7 +1312,7 @@ class TransectWalkViewModel @Inject constructor(
 
 
     fun getStateId(): Int {
-        return transectWalkRepository.prefRepo.getPref(PREF_KEY_TYPE_STATE_ID, 4)
+        return transectWalkRepository.prefRepo.getStateId()
     }
 
 }

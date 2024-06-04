@@ -72,7 +72,7 @@ class WealthRankingViewModel @Inject constructor(
         fetchDidisFromDB()
     }
     fun getStateId():Int{
-        return prefRepo.getPref(PREF_KEY_TYPE_STATE_ID, 4)
+        return prefRepo.getStateId()
     }
     fun fetchDidisFromDB() {
         showLoader.value = true

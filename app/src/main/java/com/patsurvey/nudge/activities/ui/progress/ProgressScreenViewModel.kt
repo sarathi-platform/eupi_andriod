@@ -63,8 +63,7 @@ class ProgressScreenViewModel @Inject constructor(
 
     val isVoEndorsementComplete = mutableStateOf(mutableMapOf<Int, Boolean>())
     fun getStateId():Int{
-        return progressScreenRepository.prefRepo.getPref(PREF_KEY_TYPE_STATE_ID, 4)
-    }
+        return progressScreenRepository.prefRepo.getStateId()    }
     fun isLoggedIn() = (progressScreenRepository.getAccessToken()?.isNotEmpty() == true)
 
     val pref = progressScreenRepository.prefRepo

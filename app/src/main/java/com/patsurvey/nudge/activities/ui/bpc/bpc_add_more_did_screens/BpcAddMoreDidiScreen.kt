@@ -100,7 +100,7 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
-import com.patsurvey.nudge.utils.NudgeCore.getBengalString
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import java.io.File
 
 @Composable
@@ -829,7 +829,7 @@ private fun didiDetailConstraints(): ConstraintSet {
 }
 
 fun getLatestStatusTextForBpc(context: Context, didi: DidiEntity,stateId:Int): String {
-    return getBengalString(context,stateId,R.plurals.vo_selected_status_text)
+    return getVoNameForState(context,stateId,R.plurals.vo_selected_status_text)
 }
 
 @Composable

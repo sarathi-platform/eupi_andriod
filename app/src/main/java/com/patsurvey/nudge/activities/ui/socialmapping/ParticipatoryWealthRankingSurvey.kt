@@ -112,7 +112,7 @@ import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
-import com.patsurvey.nudge.utils.NudgeCore.getBengalString
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.WealthRank
@@ -970,11 +970,11 @@ fun getLatestStatusTextForWealthRankingCard(
                     if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.forVoEndorsement == 1) {
                         when (didi.voEndorsementStatus) {
                             DidiEndorsementStatus.ENDORSED.ordinal, DidiEndorsementStatus.ACCEPTED.ordinal -> {
-                                getBengalString(context, stateId, R.plurals.vo_selected_status_text)
+                                getVoNameForState(context, stateId, R.plurals.vo_selected_status_text)
                             }
 
                             DidiEndorsementStatus.REJECTED.ordinal -> {
-                                getBengalString(context, stateId, R.plurals.vo_rejected_status_text)
+                                getVoNameForState(context, stateId, R.plurals.vo_rejected_status_text)
                             }
 
                             else -> {

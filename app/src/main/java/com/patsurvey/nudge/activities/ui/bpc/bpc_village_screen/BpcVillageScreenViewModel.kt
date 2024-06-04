@@ -67,7 +67,7 @@ class BpcVillageScreenViewModel @Inject constructor(
     val filterVillageList: StateFlow<List<VillageEntity>> get() = _filterVillageList
     val showUserChangedDialog = mutableStateOf(false)
     fun getStateId():Int{
-        return prefRepo.getPref(PREF_KEY_TYPE_STATE_ID, 4)
+        return prefRepo.getStateId()
     }
     fun init () {
         showLoader.value = true

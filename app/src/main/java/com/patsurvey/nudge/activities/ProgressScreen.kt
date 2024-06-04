@@ -94,8 +94,7 @@ import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
 import com.patsurvey.nudge.utils.ARG_FROM_PROGRESS
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.IconButtonForward
-import com.patsurvey.nudge.utils.NudgeCore
-import com.patsurvey.nudge.utils.NudgeCore.getBengalString
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
 import com.patsurvey.nudge.utils.PREF_KEY_NAME
@@ -182,7 +181,9 @@ fun ProgressScreen(
                         .height(((2 * screenHeight) / 3).dp)
                 ) {
                     Text(
-                        getBengalString(context,viewModel.getStateId(),R.plurals.seletc_village_screen_text),
+
+
+                        getVoNameForState(context,viewModel.getStateId(),R.plurals.seletc_village_screen_text),
 
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.SemiBold,
@@ -386,9 +387,9 @@ fun ProgressScreen(
                                     }
                                     4 -> ultraPoorDidiCount.value.let {
                                         if (it > 1)
-                                            getBengalString(context,viewModel.getStateId(), R.plurals.pat_sub_text_plural)
+                                            getVoNameForState(context,viewModel.getStateId(), R.plurals.pat_sub_text_plural)
                                         else
-                                            getBengalString(context,viewModel.getStateId(), R.plurals.pat_sub_text_singular)
+                                            getVoNameForState(context,viewModel.getStateId(), R.plurals.pat_sub_text_singular)
                                     }
                                     5 -> endorsedDidiCount.value.let {
                                         if (it > 1)

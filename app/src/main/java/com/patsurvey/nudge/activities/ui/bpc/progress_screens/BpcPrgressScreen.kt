@@ -96,7 +96,7 @@ import com.patsurvey.nudge.utils.ConnectionMonitor
 import com.patsurvey.nudge.utils.DottedShape
 import com.patsurvey.nudge.utils.IconButtonForward
 import com.patsurvey.nudge.utils.NudgeCore
-import com.patsurvey.nudge.utils.NudgeCore.getBengalString
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
 import com.patsurvey.nudge.utils.PREF_KEY_NAME
@@ -540,8 +540,7 @@ fun BpcProgressScreen(
                                                 TableCell(
                                                     text = if ((bpcSummaryData.value.sentVoEndorsementCount ?: 0) > 1)
                                                         stringResource(R.string.summary_vo_endoresement_text_plural)
-                                                    else
-                                                        getBengalString(context,bpcProgreesScreenViewModel.getStateId(),R.plurals.summary_vo_endoresement_text_singular),
+                                                    else getVoNameForState(context,bpcProgreesScreenViewModel.getStateId(),R.plurals.summary_vo_endoresement_text_singular),
                                                     style = TextStyle(
                                                         color = textColorDark,
                                                         fontSize = 15.sp,
@@ -571,15 +570,13 @@ fun BpcProgressScreen(
                                                 )
                                                 Spacer(modifier = Modifier.width(10.dp))
                                                 TableCell(
-                                                    text = if ((bpcSummaryData.value.voEndorsedCount ?: 0) > 1) {
-                                                        getBengalString(
+                                                    text = if ((bpcSummaryData.value.voEndorsedCount ?: 0) > 1) { getVoNameForState(
                                                             context,
                                                             bpcProgreesScreenViewModel.getStateId(),
                                                             R.plurals.didis_endorsed_by_vo_plural
                                                         )
                                                     }
-                                                    else
-                                                        getBengalString(
+                                                    else getVoNameForState(
                                                             context,
                                                             bpcProgreesScreenViewModel.getStateId(),
                                                             R.plurals.didi_endorsed_by_vo_singular
@@ -867,7 +864,7 @@ fun BpcProgressScreen(
                                                 if (isStepCompleted != StepStatus.COMPLETED.ordinal) {
                                                     Spacer(modifier = Modifier.height(10.dp))
                                                     Text(
-                                                        text = getBengalString(context,bpcProgreesScreenViewModel.getStateId(),R.plurals.vo_endorsement_completed),
+                                                        text = getVoNameForState(context,bpcProgreesScreenViewModel.getStateId(),R.plurals.vo_endorsement_completed),
                                                         fontSize = 12.sp,
                                                         fontFamily = NotoSans,
                                                         fontWeight = FontWeight.Medium,
