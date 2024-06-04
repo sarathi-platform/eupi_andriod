@@ -23,6 +23,6 @@ class PatSuccessScreenViewModel @Inject constructor(
 
     }
     fun getStateId(): Int {
-        return prefRepo.getPref(PREF_KEY_TYPE_STATE_ID, 4)
+        return prefRepo.getStateId()
     }
 }

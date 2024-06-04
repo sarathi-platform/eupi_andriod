@@ -113,7 +113,7 @@ class AddDidiViewModel @Inject constructor(
 
     val villageEntity = mutableStateOf<VillageEntity?>(null)
     fun getStateId():Int{
-        return addDidiRepository.prefRepo.getPref(PREF_KEY_TYPE_STATE_ID, 4)
+        return addDidiRepository.prefRepo.getStateId()
     }
     init {
         setVillage(addDidiRepository.getSelectedVillage().id)

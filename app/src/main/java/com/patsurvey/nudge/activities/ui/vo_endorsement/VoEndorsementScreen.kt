@@ -81,7 +81,6 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositiveForVo
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DoubleButtonBox
-import com.patsurvey.nudge.utils.NudgeCore.getBengalString
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PageFrom
@@ -91,6 +90,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import android.content.Context
 import androidx.compose.ui.platform.LocalContext
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 
 @Composable
 fun VoEndorsementScreen(
@@ -196,8 +196,7 @@ fun VoEndorsementScreen(
                     ) {
 
                         item {
-                            Text(
-                                getBengalString(context ,viewModel.getStateId(), R.plurals.vo_endorsement_screen_title),
+                            Text(getVoNameForState(context ,viewModel.getStateId(), R.plurals.vo_endorsement_screen_title),
                                 color = Color.Black,
                                 fontSize = 16.sp,
                                 fontFamily = NotoSans,

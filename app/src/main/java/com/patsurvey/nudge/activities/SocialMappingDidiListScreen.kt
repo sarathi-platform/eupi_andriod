@@ -130,7 +130,7 @@ import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.ExclusionType
-import com.patsurvey.nudge.utils.NudgeCore.getBengalString
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.PAT_SURVEY
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
@@ -1510,10 +1510,10 @@ fun getLatestStatusText(context: Context, didi: DidiEntity,viewModel:AddDidiView
                 status = if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.forVoEndorsement == 1) {
                     when (didi.voEndorsementStatus) {
                         DidiEndorsementStatus.ENDORSED.ordinal, DidiEndorsementStatus.ACCEPTED.ordinal -> {
-                            getBengalString(context,viewModel.getStateId(),R.plurals.vo_selected_status_text)
+                            getVoNameForState(context,viewModel.getStateId(),R.plurals.vo_selected_status_text)
                         }
                         DidiEndorsementStatus.REJECTED.ordinal -> {
-                            getBengalString(context,viewModel.getStateId(),R.plurals.vo_rejected_status_text)
+                            getVoNameForState(context,viewModel.getStateId(),R.plurals.vo_rejected_status_text)
                         }
                         else -> {
                             context.getString(R.string.pat_selected_status_text)

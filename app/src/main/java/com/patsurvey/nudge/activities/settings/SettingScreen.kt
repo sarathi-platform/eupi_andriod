@@ -1094,7 +1094,7 @@ fun showSyncDialog(
                                         modifier = Modifier
                                     )
                                     Text(
-                                        text =if(settingViewModel.prefRepo.getPref(PREF_KEY_TYPE_STATE_ID,4)==34) pluralStringResource(
+                                        text =if(settingViewModel.prefRepo.getStateId()==34) pluralStringResource(
                                             id = R.plurals.vo_endorsement,
                                             1
                                         )  else pluralStringResource(

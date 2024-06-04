@@ -235,6 +235,10 @@ val LEFT_BRACKET_QUOTE_REGEX = Regex("\\[")
 const val HEADING_QUESTION_TYPE = "heading"
 
 const val DEFAULT_LANGUAGE_ID = 2
+const val BENGAL_STATE_ID = 34
+const val BENGAL_STRING_VALUE = 1
+const val DEFAULT_STATE_ID = 4
+const val BENGAL_STRING_VALUE_OTHER = 2
 const val BPC_VERIFICATION_STEP_ORDER = 6
 const val VO_ENDORSEMENT_STEP_ORDER = 5
 const val VO_ENDORSEMENT_CONSTANT = "VO Endorsement"

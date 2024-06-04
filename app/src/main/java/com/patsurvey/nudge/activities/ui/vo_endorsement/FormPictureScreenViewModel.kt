@@ -122,7 +122,7 @@ class FormPictureScreenViewModel @Inject constructor(
     val formBAvailable = mutableStateOf(false)
     val showAPILoader = mutableStateOf(false)
     fun getStateId():Int{
-        return repository.prefRepo.getPref(PREF_KEY_TYPE_STATE_ID, 4)
+        return repository.prefRepo.getStateId()
     }
     init {
         cameraExecutor = Executors.newSingleThreadExecutor()

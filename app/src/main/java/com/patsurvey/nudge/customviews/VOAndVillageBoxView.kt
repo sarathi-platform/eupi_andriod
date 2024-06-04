@@ -25,7 +25,7 @@ import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.NudgeCore.getBengalString
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 
 @Composable
@@ -69,9 +69,9 @@ fun VOAndVillageBoxView(
                     .padding(start = startPadding ?: 16.dp, end = 16.dp, bottom = bottomPadding)
             ) {
                 Text(
-                    text = getBengalString(
+                    text = getVoNameForState(
                         LocalContext.current,
-                        prefRepo.getPref(PREF_KEY_TYPE_STATE_ID, 4),
+                        prefRepo.getStateId(),
                         R.plurals.vo
                     ),
                     modifier = Modifier,

@@ -77,7 +77,7 @@ class BpcProgressScreenViewModel @Inject constructor(
         fetchDataFromServer()
     }
     fun getStateId():Int{
-        return repository.prefRepo.getPref(PREF_KEY_TYPE_STATE_ID, 4)
+        return repository.prefRepo.getStateId()
     }
     private fun fetchDataFromServer(forceRefresh: Boolean = false) {
         appScopeLaunch(Dispatchers.IO) {

@@ -58,8 +58,7 @@ import com.patsurvey.nudge.utils.ARG_FROM_SETTING
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
-import com.patsurvey.nudge.utils.NudgeCore
-import com.patsurvey.nudge.utils.NudgeCore.getBengalString
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.OutlineButtonCustom
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
@@ -256,8 +255,7 @@ fun DigitalFormBScreen(
                             )
                         }
                         Row(modifier = Modifier.fillMaxWidth()) {
-                            Text(
-                                getBengalString(
+                            Text(getVoNameForState(
                                     context,
                                     viewModel.getStateId(),
                                     R.plurals.seletc_village_screen_text

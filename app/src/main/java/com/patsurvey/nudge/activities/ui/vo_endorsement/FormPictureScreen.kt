@@ -117,7 +117,7 @@ import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
-import com.patsurvey.nudge.utils.NudgeCore.getBengalString
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_FORM_C_AND_D_
 import com.patsurvey.nudge.utils.openSettings
@@ -908,7 +908,7 @@ fun FormPictureScreen(
 
                             navController.navigate(
                                 "vo_endorsement_step_completion_screen/${
-                                    getBengalString(context,formPictureScreenViewModel.getStateId(),R.plurals.vo_endorsement_completed_message)
+                                    getVoNameForState(context,formPictureScreenViewModel.getStateId(),R.plurals.vo_endorsement_completed_message)
                                         .replace(
                                             "{VILLAGE_NAME}",
                                             formPictureScreenViewModel.villageEntity.value?.name ?: BLANK_STRING

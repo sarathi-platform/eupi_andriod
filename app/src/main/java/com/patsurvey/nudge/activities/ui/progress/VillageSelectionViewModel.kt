@@ -165,7 +165,7 @@ class VillageSelectionViewModel @Inject constructor(
     val filterVillageList: StateFlow<List<VillageEntity>> get() = _filterVillageList
 
     fun getStateId():Int{
-        return prefRepo.getPref(PREF_KEY_TYPE_STATE_ID, 4)
+        return prefRepo.getStateId()
     }
     fun compareWithPreviousUser(context: Context) {
         if (TextUtils.isEmpty(prefRepo.getPreviousUserMobile()) || prefRepo.getPreviousUserMobile()

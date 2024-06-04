@@ -14,8 +14,8 @@ object NudgeCore {
 
     private var eventObserver: EventObserverInterface? = null
 
-    fun getBengalString(context:Context, stateId :Int,value: Int): String {
-      return  context.resources.getQuantityString(value,if (stateId == 34)1 else 2)
+    fun getVoNameForState(context:Context, stateId :Int,value: Int): String {
+      return  context.resources.getQuantityString(value,if (stateId == BENGAL_STATE_ID)BENGAL_STRING_VALUE else BENGAL_STRING_VALUE_OTHER)
     }
 
 

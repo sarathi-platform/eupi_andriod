@@ -69,7 +69,7 @@ import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_D
-import com.patsurvey.nudge.utils.NudgeCore.getBengalString
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.OutlineButtonCustom
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
@@ -268,7 +268,7 @@ fun DigitalFormCScreen(
                         }
                         Row(modifier = Modifier.fillMaxWidth()) {
                             Text(
-                                text = getBengalString(
+                                text = getVoNameForState(
                                     context,
                                     viewModel.getStateId(),
                                     R.plurals.seletc_village_screen_text
