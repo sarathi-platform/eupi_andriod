@@ -39,6 +39,7 @@ fun DatePickerComponent(
     hintText: String = BLANK_STRING,
     defaultValue: String = BLANK_STRING,
     isMandatory: Boolean = false,
+    isEditable: Boolean = true,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
     var text by remember { mutableStateOf(defaultValue) }
@@ -75,9 +76,10 @@ fun DatePickerComponent(
                         context,
                         R.style.my_dialog_theme,
                         { _, selectedYear, selectedMonth, selectedDay ->
-                        text = "$selectedDay/${selectedMonth + 1}/$selectedYear"
-                        onAnswerSelection(text)
-                    }, year, month, day).show()
+                            text = "$selectedDay/${selectedMonth + 1}/$selectedYear"
+                            onAnswerSelection(text)
+                        }, year, month, day
+                    ).show()
                 }) {
                     Icon(
                         imageVector = Icons.Default.DateRange,
@@ -86,6 +88,7 @@ fun DatePickerComponent(
                     )
                 }
             },
+            enabled = isEditable,
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color.White, // Background color
                 focusedIndicatorColor = Color.Transparent, // No underline when focused

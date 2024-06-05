@@ -101,5 +101,11 @@ interface TaskDao {
     @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and missionId = :missionId and activityId=:activityId and isActive=1")
     fun getTaskCountForActivity(userId: String, missionId: Int, activityId: Int): Int
 
+    @Query("SELECT status from $TASK_TABLE_NAME where  userId=:userId and taskId = :taskId and subjectId=:subjectId")
+    fun getTaskStatus(
+        userId: String,
+        taskId: Int,
+        subjectId: Int
+    ): String?
 
 }
