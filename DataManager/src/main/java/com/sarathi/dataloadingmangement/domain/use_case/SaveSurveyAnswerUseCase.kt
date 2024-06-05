@@ -7,4 +7,8 @@ class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
     suspend fun saveSurveyAnswer(questionUiModel: QuestionUiModel, subjectId: Int) {
         return repository.saveSurveyAnswer(questionUiModel, subjectId)
     }
+
+    fun getAnswerForTag(taskId: Int, subjectId: Int, tagId: String): String {
+        return repository.getSurveyAnswerForTag(taskId, subjectId, tagId)
+    }
 }

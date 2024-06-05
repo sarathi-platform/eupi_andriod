@@ -59,7 +59,8 @@ class SurveyRepositoryImpl @Inject constructor(
                     optionItems,
                     surveyAnswerList
                 ),
-                isMandatory = it.isMandatory
+                isMandatory = it.isMandatory,
+                tagId = it.tag
             )
             questionUiList.add(questionUiModel)
 

@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.GrantTaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -18,7 +19,8 @@ fun GrantTaskScreen(
     viewModel: GrantTaskScreenViewModel = hiltViewModel(),
     missionId: Int,
     activityName: String,
-    activityId: Int
+    activityId: Int,
+    onSettingClick: () -> Unit
 ) {
     LaunchedEffect(key1 = true) {
         viewModel.setMissionActivityId(missionId, activityId)
@@ -37,14 +39,20 @@ fun GrantTaskScreen(
         },
         onBottomUI = {
         },
-        onContentUI = {
+        onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
             if (viewModel.taskList.value.isNotEmpty()) {
                 GrantTaskList(
                     taskList = viewModel.taskList.value,
-                    navController = navController
+                    isSearch = isSearch,
+                    onSearchValueChange = onSearchValueChanged,
+                    navController = navController,
+                    onContentData = { contentValue, contentKey, contentType ->
+                        navigateToMediaPlayerScreen(navController, contentKey, contentType)
+                    }
                 )
             }
-        }
+        },
+        onSettingClick = onSettingClick
     )
 }
 
