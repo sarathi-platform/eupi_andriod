@@ -1,5 +1,6 @@
 package com.sarathi.missionactivitytask.ui.basic_content.component
 
+import android.text.TextUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -49,6 +50,8 @@ import com.sarathi.missionactivitytask.utils.StatusEnum
 fun GrantTaskCard(
     title: String,
     subTitle: String,
+    subtitle2: String,
+    subtitle3: String,
     primaryButtonText: String,
     onPrimaryButtonClick: () -> Unit,
     secondaryButtonText: String,
@@ -146,7 +149,7 @@ fun GrantTaskCard(
                 ) {
 
                     Text(
-                        text = "10",
+                        text = subtitle2,
                         color = blueDark,
                         style = newMediumTextStyle,
                         textAlign = TextAlign.Center,
@@ -160,24 +163,29 @@ fun GrantTaskCard(
                             },
                     )
                     Spacer(modifier = Modifier.width(dimen_8_dp))
-                    Text(
-                        text = "Didis",
-                        modifier = Modifier.weight(.4f),
-                        color = blueDark,
-                        style = newMediumTextStyle
-                    )
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_received_money),
-                        contentDescription = "Received: ₹40,000",
-                        tint = blueDark,
-                    )
-                    Text(
-                        text = "Received: ₹40,000",
-                        modifier = Modifier
-                            .padding(horizontal = dimen_5_dp),
-                        color = blueDark,
-                        style = newMediumTextStyle
-                    )
+                    if (!TextUtils.isEmpty(subtitle3)) {
+
+                        Text(
+                            text = subtitle3,
+                            modifier = Modifier.weight(.4f),
+                            color = blueDark,
+                            style = newMediumTextStyle
+                        )
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_received_money),
+                            contentDescription = "Received: ₹40,000",
+                            tint = blueDark,
+                        )
+                    }
+                    if (TextUtils.isEmpty(subtitle3)) {
+                        Text(
+                            text = subtitle3,
+                            modifier = Modifier
+                                .padding(horizontal = dimen_5_dp),
+                            color = blueDark,
+                            style = newMediumTextStyle
+                        )
+                    }
                 }
             }
             if (status == StatusEnum.NOT_STARTED.name) {

@@ -35,7 +35,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
             coreSharedPrefs.getUniqueUserIdentifier()
         )
         val result = ArrayList<String>()
-        surveyAnswerEntity.optionItems.forEach {
+        surveyAnswerEntity?.optionItems?.forEach {
             result.add(it.selectedValue ?: BLANK_STRING)
         }
         return result.joinToString(",")

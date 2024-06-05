@@ -64,9 +64,14 @@ fun GrantTaskList(
                         ?: BLANK_STRING,
                     primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name]
                         ?: BLANK_STRING,
-                    secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name]
+                    secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_SECONDARY_BUTTON.name]
                         ?: BLANK_STRING,
                     status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]
+                        ?: BLANK_STRING,
+
+                    subtitle2 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_2.name]
+                        ?: BLANK_STRING,
+                    subtitle3 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_3.name]
                         ?: BLANK_STRING,
                 )
 

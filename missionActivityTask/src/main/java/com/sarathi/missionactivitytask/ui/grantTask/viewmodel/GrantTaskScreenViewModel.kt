@@ -86,7 +86,9 @@ class GrantTaskScreenViewModel @Inject constructor(
                 UiConfigAttributeType.TAG.name -> surveyAnswerUseCase.getAnswerForTag(
                     taskId,
                     subjectId,
-                    cardAttribute.value
+                    getTaskAttributeValue(
+                        cardAttribute.value, taskId
+                    )
                 )
 
                 else -> {
