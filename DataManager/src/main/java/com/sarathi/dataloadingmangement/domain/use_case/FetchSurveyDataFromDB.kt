@@ -2,8 +2,9 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.repository.ISurveyRepository
+import javax.inject.Inject
 
-class FetchSurveyDataFromDB(
+class FetchSurveyDataFromDB @Inject constructor(
     private val repository: ISurveyRepository
 ) {
     suspend operator fun invoke(

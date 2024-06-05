@@ -1,4 +1,4 @@
-package com.sarathi.contentmodule.download_manager
+package com.sarathi.dataloadingmangement.download_manager
 
 import android.annotation.SuppressLint
 import android.app.DownloadManager
