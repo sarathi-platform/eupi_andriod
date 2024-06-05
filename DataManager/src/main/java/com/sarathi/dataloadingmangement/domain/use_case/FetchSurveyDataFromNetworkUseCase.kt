@@ -4,9 +4,10 @@ import com.google.android.gms.common.api.ApiException
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.model.survey.request.SurveyRequest
 import com.sarathi.dataloadingmangement.repository.ISurveyDownloadRepository
+import javax.inject.Inject
 
 
-class FetchSurveyDataFromNetworkUseCase(
+class FetchSurveyDataFromNetworkUseCase @Inject constructor(
     private val repository: ISurveyDownloadRepository,
 ) {
     suspend operator fun invoke(): Boolean {
@@ -15,7 +16,8 @@ class FetchSurveyDataFromNetworkUseCase(
             val apiResponse = repository.fetchSurveyFromNetwork(
                 SurveyRequest(
                     referenceId = 31,
-                    referenceType = "state"
+                    referenceType = "STATE",
+                    surveyId = 3
                 )
             )
             if (apiResponse.status.equals(SUCCESS_CODE, true)) {
