@@ -57,8 +57,8 @@ class SettingBSRepositoryImpl(
                 )
             )
             coreSharedPrefs.setFileExported(false)
-            prefRepo.setPreviousUserMobile(prefRepo.getMobileNumber() ?: BLANK_STRING)
         }
+        prefRepo.setPreviousUserMobile(prefRepo.getMobileNumber() ?: BLANK_STRING)
         prefRepo.savePref(PREF_KEY_TYPE_NAME, BLANK_STRING)
     }
 
