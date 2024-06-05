@@ -1,9 +1,9 @@
 package com.sarathi.contentmodule.ui.content_screen.domain.usecase
 
 import android.net.Uri
-import com.sarathi.contentmodule.content_downloder.domain.repository.IContentDownloader
-import com.sarathi.contentmodule.download_manager.DownloaderManager
 import com.sarathi.dataloadingmangement.data.entities.Content
+import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
+import com.sarathi.dataloadingmangement.repository.IContentDownloader
 import java.io.File
 import javax.inject.Inject
 

@@ -8,6 +8,7 @@ import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.domain.FetchDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
@@ -26,7 +27,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SurveyScreenViewModel @Inject constructor(
-    private val fetchDataUseCase: FetchDataUseCase,
+    private val fetchDataUseCase: FetchSurveyDataFromDB,
     private val taskStatusUseCase: UpdateTaskStatusUseCase,
     private val saveSurveyAnswerUseCase: SaveSurveyAnswerUseCase,
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
@@ -69,7 +70,7 @@ class SurveyScreenViewModel @Inject constructor(
     fun intiQuestions() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             taskEntity = getTaskUseCase.getTask(taskId)
-            _questionUiModel.value = fetchDataUseCase.fetchSurveyDataFromDB.invoke(
+            _questionUiModel.value = fetchDataUseCase.invoke(
                 surveyId = surveyId,
                 sectionId = sectionId,
                 subjectId = taskEntity?.subjectId ?: DEFAULT_ID

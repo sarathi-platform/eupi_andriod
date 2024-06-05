@@ -1,9 +1,9 @@
-package com.sarathi.contentmodule.content_downloder.domain.usecase
+package com.sarathi.dataloadingmangement.domain.use_case
 
 import android.util.Log
-import com.sarathi.contentmodule.content_downloder.domain.repository.IContentDownloader
-import com.sarathi.contentmodule.download_manager.DownloaderManager
 import com.sarathi.contentmodule.download_manager.FileType
+import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
+import com.sarathi.dataloadingmangement.repository.IContentDownloader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
