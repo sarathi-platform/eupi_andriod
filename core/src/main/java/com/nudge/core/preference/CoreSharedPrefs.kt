@@ -30,6 +30,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_ROLE_NAME = "role_name"
         const val PREF_KEY_TYPE_NAME = "type_name"
         const val PREF_CASTE_LIST = "caste_list"
+        const val PREF_KEY_USER_ID = "user_id"
 
 
         @Volatile
@@ -110,7 +111,6 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         val userMobile = getMobileNo()
         return "${userType}_${userMobile}"
     }
-
     override fun getAppLanguage(): String {
         return prefs.getString(PREF_KEY_LANGUAGE_CODE, DEFAULT_LANGUAGE_CODE)
             ?: DEFAULT_LANGUAGE_CODE
@@ -118,6 +118,15 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
 
     override fun saveAppLanguage(code: String?) {
         prefs.edit().putString(PREF_KEY_LANGUAGE_CODE, code).apply()
+    }
+
+    override fun getUserId(): String {
+        return prefs.getString(PREF_KEY_USER_ID, BLANK_STRING)
+            ?: BLANK_STRING
+    }
+
+    override fun setUserId(userId: String) {
+        prefs.edit().putString(PREF_KEY_USER_ID, userId).apply()
     }
 
     override fun getStateId(): Int {

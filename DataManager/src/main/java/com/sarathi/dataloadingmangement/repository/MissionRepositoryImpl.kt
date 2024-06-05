@@ -35,7 +35,6 @@ import com.sarathi.dataloadingmangement.model.mat.response.MissionResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.mat.response.TaskData
 import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
-import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import javax.inject.Inject
 
@@ -219,12 +218,6 @@ class MissionRepositoryImpl @Inject constructor(
         programmeDao.insertProgramme(ProgrammeEntity.getProgrammeEntity(programme))
     }
 
-    override suspend fun getAllMission(): List<MissionUiModel> {
-        return missionDao.getMissions(
-            sharedPrefs.getUniqueUserIdentifier(),
-            sharedPrefs.getAppLanguage()
-        )
-    }
 
     private fun saveActivityConfig(
         activityConfig: ActivityConfig,

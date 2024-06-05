@@ -1,6 +1,5 @@
 package com.sarathi.missionactivitytask.ui.grant_activity_screen.screen
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -24,11 +23,12 @@ fun ActivityRowCard(
     navController: NavController,
     contents: List<BasicContent> = listOf(),
     activities: List<ActivityUiModel>,
-
+    onContentData: (contentValue: String, contentKey: String, contentType: String) -> Unit
 ) {
     Column {
-        BaseContentScreen { contentKey, contentType, isLimitContentData ->
+        BaseContentScreen { contentValue, contentKey, contentType, isLimitContentData ->
             if (!isLimitContentData) {
+                onContentData(contentValue, contentKey, contentType)
                 navigateToMediaPlayerScreen(navController, contentKey, contentType)
             } else {
                 navigateToContentDetailScreen(navController)
@@ -42,14 +42,6 @@ fun ActivityRowCard(
             ) { index, activity ->
 
                 StepsBoxGrantComponent(
-                    modifier = Modifier.clickable {
-                        navigateToTaskScreen(
-                            navController,
-                            missionId = activity.missionId,
-                            activityId = activity.activityId,
-                            activityName = activity.description
-                        )
-                    },
                     boxTitle = activity.description,
                     subTitle = "${activity.pendingTaskCount}/${activity.taskCount}",
                     stepNo = index + 1,
@@ -59,14 +51,20 @@ fun ActivityRowCard(
                     isDividerVisible = index != activities.lastIndex,
                     painter = painterResource(id = R.drawable.ic_mission_inprogress)
                 ) {
-
+                    navigateToTaskScreen(
+                        navController,
+                        missionId = activity.missionId,
+                        activityId = activity.activityId,
+                        activityName = activity.description
+                    )
                 }
+
+
             }
         }
     }
 
 }
-
 
 
 data class BasicContent(val contentType: String, val contentTitle: String)

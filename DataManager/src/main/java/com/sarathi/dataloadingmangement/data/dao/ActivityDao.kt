@@ -39,8 +39,8 @@ interface ActivityDao {
                 " SUM(CASE WHEN task_table.status = 'completed' THEN 1 ELSE 0 END) AS pendingTaskCount\n" +
                 " from activity_table\n" +
                 "inner join activity_language_attribute_table on activity_table.activityId = activity_language_attribute_table.activityId  \n" +
-                "left join task_table on activity_table.activityId = activity_table.activityId \n" +
-                " where activity_language_attribute_table.languageCode =:languageCode and activity_table.isActive=1 and task_table.isActive=1 and activity_table.userId =:userId and activity_table.missionId=:missionId"
+                "left join task_table on activity_table.activityId = task_table.activityId \n" +
+                " where activity_language_attribute_table.languageCode =:languageCode and activity_table.isActive=1 and task_table.isActive=1 and activity_table.userId =:userId and activity_table.missionId=:missionId group by task_table.activityId "
     )
     suspend fun getActivities(
         userId: String,

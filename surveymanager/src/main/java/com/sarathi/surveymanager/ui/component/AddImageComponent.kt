@@ -40,13 +40,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
+import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.ui.events.theme.borderGreyLight
 import com.nudge.core.ui.events.theme.largeTextStyle
 import com.nudge.core.ui.events.theme.white
 import com.nudge.core.uriFromFile
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import java.io.File
 
 
@@ -54,24 +57,34 @@ import java.io.File
 @Preview(showSystemUi = true)
 @Composable
 fun AddImageComponent(
-    isImageAvailable: Boolean = true
-) {
+    isMandatory: Boolean = false,
+    maxCustomHeight: Dp = 200.dp,
+    title: String = BLANK_STRING,
+    isEditable: Boolean = true,
+    filePaths: List<String> = listOf(),
+    onImageSelection: (selectValue: String) -> Unit,
+
+
+    ) {
     val context = LocalContext.current
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyGridState = rememberLazyGridState()
-    var imageList by remember { mutableStateOf(listOf<Uri?>()) }
+    var imageList by remember { mutableStateOf(getSavedImageUri(context, filePaths)) }
     var currentImageUri by remember { mutableStateOf<Uri?>(null) }
-
-
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
             if (success) {
+
                 imageList = (imageList + currentImageUri)
+                onImageSelection(currentImageUri?.path ?: BLANK_STRING)
             }
         }
     )
     Column {
+        if (title.isNotBlank()) {
+            QuestionComponent(title = title, isRequiredField = isMandatory)
+        }
         BoxWithConstraints(
             modifier = Modifier
                 .scrollable(
@@ -87,7 +100,7 @@ fun AddImageComponent(
                     .wrapContentWidth()
                     .heightIn(
                         min = 110.dp,
-                        max = maxHeight
+                        max = maxCustomHeight
                     ),
                 horizontalArrangement = Arrangement.Center
             ) {
@@ -104,19 +117,22 @@ fun AddImageComponent(
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("+ Add Image", style = largeTextStyle, modifier = Modifier.clickable {
+                        Text(
+                            "+ Add Image", style = largeTextStyle, modifier =
+                            Modifier.clickable(enabled = isEditable) {
                             currentImageUri = getImageUri(
                                 context, "${
-                                    System.currentTimeMillis().toString()
+                                    System.currentTimeMillis()
                                 }.jpg"
                             )
+
                             cameraLauncher.launch(
                                 currentImageUri
                             )
                         })
                     }
                 }
-                itemsIndexed(imageList) { _index, image ->
+                itemsIndexed(imageList) { _, image ->
                     image?.let { ImageView(it) }
                 }
             }
@@ -137,6 +153,16 @@ fun getImageUri(context: Context, fileName: String): Uri? {
     }
 }
 
+fun getSavedImageUri(
+    context: Context, filePaths: List<String> = listOf(),
+): List<Uri?> {
+    val uriList: ArrayList<Uri?> = ArrayList<Uri?>()
+    filePaths.forEach {
+        uriList.add(getImageUri(context = context, getFileNameFromURL(it)))
+    }
+    return uriList
+}
+
 @Composable
 fun ImageView(uri: Uri) {
     Image(
@@ -149,6 +175,4 @@ fun ImageView(uri: Uri) {
         contentScale = ContentScale.Crop
     )
 }
-
-data class ImageEntity(var imageUri: Uri, var isImageAvailable: Boolean)
 

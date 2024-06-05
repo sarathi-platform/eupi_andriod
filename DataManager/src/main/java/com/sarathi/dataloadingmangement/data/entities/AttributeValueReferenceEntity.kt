@@ -31,7 +31,7 @@ data class AttributeValueReferenceEntity(
 
             return AttributeValueReferenceEntity(
                 id = 0, userId = userId, parentReferenceId = parentReferenceId,
-                key = taskData.key, value = taskData.value
+                key = taskData.key, value = taskData.value ?: BLANK_STRING
 
             )
 

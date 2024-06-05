@@ -25,6 +25,7 @@ class FetchMissionDataUseCase @Inject constructor(
 
                     missionApiResponse.forEach { programme ->
                         repository.saveProgrammeToDb(programme)
+
                         repository.saveMissionToDB(programme.missions, programme.id)
                         programme.missions.forEach { mission ->
                             repository.saveMissionsActivityToDB(

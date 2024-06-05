@@ -21,5 +21,7 @@ interface CorePrefRepo {
     fun savePref(key: String, value: Int)
     fun getPref(key: String, defaultValue: Int): Int
     fun getPref(key: String, defaultValue: String): String?
+    fun getUserId(): String
+    fun setUserId(userId: String)
 
 }
