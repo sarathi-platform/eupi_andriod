@@ -1,8 +1,8 @@
 package com.sarathi.smallgroupmodule.data.domain
 
-import android.content.Context
 import android.net.Uri
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.Core
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
@@ -35,17 +35,19 @@ import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
 import com.sarathi.smallgroupmodule.utils.getAttendanceFromBoolean
 import com.sarathi.smallgroupmodule.utils.getDate
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class EventWriterHelperImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
+//    @ApplicationContext private val context: Context,
     val coreSharedPrefs: CoreSharedPrefs,
     private val eventsDao: EventsDao,
     private val eventDependencyDao: EventDependencyDao,
     private val subjectEntityDao: SubjectEntityDao,
     private val smallGroupDidiMappingDao: SmallGroupDidiMappingDao
 ) : EventWriterHelper {
+
+    val context = Core.getContext()
+
     override suspend fun <T> createEvent(
         eventItem: T,
         eventName: EventName,
@@ -118,7 +120,7 @@ class EventWriterHelperImpl @Inject constructor(
                 selectedEventWriter
             )
         } catch (exception: Exception) {
-            CoreLogger.e(context, "saveEventToMultipleSources", exception.message ?: "")
+            CoreLogger.e(context!!, "saveEventToMultipleSources", exception.message ?: "")
         }
     }
 
@@ -132,7 +134,7 @@ class EventWriterHelperImpl @Inject constructor(
 
     override fun getEventFormatter(): IEventFormatter {
         return EventWriterFactory().createEventWriter(
-            context,
+            context!!,
             EventFormatterName.JSON_FORMAT_EVENT,
             eventsDao = eventsDao,
             eventDependencyDao
@@ -153,7 +155,7 @@ class EventWriterHelperImpl @Inject constructor(
                 ), uri
             )
         } catch (exception: Exception) {
-            CoreLogger.e(context, "ImageEventWriter", exception.message ?: "")
+            CoreLogger.e(context!!, "ImageEventWriter", exception.message ?: "")
         }
     }
 
@@ -164,12 +166,13 @@ class EventWriterHelperImpl @Inject constructor(
     suspend fun createAttendanceEvent(
         subjectEntity: SubjectEntity,
         smallGroupSubTabUiModel: SmallGroupSubTabUiModel,
-        attendance: Boolean
+        attendance: Boolean,
+        date: Long
     ): Events {
 
         val payloadData = listOf<PayloadData>(
             PayloadData(
-                date = System.currentTimeMillis().getDate(),
+                date = date.getDate(),
                 id = smallGroupSubTabUiModel.smallGroupId.toString(),
                 value = attendance.getAttendanceFromBoolean()
             )

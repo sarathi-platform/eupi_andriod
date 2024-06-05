@@ -1,5 +1,6 @@
 package com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -81,6 +82,9 @@ fun SmallGroupAttendanceScreen(
 
     }
 
+    val smallGroupAttendanceList =
+        smallGroupAttendanceScreenViewModel.smallGroupAttendanceEntityState
+
     val sheetState = rememberModalBottomSheetState(
         ModalBottomSheetValue.Hidden,
         skipHalfExpanded = false
@@ -94,9 +98,6 @@ fun SmallGroupAttendanceScreen(
 
     val coroutineScope = rememberCoroutineScope()
 
-    val selectedDate = remember {
-        mutableStateOf(System.currentTimeMillis())
-    }
 
     ToolBarWithMenuComponent(
         title = smallGroupAttendanceScreenViewModel.smallGroupDetails.value.smallGroupName,
@@ -129,7 +130,8 @@ fun SmallGroupAttendanceScreen(
                     confirmButton = {
                         TextButton(
                             onClick = {
-                                selectedDate.value = datePickerState.selectedDateMillis!!
+                                smallGroupAttendanceScreenViewModel.selectedDate.value =
+                                    datePickerState.selectedDateMillis!!
                                 showDatePickerDialog.value = false
                             },
                             content = { Text("Ok") }
@@ -168,7 +170,7 @@ fun SmallGroupAttendanceScreen(
                             contentDescription = "Date Selector",
                         ),
                         textProperties = TextProperties(
-                            text = selectedDate.value.getDate(),
+                            text = smallGroupAttendanceScreenViewModel.selectedDate.value.getDate(),
                             color = progressIndicatorColor,
                             style = defaultTextStyle
                         )
@@ -221,7 +223,11 @@ fun SmallGroupAttendanceScreen(
 
             LazyColumnWithVerticalPadding() {
 
-                itemsIndexed(smallGroupAttendanceScreenViewModel.smallGroupAttendanceEntityState.value) { index, subjectState ->
+                itemsIndexed(smallGroupAttendanceList.value) { index, subjectState ->
+                    Log.d(
+                        "TAG",
+                        "SmallGroupAttendanceScreen: subject -> ${subjectState.subjectId} && attendance -> ${subjectState.attendance}"
+                    )
                     AttendanceItem(
                         smallGroupAttendanceEntityState = subjectState
                     ) {

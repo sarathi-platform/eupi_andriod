@@ -1,5 +1,6 @@
 package com.sarathi.smallgroupmodule.ui.smallGroupAttendance.viewModel
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +37,9 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
     val isAllSelected = mutableStateOf(false)
 
     val markedAttendanceList = mutableStateOf(mutableSetOf<Int?>())
+
+    val selectedDate =
+        mutableStateOf(System.currentTimeMillis())
 
     private val _smallGroupAttendanceEntityState: MutableState<MutableList<SmallGroupAttendanceEntityState>> =
         mutableStateOf(
@@ -131,7 +135,8 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
         val event = eventWriterHelperImpl.createAttendanceEvent(
             subjectEntity = smallGroupAttendanceEntityState?.subjectEntity!!,
             smallGroupSubTabUiModel = smallGroupDetails,
-            attendance = checked
+            attendance = checked,
+            date = selectedDate.value
         )
         onEvent(EventWriterEvents.SaveAttendanceEvent(event, listOf<EventDependencyEntity>()))
     }
@@ -154,6 +159,10 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
         _smallGroupAttendanceEntityState.value.removeAt(index)
         subjectToUpdate?.copy(attendance = checked)
             ?.let { state -> _smallGroupAttendanceEntityState.value.add(index, state) }
+        Log.d(
+            "TAG",
+            "SmallGroupAttendanceScreen updateAttendanceForSubject: ${smallGroupAttendanceEntityState.value}"
+        )
 
     }
 
