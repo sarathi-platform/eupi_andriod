@@ -2,10 +2,11 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.google.android.gms.common.api.ApiException
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepository
+import com.sarathi.dataloadingmangement.repository.IMissionRepository
+import javax.inject.Inject
 
-class FetchMissionDataFromNetworkUseCase(
-    private val repository: IDataLoadingScreenRepository
+class FetchMissionDataFromNetworkUseCase @Inject constructor(
+    private val repository: IMissionRepository
 ) {
     suspend operator fun invoke(): Boolean {
         try {

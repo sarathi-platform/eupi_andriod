@@ -1,4 +1,4 @@
-package com.sarathi.contentmodule.content_downloder.domain.repository
+package com.sarathi.dataloadingmangement.repository
 
 import com.sarathi.dataloadingmangement.data.entities.Content
 

@@ -6,7 +6,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetworkUseCase
 
 
-data class FetchDataUseCase(
+data class DataLoadingUseCase(
     val fetchMissionDataFromNetworkUseCase: FetchMissionDataFromNetworkUseCase,
     val fetchContentDataFromNetworkUseCase: FetchContentDataFromNetworkUseCase,
     val fetchSurveyDataFromNetworkUseCase: FetchSurveyDataFromNetworkUseCase,

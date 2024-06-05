@@ -4,8 +4,9 @@ import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.sarathi.contentmodule.content_downloder.domain.usecase.ContentDownloaderUseCase
-import com.sarathi.dataloadingmangement.domain.FetchDataUseCase
+import com.sarathi.dataloadingmangement.domain.DataLoadingUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.missionactivitytask.domain.usecases.GetMissionsUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -22,7 +23,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MissionScreenViewModel @Inject constructor(
-    private val fetchDataUseCase: FetchDataUseCase,
+    private val fetchAllDataUseCase: FetchAllDataUseCase,
+    private val fetchDataUseCase: DataLoadingUseCase,
     private val missionsUseCase: GetMissionsUseCase,
     @ApplicationContext val context: Context,
     private val contentDownloaderUseCase: ContentDownloaderUseCase
@@ -33,14 +35,20 @@ class MissionScreenViewModel @Inject constructor(
     private val _filterMissionList = mutableStateOf<List<MissionUiModel>>(emptyList())
 
     val filterMissionList: State<List<MissionUiModel>> get() = _filterMissionList
+
+    private var baseCurrentApiCount = 0 // only count api survey count
+    private var TOTAL_API_CALL = 0
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
-                loadGrantData()
+                loadAllData()
             }
+
             is SearchEvent.PerformSearch -> {
                 performSearchQuery(event.searchTerm, event.isSearchApplied)
             }
+
             is LoaderEvent.UpdateLoaderState -> {
                 _loaderState.value = _loaderState.value.copy(
                     isLoaderVisible = event.showLoader
@@ -73,9 +81,13 @@ class MissionScreenViewModel @Inject constructor(
         }
     }
 
-    private fun loadGrantData() {
-        fetchAllData {
-            initMissionScreen()
+    private fun loadAllData() {
+        TOTAL_API_CALL = 2
+        onEvent(LoaderEvent.UpdateLoaderState(true))
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            fetchAllDataUseCase.invoke { isSuccess, successMsg ->
+                initMissionScreen()
+            }
         }
     }
 
@@ -85,7 +97,6 @@ class MissionScreenViewModel @Inject constructor(
                 fetchContentData(fetchDataUseCase) {}
                 contentDataDownloader(contentDownloaderUseCase) {}
                 fetchMissionData(fetchDataUseCase) { callBack() }
-
                 fetchDataUseCase.fetchSurveyDataFromNetworkUseCase.invoke()
             }
         } catch (ex: Exception) {
@@ -95,15 +106,20 @@ class MissionScreenViewModel @Inject constructor(
 
     }
 
-    private fun fetchMissionData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
+    private fun fetchMissionData(dataLoadingUseCase: DataLoadingUseCase, callBack: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            fetchDataUseCase.fetchMissionDataFromNetworkUseCase.invoke()
+            dataLoadingUseCase.fetchMissionDataFromNetworkUseCase.invoke()
+            initMissionScreen()
+            baseCurrentApiCount++
             updateLoaderEvent(callBack)
         }
     }
-    private fun fetchContentData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
+
+    private fun fetchContentData(dataLoadingUseCase: DataLoadingUseCase, callBack: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            fetchDataUseCase.fetchContentDataFromNetworkUseCase.invoke()
+            dataLoadingUseCase.fetchContentDataFromNetworkUseCase.invoke()
+            baseCurrentApiCount++
+            updateLoaderEvent(callBack)
         }
     }
 
@@ -117,10 +133,11 @@ class MissionScreenViewModel @Inject constructor(
     }
 
     private suspend fun updateLoaderEvent(callBack: () -> Unit) {
-        withContext(Dispatchers.Main) {
-            onEvent(LoaderEvent.UpdateLoaderState(false))
-            callBack()
+        if (baseCurrentApiCount == TOTAL_API_CALL) {
+            withContext(Dispatchers.Main) {
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+                callBack()
+            }
         }
     }
-
 }
