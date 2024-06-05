@@ -95,5 +95,5 @@ interface QuestionEntityDao {
         questionId: Int
     ): Int?
 
-   
+
 }

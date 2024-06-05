@@ -41,13 +41,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun SurveyScreen(
     navController: NavController = rememberNavController(),
-    viewModel: SurveyScreenViewModel
+    viewModel: SurveyScreenViewModel,
+    surveyId: Int, sectionId: Int, taskId: Int, subjectType: String
 ) {
     val outerState = rememberLazyListState()
     val innerState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = true) {
+        viewModel.setPreviousScreenData(surveyId, sectionId, taskId, subjectType)
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(InitDataEvent.InitDataState)
     }
@@ -121,7 +123,7 @@ fun SurveyScreen(
                             QuestionType.InputNumber.name -> {
                                 InputComponent(
                                     isMandatory = question.isMandatory,
-                                    isEditable = viewModel.isTaskStatusCompleted(),
+                                    isEditable = viewModel.isTaskCompleted.value,
                                     defaultValue = question.options?.firstOrNull()?.selectedValue
                                         ?: BLANK_STRING,
                                     title = question.questionDisplay,
@@ -138,7 +140,7 @@ fun SurveyScreen(
                                     defaultValue = question.options?.firstOrNull()?.selectedValue
                                         ?: BLANK_STRING,
                                     title = question.questionDisplay,
-                                    isEditable = viewModel.isTaskStatusCompleted(),
+                                    isEditable = viewModel.isTaskCompleted.value,
                                     hintText = question.display,
                                 ) { selectedValue ->
                                     saveInputTypeAnswer(selectedValue, question, viewModel)
@@ -154,7 +156,7 @@ fun SurveyScreen(
                                     ),
                                     isMandatory = question.isMandatory,
                                     title = question.questionDisplay,
-                                    isEditable = viewModel.isTaskStatusCompleted(),
+                                    isEditable = viewModel.isTaskCompleted.value,
                                     maxCustomHeight = maxHeight,
 
                                     ) { selectedValue ->

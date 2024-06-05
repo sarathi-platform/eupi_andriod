@@ -90,12 +90,6 @@ dependencies {
     //Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
-
-    //Firebase Firestore
-    implementation("com.google.firebase:firebase-firestore")
-
-    //CSV Export
-    implementation("com.opencsv:opencsv:5.3")
     implementation(project(":core"))
     implementation(project(":surveymanager"))
     
