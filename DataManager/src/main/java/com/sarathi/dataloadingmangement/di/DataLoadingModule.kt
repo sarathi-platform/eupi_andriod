@@ -4,11 +4,9 @@ import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import com.nudge.core.preference.CoreSharedPrefs
-import com.sarathi.contentmodule.download_manager.DownloaderManager
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
-import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
@@ -34,6 +32,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataFromNetw
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
+import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.ContentDownloaderRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.ContentRepositoryImpl
@@ -71,8 +70,7 @@ class DataLoadingModule {
     @Singleton
     fun provideGrantDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, NudgeGrantDatabase::class.java, NUDGE_GRANT_DATABASE)
-            .fallbackToDestructiveMigration()
-            .build()
+            .fallbackToDestructiveMigration().build()
 
     @Provides
     @Singleton
@@ -178,6 +176,7 @@ class DataLoadingModule {
     fun provideFetchDataUseCaseUseCase(
         surveyRepo: SurveyDownloadRepository,
         application: Application,
+        surveyRepositoryImpl: SurveyRepositoryImpl,
         missionRepositoryImpl: MissionRepositoryImpl,
         contentRepositoryImpl: ContentRepositoryImpl
     ): DataLoadingUseCase {
@@ -189,8 +188,10 @@ class DataLoadingModule {
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 contentRepositoryImpl,
                 application
+            ),
+            fetchSurveyDataFromDB = FetchSurveyDataFromDB(surveyRepositoryImpl),
+
             )
-        )
     }
 
     @Provides
@@ -200,7 +201,6 @@ class DataLoadingModule {
         activityDao: ActivityDao,
         taskDao: TaskDao,
         activityConfigDao: ActivityConfigDao,
-        activityLanguageAttributeDao: ActivityLanguageAttributeDao,
         activityLanguageDao: ActivityLanguageDao,
         attributeValueReferenceDao: AttributeValueReferenceDao,
         contentConfigDao: ContentConfigDao,
@@ -268,23 +268,23 @@ class DataLoadingModule {
         missionRepositoryImpl: MissionRepositoryImpl,
         contentRepositoryImpl: ContentRepositoryImpl,
         repository: IContentDownloader,
-        surveyRepositoryImpl: SurveyRepositoryImpl,
-        downloaderManager: DownloaderManager
-    ): FetchAllDataUseCase {
+        downloaderManager: DownloaderManager,
+
+        ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(
                 missionRepositoryImpl
             ),
             fetchSurveyDataFromNetworkUseCase = FetchSurveyDataFromNetworkUseCase(surveyRepo),
-            fetchSurveyDataFromDB = FetchSurveyDataFromDB(surveyRepositoryImpl),
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 contentRepositoryImpl,
                 application
             ),
-            contentDownloaderUseCase = ContentDownloaderUseCase(repository, downloaderManager)
-        )
+            contentDownloaderUseCase = ContentDownloaderUseCase(repository, downloaderManager),
+
+            )
     }
-}
+
 
     @Provides
     @Singleton
@@ -336,3 +336,4 @@ class DataLoadingModule {
             coreSharedPrefs = coreSharedPrefs
         )
     }
+}

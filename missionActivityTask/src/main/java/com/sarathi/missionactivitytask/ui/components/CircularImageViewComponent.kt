@@ -21,8 +21,8 @@ import coil.compose.rememberImagePainter
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.events.theme.brownDark
 import com.nudge.core.ui.events.theme.yellowBg
+import com.sarathi.missionactivitytask.utils.getImagePathFromString
 import com.sarathi.surveymanager.R
-import com.sarathi.surveymanager.utils.getImagePathFromString
 import java.io.File
 
 @Composable

@@ -2,7 +2,7 @@ package com.sarathi.surveymanager.ui.screen
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import com.sarathi.dataloadingmangement.domain.FetchDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.SurveyStatusEnum
@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SurveyScreenViewModel @Inject constructor(
-    private val fetchDataUseCase: FetchDataUseCase,
+    private val fetchDataUseCase: FetchSurveyDataFromDB,
     private val taskStatusUseCase: UpdateTaskStatusUseCase,
     private val saveSurveyAnswerUseCase: SaveSurveyAnswerUseCase
 ) : BaseViewModel() {
@@ -57,7 +57,7 @@ class SurveyScreenViewModel @Inject constructor(
 
     fun intiQuestions() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            _questionUiModel.value = fetchDataUseCase.fetchSurveyDataFromDB.invoke(
+            _questionUiModel.value = fetchDataUseCase.invoke(
                 surveyId = surveyId,
                 sectionId = sectionId,
                 subjectId = subjectId

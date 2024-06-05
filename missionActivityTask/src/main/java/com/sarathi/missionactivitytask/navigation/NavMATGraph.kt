@@ -135,6 +135,9 @@ fun NavGraphBuilder.MatNavigation(
                     )
                 })
         }
+        composable(route = MATHomeScreens.SurveyScreen.route) {
+            SurveyScreen(navController = navController, viewModel = hiltViewModel())
+        }
 
         composable(route = MATHomeScreens.ActivityCompletionScreen.route, arguments = listOf(
             navArgument(
@@ -155,9 +158,6 @@ fun NavGraphBuilder.MatNavigation(
 
             }
         }
-        composable(route = MATHomeScreens.SurveyScreen.route) {
-            SurveyScreen(navController = navController, viewModel = hiltViewModel())
-        }
     }
 
 }
@@ -175,17 +175,21 @@ sealed class MATHomeScreens(val route: String) {
     object MediaPlayerScreen :
         MATHomeScreens(route = "$MEDIA_PLAYER_SCREEN_ROUTE_NAME/{$ARG_CONTENT_KEY}/{$ARG_CONTENT_TYPE}")
 
+    object SurveyScreen :
+        MATHomeScreens(route = SURVEY_SCREEN_ROUTE_NAME)
     object ActivityCompletionScreen :
         MATHomeScreens(route = "$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/{$ARG_ACTIVITY_MASSAGE}")
 
     object FinalStepCompletionScreen : MATHomeScreens(route = MISSION_FINAL_STEP_SCREEN_ROUTE_NAME)
 
-    object SurveyScreen :
-        MATHomeScreens(route = SURVEY_SCREEN_ROUTE_NAME)
 }
 
 fun navigateToContentDetailScreen(navController: NavController) {
     navController.navigate(CONTENT_DETAIL_SCREEN_ROUTE_NAME)
+}
+
+fun navigateToSurveyScreen(navController: NavController) {
+    navController.navigate(SURVEY_SCREEN_ROUTE_NAME)
 }
 
 fun navigateToActivityCompletionScreen(navController: NavController, activityMsg: String) {
@@ -194,10 +198,6 @@ fun navigateToActivityCompletionScreen(navController: NavController, activityMsg
 
 fun navigateToFinalStepCompletionScreen(navController: NavController) {
     navController.navigate(MISSION_FINAL_STEP_SCREEN_ROUTE_NAME)
-}
-
-fun navigateToSurveyScreen(navController: NavController) {
-    navController.navigate(SURVEY_SCREEN_ROUTE_NAME)
 }
 
 fun navigateToMediaPlayerScreen(
