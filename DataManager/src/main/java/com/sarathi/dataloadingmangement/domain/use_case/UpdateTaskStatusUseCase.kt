@@ -11,4 +11,8 @@ class UpdateTaskStatusUseCase @Inject constructor(private val repository: ITaskS
     suspend fun markTaskInProgress(subjectId: Int, taskId: Int) {
         return repository.markInProgressTaskStatus(subjectId = subjectId, taskId = taskId)
     }
+
+    fun getTaskStatus(userId: String, taskId: Int, subjectId: Int): String? {
+        return repository.getTaskStatus(userId = userId, taskId = taskId, subjectId = subjectId)
+    }
 }

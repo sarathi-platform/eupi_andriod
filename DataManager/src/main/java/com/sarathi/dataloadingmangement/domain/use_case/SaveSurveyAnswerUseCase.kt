@@ -11,4 +11,6 @@ class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
     fun getAnswerForTag(taskId: Int, subjectId: Int, tagId: String): String {
         return repository.getSurveyAnswerForTag(taskId, subjectId, tagId)
     }
+
+    fun getUserIdentifier(): String = repository.getUserIdentifier()
 }

@@ -150,4 +150,15 @@ class SurveyScreenViewModel @Inject constructor(
         this.taskId = taskId
         this.subjectType = subjectType
     }
+    fun isTaskStatusCompleted(): Boolean {
+        return taskStatusUseCase.getTaskStatus(
+            userId = saveSurveyAnswerUseCase.getUserIdentifier(),
+            taskId = taskId,
+            subjectId = subjectId
+        )
+            ?.equals(
+                SurveyStatusEnum.COMPLETED.name
+            ) ?: false
+    }
+
 }

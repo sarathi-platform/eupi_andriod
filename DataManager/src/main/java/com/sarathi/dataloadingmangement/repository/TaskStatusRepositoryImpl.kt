@@ -33,5 +33,8 @@ class TaskStatusRepositoryImpl @Inject constructor(
         )
     }
 
+    override fun getTaskStatus(userId: String, taskId: Int, subjectId: Int): String? {
+        return taskDao.getTaskStatus(userId = "", taskId = 1, subjectId = 1)
+    }
 
 }
