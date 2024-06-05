@@ -1,18 +1,25 @@
 package com.sarathi.missionactivitytask.ui.grantTask.screen
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.navigation.navigateToSurveyScreen
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.GrantTaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
+import com.sarathi.surveymanager.ui.component.ButtonPositive
 
 @Composable
 fun GrantTaskScreen(
@@ -39,6 +46,21 @@ fun GrantTaskScreen(
 
         },
         onBottomUI = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+            ) {
+                ButtonPositive(
+                    buttonTitle = stringResource(R.string.complete_activity),
+                    isActive = viewModel.isButtonEnable.value,
+                    isArrowRequired = false,
+                    onClick = {
+                        viewModel.markActivityCompleteStatus()
+                        navController.popBackStack()
+                    }
+                )
+            }
         },
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
             if (viewModel.taskList.value.isNotEmpty()) {

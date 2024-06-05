@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
+import com.sarathi.dataloadingmangement.model.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
 import com.sarathi.dataloadingmangement.repository.GetTaskRepositoryImpl
 import javax.inject.Inject
@@ -14,5 +15,17 @@ class GetTaskUseCase @Inject constructor(private val taskRepositoryImpl: GetTask
 
     suspend fun getTask(taskId: Int): ActivityTaskEntity {
         return taskRepositoryImpl.getTask(taskId)
+    }
+
+    suspend fun isAllActivityCompleted(): Boolean {
+        return taskRepositoryImpl.isAllActivityCompleted()
+    }
+
+    suspend fun markActivityCompleteStatus(missionId: Int, activityId: Int) {
+        taskRepositoryImpl.updateActivityStatus(
+            missionId = missionId,
+            activityId = activityId,
+            status = SurveyStatusEnum.COMPLETED.name
+        )
     }
 }

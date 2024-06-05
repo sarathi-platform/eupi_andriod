@@ -2,6 +2,7 @@ package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
@@ -33,6 +34,8 @@ class GrantTaskScreenViewModel @Inject constructor(
     var activityConfigUiModel: ActivityConfigUiModel? = null
     private val _taskList = mutableStateOf<HashMap<Int, HashMap<String, String>>>(hashMapOf())
     val taskList: State<HashMap<Int, HashMap<String, String>>> get() = _taskList
+    val isButtonEnable = mutableStateOf<Boolean>(false)
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
@@ -52,6 +55,7 @@ class GrantTaskScreenViewModel @Inject constructor(
             val taskUiModel =
                 getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
             getSurveyDetail()
+            checkButtonValidation()
             taskUiModel.forEach {
 
                 _taskList.value[it.taskId] =
@@ -116,6 +120,21 @@ class GrantTaskScreenViewModel @Inject constructor(
     suspend fun getSurveyDetail() {
         activityConfigUiModel = getActivityConfigUseCase.getActivityUiConfig(activityId)
 
+    }
+
+    private fun checkButtonValidation() {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            isButtonEnable.value = getTaskUseCase.isAllActivityCompleted()
+        }
+    }
+
+    fun markActivityCompleteStatus() {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            getTaskUseCase.markActivityCompleteStatus(
+                missionId = missionId,
+                activityId = activityId
+            )
+        }
     }
 
 }

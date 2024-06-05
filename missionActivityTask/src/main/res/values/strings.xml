@@ -4,4 +4,6 @@
     <string name="not_able_to_load">Not able to load data please try again..</string>
     <string name="retry">Retry</string>
     <string name="in_progress">In Progress</string>
+    <string name="complete_activity">Complete Activity</string>
+    <string name="complete_mission">Complete Mission</string>
 </resources>
