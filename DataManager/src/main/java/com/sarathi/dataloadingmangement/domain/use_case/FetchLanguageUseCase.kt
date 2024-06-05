@@ -11,7 +11,7 @@ class FetchLanguageUseCase @Inject constructor(
         try {
             val apiResponse = repository.fetchLanguageDataFromServer()
             if (apiResponse.status.equals("SUCCESS", true)) {
-                apiResponse.data?.let { missionApiResponse ->
+                apiResponse.data?.let {
                     if (apiResponse.data?.languageList?.isNotEmpty() == true) {
                         repository.saveLanguageData(apiResponse.data?.languageList!!)
                     }
@@ -27,7 +27,6 @@ class FetchLanguageUseCase @Inject constructor(
         } catch (ex: Exception) {
             throw ex
         }
-        return false
     }
 
 }
