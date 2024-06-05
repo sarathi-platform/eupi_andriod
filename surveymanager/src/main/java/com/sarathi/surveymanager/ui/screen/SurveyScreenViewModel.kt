@@ -154,7 +154,7 @@ class SurveyScreenViewModel @Inject constructor(
         return taskStatusUseCase.getTaskStatus(
             userId = saveSurveyAnswerUseCase.getUserIdentifier(),
             taskId = taskId,
-            subjectId = subjectId
+            subjectId = taskEntity?.subjectId ?: DEFAULT_ID
         )
             ?.equals(
                 SurveyStatusEnum.COMPLETED.name
