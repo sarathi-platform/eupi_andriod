@@ -19,7 +19,6 @@ import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.LogoutScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
-import com.patsurvey.nudge.ProfileScreen
 import com.patsurvey.nudge.activities.AddDidiScreen
 import com.patsurvey.nudge.activities.DidiScreen
 import com.patsurvey.nudge.activities.FinalStepCompletionScreen
@@ -767,15 +766,6 @@ fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
             {
                 navController.navigate(VoEndorsmentScreeens.VO_ENDORSEMENT_DIGITAL_FORM_C_SCREEN.route)
             }
-
-            /*StepCompletionScreen(
-                navController = navController,
-                modifier = Modifier,
-                message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
-            ) {
-                navController.navigate(VoEndorsmentScreeens.VO_ENDORSEMENT_DIGITAL_FORM_C_SCREEN.route)
-
-            }*/
         }
 
         composable(

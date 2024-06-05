@@ -1,5 +1,6 @@
 package com.nudge.core.compression
 
+import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
@@ -32,4 +33,10 @@ interface IFileCompressor {
         applicationId: String? = null,
         checkInAppDirectory: Boolean = false
     )
+
+    fun getFileUrisFromMediaStore(
+        contentResolver: ContentResolver,
+        extVolumeUri: Uri,
+        filePathToZipped: String
+    ): List<Pair<String, Uri?>>
 }

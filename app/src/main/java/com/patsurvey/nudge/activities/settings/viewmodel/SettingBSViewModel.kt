@@ -4,10 +4,10 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.provider.MediaStore
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
-import androidx.core.net.toUri
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
@@ -18,11 +18,13 @@ import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nudge.core.EVENT_STRING
 import com.nudge.core.LOCAL_BACKUP_EXTENSION
 import com.nudge.core.NUDGE_DATABASE
 import com.nudge.core.SARATHI_DIRECTORY_NAME
 import com.nudge.core.SUFFIX_EVENT_ZIP_FILE
 import com.nudge.core.SUFFIX_IMAGE_ZIP_FILE
+import com.nudge.core.ZIP_EXTENSION
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.exportAllOldImages
@@ -63,6 +65,7 @@ import com.patsurvey.nudge.utils.UPCM_USER
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_CONSTANT
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.changeMilliDateToDate
+import com.patsurvey.nudge.utils.getFormSubPath
 import com.patsurvey.nudge.utils.openShareSheet
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -248,17 +251,26 @@ class SettingBSViewModel @Inject constructor(
                     }
                 }
 
-                val eventFilePath =
-                    File(Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + getUserMobileNumber() + "/" + moduleNameAccToLoggedInUser(userType))
+                // Event Files List
 
-                if(eventFilePath.exists() && eventFilePath.isDirectory){
-                    val eventFiles= eventFilePath.listFiles()?.filter { it.isFile && it.name.contains("event") }
-                    if (eventFiles != null) {
-                        if(eventFiles.isNotEmpty()){
-                            eventFiles.forEach {
-                                fileAndDbZipList.add(Pair(it.name,it.toUri()))
-                            }
+                val eventFileUrisList = compression.getFileUrisFromMediaStore(
+                    contentResolver =mAppContext.contentResolver,
+                    extVolumeUri = MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY),
+                    filePathToZipped = Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + getUserMobileNumber()
+                )
+
+                if(!eventFileUrisList.isNullOrEmpty()){
+                    val eventFiles = eventFileUrisList.filter {
+                        it.first.contains(EVENT_STRING) && !it.first.contains(
+                            ZIP_EXTENSION
+                        )
+                    }
+
+                    if (eventFiles.isNotEmpty()) {
+                        eventFiles.forEach {
+                            fileAndDbZipList.add(it)
                         }
+                        NudgeLogger.d("SettingBSViewModel", " Event File: ${eventFiles.json()} ")
                     }
                 }
 

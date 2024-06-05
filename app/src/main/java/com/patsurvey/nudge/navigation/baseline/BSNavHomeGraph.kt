@@ -1,15 +1,10 @@
 package com.patsurvey.nudge.navigation.baseline
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
@@ -22,43 +17,28 @@ import com.nrlm.baselinesurvey.ARG_FROM_SECTION_SCREEN
 import com.nrlm.baselinesurvey.ARG_MISSION_DATE
 import com.nrlm.baselinesurvey.ARG_MISSION_ID
 import com.nrlm.baselinesurvey.ARG_MISSION_NAME
-import com.nrlm.baselinesurvey.ARG_MOBILE_NUMBER
 import com.nrlm.baselinesurvey.ARG_QUESTION_ID
 import com.nrlm.baselinesurvey.ARG_SECTION_ID
 import com.nrlm.baselinesurvey.ARG_SURVEY_ID
 import com.nrlm.baselinesurvey.ARG_VIDEO_PATH
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.database.entity.QuestionEntity
-import com.nrlm.baselinesurvey.ui.auth.presentation.LoginScreenComponent
-import com.nrlm.baselinesurvey.ui.auth.presentation.OtpVerificationScreenComponent
-import com.patsurvey.nudge.activities.backup.presentation.ExportImportScreen
 import com.nrlm.baselinesurvey.ui.common_components.FinalStepCompletionScreen
 import com.nrlm.baselinesurvey.ui.common_components.StepCompletionScreen
 import com.nrlm.baselinesurvey.ui.form_response_summary_screen.presentation.FormQuestionSummaryScreen
-import com.nrlm.baselinesurvey.ui.language.presentation.LanguageScreenComponent
 import com.nrlm.baselinesurvey.ui.mission_screen.presentation.MissionScreen
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.presentation.MissionSummaryScreen
-import com.nrlm.baselinesurvey.ui.profile.presentation.ProfileBSScreen
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenHandler
 import com.nrlm.baselinesurvey.ui.question_type_screen.presentation.FormTypeQuestionScreen
 import com.nrlm.baselinesurvey.ui.search.presentation.SearchScreens
 import com.nrlm.baselinesurvey.ui.section_screen.presentation.SectionListScreen
-import com.nrlm.baselinesurvey.ui.splash.presentaion.SplashScreenComponent
 import com.nrlm.baselinesurvey.ui.start_screen.presentation.BaseLineStartScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreen
-import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.ui.video_player.presentation.FullscreenView
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.navigateBackToMissionScreen
-import com.nudge.navigationmanager.utils.NavigationParams
-import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
-import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.navigation.selection.logoutGraph
-import com.patsurvey.nudge.navigation.selection.settingNavGraph
-import com.patsurvey.nudge.utils.ARG_FROM_HOME
 
 
 fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
@@ -148,17 +128,6 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
                     ARG_SURVEY_ID
                 ) ?: 0
             )
-
-            /*QuestionScreen(
-                navController = navController,
-                viewModel = hiltViewModel(),
-                surveyeeId = it.arguments?.getInt(
-                    ARG_DIDI_ID
-                ) ?: 0,
-                sectionId = it.arguments?.getInt(
-                    ARG_SECTION_ID
-                ) ?: 0
-            )*/
         }
 
 
@@ -248,13 +217,10 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
         }
 
         composable(route = HomeScreens.Home_SCREEN.route) {
-            //  HomeScreen(navController=navController)
-            //   MissionScreen(navController = navController, viewModel = hiltViewModel())
             MissionScreen(navController = navController, viewModel = hiltViewModel())
         }
 
         composable(route = HomeScreens.MISSION_SCREEN.route) {
-            // MissionScreen(navController = navController, viewModel = hiltViewModel())
             MissionScreen(navController = navController, viewModel = hiltViewModel())
 
         }
@@ -282,7 +248,6 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
             )
             {
                 navController.popBackStack()
-                // navController.navigate(HomeScreens.VO_ENDORSEMENT_DIGITAL_FORM_C_SCREEN.route)
             }
         }
 

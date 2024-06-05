@@ -256,7 +256,7 @@ class ZipFileCompression : IFileCompressor {
 
     }
 
-    private fun getFileUrisFromMediaStore(
+    override fun getFileUrisFromMediaStore(
         contentResolver: ContentResolver,
         extVolumeUri: Uri,
         filePathToZipped: String

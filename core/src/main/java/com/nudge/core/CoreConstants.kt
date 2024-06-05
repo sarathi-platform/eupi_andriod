@@ -53,7 +53,7 @@ const val HAMLET = "HAMLET"
 const val SELECTION = "SELECTION"
 
 const val ZIP_EXTENSION = "zip"
-
+const val EVENT_STRING="event"
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),
     DbEventWrite(),

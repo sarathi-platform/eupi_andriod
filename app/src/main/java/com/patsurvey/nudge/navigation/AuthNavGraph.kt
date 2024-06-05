@@ -9,13 +9,14 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
+import com.nrlm.baselinesurvey.ui.profile.presentation.ProfileBSScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
-import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreen
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
-import com.patsurvey.nudge.ProfileScreen
+import com.nudge.navigationmanager.graphs.SettingScreens
 import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.VillageScreen
+import com.patsurvey.nudge.activities.backup.presentation.ExportImportScreen
 import com.patsurvey.nudge.activities.settings.BugLogggingMechanismScreen
 import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
@@ -105,14 +106,16 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
         }
 
         composable(route = AuthScreen.PROFILE_SCREEN.route) {
-            ProfileScreen(profileScreenVideModel = hiltViewModel(), navController = navController)
+            ProfileBSScreen(navController = navController, viewModel = hiltViewModel())
         }
 
         composable(route = AuthScreen.DATA_LOADING_SCREEN.route) {
             DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
         }
 
-
+        composable(route = SettingScreens.BACKUP_RECOVERY_SCREEN.route){
+            ExportImportScreen(navController = navController, viewModel = hiltViewModel())
+        }
     }
 }
 
