@@ -2,13 +2,14 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.google.android.gms.common.api.ApiException
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.repository.IMissionRepository
 import javax.inject.Inject
 
-class FetchMissionDataFromNetworkUseCase @Inject constructor(
+class FetchMissionDataUseCase @Inject constructor(
     private val repository: IMissionRepository
 ) {
-    suspend operator fun invoke(): Boolean {
+    suspend fun invoke(): Boolean {
         try {
 
             val apiResponse = repository.fetchMissionDataFromServer()
@@ -24,7 +25,6 @@ class FetchMissionDataFromNetworkUseCase @Inject constructor(
 
                     missionApiResponse.forEach { programme ->
                         repository.saveProgrammeToDb(programme)
-
                         repository.saveMissionToDB(programme.missions, programme.id)
                         programme.missions.forEach { mission ->
                             repository.saveMissionsActivityToDB(
@@ -56,4 +56,5 @@ class FetchMissionDataFromNetworkUseCase @Inject constructor(
         return false
     }
 
+    suspend fun getAllMission(): List<MissionUiModel> = repository.getAllMission()
 }

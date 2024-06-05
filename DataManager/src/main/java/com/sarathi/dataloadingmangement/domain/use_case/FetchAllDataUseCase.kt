@@ -6,20 +6,22 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class FetchAllDataUseCase @Inject constructor(
-    val fetchMissionDataFromNetworkUseCase: FetchMissionDataFromNetworkUseCase,
+    val fetchMissionDataUseCase: FetchMissionDataUseCase,
     val fetchContentDataFromNetworkUseCase: FetchContentDataFromNetworkUseCase,
     val fetchSurveyDataFromNetworkUseCase: FetchSurveyDataFromNetworkUseCase,
-    val contentDownloaderUseCase: ContentDownloaderUseCase
+    val contentDownloaderUseCase: ContentDownloaderUseCase,
+    val fetchLanguageUseCase: FetchLanguageUseCase,
+    val fetchUserDetailUseCase: FetchUserDetailUseCase,
 ) {
     suspend fun invoke(onComplete: (isSuccess: Boolean, successMsg: String) -> Unit) {
-        fetchMissionDataFromNetworkUseCase.invoke()
+        fetchLanguageUseCase.invoke()
+        fetchUserDetailUseCase.invoke()
+        fetchMissionDataUseCase.invoke()
         fetchSurveyDataFromNetworkUseCase.invoke()
-        CoroutineScope(Dispatchers.IO).launch {
-            fetchContentDataFromNetworkUseCase.invoke()
-        }
+        fetchContentDataFromNetworkUseCase.invoke()
+        onComplete(true, "")
         CoroutineScope(Dispatchers.IO).launch {
             contentDownloaderUseCase.contentDownloader()
         }
-        onComplete(true, "")
     }
 }

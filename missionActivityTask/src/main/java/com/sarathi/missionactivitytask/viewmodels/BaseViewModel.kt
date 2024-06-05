@@ -23,4 +23,7 @@ abstract class BaseViewModel : ViewModel() {
 
     fun loaderState(): LoaderState = loaderState.value
 
+    open fun refreshData() {
+    }
+
 }

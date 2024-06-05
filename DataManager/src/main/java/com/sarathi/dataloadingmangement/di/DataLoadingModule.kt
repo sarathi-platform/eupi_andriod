@@ -12,6 +12,7 @@ import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
+import com.sarathi.dataloadingmangement.data.dao.LanguageDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
@@ -28,17 +29,23 @@ import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.ContentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetworkUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchLanguageUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailUseCase
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.ContentDownloaderRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.ContentRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.IContentDownloader
 import com.sarathi.dataloadingmangement.repository.IContentRepository
+import com.sarathi.dataloadingmangement.repository.ILanguageRepository
 import com.sarathi.dataloadingmangement.repository.IMissionRepository
 import com.sarathi.dataloadingmangement.repository.ISurveyDownloadRepository
+import com.sarathi.dataloadingmangement.repository.IUserDetailRepository
+import com.sarathi.dataloadingmangement.repository.LanguageRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MissionRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyDownloadRepository
+import com.sarathi.dataloadingmangement.repository.UserDetailRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -111,6 +118,10 @@ class DataLoadingModule {
 
     @Provides
     @Singleton
+    fun provideLanguageDao(db: NudgeGrantDatabase) = db.languageDao()
+
+    @Provides
+    @Singleton
     fun provideUiConfigDao(db: NudgeGrantDatabase) = db.uiConfigDao()
 
     @Provides
@@ -168,13 +179,19 @@ class DataLoadingModule {
         surveyRepo: SurveyDownloadRepository,
         application: Application,
         missionRepositoryImpl: MissionRepositoryImpl,
-        contentRepositoryImpl: ContentRepositoryImpl
+        contentRepositoryImpl: ContentRepositoryImpl,
+        activityConfigDao: ActivityConfigDao,
+        coreSharedPrefs: CoreSharedPrefs
     ): DataLoadingUseCase {
         return DataLoadingUseCase(
-            fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(
+            fetchMissionDataFromNetworkUseCase = FetchMissionDataUseCase(
                 missionRepositoryImpl
             ),
-            fetchSurveyDataFromNetworkUseCase = FetchSurveyDataFromNetworkUseCase(surveyRepo),
+            fetchSurveyDataFromNetworkUseCase = FetchSurveyDataFromNetworkUseCase(
+                repository = surveyRepo,
+                activityConfigDao = activityConfigDao,
+                sharedPrefs = coreSharedPrefs
+            ),
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 contentRepositoryImpl,
                 application
@@ -212,7 +229,7 @@ class DataLoadingModule {
             missionDao = missionDao,
             contentConfigDao = contentConfigDao,
             missionLanguageAttributeDao = missionLanguageAttributeDao,
-            sharedPrefs = sharedPrefs
+            sharedPrefs = sharedPrefs,
         )
     }
 
@@ -224,6 +241,31 @@ class DataLoadingModule {
     ): IContentRepository {
         return ContentRepositoryImpl(
             apiInterface = apiService, contentDao = contentDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideLanguageRepository(
+        languageDao: LanguageDao,
+        apiService: DataLoadingApiService,
+    ): ILanguageRepository {
+        return LanguageRepositoryImpl(
+            apiInterface = apiService, languageDao = languageDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserDetailRepository(
+        languageDao: LanguageDao,
+        sharedPrefs: CoreSharedPrefs,
+        apiService: DataLoadingApiService,
+    ): IUserDetailRepository {
+        return UserDetailRepository(
+            sharedPrefs = sharedPrefs,
+            apiInterface = apiService,
+            languageDao = languageDao
         )
     }
 
@@ -256,18 +298,30 @@ class DataLoadingModule {
         missionRepositoryImpl: MissionRepositoryImpl,
         contentRepositoryImpl: ContentRepositoryImpl,
         repository: IContentDownloader,
-        downloaderManager: DownloaderManager
+        downloaderManager: DownloaderManager,
+        fetchLanguageUseCase: FetchLanguageUseCase,
+        languageRepository: LanguageRepositoryImpl,
+        fetchUserDetailUseCase: FetchUserDetailUseCase,
+        userDetailRepository: UserDetailRepository,
+        activityConfigDao: ActivityConfigDao,
+        coreSharedPrefs: CoreSharedPrefs
     ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
-            fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(
+            fetchMissionDataUseCase = FetchMissionDataUseCase(
                 missionRepositoryImpl
             ),
-            fetchSurveyDataFromNetworkUseCase = FetchSurveyDataFromNetworkUseCase(surveyRepo),
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 contentRepositoryImpl,
                 application
             ),
-            contentDownloaderUseCase = ContentDownloaderUseCase(repository, downloaderManager)
+            fetchSurveyDataFromNetworkUseCase = FetchSurveyDataFromNetworkUseCase(
+                repository = surveyRepo,
+                activityConfigDao = activityConfigDao,
+                sharedPrefs = coreSharedPrefs
+            ),
+            contentDownloaderUseCase = ContentDownloaderUseCase(repository, downloaderManager),
+            fetchLanguageUseCase = FetchLanguageUseCase(languageRepository),
+            fetchUserDetailUseCase = FetchUserDetailUseCase(userDetailRepository)
         )
     }
 }
