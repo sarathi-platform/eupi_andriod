@@ -26,6 +26,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.ui.events.theme.blueDark
+import com.nudge.core.ui.events.theme.defaultTextStyle
+import com.nudge.core.ui.events.theme.largeTextStyle
+import com.nudge.core.ui.events.theme.textColorDark
+import com.nudge.core.ui.events.theme.white
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.theme.blueDark
 import com.sarathi.missionactivitytask.ui.theme.defaultTextStyle
@@ -42,14 +47,13 @@ fun ToolBarWithMenuComponent(
     modifier: Modifier,
     isSearch: Boolean = false,
     iconResId: Int = R.drawable.arrow_left,
-    navController: NavController = rememberNavController(),
+    navController: NavController? = rememberNavController(),
     onBackIconClick: () -> Unit,
     onSearchValueChange: (String) -> Unit,
-    isFilterSelected: (Boolean) -> Unit,
-    isDataAvailable: Boolean = false,
+    isDataAvailable: Boolean = true,
     onBottomUI: @Composable () -> Unit,
-    tabBarView: @Composable () -> Unit,
-    onContentUI: @Composable (PaddingValues) -> Unit
+    onContentUI: @Composable (PaddingValues, Boolean, (String) -> Unit) -> Unit,
+    onSettingClick: () -> Unit
 ) {
     val dataAvailableState = mutableStateOf(isDataAvailable)
 
@@ -87,10 +91,7 @@ fun ToolBarWithMenuComponent(
                     }
                 },
                 actions = {
-                    IconButton(onClick = {
-                        //TODO Create extension function to navigate to screen and pass correct navController
-                        //navController.navigateToSettings()
-                    }) {
+                    IconButton(onClick = onSettingClick) {
                         Icon(
                             painter = painterResource(id = R.drawable.more_icon),
                             contentDescription = "more action button",
@@ -114,7 +115,7 @@ fun ToolBarWithMenuComponent(
                 .padding(top = 75.dp),
             verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
         ) {
-            if (!dataAvailableState.value) {
+            if (dataAvailableState.value) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -138,21 +139,7 @@ fun ToolBarWithMenuComponent(
                         })
                 }
             } else {
-
-                tabBarView()
-
-                if (isSearch) {
-                    SearchWithFilterViewComponent(placeholderString = "Search",
-                        filterSelected = false,
-                        modifier = Modifier.padding(horizontal = 10.dp),
-                        showFilter = false,
-                        onFilterSelected = {},
-                        onSearchValueChange = { queryTerm ->
-                        }
-                    )
-                }
-
-                onContentUI(it)
+                onContentUI(it, isSearch, onSearchValueChange)
             }
         }
     }

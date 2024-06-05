@@ -83,7 +83,6 @@ dependencies {
     implementation("androidx.navigation:navigation-runtime-ktx:2.5.3")
     implementation("androidx.navigation:navigation-compose:2.5.3")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation(project(":internetSpeedChecker"))
     //Material
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material:1.3.1")
@@ -98,7 +97,13 @@ dependencies {
     //CSV Export
     implementation("com.opencsv:opencsv:5.3")
     implementation(project(":core"))
+    implementation(project(":surveymanager"))
 
     //Coil
     implementation("io.coil-kt:coil-compose:2.0.0-rc01")
+
+    implementation("com.airbnb.android:lottie-compose:6.1.0")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    debugImplementation("androidx.compose.ui:ui-tooling")
+
 }

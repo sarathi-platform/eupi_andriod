@@ -1,10 +1,11 @@
 package com.sarathi.dataloadingmangement.repository
 
+import com.nudge.core.model.ApiResponseModel
 import com.sarathi.dataloadingmangement.data.entities.Content
-import com.sarathi.dataloadingmangement.model.ApiResponseModel
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ContentResponse
 import com.sarathi.dataloadingmangement.model.mat.response.MissionResponse
+import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
 import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
@@ -12,11 +13,9 @@ import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
 
 interface IDataLoadingScreenRepository {
     suspend fun fetchMissionDataFromServer(
-        languageCode: String,
-        missionName: String
-    ): ApiResponseModel<List<MissionResponse>>
+    ): ApiResponseModel<List<ProgrameResponse>>
 
-    suspend fun saveMissionToDB(missions: List<MissionResponse>)
+    suspend fun saveMissionToDB(missions: List<MissionResponse>, programmeId: Int)
 
     suspend fun saveMissionsActivityToDB(
         activities: List<ActivityResponse>,
@@ -35,6 +34,7 @@ interface IDataLoadingScreenRepository {
     suspend fun saveContentToDB(contents: List<Content>)
     suspend fun deleteContentFromDB()
     suspend fun getContentData(): List<Content>
+    suspend fun saveProgrammeToDb(programme: ProgrameResponse)
 
     suspend fun getUserDetailsFromNetwork(languageId: String): ApiResponseModel<UserDetailsResponse>
 

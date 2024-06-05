@@ -84,7 +84,6 @@ dependencies {
     implementation("androidx.navigation:navigation-runtime-ktx:2.5.3")
     implementation("androidx.navigation:navigation-compose:2.5.3")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation(project(":internetSpeedChecker"))
     //Material
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material:1.3.1")
@@ -99,5 +98,17 @@ dependencies {
     //CSV Export
     implementation("com.opencsv:opencsv:5.3")
     implementation(project(":DataManager"))
+    implementation(project(":core"))
+
+//    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
+//    implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
+    implementation("androidx.media3:media3-exoplayer:1.0.2")
+    implementation("androidx.media3:media3-exoplayer-dash:1.0.2")
+    implementation("androidx.media3:media3-ui:1.0.2")
+
+    implementation("com.github.barteksc:android-pdf-viewer:3.2.0-beta.1")
+    implementation("com.google.accompanist:accompanist-coil:0.15.0")
+    implementation("io.coil-kt:coil-compose:2.1.0")
+    implementation("androidx.compose.ui:ui-tooling-preview")
 
 }

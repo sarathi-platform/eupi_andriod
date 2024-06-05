@@ -105,7 +105,6 @@ fun uriFromFile(context: Context, file: File): Uri {
         }
     } catch (ex: Exception) {
         return Uri.EMPTY
-        Log.e("uriFromFile", "exception", ex)
     }
 }
 

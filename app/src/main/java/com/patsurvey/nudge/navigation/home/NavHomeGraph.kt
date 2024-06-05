@@ -79,6 +79,7 @@ import com.sarathi.missionactivitytask.navigation.MatNavigation
 import com.sarathi.smallgroupmodule.navigation.SmallGroupNavigation
 import com.sarathi.smallgroupmodule.ui.didiTab.presentation.DidiTabScreen
 
+
 @Composable
 fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
     NavHost(
@@ -87,7 +88,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         startDestination = HomeScreens.PROGRESS_SCREEN.route
     ) {
         composable(route = HomeScreens.PROGRESS_SCREEN.route) {
-            HomeUserScreen(navController = navController, prefRepo = prefRepo)
+            HomeUserScreen(navController = navController, prefRepo = prefRepo, onSettingIconClick = {navController.navigate(Graph.SETTING_GRAPH)})
         }
 
         composable(route = HomeScreens.BPC_PROGRESS_SCREEN.route) {
@@ -145,8 +146,9 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         patNavGraph(navController = navController)
         settingNavGraph(navController = navController)
         voEndorsmentNavGraph(navController = navController)
-        logoutGraph(navController = navController, prefRepo)
+        logoutGraph(navController =navController,prefRepo)
         bpcDidiListNavGraph(navController = navController)
+        MatNavigation(navController = navController,  onSettingIconClick = {navController.navigate(Graph.SETTING_GRAPH)})
         MatNavigation(navController = navController)
         SmallGroupNavigation(navController = navController)
     }
@@ -859,7 +861,8 @@ sealed class VoEndorsmentScreeens(val route: String) {
 }
 
 fun NavGraphBuilder.logoutGraph(navController: NavHostController,prefRepo: PrefRepo){
-    navigation(route = Graph.LOGOUT_GRAPH,
+    navigation(
+        route = Graph.LOGOUT_GRAPH,
         startDestination = LogoutScreens.LOG_HOME_SCREEN.route,
     ) {
 

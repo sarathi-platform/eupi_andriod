@@ -116,6 +116,14 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         val userMobile = getMobileNo()
         return "${userType}_${userMobile}"
     }
+    override fun getAppLanguage(): String {
+        return prefs.getString(PREF_KEY_LANGUAGE_CODE, DEFAULT_LANGUAGE_CODE)
+            ?: DEFAULT_LANGUAGE_CODE
+    }
+
+    override fun saveAppLanguage(code: String?) {
+        prefs.edit().putString(PREF_KEY_LANGUAGE_CODE, code).apply()
+    }
 
     override fun getUserId(): String {
         return prefs.getString(PREF_KEY_USER_NAME, BLANK_STRING) ?: BLANK_STRING

@@ -46,6 +46,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     val room_version = "2.6.1"
+    implementation(project(":internetSpeedChecker"))
 
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")
@@ -62,9 +63,6 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:2.43.2")
     kapt("androidx.hilt:hilt-compiler:1.0.0")
 
-
-    implementation(project(":internetSpeedChecker"))
-
     //Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
 
@@ -73,5 +71,9 @@ dependencies {
 
     //CSV Export
     implementation ("com.opencsv:opencsv:5.3")
-
+    implementation("androidx.compose.ui:ui:1.4.1")
+//Material
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material:1.3.1")
+    implementation("androidx.compose.material3:material3:1.1.2")
 }

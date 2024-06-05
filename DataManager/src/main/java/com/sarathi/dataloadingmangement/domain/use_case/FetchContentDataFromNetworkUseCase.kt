@@ -7,12 +7,13 @@ import com.sarathi.dataloadingmangement.R
 import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.model.mapper.ContentMapper
 import com.sarathi.dataloadingmangement.network.response.ContentResponse
-import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepository
+import com.sarathi.dataloadingmangement.repository.IContentRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
 
-class FetchContentDataFromNetworkUseCase(
-    private val repository: IDataLoadingScreenRepository,
+class FetchContentDataFromNetworkUseCase @Inject constructor(
+    private val repository: IContentRepository,
     @ApplicationContext private val mContext: Application,
 ) {
     suspend fun invoke(): Boolean {
