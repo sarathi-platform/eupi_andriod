@@ -41,5 +41,9 @@ class SurveySaveRepositoryImpl @Inject constructor(
         return result.joinToString(",")
     }
 
+    override fun getUserIdentifier(): String {
+        return coreSharedPrefs.getUniqueUserIdentifier()
+    }
+
 
 }

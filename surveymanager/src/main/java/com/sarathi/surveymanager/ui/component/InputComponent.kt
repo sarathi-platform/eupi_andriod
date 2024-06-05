@@ -37,6 +37,7 @@ fun InputComponent(
     maxLength: Int = 150,
     hintText: String = BLANK_STRING,
     isMandatory: Boolean = true,
+    isEditable: Boolean = true,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
     val txt = remember {
@@ -58,6 +59,7 @@ fun InputComponent(
                 .fillMaxWidth()
                 .padding(top = 6.dp),
             value = txt.value,
+            enabled = isEditable,
             onValueChange = {
                 if (it.length <= maxLength) {
                     if (isOnlyNumber) {
