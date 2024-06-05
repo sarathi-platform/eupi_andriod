@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToActivityScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.BasicMissionCard
+import com.sarathi.missionactivitytask.ui.components.LoaderComponent
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.mission_screen.viewmodel.MissionScreenViewModel
@@ -46,7 +47,7 @@ fun GrantMissionScreen(
         iconResId = R.drawable.ic_sarathi_logo,
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
-        isSearch = true,
+        isSearch = false,
         isDataAvailable = viewModel.filterMissionList.value.isEmpty(),
         onSearchValueChange = { searchedTerm ->
             viewModel.onEvent(SearchEvent.PerformSearch(searchedTerm, true))
@@ -54,6 +55,9 @@ fun GrantMissionScreen(
         onBottomUI = {
         },
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
+            LoaderComponent(
+                visible = viewModel.loaderState.value.isLoaderVisible,
+            )
             if (viewModel.missionList.value.isNotEmpty()) {
                 if (isSearch) {
                     SearchWithFilterViewComponent(placeholderString = "Search",

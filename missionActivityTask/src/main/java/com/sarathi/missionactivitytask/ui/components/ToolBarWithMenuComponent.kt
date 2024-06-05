@@ -108,17 +108,6 @@ fun ToolBarWithMenuComponent(
                 .fillMaxSize()
                 .padding(top = 75.dp)
         ) {
-            if (isSearch) {
-                SearchWithFilterViewComponent(placeholderString = "Search",
-                    filterSelected = false,
-                    modifier = Modifier.padding(horizontal = 10.dp),
-                    showFilter = false,
-                    onFilterSelected = {},
-                    onSearchValueChange = { queryTerm ->
-                        onSearchValueChange(queryTerm)
-
-                    })
-            }
             if (dataAvailableState.value) {
                 Column(
                     modifier = Modifier
