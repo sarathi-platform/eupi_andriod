@@ -57,5 +57,8 @@ class FetchMissionDataUseCase @Inject constructor(
         return false
     }
 
-    suspend fun getAllMission(): List<MissionUiModel> = repository.getAllMission()
+    suspend fun getAllMission(): List<MissionUiModel> {
+        return repository.getAllMission()
+    }
+
 }

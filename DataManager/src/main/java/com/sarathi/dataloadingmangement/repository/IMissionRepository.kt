@@ -27,7 +27,7 @@ interface IMissionRepository {
 
     suspend fun saveProgrammeToDb(programme: ProgrameResponse)
 
-    suspend fun getAllMission(): List<MissionUiModel>
 
+    suspend fun getAllMission(): List<MissionUiModel>
 
 }

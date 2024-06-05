@@ -87,8 +87,7 @@ class DataLoadingModule {
     @Singleton
     fun provideGrantDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, NudgeGrantDatabase::class.java, NUDGE_GRANT_DATABASE)
-            .fallbackToDestructiveMigration()
-            .build()
+            .fallbackToDestructiveMigration().build()
 
     @Provides
     @Singleton
@@ -191,12 +190,17 @@ class DataLoadingModule {
 
     @Provides
     @Singleton
+    fun provideContentDao(db: NudgeGrantDatabase) = db.contentDao()
+
+    @Provides
+    @Singleton
     fun provideFetchDataUseCaseUseCase(
         surveyRepo: SurveyDownloadRepository,
         application: Application,
         missionRepositoryImpl: MissionRepositoryImpl,
         contentRepositoryImpl: ContentRepositoryImpl,
         activityConfigDao: ActivityConfigDao,
+        fetchSurveyDataFromDB: FetchSurveyDataFromDB,
         coreSharedPrefs: CoreSharedPrefs
     ): DataLoadingUseCase {
         return DataLoadingUseCase(
@@ -208,38 +212,13 @@ class DataLoadingModule {
                 activityConfigDao = activityConfigDao,
                 sharedPrefs = coreSharedPrefs
             ),
+            fetchSurveyDataFromDB = fetchSurveyDataFromDB,
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 contentRepositoryImpl,
                 application
             )
         )
-    }
 
-    @Provides
-    @Singleton
-    fun provideContentDao(db: NudgeGrantDatabase) = db.contentDao()
-
-    @Provides
-    @Singleton
-    fun provideFetchDataUseCaseUseCase(
-        surveyRepo: SurveyDownloadRepository,
-        application: Application,
-        surveyRepositoryImpl: SurveyRepositoryImpl,
-        missionRepositoryImpl: MissionRepositoryImpl,
-        contentRepositoryImpl: ContentRepositoryImpl
-    ): DataLoadingUseCase {
-        return DataLoadingUseCase(
-            fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(
-                missionRepositoryImpl
-            ),
-            fetchSurveyDataFromNetworkUseCase = FetchSurveyDataFromNetworkUseCase(surveyRepo),
-            fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
-                contentRepositoryImpl,
-                application
-            ),
-            fetchSurveyDataFromDB = FetchSurveyDataFromDB(surveyRepositoryImpl),
-
-            )
     }
 
     @Provides
@@ -272,10 +251,20 @@ class DataLoadingModule {
             missionDao = missionDao,
             contentConfigDao = contentConfigDao,
             missionLanguageAttributeDao = missionLanguageAttributeDao,
-            sharedPrefs = sharedPrefs,
+            sharedPrefs = sharedPrefs
         )
     }
 
+    @Provides
+    @Singleton
+    fun provideContentRepository(
+        contentDao: ContentDao,
+        apiService: DataLoadingApiService,
+    ): IContentRepository {
+        return ContentRepositoryImpl(
+            apiInterface = apiService, contentDao = contentDao
+        )
+    }
 
     @Provides
     @Singleton
@@ -304,204 +293,174 @@ class DataLoadingModule {
 
     @Provides
     @Singleton
-    fun provideContentRepository(
+    fun provideContentDownloaderRepositoryImpl(
         contentDao: ContentDao,
-        apiService: DataLoadingApiService,
-    ): IContentRepository {
-        return ContentRepositoryImpl(
-            apiInterface = apiService, contentDao = contentDao
-        ): IContentDownloader {
-            return ContentDownloaderRepositoryImpl(
-                contentDao
-            )
-        }
+    ): IContentDownloader {
+        return ContentDownloaderRepositoryImpl(
+            contentDao
+        )
+    }
 
-        @Provides
-        @Singleton
-        fun provideContentDownloaderRepositoryImpl(
-            contentDao: ContentDao,
-        ): IContentDownloader {
-            return ContentDownloaderRepositoryImpl(
-                contentDao
-            )
-        }
+    @Provides
+    @Singleton
+    fun provideContentUseCase(
+        repository: ContentDownloaderRepositoryImpl,
+        downloaderManager: DownloaderManager,
+    ): ContentUseCase {
+        return ContentUseCase(
+            contentDownloaderUseCase = ContentDownloaderUseCase(repository, downloaderManager),
+        )
+    }
 
-        fun provideContentUseCase(
-            repository: ContentDownloaderRepositoryImpl,
-            downloaderManager: DownloaderManager,
-        ): ContentUseCase {
-            return ContentUseCase(
-                contentDownloaderUseCase = ContentDownloaderUseCase(repository, downloaderManager),
-            )
-        }
+    @Provides
+    @Singleton
+    fun provideFetchAllDataUseCase(
+        surveyRepo: SurveyDownloadRepository,
+        application: Application,
+        missionRepositoryImpl: MissionRepositoryImpl,
+        contentRepositoryImpl: ContentRepositoryImpl,
+        repository: IContentDownloader,
+        downloaderManager: DownloaderManager,
+        fetchLanguageUseCase: FetchLanguageUseCase,
+        languageRepository: LanguageRepositoryImpl,
+        fetchUserDetailUseCase: FetchUserDetailUseCase,
+        userDetailRepository: UserDetailRepository,
+        activityConfigDao: ActivityConfigDao,
+        coreSharedPrefs: CoreSharedPrefs
+    ): FetchAllDataUseCase {
+        return FetchAllDataUseCase(
+            fetchMissionDataUseCase = FetchMissionDataUseCase(
+                missionRepositoryImpl
+            ),
+            fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
+                contentRepositoryImpl,
+                application
+            ),
+            fetchSurveyDataFromNetworkUseCase = FetchSurveyDataFromNetworkUseCase(
+                repository = surveyRepo,
+                activityConfigDao = activityConfigDao,
+                sharedPrefs = coreSharedPrefs
+            ),
+            contentDownloaderUseCase = ContentDownloaderUseCase(repository, downloaderManager),
+            fetchLanguageUseCase = FetchLanguageUseCase(languageRepository),
+            fetchUserDetailUseCase = FetchUserDetailUseCase(userDetailRepository)
+        )
+    }
 
-        @Provides
-        @Singleton
-        fun provideFetchAllDataUseCase(
-            surveyRepo: SurveyDownloadRepository,
-            application: Application,
-            missionRepositoryImpl: MissionRepositoryImpl,
-            contentRepositoryImpl: ContentRepositoryImpl,
-            repository: IContentDownloader,
-            downloaderManager: DownloaderManager,
-            fetchLanguageUseCase: FetchLanguageUseCase,
-            languageRepository: LanguageRepositoryImpl,
-            fetchUserDetailUseCase: FetchUserDetailUseCase,
-            userDetailRepository: UserDetailRepository,
-            activityConfigDao: ActivityConfigDao,
-            coreSharedPrefs: CoreSharedPrefs
-        ): FetchAllDataUseCase {
-            return FetchAllDataUseCase(
-                fetchMissionDataUseCase = FetchMissionDataUseCase(
-                    missionRepositoryImpl
-                ),
-                application: Application,
-                missionRepositoryImpl: MissionRepositoryImpl,
-                contentRepositoryImpl: ContentRepositoryImpl,
-                repository: IContentDownloader,
-                downloaderManager: DownloaderManager,
 
-                ): FetchAllDataUseCase {
-                return FetchAllDataUseCase(
-                    fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(
-                        missionRepositoryImpl
-                    ),
-                    fetchSurveyDataFromNetworkUseCase = FetchSurveyDataFromNetworkUseCase(surveyRepo),
-                    fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
-                        contentRepositoryImpl,
-                        application
-                    ),
-                    contentDownloaderUseCase = ContentDownloaderUseCase(
-                        repository,
-                        downloaderManager
-                    ),
+    @Provides
+    @Singleton
+    fun provideSaveSurveyRepository(
+        surveyAnswersDao: SurveyAnswersDao,
+        coreSharedPrefs: CoreSharedPrefs
 
-                    )
-            }
-            @Provides
-            @Singleton
-            fun provideSaveSurveyUseCase(
-                repositoryImpl: SurveySaveRepositoryImpl
-            ): SaveSurveyAnswerUseCase {
-                return SaveSurveyAnswerUseCase(repositoryImpl)
-            }
+    ): ISurveySaveRepository {
+        return SurveySaveRepositoryImpl(
+            surveyAnswersDao = surveyAnswersDao,
+            coreSharedPrefs = coreSharedPrefs
+        )
+    }
 
-            @Provides
-            @Singleton
-            fun provideSurveyRepository(
-                questionEntityDao: QuestionEntityDao,
-                surveyAnswersDao: SurveyAnswersDao,
-                optionItemDao: OptionItemDao,
-                coreSharedPrefs: CoreSharedPrefs,
-                surveyDao: SurveyEntityDao
-            ): ISurveyRepository {
-                return SurveyRepositoryImpl(
-                    questionDao = questionEntityDao,
-                    surveyAnswersDao = surveyAnswersDao,
-                    optionItemDao = optionItemDao,
-                    coreSharedPrefs = coreSharedPrefs,
-                    surveyEntityDao = surveyDao
+    @Provides
+    @Singleton
+    fun provideTaskStatusRepository(
+        taskDao: TaskDao,
+        coreSharedPrefs: CoreSharedPrefs
 
-                ),
-                fetchSurveyDataFromNetworkUseCase = FetchSurveyDataFromNetworkUseCase(
-                    repository = surveyRepo,
-                    activityConfigDao = activityConfigDao,
-                    sharedPrefs = coreSharedPrefs
-                ),
-                contentDownloaderUseCase = ContentDownloaderUseCase(repository, downloaderManager),
-                fetchLanguageUseCase = FetchLanguageUseCase(languageRepository),
-                fetchUserDetailUseCase = FetchUserDetailUseCase(userDetailRepository)
-                )
-            }
+    ): ITaskStatusRepository {
+        return TaskStatusRepositoryImpl(
+            taskDao = taskDao,
+            coreSharedPrefs = coreSharedPrefs
+        )
+    }
 
-            @Provides
-            @Singleton
-            fun provideSaveSurveyRepository(
-                surveyAnswersDao: SurveyAnswersDao,
-                coreSharedPrefs: CoreSharedPrefs
+    @Provides
+    @Singleton
+    fun provideMatStatusEventRepository(
+        coreSharedPrefs: CoreSharedPrefs
 
-            ): ISurveySaveRepository {
-                return SurveySaveRepositoryImpl(
-                    surveyAnswersDao = surveyAnswersDao,
-                    coreSharedPrefs = coreSharedPrefs
-                )
-            }
+    ): IMATStatusEventRepository {
+        return MATStatusEventRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs
+        )
+    }
 
-            @Provides
-            @Singleton
-            fun provideTaskStatusRepository(
-                taskDao: TaskDao,
-                coreSharedPrefs: CoreSharedPrefs
+    @Provides
+    @Singleton
+    fun provideMatStatusEventUseCase(
+        repositoryImpl: MATStatusEventRepositoryImpl,
+        eventWriterRepositoryImpl: EventWriterRepositoryImpl
+    ): MATStatusEventWriterUseCase {
+        return MATStatusEventWriterUseCase(
+            repository = repositoryImpl,
+            eventWriterRepositoryImpl = eventWriterRepositoryImpl
+        )
+    }
 
-            ): ITaskStatusRepository {
-                return TaskStatusRepositoryImpl(
-                    taskDao = taskDao,
-                    coreSharedPrefs = coreSharedPrefs
-                )
-            }
-        }
+    @Provides
+    @Singleton
+    fun provideEventWriterRepository(
+        @ApplicationContext context: Context,
+        eventsDao: EventsDao,
+        eventDependencyDao: EventDependencyDao,
+        coreSharedPrefs: CoreSharedPrefs
 
-        @Provides
-        @Singleton
-        fun provideMatStatusEventRepository(
-            coreSharedPrefs: CoreSharedPrefs
+    ): IEventWriterRepository {
+        return EventWriterRepositoryImpl(
+            eventsDao = eventsDao,
+            eventDependencyDao = eventDependencyDao,
+            coreSharedPrefs = coreSharedPrefs,
+            context = context
+        )
+    }
 
-        ): IMATStatusEventRepository {
-            return MATStatusEventRepositoryImpl(
-                coreSharedPrefs = coreSharedPrefs
-            )
-        }
+    @Provides
+    @Singleton
+    fun provideSaveSurveyAnswerEventRepository(
+        coreSharedPrefs: CoreSharedPrefs
 
-        @Provides
-        @Singleton
-        fun provideMatStatusEventUseCase(
-            repositoryImpl: MATStatusEventRepositoryImpl,
-            eventWriterRepositoryImpl: EventWriterRepositoryImpl
-        ): MATStatusEventWriterUseCase {
-            return MATStatusEventWriterUseCase(
-                repository = repositoryImpl,
-                eventWriterRepositoryImpl = eventWriterRepositoryImpl
-            )
-        }
+    ): ISurveyAnswerEventRepository {
+        return SurveyAnswerEventRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs
+        )
+    }
 
-        @Provides
-        @Singleton
-        fun provideEventWriterRepository(
-            @ApplicationContext context: Context,
-            eventsDao: EventsDao,
-            eventDependencyDao: EventDependencyDao,
-            coreSharedPrefs: CoreSharedPrefs
+    @Provides
+    @Singleton
+    fun provideSaveSurveyAnswerEventUseCase(
+        eventWriterRepositoryImpl: EventWriterRepositoryImpl,
+        surveyAnswerRepo: SurveyAnswerEventRepositoryImpl
+    ): SurveyAnswerEventWriterUseCase {
+        return SurveyAnswerEventWriterUseCase(
+            repository = surveyAnswerRepo,
+            eventWriterRepositoryImpl = eventWriterRepositoryImpl
+        )
+    }
 
-        ): IEventWriterRepository {
-            return EventWriterRepositoryImpl(
-                eventsDao = eventsDao,
-                eventDependencyDao = eventDependencyDao,
-                coreSharedPrefs = coreSharedPrefs,
-                context = context
-            )
-        }
+    @Provides
+    @Singleton
+    fun provideSaveSurveyUseCase(
+        repositoryImpl: SurveySaveRepositoryImpl
+    ): SaveSurveyAnswerUseCase {
+        return SaveSurveyAnswerUseCase(repositoryImpl)
+    }
 
-        @Provides
-        @Singleton
-        fun provideSaveSurveyAnswerEventRepository(
-            coreSharedPrefs: CoreSharedPrefs
+    @Provides
+    @Singleton
+    fun provideSurveyRepository(
+        questionEntityDao: QuestionEntityDao,
+        surveyAnswersDao: SurveyAnswersDao,
+        optionItemDao: OptionItemDao,
+        coreSharedPrefs: CoreSharedPrefs,
+        surveyDao: SurveyEntityDao
+    ): ISurveyRepository {
+        return SurveyRepositoryImpl(
+            questionDao = questionEntityDao,
+            surveyAnswersDao = surveyAnswersDao,
+            optionItemDao = optionItemDao,
+            coreSharedPrefs = coreSharedPrefs,
+            surveyEntityDao = surveyDao
 
-        ): ISurveyAnswerEventRepository {
-            return SurveyAnswerEventRepositoryImpl(
-                coreSharedPrefs = coreSharedPrefs
-            )
-        }
-
-        @Provides
-        @Singleton
-        fun provideSaveSurveyAnswerEventUseCase(
-            eventWriterRepositoryImpl: EventWriterRepositoryImpl,
-            surveyAnswerRepo: SurveyAnswerEventRepositoryImpl
-        ): SurveyAnswerEventWriterUseCase {
-            return SurveyAnswerEventWriterUseCase(
-                repository = surveyAnswerRepo,
-                eventWriterRepositoryImpl = eventWriterRepositoryImpl
-            )
-        }
+        )
     }
 }
