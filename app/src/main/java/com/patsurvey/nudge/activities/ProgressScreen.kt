@@ -387,9 +387,9 @@ fun ProgressScreen(
                                     }
                                     4 -> ultraPoorDidiCount.value.let {
                                         if (it > 1)
-                                            getVoNameForState(context,viewModel.getStateId(), R.plurals.pat_sub_text_plural)
+                                            getVoNameForState(context,viewModel.getStateId(), R.plurals.pat_sub_text_plural,it)
                                         else
-                                            getVoNameForState(context,viewModel.getStateId(), R.plurals.pat_sub_text_singular)
+                                            getVoNameForState(context,viewModel.getStateId(), R.plurals.pat_sub_text_singular,it)
                                     }
                                     5 -> endorsedDidiCount.value.let {
                                         if (it > 1)
