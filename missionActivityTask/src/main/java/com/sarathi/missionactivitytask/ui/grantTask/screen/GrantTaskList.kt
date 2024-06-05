@@ -1,7 +1,6 @@
 package com.sarathi.missionactivitytask.ui.grantTask.screen
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -10,10 +9,13 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
-import com.sarathi.contentmodule.ui.component.BasicContentComponent
+import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
+import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
+import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
+import com.sarathi.missionactivitytask.navigation.navigateToSurveyScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.GrantTaskCard
-import com.sarathi.missionactivitytask.ui.components.ButtonComponent
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.BasicContent
@@ -23,20 +25,17 @@ fun GrantTaskList(
     taskList: HashMap<Int, HashMap<String, String>>,
     contents: List<BasicContent> = listOf(),
     isSearch: Boolean = true,
-    onSearchValueChange: (String) -> Unit
+    onSearchValueChange: (String) -> Unit,
+    navController: NavController,
+    onContentData: (contentValue: String, contentKey: String, contentType: String) -> Unit,
 ) {
     Column {
-        Row(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp, start = 20.dp, end = 20.dp)) {
-            contents.forEachIndexed { index, item ->
-                if (index < 3) {
-                    BasicContentComponent(
-                        contentType = item.contentType,
-                        contentTitle = item.contentTitle,
-                        onClick = {}
-                    )
-                } else if (index == 3) {
-                    ButtonComponent(title = "+ ${contents.size - index} More Data")
-                }
+        BaseContentScreen { contentValue, contentKey, contentType, isLimitContentData ->
+            if (!isLimitContentData) {
+                onContentData(contentValue, contentKey, contentType)
+                navigateToMediaPlayerScreen(navController, contentKey, contentType)
+            } else {
+                navigateToContentDetailScreen(navController)
             }
         }
         if (isSearch) {
@@ -57,6 +56,9 @@ fun GrantTaskList(
             ) { index, task ->
 
                 GrantTaskCard(
+                    onPrimaryButtonClick = {
+                        navigateToSurveyScreen(navController)
+                    },
                     title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name] ?: BLANK_STRING,
                     subTitle = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name]
                         ?: BLANK_STRING,

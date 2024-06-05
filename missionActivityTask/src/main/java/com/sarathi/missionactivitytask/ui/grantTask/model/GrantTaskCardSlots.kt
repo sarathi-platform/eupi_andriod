@@ -10,3 +10,7 @@ enum class GrantTaskCardSlots(val type: String) {
     GRANT_TASK_STATUS(type = "text")
 
 }
+enum class GrantTaskSearchBarSlots(val type: String) {
+    GRANT_TASK_SEARCH_TITLE(type = "text"),
+
+}

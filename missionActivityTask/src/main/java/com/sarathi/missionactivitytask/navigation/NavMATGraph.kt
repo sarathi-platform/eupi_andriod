@@ -26,9 +26,11 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MAT_GR
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MEDIA_PLAYER_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MISSION_FINAL_STEP_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MISSION_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.SURVEY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.ui.grantTask.screen.GrantTaskScreen
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.ActivityScreen
 import com.sarathi.missionactivitytask.ui.mission_screen.screen.GrantMissionScreen
+import com.sarathi.surveymanager.ui.screen.SurveyScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.ActivitySuccessScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.FinalStepCompletionScreen
 
@@ -133,6 +135,9 @@ fun NavGraphBuilder.MatNavigation(
                     )
                 })
         }
+        composable(route = MATHomeScreens.SurveyScreen.route) {
+            SurveyScreen(navController = navController, viewModel = hiltViewModel())
+        }
 
         composable(route = MATHomeScreens.ActivityCompletionScreen.route, arguments = listOf(
             navArgument(
@@ -170,6 +175,8 @@ sealed class MATHomeScreens(val route: String) {
     object MediaPlayerScreen :
         MATHomeScreens(route = "$MEDIA_PLAYER_SCREEN_ROUTE_NAME/{$ARG_CONTENT_KEY}/{$ARG_CONTENT_TYPE}")
 
+    object SurveyScreen :
+        MATHomeScreens(route = SURVEY_SCREEN_ROUTE_NAME)
     object ActivityCompletionScreen :
         MATHomeScreens(route = "$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/{$ARG_ACTIVITY_MASSAGE}")
 
@@ -179,6 +186,10 @@ sealed class MATHomeScreens(val route: String) {
 
 fun navigateToContentDetailScreen(navController: NavController) {
     navController.navigate(CONTENT_DETAIL_SCREEN_ROUTE_NAME)
+}
+
+fun navigateToSurveyScreen(navController: NavController) {
+    navController.navigate(SURVEY_SCREEN_ROUTE_NAME)
 }
 
 fun navigateToActivityCompletionScreen(navController: NavController, activityMsg: String) {

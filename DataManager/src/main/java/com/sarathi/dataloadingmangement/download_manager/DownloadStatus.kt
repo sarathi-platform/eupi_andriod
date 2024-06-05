@@ -1,5 +1,4 @@
-package com.sarathi.contentmodule.download_manager
-
+package com.sarathi.dataloadingmangement.download_manager
 enum class DownloadStatus(val value: Int) {
     UNAVAILABLE(0),
     DOWNLOADING(1),

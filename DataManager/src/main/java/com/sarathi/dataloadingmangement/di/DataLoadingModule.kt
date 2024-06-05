@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import com.nudge.core.preference.CoreSharedPrefs
-import com.sarathi.contentmodule.download_manager.DownloaderManager
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
@@ -19,6 +18,7 @@ import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
@@ -29,7 +29,10 @@ import com.sarathi.dataloadingmangement.domain.use_case.ContentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
+import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.ContentDownloaderRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.ContentRepositoryImpl
@@ -37,8 +40,14 @@ import com.sarathi.dataloadingmangement.repository.IContentDownloader
 import com.sarathi.dataloadingmangement.repository.IContentRepository
 import com.sarathi.dataloadingmangement.repository.IMissionRepository
 import com.sarathi.dataloadingmangement.repository.ISurveyDownloadRepository
+import com.sarathi.dataloadingmangement.repository.ISurveyRepository
+import com.sarathi.dataloadingmangement.repository.ISurveySaveRepository
+import com.sarathi.dataloadingmangement.repository.ITaskStatusRepository
 import com.sarathi.dataloadingmangement.repository.MissionRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyDownloadRepository
+import com.sarathi.dataloadingmangement.repository.SurveyRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.SurveySaveRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.TaskStatusRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -167,6 +176,7 @@ class DataLoadingModule {
     fun provideFetchDataUseCaseUseCase(
         surveyRepo: SurveyDownloadRepository,
         application: Application,
+        surveyRepositoryImpl: SurveyRepositoryImpl,
         missionRepositoryImpl: MissionRepositoryImpl,
         contentRepositoryImpl: ContentRepositoryImpl
     ): DataLoadingUseCase {
@@ -178,8 +188,10 @@ class DataLoadingModule {
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 contentRepositoryImpl,
                 application
+            ),
+            fetchSurveyDataFromDB = FetchSurveyDataFromDB(surveyRepositoryImpl),
+
             )
-        )
     }
 
     @Provides
@@ -256,8 +268,9 @@ class DataLoadingModule {
         missionRepositoryImpl: MissionRepositoryImpl,
         contentRepositoryImpl: ContentRepositoryImpl,
         repository: IContentDownloader,
-        downloaderManager: DownloaderManager
-    ): FetchAllDataUseCase {
+        downloaderManager: DownloaderManager,
+
+        ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(
                 missionRepositoryImpl
@@ -267,7 +280,60 @@ class DataLoadingModule {
                 contentRepositoryImpl,
                 application
             ),
-            contentDownloaderUseCase = ContentDownloaderUseCase(repository, downloaderManager)
+            contentDownloaderUseCase = ContentDownloaderUseCase(repository, downloaderManager),
+
+            )
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideSaveSurveyUseCase(
+        repositoryImpl: SurveySaveRepositoryImpl
+    ): SaveSurveyAnswerUseCase {
+        return SaveSurveyAnswerUseCase(repositoryImpl)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSurveyRepository(
+        questionEntityDao: QuestionEntityDao,
+        surveyAnswersDao: SurveyAnswersDao,
+        optionItemDao: OptionItemDao,
+        coreSharedPrefs: CoreSharedPrefs
+    ): ISurveyRepository {
+        return SurveyRepositoryImpl(
+            questionDao = questionEntityDao,
+            surveyAnswersDao = surveyAnswersDao,
+            optionItemDao = optionItemDao,
+            coreSharedPrefs = coreSharedPrefs
+
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSaveSurveyRepository(
+        surveyAnswersDao: SurveyAnswersDao,
+        coreSharedPrefs: CoreSharedPrefs
+
+    ): ISurveySaveRepository {
+        return SurveySaveRepositoryImpl(
+            surveyAnswersDao = surveyAnswersDao,
+            coreSharedPrefs = coreSharedPrefs
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideTaskStatusRepository(
+        taskDao: TaskDao,
+        coreSharedPrefs: CoreSharedPrefs
+
+    ): ITaskStatusRepository {
+        return TaskStatusRepositoryImpl(
+            taskDao = taskDao,
+            coreSharedPrefs = coreSharedPrefs
         )
     }
 }

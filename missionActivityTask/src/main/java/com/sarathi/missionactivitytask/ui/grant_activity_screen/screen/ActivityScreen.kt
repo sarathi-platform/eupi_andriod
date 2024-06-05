@@ -1,12 +1,15 @@
 package com.sarathi.missionactivitytask.ui.grant_activity_screen.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.viewmodel.ActivityScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -25,6 +28,7 @@ fun ActivityScreen(
         viewModel.onEvent(InitDataEvent.InitDataState)
         viewModel.setMissionDetail(missionId)
     }
+    val context = LocalContext.current
     ToolBarWithMenuComponent(
         title = missionName,
         modifier = Modifier.fillMaxSize(),
@@ -42,7 +46,18 @@ fun ActivityScreen(
                 ActivityRowCard(
                     activities = viewModel.activityList.value,
                     navController = navController
-                )
+                ) { contentValue, contentKey, contentType ->
+                    if (viewModel.isFilePathExists(contentValue)) {
+                        navigateToMediaPlayerScreen(navController, contentKey, contentType)
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "file not Exists ",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                }
             }
         },
         onSettingClick = onSettingClick
