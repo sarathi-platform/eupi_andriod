@@ -15,6 +15,6 @@ class QuestionUiModel(
     var options: List<OptionItemEntity>?, var display: String,
     var summary: String? = "",
     val tagId: Int,
-    val surveyName: String
+    val surveyName: String,
     )
 

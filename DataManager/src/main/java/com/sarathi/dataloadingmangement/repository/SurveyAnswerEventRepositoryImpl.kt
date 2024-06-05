@@ -15,7 +15,7 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
     ISurveyAnswerEventRepository {
 
     override suspend fun writeSaveAnswerEvent(
-        questionUiModel: QuestionUiModel,
+        questionUiModels: List<QuestionUiModel>,
         subjectId: Int,
         subjectType: String,
         refrenceId: Int,
@@ -23,13 +23,14 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
     ): SaveAnswerEventDto {
 
         return SaveAnswerEventDto(
-            surveyId = questionUiModel.surveyId,
+            surveyId = questionUiModels.first().surveyId,
             dateCreated = System.currentTimeMillis(),
-            languageId = questionUiModel.languageId,
+            languageId = questionUiModels.first().languageId,
             subjectId = subjectId,
             subjectType = subjectType,
-            sectionId = questionUiModel.sectionId,
-            question = getQuestionEvent(questionUiModel),
+            sectionId = questionUiModels.first().sectionId,
+            question = getQuestionEvent(questionUiModels),
+
             referenceId = refrenceId,
             localTaskId = taskLocalId ?: BLANK_STRING
         )
@@ -38,15 +39,26 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
     }
 
 
-    private fun getQuestionEvent(questionUiModel: QuestionUiModel): SaveAnswerEventQuestionItemDto {
-        return SaveAnswerEventQuestionItemDto(
+    private fun getQuestionEvent(questionUiModels: List<QuestionUiModel>): List<SaveAnswerEventQuestionItemDto> {
+        var questionAnsweList = ArrayList<SaveAnswerEventQuestionItemDto>()
+        questionUiModels.forEach { questionUiModel ->
+
+
+            val options = getOption(questionUiModel.options!!, "")
+            if (options.isNotEmpty()) {
+                questionAnsweList.add(
+                    SaveAnswerEventQuestionItemDto(
             questionId = questionUiModel.questionId,
             questionType = questionUiModel.type,
             tag = questionUiModel.tagId,
             showQuestion = true,
             questionDesc = questionUiModel.questionDisplay ?: BLANK_STRING,
-            options = getOption(questionUiModel.options!!, "")
-        )
+                        options = options
+                    )
+                )
+            }
+        }
+        return questionAnsweList
     }
 
     private fun getOption(
@@ -55,17 +67,18 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
     ): List<SaveAnswerEventOptionItemDto> {
         val result = ArrayList<SaveAnswerEventOptionItemDto>()
         optionsItems.forEach { optionItem ->
-            result.add(
-                SaveAnswerEventOptionItemDto(
-                    optionId = optionItem.optionId ?: 0,
-                    selectedValue = optionItem.selectedValue,
-                    tag = optionItem.optionTag,
-                    optionDesc = optionItem.summary ?: BLANK_STRING,
-                    referenceId = referenceId
+            if (optionItem.isSelected == true) {
+                result.add(
+                    SaveAnswerEventOptionItemDto(
+                        optionId = optionItem.optionId ?: 0,
+                        selectedValue = optionItem.selectedValue,
+                        tag = optionItem.optionTag,
+                        optionDesc = optionItem.summary ?: BLANK_STRING,
+                        referenceId = referenceId
 
+                    )
                 )
-            )
-
+            }
         }
         return result
 

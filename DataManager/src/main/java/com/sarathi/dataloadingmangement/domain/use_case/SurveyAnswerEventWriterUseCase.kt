@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.domain.use_case
 import android.net.Uri
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.ISurveyAnswerEventRepository
@@ -13,7 +14,7 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
     private val eventWriterRepositoryImpl: EventWriterRepositoryImpl
 ) {
     suspend operator fun invoke(
-        questionUiModel: QuestionUiModel,
+        questionUiModel: List<QuestionUiModel>,
         subjectId: Int,
         subjectType: String,
         referenceId: Int,
@@ -32,7 +33,7 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             saveAnswerEventDto,
             EventName.SAVE_RESPONSE_EVENT,
             EventType.STATEFUL,
-            questionUiModel.surveyName
+            questionUiModel.firstOrNull()?.surveyName ?: BLANK_STRING
         )
             ?.let {
 

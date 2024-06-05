@@ -5,7 +5,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 
 interface ISurveyAnswerEventRepository {
     suspend fun writeSaveAnswerEvent(
-        questionUiModel: QuestionUiModel,
+        questionUiModel: List<QuestionUiModel>,
         subjectId: Int,
         subjectType: String,
         refrenceId: Int,

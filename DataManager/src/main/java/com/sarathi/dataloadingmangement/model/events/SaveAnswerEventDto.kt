@@ -19,7 +19,7 @@ data class SaveAnswerEventDto(
     val sectionId: Int,
     @SerializedName("question")
     @Expose
-    val question: SaveAnswerEventQuestionItemDto,
+    val question: List<SaveAnswerEventQuestionItemDto>,
     @SerializedName("subjectId")
     @Expose
     val subjectId: Int,
@@ -32,4 +32,5 @@ data class SaveAnswerEventDto(
     @SerializedName("localTaskId")
     @Expose
     val localTaskId: String,
-)
+
+    )
