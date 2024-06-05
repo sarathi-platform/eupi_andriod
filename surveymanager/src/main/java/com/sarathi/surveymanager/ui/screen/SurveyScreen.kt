@@ -121,6 +121,7 @@ fun SurveyScreen(
                             QuestionType.InputNumber.name -> {
                                 InputComponent(
                                     isMandatory = question.isMandatory,
+                                    isEditable = viewModel.isTaskStatusCompleted(),
                                     defaultValue = question.options?.firstOrNull()?.selectedValue
                                         ?: BLANK_STRING,
                                     title = question.questionDisplay,
@@ -137,6 +138,7 @@ fun SurveyScreen(
                                     defaultValue = question.options?.firstOrNull()?.selectedValue
                                         ?: BLANK_STRING,
                                     title = question.questionDisplay,
+                                    isEditable = viewModel.isTaskStatusCompleted(),
                                     hintText = question.display,
                                 ) { selectedValue ->
                                     saveInputTypeAnswer(selectedValue, question, viewModel)
@@ -152,6 +154,7 @@ fun SurveyScreen(
                                     ),
                                     isMandatory = question.isMandatory,
                                     title = question.questionDisplay,
+                                    isEditable = viewModel.isTaskStatusCompleted(),
                                     maxCustomHeight = maxHeight,
 
                                     ) { selectedValue ->

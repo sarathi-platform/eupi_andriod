@@ -60,6 +60,7 @@ fun AddImageComponent(
     isMandatory: Boolean = false,
     maxCustomHeight: Dp = 200.dp,
     title: String = BLANK_STRING,
+    isEditable: Boolean = true,
     filePaths: List<String> = listOf(),
     onImageSelection: (selectValue: String) -> Unit,
 
@@ -116,7 +117,9 @@ fun AddImageComponent(
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("+ Add Image", style = largeTextStyle, modifier = Modifier.clickable {
+                        Text(
+                            "+ Add Image", style = largeTextStyle, modifier =
+                            Modifier.clickable(enabled = isEditable) {
                             currentImageUri = getImageUri(
                                 context, "${
                                     System.currentTimeMillis()

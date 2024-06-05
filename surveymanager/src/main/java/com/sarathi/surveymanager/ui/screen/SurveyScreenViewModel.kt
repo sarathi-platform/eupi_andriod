@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.sarathi.dataloadingmangement.domain.FetchDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
+import com.sarathi.dataloadingmangement.model.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -96,9 +97,19 @@ class SurveyScreenViewModel @Inject constructor(
 
     fun saveButtonClicked() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-
             taskStatusUseCase.markTaskCompleted(subjectId = subjectId, taskId = taskId)
         }
+    }
+
+    fun isTaskStatusCompleted(): Boolean {
+        return taskStatusUseCase.getTaskStatus(
+            userId = saveSurveyAnswerUseCase.getUserIdentifier(),
+            taskId = taskId,
+            subjectId = subjectId
+        )
+            ?.equals(
+                SurveyStatusEnum.COMPLETED.name
+            ) ?: false
     }
 
 }
