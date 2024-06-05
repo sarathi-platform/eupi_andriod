@@ -12,7 +12,7 @@ class UpdateTaskStatusUseCase @Inject constructor(private val repository: ITaskS
         return repository.markInProgressTaskStatus(subjectId = subjectId, taskId = taskId)
     }
 
-    fun getTaskStatus(userId: String, taskId: Int, subjectId: Int): String? {
+    suspend fun getTaskStatus(userId: String, taskId: Int, subjectId: Int): String? {
         return repository.getTaskStatus(userId = userId, taskId = taskId, subjectId = subjectId)
     }
 }

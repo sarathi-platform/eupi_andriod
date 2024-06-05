@@ -34,10 +34,9 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.SURVEY
 import com.sarathi.missionactivitytask.ui.grantTask.screen.GrantTaskScreen
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.ActivityScreen
 import com.sarathi.missionactivitytask.ui.mission_screen.screen.GrantMissionScreen
-import com.sarathi.surveymanager.ui.screen.SurveyScreen
-import com.sarathi.surveymanager.ui.screen.SurveyScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.ActivitySuccessScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.FinalStepCompletionScreen
+import com.sarathi.surveymanager.ui.screen.SurveyScreen
 
 
 fun NavGraphBuilder.MatNavigation(
@@ -171,9 +170,6 @@ fun NavGraphBuilder.MatNavigation(
                 ) ?: BLANK_STRING,
 
                 )
-        }
-        composable(route = MATHomeScreens.SurveyScreen.route) {
-            SurveyScreen(navController = navController, viewModel = hiltViewModel())
         }
 
         composable(route = MATHomeScreens.ActivityCompletionScreen.route, arguments = listOf(

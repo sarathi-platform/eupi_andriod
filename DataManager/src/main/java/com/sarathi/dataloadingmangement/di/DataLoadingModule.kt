@@ -36,30 +36,24 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetwo
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
-import com.sarathi.dataloadingmangement.repository.DataLoadingScreenRepositoryImpl
-import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
-import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepository
-import com.sarathi.dataloadingmangement.repository.IEventWriterRepository
-import com.sarathi.dataloadingmangement.repository.IMATStatusEventRepository
-import com.sarathi.dataloadingmangement.repository.ISurveyAnswerEventRepository
 import com.sarathi.dataloadingmangement.repository.ContentDownloaderRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.ContentRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.IContentDownloader
 import com.sarathi.dataloadingmangement.repository.IContentRepository
+import com.sarathi.dataloadingmangement.repository.IEventWriterRepository
+import com.sarathi.dataloadingmangement.repository.IMATStatusEventRepository
 import com.sarathi.dataloadingmangement.repository.IMissionRepository
+import com.sarathi.dataloadingmangement.repository.ISurveyAnswerEventRepository
 import com.sarathi.dataloadingmangement.repository.ISurveyDownloadRepository
 import com.sarathi.dataloadingmangement.repository.ISurveyRepository
 import com.sarathi.dataloadingmangement.repository.ISurveySaveRepository
 import com.sarathi.dataloadingmangement.repository.ITaskStatusRepository
 import com.sarathi.dataloadingmangement.repository.MATStatusEventRepositoryImpl
-import com.sarathi.dataloadingmangement.repository.SurveyAnswerEventRepositoryImpl
-import com.sarathi.dataloadingmangement.repository.ISurveyRepository
-import com.sarathi.dataloadingmangement.repository.ISurveySaveRepository
-import com.sarathi.dataloadingmangement.repository.ITaskStatusRepository
 import com.sarathi.dataloadingmangement.repository.MissionRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.SurveyAnswerEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyDownloadRepository
 import com.sarathi.dataloadingmangement.repository.SurveyRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveySaveRepositoryImpl
@@ -300,30 +294,6 @@ class DataLoadingModule {
 
             )
     }
-
-
-
-
-    @Provides
-    @Singleton
-    fun provideSurveyRepository(
-        questionEntityDao: QuestionEntityDao,
-        surveyAnswersDao: SurveyAnswersDao,
-        optionItemDao: OptionItemDao,
-        coreSharedPrefs: CoreSharedPrefs
-    ): ISurveyRepository {
-        return SurveyRepositoryImpl(
-            questionDao = questionEntityDao,
-            surveyAnswersDao = surveyAnswersDao,
-            optionItemDao = optionItemDao,
-            coreSharedPrefs = coreSharedPrefs
-
-        )
-    }
-
-
-
-
     @Provides
     @Singleton
     fun provideSaveSurveyUseCase(

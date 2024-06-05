@@ -5,10 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
-import com.sarathi.dataloadingmangement.domain.FetchDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
@@ -42,6 +41,7 @@ class SurveyScreenViewModel @Inject constructor(
     private var taskEntity: ActivityTaskEntity? = null
 
     val isButtonEnable = mutableStateOf<Boolean>(false)
+    val isTaskCompleted = mutableStateOf<Boolean>(false)
     private val _questionUiModel = mutableStateOf<List<QuestionUiModel>>(emptyList())
     val questionUiModel: State<List<QuestionUiModel>> get() = _questionUiModel
     override fun <T> onEvent(event: T) {
@@ -76,6 +76,7 @@ class SurveyScreenViewModel @Inject constructor(
                 subjectId = taskEntity?.subjectId ?: DEFAULT_ID
             )
             checkButtonValidation()
+            isTaskStatusCompleted()
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
@@ -151,15 +152,21 @@ class SurveyScreenViewModel @Inject constructor(
         this.taskId = taskId
         this.subjectType = subjectType
     }
-    fun isTaskStatusCompleted(): Boolean {
-        return taskStatusUseCase.getTaskStatus(
-            userId = saveSurveyAnswerUseCase.getUserIdentifier(),
-            taskId = taskId,
-            subjectId = taskEntity?.subjectId ?: DEFAULT_ID
-        )
-            ?.equals(
-                SurveyStatusEnum.COMPLETED.name
-            ) ?: false
-    }
+    private fun isTaskStatusCompleted() {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 
+            isTaskCompleted.value = taskStatusUseCase.getTaskStatus(
+                userId = saveSurveyAnswerUseCase.getUserIdentifier(),
+                taskId = taskId,
+                subjectId = taskEntity?.subjectId ?: DEFAULT_ID
+            )
+                ?.equals(
+                    SurveyStatusEnum.COMPLETED.name
+                ) ?: false
+
+
+        }
+
+
+    }
 }
