@@ -7,5 +7,5 @@ data class TaskData(
     @SerializedName("key")
     val key: String,
     @SerializedName("value")
-    val value: String
+    val value: String?
 )

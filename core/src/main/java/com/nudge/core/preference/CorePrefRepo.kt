@@ -16,5 +16,7 @@ interface CorePrefRepo {
     fun getUniqueUserIdentifier(): String
     fun getAppLanguage(): String?
     fun saveAppLanguage(code: String?)
+    fun getUserId(): String
+    fun setUserId(userId: String)
 
 }

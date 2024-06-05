@@ -2,4 +2,5 @@
 <resources>
 
     <style name="Theme.The_nudge" parent="android:Theme.Material.Light.NoActionBar" />
+
 </resources>

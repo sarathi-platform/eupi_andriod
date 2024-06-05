@@ -1,9 +1,9 @@
-package com.sarathi.missionactivitytask.ui.grantTask.domain.usecases
+package com.sarathi.dataloadingmangement.domain.use_case
 
+import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
-import com.sarathi.missionactivitytask.ui.grantTask.domain.repository.GetTaskRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.GetTaskRepositoryImpl
 import javax.inject.Inject
-
 
 class GetTaskUseCase @Inject constructor(private val taskRepositoryImpl: GetTaskRepositoryImpl) {
 
@@ -11,4 +11,8 @@ class GetTaskUseCase @Inject constructor(private val taskRepositoryImpl: GetTask
         taskRepositoryImpl.getActiveTask(missionId, activityId)
 
     suspend fun getSubjectAttributes(taskId: Int) = taskRepositoryImpl.getTaskAttributes(taskId)
+
+    suspend fun getTask(taskId: Int): ActivityTaskEntity {
+        return taskRepositoryImpl.getTask(taskId)
+    }
 }

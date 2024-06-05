@@ -7,6 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.sarathi.contentmodule.constants.Constants.CONTENT_THRESHOLD_VALUE
 import com.sarathi.contentmodule.ui.component.BasicContentComponent
 import com.sarathi.contentmodule.ui.content_screen.viewmodel.BaseContentScreenViewModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
@@ -15,7 +16,7 @@ import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 @Composable
 fun BaseContentScreen(
     viewModel: BaseContentScreenViewModel = hiltViewModel(),
-    onClick: (contentKey: String, contentType: String, isLimitContentData: Boolean) -> Unit
+    onClick: (contentValue: String, contentKey: String, contentType: String, isLimitContentData: Boolean) -> Unit
 ) {
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
@@ -28,10 +29,15 @@ fun BaseContentScreen(
                     contentType = item.contentType,
                     contentTitle = item.contentName,
                     contentValue = item.contentValue,
-                    isLimitContentData = index == 3,
-                    totalContent = viewModel.contentCount.value - 3,
+                    isLimitContentData = index == CONTENT_THRESHOLD_VALUE,
+                    totalContent = viewModel.contentCount.value - CONTENT_THRESHOLD_VALUE,
                     onClick = {
-                        onClick(item.contentKey, item.contentType, index == 3)
+                        onClick(
+                            item.contentValue,
+                            item.contentKey,
+                            item.contentType,
+                            index == CONTENT_THRESHOLD_VALUE
+                        )
                     }
                 )
             }

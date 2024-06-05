@@ -21,9 +21,9 @@ interface DataLoadingApiService {
     @POST(SUB_PATH_CONTENT_MANAGER)
     suspend fun fetchContentData(@Body contentMangerRequest: ContentRequest): ApiResponseModel<List<ContentResponse>>
 
-    //  @POST("http://10.0.2.2:3001/home")
+    // @POST("http://10.0.2.2:3001/home") DateType
     @POST(SUBPATH_FETCH_SURVEY_FROM_NETWORK)
-    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    //  @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getSurveyFromNetwork(@Body request: SurveyRequest): ApiResponseModel<SurveyResponseModel>
 
 

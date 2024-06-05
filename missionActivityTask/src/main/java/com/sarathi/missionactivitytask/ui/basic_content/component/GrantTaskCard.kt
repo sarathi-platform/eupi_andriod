@@ -50,6 +50,7 @@ fun GrantTaskCard(
     title: String,
     subTitle: String,
     primaryButtonText: String,
+    onPrimaryButtonClick: () -> Unit,
     secondaryButtonText: String,
     status: String,
     modifier: Modifier = Modifier,
@@ -189,8 +190,8 @@ fun GrantTaskCard(
                     Spacer(modifier = Modifier.weight(1f))
                     if (primaryButtonText.isNotBlank()) {
                         PrimaryButton(
-                            text = "Start",
-                            onClick = { /*TODO*/ },
+                            text = primaryButtonText,
+                            onClick = { onPrimaryButtonClick() },
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -232,7 +233,7 @@ fun GrantTaskCard(
                         if (primaryButtonText.isNotBlank()) {
                             PrimaryButton(
                                 text = "Continue",
-                                onClick = { /*TODO*/ },
+                                onClick = { onPrimaryButtonClick() },
                                 modifier = Modifier.weight(1f)
                             )
                         }

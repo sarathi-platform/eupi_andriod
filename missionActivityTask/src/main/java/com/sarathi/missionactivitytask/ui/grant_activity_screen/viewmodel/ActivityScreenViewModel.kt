@@ -2,6 +2,7 @@ package com.sarathi.missionactivitytask.ui.grant_activity_screen.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.domain.usecase.GetActivityUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ActivityScreenViewModel @Inject constructor(
-    private val getActivityUseCase: GetActivityUseCase
+    private val getActivityUseCase: GetActivityUseCase,
+    private val fetchContentUseCase: FetchContentUseCase
 ) : BaseViewModel() {
     var missionId: Int = 0
     private val _activityList = mutableStateOf<List<ActivityUiModel>>(emptyList())
@@ -48,5 +50,7 @@ class ActivityScreenViewModel @Inject constructor(
     fun setMissionDetail(missionId: Int) {
         this.missionId = missionId
     }
-
+    fun isFilePathExists(filePath: String): Boolean {
+        return fetchContentUseCase.isFilePathExists(filePath)
+    }
 }

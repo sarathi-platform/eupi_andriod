@@ -76,6 +76,11 @@ data class QuestionEntity(
     @ColumnInfo(name = "isConditional")
     var isConditional: Boolean = false,
 
+    @SerializedName("isMandatory")
+    @Expose
+    @ColumnInfo(name = "isMandatory")
+    var isMandatory: Boolean = false,
+
     @SerializedName("tag")
     @Expose
     @ColumnInfo(name = "tag")
@@ -111,7 +116,8 @@ data class QuestionEntity(
                 isConditional = isCondition,
                 tag = question.attributeTag ?: 0,
                 contentEntities = question.contentList,
-                parentQuestionId = parentId
+                parentQuestionId = parentId,
+                isMandatory = question.isMandatory
             )
         }
 
