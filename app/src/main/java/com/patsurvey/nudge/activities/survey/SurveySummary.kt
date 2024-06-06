@@ -30,6 +30,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -62,7 +63,9 @@ import com.patsurvey.nudge.utils.BottomButtonBox
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiItemCardForPat
 import com.patsurvey.nudge.utils.DidiItemCardForVoForSummary
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
@@ -358,7 +361,8 @@ fun SurveySummary(
                     villageName = surveySummaryViewModel.repository.prefRepo.getSelectedVillage().name ?: "",
                     voName = (surveySummaryViewModel.repository.prefRepo.getSelectedVillage().federationName)
                         ?: "",
-                    modifier = Modifier
+                    modifier = Modifier,
+                    stateId = surveySummaryViewModel.getStateId()
                 )
 
                 Column( modifier = Modifier
@@ -369,7 +373,8 @@ fun SurveySummary(
                             .padding(vertical = 2.dp)
                     ) {
                         Text(
-                            text = stringResource(id = if (fromScreen == ARG_FROM_PAT_SURVEY) R.string.pat_survey else R.string.vo_endorsement),
+                            text = if (fromScreen == ARG_FROM_PAT_SURVEY){stringResource( R.string.pat_survey)} else {
+                                getVoNameForState(context,surveySummaryViewModel.getStateId(),R.plurals.vo_endorsement)},
                             modifier = Modifier
                                 .align(Alignment.Center)
                                 .fillMaxWidth(),
@@ -581,8 +586,10 @@ fun SurveySummary(
                                                                 )
                                                             ) {
                                                                 val emptyMessage = when (showDidiListForStatus.second) {
-                                                                    DidiEndorsementStatus.REJECTED.ordinal -> stringResource(R.string.vo_summary_rejected_empty_text)
-                                                                    DidiEndorsementStatus.ENDORSED.ordinal -> stringResource(R.string.vo_summary_endorsed_empty_text)
+                                                                    DidiEndorsementStatus.REJECTED.ordinal ->
+                                                                        getVoNameForState(context,surveySummaryViewModel.getStateId(),R.plurals.vo_summary_rejected_empty_text)
+                                                                    DidiEndorsementStatus.ENDORSED.ordinal ->
+                                                                        getVoNameForState(context,surveySummaryViewModel.getStateId(),R.plurals.vo_summary_endorsed_empty_text)
                                                                     else -> {""}
                                                                 }
                                                                 append(emptyMessage)
@@ -709,7 +716,13 @@ fun SurveySummary(
                         if (showDidiListForStatus.first)
                             stringResource(id = R.string.done_text)
                         else
-                            stringResource(id = R.string.send_for_vo_text)
+                            if(surveySummaryViewModel.repository.prefRepo.getStateId()==34) pluralStringResource(
+                                id = R.plurals.send_for_vo_text,
+                                1
+                            )  else pluralStringResource(
+                                id = R.plurals.send_for_vo_text,
+                                2
+                            )
                     } else {
                         if (showDidiListForStatus.first)
                             stringResource(id = R.string.done_text)

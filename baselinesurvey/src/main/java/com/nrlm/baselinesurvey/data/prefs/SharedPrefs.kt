@@ -7,7 +7,6 @@ import com.nrlm.baselinesurvey.ACCESS_TOKEN
 import com.nrlm.baselinesurvey.ARG_FROM_HOME
 import com.nrlm.baselinesurvey.ARG_PAGE_FROM
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.PREF_KEY_IS_DATA_SYNC
 import com.nrlm.baselinesurvey.PREF_KEY_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.PREF_KEY_LANGUAGE_ID
@@ -19,6 +18,7 @@ import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
 import com.nrlm.baselinesurvey.PREF_USER_TYPE
 import com.nrlm.baselinesurvey.data.prefs.StrictModePermitter.permitDiskReads
 import com.nrlm.baselinesurvey.database.entity.VillageEntity
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton

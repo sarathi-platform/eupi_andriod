@@ -11,7 +11,6 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toFile
 import com.google.gson.Gson
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.PREF_KEY_NAME
 import com.nrlm.baselinesurvey.R
@@ -36,7 +35,9 @@ import com.nrlm.baselinesurvey.utils.openShareSheet
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.EXCEL_TYPE
+import com.nudge.core.NUDGE_DATABASE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.datamodel.BaseLineQnATableCSV
@@ -53,6 +54,7 @@ import com.nudge.core.getFirstName
 import com.nudge.core.importDbFile
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.SettingOptionModel
+import com.nudge.core.moduleNameAccToLoggedInUser
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toDate
 import com.nudge.core.ui.events.ToastMessageEvent
@@ -60,6 +62,7 @@ import com.nudge.core.uriFromFile
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
 import com.patsurvey.nudge.utils.NudgeCore
+import com.patsurvey.nudge.utils.UPCM_USER
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -92,11 +95,13 @@ class ExportImportViewModel @Inject constructor(
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState(false))
     val applicationId = mutableStateOf(BLANK_STRING)
     val loaderState: State<LoaderState> get() = _loaderState
+    val loggedInUserType= mutableStateOf(BLANK_STRING)
 
     init {
         mAppContext=NudgeCore.getAppContext()
         applicationId.value = CoreAppDetails.getApplicationDetails()?.applicationID ?: BuildConfig.APPLICATION_ID
         _optionList.value=exportImportUseCase.getExportOptionListUseCase.fetchExportOptionList()
+        loggedInUserType.value = exportImportUseCase.getUserDetailsExportUseCase.getLoggedInUserType()
     }
     override fun <T> onEvent(event: T) {
         when(event){
@@ -137,8 +142,9 @@ class ExportImportViewModel @Inject constructor(
                  appContext = mAppContext,
                  applicationID = applicationId.value,
                  mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
-                 databaseName = NUDGE_BASELINE_DATABASE,
-                 userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName())
+                 databaseName = if (loggedInUserType.value == UPCM_USER) NUDGE_BASELINE_DATABASE else NUDGE_DATABASE,
+                 userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName()),
+                 moduleName = moduleNameAccToLoggedInUser(loggedInUser = loggedInUserType.value)
              ) {
                  BaselineLogger.d("ExportImportViewModel","exportLocalDatabase : ${it.path}")
                  onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -165,7 +171,7 @@ class ExportImportViewModel @Inject constructor(
                 appContext = mAppContext,
                 applicationID = applicationId.value,
                 mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
-                timeInMillSec = System.currentTimeMillis().toString(),
+                moduleName = moduleNameAccToLoggedInUser(loggedInUser = loggedInUserType.value),
                 userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName())
             )
             onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -194,7 +200,8 @@ fun exportOnlyLogFile(context: Context){
                 appContext = mAppContext,
                 applicationID = applicationId.value,
                 userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName()),
-                mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
+                mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
+                moduleName = moduleNameAccToLoggedInUser(loggedInUserType.value)
             ) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
                 openShareSheet(convertURIAccToOS(it) ,"", type = ZIP_MIME_TYPE)
@@ -219,7 +226,8 @@ fun exportOnlyLogFile(context: Context){
                     mAppContext,
                     listOf(),
                     exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
-                    exportImportUseCase.getUserDetailsExportUseCase.getUserName()
+                    exportImportUseCase.getUserDetailsExportUseCase.getUserName(),
+                    moduleName = moduleNameAccToLoggedInUser(loggedInUserType.value)
                 )
                if(fileUri!=null) {
                    BaselineLogger.d("ExportImportViewModel","compressEventData ${fileUri.path}----")
@@ -256,7 +264,7 @@ fun exportOnlyLogFile(context: Context){
         importDbFile(
             appContext = mAppContext,
             importedDbUri = uri,
-            deleteDBName = NUDGE_BASELINE_DATABASE,
+            deleteDBName = if (loggedInUserType.value == UPCM_USER) NUDGE_BASELINE_DATABASE else NUDGE_DATABASE,
             applicationID = applicationId.value
         ) {
             BaselineLogger.d("ExportImportViewModel","importSelectedDB Success ----")

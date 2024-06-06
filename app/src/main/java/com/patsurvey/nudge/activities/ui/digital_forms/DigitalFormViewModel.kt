@@ -21,6 +21,7 @@ import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
@@ -49,6 +50,9 @@ class DigitalFormViewModel @Inject constructor(
     val didiDetailListForBpc: StateFlow<List<PoorDidiEntity>> get() = _didiDetailListForBpc
     val casteList: StateFlow<List<CasteEntity>> get() = _casteList
     var villageId: Int = -1
+    fun getStateId():Int{
+        return digitalFormRepository.prefRepo.getStateId()
+    }
     init {
         villageId = digitalFormRepository.getSelectedVillage().id
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -107,6 +111,7 @@ class DigitalFormViewModel @Inject constructor(
                 }
                 PdfUtils.getFormAPdfForBpc(
                     context = context,
+                    getStateId(),
                     villageEntity = villageEntity,
                     didiDetailList = didiDetailListForBpc.value,
                     casteList = casteList.value,
@@ -123,6 +128,7 @@ class DigitalFormViewModel @Inject constructor(
                 }
                 PdfUtils.getFormAPdf(
                     context = context,
+                    getStateId() ,
                     villageEntity = villageEntity,
                     didiDetailList = didiDetailList.value,
                     casteList = casteList.value,
@@ -156,7 +162,9 @@ class DigitalFormViewModel @Inject constructor(
                     )
                 }
                 PdfUtils.getFormBPdfForBpc(
-                    context, villageEntity = digitalFormRepository.getSelectedVillage(),
+                    context,
+                    getStateId(),
+                    villageEntity = digitalFormRepository.getSelectedVillage(),
                     didiDetailList = didiDetailListForBpc.value.filter { it.forVoEndorsement == 1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit },
                     casteList = casteList.value,
                     completionDate = changeMilliDateToDate(
@@ -178,7 +186,9 @@ class DigitalFormViewModel @Inject constructor(
                     )
                 }
                 PdfUtils.getFormBPdf(
-                    context, villageEntity = digitalFormRepository.getSelectedVillage(),
+                    context,
+                    getStateId(),
+                    villageEntity = digitalFormRepository.getSelectedVillage(),
                     didiDetailList = didiDetailList.value.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit },
                     casteList = casteList.value,
                     completionDate = changeMilliDateToDate(
@@ -212,7 +222,9 @@ class DigitalFormViewModel @Inject constructor(
                     )
                 }
                 PdfUtils.getFormCPdfForBpc(
-                    context, villageEntity = digitalFormRepository.getSelectedVillage(),
+                    context,
+                    getStateId(),
+                    villageEntity = digitalFormRepository.getSelectedVillage(),
                     didiDetailList = didiDetailListForBpc.value.filter { it.forVoEndorsement == 1 && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal },
                     casteList = casteList.value,
                     completionDate = changeMilliDateToDate(
@@ -234,7 +246,9 @@ class DigitalFormViewModel @Inject constructor(
                     )
                 }
                 PdfUtils.getFormCPdf(
-                    context, villageEntity = digitalFormRepository.getSelectedVillage(),
+                    context,
+                    getStateId(),
+                    villageEntity = digitalFormRepository.getSelectedVillage(),
                     didiDetailList = didiDetailList.value.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal },
                     casteList = casteList.value,
                     completionDate = changeMilliDateToDate(

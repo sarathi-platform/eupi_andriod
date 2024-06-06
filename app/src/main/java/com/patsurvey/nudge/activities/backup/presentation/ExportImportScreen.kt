@@ -29,6 +29,7 @@ import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.backup.viewmodel.ExportImportViewModel
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
+import com.patsurvey.nudge.utils.UPCM_USER
 
 @Composable
 fun ExportImportScreen(
@@ -59,7 +60,7 @@ fun ExportImportScreen(
         optionList = viewModel.optionList.value,
         onBackClick = {navController.popBackStack()},
         isScreenHaveLogoutButton = false,
-        onItemClick = { index, settingOptionModel ->
+        onItemClick = { _, settingOptionModel ->
             BaselineLogger.d("ExportImportScreen","${settingOptionModel.tag} :: ${settingOptionModel.title} Click")
             when(settingOptionModel.tag){
                 SettingTagEnum.LOAD_SERVER_DATA.name -> {
@@ -120,13 +121,21 @@ fun ExportImportScreen(
             onPositiveButtonClick = {
                 BaselineLogger.d("ExportImportScreen","Load Server Data Dialog YES Click")
                 viewModel.exportLocalDatabase(isNeedToShare = false){
-                    viewModel.clearLocalDatabase{
+                    viewModel.clearLocalDatabase {
                         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
-                        viewModel.showLoadConfirmationDialog.value =false
-                        navController.navigate(route = NudgeNavigationGraph.HOME){
-                            launchSingleTop=true
-                            popUpTo(AuthScreen.START_SCREEN.route){
-                                inclusive=true
+                        viewModel.showLoadConfirmationDialog.value = false
+                        if (viewModel.loggedInUserType.value == UPCM_USER) {
+                            navController.navigate(route = NudgeNavigationGraph.HOME) {
+                                launchSingleTop = true
+                                popUpTo(AuthScreen.START_SCREEN.route) {
+                                    inclusive = true
+                                }
+                            }
+                        } else {
+                            when (navController.graph.route) {
+                                NudgeNavigationGraph.ROOT -> navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route)
+                                NudgeNavigationGraph.HOME -> navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route)
+                                else -> navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
                             }
                         }
                     }

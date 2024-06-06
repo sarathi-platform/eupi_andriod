@@ -732,7 +732,7 @@ fun TextDetails(title: String, data: String) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(text = title, style = defaultTextStyle, color = textColorDark)
         Text(
-            text = data, style = smallTextStyle, color = textColorDark
+            text = data, style = smallTextStyle,color = textColorDark
         )
     }
 }

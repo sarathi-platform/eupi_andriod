@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities.ui.progress
 
-
 import android.app.DownloadManager
 import android.content.Context
 import android.os.Environment
@@ -9,6 +8,8 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
 import com.nrlm.baselinesurvey.PREF_STATE_ID
+import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.json
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
@@ -59,7 +60,6 @@ import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.COMPLETED_STRING
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
-import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_ID
 import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DOUBLE_ZERO
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
@@ -78,6 +78,7 @@ import com.patsurvey.nudge.utils.PREF_KEY_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_PROFILE_IMAGE
 import com.patsurvey.nudge.utils.PREF_KEY_ROLE_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
@@ -163,7 +164,9 @@ class VillageSelectionViewModel @Inject constructor(
     var _filterVillageList = MutableStateFlow(listOf<VillageEntity>())
     val filterVillageList: StateFlow<List<VillageEntity>> get() = _filterVillageList
 
-
+    fun getStateId():Int{
+        return prefRepo.getStateId()
+    }
     fun compareWithPreviousUser(context: Context) {
         if (TextUtils.isEmpty(prefRepo.getPreviousUserMobile()) || prefRepo.getPreviousUserMobile()
                 .equals(prefRepo.getMobileNumber())
@@ -215,22 +218,26 @@ class VillageSelectionViewModel @Inject constructor(
                 fetchCastList()
                 if (prefRepo.getPref(LAST_UPDATE_TIME, 0L) != 0L) {
                     if ((System.currentTimeMillis() - prefRepo.getPref(LAST_UPDATE_TIME, 0L)) > TimeUnit.DAYS.toMillis(30)) {
-                        if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(CRP_USER_TYPE, true)) {
-                            fetchVillageList(context)
-                        } else {
-                            fetchDataForBpc(context)
-                        }
+                        fetchUserWiseData()
                     } else {
                         showLoader.value = false
                     }
                 } else {
-                    if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(CRP_USER_TYPE, true)) {
-                        fetchVillageList(context)
-                    } else {
-                        fetchDataForBpc(context)
-                    }
+                    fetchUserWiseData()
                 }
             }
+        }
+    }
+
+    fun fetchUserWiseData() {
+        if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING) ?: BLANK_STRING).equals(
+                CRP_USER_TYPE,
+                true
+            )
+        ) {
+            fetchVillageList()
+        } else {
+            fetchDataForBpc()
         }
     }
 
@@ -316,7 +323,7 @@ class VillageSelectionViewModel @Inject constructor(
         }
     }
 
-    private fun fetchDataForBpc(context: Context) {
+    private fun fetchDataForBpc() {
         showLoader.value = true
         job = MyApplication.appScopeLaunch (Dispatchers.IO + exceptionHandler){
             val awaitDeff= CoroutineScope(Dispatchers.IO).async {
@@ -382,10 +389,6 @@ class VillageSelectionViewModel @Inject constructor(
                                                         ?: System.currentTimeMillis()
                                                 )
                                             }
-//                                            if(steps.id == 44){
-//                                                prefRepo.savePref(
-//                                                    PREF_WEALTH_RANKING_COMPLETION_DATE, steps.localModifiedDate?: BLANK_STRING)
-//                                            }
                                         }
                                         NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getStepsList " +
                                                 "stepsListDao.insertAll(it.stepList) before")
@@ -1061,12 +1064,12 @@ class VillageSelectionViewModel @Inject constructor(
         return File("${context.getExternalFilesDir(if (fileType == FileType.VIDEO) Environment.DIRECTORY_MOVIES else if (fileType == FileType.IMAGE) Environment.DIRECTORY_DCIM else Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${videoItemId}.mp4")
     }
 
-    private fun fetchVillageList(context: Context) {
+    private fun fetchVillageList() {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO) {
-                    val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
+                    val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?: DEFAULT_LANGUAGE_ID)
                     val localStepsList = stepsListDao.getAllSteps()
                     val villageIdList: ArrayList<Int> = arrayListOf()
                     if (localStepsList.isNotEmpty()) {
@@ -1080,7 +1083,6 @@ class VillageSelectionViewModel @Inject constructor(
                     if (localNumAnswerList.isNotEmpty()) {
                         numericAnswerDao.deleteNumericTable()
                     }
-
                     villageList.forEach { village ->
                         villageIdList.add(village.id)
                         launch {
@@ -1572,6 +1574,8 @@ class VillageSelectionViewModel @Inject constructor(
                                 prefRepo.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage ?: "")
                                 prefRepo.savePref(PREF_KEY_ROLE_NAME, it.roleName ?: "")
                                 prefRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: "")
+                                prefRepo.savePref(PREF_KEY_TYPE_STATE_ID,  it.villageList?.get(0)?.stateId?:4)
+
                                 villageListDao.insertAll(it.villageList ?: listOf())
                                 stateId.value= it.villageList?.get(0)?.stateId?:1
                                 if(it.typeName.equals(UPCM_USER)){

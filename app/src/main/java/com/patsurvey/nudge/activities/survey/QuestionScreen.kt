@@ -454,8 +454,8 @@ fun QuestionScreen(
                                                 coroutineScope.launch {
                                                     delay(250)
                                                     if (answeredQuestion.value < (questionList.size)) {
-                                                        selQuesIndex.value = selQuesIndex.value + 1
-                                                        answeredQuestion.value = answeredQuestion.value + 1
+                                                        selQuesIndex.value += 1
+                                                        answeredQuestion.value += 1
                                                         val nextPageIndex = pagerState.currentPage + 1
                                                         viewModel.findListTypeSelectedAnswer(
                                                             pagerState.currentPage,

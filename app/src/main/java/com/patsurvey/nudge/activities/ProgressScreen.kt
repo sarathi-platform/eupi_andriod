@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities
 
 import android.content.Context
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -51,6 +52,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -64,6 +66,7 @@ import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
+import com.patsurvey.nudge.activities.ui.progress.VillageSelectionViewModel
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
@@ -91,9 +94,11 @@ import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
 import com.patsurvey.nudge.utils.ARG_FROM_PROGRESS
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.IconButtonForward
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
 import com.patsurvey.nudge.utils.PREF_KEY_NAME
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_OPEN_FROM_HOME
 import com.patsurvey.nudge.utils.PREF_PROGRAM_NAME
 import com.patsurvey.nudge.utils.PageFrom
@@ -109,9 +114,9 @@ import kotlinx.coroutines.launch
 fun ProgressScreen(
     modifier: Modifier = Modifier,
     viewModel: ProgressScreenViewModel,
-    stepsNavHostController: NavHostController,
     onNavigateToStep:(Int, Int, Int, Boolean) ->Unit,
     onNavigateToSetting:()->Unit,
+
     onBackClick:()->Unit
 ) {
     LaunchedEffect(key1 = Unit) {
@@ -175,7 +180,10 @@ fun ProgressScreen(
                         .height(((2 * screenHeight) / 3).dp)
                 ) {
                     Text(
-                        text = stringResource(R.string.seletc_village_screen_text),
+
+
+                        getVoNameForState(context,viewModel.getStateId(),R.plurals.seletc_village_screen_text),
+
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp,
@@ -186,6 +194,7 @@ fun ProgressScreen(
                         NudgeLogger.d("ProgressScreen","BottomSheet : $villages :: size ${villages.size}")
                         itemsIndexed(villages.distinctBy { it.id }) { index, village ->
                             VillageAndVoBoxForBottomSheet(
+                                stateId = viewModel.getStateId(),
                                 tolaName = village.name,
                                 voName = village.federationName,
                                 index = index,
@@ -377,9 +386,9 @@ fun ProgressScreen(
                                     }
                                     4 -> ultraPoorDidiCount.value.let {
                                         if (it > 1)
-                                            stringResource(id = R.string.pat_sub_text_plural, it)
+                                            getVoNameForState(context,viewModel.getStateId(), R.plurals.pat_sub_text_plural,it)
                                         else
-                                            stringResource(id = R.string.pat_sub_text_singular, it)
+                                            getVoNameForState(context,viewModel.getStateId(), R.plurals.pat_sub_text_singular,it)
                                     }
                                     5 -> endorsedDidiCount.value.let {
                                         if (it > 1)
@@ -390,7 +399,7 @@ fun ProgressScreen(
                                     else -> ""
                                 }
                                 StepsBox(
-                                    boxTitle = findStepNameForSelectedLanguage(context,step.id),
+                                    boxTitle = findStepNameForSelectedLanguage(context,step.id,viewModel.getStateId()),
                                     subTitle = subText,
                                     stepNo = step.orderNumber,
                                     index = index,
@@ -415,19 +424,10 @@ fun ProgressScreen(
                                     }
 
                                     when (index) {
-                                        0 -> {
-//                                            onNavigateToTransWalk(villageId,stepId,index)
-                                        }
-                                        1 -> {
-//                                            onNavigateToTransWalk(villageId,stepId,index)
-                                        }
-                                        2 -> {}
                                         3 -> {
                                             if (isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal)
                                                 viewModel.saveFromPage(ARG_FROM_PAT_SURVEY)
                                         }
-                                        4 -> {}
-                                        5 -> {}
                                     }
                                     if (isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal)
                                         onNavigateToStep(villageId,step.id,index,(viewModel.stepList.value[index].isComplete == StepStatus.COMPLETED.ordinal))

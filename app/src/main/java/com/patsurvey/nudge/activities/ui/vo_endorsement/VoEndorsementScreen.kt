@@ -82,11 +82,15 @@ import com.patsurvey.nudge.utils.ButtonPositiveForVo
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.showDidiImageDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 
 @Composable
 fun VoEndorsementScreen(
@@ -98,6 +102,7 @@ fun VoEndorsementScreen(
     val showLoader = remember {
         mutableStateOf(false)
     }
+    var context = LocalContext.current
 
     val didis by viewModel.didiList.collectAsState()
 
@@ -191,8 +196,7 @@ fun VoEndorsementScreen(
                     ) {
 
                         item {
-                            Text(
-                                text = stringResource(id = R.string.vo_endorsement_screen_title),
+                            Text(getVoNameForState(context ,viewModel.getStateId(), R.plurals.vo_endorsement_screen_title),
                                 color = Color.Black,
                                 fontSize = 16.sp,
                                 fontFamily = NotoSans,

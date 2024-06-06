@@ -25,7 +25,7 @@ class ConfigRepository @Inject constructor(
 ) : BaseRepository() {
 
     suspend fun fetchLanguageFromAPI(): ApiResponseModel<ConfigResponseModel> {
-        return apiService.configDetails()
+        return apiService.configDetailsV2()
     };
 
     override fun onServerError(error: ErrorModel?) {

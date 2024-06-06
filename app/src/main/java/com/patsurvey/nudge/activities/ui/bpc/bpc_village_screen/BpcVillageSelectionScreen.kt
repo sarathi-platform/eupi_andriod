@@ -86,8 +86,8 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPCVillageStatus
 import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidthWithoutIcon
 import com.patsurvey.nudge.utils.ButtonPositive
+import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.showCustomDialog
@@ -171,13 +171,13 @@ fun BpcVillageSelectionScreen(
         })
 
     if (viewModel.showLoader.value) {
+
         Scaffold(
             modifier = Modifier,
             topBar = {
                 TopAppBar(
                     title = {
-                        Text(
-                            text = stringResource(R.string.seletc_village_screen_text),
+                        Text(getVoNameForState(context,viewModel.getStateId(),R.plurals.seletc_village_screen_text),
                             fontFamily = NotoSans,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.SemiBold,
@@ -227,7 +227,7 @@ fun BpcVillageSelectionScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = stringResource(R.string.seletc_village_screen_text),
+                            text = getVoNameForState(context,viewModel.getStateId(),R.plurals.seletc_village_screen_text),
                             fontFamily = NotoSans,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.SemiBold,
@@ -342,6 +342,7 @@ fun BpcVillageSelectionScreen(
                                     villageEntity = village,
                                     index = index,
                                     selectedIndex = viewModel.villageSelected.value,
+                                    stateId=viewModel.getStateId()
                                 ) {
                                     NudgeLogger.d("BpcVillageAndVoBoxForBottomSheet","id = $it")
                                     viewModel.villageSelected.value = it
@@ -378,8 +379,7 @@ fun BpcVillageSelectionScreen(
                                 val statusId= villages[viewModel.villageSelected.value].statusId
                                 when (fetchBPCVillageStatus(stepId, statusId)) {
                                     BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal, BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal -> showCustomToast(
-                                        context,
-                                        context.getString(R.string.village_is_not_vo_endorsed_right_now)
+                                        context, getVoNameForState(context,viewModel.getStateId(),R.plurals.village_is_not_vo_endorsed_right_now)
                                     )
                                     else -> {
                                         viewModel.updateSelectedVillage(villageList = villages)
@@ -414,7 +414,9 @@ fun BpcVillageAndVoBoxForBottomSheet(
     villageEntity: VillageEntity,
     index: Int,
     selectedIndex: Int,
+    stateId:Int,
     onVillageSeleted: (Int) -> Unit
+
 ) {
     val bpcVillageStatus = fetchBPCVillageStatus(
         villageEntity.stepId,
@@ -438,9 +440,11 @@ fun BpcVillageAndVoBoxForBottomSheet(
             ) {
                 when (bpcVillageStatus) {
                     BPCVillageStatus.VO_ENDORSEMENT_NOT_STARTED.ordinal, BPCVillageStatus.VO_ENDORSEMENT_IN_PROGRESS.ordinal -> showCustomToast(
-                        context,
-                        context.getString(R.string.village_is_not_vo_endorsed_right_now)
-                    )
+                        context, getVoNameForState(
+                            context,
+                            stateId,
+                            R.plurals.village_is_not_vo_endorsed_right_now
+                        ))
 
                     else -> onVillageSeleted(index)
                 }
@@ -527,7 +531,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                         .padding(start = 16.dp, end = 16.dp)
                 ) {
                     Text(
-                        text = "VO: ",
+                        text = getVoNameForState(context, stateId, R.plurals.vo),
                         modifier = Modifier,
                         color = textColorDark,
                         fontSize = 14.sp,
@@ -573,7 +577,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                     }
                     if (bpcVillageStatus < BPCVillageStatus.VO_ENDORSEMENT_COMPLETED.ordinal) {
                         Text(
-                            text = stringResource(id = R.string.vo_endorsement_not_started),
+                            text = getVoNameForState(context,stateId,R.plurals.seletc_village_screen_text),
                             color = textColorDark,
                             style = smallerTextStyle,
                             modifier = Modifier
@@ -581,13 +585,17 @@ fun BpcVillageAndVoBoxForBottomSheet(
                         )
                     }else {
                         Text(
-                            text = stringResource(
-                                if (villageEntity.stepId == 44) R.string.vo_endorsement_completed_village_banner_text else {
-                                    if (villageEntity.statusId == StepStatus.COMPLETED.ordinal) R.string.bpc_verification_completed_village_banner_text
-                                    else if (villageEntity.statusId == StepStatus.INPROGRESS.ordinal) R.string.bpc_verification_in_progress_village_banner_text
-                                    else R.string.vo_endorsement_completed_village_banner_text
-                                }
-                            ),
+                            text =
+                                if (villageEntity.stepId == 44)
+                                { getVoNameForState(context,stateId,R.plurals.vo_endorsement_completed_village_banner_text)
+                                    }
+                                else {
+                                    if (villageEntity.statusId == StepStatus.COMPLETED.ordinal)
+                                        stringResource(R.string.bpc_verification_completed_village_banner_text)
+                                    else if (villageEntity.statusId == StepStatus.INPROGRESS.ordinal)
+                                        stringResource( R.string.bpc_verification_in_progress_village_banner_text)
+                                    else getVoNameForState(context,stateId,R.plurals.vo_endorsement_completed_village_banner_text)
+                                     },
                             color = textColorDark,
                             style = smallerTextStyle,
                             modifier = Modifier.absolutePadding(bottom = 3.dp)
@@ -602,7 +610,7 @@ fun BpcVillageAndVoBoxForBottomSheet(
                         .height(5.dp)
                 )
                 Text(
-                    text = stringResource(id = R.string.vo_endorsement_not_started),
+                    text = getVoNameForState(context,stateId,R.plurals.vo_endorsement_not_started),
                     color = textColorDark,
                     style = smallerTextStyle,
                     modifier = Modifier
@@ -641,6 +649,7 @@ fun BpcVillageAndVoBoxForBottomSheetPreview(
             villageEntity = villageEntity,
             index = 1,
             selectedIndex = 1,
+            stateId = 4,
             onVillageSeleted =  {
 
             }

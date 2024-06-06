@@ -5,15 +5,17 @@ import android.content.SharedPreferences
 import android.util.Log
 import com.google.gson.Gson
 import com.nrlm.baselinesurvey.PREF_KEY_IS_DATA_SYNC
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.patsurvey.nudge.data.prefs.StrictModePermitter.permitDiskReads
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.utils.ACCESS_TOKEN
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.ARG_PAGE_FROM
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_CODE
+import com.patsurvey.nudge.utils.DEFAULT_STATE_ID
 import com.patsurvey.nudge.utils.ONLINE_STATUS
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_MOBILE_NUMBER
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -51,9 +53,15 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
             )
         }
     }
+
+    override fun getStateId(): Int {
+        return prefs.getInt(PREF_KEY_TYPE_STATE_ID, DEFAULT_STATE_ID)
+    }
+
     override fun getAppLanguage(): String? {
         return prefs.getString(PREF_KEY_LANGUAGE_CODE, DEFAULT_LANGUAGE_CODE)
     }
+
 
     override fun saveAppLanguage(code: String?) {
         prefs.edit().putString(PREF_KEY_LANGUAGE_CODE, code).apply()

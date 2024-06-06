@@ -41,7 +41,6 @@ fun HomeUserScreen(
             )
         } else {
             ProgressScreen(
-                stepsNavHostController = navController,
                 viewModel = hiltViewModel(),
                 modifier = Modifier.fillMaxWidth(),
                 onNavigateToStep = { villageId, stepId, index, isStepComplete ->

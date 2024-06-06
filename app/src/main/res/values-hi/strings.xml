@@ -396,6 +396,8 @@
     <string name="didi_verified_by_bpc">बीपीसी द्वारा सत्यापित दीदियाँ</string>
     <string name="bpc_verification_in_progress_village_banner_text">बीपीसी सत्यापन प्रगति पर है</string>
     <string name="recover_old_data">पुराना डेटा पुनर्प्राप्त करें</string>
+    <string name="this_language_is_not_available_for_selection">यह भाषा selection के लिए उपलब्ध नहीं है</string>
+    <string name="change_language">भाषा बदलें</string>
 
 
 </resources>
