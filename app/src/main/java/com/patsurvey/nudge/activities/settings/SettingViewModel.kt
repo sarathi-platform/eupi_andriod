@@ -18,7 +18,6 @@ import com.nudge.core.exportOldData
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.json
-import com.nudge.core.moduleNameAccToLoggedInUser
 import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.MyApplication
@@ -889,7 +888,7 @@ class SettingViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val context = MyApplication.applicationContext()
             exportLocalData(context)
-            LogWriter.buildSupportLogAndShare()
+
         }
     }
 

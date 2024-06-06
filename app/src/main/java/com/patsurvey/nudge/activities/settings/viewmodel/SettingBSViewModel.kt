@@ -37,7 +37,6 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
 import com.nudge.core.utils.LogWriter
-import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.CasteEntity
@@ -467,15 +466,7 @@ class SettingBSViewModel @Inject constructor(
         )
     }
 
-    //TODO: Needs to update code for Common Export and Export Event File functionality for the Selection and Baseline
-    fun buildAndShareLogsForSelection() {
-        NudgeLogger.d("SettingBSViewModel", "buildAndShareLogs SELECTION---------------")
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val context = MyApplication.applicationContext()
-            settingBSUserCase.exportHandlerSettingUseCase.exportAllData(context)
-            com.patsurvey.nudge.utils.LogWriter.buildSupportLogAndShare()
-        }
-    }
+
 
     fun exportOnlyLogFile(context: Context){
         NudgeLogger.d("ExportImportViewModel","exportOnlyLogFile: ----")
