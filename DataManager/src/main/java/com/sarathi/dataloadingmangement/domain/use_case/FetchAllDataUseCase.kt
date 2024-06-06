@@ -1,25 +1,28 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class FetchAllDataUseCase @Inject constructor(
-    val fetchMissionDataFromNetworkUseCase: FetchMissionDataFromNetworkUseCase,
+    val fetchMissionDataUseCase: FetchMissionDataUseCase,
     val fetchContentDataFromNetworkUseCase: FetchContentDataFromNetworkUseCase,
     val fetchSurveyDataFromNetworkUseCase: FetchSurveyDataFromNetworkUseCase,
-    val contentDownloaderUseCase: ContentDownloaderUseCase
+    val contentDownloaderUseCase: ContentDownloaderUseCase,
+    val fetchLanguageUseCase: FetchLanguageUseCase,
+    val fetchUserDetailUseCase: FetchUserDetailUseCase,
 ) {
     suspend fun invoke(onComplete: (isSuccess: Boolean, successMsg: String) -> Unit) {
-        fetchMissionDataFromNetworkUseCase.invoke()
+        fetchLanguageUseCase.invoke()
+        fetchUserDetailUseCase.invoke()
+        fetchMissionDataUseCase.invoke()
         fetchSurveyDataFromNetworkUseCase.invoke()
-        CoroutineScope(Dispatchers.IO).launch {
-            fetchContentDataFromNetworkUseCase.invoke()
-        }
+        fetchContentDataFromNetworkUseCase.invoke()
+        onComplete(true, BLANK_STRING)
         CoroutineScope(Dispatchers.IO).launch {
             contentDownloaderUseCase.contentDownloader()
         }
-        onComplete(true, "")
     }
 }
