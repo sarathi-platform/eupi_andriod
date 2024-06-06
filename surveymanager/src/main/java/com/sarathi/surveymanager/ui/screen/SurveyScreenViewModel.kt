@@ -152,21 +152,14 @@ class SurveyScreenViewModel @Inject constructor(
         this.taskId = taskId
         this.subjectType = subjectType
     }
+
     private fun isTaskStatusCompleted() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-
-            isTaskCompleted.value = taskStatusUseCase.getTaskStatus(
+            isTaskCompleted.value = !taskStatusUseCase.getTaskStatus(
                 userId = saveSurveyAnswerUseCase.getUserIdentifier(),
                 taskId = taskId,
                 subjectId = taskEntity?.subjectId ?: DEFAULT_ID
-            )
-                ?.equals(
-                    SurveyStatusEnum.COMPLETED.name
-                ) ?: false
-
-
+            ).equals(SurveyStatusEnum.COMPLETED.name)
         }
-
-
     }
 }
