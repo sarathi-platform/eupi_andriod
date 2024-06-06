@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.google.android.gms.common.api.ApiException
+import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.data.entities.LanguageEntity
 import com.sarathi.dataloadingmangement.repository.IUserDetailRepository
 import javax.inject.Inject
@@ -14,7 +15,7 @@ class FetchUserDetailUseCase @Inject constructor(
             val userViewApiRequest = createMultiLanguageVillageRequest(localLanguageList)
             val apiResponse =
                 repository.fetchUseDetailFromNetwork(userViewApiRequest = userViewApiRequest)
-            if (apiResponse.status.equals("SUCCESS", true)) {
+            if (apiResponse.status.equals(SUCCESS, true)) {
                 apiResponse.data?.let { userApiResponse ->
                     repository.saveUserDetails(userApiResponse)
                 }

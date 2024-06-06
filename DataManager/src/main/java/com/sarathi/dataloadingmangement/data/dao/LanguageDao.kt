@@ -12,12 +12,6 @@ interface LanguageDao {
     @Query("SELECT * FROM $LANGUAGE_TABLE_NAME ORDER BY orderNumber ASC")
     fun getAllLanguages(): List<LanguageEntity>
 
-    @Query("Select * FROM $LANGUAGE_TABLE_NAME where id = :id")
-    fun getLanguage(id: Int): LanguageEntity
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertLanguage(languageEntity: LanguageEntity)
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(villages: List<LanguageEntity>)
 }

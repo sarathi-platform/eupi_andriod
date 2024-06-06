@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,7 +20,7 @@ class FetchAllDataUseCase @Inject constructor(
         fetchMissionDataUseCase.invoke()
         fetchSurveyDataFromNetworkUseCase.invoke()
         fetchContentDataFromNetworkUseCase.invoke()
-        onComplete(true, "")
+        onComplete(true, BLANK_STRING)
         CoroutineScope(Dispatchers.IO).launch {
             contentDownloaderUseCase.contentDownloader()
         }

@@ -21,9 +21,9 @@ class FetchSurveyDataFromNetworkUseCase @Inject constructor(
             activityConfigDao.getSurveyIds().forEach { surveyId ->
                 callSurveyApi(
                     SurveyRequest(
-                        referenceId = sharedPrefs.getPref(PREF_STATE_ID, 31),
+                        referenceId = getReferenceId(),
                         referenceType = STATE,
-                        surveyId = 3
+                        surveyId = surveyId
                     )
                 )
             }
@@ -34,6 +34,8 @@ class FetchSurveyDataFromNetworkUseCase @Inject constructor(
             throw ex
         }
     }
+
+    private fun getReferenceId() = sharedPrefs.getPref(PREF_STATE_ID, 31)
 
     private suspend fun callSurveyApi(surveyRequest: SurveyRequest): Boolean {
         val apiResponse = repository.fetchSurveyFromNetwork(surveyRequest)

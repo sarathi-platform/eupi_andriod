@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.repository
 
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_EMAIL
@@ -30,13 +31,19 @@ class UserDetailRepository @Inject constructor(
     }
 
     override fun saveUserDetails(userDetailsResponse: UserDetailsResponse) {
-        sharedPrefs.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: "")
-        sharedPrefs.savePref(PREF_KEY_NAME, userDetailsResponse.name ?: "")
-        sharedPrefs.savePref(PREF_KEY_EMAIL, userDetailsResponse.email ?: "")
-        sharedPrefs.savePref(PREF_KEY_IDENTITY_NUMBER, userDetailsResponse.identityNumber ?: "")
-        sharedPrefs.savePref(PREF_KEY_PROFILE_IMAGE, userDetailsResponse.profileImage ?: "")
-        sharedPrefs.savePref(PREF_KEY_ROLE_NAME, userDetailsResponse.roleName ?: "")
-        sharedPrefs.savePref(PREF_KEY_TYPE_NAME, userDetailsResponse.typeName ?: "")
+        sharedPrefs.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: BLANK_STRING)
+        sharedPrefs.savePref(PREF_KEY_NAME, userDetailsResponse.name ?: BLANK_STRING)
+        sharedPrefs.savePref(PREF_KEY_EMAIL, userDetailsResponse.email ?: BLANK_STRING)
+        sharedPrefs.savePref(
+            PREF_KEY_IDENTITY_NUMBER,
+            userDetailsResponse.identityNumber ?: BLANK_STRING
+        )
+        sharedPrefs.savePref(
+            PREF_KEY_PROFILE_IMAGE,
+            userDetailsResponse.profileImage ?: BLANK_STRING
+        )
+        sharedPrefs.savePref(PREF_KEY_ROLE_NAME, userDetailsResponse.roleName ?: BLANK_STRING)
+        sharedPrefs.savePref(PREF_KEY_TYPE_NAME, userDetailsResponse.typeName ?: BLANK_STRING)
         sharedPrefs.savePref(PREF_STATE_ID, userDetailsResponse.referenceId.first().stateId ?: -1)
     }
 }

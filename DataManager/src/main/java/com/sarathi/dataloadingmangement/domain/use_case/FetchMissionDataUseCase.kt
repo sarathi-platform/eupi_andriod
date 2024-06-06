@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.google.android.gms.common.api.ApiException
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.repository.IMissionRepository
 import javax.inject.Inject
@@ -13,7 +14,7 @@ class FetchMissionDataUseCase @Inject constructor(
         try {
 
             val apiResponse = repository.fetchMissionDataFromServer()
-            if (apiResponse.status.equals("SUCCESS", true)) {
+            if (apiResponse.status.equals(SUCCESS, true)) {
                 apiResponse.data?.let { missionApiResponse ->
 
 //                    var dumyyResponse: List<ProgrameResponse>? = null
