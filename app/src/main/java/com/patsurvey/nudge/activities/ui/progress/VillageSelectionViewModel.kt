@@ -218,22 +218,26 @@ class VillageSelectionViewModel @Inject constructor(
                 fetchCastList()
                 if (prefRepo.getPref(LAST_UPDATE_TIME, 0L) != 0L) {
                     if ((System.currentTimeMillis() - prefRepo.getPref(LAST_UPDATE_TIME, 0L)) > TimeUnit.DAYS.toMillis(30)) {
-                        if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(CRP_USER_TYPE, true)) {
-                            fetchVillageList()
-                        } else {
-                            fetchDataForBpc(context)
-                        }
+                        fetchUserWiseData()
                     } else {
                         showLoader.value = false
                     }
                 } else {
-                    if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(CRP_USER_TYPE, true)) {
-                        fetchVillageList()
-                    } else {
-                        fetchDataForBpc(context)
-                    }
+                    fetchUserWiseData()
                 }
             }
+        }
+    }
+
+    fun fetchUserWiseData() {
+        if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING) ?: BLANK_STRING).equals(
+                CRP_USER_TYPE,
+                true
+            )
+        ) {
+            fetchVillageList()
+        } else {
+            fetchDataForBpc()
         }
     }
 
@@ -319,7 +323,7 @@ class VillageSelectionViewModel @Inject constructor(
         }
     }
 
-    private fun fetchDataForBpc(context: Context) {
+    private fun fetchDataForBpc() {
         showLoader.value = true
         job = MyApplication.appScopeLaunch (Dispatchers.IO + exceptionHandler){
             val awaitDeff= CoroutineScope(Dispatchers.IO).async {
@@ -1079,14 +1083,12 @@ class VillageSelectionViewModel @Inject constructor(
                     if (localNumAnswerList.isNotEmpty()) {
                         numericAnswerDao.deleteNumericTable()
                     }
-                    Log.d("TAG", "fetchVillageListTAG: ${villageList.json()} ")
                     villageList.forEach { village ->
                         villageIdList.add(village.id)
                         launch {
                             stateId.value = village.stateId
                             RetryHelper.stateId = stateId.value
                             try {
-                                Log.d("TAG", "fetchVillageListTAG: stepList ${village.id} ")
                                 val response = apiService.getStepsList(village.id)
                                 if (response.status.equals(SUCCESS, true)) {
                                     response.data?.let {
