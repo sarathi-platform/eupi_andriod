@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.common_components
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -50,12 +51,21 @@ fun EditTextWithTitleComponent(
     isOnlyNumber: Boolean = false,
     maxLength: Int = 150,
     isContent: Boolean = false,
+    resetResponse: Boolean = false,
     onInfoButtonClicked: () -> Unit,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
-    val txt = remember {
+    val txt = remember(resetResponse, showQuestion?.optionId) {
         mutableStateOf(defaultValue)
-   }
+    }
+    Log.d(
+        "TAG",
+        "EditTextWithTitleComponent in component: ${showQuestion?.optionItemEntity?.display}, type: ${showQuestion?.optionItemEntity?.optionType}, showQuestion: ${showQuestion?.showQuestion}"
+    )
+    Log.d(
+        "TAG",
+        "EditTextWithTitleComponent in component response: ${txt.value}"
+    )
 //    if (txt.value.isBlank()) {
 //        txt.value = defaultValue
 //    }

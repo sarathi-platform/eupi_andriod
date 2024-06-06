@@ -284,22 +284,39 @@ fun NestedLazyListForFormQuestions(
                             QuestionType.InputNumberEditText.name -> {
                                 Log.d(
                                     "TAG",
-                                    "EditTextWithTitleComponent: ${option?.optionItemEntity?.display}, type: ${option.optionItemEntity.optionType}"
+                                    "EditTextWithTitleComponent: id: ${option.optionId}, questionId: ${option.optionItemEntity.questionId}, ${option?.optionItemEntity?.display}, type: ${option.optionItemEntity.optionType}, showQuestion: ${option.showQuestion}"
                                 )
+                                Log.d(
+                                    "TAG",
+                                    "EditTextWithTitleComponent response: ${
+                                        if (viewModel.tempRefId.value != BLANK_STRING)
+                                            formQuestionResponseEntity.value.getResponseForOptionId(
+                                                option.optionId ?: -1
+                                            )?.selectedValue
+                                                ?: BLANK_STRING
+                                        else
+                                            viewModel.storeCacheForResponse.getResponseForOptionId(
+                                                optionId = option.optionId ?: -1
+                                            )?.selectedValue ?: BLANK_STRING
+                                    }"
+                                )
+
+                                val responseValue = if (viewModel.tempRefId.value != BLANK_STRING)
+                                    formQuestionResponseEntity.value.getResponseForOptionId(
+                                        option.optionId ?: -1
+                                    )?.selectedValue
+                                        ?: BLANK_STRING
+                                else
+                                    viewModel.storeCacheForResponse.getResponseForOptionId(
+                                        optionId = option.optionId ?: -1
+                                    )?.selectedValue ?: BLANK_STRING
 
                                 EditTextWithTitleComponent(
                                     option.optionItemEntity.display,
                                     showQuestion = option,
                                     isContent = option.optionItemEntity.contentEntities.isNotEmpty(),
-                                    defaultValue = if (viewModel.tempRefId.value != BLANK_STRING)
-                                        formQuestionResponseEntity.value.getResponseForOptionId(
-                                            option.optionId ?: -1
-                                        )?.selectedValue
-                                            ?: BLANK_STRING
-                                    else
-                                        viewModel.storeCacheForResponse.getResponseForOptionId(
-                                            optionId = option.optionId ?: -1
-                                        )?.selectedValue ?: BLANK_STRING,
+                                    resetResponse = responseValue == BLANK_STRING,
+                                    defaultValue = responseValue,
                                     isOnlyNumber = option.optionItemEntity.optionType == QuestionType.InputNumber.name || option.optionItemEntity.optionType == QuestionType.InputNumberEditText.name,
                                     onInfoButtonClicked = {
                                         sectionInfoButtonClicked(option.optionItemEntity.contentEntities)
