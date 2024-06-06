@@ -888,7 +888,7 @@ class SettingViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val context = MyApplication.applicationContext()
             exportLocalData(context)
-            LogWriter.buildSupportLogAndShare()
+
         }
     }
 
@@ -937,7 +937,7 @@ class SettingViewModel @Inject constructor(
                     getFormPdfAndLogUri(),
                     prefRepo.getMobileNumber(),
                     userName = prefRepo.getPref(PREF_KEY_NAME, BLANK_STRING) ?: BLANK_STRING,
-
+                    moduleName = BLANK_STRING
                 )
 
                 val imageUri = compression.compressBackupImages(
@@ -1113,7 +1113,8 @@ class SettingViewModel @Inject constructor(
             applicationID = BuildConfig.APPLICATION_ID,
             mobileNo = userUniqueId,
             databaseName = NUDGE_DATABASE,
-            userName = BLANK_STRING
+            userName = BLANK_STRING,
+            moduleName = BLANK_STRING
         ) {
             onExportSuccess()
         }

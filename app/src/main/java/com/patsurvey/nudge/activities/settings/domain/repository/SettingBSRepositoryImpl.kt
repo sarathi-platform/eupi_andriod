@@ -4,7 +4,6 @@ import android.content.Context
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.LANGUAGE_OPEN_FROM_SETTING
 import com.nrlm.baselinesurvey.utils.BaselineCore
-import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
@@ -24,8 +23,8 @@ import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_EMAIL
 import com.patsurvey.nudge.utils.PREF_KEY_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
+import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.UPCM_USER
-import kotlinx.coroutines.Dispatchers
 
 class SettingBSRepositoryImpl(
     private val prefRepo: PrefRepo,
@@ -43,6 +42,7 @@ class SettingBSRepositoryImpl(
 
     override fun clearSharedPref() {
         prefRepo.saveAccessToken(BLANK_STRING)
+        prefRepo.saveSettingOpenFrom(PageFrom.HOME_PAGE.ordinal)
         if(prefRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING).equals(UPCM_USER)) {
             prefRepo.savePref(PREF_KEY_TYPE_NAME, BLANK_STRING)
             val coreSharedPrefs = CoreSharedPrefs.getInstance(BaselineCore.getAppContext())

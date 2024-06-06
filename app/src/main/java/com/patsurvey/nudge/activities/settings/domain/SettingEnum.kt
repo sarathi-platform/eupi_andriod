@@ -7,7 +7,6 @@ enum class SettingTagEnum {
     TRAINING_VIDEOS,
     LANGUAGE,
     SHARE_LOGS,
-    EXPORT_FILE,
     LOAD_SERVER_DATA,
     IMPORT_DATA,
     EXPORT_BACKUP_FILE,

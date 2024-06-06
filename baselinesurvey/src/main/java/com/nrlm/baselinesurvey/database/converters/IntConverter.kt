@@ -17,9 +17,9 @@ class IntConverter {
     }
 
     @TypeConverter
-    fun toOptionValuesList(optionValuesString: String?): List<Int>? {
-        if (optionValuesString == null) {
-            return null
+    fun toOptionValuesList(optionValuesString: String?): List<Int> {
+        if (optionValuesString.isNullOrEmpty()) {
+            return emptyList()
         }
         val gson = Gson()
         val type = object :
