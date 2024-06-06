@@ -24,12 +24,6 @@ android {
         }
     }
 
-    bundle {
-        language {
-            enableSplit = false
-        }
-    }
-
     packagingOptions {
         exclude 'META-INF/beans.xml'
         exclude 'META-INF/DEPENDENCIES'
@@ -113,10 +107,6 @@ android {
 kapt {
     correctErrorTypes = true
 }
-//android.applicationVariants.all {
-//    def aptOutputDir = new File(buildDir, "generated/source/kapt/${it.unitTestVariant.dirName}")
-//    it.unitTestVariant.addJavaSourceFoldersToModel(aptOutputDir)
-//}
 
 dependencies {
 
