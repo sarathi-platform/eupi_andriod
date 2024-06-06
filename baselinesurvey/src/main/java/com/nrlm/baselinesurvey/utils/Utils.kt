@@ -593,6 +593,9 @@ fun ConditionsDto.checkCondition(userInputValue: String): Boolean {
 
 fun ConditionsDto.checkConditionForMultiSelectDropDown(userInputValue: List<String>): Boolean {
     val condition = this.value.split(CONDITIONS_DELIMITER, ignoreCase = true)
+    if (userInputValue.isEmpty())
+        return false
+
     try {
         val result = when (checkStringOperator(this.operator)) {
             Operator.EQUAL_TO -> {
