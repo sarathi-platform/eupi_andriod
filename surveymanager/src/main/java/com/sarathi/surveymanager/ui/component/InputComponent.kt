@@ -59,7 +59,7 @@ fun InputComponent(
                 .fillMaxWidth()
                 .padding(top = 6.dp),
             value = txt.value,
-            // enabled = isEditable,
+            enabled = isEditable,
             onValueChange = {
                 if (it.length <= maxLength) {
                     if (isOnlyNumber) {
@@ -72,7 +72,7 @@ fun InputComponent(
                 }
                 onAnswerSelection(txt.value)
             },
-            label = { Text(hintText, style = buttonTextStyle.copy(color = placeholderGrey)) },
+            placeholder = { Text(hintText, style = buttonTextStyle.copy(color = placeholderGrey)) },
             keyboardOptions = if (isOnlyNumber) {
                 KeyboardOptions(
                     imeAction = ImeAction.Done,

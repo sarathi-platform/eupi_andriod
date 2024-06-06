@@ -24,6 +24,7 @@ fun GrantTaskList(
     taskList: HashMap<Int, HashMap<String, String>>,
     contents: List<BasicContent> = listOf(),
     isSearch: Boolean = true,
+    searchPlaceholder: String = "Search",
     onSearchValueChange: (String) -> Unit,
     navController: NavController,
     onPrimaryButtonClick: (Int) -> Unit,
@@ -39,14 +40,14 @@ fun GrantTaskList(
             }
         }
         if (isSearch) {
-            SearchWithFilterViewComponent(placeholderString = "Search",
+            SearchWithFilterViewComponent(
+                placeholderString = searchPlaceholder,
                 filterSelected = false,
                 modifier = Modifier.padding(horizontal = 10.dp),
                 showFilter = false,
                 onFilterSelected = {},
                 onSearchValueChange = { queryTerm ->
                     onSearchValueChange(queryTerm)
-
                 })
         }
         Spacer(modifier = Modifier.height(20.dp))

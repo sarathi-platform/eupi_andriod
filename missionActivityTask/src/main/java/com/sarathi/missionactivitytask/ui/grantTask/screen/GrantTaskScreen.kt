@@ -7,6 +7,8 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.BLANK_STRING
+import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.navigation.navigateToSurveyScreen
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
@@ -24,8 +26,8 @@ fun GrantTaskScreen(
     onSettingClick: () -> Unit
 ) {
     LaunchedEffect(key1 = true) {
-        viewModel.setMissionActivityId(missionId, activityId)
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
+        viewModel.setMissionActivityId(missionId, activityId)
         viewModel.onEvent(InitDataEvent.InitDataState)
     }
     ToolBarWithMenuComponent(
@@ -34,17 +36,23 @@ fun GrantTaskScreen(
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
         isSearch = true,
-        isDataAvailable = viewModel.taskList.value.isEmpty(),
-        onSearchValueChange = {
-
+        onSearchValueChange = { queryTerm ->
+            viewModel.onEvent(
+                SearchEvent.PerformSearch(
+                    queryTerm,
+                    false,
+                    BLANK_STRING
+                )
+            )
         },
         onBottomUI = {
         },
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
-            if (viewModel.taskList.value.isNotEmpty()) {
+            if (viewModel.filterList.value.isNotEmpty()) {
                 GrantTaskList(
-                    taskList = viewModel.taskList.value,
+                    taskList = viewModel.filterList.value,
                     isSearch = isSearch,
+                    searchPlaceholder = viewModel.searchLabel.value,
                     onSearchValueChange = onSearchValueChanged,
                     navController = navController,
                     onContentData = { contentValue, contentKey, contentType ->
