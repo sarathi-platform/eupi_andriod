@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.ui.question_type_screen.presentation.component
 
-import android.util.Log
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollBy
@@ -282,24 +281,6 @@ fun NestedLazyListForFormQuestions(
                             QuestionType.Input.name,
                             QuestionType.InputText.name,
                             QuestionType.InputNumberEditText.name -> {
-                                Log.d(
-                                    "TAG",
-                                    "EditTextWithTitleComponent: id: ${option.optionId}, questionId: ${option.optionItemEntity.questionId}, ${option?.optionItemEntity?.display}, type: ${option.optionItemEntity.optionType}, showQuestion: ${option.showQuestion}"
-                                )
-                                Log.d(
-                                    "TAG",
-                                    "EditTextWithTitleComponent response: ${
-                                        if (viewModel.tempRefId.value != BLANK_STRING)
-                                            formQuestionResponseEntity.value.getResponseForOptionId(
-                                                option.optionId ?: -1
-                                            )?.selectedValue
-                                                ?: BLANK_STRING
-                                        else
-                                            viewModel.storeCacheForResponse.getResponseForOptionId(
-                                                optionId = option.optionId ?: -1
-                                            )?.selectedValue ?: BLANK_STRING
-                                    }"
-                                )
 
                                 val responseValue = if (viewModel.tempRefId.value != BLANK_STRING)
                                     formQuestionResponseEntity.value.getResponseForOptionId(
