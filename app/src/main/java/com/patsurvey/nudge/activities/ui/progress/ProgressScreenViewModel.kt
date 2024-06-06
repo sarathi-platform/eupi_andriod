@@ -190,11 +190,8 @@ class ProgressScreenViewModel @Inject constructor(
                                 selectedText.value = villageEntity.name
                             }
                         }
-//                    selectedText.value = villageList[villageList.map { it.id }.indexOf(prefRepo.getSelectedVillage().id)].name
-//                    selectedText.value = villageList[villageSelected.value].name
                         getStepsList(progressScreenRepository.getSelectedVillage().id)
                     }
-//                    showLoader.value = false
                 }
             }
         }

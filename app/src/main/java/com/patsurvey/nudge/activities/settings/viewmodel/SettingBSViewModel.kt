@@ -9,7 +9,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
@@ -65,7 +64,6 @@ import com.patsurvey.nudge.utils.UPCM_USER
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_CONSTANT
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.changeMilliDateToDate
-import com.patsurvey.nudge.utils.getFormSubPath
 import com.patsurvey.nudge.utils.openShareSheet
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -77,6 +75,8 @@ import java.io.File
 import java.util.Timer
 import java.util.TimerTask
 import javax.inject.Inject
+import com.patsurvey.nudge.BuildConfig
+
 
 @HiltViewModel
 class SettingBSViewModel @Inject constructor(
@@ -304,7 +304,7 @@ class SettingBSViewModel @Inject constructor(
                                 selectedVillageId
                             )
 
-                        val isFormAGenerated = generateFormA(casteList, selectedVillageId, didiList)
+                        val isFormAGenerated = generateFormA(prefRepo.getStateId(),casteList, selectedVillageId, didiList)
                         addFormToUriList(
                             isFormAGenerated,
                             selectedVillageId,
@@ -312,7 +312,7 @@ class SettingBSViewModel @Inject constructor(
                             fileAndDbZipList
                         )
 
-                        val isFormBGenerated = generateFormB(casteList, selectedVillageId, didiList)
+                        val isFormBGenerated = generateFormB(prefRepo.getStateId() ,casteList, selectedVillageId, didiList)
                         addFormToUriList(
                             isFormBGenerated,
                             selectedVillageId,
@@ -320,7 +320,7 @@ class SettingBSViewModel @Inject constructor(
                             fileAndDbZipList
                         )
 
-                        val isFormCGenerated = generateFormc(casteList, selectedVillageId, didiList)
+                        val isFormCGenerated = generateFormc(prefRepo.getStateId(),casteList, selectedVillageId, didiList)
                         addFormToUriList(
                             isFormCGenerated,
                             selectedVillageId,
@@ -393,74 +393,88 @@ class SettingBSViewModel @Inject constructor(
         }, time)
     }
 
-    fun checkFormsAvailabilityForVillage(context: Context, villageId: Int) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val formAFilePath =
-                File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_A_PDF_NAME}_${villageId}.pdf")
-            val formBFilePath =
-                File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_B_PDF_NAME}_${villageId}.pdf")
-            val formCFilePath =
-                File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_C_PDF_NAME}_${villageId}.pdf")
-
-            var didiList=settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(villageId)
-            if(userType == BPC_USER_TYPE){
-                 didiList=settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllPoorDidiForVillage(villageId)
+    suspend fun checkFormAAvailability(context: Context, villageId: Int) {
+        val formAFilePath =
+            File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_A_PDF_NAME}_${villageId}.pdf")
+        var didiList =
+            settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(villageId)
+        if (userType == BPC_USER_TYPE) {
+            didiList =
+                settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllPoorDidiForVillage(villageId)
+        }
+        if (formAFilePath.isFile && formAFilePath.exists()) {
+            withContext(Dispatchers.Main) {
+                formAAvailable.value = true
             }
-
-            // Form A availability check
-            if (formAFilePath.isFile && formAFilePath.exists()) {
+        } else {
+            if (didiList.any { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }
+            ) {
                 withContext(Dispatchers.Main) {
                     formAAvailable.value = true
                 }
             } else {
-                    if (didiList.any { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }
-                    ) {
-                        withContext(Dispatchers.Main) {
-                            formAAvailable.value = true
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            formAAvailable.value = false
-                        }
-                    }
+                withContext(
+                    Dispatchers.Main
+                ) {
+                    formAAvailable.value = false
+                }
             }
+        }
+    }
 
-            // Form B availability check
-            if (formBFilePath.isFile && formBFilePath.exists()) {
+    suspend fun checkFormBAvailability(context: Context, villageId: Int) {
+        val formBFilePath =
+            File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_B_PDF_NAME}_${villageId}.pdf")
+        var didiList =
+            settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(villageId)
+        if (userType == BPC_USER_TYPE) {
+            didiList =
+                settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllPoorDidiForVillage(villageId)
+        }
+        if (formBFilePath.isFile && formBFilePath.exists()) {
+            withContext(Dispatchers.Main) {
+                formBAvailable.value = true
+            }
+        } else {
+            if (didiList.any { it.forVoEndorsement == 1 && !it.patEdit }
+            ) {
                 withContext(Dispatchers.Main) {
                     formBAvailable.value = true
                 }
             } else {
-                if (didiList.any { it.forVoEndorsement == 1 && !it.patEdit }
-                ) {
-                    withContext(Dispatchers.Main) {
-                        formBAvailable.value = true
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        formBAvailable.value = false
-                    }
-                }
-            }
-
-            // Form C availability check
-            if (formCFilePath.isFile && formCFilePath.exists()) {
                 withContext(Dispatchers.Main) {
-                    formCAvailable.value = true
-                }
-            } else {
-                val stepList = settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllStepsForVillage(villageId)
-                val filteredStepList = stepList.filter { it.name.equals(VO_ENDORSEMENT_CONSTANT, true) }
-                if (filteredStepList[0] != null) {
-                    formCAvailable.value =
-                        filteredStepList[0].isComplete == StepStatus.COMPLETED.ordinal
-                } else {
-                    formCAvailable.value = false
+                    formBAvailable.value = false
                 }
             }
+        }
+    }
 
+    suspend fun checkFormCAvailability(context: Context, villageId: Int) {
+        val formCFilePath =
+            File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_C_PDF_NAME}_${villageId}.pdf")
 
+        if (formCFilePath.isFile && formCFilePath.exists()) {
+            withContext(Dispatchers.Main) {
+                formCAvailable.value = true
+            }
+        } else {
+            val stepList =
+                settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllStepsForVillage(villageId)
+            val filteredStepList = stepList.filter { it.name.equals(VO_ENDORSEMENT_CONSTANT, true) }
+            if (filteredStepList[0] != null) {
+                formCAvailable.value =
+                    filteredStepList[0].isComplete == StepStatus.COMPLETED.ordinal
+            } else {
+                formCAvailable.value = false
+            }
+        }
+    }
+    fun checkFormsAvailabilityForVillage(context: Context, villageId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 
+            checkFormAAvailability(context = context, villageId = villageId)
+            checkFormBAvailability(context = context, villageId = villageId)
+            checkFormCAvailability(context = context, villageId = villageId)
         }
 
     }
@@ -521,11 +535,13 @@ class SettingBSViewModel @Inject constructor(
     }
 
     private suspend fun generateFormA(
+        stateId: Int,
         casteList: List<CasteEntity>,
         selectedVillageId: Int,
         didiList: List<DidiEntity>
     ) = PdfUtils.getFormAPdf(
         mAppContext,
+        stateId,
         villageEntity = prefRepo.getSelectedVillage(),
         casteList = casteList,
         didiDetailList = didiList,
@@ -537,12 +553,16 @@ class SettingBSViewModel @Inject constructor(
     )
 
     private suspend fun generateFormB(
+        stateId: Int,
         casteList: List<CasteEntity>,
         selectedVillageId: Int,
-        didiList: List<DidiEntity>
+        didiList: List<DidiEntity>,
+
     ) =
         PdfUtils.getFormBPdf(
-            mAppContext, villageEntity = prefRepo.getSelectedVillage(),
+            mAppContext,
+            stateId,
+            villageEntity = prefRepo.getSelectedVillage(),
             didiDetailList = didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit },
             casteList = casteList,
             completionDate = changeMilliDateToDate(
@@ -554,12 +574,15 @@ class SettingBSViewModel @Inject constructor(
         )
 
     private suspend fun generateFormc(
+        stateId: Int,
         casteList: List<CasteEntity>,
         selectedVillageId: Int,
         didiList: List<DidiEntity>
     ) =
         PdfUtils.getFormCPdf(
-            mAppContext, villageEntity = prefRepo.getSelectedVillage(),
+            mAppContext,
+            stateId ,
+            villageEntity = prefRepo.getSelectedVillage(),
             didiDetailList = didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal },
             casteList = casteList,
             completionDate = changeMilliDateToDate(

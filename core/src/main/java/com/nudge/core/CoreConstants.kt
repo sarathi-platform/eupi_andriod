@@ -54,6 +54,11 @@ const val SELECTION = "SELECTION"
 
 const val ZIP_EXTENSION = "zip"
 const val EVENT_STRING="event"
+const val DEFAULT_LANGUAGE_ID = 2
+const val DEFAULT_LANGUAGE_CODE="en"
+const val DEFAULT_LANGUAGE_NAME = "English"
+const val DEFAULT_LANGUAGE_LOCAL_NAME = "English"
+const val KOKBOROK_LANGUAGE_CODE="ky"
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),
     DbEventWrite(),

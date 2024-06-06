@@ -114,7 +114,6 @@ import kotlinx.coroutines.launch
 fun ProgressScreen(
     modifier: Modifier = Modifier,
     viewModel: ProgressScreenViewModel,
-    stepsNavHostController: NavHostController,
     onNavigateToStep:(Int, Int, Int, Boolean) ->Unit,
     onNavigateToSetting:()->Unit,
 
@@ -425,19 +424,10 @@ fun ProgressScreen(
                                     }
 
                                     when (index) {
-                                        0 -> {
-//                                            onNavigateToTransWalk(villageId,stepId,index)
-                                        }
-                                        1 -> {
-//                                            onNavigateToTransWalk(villageId,stepId,index)
-                                        }
-                                        2 -> {}
                                         3 -> {
                                             if (isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal)
                                                 viewModel.saveFromPage(ARG_FROM_PAT_SURVEY)
                                         }
-                                        4 -> {}
-                                        5 -> {}
                                     }
                                     if (isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal)
                                         onNavigateToStep(villageId,step.id,index,(viewModel.stepList.value[index].isComplete == StepStatus.COMPLETED.ordinal))

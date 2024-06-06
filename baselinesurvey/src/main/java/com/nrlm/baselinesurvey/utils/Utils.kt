@@ -43,16 +43,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.core.content.FileProvider
 import androidx.core.text.isDigitsOnly
 import com.google.gson.Gson
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.CONDITIONS_DELIMITER
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_LOCAL_NAME
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_NAME
 import com.nrlm.baselinesurvey.DELIMITER_TIME
 import com.nrlm.baselinesurvey.DELIMITER_YEAR
 import com.nrlm.baselinesurvey.HOURS
@@ -91,6 +85,10 @@ import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.greyBorder
 import com.nudge.core.Core
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.DEFAULT_LANGUAGE_LOCAL_NAME
+import com.nudge.core.DEFAULT_LANGUAGE_NAME
 import com.nudge.core.enums.EventName
 import java.io.File
 import java.text.SimpleDateFormat

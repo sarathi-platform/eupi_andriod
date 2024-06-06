@@ -8,6 +8,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.json
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.RetryHelper
@@ -66,7 +67,6 @@ import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
 import com.patsurvey.nudge.utils.COMPLETED_STRING
-import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_ID
 import com.patsurvey.nudge.utils.DIDI_NOT_AVAILABLE
 import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DOUBLE_ZERO
@@ -3972,11 +3972,7 @@ class VillageSelectionRepository @Inject constructor(
                                 val stateId = if (it.villageList?.isNotEmpty() == true) it.villageList?.get(0)?.stateId?:1 else -1
                                 val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                                 val defaultLanguageVillageList = villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID)
-                                /*if (localVillageList.isNotEmpty()) {
-                                    _villagList.emit(localVillageList)
-                                } else {
-                                    _villagList.emit(villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID))
-                                }*/
+
                                 userAndVillageDetailsModel = if (localVillageList.isNotEmpty()) {
                                     UserAndVillageDetailsModel(true, localVillageList, stateId = stateId)
                                 } else {

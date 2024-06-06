@@ -394,6 +394,7 @@
     <string name="didi_verified_by_bpc">Didis BPC দ্বারা যাচাই</string>
     <string name="bpc_verification_in_progress_village_banner_text">" BPC যাচাইকরণ প্রক্রিয়াধীন"</string>
     <string name="recover_old_data">পুরানো ডেটা পুনরুদ্ধার করুন</string>
+    <string name="this_language_is_not_available_for_selection">এই ভাষা নির্বাচনের জন্য উপলব্ধ নয়</string>
 
 
 </resources>

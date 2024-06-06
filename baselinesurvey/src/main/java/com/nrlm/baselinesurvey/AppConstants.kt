@@ -5,9 +5,6 @@ import androidx.compose.ui.unit.dp
 const val BLANK_STRING=""
 const val DEFAULT_ID = -1
 const val ZERO_RESULT = "0"
-const val DEFAULT_LANGUAGE_CODE="en"
-const val DEFAULT_LANGUAGE_NAME = "English"
-const val DEFAULT_LANGUAGE_LOCAL_NAME = "English"
 const val MOBILE_NUMBER_LENGTH=10
 const val ASSET_VALUE_LENGTH = 8
 const val MAXIMUM_RANGE = 999999
@@ -263,7 +260,7 @@ const val VALUE_OF_PRODUCTIVE_ASSETS = "Value of productive assets"
 const val EARNING_RATIO = "Earning ratio"
 const val HEADING_QUESTION_TYPE = "heading"
 
-const val DEFAULT_LANGUAGE_ID = 2
+
 const val BPC_VERIFICATION_STEP_ORDER = 6
 const val VO_ENDORSEMENT_STEP_ORDER = 5
 

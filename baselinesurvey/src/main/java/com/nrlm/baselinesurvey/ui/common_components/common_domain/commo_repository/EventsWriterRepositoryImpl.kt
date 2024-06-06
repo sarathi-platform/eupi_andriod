@@ -2,7 +2,6 @@ package com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_reposit
 
 import android.net.Uri
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
@@ -16,6 +15,7 @@ import com.nrlm.baselinesurvey.model.datamodel.UpdateTaskStatusEventDto
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.getParentEntityMapForEvent
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao

@@ -6,7 +6,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_ID
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.PREF_CASTE_LIST
 import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nrlm.baselinesurvey.PREF_KEY_IDENTITY_NUMBER
@@ -74,6 +73,7 @@ import com.nudge.core.PREF_KEY_IS_SETTING_SCREEN_OPEN
 import com.nrlm.baselinesurvey.utils.convertFormTypeQuestionListToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.convertQuestionListToOptionItemEntity
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.entities.ApiStatusEntity
 import com.nudge.core.enums.ApiStatus

@@ -9,6 +9,8 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
 import com.nrlm.baselinesurvey.PREF_STATE_ID
+import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.json
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
@@ -59,7 +61,6 @@ import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.COMPLETED_STRING
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
-import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_ID
 import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DOUBLE_ZERO
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
@@ -1083,13 +1084,14 @@ class VillageSelectionViewModel @Inject constructor(
                     if (localNumAnswerList.isNotEmpty()) {
                         numericAnswerDao.deleteNumericTable()
                     }
-
+                    Log.d("TAG", "fetchVillageListTAG: ${villageList.json()} ")
                     villageList.forEach { village ->
                         villageIdList.add(village.id)
                         launch {
                             stateId.value = village.stateId
                             RetryHelper.stateId = stateId.value
                             try {
+                                Log.d("TAG", "fetchVillageListTAG: stepList ${village.id} ")
                                 val response = apiService.getStepsList(village.id)
                                 if (response.status.equals(SUCCESS, true)) {
                                     response.data?.let {

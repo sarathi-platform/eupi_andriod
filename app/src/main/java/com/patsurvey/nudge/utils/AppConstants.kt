@@ -6,7 +6,6 @@ import com.patsurvey.nudge.R
 
 const val BLANK_STRING=""
 const val ONE="1"
-const val DEFAULT_LANGUAGE_CODE="en"
 const val MOBILE_NUMBER_LENGTH=10
 const val ASSET_VALUE_LENGTH=8
 const val MAXIMUM_RANGE=99999
@@ -234,7 +233,6 @@ val LEFT_BRACKET_QUOTE_REGEX = Regex("\\[")
 
 const val HEADING_QUESTION_TYPE = "heading"
 
-const val DEFAULT_LANGUAGE_ID = 2
 const val BENGAL_STATE_ID = 34
 const val BENGAL_STRING_VALUE = 1
 const val DEFAULT_STATE_ID = 4

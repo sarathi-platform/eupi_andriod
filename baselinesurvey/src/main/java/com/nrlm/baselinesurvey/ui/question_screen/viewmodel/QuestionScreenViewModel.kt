@@ -13,7 +13,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.BLANK_STRING
-import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
@@ -54,6 +53,7 @@ import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.toOptionItemStateList
 import com.nrlm.baselinesurvey.utils.updateOptionItemEntityListStateForQuestionByCondition
 import com.nrlm.baselinesurvey.utils.updateOptionsForNoneCondition
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
