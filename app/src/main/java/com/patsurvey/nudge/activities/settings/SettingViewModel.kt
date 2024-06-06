@@ -889,7 +889,7 @@ class SettingViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val context = MyApplication.applicationContext()
             exportLocalData(context)
-            LogWriter.buildSupportLogAndShare()
+
         }
     }
 
