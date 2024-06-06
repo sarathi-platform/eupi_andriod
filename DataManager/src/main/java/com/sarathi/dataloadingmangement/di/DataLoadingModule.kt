@@ -19,9 +19,8 @@ import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
-import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
-import com.sarathi.dataloadingmangement.data.dao.TaskAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
@@ -32,24 +31,25 @@ import com.sarathi.dataloadingmangement.domain.use_case.ContentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailsUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupFromNetworkUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
-import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepository
-import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepository
-import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepositoryImpl
-import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepository
-import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.ContentDownloaderRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.ContentRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.IContentDownloader
 import com.sarathi.dataloadingmangement.repository.IContentRepository
+import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepository
+import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.IMissionRepository
 import com.sarathi.dataloadingmangement.repository.ISurveyDownloadRepository
 import com.sarathi.dataloadingmangement.repository.MissionRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyDownloadRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -190,7 +190,8 @@ class DataLoadingModule {
         surveyRepo: SurveyDownloadRepository,
         application: Application,
         missionRepositoryImpl: MissionRepositoryImpl,
-        contentRepositoryImpl: ContentRepositoryImpl
+        contentRepositoryImpl: ContentRepositoryImpl,
+        userDetailsRepository: IDataLoadingScreenRepository
     ): DataLoadingUseCase {
         return DataLoadingUseCase(
             fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(
@@ -200,7 +201,19 @@ class DataLoadingModule {
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 contentRepositoryImpl,
                 application
-            )
+            ),
+            fetchUserDetailsUseCase = FetchUserDetailsUseCase(userDetailsRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideIDataLoadingScreenRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        dataLoadingApiService: DataLoadingApiService
+    ): IDataLoadingScreenRepository {
+        return IDataLoadingScreenRepositoryImpl(
+            coreSharedPrefs, dataLoadingApiService
         )
     }
 
@@ -305,7 +318,6 @@ class DataLoadingModule {
             subjectEntityDao
         )
     }
-}
 
     @Provides
     @Singleton
@@ -336,3 +348,5 @@ class DataLoadingModule {
     ): FetchSmallGroupFromNetworkUseCase {
         return FetchSmallGroupFromNetworkUseCase(fetchSmallGroupDetailsFromNetworkRepository)
     }
+
+}

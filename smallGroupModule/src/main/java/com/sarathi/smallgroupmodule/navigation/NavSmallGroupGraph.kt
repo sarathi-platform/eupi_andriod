@@ -12,13 +12,17 @@ import com.sarathi.smallgroupmodule.constatns.SmallGroupConstants.SMALL_GROUP_GR
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation.SmallGroupAttendanceScreen
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.ui.SmallGroupAttendanceHistoryScreen
 
-fun NavGraphBuilder.SmallGroupNavigation(navController: NavHostController) {
+fun NavGraphBuilder.SmallGroupNavigation(
+    navController: NavHostController,
+    onSettingIconClick: () -> Unit
+) {
     navigation(
         route = SMALL_GROUP_GRAPH,
         startDestination = SmallGroupScreens.SmallGroupAttendanceHistoryScreen.route
     ) {
         //TODO Temp code remove after fixing navigation
-        composable(route = SmallGroupScreens.SmallGroupAttendanceHistoryScreen.route,
+        composable(
+            route = SmallGroupScreens.SmallGroupAttendanceHistoryScreen.route,
             arguments = listOf(
                 navArgument(ARG_SMALL_GROUP_ID) {
                     type = NavType.IntType
@@ -43,7 +47,8 @@ fun NavGraphBuilder.SmallGroupNavigation(navController: NavHostController) {
             SmallGroupAttendanceScreen(
                 smallGroupId = it.arguments?.getInt(ARG_SMALL_GROUP_ID) ?: 0,
                 smallGroupAttendanceScreenViewModel = hiltViewModel(),
-                navHostController = navController
+                navHostController = navController,
+                onSettingIconClicked = { onSettingIconClick() }
             )
         }
 

@@ -24,7 +24,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
-import com.sarathi.missionactivitytask.ui.theme.dimen_8_dp
+import com.nudge.core.ui.events.theme.dimen_8_dp
 
 @Composable
 fun BasicTextWithIconComponent(

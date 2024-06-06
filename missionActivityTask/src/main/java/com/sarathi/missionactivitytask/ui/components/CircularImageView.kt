@@ -8,9 +8,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import coil.compose.rememberImagePainter
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.getImagePathFromString
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.constants.MissionActivityConstants.BLANK_STRING
 import java.io.File
 
 const val DEFAULT_IMAGE_CONTENT_DESCRIPTION = "didi image placeholder"

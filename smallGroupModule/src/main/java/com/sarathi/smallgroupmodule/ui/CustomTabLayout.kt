@@ -1,10 +1,14 @@
 package com.sarathi.smallgroupmodule.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,14 +19,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.sarathi.smallgroupmodule.ui.theme.blueDark
 import com.sarathi.smallgroupmodule.ui.theme.borderGrey
 import com.sarathi.smallgroupmodule.ui.theme.dimen_1_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_6_dp
 import com.sarathi.smallgroupmodule.ui.theme.mediumTextStyle
 import com.sarathi.smallgroupmodule.ui.theme.tabBgColor
+import com.sarathi.smallgroupmodule.ui.theme.textColorDark
 import com.sarathi.smallgroupmodule.ui.theme.white
 
 @Composable
@@ -63,10 +68,30 @@ fun TabItem(
 ) {
     val tabBgColor: Color = if (isSelected) tabBgColor else white
     val borderColor: Color = if (isSelected) tabBgColor else borderGrey
+
+    val interactionSource = remember { MutableInteractionSource() }
+    val ripple =
+        rememberRipple(bounded = true, color = com.sarathi.smallgroupmodule.ui.theme.tabBgColor)
+
     Box(
-        modifier = Modifier.border(
-            dimen_1_dp, borderColor, RoundedCornerShape(dimen_6_dp)
-        ),
+        modifier = Modifier
+            .border(
+                width = dimen_1_dp,
+                color = borderColor,
+                shape = RoundedCornerShape(dimen_6_dp)
+            )
+            .background(
+                color = tabBgColor,
+                shape = RoundedCornerShape(dimen_6_dp)
+            )
+            .selectable(
+                selected = isSelected,
+                onClick = onClick,
+                enabled = true,
+                role = Role.Tab,
+                interactionSource = interactionSource,
+                indication = ripple
+            ),
         contentAlignment = Alignment.Center
     ) {
 
@@ -81,7 +106,7 @@ fun TabItem(
                     horizontal = 12.dp,
                 ),
             text = text,
-            color = blueDark,
+            color = textColorDark,
             style = mediumTextStyle,
             textAlign = TextAlign.Center,
         )

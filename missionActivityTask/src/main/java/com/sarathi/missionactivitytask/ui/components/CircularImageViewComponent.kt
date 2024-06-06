@@ -19,10 +19,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.getImagePathFromString
 import com.nudge.core.ui.events.theme.brownDark
 import com.nudge.core.ui.events.theme.yellowBg
 import com.sarathi.surveymanager.R
-import com.sarathi.surveymanager.utils.getImagePathFromString
 import java.io.File
 
 @Composable

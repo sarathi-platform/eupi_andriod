@@ -4,7 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Text
@@ -19,12 +21,13 @@ import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.BasicTextWithIconComponent
 import com.sarathi.missionactivitytask.ui.components.LazyColumnWithVerticalPadding
-import com.sarathi.missionactivitytask.ui.theme.dimen_8_dp
 import com.sarathi.smallgroupmodule.navigation.navigateToAttendanceHistoryScreen
 import com.sarathi.smallgroupmodule.ui.didiTab.viewModel.DidiTabViewModel
 import com.sarathi.smallgroupmodule.ui.theme.blueDark
 import com.sarathi.smallgroupmodule.ui.theme.defaultTextStyle
+import com.sarathi.smallgroupmodule.ui.theme.dimen_100_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_16_dp
+import com.sarathi.smallgroupmodule.ui.theme.dimen_8_dp
 import com.sarathi.smallgroupmodule.ui.theme.mediumTextStyle
 import com.sarathi.smallgroupmodule.ui.theme.white
 
@@ -45,6 +48,12 @@ fun SmallGroupSubTab(
             SmallGroupItem(smallGroupDetails = smallGroup) { smallGroupId ->
                 navHostController.navigateToAttendanceHistoryScreen(smallGroupId)
             }
+        }
+
+        item {
+            Spacer(modifier = Modifier
+                .fillMaxWidth()
+                .height(dimen_100_dp))
         }
 
     }

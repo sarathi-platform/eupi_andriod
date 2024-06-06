@@ -146,12 +146,19 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         patNavGraph(navController = navController)
         settingNavGraph(navController = navController)
         voEndorsmentNavGraph(navController = navController)
-        logoutGraph(navController =navController,prefRepo)
+        logoutGraph(navController = navController, prefRepo)
         bpcDidiListNavGraph(navController = navController)
-        MatNavigation(navController = navController,  onSettingIconClick = {navController.navigate(Graph.SETTING_GRAPH)})
-        MatNavigation(navController = navController)
-        SmallGroupNavigation(navController = navController)
+        MatNavigation(
+            navController = navController,
+            onSettingIconClick = { navController.navigateToSettingScreen() })
+        SmallGroupNavigation(
+            navController = navController,
+            onSettingIconClick = { navController.navigateToSettingScreen() })
     }
+}
+
+fun NavHostController.navigateToSettingScreen() {
+    this.navigate(Graph.SETTING_GRAPH)
 }
 
 sealed class HomeScreens(val route: String) {

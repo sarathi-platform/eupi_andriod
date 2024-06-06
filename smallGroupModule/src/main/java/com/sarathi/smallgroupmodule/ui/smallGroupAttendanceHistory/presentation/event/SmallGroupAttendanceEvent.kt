@@ -10,4 +10,6 @@ sealed class SmallGroupAttendanceEvent {
     data class MarkAttendanceForSubject(val checked: Boolean, val subjectId: Int) :
         SmallGroupAttendanceEvent()
 
+    object SubmitAttendanceForDate : SmallGroupAttendanceEvent()
+
 }

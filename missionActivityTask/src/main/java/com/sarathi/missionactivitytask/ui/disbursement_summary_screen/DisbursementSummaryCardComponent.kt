@@ -30,7 +30,7 @@ import com.nudge.core.ui.events.theme.dimen_6_dp
 import com.nudge.core.ui.events.theme.dimen_8_dp
 import com.nudge.core.ui.events.theme.smallTextStyle
 import com.nudge.core.ui.events.theme.white
-import com.sarathi.surveymanager.ui.component.CircularImageViewComponent
+import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
 
 
 @Preview(showSystemUi = true)

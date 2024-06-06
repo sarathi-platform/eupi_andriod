@@ -47,6 +47,12 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
         )
     val smallGroupAttendanceEntityState: State<List<SmallGroupAttendanceEntityState>> get() = _smallGroupAttendanceEntityState
 
+    val selectedItems =
+        mutableStateOf(mapOf<Int, Boolean>())
+
+
+    val allSelected = mutableStateOf(false)
+
     override fun <T> onEvent(event: T) {
 
         when (event) {
@@ -71,18 +77,22 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
                             )
                         )
                     }
+                    selectedItems.value =
+                        smallGroupAttendanceEntityState.value.map { it.subjectId to false }.toMap()
+                    allSelected.value = selectedItems.value.values.all {
+                        it
+                    } && selectedItems.value.isNotEmpty()
                 }
             }
 
             is SmallGroupAttendanceEvent.MarkAttendanceForAll -> {
-                isAllSelected.value = event.checked
-                if (event.checked) {
-                    markedAttendanceList.value.addAll(subjectList.value.map { it.subjectId })
-                } else {
-                    markedAttendanceList.value.clear()
-                }
-                updateAttendanceForAll(event.checked)
-                viewModelScope.launch(Dispatchers.IO) {
+
+                val newSelection = selectedItems.value.mapValues { event.checked }
+                selectedItems.value = newSelection
+                allSelected.value =
+                    selectedItems.value.values.filter { it == true }.size == selectedItems.value.size && selectedItems.value.isNotEmpty()
+
+                /*viewModelScope.launch(Dispatchers.IO) {
                     smallGroupAttendanceEntityState.value.forEach { smallGroupAttendanceEntityState ->
                         addSaveAttendanceEvent(
                             smallGroupAttendanceEntityState,
@@ -90,7 +100,7 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
                             event.checked
                         )
                     }
-                }
+                }*/
             }
 
             is SmallGroupAttendanceEvent.MarkAttendanceForSubject -> {
@@ -98,20 +108,15 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
                 if (event.subjectId == 0)
                     return
 
-                if (event.checked) {
-                    markedAttendanceList.value.add(event.subjectId)
-                } else {
-                    markedAttendanceList.value.remove(event.subjectId)
+                selectedItems.value = selectedItems.value.toMutableMap().apply {
+                    this[event.subjectId] = event.checked
                 }
-                updateAttendanceForSubject(event.checked, event.subjectId)
+                allSelected.value =
+                    selectedItems.value.values.filter { it == true }.size == selectedItems.value.size && selectedItems.value.isNotEmpty()
 
-                viewModelScope.launch(Dispatchers.IO) {
-                    addSaveAttendanceEvent(
-                        smallGroupAttendanceEntityState.value.find { it.subjectId == event.subjectId },
-                        smallGroupDetails.value,
-                        event.checked
-                    )
-                }
+                /*viewModelScope.launch(Dispatchers.IO) {
+
+                }*/
             }
 
             is EventWriterEvents.SaveAttendanceEvent -> {
@@ -122,6 +127,20 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
                         eventDependencies = event.dependencyEntityList
                     )
                 }
+            }
+
+            is SmallGroupAttendanceEvent.SubmitAttendanceForDate -> {
+
+                viewModelScope.launch(Dispatchers.IO) {
+                    smallGroupAttendanceEntityState.value.forEach { subjectState ->
+                        addSaveAttendanceEvent(
+                            smallGroupAttendanceEntityState = subjectState,
+                            smallGroupDetails = smallGroupDetails.value,
+                            checked = selectedItems.value[subjectState.subjectId] ?: false
+                        )
+                    }
+                }
+
             }
         }
 

@@ -26,16 +26,16 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
+import com.nudge.core.ui.events.theme.brownDark
+import com.nudge.core.ui.events.theme.defaultCardElevation
+import com.nudge.core.ui.events.theme.dimen_10_dp
+import com.nudge.core.ui.events.theme.dimen_2_dp
+import com.nudge.core.ui.events.theme.dimen_4_dp
+import com.nudge.core.ui.events.theme.dimen_56_dp
+import com.nudge.core.ui.events.theme.roundedCornerRadiusDefault
+import com.nudge.core.ui.events.theme.white
+import com.nudge.core.ui.events.theme.yellowBg
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.missionactivitytask.ui.theme.brownDark
-import com.sarathi.missionactivitytask.ui.theme.defaultCardElevation
-import com.sarathi.missionactivitytask.ui.theme.dimen_10_dp
-import com.sarathi.missionactivitytask.ui.theme.dimen_2_dp
-import com.sarathi.missionactivitytask.ui.theme.dimen_4_dp
-import com.sarathi.missionactivitytask.ui.theme.dimen_56_dp
-import com.sarathi.missionactivitytask.ui.theme.roundedCornerRadiusDefault
-import com.sarathi.missionactivitytask.ui.theme.white
-import com.sarathi.missionactivitytask.ui.theme.yellowBg
 
 @Composable
 fun BasicCardView(

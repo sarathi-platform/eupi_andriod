@@ -7,11 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -19,6 +14,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
+import com.sarathi.smallgroupmodule.SmallGroupCore
 import com.sarathi.smallgroupmodule.ui.TabItem
 import com.sarathi.smallgroupmodule.ui.didiTab.viewModel.DidiTabViewModel
 import com.sarathi.smallgroupmodule.ui.smallGroupSubTab.presentation.SmallGroupSubTab
@@ -44,7 +40,6 @@ fun DidiTabScreen(
     val didiList = didiTabViewModel.didiList
 
     val tabs = listOf("Didi", "Small Group")
-    var tabIndex by remember { mutableStateOf(0) }
 
 
     ToolBarWithMenuComponent(
@@ -54,61 +49,50 @@ fun DidiTabScreen(
         iconResId = Res.drawable.ic_sarathi_logo,
         onBackIconClick = { /*TODO*/ },
         isDataAvailable = didiList.value.isNotEmpty(),
-        isFilterSelected = {},
         onSearchValueChange = {
 
         },
         onBottomUI = { /*TODO*/ },
-        tabBarView = {
-
-
-        }
-    ) {
-
-        Column(
-            modifier = Modifier
-                .padding(horizontal = dimen_16_dp)
-                .padding(top = dimen_16_dp),
-            verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
-        ) {
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
-                modifier = Modifier.fillMaxWidth(),
+        onSettingClick = {},
+        onContentUI = { paddingValues, b, function ->
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = dimen_16_dp)
+                    .padding(top = dimen_16_dp),
+                verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
             ) {
 
-                tabs.forEachIndexed { index, tab ->
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
 
-                    val isSelected = remember {
-                        derivedStateOf {
-                            tabIndex == index
-                        }
+                    tabs.forEachIndexed { index, tab ->
+
+                        val count = getCount(index, didiTabViewModel)
+                        TabItem(
+                            isSelected = SmallGroupCore.tabIndex.value == index,
+                            onClick = {
+                                SmallGroupCore.tabIndex.value = index
+                            },
+                            text = "$tab ($count)"
+                        )
                     }
 
-                    val count = getCount(index, didiTabViewModel)
-                    TabItem(
-                        isSelected = isSelected.value,
-                        onClick = {
-                            tabIndex = index
-                        },
-                        text = tab + " ($count)"
+                }
+
+                when (SmallGroupCore.tabIndex.value) {
+                    0 -> DidiSubTab(didiTabViewModel = didiTabViewModel, didiList = didiList.value)
+                    1 -> SmallGroupSubTab(
+                        didiTabViewModel = didiTabViewModel,
+                        smallGroupList = didiTabViewModel.smallGroupList.value,
+                        navHostController = navHostController
                     )
                 }
 
             }
-
-            when (tabIndex) {
-                0 -> DidiSubTab(didiTabViewModel = didiTabViewModel, didiList = didiList.value)
-                1 -> SmallGroupSubTab(
-                    didiTabViewModel = didiTabViewModel,
-                    smallGroupList = didiTabViewModel.smallGroupList.value,
-                    navHostController = navHostController
-                )
-            }
-
         }
-
-    }
+    )
 
 }
 

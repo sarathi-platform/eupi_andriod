@@ -28,16 +28,11 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.ui.events.theme.blueDark
 import com.nudge.core.ui.events.theme.defaultTextStyle
+import com.nudge.core.ui.events.theme.dimen_10_dp
 import com.nudge.core.ui.events.theme.largeTextStyle
 import com.nudge.core.ui.events.theme.textColorDark
 import com.nudge.core.ui.events.theme.white
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.ui.theme.blueDark
-import com.sarathi.missionactivitytask.ui.theme.defaultTextStyle
-import com.sarathi.missionactivitytask.ui.theme.dimen_10_dp
-import com.sarathi.missionactivitytask.ui.theme.largeTextStyle
-import com.sarathi.missionactivitytask.ui.theme.textColorDark
-import com.sarathi.missionactivitytask.ui.theme.white
 
 
 @SuppressLint("UnrememberedMutableState")
@@ -115,7 +110,7 @@ fun ToolBarWithMenuComponent(
                 .padding(top = 75.dp),
             verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
         ) {
-            if (dataAvailableState.value) {
+            if (!dataAvailableState.value) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()

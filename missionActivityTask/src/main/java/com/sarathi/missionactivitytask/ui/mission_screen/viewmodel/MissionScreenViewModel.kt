@@ -85,6 +85,7 @@ class MissionScreenViewModel @Inject constructor(
         TOTAL_API_CALL = 2
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            fetchUserDetails()
             fetchAllDataUseCase.invoke { isSuccess, successMsg ->
                 initMissionScreen()
             }
@@ -104,6 +105,10 @@ class MissionScreenViewModel @Inject constructor(
             callBack()
         }
 
+    }
+
+    private suspend fun fetchUserDetails() {
+        fetchDataUseCase.fetchUserDetailsUseCase.invoke()
     }
 
     private fun fetchMissionData(dataLoadingUseCase: DataLoadingUseCase, callBack: () -> Unit) {
