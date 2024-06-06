@@ -44,7 +44,7 @@ fun ToolBarWithMenuComponent(
     navController: NavController? = rememberNavController(),
     onBackIconClick: () -> Unit,
     onSearchValueChange: (String) -> Unit,
-    isDataAvailable: Boolean = true,
+    isDataAvailable: Boolean = false,
     onBottomUI: @Composable () -> Unit,
     onContentUI: @Composable (PaddingValues, Boolean, (String) -> Unit) -> Unit,
     onSettingClick: () -> Unit
