@@ -500,11 +500,12 @@ class EventWriterHelperImpl @Inject constructor(
         val taskEntity = taskDao.getTask(getBaseLineUserId(), activityId, missionId, taskId)
 
         val eventList = mutableListOf<Events>()
+//TODO - Atul to optimize this to write only event when necessary.
 
-        if (taskEntity.status != SectionStatus.COMPLETED.name && taskEntity.status != SectionStatus.INPROGRESS.name) {
+//        if (taskEntity.status != SectionStatus.INPROGRESS.name && status != SectionStatus.INPROGRESS) {
             val taskStatusUpdateEvent = createTaskStatusUpdateEvent(taskEntity.subjectId, status)
             eventList.add(taskStatusUpdateEvent)
-        }
+//        }
 
         if (activityEntity.status != SectionStatus.COMPLETED.name && activityEntity.status != SectionStatus.INPROGRESS.name) {
             if (activityEntity.status == null) {
