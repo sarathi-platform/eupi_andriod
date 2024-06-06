@@ -107,10 +107,6 @@ android {
 kapt {
     correctErrorTypes = true
 }
-//android.applicationVariants.all {
-//    def aptOutputDir = new File(buildDir, "generated/source/kapt/${it.unitTestVariant.dirName}")
-//    it.unitTestVariant.addJavaSourceFoldersToModel(aptOutputDir)
-//}
 
 dependencies {
 

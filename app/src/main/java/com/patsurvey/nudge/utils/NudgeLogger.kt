@@ -1,7 +1,5 @@
 package com.patsurvey.nudge.utils
 
-import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.Environment
 import android.text.TextUtils
@@ -11,7 +9,6 @@ import android.widget.Toast
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.BuildConfig.DEBUG
 import com.patsurvey.nudge.BuildConfig.VERSION_NAME
-import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.utils.NudgeLogger.e
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -153,7 +150,7 @@ object LogWriter {
                             var packet: EchoPacket?
                             try {
                                 packet = syslogQueue?.take()
-                                //if (packet instanceof QuitPacket) throw new InterruptedException(packet.message)
+
                                 if (packet != null) log(packet)
                             } catch (ex: Exception) {
                                 Log.e(TAG, "log process packet exception", ex)
@@ -370,66 +367,6 @@ object LogWriter {
             return null
         }
         return logFile
-    }
-
-    suspend fun buildSupportLogAndShare() {
-        val context = NudgeCore.getAppContext()
-        try {
-
-            val logFile = getLogFile() ?: return
-
-            val sub = AnalyticsHelper.mPrefRepo?.getPref(PREF_MOBILE_NUMBER, "")
-            val email = AnalyticsHelper.mPrefRepo?.getPref(PREF_KEY_EMAIL, "")
-            val subject = "Sarathi debug log - Email: $email UserId: $sub"
-            val message = "The following individual logs are contained within the attachment:\n\n"
-            withContext(Dispatchers.Main) {
-                share(
-                    context = context,
-                    logFile,
-                    arrayOf(
-                        "anupam.bhardwaj@tothenew.com",
-                        "anas.mansoori@tothenew.com",
-                        "ankit.jain3@tothenew.com",
-                        "nitish.bhardwaj@tothenew.com",
-                        "naren.srinivasan@thenudge.org"
-                    ),
-                    subject,
-                    message
-                )?.let {
-                    NudgeCore.startExternalApp(it)
-                }
-            }
-        } catch (ex: Exception) {
-            e(TAG, "buildSupportLogAndShare", ex)
-            withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Logs unavailable", Toast.LENGTH_SHORT).show()
-            }
-            return
-        }
-    }
-
-    fun share(context: Context, file: File, emails: Array<String?>?, subject: String, message: String): Intent? {
-        try {
-            return Intent.createChooser(
-                Intent(Intent.ACTION_SEND)
-                    .setType("vnd.android.cursor.dir/email")
-                    .putExtra(Intent.EXTRA_EMAIL, emails)
-                    .putExtra(Intent.EXTRA_SUBJECT, subject)
-                    .putExtra(Intent.EXTRA_TEXT, message)
-                    .putExtra(
-                        Intent.EXTRA_STREAM,
-                        uriFromFile(
-                            context,
-                            file
-                        )
-                    )
-                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
-                "Share File"
-            )
-        } catch (ex: Exception) {
-            e(TAG, "share file", ex)
-        }
-        return null
     }
 
     fun getSupportLogFileName(): String {
