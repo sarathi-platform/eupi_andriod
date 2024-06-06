@@ -1,16 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
-import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_EMAIL
-import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_IDENTITY_NUMBER
-import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_NAME
-import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_PROFILE_IMAGE
-import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_ROLE_NAME
-import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_TYPE_NAME
-import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_USER_NAME
-import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_STATE_ID
 import com.sarathi.dataloadingmangement.data.dao.LanguageDao
 import com.sarathi.dataloadingmangement.data.entities.LanguageEntity
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
@@ -31,19 +22,14 @@ class UserDetailRepository @Inject constructor(
     }
 
     override fun saveUserDetails(userDetailsResponse: UserDetailsResponse) {
-        sharedPrefs.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: BLANK_STRING)
-        sharedPrefs.savePref(PREF_KEY_NAME, userDetailsResponse.name ?: BLANK_STRING)
-        sharedPrefs.savePref(PREF_KEY_EMAIL, userDetailsResponse.email ?: BLANK_STRING)
-        sharedPrefs.savePref(
-            PREF_KEY_IDENTITY_NUMBER,
-            userDetailsResponse.identityNumber ?: BLANK_STRING
-        )
-        sharedPrefs.savePref(
-            PREF_KEY_PROFILE_IMAGE,
-            userDetailsResponse.profileImage ?: BLANK_STRING
-        )
-        sharedPrefs.savePref(PREF_KEY_ROLE_NAME, userDetailsResponse.roleName ?: BLANK_STRING)
-        sharedPrefs.savePref(PREF_KEY_TYPE_NAME, userDetailsResponse.typeName ?: BLANK_STRING)
-        sharedPrefs.savePref(PREF_STATE_ID, userDetailsResponse.referenceId.first().stateId ?: -1)
+        userDetailsResponse.username?.let { sharedPrefs.setUserName(it) }
+        userDetailsResponse.email?.let { sharedPrefs.setUserEmail(it) }
+        userDetailsResponse.roleName?.let { sharedPrefs.setUserRole(it) }
+        userDetailsResponse.typeName?.let { sharedPrefs.setUserType(it) }
+        userDetailsResponse.referenceId.let {
+            sharedPrefs.setStateId(
+                userDetailsResponse.referenceId.first().stateId ?: -1
+            )
+        }
     }
 }
