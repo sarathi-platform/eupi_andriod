@@ -1,7 +1,5 @@
 package com.patsurvey.nudge.activities
 
-import android.util.Log
-import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.model.dataModel.ErrorModel
@@ -17,6 +15,10 @@ class VillageScreenViewModel @Inject constructor(
 ): BaseViewModel() {
 
     fun isUserBpc() = prefRepo.isUserBPC()
+
+    fun getStateId():Int{
+        return prefRepo.getStateId()
+    }
 
     override fun onServerError(error: ErrorModel?) {
         TODO("Not yet implemented")

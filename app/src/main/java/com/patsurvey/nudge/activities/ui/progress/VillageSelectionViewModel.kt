@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities.ui.progress
 
-
 import android.app.DownloadManager
 import android.content.Context
 import android.os.Environment
@@ -220,7 +219,7 @@ class VillageSelectionViewModel @Inject constructor(
                 if (prefRepo.getPref(LAST_UPDATE_TIME, 0L) != 0L) {
                     if ((System.currentTimeMillis() - prefRepo.getPref(LAST_UPDATE_TIME, 0L)) > TimeUnit.DAYS.toMillis(30)) {
                         if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(CRP_USER_TYPE, true)) {
-                            fetchVillageList(context)
+                            fetchVillageList()
                         } else {
                             fetchDataForBpc(context)
                         }
@@ -229,7 +228,7 @@ class VillageSelectionViewModel @Inject constructor(
                     }
                 } else {
                     if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(CRP_USER_TYPE, true)) {
-                        fetchVillageList(context)
+                        fetchVillageList()
                     } else {
                         fetchDataForBpc(context)
                     }
@@ -386,10 +385,6 @@ class VillageSelectionViewModel @Inject constructor(
                                                         ?: System.currentTimeMillis()
                                                 )
                                             }
-//                                            if(steps.id == 44){
-//                                                prefRepo.savePref(
-//                                                    PREF_WEALTH_RANKING_COMPLETION_DATE, steps.localModifiedDate?: BLANK_STRING)
-//                                            }
                                         }
                                         NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getStepsList " +
                                                 "stepsListDao.insertAll(it.stepList) before")
@@ -1065,12 +1060,12 @@ class VillageSelectionViewModel @Inject constructor(
         return File("${context.getExternalFilesDir(if (fileType == FileType.VIDEO) Environment.DIRECTORY_MOVIES else if (fileType == FileType.IMAGE) Environment.DIRECTORY_DCIM else Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${videoItemId}.mp4")
     }
 
-    private fun fetchVillageList(context: Context) {
+    private fun fetchVillageList() {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO) {
-                    val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
+                    val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?: DEFAULT_LANGUAGE_ID)
                     val localStepsList = stepsListDao.getAllSteps()
                     val villageIdList: ArrayList<Int> = arrayListOf()
                     if (localStepsList.isNotEmpty()) {

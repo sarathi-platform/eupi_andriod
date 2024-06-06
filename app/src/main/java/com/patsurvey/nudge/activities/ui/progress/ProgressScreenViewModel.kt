@@ -94,19 +94,6 @@ class ProgressScreenViewModel @Inject constructor(
         }
     }
 
-    private fun checkAndUpdateCompletedStepsForVillage() {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val villageId = progressScreenRepository.getSelectedVillage().id
-            val updatedCompletedStepList = mutableListOf<Int>()
-            stepList.value.forEach {
-                if (it.isComplete == StepStatus.COMPLETED.ordinal) {
-                    updatedCompletedStepList.add(it.id)
-                }
-            }
-            progressScreenRepository.updateLastCompleteStep(villageId, updatedCompletedStepList)
-        }
-    }
-
     fun getStepsList(villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = progressScreenRepository.getAllStepsForVillage(villageId)
@@ -232,7 +219,6 @@ class ProgressScreenViewModel @Inject constructor(
                         StepStatus.INPROGRESS.ordinal,
                         villageId
                     )
-//                stepsListDao.updateNeedToPost(dbInProgressStep.id, true)
             } else {
                 progressScreenRepository.markStepAsInProgress(
                     1,

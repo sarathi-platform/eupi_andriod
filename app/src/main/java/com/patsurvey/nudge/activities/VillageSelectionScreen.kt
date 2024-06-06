@@ -50,7 +50,6 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -86,10 +85,8 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidthWithoutIcon
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
-//import com.patsurvey.nudge.utils.NudgeCore.getBengalString
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.showCustomDialog
@@ -195,7 +192,6 @@ fun VillageSelectionScreen(
                     actions = {
                         IconButton(onClick = {
                             viewModel.prefRepo.saveSettingOpenFrom(PageFrom.VILLAGE_PAGE.ordinal)
-//                            viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
                             onNavigateToSetting()
                         }) {
                             Icon(
@@ -329,7 +325,6 @@ fun VillageSelectionScreen(
                     ) {
 
                         LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-//                item { Spacer(modifier = Modifier.height(4.dp)) }
                             item {
                                 SearchWithFilterView(
                                     placeholderString = stringResource(id = R.string.search_village),
@@ -365,7 +360,6 @@ fun VillageSelectionScreen(
                             }
                             item { Spacer(modifier = Modifier.height(50.dp)) }
                         }
-//                    }
                         CustomSnackBarShow(
                             state = snackState,
                             position = CustomSnackBarViewPosition.Bottom
