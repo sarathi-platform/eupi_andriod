@@ -33,10 +33,10 @@ fun AlertDialogComponent(
                 Icon(icon, contentDescription = "Example Icon")
         },
         title = {
-            Text(text = dialogTitle)
+            Text(text = dialogTitle, color = textColorDark)
         },
         text = {
-            Text(text = dialogText)
+            Text(text = dialogText, color = textColorDark)
         },
         onDismissRequest = {
             onDismissRequest()
