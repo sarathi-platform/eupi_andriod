@@ -28,19 +28,15 @@ class SurveyDownloadRepository @Inject constructor(
     val optionItemDao: OptionItemDao,
     val questionEntityDao: QuestionEntityDao
 ) : ISurveyDownloadRepository {
-    override suspend fun fetchSurveyFromNetwork(surveyRequestBodyModel: SurveyRequest): ApiResponseModel<SurveyResponseModel> {
-        return dataLoadingApiService.getSurveyFromNetwork(surveyRequestBodyModel)
+    override suspend fun fetchSurveyFromNetwork(surveyRequest: SurveyRequest): ApiResponseModel<SurveyResponseModel> {
+        return dataLoadingApiService.getSurveyFromNetwork(surveyRequest)
     }
 
     override fun saveSurveyToDb(surveyApiResponse: SurveyResponseModel) {
         surveyDao.deleteSurveyFroLanguage(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
-            surveyApiResponse.surveyId,
-
-            )
-
-
-
+            surveyApiResponse.surveyId
+        )
         surveyApiResponse.surveyLanguageAttributes.forEach { surveyLanguageAttributes ->
             surveyDao.insertSurvey(
                 SurveyEntity.getSurveyEntity(
@@ -77,7 +73,6 @@ class SurveyDownloadRepository @Inject constructor(
                 section.questionList.forEach { question ->
                     conditionDtoWithParentIdList.add(ConditionDtoWithParentId(question!!, 0))
                 }
-
                 saveQuestionOptionsAtAllLevel(
                     conditionDtoWithParentIdList,
                     section,
@@ -85,8 +80,6 @@ class SurveyDownloadRepository @Inject constructor(
                     section.languageCode
                 )
             }
-
-
         }
 
     }
