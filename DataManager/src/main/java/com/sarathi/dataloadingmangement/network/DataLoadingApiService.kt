@@ -9,9 +9,13 @@ import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.survey.request.SurveyRequest
 import com.sarathi.dataloadingmangement.model.survey.response.SurveyResponseModel
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
+import com.sarathi.dataloadingmangement.network.response.ConfigResponseModel
+import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface DataLoadingApiService {
     @POST(SUB_PATH_GET_MISSION)
@@ -26,5 +30,13 @@ interface DataLoadingApiService {
     //  @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getSurveyFromNetwork(@Body request: SurveyRequest): ApiResponseModel<SurveyResponseModel>
 
+    @GET(SUBPATH_CONFIG_GET_LANGUAGE)
+    suspend fun fetchLanguageConfigDetailsFromNetwork(): ApiResponseModel<ConfigResponseModel?>
+
+    @GET(SUBPATH_USER_VIEW)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun userAndVillageListAPI(
+        @Query("languageId") languageId: String
+    ): ApiResponseModel<UserDetailsResponse>
 
 }
