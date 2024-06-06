@@ -298,9 +298,6 @@ const val DIDI_LIST = "DIDI_LIST"
 
 const val QUESTION_DATA_TAB = "Questions"
 const val SECTION_INFORMATION_TAB = "Sections"
-
-const val BASE_LINE = "BASELINE"
-const val HAMLET = "HAMLET"
 const val ARG_VIDEO_PATH = "video_path"
 const val ARG_ACTIVITY_ID = "activity_id"
 const val ARG_ACTIVITY_DATE = "activity_date"

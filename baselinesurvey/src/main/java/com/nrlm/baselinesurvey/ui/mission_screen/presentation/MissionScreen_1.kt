@@ -60,7 +60,7 @@ import kotlin.system.exitProcess
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Preview(showBackground = true)
 @Composable
-fun MissionScreen_1(
+fun MissionScreen(
     navController: NavController = rememberNavController(),
     viewModel: MissionViewModel = hiltViewModel()
 ) {
@@ -196,7 +196,7 @@ fun MissionScreen_1(
                                 viewModel.getPendingActivityCountForMissionLive(mission.missionId)
                                     .observeAsState().value ?: 0
 
-                            MissonRowScreen_1(
+                            MissionRowScreen(
                                 mission = mission,
                                 missionDueDate = mission.startDate,
                                 viewModel = viewModel,
@@ -219,6 +219,6 @@ fun MissionScreen_1(
 
 @Preview
 @Composable
-fun MissionScreen_1Perview() {
-    MissionScreen_1()
+fun MissionScreenPreview() {
+    MissionScreen()
 }

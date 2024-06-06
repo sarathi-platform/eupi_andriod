@@ -5,12 +5,17 @@ import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nrlm.baselinesurvey.PREF_KEY_NAME
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
-import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.patsurvey.nudge.database.NudgeDatabase
+import com.patsurvey.nudge.utils.CRP_USER_TYPE
+import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import javax.inject.Inject
 
 class ExportImportRepositoryImpl @Inject constructor(
     val prefBSRepo: PrefBSRepo,
-    val nudgeBaselineDatabase:NudgeBaselineDatabase
+    val nudgeBaselineDatabase:NudgeBaselineDatabase,
+    val nudgeDatabase: NudgeDatabase
 ):ExportImportRepository {
     override fun clearLocalData() {
         try {
@@ -30,8 +35,7 @@ class ExportImportRepositoryImpl @Inject constructor(
             nudgeBaselineDatabase.surveyEntityDao().deleteAllSurvey(prefBSRepo.getUniqueUserIdentifier())
             nudgeBaselineDatabase.didiInfoEntityDao().deleteAllDidiInfo(prefBSRepo.getUniqueUserIdentifier())
         }catch (ex:Exception){
-            ex.printStackTrace()
-            BaselineLogger.d("ExportImportRepositoryImpl","clearLocalData: ${ex.message}")
+            NudgeLogger.d("ExportImportRepositoryImpl","clearLocalData: ${ex.message}")
         }
 
     }
@@ -54,6 +58,28 @@ class ExportImportRepositoryImpl @Inject constructor(
 
     override fun getUserName(): String {
         return prefBSRepo.getPref(PREF_KEY_NAME, BLANK_STRING) ?: BLANK_STRING
+    }
+
+    override fun getLoggedInUserType(): String {
+        return prefBSRepo.getPref(PREF_KEY_TYPE_NAME, CRP_USER_TYPE) ?: CRP_USER_TYPE
+    }
+
+    override fun clearSelectionLocalDB() {
+        try {
+            nudgeDatabase.tolaDao().deleteAllTola()
+            nudgeDatabase.didiDao().deleteAllDidi()
+            nudgeDatabase.lastSelectedTola().deleteAllLastSelectedTola()
+            nudgeDatabase.numericAnswerDao().deleteAllNumericAnswers()
+            nudgeDatabase.answerDao().deleteAllAnswers()
+            nudgeDatabase.questionListDao().deleteQuestionTable()
+            nudgeDatabase.stepsListDao().deleteAllStepsFromDB()
+            nudgeDatabase.villageListDao().deleteAllVilleges()
+            nudgeDatabase.bpcSummaryDao().deleteAllSummary()
+            nudgeDatabase.poorDidiListDao().deleteAllDidis()
+            prefBSRepo.savePref(LAST_UPDATE_TIME, 0L)
+        }catch (ex:Exception){
+            NudgeLogger.d("ExportImportRepositoryImpl","clearSelectionLocalDB: ${ex.message}")
+        }
     }
 
 

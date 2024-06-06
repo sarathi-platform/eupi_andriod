@@ -20,6 +20,7 @@ import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.settings.domain.DigitalFormEnum
+import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.showCustomDialog
 import com.patsurvey.nudge.utils.showToast
 import java.util.Locale
@@ -45,7 +46,7 @@ fun SettingBSScreen(
     if (viewModel.showLogoutDialog.value) {
         showCustomDialog(
             title = context.getString(com.patsurvey.nudge.R.string.logout),
-            message = context.getString(com.patsurvey.nudge.R.string.logout_confirmation),
+            message = context.getString(R.string.logout_confirmation),
             positiveButtonTitle = stringResource(id = com.patsurvey.nudge.R.string.logout),
             negativeButtonTitle = stringResource(id = com.patsurvey.nudge.R.string.cancel),
             onNegativeButtonClick = {
@@ -55,8 +56,17 @@ fun SettingBSScreen(
                 viewModel.showLogoutDialog.value = false
                 viewModel.showLoader.value=true
                 viewModel.performLogout(context) {
-                    if (it)
-                        navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
+                    if (it){
+                        if (viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal) {
+                            navController.navigate(AuthScreen.LOGIN.route)
+                        } else {
+                            if (navController.graph.route == NudgeNavigationGraph.ROOT) {
+                                navController.navigate(AuthScreen.LOGIN.route)
+                            } else {
+                                navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
+                            }
+                        }
+                    }
                     else showCustomToast(context, context.getString(R.string.something_went_wrong))
                 }
             })
@@ -64,27 +74,6 @@ fun SettingBSScreen(
 
     }
 
-    if(viewModel.showLoadConfimationDialog.value){
-        showCustomDialog(
-            title = stringResource(id = R.string.are_you_sure),
-            message =stringResource(id = R.string.are_you_sure_you_want_to_load_data_from_server),
-            positiveButtonTitle = stringResource(id = R.string.yes_text),
-            negativeButtonTitle = stringResource(id = R.string.option_no),
-            onNegativeButtonClick = {viewModel.showLoadConfimationDialog.value =false},
-            onPositiveButtonClick = {
-                viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-                viewModel.exportDbAndImages{
-                    viewModel.clearSelectionLocalDatabase{
-                        viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
-                        when(navController.graph.route){
-                            NudgeNavigationGraph.ROOT-> navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route)
-                            NudgeNavigationGraph.HOME-> navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route)
-                          else -> navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
-                        }
-                    }
-                }
-            })
-    }
   if(!loaderState.value.isLoaderVisible) {
       CommonSettingScreen(
           title = stringResource(id = R.string.settings_screen_title),
@@ -95,7 +84,7 @@ fun SettingBSScreen(
               navController.popBackStack()
           },
           expanded = expanded.value,
-          onItemClick = { index, option ->
+          onItemClick = { _, option ->
               when (option.tag) {
                   SettingTagEnum.LANGUAGE.name -> {
                       viewModel.saveLanguagePageFrom()
@@ -126,21 +115,6 @@ fun SettingBSScreen(
 
                   SettingTagEnum.SHARE_LOGS.name -> {
                       viewModel.exportOnlyLogFile(context)
-                  }
-
-                  SettingTagEnum.EXPORT_FILE.name -> {
-                      viewModel.compressEventData(context.getString(R.string.share_export_file))
-                  }
-
-                  SettingTagEnum.LOAD_SERVER_DATA.name -> {
-                      if ((context as MainActivity).isOnline.value) {
-                          viewModel.showLoadConfimationDialog.value = true
-                      }else{
-                          showToast(
-                              context,
-                              context.getString(R.string.logout_no_internet_error_message)
-                          )
-                      }
                   }
               }
           },
