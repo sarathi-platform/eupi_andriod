@@ -22,10 +22,8 @@ import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
-import com.nudge.core.DEFAULT_ID
 import com.sarathi.missionactivitytask.navigation.navigateToGrantSurveySummaryScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
-import com.sarathi.missionactivitytask.navigation.navigateToSurveyScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.GrantTaskCard
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
@@ -110,14 +108,16 @@ fun GrantTaskScreen(
                         ) { index, task ->
 
                             GrantTaskCard(
-                                onPrimaryButtonClick = {
+                                onPrimaryButtonClick = { subjectName ->
                                     viewModel.activityConfigUiModel?.let {
-                                        navigateToSurveyScreen(
+                                        navigateToGrantSurveySummaryScreen(
                                             navController,
                                             taskId = task.key,
                                             surveyId = it.surveyId,
                                             sectionId = it.sectionId,
-                                            subjectType = it.subject
+                                            subjectType = it.subject,
+                                            subjectName = subjectName,
+                                            activityConfigId = it.activityConfigId,
                                         )
                                     }
                                 },

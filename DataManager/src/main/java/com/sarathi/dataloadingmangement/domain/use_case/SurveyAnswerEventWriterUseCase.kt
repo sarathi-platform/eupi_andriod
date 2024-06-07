@@ -17,7 +17,7 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
         questionUiModel: List<QuestionUiModel>,
         subjectId: Int,
         subjectType: String,
-        referenceId: Int,
+        referenceId: String,
         taskLocalId: String,
         uriList: List<Uri>?
     ) {

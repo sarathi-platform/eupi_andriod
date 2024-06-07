@@ -44,14 +44,14 @@ import kotlinx.coroutines.launch
 fun SurveyScreen(
     navController: NavController = rememberNavController(),
     viewModel: SurveyScreenViewModel,
-    surveyId: Int, sectionId: Int, taskId: Int, subjectType: String
+    surveyId: Int, sectionId: Int, taskId: Int, subjectType: String, referenceId: String
 ) {
     val outerState = rememberLazyListState()
     val innerState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = true) {
-        viewModel.setPreviousScreenData(surveyId, sectionId, taskId, subjectType)
+        viewModel.setPreviousScreenData(surveyId, sectionId, taskId, subjectType, referenceId)
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(InitDataEvent.InitDataState)
     }

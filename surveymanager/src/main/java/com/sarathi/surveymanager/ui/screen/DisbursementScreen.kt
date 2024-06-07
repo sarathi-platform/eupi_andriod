@@ -20,7 +20,7 @@ fun DisbursementSummaryScreen(
     subjectType: String,
     subjectName: String,
     activityConfigId: Int,
-    onNavigateSurveyScreen: () -> Unit,
+    onNavigateSurveyScreen: (referenceId: String) -> Unit,
 ) {
 
     LaunchedEffect(key1 = true) {
@@ -41,7 +41,7 @@ fun DisbursementSummaryScreen(
         onContentUI = { paddingValues ->
             CollapsibleCard(
                 summaryCount = 10, onClick = {
-                    onNavigateSurveyScreen()
+                    onNavigateSurveyScreen(viewModel.getReferenceId())
                 },
                 onContentUI = {
                     DisbursementCard()

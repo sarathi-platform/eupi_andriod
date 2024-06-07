@@ -21,6 +21,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CO
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_TYPE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_REFERENCE_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SECTION_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SUBJECT_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SUBJECT_TYPE
@@ -156,6 +157,9 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_SUBJECT_TYPE) {
                     type = NavType.StringType
+                },
+                navArgument(name = ARG_REFERENCE_ID) {
+                    type = NavType.StringType
                 })
         ) {
             SurveyScreen(
@@ -172,6 +176,9 @@ fun NavGraphBuilder.MatNavigation(
                 subjectType = it.arguments?.getString(
                     ARG_SUBJECT_TYPE
                 ) ?: BLANK_STRING,
+                referenceId = it.arguments?.getString(
+                    ARG_REFERENCE_ID
+                ) ?: BLANK_STRING
 
                 )
         }
@@ -218,7 +225,7 @@ fun NavGraphBuilder.MatNavigation(
                     ARG_ACTIVITY_CONFIG_ID
                 ) ?: 0,
                 onSettingClick = onSettingIconClick,
-                onNavigateSurveyScreen = {
+                onNavigateSurveyScreen = { referenceId ->
                     navigateToSurveyScreen(
                         navController, surveyId = it.arguments?.getInt(
                             ARG_SURVEY_ID
@@ -228,7 +235,8 @@ fun NavGraphBuilder.MatNavigation(
                             ARG_TASK_ID
                         ) ?: 0, subjectType = it.arguments?.getString(
                             ARG_SUBJECT_TYPE
-                        ) ?: BLANK_STRING
+                        ) ?: BLANK_STRING,
+                        referenceId = referenceId
                     )
                 }
             )
@@ -271,7 +279,7 @@ sealed class MATHomeScreens(val route: String) {
         MATHomeScreens(route = "$MEDIA_PLAYER_SCREEN_ROUTE_NAME/{$ARG_CONTENT_KEY}/{$ARG_CONTENT_TYPE}")
 
     object SurveyScreen :
-        MATHomeScreens(route = "$SURVEY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}")
+        MATHomeScreens(route = "$SURVEY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_REFERENCE_ID}")
 
     object DisbursementSurveyScreen :
         MATHomeScreens(route = "$GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_SUBJECT_NAME}/{$ARG_ACTIVITY_CONFIG_ID}")
@@ -292,9 +300,10 @@ fun navigateToSurveyScreen(
     surveyId: Int,
     sectionId: Int,
     taskId: Int,
-    subjectType: String
+    subjectType: String,
+    referenceId: String
 ) {
-    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType")
+    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$referenceId")
 }
 
 fun navigateToGrantSurveySummaryScreen(
@@ -304,7 +313,7 @@ fun navigateToGrantSurveySummaryScreen(
     taskId: Int,
     subjectType: String,
     subjectName: String,
-    activityConfigId: Int
+    activityConfigId: Int,
 ) {
     navController.navigate("$GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$subjectName/$activityConfigId")
 }

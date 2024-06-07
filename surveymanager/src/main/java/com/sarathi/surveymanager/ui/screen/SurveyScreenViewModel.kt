@@ -37,7 +37,7 @@ class SurveyScreenViewModel @Inject constructor(
     private var sectionId: Int = 0
     private var taskId: Int = 0
     private var subjectType: String = BLANK_STRING
-    private var referenceId: Int = 0
+    private var referenceId: String = BLANK_STRING
     private var taskEntity: ActivityTaskEntity? = null
 
     val isButtonEnable = mutableStateOf<Boolean>(false)
@@ -87,7 +87,8 @@ class SurveyScreenViewModel @Inject constructor(
                 saveSurveyAnswerUseCase.saveSurveyAnswer(
                     question,
                     taskEntity?.subjectId ?: DEFAULT_ID,
-                    taskId = taskId
+                    taskId = taskId,
+                    referenceId = referenceId
                 )
                 if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name) {
                     taskStatusUseCase.markTaskInProgress(
@@ -149,12 +150,20 @@ class SurveyScreenViewModel @Inject constructor(
         }
     }
 
-    fun setPreviousScreenData(surveyId: Int, sectionId: Int, taskId: Int, subjectType: String) {
+    fun setPreviousScreenData(
+        surveyId: Int,
+        sectionId: Int,
+        taskId: Int,
+        subjectType: String,
+        referenceId: String
+    ) {
         this.surveyId = surveyId
         this.sectionId = sectionId
         this.taskId = taskId
         this.subjectType = subjectType
+        this.referenceId = referenceId
     }
+
     private fun isTaskStatusCompleted() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             isTaskCompleted.value = !taskStatusUseCase.getTaskStatus(

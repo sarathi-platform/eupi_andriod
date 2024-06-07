@@ -24,6 +24,14 @@ interface SurveyAnswersDao {
     @Query("select count(*) from ques_answer_table where userId =:userId and subjectId=:subjectId and sectionId=:sectionId and questionId =:questionId")
     fun getSurveyAnswers(userId: String, subjectId: Int, sectionId: Int, questionId: Int): Int
 
+    @Query("select * from ques_answer_table where userId =:userId and taskId=:taskId and sectionId=:sectionId and surveyId=:surveyId")
+    fun getSurveyAnswersForSummary(
+        userId: String,
+        taskId: Int,
+        sectionId: Int,
+        surveyId: Int
+    ): List<SurveyAnswerEntity>
+
     @Query("Update $ANSWER_TABLE set optionItems = :optionItems,answerValue =:answerValue, questionType=:questionType, questionSummary=:questionSummary where userId=:userId and subjectId = :subjectId AND questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId")
     fun updateAnswer(
         userId: String,
@@ -58,8 +66,6 @@ interface SurveyAnswersDao {
                 subjectId = surveyAnswerEntity.subjectId,
                 optionItems = surveyAnswerEntity.optionItems,
                 answerValue = surveyAnswerEntity.answerValue
-
-
             )
 
 

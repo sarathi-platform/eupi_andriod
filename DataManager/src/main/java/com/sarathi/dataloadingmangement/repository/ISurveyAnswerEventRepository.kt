@@ -8,7 +8,7 @@ interface ISurveyAnswerEventRepository {
         questionUiModel: List<QuestionUiModel>,
         subjectId: Int,
         subjectType: String,
-        refrenceId: Int,
+        refrenceId: String,
         taskLocalId: String
     ): SaveAnswerEventDto
 

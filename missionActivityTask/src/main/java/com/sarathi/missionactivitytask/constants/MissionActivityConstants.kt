@@ -23,7 +23,9 @@ object MissionActivityConstants {
     const val ARG_SUBJECT_NAME = "subject_name"
 
     const val ARG_SURVEY_ID = "survey_id"
+    const val ARG_REFERENCE_ID = "referenceId"
     const val ARG_SECTION_ID = "section_id"
+    const val ARG_SUBJECT_ID = "subject_id"
     const val ARG_ACTIVITY_CONFIG_ID = "activity_config_id"
     const val ARG_ACTIVITY_MASSAGE = "activity_massage"
     const val FINAL_STEP_COMPLETION_DELAY = 3000L

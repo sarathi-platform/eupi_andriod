@@ -13,7 +13,7 @@ data class SaveAnswerEventDto(
     val languageId: String,
     @SerializedName("referenceId")
     @Expose
-    val referenceId: Int,
+    val referenceId: String,
     @SerializedName("sectionId")
     @Expose
     val sectionId: Int,

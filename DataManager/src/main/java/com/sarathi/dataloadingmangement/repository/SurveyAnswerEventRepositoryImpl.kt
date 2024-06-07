@@ -18,7 +18,7 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
         questionUiModels: List<QuestionUiModel>,
         subjectId: Int,
         subjectType: String,
-        refrenceId: Int,
+        refrenceId: String,
         taskLocalId: String
     ): SaveAnswerEventDto {
 

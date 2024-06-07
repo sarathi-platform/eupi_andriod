@@ -12,14 +12,19 @@ class SurveySaveRepositoryImpl @Inject constructor(
     val coreSharedPrefs: CoreSharedPrefs
 ) :
     ISurveySaveRepository {
-    override suspend fun saveSurveyAnswer(question: QuestionUiModel, subjectId: Int, taskId: Int) {
+    override suspend fun saveSurveyAnswer(
+        question: QuestionUiModel,
+        subjectId: Int,
+        taskId: Int,
+        referenceId: String
+    ) {
 
         surveyAnswersDao.insertOrModifySurveyAnswer(
             SurveyAnswerEntity.getSurveyAnswerEntity(
                 question = question,
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
                 subjectId = subjectId,
-                referenceId = "",
+                referenceId = referenceId,
                 taskId = taskId
             )
         )
@@ -43,5 +48,17 @@ class SurveySaveRepositoryImpl @Inject constructor(
         return coreSharedPrefs.getUniqueUserIdentifier()
     }
 
+    override suspend fun getAllSaveAnswer(
+        surveyId: Int,
+        taskId: Int,
+        sectionId: Int
+    ): List<SurveyAnswerEntity> {
+        return surveyAnswersDao.getSurveyAnswersForSummary(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            sectionId = sectionId,
+            surveyId = surveyId,
+            taskId = taskId
+        )
+    }
 
 }
