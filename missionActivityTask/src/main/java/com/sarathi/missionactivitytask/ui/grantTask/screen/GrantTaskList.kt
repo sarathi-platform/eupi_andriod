@@ -17,12 +17,10 @@ import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.GrantTaskCard
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
-import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.BasicContent
 
 @Composable
 fun GrantTaskList(
     taskList: HashMap<Int, HashMap<String, String>>,
-    contents: List<BasicContent> = listOf(),
     isSearch: Boolean = true,
     searchPlaceholder: String = "Search",
     onSearchValueChange: (String) -> Unit,
@@ -74,6 +72,10 @@ fun GrantTaskList(
                         ?: BLANK_STRING,
                     subtitle3 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_3.name]
                         ?: BLANK_STRING,
+                    subtitle4 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]
+                        ?: BLANK_STRING,
+                    subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name]
+                        ?: BLANK_STRING
                 )
 
 
