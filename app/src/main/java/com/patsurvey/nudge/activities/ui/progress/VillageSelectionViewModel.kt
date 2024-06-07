@@ -1553,6 +1553,7 @@ class VillageSelectionViewModel @Inject constructor(
     private fun fetchUserDetails(apiSuccess: (success: Boolean) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
+
                 val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                 val localLanguageList = languageListDao.getAllLanguages()
                val villageReq= createMultiLanguageVillageRequest(localLanguageList)
@@ -1563,6 +1564,7 @@ class VillageSelectionViewModel @Inject constructor(
                    _filterVillageList.value = villageList.value
                     setVoEndorsementCompleteForVillages()
                     apiSuccess(true)
+
                 } else {
                     val response = apiService.userAndVillageListAPI(villageReq)
                     withContext(Dispatchers.IO) {
@@ -1590,6 +1592,7 @@ class VillageSelectionViewModel @Inject constructor(
                                     _villagList.emit(villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID))
                                 }
                                 _filterVillageList.value=villageList.value
+
                                 if (it.typeName.equals(BPC_USER_TYPE, true)) {
                                     prefRepo.setIsUserBPC(true)
                                 } else {

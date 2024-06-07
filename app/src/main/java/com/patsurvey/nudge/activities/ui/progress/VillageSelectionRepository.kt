@@ -94,6 +94,7 @@ import com.patsurvey.nudge.utils.PREF_KEY_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_PROFILE_IMAGE
 import com.patsurvey.nudge.utils.PREF_KEY_ROLE_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_FORM_C_AND_D_
@@ -3951,11 +3952,13 @@ class VillageSelectionRepository @Inject constructor(
                 if (!localVillageList.isNullOrEmpty()) {
                     val stateId = localVillageList[0].stateId
                     userAndVillageDetailsModel = UserAndVillageDetailsModel(true, localVillageList, stateId = stateId)
+
 //                    _villagList.value = localVillageList
 //                    _filterVillageList.value = villageList.value
                     withContext(Dispatchers.Main) {
                         apiSuccess(userAndVillageDetailsModel!!)
                     }
+
                 }
                 } else {
                     NudgeLogger.d("VillageSelectionRepository", "fetchUserAndVillageDetails -> villageReq: $villageReq")
@@ -3972,6 +3975,8 @@ class VillageSelectionRepository @Inject constructor(
                                 val stateId = if (it.villageList?.isNotEmpty() == true) it.villageList?.get(0)?.stateId?:1 else -1
                                 val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                                 val defaultLanguageVillageList = villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID)
+                                prefRepo.savePref(PREF_KEY_TYPE_STATE_ID,  it.villageList?.get(0)?.stateId?:4)
+
                                 /*if (localVillageList.isNotEmpty()) {
                                     _villagList.emit(localVillageList)
                                 } else {
