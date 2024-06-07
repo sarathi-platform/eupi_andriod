@@ -83,40 +83,43 @@ class SurveyScreenViewModel @Inject constructor(
         }
     }
 
-    fun saveAnswerIntoDB(
-        question: QuestionUiModel
-    ) {
+    fun saveAnswerIntoDB() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            saveSurveyAnswerUseCase.saveSurveyAnswer(question, taskEntity?.subjectId ?: DEFAULT_ID)
-            if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name) {
-                taskStatusUseCase.markTaskInProgress(
-                    subjectId = taskEntity?.subjectId ?: DEFAULT_ID, taskId = taskId
+            questionUiModel.value.forEach { question ->
+                saveSurveyAnswerUseCase.saveSurveyAnswer(
+                    question,
+                    taskEntity?.subjectId ?: DEFAULT_ID
                 )
-                taskEntity = getTaskUseCase.getTask(taskId)
-                taskEntity?.let {
-                    matStatusEventWriterUseCase.updateTaskStatus(
-                        taskEntity = it,
-                        referenceId.toString(),
-                        subjectType
+                if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name) {
+                    taskStatusUseCase.markTaskInProgress(
+                        subjectId = taskEntity?.subjectId ?: DEFAULT_ID, taskId = taskId
                     )
-                }
+                    taskEntity = getTaskUseCase.getTask(taskId)
+                    taskEntity?.let {
+                        matStatusEventWriterUseCase.updateTaskStatus(
+                            taskEntity = it,
+                            referenceId.toString(),
+                            subjectType
+                        )
+                    }
 
+                }
+                surveyAnswerEventWriterUseCase.invoke(
+                    questionUiModel = questionUiModel.value,
+                    subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+                    subjectType = subjectType,
+                    taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
+                    referenceId = referenceId,
+                    uriList = listOf()
+                )
             }
-            surveyAnswerEventWriterUseCase.invoke(
-                questionUiModel = questionUiModel.value,
-                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
-                subjectType = subjectType,
-                taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
-                referenceId = referenceId,
-                uriList = listOf()
-            )
-            checkButtonValidation()
+
         }
 
     }
 
 
-    private fun checkButtonValidation() {
+    fun checkButtonValidation() {
         questionUiModel.value.filter { it.isMandatory }.forEach { questionUiModel ->
 
             val result = (questionUiModel.options?.filter { it.isSelected == true }?.size ?: 0) > 0
@@ -132,17 +135,18 @@ class SurveyScreenViewModel @Inject constructor(
 
     fun saveButtonClicked() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            taskStatusUseCase.markTaskCompleted(
-                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
-                taskId = taskEntity?.taskId ?: DEFAULT_ID
-            )
-            taskEntity?.let {
-                matStatusEventWriterUseCase.updateTaskStatus(
-                    taskEntity = it,
-                    referenceId.toString(),
-                    subjectType
-                )
-            }
+            saveAnswerIntoDB()
+//            taskStatusUseCase.markTaskCompleted(
+//                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+//                taskId = taskEntity?.taskId ?: DEFAULT_ID
+//            )
+//            taskEntity?.let {
+//                matStatusEventWriterUseCase.updateTaskStatus(
+//                    taskEntity = it,
+//                    referenceId.toString(),
+//                    subjectType
+//                )
+//            }
         }
     }
 
@@ -152,6 +156,7 @@ class SurveyScreenViewModel @Inject constructor(
         this.taskId = taskId
         this.subjectType = subjectType
     }
+
     private fun isTaskStatusCompleted() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 

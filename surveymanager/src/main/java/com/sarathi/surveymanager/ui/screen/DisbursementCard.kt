@@ -25,7 +25,10 @@ import com.nudge.core.ui.events.theme.black100Percent
 import com.nudge.core.ui.events.theme.borderGreyLight
 import com.nudge.core.ui.events.theme.defaultTextStyle
 import com.nudge.core.ui.events.theme.dimen_10_dp
+import com.nudge.core.ui.events.theme.dimen_1_dp
+import com.nudge.core.ui.events.theme.dimen_20_dp
 import com.nudge.core.ui.events.theme.dimen_2_dp
+import com.nudge.core.ui.events.theme.dimen_40_dp
 import com.nudge.core.ui.events.theme.greyColor
 import com.nudge.core.ui.events.theme.quesOptionTextStyle
 import com.nudge.core.ui.events.theme.white
@@ -66,9 +69,9 @@ fun DisbursementCard(
             Row(
                 modifier = Modifier
                     .weight(1.0f)
-                    .height(35.dp)
+                    .height(dimen_40_dp)
                     .background(
-                        color = white, shape = RoundedCornerShape(1.dp)
+                        color = white, shape = RoundedCornerShape(dimen_1_dp)
                     )
                     .border(
                         width = 0.5.dp,
@@ -80,7 +83,7 @@ fun DisbursementCard(
             ) {
                 Icon(
                     modifier = Modifier
-                        .size(20.dp)
+                        .size(dimen_20_dp)
                         .padding(dimen_2_dp),
                     imageVector = Icons.Default.Edit,
                     contentDescription = "Forward",
@@ -94,21 +97,21 @@ fun DisbursementCard(
             Row(
                 modifier = Modifier
                     .weight(1.0f)
-                    .height(35.dp)
+                    .height(dimen_40_dp)
                     .background(
-                        color = white, shape = RoundedCornerShape(1.dp)
+                        color = white, shape = RoundedCornerShape(dimen_1_dp)
                     )
                     .border(
                         width = 0.5.dp,
                         color = borderGreyLight,
-                        shape = RoundedCornerShape(1.dp)
+                        shape = RoundedCornerShape(dimen_1_dp)
                     ),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     modifier = Modifier
-                        .size(20.dp)
+                        .size(dimen_20_dp)
                         .padding(dimen_2_dp),
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Forward",

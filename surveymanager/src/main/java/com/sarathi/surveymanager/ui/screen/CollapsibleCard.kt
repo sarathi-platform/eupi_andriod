@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -34,6 +33,10 @@ import androidx.compose.ui.unit.dp
 import com.nudge.core.ui.events.theme.blue
 import com.nudge.core.ui.events.theme.defaultTextStyle
 import com.nudge.core.ui.events.theme.dimen_10_dp
+import com.nudge.core.ui.events.theme.dimen_16_dp
+import com.nudge.core.ui.events.theme.dimen_1_dp
+import com.nudge.core.ui.events.theme.dimen_30_dp
+import com.nudge.core.ui.events.theme.dimen_6_dp
 import com.nudge.core.ui.events.theme.greyBorderColor
 import com.nudge.core.ui.events.theme.white
 
@@ -46,13 +49,13 @@ fun CollapsibleCard(
     var expanded by remember { mutableStateOf(false) }
     androidx.compose.material3.Card(
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 30.dp
+            defaultElevation = dimen_30_dp
         ), modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .clip(RoundedCornerShape(6.dp))
+            .clip(RoundedCornerShape(dimen_6_dp))
             .border(
-                width = 1.dp, color = greyBorderColor, shape = RoundedCornerShape(6.dp)
+                width = dimen_1_dp, color = greyBorderColor, shape = RoundedCornerShape(dimen_6_dp)
             )
             .background(Color.Transparent)
     ) {
@@ -84,13 +87,13 @@ fun CollapsibleCard(
                     thickness = 0.5.dp,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = dimen_10_dp)
+                        .padding(top = dimen_10_dp)
                 )
                 Row {
                     Row(
                         modifier = Modifier
                             .weight(1f)
-                            .padding(horizontal = dimen_10_dp)
+                            .padding(dimen_10_dp)
                     ) {
                         Text(
                             text = "Summary ",
@@ -107,7 +110,7 @@ fun CollapsibleCard(
                         contentDescription = null,
                         tint = Color.Black,
                         modifier = Modifier
-                            .size(24.dp)
+                            .padding(dimen_10_dp)
                             .rotate(if (expanded) 180f else 0f)
                     )
                 }
@@ -117,7 +120,7 @@ fun CollapsibleCard(
                 visible = expanded, enter = expandVertically(), exit = shrinkVertically()
             ) {
                 Column(
-                    modifier = Modifier.padding(top = 16.dp)
+                    modifier = Modifier.padding(top = dimen_16_dp)
                 ) {
                     onContentUI()
                 }

@@ -158,22 +158,28 @@ fun SurveyScreen(
                                     ),
                                     isMandatory = question.isMandatory,
                                     title = question.questionDisplay,
-                                    isEditable = viewModel.isTaskCompleted.value,
+                                    isEditable = true,
                                     maxCustomHeight = maxHeight,
 
                                     ) { selectedValue ->
                                     saveMultiImageTypeAnswer(selectedValue, question.options)
-                                    viewModel.saveAnswerIntoDB(question)
+                                    viewModel.checkButtonValidation()
                                 }
                             }
 
                             QuestionType.SingleSelectDropDown.name -> {
-                                TypeDropDownComponent(sources = listOf()) {
+                                TypeDropDownComponent(
+                                    title = question.questionDisplay,
+                                    isMandatory = question.isMandatory,
+                                    sources = listOf()
+                                ) {
                                 }
                             }
 
                             QuestionType.MultiSelectDropDown.name -> {
                                 TypeMultiSelectedDropDownComponent(
+                                    title = question.questionDisplay,
+                                    isMandatory = question.isMandatory,
                                     sources = listOf(),
                                     selectOptionText = BLANK_STRING
                                 ) {
@@ -202,19 +208,15 @@ private fun saveInputTypeAnswer(
 
     }
     question.options?.firstOrNull()?.selectedValue = selectedValue
-    viewModel.saveAnswerIntoDB(question)
+    viewModel.checkButtonValidation()
 }
 
 fun saveMultiImageTypeAnswer(filePath: String, options: List<OptionItemEntity>?) {
     val list: ArrayList<String> = ArrayList<String>()
     list.add(filePath)
     list.addAll(commaSeparatedStringToList(options?.firstOrNull()?.selectedValue ?: BLANK_STRING))
-
-
-
     options?.firstOrNull()?.selectedValue = listToCommaSeparatedString(list)
     options?.firstOrNull()?.isSelected = true
-
 }
 
 

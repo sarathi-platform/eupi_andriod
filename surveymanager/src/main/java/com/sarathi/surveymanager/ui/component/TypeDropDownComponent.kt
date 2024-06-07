@@ -13,13 +13,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.toSize
 import com.nudge.core.showCustomToast
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.surveymanager.R
 
 @Composable
 fun TypeDropDownComponent(
+    title: String = BLANK_STRING,
     hintText: String = stringResource(R.string.select),
     sources: List<ValuesDto>?,
+    isMandatory: Boolean = false,
     isEditAllowed: Boolean = true,
     selectOptionText: Int = 0,
     onAnswerSelection: (selectValue: Int) -> Unit
@@ -45,6 +48,8 @@ fun TypeDropDownComponent(
         modifier = Modifier.fillMaxWidth(),
         mTextFieldSize = textFieldSize,
         expanded = expanded,
+        title = title,
+        isMandatory = isMandatory,
         selectedItem = selectedOptionText,
         onExpandedChange = {
             expanded = !it

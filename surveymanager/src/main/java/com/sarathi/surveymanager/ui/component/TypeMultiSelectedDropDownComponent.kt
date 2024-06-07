@@ -18,6 +18,8 @@ import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
 
 @Composable
 fun TypeMultiSelectedDropDownComponent(
+    title: String = BLANK_STRING,
+    isMandatory: Boolean = false,
     hintText: String = stringResource(R.string.select),
     sources: List<ValuesDto>?,
     selectOptionText: String = BLANK_STRING,
@@ -35,6 +37,8 @@ fun TypeMultiSelectedDropDownComponent(
     }
 
     MultiSelectSelectDropDown(
+        title = title,
+        isMandatory = isMandatory,
         hint = hintText,
         items = defaultSourceList,
         modifier = Modifier.fillMaxWidth(),
