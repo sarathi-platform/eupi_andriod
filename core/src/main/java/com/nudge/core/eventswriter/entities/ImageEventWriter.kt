@@ -12,6 +12,7 @@ import android.util.Log
 import androidx.core.net.toUri
 import com.nudge.core.SARATHI_DIRECTORY_NAME
 import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
@@ -31,6 +32,7 @@ class ImageEventWriter : IEventWriter {
         uri: Uri?,
         dependencyEntity: List<EventDependencyEntity>,
         eventsDao: EventsDao,
+        eventStatusDao: EventStatusDao,
         eventDependencyDao: EventDependencyDao
     ) {
         uri?.let { saveImageToMediaStore(context, it, mobileNo) }

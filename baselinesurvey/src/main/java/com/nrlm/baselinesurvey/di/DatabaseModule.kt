@@ -5,6 +5,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
+import com.nudge.syncmanager.utils.SYNC_MANAGER_DATABASE
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import dagger.Module
 import dagger.Provides
@@ -107,6 +108,10 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun providesApiStatusDao(syncDb: SyncManagerDatabase) = syncDb.apiStatusDao()
+
+    @Provides
+    @Singleton
+    fun providesEventStatusDao(syncDb: SyncManagerDatabase) = syncDb.eventStatusDao()
 
 
 }

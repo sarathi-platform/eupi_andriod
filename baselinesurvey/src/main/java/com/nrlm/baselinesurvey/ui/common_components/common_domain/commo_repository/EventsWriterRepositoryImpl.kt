@@ -18,6 +18,7 @@ import com.nrlm.baselinesurvey.utils.getParentEntityMapForEvent
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
@@ -42,7 +43,7 @@ class EventsWriterRepositoryImpl @Inject constructor(
     private val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
     private val eventsDao: EventsDao,
     private val eventDependencyDao: EventDependencyDao,
-
+    private val eventStatusDao: EventStatusDao
     ) : EventsWriterRepository {
 
     override suspend fun <T> createEvent(
@@ -70,10 +71,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
                     createdBy = prefBSRepo.getUserId(),
                     mobile_number = prefBSRepo.getMobileNumber() ?: BLANK_STRING,
                     request_payload = requestPayload.json(),
-                    status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.eventSyncStatus,
                     modified_date = System.currentTimeMillis().toDate(),
-                    result = null,
-                    consumer_status = BLANK_STRING,
                     payloadLocalId = BLANK_STRING,
                     metadata = MetadataDto(
                         mission = survey?.surveyName ?: BLANK_STRING,
@@ -111,10 +110,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
                             createdBy = prefBSRepo.getUserId(),
                             mobile_number = prefBSRepo.getMobileNumber() ?: BLANK_STRING,
                             request_payload = requestPayload.json(),
-                            status = EventSyncStatus.OPEN.name,
+                            status = EventSyncStatus.OPEN.eventSyncStatus,
                             modified_date = System.currentTimeMillis().toDate(),
-                            result = null,
-                            consumer_status = BLANK_STRING,
                             payloadLocalId = BLANK_STRING,
                             metadata = MetadataDto(
                                 mission = survey?.surveyName ?: BLANK_STRING,
@@ -151,10 +148,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
                             createdBy = prefBSRepo.getUserId(),
                             mobile_number = prefBSRepo.getMobileNumber() ?: BLANK_STRING,
                             request_payload = requestPayload.json(),
-                            status = EventSyncStatus.OPEN.name,
+                            status = EventSyncStatus.OPEN.eventSyncStatus,
                             modified_date = System.currentTimeMillis().toDate(),
-                            result = null,
-                            consumer_status = BLANK_STRING,
                             payloadLocalId = BLANK_STRING,
                             metadata = MetadataDto(
                                 mission = survey?.surveyName ?: BLANK_STRING,
@@ -199,10 +194,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
                     createdBy = prefBSRepo.getUserId(),
                     mobile_number = prefBSRepo.getMobileNumber() ?: BLANK_STRING,
                     request_payload = requestPayload.json(),
-                    status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.eventSyncStatus,
                     modified_date = System.currentTimeMillis().toDate(),
-                    result = null,
-                    consumer_status = BLANK_STRING,
                     payloadLocalId = BLANK_STRING,
                     metadata = MetadataDto(
                         mission = mission.missionName ?: BLANK_STRING,
@@ -236,10 +229,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
                     createdBy = prefBSRepo.getUserId(),
                     mobile_number = prefBSRepo.getMobileNumber() ?: BLANK_STRING,
                     request_payload = requestPayload.json(),
-                    status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.eventSyncStatus,
                     modified_date = System.currentTimeMillis().toDate(),
-                    result = null,
-                    consumer_status = BLANK_STRING,
                     payloadLocalId = BLANK_STRING,
                     metadata = MetadataDto(
                         mission = mission.missionName ?: BLANK_STRING,
@@ -273,10 +264,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
                     createdBy = prefBSRepo.getUserId(),
                     mobile_number = prefBSRepo.getMobileNumber() ?: BLANK_STRING,
                     request_payload = requestPayload.json(),
-                    status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.eventSyncStatus,
                     modified_date = System.currentTimeMillis().toDate(),
-                    result = null,
-                    consumer_status = BLANK_STRING,
                     payloadLocalId = BLANK_STRING,
                     metadata = MetadataDto(
                         mission = mission.missionName ?: BLANK_STRING,
@@ -346,7 +335,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
             BaselineCore.getAppContext(),
             EventFormatterName.JSON_FORMAT_EVENT,
             eventsDao = eventsDao,
-            eventDependencyDao
+            eventDependencyDao = eventDependencyDao,
+            eventStatusDao = eventStatusDao
         )
     }
 

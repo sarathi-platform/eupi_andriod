@@ -925,7 +925,7 @@ class SettingViewModel @Inject constructor(
                 Log.e("TAG", "Error while downloading image.")
             }
             Log.d("D", ConnectionMonitor.DoesNetworkHaveInternet.getNetworkStrength().toString())
-            NudgeCore.getEventObserver()?.syncPendingEvent(NudgeCore.getAppContext(), networkSpeed)
+//            NudgeCore.getEventObserver()?.syncPendingEvent(NudgeCore.getAppContext(), networkSpeed)
         }
     }
 

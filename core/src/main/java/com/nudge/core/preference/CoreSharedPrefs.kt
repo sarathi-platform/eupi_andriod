@@ -2,17 +2,23 @@ package com.nudge.core.preference
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
 
-class CoreSharedPrefs private constructor(val context: Context) :
+class CoreSharedPrefs @Inject constructor(@ApplicationContext private val context: Context) :
     CorePrefRepo {
     companion object {
         const val PREFS_NAME = "secured_nudge_prefs"
         const val PREF_FILE_BACKUP_NAME = "file_backup_name"
         const val PREF_IMAGE_FILE_BACKUP_NAME = "image_file_backup_name"
         const val PREF_IMAGE_FILE_EXPORTED_NAME = "is_file_exorted"
+        const val PREF_KEY_USER_NAME="key_user_name"
+        const val PREF_MOBILE_NUMBER = "pref_mobile_number"
+        const val PREF_PRODUCER_WORKER_ID= "producer_worker_id"
 
         @Volatile
         private var INSTANCE: CoreSharedPrefs? = null
@@ -71,4 +77,20 @@ class CoreSharedPrefs private constructor(val context: Context) :
         prefs.edit().putBoolean(PREF_IMAGE_FILE_EXPORTED_NAME, isExported).apply()
     }
 
+    override fun getUserId(): String {
+        return prefs.getString(PREF_KEY_USER_NAME, BLANK_STRING) ?: BLANK_STRING
+    }
+
+    override fun getMobileNumber(): String {
+        return prefs.getString(PREF_MOBILE_NUMBER, BLANK_STRING) ?: BLANK_STRING
+    }
+
+    override fun savePref(key: String, value: String) {
+        prefs.edit().putString(key, value).apply()
+    }
+
+    override fun getPref(key: String, defaultValue: String): String? {
+        return prefs.getString(key, defaultValue) ?: defaultValue
+
+    }
 }

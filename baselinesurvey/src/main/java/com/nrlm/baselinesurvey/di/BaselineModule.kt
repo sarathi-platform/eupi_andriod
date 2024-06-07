@@ -134,7 +134,9 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivityStatusUseCase
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.preference.CorePrefRepo
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -231,9 +233,10 @@ object BaselineModule {
     @Singleton
     fun provideLoginScreenRepository(
         prefBSRepo: PrefBSRepo,
-        baseLineApiService: BaseLineApiService
+        baseLineApiService: BaseLineApiService,
+        corePrefRepo: CorePrefRepo
     ): LoginScreenRepository {
-        return LoginScreenRepositoryImpl(prefBSRepo, baseLineApiService)
+        return LoginScreenRepositoryImpl(prefBSRepo, baseLineApiService, corePrefRepo = corePrefRepo)
     }
 
     @Provides
@@ -460,7 +463,8 @@ object BaselineModule {
         contentDao: ContentDao,
         baselineDatabase: NudgeBaselineDatabase,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
-        apiStatusDao: ApiStatusDao
+        apiStatusDao: ApiStatusDao,
+        corePrefRepo: CorePrefRepo
 
     ): DataLoadingScreenRepository {
         return DataLoadingScreenRepositoryImpl(
@@ -478,7 +482,8 @@ object BaselineModule {
             contentDao,
             baselineDatabase,
             didiSectionProgressEntityDao,
-            apiStatusDao
+            apiStatusDao,
+            corePrefRepo
         )
     }
 
@@ -682,7 +687,8 @@ object BaselineModule {
         eventsDao: EventsDao,
         eventDependencyDao: EventDependencyDao,
         nudgeBaselineDatabase: NudgeBaselineDatabase,
-        eventWriterHelper: EventWriterHelperImpl
+        eventWriterHelper: EventWriterHelperImpl,
+        eventStatusDao: EventStatusDao
     ): EventsWriterRepository {
         return EventsWriterRepositoryImpl(
             prefBSRepo = prefBSRepo,
@@ -691,6 +697,7 @@ object BaselineModule {
             eventsDao = eventsDao,
             eventDependencyDao = eventDependencyDao,
             missionEntityDao = missionEntityDao,
+            eventStatusDao = eventStatusDao
         )
     }
 

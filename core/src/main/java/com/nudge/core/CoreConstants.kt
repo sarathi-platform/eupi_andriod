@@ -10,6 +10,7 @@ import com.nudge.core.eventswriter.entities.ImageEventWriter
 const val BLANK_STRING = ""
 
 const val EventsTable = "events_table"
+const val EventsStatusTable = "events_status_table"
 const val EventDependencyTable = "event_dependency_table"
 const val ApiStatusTable = "api_status_table"
 
@@ -43,6 +44,11 @@ const val EVENT_DELIMETER = "~@-"
 const val ZIP_MIME_TYPE = "application/zip"
 const val EXCEL_TYPE = "text/csv"
 const val REGENERATE_PREFIX = "regenerate_"
+const val SOMETHING_WENT_WRONG="Something Went Wrong"
+const val RESPONSE_DATA_LIST_IS_EMPTY_EXCEPTION="Response data list is empty"
+const val RESPONSE_DATA_IS_NULL_EXCEPTION="Response data is null"
+const val RESPONSE_STATUS_FAILED_EXCEPTION="Response status is failed"
+
 const val PREF_KEY_IS_SETTING_SCREEN_OPEN= "is_setting_open"
 const val ENGLISH_LANGUAGE_CODE="en"
 const val UPCM_USER="Ultra Poor change maker (UPCM)"

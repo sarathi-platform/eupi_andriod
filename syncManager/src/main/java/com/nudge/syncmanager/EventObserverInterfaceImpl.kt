@@ -5,29 +5,48 @@ import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import com.nudge.communicationModule.EventObserverInterface
+import com.nudge.core.BLANK_STRING
+import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventDependencyEntity
+import com.nudge.core.database.entities.EventStatusEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.NetworkSpeed
+import com.nudge.syncmanager.utils.PRODUCER_WORKER_TAG
+import com.nudge.syncmanager.workers.SyncUploadWorker
+import kotlinx.coroutines.flow.Flow
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class EventObserverInterfaceImpl @Inject constructor(
     val eventsDao: EventsDao,
-    val eventDependencyDao: EventDependencyDao
+    val eventDependencyDao: EventDependencyDao,
+    val eventStatusDao: EventStatusDao,
+    private val workManager: WorkManager
 ) : EventObserverInterface {
 
     override fun <T> onEventCallback(event: T) {
-
+        //TODO: Needs to implement after sync integration
     }
 
     override suspend fun addEvent(event: Events) {
         eventsDao.insert(event)
+        eventStatusDao.insert(EventStatusEntity(
+            clientId = event.id,
+            errorMessage = BLANK_STRING,
+            status = EventSyncStatus.OPEN.eventSyncStatus,
+            mobileNumber = event.mobile_number,
+            createdBy = event.createdBy,
+            eventStatusId = 0
+         )
+        )
     }
 
     override suspend fun addEvents(events: List<Events>) {
@@ -42,7 +61,12 @@ class EventObserverInterfaceImpl @Inject constructor(
         eventDependencyDao.insertAll(eventDependencies)
     }
 
-    override suspend fun syncPendingEvent(context: Context, networkSpeed: NetworkSpeed) {
+    override suspend fun getEvent(): List<Events> {
+        return eventsDao.getAllEvent()
+    }
+
+
+    override suspend fun syncPendingEvent(context: Context, networkSpeed: NetworkSpeed): Flow<WorkInfo> {
 
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -51,18 +75,19 @@ class EventObserverInterfaceImpl @Inject constructor(
         val data = Data.Builder()
         data.putInt("batchCount", getBatchSize(networkSpeed))
         val uploadWorkRequest: WorkRequest =
-            OneTimeWorkRequestBuilder<SyncUploadWorker>().setConstraints(constraints)
+            PeriodicWorkRequestBuilder<SyncUploadWorker>(2, TimeUnit.MINUTES)
+                .setConstraints(
+                    constraints
+                ).addTag(PRODUCER_WORKER_TAG)
                 .setBackoffCriteria(
                     BackoffPolicy.LINEAR,
-                    10000,
+                    90000,
                     TimeUnit.MILLISECONDS
                 ).setInputData(data.build())
                 .build()
 
-        WorkManager
-            .getInstance(context)
-            .enqueue(uploadWorkRequest)
-
+        workManager.enqueue(uploadWorkRequest)
+        return workManager.getWorkInfoByIdFlow(uploadWorkRequest.id)
     }
 
     fun getBatchSize(networkSpeed: NetworkSpeed): Int {

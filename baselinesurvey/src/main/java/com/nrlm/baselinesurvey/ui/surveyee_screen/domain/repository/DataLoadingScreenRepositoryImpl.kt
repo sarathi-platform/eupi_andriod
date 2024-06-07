@@ -77,6 +77,7 @@ import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.entities.ApiStatusEntity
 import com.nudge.core.enums.ApiStatus
+import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.toDate
 import javax.inject.Inject
 
@@ -95,7 +96,8 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     val contentDao: ContentDao,
     val baselineDatabase: NudgeBaselineDatabase,
     val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
-    val apiStatusDao: ApiStatusDao
+    val apiStatusDao: ApiStatusDao,
+    val corePrefRepo: CorePrefRepo
 ) : DataLoadingScreenRepository {
     override suspend fun fetchLocalLanguageList(): List<LanguageEntity> {
 
@@ -415,14 +417,15 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     override fun saveUserDetails(userDetailsResponse: UserDetailsResponse) {
         BaselineLogger.d("User Details        ","Mobile Number: ${prefBSRepo.getPref(PREF_MOBILE_NUMBER,BLANK_STRING)}")
         BaselineLogger.d("User Details        ","User Email: ${userDetailsResponse.email}")
-        prefBSRepo.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: "")
-        prefBSRepo.savePref(PREF_KEY_NAME, userDetailsResponse.name ?: "")
-        prefBSRepo.savePref(PREF_KEY_EMAIL, userDetailsResponse.email ?: "")
-        prefBSRepo.savePref(PREF_KEY_IDENTITY_NUMBER, userDetailsResponse.identityNumber ?: "")
-        prefBSRepo.savePref(PREF_KEY_PROFILE_IMAGE, userDetailsResponse.profileImage ?: "")
-        prefBSRepo.savePref(PREF_KEY_ROLE_NAME, userDetailsResponse.roleName ?: "")
-        prefBSRepo.savePref(PREF_KEY_TYPE_NAME, userDetailsResponse.typeName ?: "")
-        prefBSRepo.savePref(PREF_STATE_ID, userDetailsResponse.referenceId.first().stateId ?: -1)
+        prefRepo.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: "")
+        corePrefRepo.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: "")
+        prefRepo.savePref(PREF_KEY_NAME, userDetailsResponse.name ?: "")
+        prefRepo.savePref(PREF_KEY_EMAIL, userDetailsResponse.email ?: "")
+        prefRepo.savePref(PREF_KEY_IDENTITY_NUMBER, userDetailsResponse.identityNumber ?: "")
+        prefRepo.savePref(PREF_KEY_PROFILE_IMAGE, userDetailsResponse.profileImage ?: "")
+        prefRepo.savePref(PREF_KEY_ROLE_NAME, userDetailsResponse.roleName ?: "")
+        prefRepo.savePref(PREF_KEY_TYPE_NAME, userDetailsResponse.typeName ?: "")
+        prefRepo.savePref(PREF_STATE_ID, userDetailsResponse.referenceId.first().stateId ?: -1)
     }
 
     override fun getUserId(): Int {

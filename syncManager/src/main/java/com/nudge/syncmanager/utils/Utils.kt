@@ -1,4 +1,4 @@
-package com.nudge.syncmanager
+package com.nudge.syncmanager.utils
 
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -6,7 +6,6 @@ import java.util.Locale
 import java.util.TimeZone
 
 fun Long.toDate(
-    dateFormat: Long = System.currentTimeMillis(),
     timeZone: TimeZone = TimeZone.getTimeZone("UTC")
 ): Date {
     val dateTime = Date(this)

@@ -17,10 +17,14 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
+import com.nudge.syncmanager.SyncManager
 
 object BaselineCore {
 
     private val TAG = BaselineCore::class.java.simpleName
+
+    private var eventObserver: EventObserverInterface? = null
+
     private lateinit var mainApplication: Application
     private lateinit var connectionLiveData: ConnectionMonitor
     private val validNetworksList: MutableSet<Network> = HashSet()
@@ -54,12 +58,20 @@ object BaselineCore {
     fun setIsEditAllowedForNoneMarkedQuestionFlag(flag: Boolean) {
         isEditAllowedForNoneMarkedQuestion = flag
     }
+    fun getEventObserver(): EventObserverInterface? {
+        return eventObserver
+    }
 
+    fun removeEventObserver(syncManager: SyncManager) {
+        eventObserver = null
+        syncManager.removeObserver()
+    }
 
     fun init(context: Context) {
         downloader = AndroidDownloader(context)
         connectionLiveData = ConnectionMonitor(context)
         mainApplication= context as Application
+        eventObserver = syncManager.initEventObserver()
     }
 
     private val applicationScope = CoroutineScope(SupervisorJob())

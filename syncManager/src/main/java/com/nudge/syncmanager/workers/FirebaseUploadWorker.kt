@@ -1,9 +1,11 @@
-package com.nudge.syncmanager
+package com.nudge.syncmanager.workers
 
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.nudge.syncmanager.firebase.FirebaseRepository
+import com.nudge.syncmanager.SyncApiRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.net.SocketTimeoutException
@@ -21,8 +23,8 @@ class FirebaseUploadWorker @AssistedInject constructor(
             try {
                 var totalPendingEventCount = syncApiRepository.getPendingEventCount()
                 while (totalPendingEventCount > 0) {
-                    val pendingEvents = syncApiRepository.getPendingEventFromDb()
-                    firebaseRepository.addEventsToFirebase(pendingEvents)
+                    val pendingEvents = syncApiRepository.getPendingEventFromDb(5,5)
+//                    firebaseRepository.addEventsToFirebase(pendingEvents)
                     totalPendingEventCount = syncApiRepository.getPendingEventCount()
                 }
                 // do long running work
