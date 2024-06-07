@@ -39,14 +39,15 @@ interface QuestionEntityDao {
                 " question_table.contentEntities,\n" +
                 " survey_language_attribute_table.languageCode,\n" +
                 " question_table.parentQuestionId\n" +
-                "  from question_table inner join survey_language_attribute_table on question_table.questionId = survey_language_attribute_table.referenceId where survey_language_attribute_table.referenceType =\"QUESTION\" \n" +
+                "  from question_table inner join survey_language_attribute_table on question_table.questionId = survey_language_attribute_table.referenceId where survey_language_attribute_table.referenceType =:referenceType \n" +
                 "and survey_language_attribute_table.languageCode=:languageId AND question_table.userId=:userId and question_table.sectionId = :sectionId and question_table.surveyId = :surveyId and question_table.userId=:userId "
     )
     fun getSurveySectionQuestionForLanguage(
         userId: String,
         sectionId: Int,
         surveyId: Int,
-        languageId: String
+        languageId: String,
+        referenceType: String
     ): List<QuestionUiEntity>
 
     @Query("Select * from $QUESTION_TABLE where userId=:userid and surveyId = :surveyId and languageId = :languageId")

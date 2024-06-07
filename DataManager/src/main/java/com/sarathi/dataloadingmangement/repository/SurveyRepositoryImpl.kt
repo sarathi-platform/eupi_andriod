@@ -31,12 +31,12 @@ class SurveyRepositoryImpl @Inject constructor(
         val surveyName = surveyEntityDao.getSurveyDetailForLanguage(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             surveyId,
-            //coreSharedPrefs.getAppLanguage()
         )?.surveyName
         val optionItems = optionItemDao.getSurveySectionQuestionOptionsForLanguage(
             languageId = coreSharedPrefs.getAppLanguage(),
             sectionId = sectionId,
             surveyId = surveyId,
+            referenceType = LanguageAttributeReferenceType.OPTION.name,
             userId = coreSharedPrefs.getUniqueUserIdentifier()
         )
         val surveyAnswerList = surveyAnswersDao.getSurveyAnswers(
@@ -49,7 +49,8 @@ class SurveyRepositoryImpl @Inject constructor(
             languageId = coreSharedPrefs.getAppLanguage(),
             sectionId = sectionId,
             surveyId = surveyId,
-            userId = coreSharedPrefs.getUniqueUserIdentifier()
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            referenceType = LanguageAttributeReferenceType.QUESTION.name
         ).forEach {
 
             val questionUiModel = QuestionUiModel(

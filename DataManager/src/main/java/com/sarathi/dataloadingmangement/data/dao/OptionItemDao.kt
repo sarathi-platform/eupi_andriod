@@ -36,13 +36,14 @@ interface OptionItemDao {
                 " option_table.selectedValueId,\n" +
                 " survey_language_attribute_table.description,\n" +
                 " survey_language_attribute_table.paraphrase\n" +
-                "  from option_table inner join survey_language_attribute_table on option_table.optionId = survey_language_attribute_table.referenceId where survey_language_attribute_table.referenceType =\"OPTION\" \n" +
+                "  from option_table inner join survey_language_attribute_table on option_table.optionId = survey_language_attribute_table.referenceId where survey_language_attribute_table.referenceType =:referenceType \n" +
                 "and survey_language_attribute_table.languageCode=:languageId and option_table.surveyId=:surveyId and option_table.sectionId=:sectionId and option_table.userId=:userId "
     )
     fun getSurveySectionQuestionOptionsForLanguage(
         userId: String,
         sectionId: Int,
         surveyId: Int,
+        referenceType: String,
         languageId: String
     ): List<OptionsUiModel>
 
