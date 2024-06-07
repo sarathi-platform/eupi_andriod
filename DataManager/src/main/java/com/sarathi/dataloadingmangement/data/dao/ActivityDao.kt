@@ -56,4 +56,15 @@ interface ActivityDao {
     ): Int
 
 
+    @Query("UPDATE $ACTIVITY_TABLE_NAME set status = :status where userId=:userId and missionId = :missionId and activityId=:activityId and isActive=1")
+    fun updateActivityStatus(
+        userId: String,
+        activityId: Int,
+        status: String,
+        missionId: Int
+    )
+
+    @Query("SELECT count(*) FROM $ACTIVITY_TABLE_NAME WHERE userId = :userId AND status IN (:statuses)")
+    suspend fun countActivityByStatus(userId: String, statuses: List<String>): Int
+
 }

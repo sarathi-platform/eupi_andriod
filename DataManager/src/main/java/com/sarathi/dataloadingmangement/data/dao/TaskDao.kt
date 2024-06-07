@@ -108,4 +108,7 @@ interface TaskDao {
         subjectId: Int
     ): String?
 
+    @Query("SELECT count(*) FROM $TASK_TABLE_NAME WHERE userId = :userId AND status IN (:statuses)")
+    suspend fun countTasksByStatus(userId: String, statuses: List<String>): Int
+
 }

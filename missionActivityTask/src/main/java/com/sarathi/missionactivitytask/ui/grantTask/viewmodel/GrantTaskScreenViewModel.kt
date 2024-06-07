@@ -2,6 +2,7 @@ package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
@@ -37,6 +38,8 @@ class GrantTaskScreenViewModel @Inject constructor(
     private val _filterList = mutableStateOf<HashMap<Int, HashMap<String, String>>>(hashMapOf())
     val filterList: State<HashMap<Int, HashMap<String, String>>> get() = _filterList
     val searchLabel = mutableStateOf<String>(BLANK_STRING)
+    val isButtonEnable = mutableStateOf<Boolean>(false)
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
@@ -60,6 +63,7 @@ class GrantTaskScreenViewModel @Inject constructor(
             val taskUiModel =
                 getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
             getSurveyDetail()
+            checkButtonValidation()
             taskUiModel.forEachIndexed { index, it ->
                 if (index == 0) {
                     searchLabel.value = getUiComponentValues(
@@ -158,6 +162,21 @@ class GrantTaskScreenViewModel @Inject constructor(
             filteredList.putAll(taskList.value)
         }
         _filterList.value = filteredList
+    }
+
+    private fun checkButtonValidation() {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            isButtonEnable.value = getTaskUseCase.isAllActivityCompleted()
+        }
+    }
+
+    fun markActivityCompleteStatus() {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            getTaskUseCase.markActivityCompleteStatus(
+                missionId = missionId,
+                activityId = activityId
+            )
+        }
     }
 
 }

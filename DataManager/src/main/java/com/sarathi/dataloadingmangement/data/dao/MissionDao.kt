@@ -52,4 +52,11 @@ interface MissionDao {
     @Query("SELECT count(*) FROM $MISSION_TABLE_NAME where  userId=:userId and missionId=:missionId ")
     suspend fun getMissionCount(userId: String, missionId: Int): Int
 
+    @Query("UPDATE $MISSION_TABLE_NAME set status = :status where userId=:userId and missionId = :missionId  and isActive=1")
+    fun updateMissionStatus(
+        userId: String,
+        status: String,
+        missionId: Int
+    )
+
 }
