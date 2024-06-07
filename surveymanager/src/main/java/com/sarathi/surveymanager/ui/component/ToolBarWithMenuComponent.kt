@@ -146,7 +146,6 @@ fun ToolBarWithMenuComponent(
                         })
                 }
             } else {
-
                 onContentUI(it)
             }
         }

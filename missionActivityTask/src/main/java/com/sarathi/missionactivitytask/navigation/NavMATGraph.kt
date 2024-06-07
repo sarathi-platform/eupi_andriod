@@ -217,9 +217,20 @@ fun NavGraphBuilder.MatNavigation(
                 activityConfigId = it.arguments?.getInt(
                     ARG_ACTIVITY_CONFIG_ID
                 ) ?: 0,
-                onSettingClick = onSettingIconClick
-
-
+                onSettingClick = onSettingIconClick,
+                onNavigateSurveyScreen = {
+                    navigateToSurveyScreen(
+                        navController, surveyId = it.arguments?.getInt(
+                            ARG_SURVEY_ID
+                        ) ?: 0, sectionId = it.arguments?.getInt(
+                            ARG_SECTION_ID
+                        ) ?: 0, taskId = it.arguments?.getInt(
+                            ARG_TASK_ID
+                        ) ?: 0, subjectType = it.arguments?.getString(
+                            ARG_SUBJECT_TYPE
+                        ) ?: BLANK_STRING
+                    )
+                }
             )
         }
 
@@ -261,6 +272,7 @@ sealed class MATHomeScreens(val route: String) {
 
     object SurveyScreen :
         MATHomeScreens(route = "$SURVEY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}")
+
     object DisbursementSurveyScreen :
         MATHomeScreens(route = "$GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_SUBJECT_NAME}/{$ARG_ACTIVITY_CONFIG_ID}")
 

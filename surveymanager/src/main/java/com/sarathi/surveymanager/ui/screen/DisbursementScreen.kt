@@ -19,7 +19,8 @@ fun DisbursementSummaryScreen(
     taskId: Int,
     subjectType: String,
     subjectName: String,
-    activityConfigId: Int
+    activityConfigId: Int,
+    onNavigateSurveyScreen: () -> Unit,
 ) {
 
     LaunchedEffect(key1 = true) {
@@ -31,15 +32,21 @@ fun DisbursementSummaryScreen(
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
         isSearch = false,
-        isDataAvailable = true,
+        isDataAvailable = false,
         onSearchValueChange = {
 
         },
         onBottomUI = {
         },
         onContentUI = { paddingValues ->
+            CollapsibleCard(
+                summaryCount = 10, onClick = {
+                    onNavigateSurveyScreen()
+                },
+                onContentUI = {
+                    DisbursementCard()
+                })
 
-            //sss
         },
         onSettingClick = onSettingClick
     )
