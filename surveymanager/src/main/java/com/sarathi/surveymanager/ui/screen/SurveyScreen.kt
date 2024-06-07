@@ -78,6 +78,7 @@ fun SurveyScreen(
                     isLeftArrow = false,
                     onClick = {
                         viewModel.saveButtonClicked()
+                        navController.popBackStack()
                     }
 
                 )

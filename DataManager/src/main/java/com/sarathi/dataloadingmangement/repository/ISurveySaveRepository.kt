@@ -18,4 +18,11 @@ interface ISurveySaveRepository {
         taskId: Int,
         sectionId: Int
     ): List<SurveyAnswerEntity>
+
+    suspend fun deleteSurveyAnswer(
+        sectionId: Int,
+        surveyId: Int,
+        referenceId: String,
+        taskId: Int
+    ): Int
 }

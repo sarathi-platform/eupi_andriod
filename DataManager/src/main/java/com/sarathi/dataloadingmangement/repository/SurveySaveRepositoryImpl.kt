@@ -61,4 +61,19 @@ class SurveySaveRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun deleteSurveyAnswer(
+        sectionId: Int,
+        surveyId: Int,
+        referenceId: String,
+        taskId: Int
+    ): Int {
+        return surveyAnswersDao.deleteSurveyAnswer(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            sectionId = sectionId,
+            surveyId = surveyId,
+            taskId = taskId,
+            referenceId = referenceId
+        )
+    }
+
 }

@@ -2,6 +2,7 @@ package com.sarathi.surveymanager.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nudge.core.ui.events.theme.black100Percent
 import com.nudge.core.ui.events.theme.borderGreyLight
@@ -33,13 +33,15 @@ import com.nudge.core.ui.events.theme.greyColor
 import com.nudge.core.ui.events.theme.quesOptionTextStyle
 import com.nudge.core.ui.events.theme.white
 
-@Preview(showBackground = true)
 @Composable
 fun DisbursementCard(
     subTitle1: String = "15 Jan",
     subTitle2: String = "₹ 500",
     subTitle3: String = "Backyard Poultry",
-    subTitle4: String = "Direct Bank Transfer"
+    subTitle4: String = "Direct Bank Transfer",
+    onEditSurvey: () -> Unit,
+    onDeleteSurvey: () -> Unit
+
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -70,6 +72,9 @@ fun DisbursementCard(
                 modifier = Modifier
                     .weight(1.0f)
                     .height(dimen_40_dp)
+                    .clickable {
+                        onEditSurvey()
+                    }
                     .background(
                         color = white, shape = RoundedCornerShape(dimen_1_dp)
                     )
@@ -98,6 +103,9 @@ fun DisbursementCard(
                 modifier = Modifier
                     .weight(1.0f)
                     .height(dimen_40_dp)
+                    .clickable {
+                        onDeleteSurvey()
+                    }
                     .background(
                         color = white, shape = RoundedCornerShape(dimen_1_dp)
                     )

@@ -36,4 +36,18 @@ class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
     }
 
     fun getUserIdentifier(): String = repository.getUserIdentifier()
+
+    suspend fun deleteSurveyAnswer(
+        sectionId: Int,
+        surveyId: Int,
+        referenceId: String,
+        taskId: Int
+    ): Int {
+        return repository.deleteSurveyAnswer(
+            sectionId = sectionId,
+            surveyId = surveyId,
+            taskId = taskId,
+            referenceId = referenceId
+        )
+    }
 }

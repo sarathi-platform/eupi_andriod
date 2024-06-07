@@ -67,12 +67,17 @@ interface SurveyAnswersDao {
                 optionItems = surveyAnswerEntity.optionItems,
                 answerValue = surveyAnswerEntity.answerValue
             )
-
-
         }
-
-
     }
+
+    @Query("Delete from ques_answer_table where userId =:userId and sectionId=:sectionId and taskId=:taskId and referenceId =:referenceId and surveyId=:surveyId")
+    fun deleteSurveyAnswer(
+        userId: String,
+        sectionId: Int,
+        surveyId: Int,
+        referenceId: String,
+        taskId: Int
+    ): Int
 
     @Query("select * from ques_answer_table where userId =:uniqueUserIdentifier and subjectId=:subjectId and taskId=:taskId and tagId =:tagId")
     fun getSurveyAnswerForTag(

@@ -1,6 +1,7 @@
 package com.sarathi.surveymanager.ui.component
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -30,14 +31,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nudge.core.ui.events.theme.NotoSans
 import com.nudge.core.ui.events.theme.blueDark
 import com.nudge.core.ui.events.theme.borderGreyLight
+import com.nudge.core.ui.events.theme.buttonTextStyle
 import com.nudge.core.ui.events.theme.dimen_1_dp
 import com.nudge.core.ui.events.theme.dimen_2_dp
 import com.nudge.core.ui.events.theme.greyBorder
@@ -49,6 +54,7 @@ import com.nudge.core.ui.events.theme.smallTextStyleMediumWeight
 import com.nudge.core.ui.events.theme.smallTextStyleNormalWeight
 import com.nudge.core.ui.events.theme.smallerTextStyle
 import com.nudge.core.ui.events.theme.white
+import com.sarathi.surveymanager.R
 
 @Composable
 fun PrimaryButton(
@@ -267,3 +273,52 @@ fun ButtonPositive(
         }
     }
 }
+
+@Composable
+fun ButtonNegative(
+    modifier: Modifier = Modifier,
+    buttonTitle: String,
+    horizontalPadding: Dp = 10.dp,
+    isArrowRequired: Boolean = true,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(languageItemActiveBg)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.Black
+                )
+
+            ) {
+                onClick()
+            }
+            .padding(horizontal = horizontalPadding)
+            .then(modifier),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(
+            Modifier.padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (isArrowRequired) {
+                Image(
+                    painter = painterResource(id = R.drawable.baseline_arrow_back),
+                    contentDescription = "Negative Button",
+                    modifier = Modifier
+                        .absolutePadding(top = 2.dp),
+                    colorFilter = ColorFilter.tint(blueDark)
+                )
+            }
+            androidx.compose.material.Text(
+                text = buttonTitle,
+                color = blueDark,
+                style = buttonTextStyle
+            )
+        }
+    }
+}
+

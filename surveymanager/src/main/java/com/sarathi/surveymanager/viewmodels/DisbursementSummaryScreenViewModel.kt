@@ -1,11 +1,17 @@
 package com.sarathi.surveymanager.viewmodels
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import com.nudge.core.BLANK_STRING
+import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
+import com.sarathi.surveymanager.ui.screen.model.SurveyCardTag
+import com.sarathi.surveymanager.ui.screen.model.SurveyUIModel
 import com.sarathi.surveymanager.utils.events.EventWriterEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -19,11 +25,16 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     private val grantConfigUseCase: GrantConfigUseCase,
     private val saveSurveyAnswerUseCase: SaveSurveyAnswerUseCase
 ) : BaseViewModel() {
+    private val _taskList = mutableStateOf<Map<String, List<SurveyAnswerEntity>>>(hashMapOf())
+    val taskList: State<Map<String, List<SurveyAnswerEntity>>> get() = _taskList
+
     private var surveyId: Int = 3
     private var sectionId: Int = 1
     private var taskId: Int = 1
     private var subjectType: String = "Vo"
     private var activityConfigId: Int = 0
+    var showDialog = mutableStateOf(Pair<Boolean, String?>(false, BLANK_STRING))
+
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -50,11 +61,12 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
 
     private fun initData() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            saveSurveyAnswerUseCase.getAllSaveAnswer(
-                surveyId = surveyId,
-                sectionId = sectionId,
-                taskId = taskId
-            )
+            _taskList.value =
+                saveSurveyAnswerUseCase.getAllSaveAnswer(
+                    surveyId = surveyId,
+                    sectionId = sectionId,
+                    taskId = taskId
+                ).groupBy { it.referenceId }
         }
     }
 
@@ -79,4 +91,39 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
         return UUID.randomUUID().toString()
     }
 
+    fun getSurveyUIModel(surveyList: List<SurveyAnswerEntity>): SurveyUIModel {
+        var subTitle1 = BLANK_STRING
+        var subTitle2 = BLANK_STRING
+        var subTitle3 = BLANK_STRING
+        surveyList.forEach { survey ->
+            when (survey.tagId) {
+                SurveyCardTag.SURVEY_TAG_CSG.tag ->
+                    subTitle1 = survey.optionItems.first().selectedValue ?: BLANK_STRING
+
+                SurveyCardTag.SURVEY_TAG_DATE.tag ->
+                    subTitle2 = survey.optionItems.first().selectedValue ?: BLANK_STRING
+
+                SurveyCardTag.SURVEY_TAG_NUMBER.tag ->
+                    subTitle3 = survey.optionItems.first().selectedValue ?: BLANK_STRING
+            }
+        }
+
+        return SurveyUIModel(
+            referenceId = surveyList.first().referenceId,
+            subTittle1 = subTitle1,
+            subTittle2 = subTitle2,
+            subTittle3 = subTitle3
+        )
+    }
+
+    fun deleteSurveyAnswer(referenceId: String) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            saveSurveyAnswerUseCase.deleteSurveyAnswer(
+                surveyId = surveyId,
+                sectionId = sectionId,
+                taskId = taskId,
+                referenceId = referenceId,
+            )
+        }
+    }
 }
