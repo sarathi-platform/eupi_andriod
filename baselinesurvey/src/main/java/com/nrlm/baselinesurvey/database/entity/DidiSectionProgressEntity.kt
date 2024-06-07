@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.nrlm.baselinesurvey.DIDI_SECTION_PROGRESS_TABLE
-import com.nudge.syncmanager.utils.BLANK_STRING
+import com.nudge.core.BLANK_STRING
 
 @Entity(tableName = DIDI_SECTION_PROGRESS_TABLE)
 data class DidiSectionProgressEntity(

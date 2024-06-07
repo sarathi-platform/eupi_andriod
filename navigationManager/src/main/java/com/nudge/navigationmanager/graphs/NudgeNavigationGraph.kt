@@ -154,6 +154,7 @@ sealed class SettingScreens(val route: String) {
     object IMAGE_VIEWER : SettingScreens(route = "$IMAGE_VIEWER_ROUTE_NAME/{${NavigationParams.ARG_IMAGE_PATH.value}}")
 
     object BACKUP_RECOVERY_SCREEN : SettingScreens(route = BACKUP_RECOVERY_SCREEN_ROUTE_NAME)
+    object SYNC_DATA_NOW_SCREEN : SettingScreens(route = SYNC_HOME_ROUTE_NAME)
 }
 
 sealed class LogoutScreens(val route: String){

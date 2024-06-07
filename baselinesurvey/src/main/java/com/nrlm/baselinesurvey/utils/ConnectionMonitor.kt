@@ -8,7 +8,6 @@ import android.net.NetworkRequest
 import androidx.lifecycle.LiveData
 import com.facebook.network.connectionclass.ConnectionClassManager
 import com.facebook.network.connectionclass.ConnectionQuality
-import com.nrlm.baselinesurvey.BaselineApplication
 import com.nudge.core.enums.NetworkSpeed
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

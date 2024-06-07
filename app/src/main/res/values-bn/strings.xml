@@ -198,7 +198,7 @@
     <string name="finish">শেষ করুন</string>
     <string name="no_internet">ইন্টারনেট সংযুক্ত নাহি</string>
     <string name="connected">ইন্টারনেট সংযুক্ত</string>
-    <string name="sync_your_data">আপনার ডেটা সিঙ্ক করুন</string>
+    <string name="sync_your_data">এখন ডেটা সিঙ্ক করুন</string>
     <string name="your_data_already_synced">আপনার ডেটা ইতিমধ্যেই সিঙ্ক করা হয়েছে</string>
     <string name="data_synced_successfully">ডেটা সফলভাবে সিঙ্ক হয়েছে</string>
     <string name="sync">ইন্টারনেট সিঙ্ক করুন</string>

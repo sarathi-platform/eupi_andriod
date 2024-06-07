@@ -34,6 +34,7 @@ import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
 import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.survey.SingleQuestionScreen
 import com.patsurvey.nudge.activities.survey.SurveySummary
+import com.patsurvey.nudge.activities.sync_event.presentation.SyncEventScreen
 import com.patsurvey.nudge.activities.ui.bpc.bpc_add_more_did_screens.BpcAddMoreDidiScreen
 import com.patsurvey.nudge.activities.ui.bpc.bpc_didi_list_screens.BpcDidiListScreen
 import com.patsurvey.nudge.activities.ui.bpc.progress_screens.BpcProgressScreen
@@ -684,6 +685,9 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
 
         composable(route = SettingScreens.BACKUP_RECOVERY_SCREEN.route){
             ExportImportScreen(navController = navController, viewModel = hiltViewModel())
+        }
+        composable(route = SettingScreens.SYNC_DATA_NOW_SCREEN.route){
+            SyncEventScreen(navController = navController, viewModel = hiltViewModel())
         }
 
     }

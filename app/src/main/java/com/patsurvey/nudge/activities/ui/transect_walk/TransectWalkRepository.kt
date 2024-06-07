@@ -119,7 +119,6 @@ class TransectWalkRepository @Inject constructor(
                         depends_on = emptyList(),
                         request_payload_size = requestPayload.getSizeInLong(),
                     ).json(),
-                    result = null
                 )
                 return addTolaEvent
             }
@@ -142,7 +141,6 @@ class TransectWalkRepository @Inject constructor(
                         request_payload_size = requestPayload.getSizeInLong(),
                         parentEntity = getParentEntityMapForEvent(eventItem, EventName.UPDATE_TOLA)
                     ).json(),
-                    result = null
                 )
                 val dependsOn = createEventDependency(eventItem, eventName, updateTolaEvent)
                 val metadata = updateTolaEvent.metadata?.getMetaDataDtoFromString()
@@ -173,7 +171,6 @@ class TransectWalkRepository @Inject constructor(
                         request_payload_size = requestPayload.getSizeInLong(),
                         parentEntity = getParentEntityMapForEvent(eventItem, eventName)
                     ).json(),
-                    result = null
                 )
                 val dependsOn = createEventDependency(eventItem, eventName, deleteTolaEvent)
                 val metadata = deleteTolaEvent.metadata?.getMetaDataDtoFromString()
@@ -203,7 +200,6 @@ class TransectWalkRepository @Inject constructor(
                     request_payload = requestPayload,
                     status = EventSyncStatus.OPEN.eventSyncStatus,
                     modified_date = System.currentTimeMillis().toDate(),
-                    result = null,
                     payloadLocalId = (eventItem as DidiEntity).localUniqueId,
                     metadata = MetadataDto(
                         mission = SELECTION_MISSION,

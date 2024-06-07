@@ -198,7 +198,7 @@
     <string name="finish">শেষ</string>
     <string name="no_internet">ছিঙ্ক কৰক</string>
     <string name="connected">সংযুক্ত</string>
-    <string name="sync_your_data">আপোনাৰ বিবৰণ ছিঙ্ক কৰক</string>
+    <string name="sync_your_data">এতিয়া তথ্য ছিঙ্ক কৰক</string>
     <string name="your_data_already_synced">আপোনাৰ বিবৰণ ইতিমধ্যে ছিঙ্ক কৰা হৈছে</string>
     <string name="data_synced_successfully">বিবৰণ সফলতাৰে ছিঙ্ক কৰা হৈছে</string>
     <string name="sync">ছিঙ্ক কৰক</string>

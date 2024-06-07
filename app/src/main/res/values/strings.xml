@@ -240,7 +240,7 @@
 
     <string name="no_internet">Not Connected</string>
     <string name="connected">Connected</string>
-    <string name="sync_your_data">Sync Your Data</string>
+    <string name="sync_your_data">Sync Data Now</string>
     <string name="your_data_already_synced">Your Data is already Synced</string>
     <string name="data_synced_successfully">Data Synced Successfully</string>
     <string name="sync">Sync</string>

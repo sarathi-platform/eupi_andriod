@@ -5,11 +5,13 @@ import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.model.request.LoginRequest
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.network.interfaces.BaseLineApiService
+import com.nudge.core.preference.CorePrefRepo
 import javax.inject.Inject
 
 class LoginScreenRepositoryImpl @Inject constructor(
     private val prefBSRepo: PrefBSRepo,
-    private val baseLineApiService: BaseLineApiService
+    private val baseLineApiService: BaseLineApiService,
+    val corePrefRepo: CorePrefRepo
 ): LoginScreenRepository {
 
 

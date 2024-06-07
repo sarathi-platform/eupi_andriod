@@ -417,15 +417,15 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     override fun saveUserDetails(userDetailsResponse: UserDetailsResponse) {
         BaselineLogger.d("User Details        ","Mobile Number: ${prefBSRepo.getPref(PREF_MOBILE_NUMBER,BLANK_STRING)}")
         BaselineLogger.d("User Details        ","User Email: ${userDetailsResponse.email}")
-        prefRepo.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: "")
+        prefBSRepo.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: "")
         corePrefRepo.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: "")
-        prefRepo.savePref(PREF_KEY_NAME, userDetailsResponse.name ?: "")
-        prefRepo.savePref(PREF_KEY_EMAIL, userDetailsResponse.email ?: "")
-        prefRepo.savePref(PREF_KEY_IDENTITY_NUMBER, userDetailsResponse.identityNumber ?: "")
-        prefRepo.savePref(PREF_KEY_PROFILE_IMAGE, userDetailsResponse.profileImage ?: "")
-        prefRepo.savePref(PREF_KEY_ROLE_NAME, userDetailsResponse.roleName ?: "")
-        prefRepo.savePref(PREF_KEY_TYPE_NAME, userDetailsResponse.typeName ?: "")
-        prefRepo.savePref(PREF_STATE_ID, userDetailsResponse.referenceId.first().stateId ?: -1)
+        prefBSRepo.savePref(PREF_KEY_NAME, userDetailsResponse.name ?: "")
+        prefBSRepo.savePref(PREF_KEY_EMAIL, userDetailsResponse.email ?: "")
+        prefBSRepo.savePref(PREF_KEY_IDENTITY_NUMBER, userDetailsResponse.identityNumber ?: "")
+        prefBSRepo.savePref(PREF_KEY_PROFILE_IMAGE, userDetailsResponse.profileImage ?: "")
+        prefBSRepo.savePref(PREF_KEY_ROLE_NAME, userDetailsResponse.roleName ?: "")
+        prefBSRepo.savePref(PREF_KEY_TYPE_NAME, userDetailsResponse.typeName ?: "")
+        prefBSRepo.savePref(PREF_STATE_ID, userDetailsResponse.referenceId.first().stateId ?: -1)
     }
 
     override fun getUserId(): Int {

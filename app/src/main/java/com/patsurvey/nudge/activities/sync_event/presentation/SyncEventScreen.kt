@@ -1,4 +1,4 @@
-package com.nrlm.baselinesurvey.ui.sync_event.presentation
+package com.patsurvey.nudge.activities.sync_event.presentation
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -21,15 +21,10 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,18 +37,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.navigation.NavController
 import androidx.work.WorkInfo
-import androidx.work.WorkManager
-import com.google.android.datatransport.runtime.firebase.transport.LogEventDropped
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
-import com.nrlm.baselinesurvey.ui.sync_event.viewmodel.SyncEventViewModel
+import com.patsurvey.nudge.activities.sync_event.viewmodel.SyncEventViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.mediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.utils.ConnectionMonitor
-import com.nudge.syncmanager.utils.PRODUCER_WORKER_TAG
 
 @SuppressLint("RestrictedApi")
 @Composable
@@ -163,7 +155,7 @@ fun WorkStatusScreen(workStatus: LiveData<List<WorkInfo>>) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Work Status:", style = MaterialTheme.typography.titleLarge)
+        Text(text = "Work Status:", style = mediumTextStyle)
         Spacer(modifier = Modifier.height(16.dp))
         workInfo.value?.let {
             if(it.isNotEmpty()){

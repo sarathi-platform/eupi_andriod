@@ -1,34 +1,28 @@
-package com.nrlm.baselinesurvey.ui.sync_event.viewmodel
+package com.patsurvey.nudge.activities.sync_event.viewmodel
 
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import androidx.work.WorkInfo
 import com.nrlm.baselinesurvey.base.BaseViewModel
-import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.NetworkSpeed
-import com.nudge.core.preference.CorePrefRepo
 import com.nudge.syncmanager.utils.WORKER_RESULT
+import com.patsurvey.nudge.utils.NudgeCore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 @HiltViewModel
 class SyncEventViewModel @Inject constructor(
-    val prefRepo: PrefRepo
+    val prefRepo: PrefBSRepo
 ) : BaseViewModel()  {
     private val _syncEventList = MutableStateFlow(listOf<Events>())
     val syncEventList: StateFlow<List<Events>> get() = _syncEventList
@@ -46,7 +40,7 @@ class SyncEventViewModel @Inject constructor(
     fun getAllEvents() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-             _syncEventList.value= BaselineCore.getEventObserver()?.getEvent()!!
+             _syncEventList.value= NudgeCore.getEventObserver()?.getEvent()!!
 
             }catch (ex:Exception){
                 BaselineLogger.d("SyncEventViewModel"," syncAllEvent: ${ex.printStackTrace()} ")
@@ -57,7 +51,7 @@ class SyncEventViewModel @Inject constructor(
    fun syncAllPending(networkSpeed: NetworkSpeed) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                BaselineCore.getEventObserver()
+                NudgeCore.getEventObserver()
                     ?.syncPendingEvent(BaselineCore.getAppContext(), networkSpeed)?.collect{
                         if(it!=null){
                             Log.d("TAG", "syncAllPendingEvents: ${it.state.name} :: ${it.state.isFinished} :: ${it.outputData.getString(

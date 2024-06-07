@@ -19,6 +19,7 @@ import com.patsurvey.nudge.activities.VillageScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportImportScreen
 import com.patsurvey.nudge.activities.settings.BugLogggingMechanismScreen
 import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
+import com.patsurvey.nudge.activities.sync_event.presentation.SyncEventScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
@@ -115,6 +116,10 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
 
         composable(route = SettingScreens.BACKUP_RECOVERY_SCREEN.route){
             ExportImportScreen(navController = navController, viewModel = hiltViewModel())
+        }
+
+        composable(route = SettingScreens.SYNC_DATA_NOW_SCREEN.route){
+            SyncEventScreen(navController = navController, viewModel = hiltViewModel())
         }
     }
 }

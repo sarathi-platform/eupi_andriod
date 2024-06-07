@@ -187,7 +187,7 @@
     <string name="finish">फोजोबनाय</string>
     <string name="no_internet">फोनांजाबनाय जायाखै</string>
     <string name="connected">फोनांजाबनाय जाबाय</string>
-    <string name="sync_your_data">नोंनि डाटाखौ Sync खालाम</string>
+    <string name="sync_your_data">Sync Data Now</string>
     <string name="your_data_already_synced">नोंथांनि डाटाया बावैनो Sync जाबाय</string>
     <string name="data_synced_successfully">जाफुंसारै डाटा Sync खालामनाय जाबाय</string>
     <string name="sync">Sync</string>

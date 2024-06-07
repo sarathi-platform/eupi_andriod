@@ -150,8 +150,7 @@ class MyApplication : Application(), androidx.work.Configuration.Provider {
         return localizationDelegate.getResources(baseContext, super.getResources())
     }
 
-    override fun getWorkManagerConfiguration(): androidx.work.Configuration {
-        return androidx.work.Configuration.Builder()
+    override val workManagerConfiguration: androidx.work.Configuration
+        get() = androidx.work.Configuration.Builder()
             .setWorkerFactory(workerFactory).build()
-    }
 }

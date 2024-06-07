@@ -9,7 +9,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
-import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 import com.patsurvey.nudge.activities.settings.viewmodel.SettingBSViewModel
 import com.nrlm.baselinesurvey.utils.showCustomToast
@@ -18,7 +17,6 @@ import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.settings.domain.DigitalFormEnum
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.showCustomDialog
@@ -115,6 +113,10 @@ fun SettingBSScreen(
 
                   SettingTagEnum.SHARE_LOGS.name -> {
                       viewModel.exportOnlyLogFile(context)
+                  }
+
+                  SettingTagEnum.SYNC_DATA_NOW.name -> {
+                    navController.navigate(SettingScreens.SYNC_DATA_NOW_SCREEN.route)
                   }
               }
           },

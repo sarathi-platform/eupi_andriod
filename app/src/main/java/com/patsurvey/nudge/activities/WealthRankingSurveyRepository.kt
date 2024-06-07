@@ -177,7 +177,6 @@ class WealthRankingSurveyRepository @Inject constructor(
                     request_payload = requestPayload,
                     status = EventSyncStatus.OPEN.eventSyncStatus,
                     modified_date = System.currentTimeMillis().toDate(),
-                    result = null,
                     payloadLocalId = (eventItem as DidiEntity).localUniqueId,
                     metadata = MetadataDto(
                         mission = SELECTION_MISSION,
