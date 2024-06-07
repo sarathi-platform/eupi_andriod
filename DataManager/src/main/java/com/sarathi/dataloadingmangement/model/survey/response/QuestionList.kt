@@ -10,10 +10,6 @@ data class QuestionList(
     @Expose
     var questionId: Int? = null,
 
-    @SerializedName("description")
-    @Expose
-    var questionDisplay: String? = null,
-    // replace with dec
 
     @SerializedName("order")
     @Expose
@@ -31,10 +27,6 @@ data class QuestionList(
     @Expose
     var options: List<OptionsItem?>? = emptyList(),
 
-    @SerializedName("paraphrase")
-    @Expose
-    var questionSummary: String? = null,
-    //paraphase
 
     @SerializedName("tag")
     @Expose
@@ -56,5 +48,11 @@ data class QuestionList(
     @SerializedName("isMandatory")
     @Expose
     val isMandatory: Boolean = false,
+    @SerializedName("languages")
+    @Expose
+    val surveyLanguageAttributes: List<SurveyLanguageAttributes>,
+    @SerializedName("originalValue")
+    @Expose
+    val originalValue: String = BLANK_STRING,
 
     )

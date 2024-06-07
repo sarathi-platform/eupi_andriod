@@ -8,8 +8,8 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.sarathi.dataloadingmangement.ANSWER_TABLE
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 
 
 @Dao
@@ -39,7 +39,7 @@ interface SurveyAnswersDao {
         sectionId: Int,
         questionId: Int,
         surveyId: Int,
-        optionItems: List<OptionItemEntity>,
+        optionItems: List<OptionsUiModel>,
         questionType: String,
         questionSummary: String,
         answerValue: String

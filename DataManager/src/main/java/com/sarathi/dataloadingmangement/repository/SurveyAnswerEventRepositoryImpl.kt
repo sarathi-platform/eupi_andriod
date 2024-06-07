@@ -2,10 +2,10 @@ package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventOptionItemDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventQuestionItemDto
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import javax.inject.Inject
 
@@ -62,7 +62,7 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
     }
 
     private fun getOption(
-        optionsItems: List<OptionItemEntity>,
+        optionsItems: List<OptionsUiModel>,
         referenceId: String
     ): List<SaveAnswerEventOptionItemDto> {
         val result = ArrayList<SaveAnswerEventOptionItemDto>()
@@ -73,7 +73,7 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                         optionId = optionItem.optionId ?: 0,
                         selectedValue = optionItem.selectedValue,
                         tag = optionItem.optionTag,
-                        optionDesc = optionItem.summary ?: BLANK_STRING,
+                        optionDesc = optionItem.description ?: BLANK_STRING,
                         referenceId = referenceId
 
                     )

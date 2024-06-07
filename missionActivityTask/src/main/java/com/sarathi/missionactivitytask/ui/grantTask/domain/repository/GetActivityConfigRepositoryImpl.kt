@@ -18,7 +18,7 @@ class GetActivityConfigRepositoryImpl @Inject constructor(
         return activityConfigDao.getActivityConfigWithSection(
             activityId = activityId,
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
-            languageId = coreSharedPrefs.getAppLanguage()
+            // languageId = coreSharedPrefs.getAppLanguage()
         )
     }
 
