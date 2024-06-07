@@ -12,9 +12,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
     val coreSharedPrefs: CoreSharedPrefs
 ) :
     ISurveySaveRepository {
-
-
-    override suspend fun saveSurveyAnswer(question: QuestionUiModel, subjectId: Int) {
+    override suspend fun saveSurveyAnswer(question: QuestionUiModel, subjectId: Int, taskId: Int) {
 
         surveyAnswersDao.insertOrModifySurveyAnswer(
             SurveyAnswerEntity.getSurveyAnswerEntity(
@@ -22,7 +20,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
                 subjectId = subjectId,
                 referenceId = "",
-                taskId = 0
+                taskId = taskId
             )
         )
     }

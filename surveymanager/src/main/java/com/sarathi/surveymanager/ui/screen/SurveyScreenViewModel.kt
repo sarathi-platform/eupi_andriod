@@ -33,10 +33,10 @@ class SurveyScreenViewModel @Inject constructor(
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
     private val getTaskUseCase: GetTaskUseCase,
 ) : BaseViewModel() {
-    private var surveyId: Int = 3
-    private var sectionId: Int = 1
-    private var taskId: Int = 1
-    private var subjectType: String = "Vo"
+    private var surveyId: Int = 0
+    private var sectionId: Int = 0
+    private var taskId: Int = 0
+    private var subjectType: String = BLANK_STRING
     private var referenceId: Int = 0
     private var taskEntity: ActivityTaskEntity? = null
 
@@ -59,15 +59,13 @@ class SurveyScreenViewModel @Inject constructor(
 
             is EventWriterEvents.SaveAnswerEvent -> {
                 CoroutineScope(Dispatchers.IO).launch {
-                    //   saveSurveyAnswerUseCase.saveSurveyAnswer(event,subjectId)
-
                 }
             }
 
         }
     }
 
-    fun intiQuestions() {
+    private fun intiQuestions() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             taskEntity = getTaskUseCase.getTask(taskId)
             _questionUiModel.value = fetchDataUseCase.invoke(
@@ -88,7 +86,8 @@ class SurveyScreenViewModel @Inject constructor(
             questionUiModel.value.forEach { question ->
                 saveSurveyAnswerUseCase.saveSurveyAnswer(
                     question,
-                    taskEntity?.subjectId ?: DEFAULT_ID
+                    taskEntity?.subjectId ?: DEFAULT_ID,
+                    taskId = taskId
                 )
                 if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name) {
                     taskStatusUseCase.markTaskInProgress(
@@ -156,20 +155,13 @@ class SurveyScreenViewModel @Inject constructor(
         this.taskId = taskId
         this.subjectType = subjectType
     }
-
     private fun isTaskStatusCompleted() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-
-            isTaskCompleted.value = taskStatusUseCase.getTaskStatus(
+            isTaskCompleted.value = !taskStatusUseCase.getTaskStatus(
                 userId = saveSurveyAnswerUseCase.getUserIdentifier(),
                 taskId = taskId,
                 subjectId = taskEntity?.subjectId ?: DEFAULT_ID
-            )
-                ?.equals(
-                    SurveyStatusEnum.COMPLETED.name
-                ) ?: false
-
-
+            ).equals(SurveyStatusEnum.COMPLETED.name)
         }
 
 

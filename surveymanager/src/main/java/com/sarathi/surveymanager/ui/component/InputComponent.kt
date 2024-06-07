@@ -72,7 +72,7 @@ fun InputComponent(
                 }
                 onAnswerSelection(txt.value)
             },
-            label = { Text(hintText, style = buttonTextStyle.copy(color = placeholderGrey)) },
+            placeholder = { Text(hintText, style = buttonTextStyle.copy(color = placeholderGrey)) },
             keyboardOptions = if (isOnlyNumber) {
                 KeyboardOptions(
                     imeAction = ImeAction.Done,

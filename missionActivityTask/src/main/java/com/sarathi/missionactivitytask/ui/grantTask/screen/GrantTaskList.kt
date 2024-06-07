@@ -22,8 +22,8 @@ import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.BasicCont
 @Composable
 fun GrantTaskList(
     taskList: HashMap<Int, HashMap<String, String>>,
-    contents: List<BasicContent> = listOf(),
     isSearch: Boolean = true,
+    searchPlaceholder: String = "Search",
     onSearchValueChange: (String) -> Unit,
     navController: NavController,
     onPrimaryButtonClick: (Int, String) -> Unit,
@@ -39,7 +39,8 @@ fun GrantTaskList(
             }
         }
         if (isSearch) {
-            SearchWithFilterViewComponent(placeholderString = "Search",
+            SearchWithFilterViewComponent(
+                placeholderString = searchPlaceholder,
                 filterSelected = false,
                 modifier = Modifier.padding(horizontal = 10.dp),
                 showFilter = false,
@@ -76,6 +77,10 @@ fun GrantTaskList(
                         ?: BLANK_STRING,
                     subtitle3 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_3.name]
                         ?: BLANK_STRING,
+                    subtitle4 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]
+                        ?: BLANK_STRING,
+                    subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name]
+                        ?: BLANK_STRING
                 )
 
 
