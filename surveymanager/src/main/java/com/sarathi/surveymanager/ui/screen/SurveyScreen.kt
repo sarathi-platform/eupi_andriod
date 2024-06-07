@@ -26,7 +26,7 @@ import androidx.navigation.compose.rememberNavController
 import com.nudge.core.ui.events.theme.dimen_16_dp
 import com.nudge.core.ui.events.theme.dimen_8_dp
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -192,7 +192,7 @@ private fun saveInputTypeAnswer(
     viewModel.saveAnswerIntoDB(question)
 }
 
-fun saveMultiImageTypeAnswer(filePath: String, options: List<OptionItemEntity>?) {
+fun saveMultiImageTypeAnswer(filePath: String, options: List<OptionsUiModel>?) {
     val list: ArrayList<String> = ArrayList<String>()
     list.add(filePath)
     list.addAll(commaSeparatedStringToList(options?.firstOrNull()?.selectedValue ?: BLANK_STRING))

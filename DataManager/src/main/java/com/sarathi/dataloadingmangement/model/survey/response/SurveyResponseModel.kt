@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.model.survey.response
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.nudge.core.BLANK_STRING
 
 data class SurveyResponseModel(
 
@@ -44,4 +45,11 @@ data class SurveyResponseModel(
     @SerializedName("subject")
     @Expose
     val subject: String,
-)
+    @SerializedName("sections")
+    @Expose
+    val sections: List<Sections>,
+    @SerializedName("originalValue")
+    @Expose
+    val originalValue: String? = BLANK_STRING,
+
+    )

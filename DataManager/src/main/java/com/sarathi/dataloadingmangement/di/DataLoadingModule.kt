@@ -23,6 +23,7 @@ import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
 import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
@@ -169,13 +170,19 @@ class DataLoadingModule {
 
     @Provides
     @Singleton
+    fun provideSurveyLanguageAttributeDao(db: NudgeGrantDatabase) = db.surveyLanguageAttributeDao()
+
+
+    @Provides
+    @Singleton
     fun provideSurveyDownloadRepository(
         dataLoadingApiService: DataLoadingApiService,
         surveyDao: SurveyEntityDao,
         sectionEntityDao: SectionEntityDao,
         coreSharedPrefs: CoreSharedPrefs,
         optionItemDao: OptionItemDao,
-        questionEntityDao: QuestionEntityDao
+        questionEntityDao: QuestionEntityDao,
+        surveyLanguageAttributeDao: SurveyLanguageAttributeDao
     ): ISurveyDownloadRepository {
         return SurveyDownloadRepository(
             dataLoadingApiService = dataLoadingApiService,
@@ -183,7 +190,8 @@ class DataLoadingModule {
             sectionEntityDao = sectionEntityDao,
             coreSharedPrefs = coreSharedPrefs,
             optionItemDao = optionItemDao,
-            questionEntityDao = questionEntityDao
+            questionEntityDao = questionEntityDao,
+            surveyLanguageAttributeDao = surveyLanguageAttributeDao
 
         )
     }

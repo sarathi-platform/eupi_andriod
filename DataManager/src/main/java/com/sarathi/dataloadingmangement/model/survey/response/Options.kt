@@ -46,7 +46,6 @@ data class Options(
                         optionValue = it.optionValue ?: 0,
                         summary = it.summary ?: BLANK_STRING,
                         weight = it.weight ?: 0,
-                        display = it.display ?: BLANK_STRING,
                         count = it.count ?: 0,
                         selected = it.isSelected ?: false
                     )

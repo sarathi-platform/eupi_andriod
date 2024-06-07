@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName
 import com.sarathi.dataloadingmangement.ANSWER_TABLE
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.converters.QuestionsOptionsConverter
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 
 
@@ -68,7 +69,7 @@ data class SurveyAnswerEntity(
     @Expose
     @ColumnInfo("optionItems")
     @TypeConverters(QuestionsOptionsConverter::class)
-    var optionItems: List<OptionItemEntity>,
+    var optionItems: List<OptionsUiModel>,
 
     @SerializedName("questionSummary")
     @Expose

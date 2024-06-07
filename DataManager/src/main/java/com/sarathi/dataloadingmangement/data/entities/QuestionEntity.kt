@@ -94,7 +94,6 @@ data class QuestionEntity(
     companion object {
         fun getQuestionEntity(
             userId: String,
-            languageId: String,
             sectionId: Int,
             surveyId: Int,
             isCondition: Boolean,
@@ -107,12 +106,9 @@ data class QuestionEntity(
                 questionId = question.questionId,
                 sectionId = sectionId,
                 surveyId = surveyId,
-                questionDisplay = question.questionDisplay,
-                questionSummary = question.questionSummary,
                 gotoQuestionId = question.gotoQuestionId,
                 order = question.order,
                 type = question.type,
-                languageId = languageId,
                 isConditional = isCondition,
                 tag = question.attributeTag ?: 0,
                 contentEntities = question.contentList,

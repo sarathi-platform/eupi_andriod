@@ -38,11 +38,6 @@ data class SurveyEntity(
     @ColumnInfo(name = "thresholdScore")
     val thresholdScore: Int,
 
-    @SerializedName("languageId")
-    @Expose
-    @ColumnInfo(name = "languageId")
-    val languageId: String,
-
     @SerializedName("referenceId")
     @Expose
     @ColumnInfo(name = "referenceId")
@@ -52,16 +47,13 @@ data class SurveyEntity(
     companion object {
         fun getSurveyEntity(
             userId: String,
-            surveyName: String,
-            languageCode: String,
             surveyApiResponseModel: SurveyResponseModel
         ): SurveyEntity {
             return SurveyEntity(
                 userId = userId,
                 id = 0,
                 surveyId = surveyApiResponseModel.surveyId,
-                surveyName = surveyName,
-                languageId = languageCode,
+                surveyName = surveyApiResponseModel.originalValue ?: BLANK_STRING,
                 surveyPassingMark = surveyApiResponseModel.surveyPassingMark,
                 thresholdScore = surveyApiResponseModel.thresholdScore,
                 referenceId = surveyApiResponseModel.referenceId

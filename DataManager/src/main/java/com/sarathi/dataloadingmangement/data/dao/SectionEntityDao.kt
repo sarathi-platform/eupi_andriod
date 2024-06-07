@@ -12,36 +12,32 @@ interface SectionEntityDao {
     @Insert
     fun insertSection(sectionEntity: SectionEntity)
 
-    @Query("Select * from $SECTION_TABLE where userId=:userId and sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
+    @Query("Select * from $SECTION_TABLE where userId=:userId and sectionId = :sectionId and surveyId = :surveyId ")
     fun getSurveySectionForLanguage(
         userId: String,
         sectionId: Int,
         surveyId: Int,
-        languageId: Int
     ): SectionEntity
 
-    @Query("Select * from $SECTION_TABLE where userId=:userId and surveyId = :surveyId and languageId = :languageId")
+    @Query("Select * from $SECTION_TABLE where userId=:userId and surveyId = :surveyId ")
     fun getAllSectionForSurveyInLanguage(
         userId: String,
         surveyId: Int,
-        languageId: Int
     ): List<SectionEntity>
 
-    @Query("Delete from $SECTION_TABLE where userId=:userId and sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
+    @Query("Delete from $SECTION_TABLE where userId=:userId and sectionId = :sectionId and surveyId = :surveyId ")
     fun deleteSurveySectionFroLanguage(
         userId: String,
         sectionId: Int,
         surveyId: Int,
-        languageId: String
     )
 
     @Query("Select * from $SECTION_TABLE where userId=:userId")
     fun getSections(userId: String): List<SectionEntity?>?
 
-    @Query("Select * from $SECTION_TABLE where userId=:userId and languageId = :languageId")
+    @Query("Select * from $SECTION_TABLE where userId=:userId ")
     fun getSectionsT(
         userId: String,
-        languageId: Int,
     ): List<SectionEntity>
 
 }

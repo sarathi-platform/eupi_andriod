@@ -7,8 +7,8 @@ import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
-import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import javax.inject.Inject
 
@@ -31,7 +31,7 @@ class SurveyRepositoryImpl @Inject constructor(
         val surveyName = surveyEntityDao.getSurveyDetailForLanguage(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             surveyId,
-            coreSharedPrefs.getAppLanguage()
+            //coreSharedPrefs.getAppLanguage()
         )?.surveyName
         val optionItems = optionItemDao.getSurveySectionQuestionOptionsForLanguage(
             languageId = coreSharedPrefs.getAppLanguage(),
@@ -56,10 +56,10 @@ class SurveyRepositoryImpl @Inject constructor(
                 questionId = it.questionId ?: DEFAULT_ID,
                 surveyId = it.surveyId,
                 sectionId = it.sectionId,
-                display = it.questionDisplay ?: BLANK_STRING,
-                languageId = it.languageId ?: BLANK_STRING,
-                questionSummary = it.questionSummary,
-                questionDisplay = it.questionDisplay ?: BLANK_STRING,
+                display = it.description ?: BLANK_STRING,
+                languageId = it.languageCode ?: BLANK_STRING,
+                questionSummary = it.description,
+                questionDisplay = it.description ?: BLANK_STRING,
                 type = it.type ?: BLANK_STRING,
                 options = getOptionItemsForQuestion(
                     it.questionId ?: DEFAULT_ID,
@@ -79,13 +79,13 @@ class SurveyRepositoryImpl @Inject constructor(
 
     private fun getOptionItemsForQuestion(
         questionId: Int,
-        optionItems: List<OptionItemEntity>,
+        optionItems: List<OptionsUiModel>,
         surveyAnswerList: List<SurveyAnswerEntity>
-    ): List<OptionItemEntity> {
+    ): List<OptionsUiModel> {
         val optionList = optionItems.filter { it.questionId == questionId }
         val surveyAnswer = surveyAnswerList.filter { it.questionId == questionId }
         if (surveyAnswerList.isNotEmpty() && surveyAnswer.isNotEmpty()) {
-            val optionItemWithSaved = ArrayList<OptionItemEntity>()
+            val optionItemWithSaved = ArrayList<OptionsUiModel>()
             // if answer exist
             optionList.forEach { questionOptionItem ->
 

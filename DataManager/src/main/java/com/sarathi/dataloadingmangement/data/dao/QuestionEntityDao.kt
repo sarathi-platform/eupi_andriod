@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.sarathi.dataloadingmangement.QUESTION_TABLE
 import com.sarathi.dataloadingmangement.data.entities.QuestionEntity
+import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiEntity
 
 
 @Dao
@@ -13,22 +14,40 @@ interface QuestionEntityDao {
     @Insert
     fun insertQuestion(questionEntity: QuestionEntity)
 
-    @Query("Delete from $QUESTION_TABLE where userId=:userid and questionId = :questionId and sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
+    @Query("Delete from $QUESTION_TABLE where userId=:userid and questionId = :questionId and sectionId = :sectionId and surveyId = :surveyId ")
     fun deleteSurveySectionQuestionFroLanguage(
         userid: String,
         questionId: Int,
         sectionId: Int,
         surveyId: Int,
-        languageId: String
     )
 
-    @Query("Select * from $QUESTION_TABLE where userId=:userId and sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
+    @Query(
+        "select \n" +
+                " survey_language_attribute_table.description,\n" +
+                " survey_language_attribute_table.paraphrase,\n" +
+                " question_table.questionId,\n" +
+                " question_table.sectionId,\n" +
+                " question_table.surveyId,\n" +
+                " question_table.questionImageUrl,\n" +
+                " question_table.type,\n" +
+                " question_table.gotoQuestionId,\n" +
+                " question_table.`order` ,\n" +
+                " question_table.isConditional,\n" +
+                " question_table.isMandatory,\n" +
+                " question_table.tag,\n" +
+                " question_table.contentEntities,\n" +
+                " survey_language_attribute_table.languageCode,\n" +
+                " question_table.parentQuestionId\n" +
+                "  from question_table inner join survey_language_attribute_table on question_table.questionId = survey_language_attribute_table.referenceId where survey_language_attribute_table.referenceType =\"QUESTION\" \n" +
+                "and survey_language_attribute_table.languageCode=:languageId AND question_table.userId=:userId and question_table.sectionId = :sectionId and question_table.surveyId = :surveyId and question_table.userId=:userId "
+    )
     fun getSurveySectionQuestionForLanguage(
         userId: String,
         sectionId: Int,
         surveyId: Int,
         languageId: String
-    ): List<QuestionEntity>
+    ): List<QuestionUiEntity>
 
     @Query("Select * from $QUESTION_TABLE where userId=:userid and surveyId = :surveyId and languageId = :languageId")
     fun getAllQuestionsForLanguage(
@@ -37,13 +56,12 @@ interface QuestionEntityDao {
         languageId: String
     ): List<QuestionEntity>
 
-    @Query("SELECT * from $QUESTION_TABLE where userId=:userid and questionId = :questionId and sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
+    @Query("SELECT * from $QUESTION_TABLE where userId=:userid and questionId = :questionId and sectionId = :sectionId and surveyId = :surveyId ")
     fun getQuestionForSurveySectionForLanguage(
         userid: String,
         questionId: Int,
         sectionId: Int,
         surveyId: Int,
-        languageId: String
     ): QuestionEntity?
 
     @Query("Select * from $QUESTION_TABLE where userId=:userid ")

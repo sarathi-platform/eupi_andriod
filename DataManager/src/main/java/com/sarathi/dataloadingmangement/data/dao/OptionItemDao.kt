@@ -5,48 +5,48 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.sarathi.dataloadingmangement.OPTION_TABLE
 import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 
 @Dao
 interface OptionItemDao {
     @Insert
     fun insertOption(optionItem: OptionItemEntity)
 
-    @Query("Delete from $OPTION_TABLE where  userId=:userId and optionId=:optionId and questionId = :questionId and sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
+    @Query("Delete from $OPTION_TABLE where  userId=:userId and optionId=:optionId and questionId = :questionId and sectionId = :sectionId and surveyId = :surveyId and userId=:userId")
     fun deleteSurveySectionQuestionOptionFroLanguage(
         userId: String,
         optionId: Int,
         questionId: Int,
         sectionId: Int,
         surveyId: Int,
-        languageId: String
     )
 
-    @Query("Select * from $OPTION_TABLE where  userId=:userId and  sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
+    @Query(
+        "select option_table.optionId, \n" +
+                " option_table.sectionId,\n" +
+                " option_table.surveyId,\n" +
+                " option_table.questionId,\n" +
+                " option_table.selectedValue,\n" +
+                " option_table.optionType,\n" +
+                " option_table.`order`,\n" +
+                " option_table.contentEntities,\n" +
+                " option_table.conditions,\n" +
+                " option_table.selectedValue,\n" +
+                " option_table.optionTag,\n" +
+                " option_table.selectedValueId,\n" +
+                " survey_language_attribute_table.description,\n" +
+                " survey_language_attribute_table.paraphrase\n" +
+                "  from option_table inner join survey_language_attribute_table on option_table.optionId = survey_language_attribute_table.referenceId where survey_language_attribute_table.referenceType =\"OPTION\" \n" +
+                "and survey_language_attribute_table.languageCode=:languageId and option_table.surveyId=:surveyId and option_table.sectionId=:sectionId and option_table.userId=:userId "
+    )
     fun getSurveySectionQuestionOptionsForLanguage(
         userId: String,
         sectionId: Int,
         surveyId: Int,
         languageId: String
-    ): List<OptionItemEntity>
+    ): List<OptionsUiModel>
 
-    @Query("Select * from $OPTION_TABLE where userId=:userId and sectionId = :sectionId and surveyId = :surveyId and questionId = :questionId and optionId = :optionId and languageId = :languageId")
-    fun getSurveySectionQuestionOptionForLanguage(
-        userId: String,
-        sectionId: Int,
-        surveyId: Int,
-        questionId: Int,
-        optionId: Int,
-        languageId: Int
-    ): OptionItemEntity?
 
-    @Query("Select * from $OPTION_TABLE where  userId=:userId and sectionId = :sectionId and surveyId = :surveyId and questionId = :questionId and languageId=:languageId")
-    fun getSurveySectionQuestionOptions(
-        userId: String,
-        sectionId: Int,
-        surveyId: Int,
-        questionId: Int,
-        languageId: Int
-    ): List<OptionItemEntity>
 
     @Query("Update $OPTION_TABLE set isSelected = :isSelected where  userId=:userId and surveyId=:surveyId AND sectionId=:sectionId AND questionId = :questionId AND optionId = :optionId")
     fun updateOptionItem(
@@ -68,24 +68,9 @@ interface OptionItemDao {
         selectValue: String,
     )
 
-    @Query("Select * from $OPTION_TABLE where userId=:userId and  surveyId = :surveyId and languageId = :languageId")
-    fun getAllOptionForLanguage(
-        userId: String,
-        surveyId: Int,
-        languageId: Int
-    ): List<OptionItemEntity>
 
 
     @Query("Delete from $OPTION_TABLE where userId=:userId")
     fun deleteOptions(userId: String)
 
-    @Query("SELECT * FROM option_table WHERE languageId = :languageId AND optionId IN (:optionIds) AND questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId and userId =:userId")
-    fun getOptions(
-        languageId: Int,
-        optionIds: List<Int>,
-        questionId: Int,
-        sectionId: Int,
-        surveyId: Int,
-        userId: String
-    ): List<OptionItemEntity>
 }
