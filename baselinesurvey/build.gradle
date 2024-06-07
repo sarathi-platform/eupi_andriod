@@ -129,6 +129,7 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.1.2")
     implementation "androidx.compose.runtime:runtime-livedata:1.4.3"
     implementation project(":core")
+    implementation project(':DataManager')
 
 //    implementation project(path: ':baselinesurvey')
     testImplementation 'junit:junit:4.13.2'

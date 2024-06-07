@@ -39,7 +39,6 @@ class SplashScreenRepositoryImpl @Inject constructor(
             val defaultLanguage = getDefaultLanguage()
             languageListDao.insertLanguage(defaultLanguage)
         }
-
     }
 
     override fun isLoggedIn(): Boolean {

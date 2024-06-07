@@ -21,6 +21,15 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_MOBILE_NO_NAME = "mobileNo"
         const val PREF_USER_TYPE = "userType"
         const val PREF_KEY_LANGUAGE_CODE = "language_code"
+        const val PREF_STATE_ID = "stateId"
+        const val PREF_KEY_USER_NAME = "key_user_name"
+        const val PREF_KEY_NAME = "key_name"
+        const val PREF_KEY_EMAIL = "key_email"
+        const val PREF_KEY_IDENTITY_NUMBER = "key_identity_number"
+        const val PREF_KEY_PROFILE_IMAGE = "profile_image"
+        const val PREF_KEY_ROLE_NAME = "role_name"
+        const val PREF_KEY_TYPE_NAME = "type_name"
+        const val PREF_CASTE_LIST = "caste_list"
         const val PREF_KEY_USER_ID = "user_id"
 
 
@@ -54,9 +63,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     }
 
     override fun setBackupFileName(fileName: String) {
-
-        prefs.edit().putString(PREF_FILE_BACKUP_NAME, fileName).apply()
-
+        savePref(PREF_FILE_BACKUP_NAME, fileName)
     }
 
     override fun getImageBackupFileName(mobileNo: String): String {
@@ -80,6 +87,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     override fun setFileExported(isExported: Boolean) {
         prefs.edit().putBoolean(PREF_IMAGE_FILE_EXPORTED_NAME, isExported).apply()
     }
+
     override fun setMobileNo(mobileNo: String) {
         prefs.edit().putString(PREF_MOBILE_NO_NAME, mobileNo).apply()
     }
@@ -101,6 +109,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         val userMobile = getMobileNo()
         return "${userType}_${userMobile}"
     }
+
     override fun getAppLanguage(): String {
         return prefs.getString(PREF_KEY_LANGUAGE_CODE, DEFAULT_LANGUAGE_CODE)
             ?: DEFAULT_LANGUAGE_CODE
@@ -117,6 +126,54 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
 
     override fun setUserId(userId: String) {
         prefs.edit().putString(PREF_KEY_USER_ID, userId).apply()
+    }
+
+    fun setUserName(userName: String) {
+        savePref(PREF_KEY_USER_NAME, userName)
+    }
+
+    fun getUserName(): String {
+        return getPref(PREF_KEY_USER_NAME, BLANK_STRING)
+    }
+
+    fun setUserEmail(email: String) {
+        savePref(PREF_KEY_EMAIL, email)
+    }
+
+    fun getUserEmail(): String {
+        return getPref(PREF_KEY_EMAIL, BLANK_STRING)
+    }
+
+    fun setStateId(stateId: Int) {
+        savePref(PREF_STATE_ID, stateId)
+    }
+
+    fun getStateId(): Int {
+        return getPref(PREF_STATE_ID, -1)
+    }
+
+    fun setUserRole(role: String) {
+        savePref(PREF_KEY_ROLE_NAME, role)
+    }
+
+    fun getUserRole(): String {
+        return getPref(PREF_KEY_ROLE_NAME, BLANK_STRING)
+    }
+
+    override fun savePref(key: String, value: String) {
+        prefs.edit().putString(key, value).apply()
+    }
+
+    override fun savePref(key: String, value: Int) {
+        prefs.edit().putInt(key, value).apply()
+    }
+
+    override fun getPref(key: String, defaultValue: Int): Int {
+        return prefs.getInt(key, defaultValue)
+    }
+
+    override fun getPref(key: String, defaultValue: String): String {
+        return prefs.getString(key, defaultValue) ?: BLANK_STRING
     }
 
 }
