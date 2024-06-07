@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
@@ -26,12 +27,14 @@ class GrantTaskScreenViewModel @Inject constructor(
     private val getTaskUseCase: GetTaskUseCase,
     private val surveyAnswerUseCase: SaveSurveyAnswerUseCase,
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
-    private val getActivityConfigUseCase: GetActivityConfigUseCase
+    private val getActivityConfigUseCase: GetActivityConfigUseCase,
+    private val grantConfigUseCase: GrantConfigUseCase
 ) : BaseViewModel() {
     private var missionId = 0
     private var activityId = 0
     var activityConfigUiModel: ActivityConfigUiModel? = null
     private val _taskList = mutableStateOf<HashMap<Int, HashMap<String, String>>>(hashMapOf())
+    var isDisbursement: Boolean = false
     val taskList: State<HashMap<Int, HashMap<String, String>>> get() = _taskList
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -57,6 +60,7 @@ class GrantTaskScreenViewModel @Inject constructor(
                 _taskList.value[it.taskId] =
                     getUiComponentValues(it.taskId, it.status.toString(), it.subjectId)
             }
+            getGrantConfig()
 
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -118,6 +122,14 @@ class GrantTaskScreenViewModel @Inject constructor(
     suspend fun getSurveyDetail() {
         activityConfigUiModel = getActivityConfigUseCase.getActivityUiConfig(activityId)
 
+    }
+
+    suspend fun getGrantConfig() {
+        activityConfigUiModel?.activityConfigId?.let {
+            val grantConfigs = grantConfigUseCase.getGrantConfig(it)
+            isDisbursement = grantConfigs.isNotEmpty()
+
+        }
     }
 
 }

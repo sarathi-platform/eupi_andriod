@@ -13,6 +13,7 @@ import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
+import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
 import com.sarathi.dataloadingmangement.data.dao.LanguageDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
@@ -167,6 +168,11 @@ class DataLoadingModule {
     @Singleton
     fun provideSurveyAnswersDao(db: NudgeGrantDatabase) = db.surveyAnswersDao()
 
+
+    @Provides
+    @Singleton
+    fun provideGrantConfigDao(db: NudgeGrantDatabase) = db.grantConfigDao()
+
     @Provides
     @Singleton
     fun provideSurveyDownloadRepository(
@@ -237,6 +243,7 @@ class DataLoadingModule {
         uiConfigDao: UiConfigDao,
         apiService: DataLoadingApiService,
         sharedPrefs: CoreSharedPrefs,
+        grantConfigDao: GrantConfigDao
     ): IMissionRepository {
         return MissionRepositoryImpl(
             apiInterface = apiService,
@@ -251,7 +258,10 @@ class DataLoadingModule {
             missionDao = missionDao,
             contentConfigDao = contentConfigDao,
             missionLanguageAttributeDao = missionLanguageAttributeDao,
-            sharedPrefs = sharedPrefs
+            sharedPrefs = sharedPrefs,
+            grantConfigDao = grantConfigDao
+
+
         )
     }
 

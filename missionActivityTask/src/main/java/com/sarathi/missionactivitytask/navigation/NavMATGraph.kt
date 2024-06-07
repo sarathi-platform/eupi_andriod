@@ -13,6 +13,7 @@ import com.sarathi.contentmodule.media.MediaScreen
 import com.sarathi.contentmodule.ui.content_detail_screen.screen.ContentDetailScreen
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ACTIVITY_SCREEN_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_CONFIG_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_MASSAGE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_NAME
@@ -21,10 +22,12 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CO
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SECTION_ID
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SUBJECT_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SUBJECT_TYPE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SURVEY_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TASK_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.CONTENT_DETAIL_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MAT_GRAPH
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MEDIA_PLAYER_SCREEN_ROUTE_NAME
@@ -36,6 +39,7 @@ import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.ActivityS
 import com.sarathi.missionactivitytask.ui.mission_screen.screen.GrantMissionScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.ActivitySuccessScreen
 import com.sarathi.missionactivitytask.ui.step_completion_screen.FinalStepCompletionScreen
+import com.sarathi.surveymanager.ui.screen.DisbursementSummaryScreen
 import com.sarathi.surveymanager.ui.screen.SurveyScreen
 
 
@@ -171,6 +175,53 @@ fun NavGraphBuilder.MatNavigation(
 
                 )
         }
+        composable(
+            route = MATHomeScreens.DisbursementSurveyScreen.route, arguments = listOf(
+                navArgument(name = ARG_TASK_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_SECTION_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_SURVEY_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_SUBJECT_TYPE) {
+                    type = NavType.StringType
+                },
+                navArgument(name = ARG_SUBJECT_NAME) {
+                    type = NavType.StringType
+                },
+                navArgument(name = ARG_ACTIVITY_CONFIG_ID) {
+                    type = NavType.IntType
+                },
+
+
+                )
+        ) {
+            DisbursementSummaryScreen(
+                navController = navController, viewModel = hiltViewModel(),
+                taskId = it.arguments?.getInt(
+                    ARG_TASK_ID
+                ) ?: 0,
+                surveyId = it.arguments?.getInt(
+                    ARG_SURVEY_ID
+                ) ?: 0,
+                sectionId = it.arguments?.getInt(
+                    ARG_SECTION_ID
+                ) ?: 0,
+                subjectType = it.arguments?.getString(
+                    ARG_SUBJECT_TYPE
+                ) ?: BLANK_STRING,
+                subjectName = it.arguments?.getString(ARG_SUBJECT_NAME) ?: BLANK_STRING,
+                activityConfigId = it.arguments?.getInt(
+                    ARG_ACTIVITY_CONFIG_ID
+                ) ?: 0,
+                onSettingClick = onSettingIconClick
+
+
+            )
+        }
 
         composable(route = MATHomeScreens.ActivityCompletionScreen.route, arguments = listOf(
             navArgument(
@@ -210,7 +261,10 @@ sealed class MATHomeScreens(val route: String) {
 
     object SurveyScreen :
         MATHomeScreens(route = "$SURVEY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}")
-     object ActivityCompletionScreen :
+    object DisbursementSurveyScreen :
+        MATHomeScreens(route = "$GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_SUBJECT_NAME}/{$ARG_ACTIVITY_CONFIG_ID}")
+
+    object ActivityCompletionScreen :
         MATHomeScreens(route = "$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/{$ARG_ACTIVITY_MASSAGE}")
 
     object FinalStepCompletionScreen : MATHomeScreens(route = MISSION_FINAL_STEP_SCREEN_ROUTE_NAME)
@@ -229,6 +283,18 @@ fun navigateToSurveyScreen(
     subjectType: String
 ) {
     navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType")
+}
+
+fun navigateToGrantSurveySummaryScreen(
+    navController: NavController,
+    surveyId: Int,
+    sectionId: Int,
+    taskId: Int,
+    subjectType: String,
+    subjectName: String,
+    activityConfigId: Int
+) {
+    navController.navigate("$GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$subjectName/$activityConfigId")
 }
 
 

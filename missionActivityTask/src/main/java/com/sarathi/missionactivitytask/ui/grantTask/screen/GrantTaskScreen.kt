@@ -7,6 +7,8 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.DEFAULT_ID
+import com.sarathi.missionactivitytask.navigation.navigateToGrantSurveySummaryScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.navigation.navigateToSurveyScreen
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
@@ -50,17 +52,35 @@ fun GrantTaskScreen(
                     onContentData = { contentValue, contentKey, contentType ->
                         navigateToMediaPlayerScreen(navController, contentKey, contentType)
                     },
-                    onPrimaryButtonClick = { taskId ->
-                        viewModel.activityConfigUiModel?.let {
-                            navigateToSurveyScreen(
-                                navController,
-                                taskId = taskId,
-                                surveyId = it.surveyId,
-                                sectionId = it.sectionId,
-                                subjectType = it.subject
-                            )
+                    onPrimaryButtonClick = { taskId, title ->
 
+                        if (viewModel.isDisbursement) {
+                            viewModel.activityConfigUiModel?.let {
+                                navigateToGrantSurveySummaryScreen(
+                                    navController,
+                                    taskId = taskId,
+                                    surveyId = it.surveyId,
+                                    sectionId = it.sectionId,
+                                    subjectType = it.subject,
+                                    subjectName = title,
+                                    activityConfigId = viewModel.activityConfigUiModel?.activityConfigId
+                                        ?: DEFAULT_ID
+                                )
+
+                            }
+                        } else {
+                            viewModel.activityConfigUiModel?.let {
+                                navigateToSurveyScreen(
+                                    navController,
+                                    taskId = taskId,
+                                    surveyId = it.surveyId,
+                                    sectionId = it.sectionId,
+                                    subjectType = it.subject
+                                )
+
+                            }
                         }
+
                     }
                 )
             }

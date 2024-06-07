@@ -8,6 +8,7 @@ import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
+import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
@@ -20,6 +21,7 @@ import com.sarathi.dataloadingmangement.data.entities.ActivityLanguageAttributes
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.AttributeValueReferenceEntity
 import com.sarathi.dataloadingmangement.data.entities.ContentConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.GrantConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionLanguageEntity
 import com.sarathi.dataloadingmangement.data.entities.ProgrammeEntity
@@ -31,6 +33,7 @@ import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityTitle
 import com.sarathi.dataloadingmangement.model.mat.response.AttributeResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ContentResponse
+import com.sarathi.dataloadingmangement.model.mat.response.GrantConfigResponse
 import com.sarathi.dataloadingmangement.model.mat.response.MissionResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.mat.response.TaskData
@@ -52,7 +55,8 @@ class MissionRepositoryImpl @Inject constructor(
     val programmeDao: ProgrammeDao,
     val subjectAttributeDao: SubjectAttributeDao,
     val attributeValueReferenceDao: AttributeValueReferenceDao,
-    val missionDao: MissionDao
+    val missionDao: MissionDao,
+    val grantConfigDao: GrantConfigDao
 ) : IMissionRepository {
 
     override suspend fun fetchMissionDataFromServer(
@@ -142,11 +146,19 @@ class MissionRepositoryImpl @Inject constructor(
                         2
                     )
                     missionActivityModel.activityConfig?.let {
-                        saveActivityConfig(
+                        val activityConfigId = saveActivityConfig(
                             it,
                             missionActivityModel.id,
+
                             missionId
                         )
+                        it.grantConfig?.let { it1 ->
+                            saveGrantActivityConfig(
+                                it1,
+                                missionActivityModel.activityConfig.surveyId,
+                                activityConfigId
+                            )
+                        }
                     }
                     saveActivityUiConfig(
                         missionActivityModel.id,
@@ -159,6 +171,9 @@ class MissionRepositoryImpl @Inject constructor(
                             missionActivityModel.id,
                             it
                         )
+                    }
+                    missionActivityModel.activityConfig?.grantConfig?.let { it1 ->
+
                     }
                 } else {
                     missionActivityDao.updateActivityActiveStatus(
@@ -231,8 +246,8 @@ class MissionRepositoryImpl @Inject constructor(
         activityConfig: ActivityConfig,
         activityId: Int,
         missionId: Int
-    ) {
-        activityConfigDao.insertActivityConfig(
+    ): Long {
+        return activityConfigDao.insertActivityConfig(
             ActivityConfigEntity.getActivityConfigEntity(
                 activityId = activityId,
                 missionId = missionId,
@@ -301,6 +316,22 @@ class MissionRepositoryImpl @Inject constructor(
                     userId = sharedPrefs.getUniqueUserIdentifier(),
                     parentReferenceId = refrenceId,
                     taskData = it,
+                )
+            )
+        }
+    }
+    private fun saveGrantActivityConfig(
+        grantConfig: List<GrantConfigResponse>,
+        surveyId: Int,
+        activityTypeId: Long
+    ) {
+        grantConfig.forEach {
+            grantConfigDao.insertGrantActivityConfig(
+                GrantConfigEntity.getGrantConfigEntity(
+                    userId = sharedPrefs.getUniqueUserIdentifier(),
+                    activityConfigId = activityTypeId,
+                    surveyId = surveyId,
+                    grantConfigResponse = it
                 )
             )
         }

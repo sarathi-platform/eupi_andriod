@@ -13,9 +13,9 @@ import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
 @Dao
 interface ActivityConfigDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertActivityConfig(activityConfigEntity: ActivityConfigEntity)
+    fun insertActivityConfig(activityConfigEntity: ActivityConfigEntity): Long
 
-    @Query("select activity_config_table.surveyId , activity_config_table.subject, section_table.sectionId from activity_config_table left join section_table  where activityId =:activityId and languageId=:languageId and  activity_config_table. userId =:userId and  section_table.userId =:userId ")
+    @Query("select activity_config_table.surveyId ,activity_config_table.activityTypeId as activityConfigId ,activity_config_table.subject, section_table.sectionId from activity_config_table left join section_table  where activityId =:activityId and languageId=:languageId and  activity_config_table. userId =:userId and  section_table.userId =:userId ")
     fun getActivityConfigWithSection(
         activityId: Int,
         userId: String,

@@ -20,6 +20,7 @@ import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
+import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
 import com.sarathi.dataloadingmangement.data.dao.LanguageDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
@@ -41,6 +42,7 @@ import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.AttributeValueReferenceEntity
 import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.data.entities.ContentConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.GrantConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.LanguageEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionLanguageEntity
@@ -77,7 +79,8 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
         OptionItemEntity::class,
         LanguageEntity::class,
         ProgrammeEntity::class,
-        SurveyAnswerEntity::class
+        SurveyAnswerEntity::class,
+        GrantConfigEntity::class
 
     ],
     version = NUDGE_GRANT_DATABASE_VERSION,
@@ -117,6 +120,7 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun optionItemDao(): OptionItemDao
     abstract fun programmeDao(): ProgrammeDao
     abstract fun surveyAnswersDao(): SurveyAnswersDao
+    abstract fun grantConfigDao(): GrantConfigDao
 
 
     class NudgeDatabaseCallback : Callback()

@@ -173,7 +173,8 @@ fun SurveyScreen(
 
                 }
             }
-        }
+        },
+        onSettingClick = {}
     )
 }
 

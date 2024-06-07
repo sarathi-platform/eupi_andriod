@@ -26,7 +26,7 @@ fun GrantTaskList(
     isSearch: Boolean = true,
     onSearchValueChange: (String) -> Unit,
     navController: NavController,
-    onPrimaryButtonClick: (Int) -> Unit,
+    onPrimaryButtonClick: (Int, String) -> Unit,
     onContentData: (contentValue: String, contentKey: String, contentType: String) -> Unit,
 ) {
     Column {
@@ -57,7 +57,10 @@ fun GrantTaskList(
 
                 GrantTaskCard(
                     onPrimaryButtonClick = {
-                        onPrimaryButtonClick(task.key)
+                        onPrimaryButtonClick(
+                            task.key,
+                            task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name] ?: BLANK_STRING
+                        )
                     },
                     title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name] ?: BLANK_STRING,
                     subTitle = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name]

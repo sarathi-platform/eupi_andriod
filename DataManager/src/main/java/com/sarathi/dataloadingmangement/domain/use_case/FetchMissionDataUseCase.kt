@@ -17,13 +17,6 @@ class FetchMissionDataUseCase @Inject constructor(
             if (apiResponse.status.equals(SUCCESS, true)) {
                 apiResponse.data?.let { missionApiResponse ->
 
-//                    var dumyyResponse: List<ProgrameResponse>? = null
-//                    context.resources.openRawResource(R.raw.mission_response).use {
-//                        val listType = object : TypeToken<List<ProgrameResponse>>() {}.getType()
-//
-//                        dumyyResponse = Gson().fromJson(it.reader(), listType)
-//                    }
-
                     missionApiResponse.forEach { programme ->
                         repository.saveProgrammeToDb(programme)
 
