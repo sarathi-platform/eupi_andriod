@@ -36,6 +36,8 @@ import com.sarathi.surveymanager.ui.component.ButtonPositive
 import com.sarathi.surveymanager.ui.component.DatePickerComponent
 import com.sarathi.surveymanager.ui.component.InputComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
+import com.sarathi.surveymanager.ui.component.TypeDropDownComponent
+import com.sarathi.surveymanager.ui.component.TypeMultiSelectedDropDownComponent
 import kotlinx.coroutines.launch
 
 @Composable
@@ -162,10 +164,20 @@ fun SurveyScreen(
                                     ) { selectedValue ->
                                     saveMultiImageTypeAnswer(selectedValue, question.options)
                                     viewModel.saveAnswerIntoDB(question)
-
-
                                 }
+                            }
 
+                            QuestionType.SingleSelectDropDown.name -> {
+                                TypeDropDownComponent(sources = listOf()) {
+                                }
+                            }
+
+                            QuestionType.MultiSelectDropDown.name -> {
+                                TypeMultiSelectedDropDownComponent(
+                                    sources = listOf(),
+                                    selectOptionText = BLANK_STRING
+                                ) {
+                                }
                             }
                         }
                     }

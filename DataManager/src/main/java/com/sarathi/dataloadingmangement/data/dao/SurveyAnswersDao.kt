@@ -68,12 +68,12 @@ interface SurveyAnswersDao {
 
     }
 
-    @Query("select * from ques_answer_table where userId =:uniqueUserIdentifier and subjectId=:subjectId and taskId=:taskId and taskId =:tagId")
+    @Query("select * from ques_answer_table where userId =:uniqueUserIdentifier and subjectId=:subjectId and taskId=:taskId and tagId =:tagId")
     fun getSurveyAnswerForTag(
         taskId: Int,
         subjectId: Int,
         tagId: Int,
         uniqueUserIdentifier: String
-    ): SurveyAnswerEntity
+    ): SurveyAnswerEntity?
 
 }

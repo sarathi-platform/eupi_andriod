@@ -17,13 +17,12 @@ import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.GrantTaskCard
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
-import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.BasicContent
 
 @Composable
 fun GrantTaskList(
     taskList: HashMap<Int, HashMap<String, String>>,
-    contents: List<BasicContent> = listOf(),
     isSearch: Boolean = true,
+    searchPlaceholder: String = "Search",
     onSearchValueChange: (String) -> Unit,
     navController: NavController,
     onPrimaryButtonClick: (Int) -> Unit,
@@ -39,14 +38,14 @@ fun GrantTaskList(
             }
         }
         if (isSearch) {
-            SearchWithFilterViewComponent(placeholderString = "Search",
+            SearchWithFilterViewComponent(
+                placeholderString = searchPlaceholder,
                 filterSelected = false,
                 modifier = Modifier.padding(horizontal = 10.dp),
                 showFilter = false,
                 onFilterSelected = {},
                 onSearchValueChange = { queryTerm ->
                     onSearchValueChange(queryTerm)
-
                 })
         }
         Spacer(modifier = Modifier.height(20.dp))
@@ -64,10 +63,19 @@ fun GrantTaskList(
                         ?: BLANK_STRING,
                     primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name]
                         ?: BLANK_STRING,
-                    secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name]
+                    secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_SECONDARY_BUTTON.name]
                         ?: BLANK_STRING,
                     status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]
                         ?: BLANK_STRING,
+
+                    subtitle2 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_2.name]
+                        ?: BLANK_STRING,
+                    subtitle3 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_3.name]
+                        ?: BLANK_STRING,
+                    subtitle4 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]
+                        ?: BLANK_STRING,
+                    subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name]
+                        ?: BLANK_STRING
                 )
 
 

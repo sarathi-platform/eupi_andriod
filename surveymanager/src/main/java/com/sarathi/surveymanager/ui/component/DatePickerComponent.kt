@@ -59,6 +59,7 @@ fun DatePickerComponent(
                 .border(1.dp, greyColor, shape = RoundedCornerShape(8.dp))
                 .padding(8.dp),
             value = text,
+            readOnly = true,
             onValueChange = { text = it },
             placeholder = {
                 Text(
