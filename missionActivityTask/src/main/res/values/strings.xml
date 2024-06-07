@@ -5,4 +5,6 @@
     <string name="retry">Retry</string>
     <string name="in_progress">In Progress</string>
     <string name="received">Received: ₹</string>
+    <string name="complete_activity">Complete Activity</string>
+    <string name="complete_mission">Complete Mission</string>
 </resources>
