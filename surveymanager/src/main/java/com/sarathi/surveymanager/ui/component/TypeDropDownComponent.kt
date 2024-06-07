@@ -9,8 +9,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.toSize
+import com.nudge.core.showCustomToast
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.surveymanager.R
 
@@ -22,7 +24,7 @@ fun TypeDropDownComponent(
     selectOptionText: Int = 0,
     onAnswerSelection: (selectValue: Int) -> Unit
 ) {
-
+    val context = LocalContext.current
     val defaultSourceList =
         sources ?: listOf(ValuesDto(id = 1, "Yes"), ValuesDto(id = 2, "No"))
     var expanded by remember { mutableStateOf(false) }
@@ -60,10 +62,10 @@ fun TypeDropDownComponent(
                 onAnswerSelection(it.id)
                 expanded = false
             } else {
-//                    showCustomToast(
-//                        context,
-//                        context.getString(R.string.edit_disable_message)
-//                    )
+                showCustomToast(
+                    context,
+                    context.getString(R.string.edit_disable_message)
+                )
             }
         })
 
