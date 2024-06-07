@@ -4,11 +4,8 @@ import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.sarathi.dataloadingmangement.domain.DataLoadingUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
-import com.sarathi.missionactivitytask.domain.usecases.GetMissionsUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.utils.event.SearchEvent
@@ -24,11 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MissionScreenViewModel @Inject constructor(
     private val fetchAllDataUseCase: FetchAllDataUseCase,
-    private val fetchDataUseCase: DataLoadingUseCase,
-    private val missionsUseCase: GetMissionsUseCase,
     @ApplicationContext val context: Context,
-    private val contentDownloaderUseCase: ContentDownloaderUseCase
-
 ) : BaseViewModel() {
     private val _missionList = mutableStateOf<List<MissionUiModel>>(emptyList())
     val missionList: State<List<MissionUiModel>> get() = _missionList
@@ -57,6 +50,10 @@ class MissionScreenViewModel @Inject constructor(
         }
     }
 
+    override fun refreshData() {
+        loadAllData()
+    }
+
     private fun performSearchQuery(searchTerm: String, searchApplied: Boolean) {
         val filteredList = ArrayList<MissionUiModel>()
         if (searchTerm.isNotEmpty()) {
@@ -73,7 +70,7 @@ class MissionScreenViewModel @Inject constructor(
 
     private fun initMissionScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            _missionList.value = missionsUseCase.getAllMission()
+            _missionList.value = fetchAllDataUseCase.fetchMissionDataUseCase.getAllMission()
             _filterMissionList.value = _missionList.value
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -82,53 +79,11 @@ class MissionScreenViewModel @Inject constructor(
     }
 
     private fun loadAllData() {
-        TOTAL_API_CALL = 2
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             fetchAllDataUseCase.invoke { isSuccess, successMsg ->
                 initMissionScreen()
             }
-        }
-    }
-
-    private fun fetchAllData(callBack: () -> Unit) {
-        try {
-            viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-                fetchContentData(fetchDataUseCase) {}
-                contentDataDownloader(contentDownloaderUseCase) {}
-                fetchMissionData(fetchDataUseCase) { callBack() }
-                fetchDataUseCase.fetchSurveyDataFromNetworkUseCase.invoke()
-            }
-        } catch (ex: Exception) {
-            onEvent(LoaderEvent.UpdateLoaderState(false))
-            callBack()
-        }
-
-    }
-
-    private fun fetchMissionData(dataLoadingUseCase: DataLoadingUseCase, callBack: () -> Unit) {
-        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            dataLoadingUseCase.fetchMissionDataFromNetworkUseCase.invoke()
-            initMissionScreen()
-            baseCurrentApiCount++
-            updateLoaderEvent(callBack)
-        }
-    }
-
-    private fun fetchContentData(dataLoadingUseCase: DataLoadingUseCase, callBack: () -> Unit) {
-        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            dataLoadingUseCase.fetchContentDataFromNetworkUseCase.invoke()
-            baseCurrentApiCount++
-            updateLoaderEvent(callBack)
-        }
-    }
-
-    private fun contentDataDownloader(
-        contentDownloaderUseCase: ContentDownloaderUseCase,
-        callBack: () -> Unit
-    ) {
-        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            contentDownloaderUseCase.contentDownloader()
         }
     }
 

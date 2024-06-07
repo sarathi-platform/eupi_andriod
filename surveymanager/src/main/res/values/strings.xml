@@ -5,4 +5,7 @@
     <string name="not_able_to_load">Not able to load data please try again..</string>
     <string name="retry">Retry</string>
     <string name="in_progress">In Progress</string>
+    <string name="select">Select</string>
+    <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
+
 </resources>
