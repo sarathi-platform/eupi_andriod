@@ -39,10 +39,12 @@ import com.nudge.core.ui.events.theme.dimen_30_dp
 import com.nudge.core.ui.events.theme.dimen_6_dp
 import com.nudge.core.ui.events.theme.greyBorderColor
 import com.nudge.core.ui.events.theme.white
+import com.sarathi.dataloadingmangement.BLANK_STRING
 
 @Composable
 fun CollapsibleCard(
-    summaryCount: Int = 10,
+    title: String = BLANK_STRING,
+    summaryCount: Int = 0,
     onContentUI: @Composable () -> Unit,
     onClick: () -> Unit
 ) {
@@ -78,7 +80,7 @@ fun CollapsibleCard(
 
             ) {
                 Text(
-                    text = "+ Add Disbursement", style = defaultTextStyle.copy(color = blue)
+                    text = title, style = defaultTextStyle.copy(color = blue)
                 )
             }
             if (summaryCount > 0) {

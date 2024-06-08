@@ -24,9 +24,8 @@ data class GrantConfigEntity(
     var grantComponent: String,
     var grantMode: String,
     var grantNature: String,
-    var activityConfigId: Long,
-
-    ) {
+    var activityConfigId: Long
+) {
     companion object {
 
         fun getGrantConfigEntity(

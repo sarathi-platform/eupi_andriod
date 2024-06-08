@@ -73,7 +73,8 @@ class SurveyScreenViewModel @Inject constructor(
                 surveyId = surveyId,
                 sectionId = sectionId,
                 subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
-                activityConfigId = activityConfigId
+                activityConfigId = activityConfigId,
+                referenceId = referenceId
             )
             checkButtonValidation()
             isTaskStatusCompleted()

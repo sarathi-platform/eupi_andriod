@@ -18,11 +18,22 @@ interface SurveyAnswersDao {
     fun insertSurveyAnswer(surveyAnswerEntity: SurveyAnswerEntity)
 
 
-    @Query("select * from ques_answer_table where userId =:userId and subjectId=:subjectId and sectionId=:sectionId")
-    fun getSurveyAnswers(userId: String, subjectId: Int, sectionId: Int): List<SurveyAnswerEntity>
+    @Query("select * from ques_answer_table where userId =:userId and subjectId=:subjectId and sectionId=:sectionId and referenceId=:referenceId")
+    fun getSurveyAnswers(
+        userId: String,
+        subjectId: Int,
+        sectionId: Int,
+        referenceId: String
+    ): List<SurveyAnswerEntity>
 
-    @Query("select count(*) from ques_answer_table where userId =:userId and subjectId=:subjectId and sectionId=:sectionId and questionId =:questionId")
-    fun getSurveyAnswers(userId: String, subjectId: Int, sectionId: Int, questionId: Int): Int
+    @Query("select count(*) from ques_answer_table where userId =:userId and subjectId=:subjectId and sectionId=:sectionId and questionId =:questionId and referenceId=:referenceId")
+    fun getSurveyAnswers(
+        userId: String,
+        subjectId: Int,
+        sectionId: Int,
+        questionId: Int,
+        referenceId: String
+    ): Int
 
     @Query("select * from ques_answer_table where userId =:userId and taskId=:taskId and sectionId=:sectionId and surveyId=:surveyId")
     fun getSurveyAnswersForSummary(
@@ -32,7 +43,7 @@ interface SurveyAnswersDao {
         surveyId: Int
     ): List<SurveyAnswerEntity>
 
-    @Query("Update $ANSWER_TABLE set optionItems = :optionItems,answerValue =:answerValue, questionType=:questionType, questionSummary=:questionSummary where userId=:userId and subjectId = :subjectId AND questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId")
+    @Query("Update $ANSWER_TABLE set optionItems = :optionItems,answerValue =:answerValue, questionType=:questionType, questionSummary=:questionSummary where userId=:userId and subjectId = :subjectId AND questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId and referenceId=:referenceId")
     fun updateAnswer(
         userId: String,
         subjectId: Int,
@@ -42,7 +53,8 @@ interface SurveyAnswersDao {
         optionItems: List<OptionsUiModel>,
         questionType: String,
         questionSummary: String,
-        answerValue: String
+        answerValue: String,
+        referenceId: String
     )
 
     @Transaction
@@ -51,7 +63,8 @@ interface SurveyAnswersDao {
                 surveyAnswerEntity.userId ?: BLANK_STRING,
                 surveyAnswerEntity.subjectId,
                 surveyAnswerEntity.sectionId,
-                surveyAnswerEntity.questionId
+                surveyAnswerEntity.questionId,
+                surveyAnswerEntity.referenceId
             ) == 0
         ) {
             insertSurveyAnswer(surveyAnswerEntity)
@@ -65,7 +78,8 @@ interface SurveyAnswersDao {
                 sectionId = surveyAnswerEntity.sectionId,
                 subjectId = surveyAnswerEntity.subjectId,
                 optionItems = surveyAnswerEntity.optionItems,
-                answerValue = surveyAnswerEntity.answerValue
+                answerValue = surveyAnswerEntity.answerValue,
+                referenceId = surveyAnswerEntity.referenceId
             )
         }
     }
