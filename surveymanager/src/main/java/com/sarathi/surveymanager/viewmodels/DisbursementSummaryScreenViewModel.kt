@@ -99,13 +99,13 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
         var subTitle3 = BLANK_STRING
         surveyList.forEach { survey ->
             when (survey.tagId) {
-                SurveyCardTag.SURVEY_TAG_CSG.tag ->
+                SurveyCardTag.SURVEY_TAG_AMOUNT.tag ->
                     subTitle1 = survey.optionItems.first().selectedValue ?: BLANK_STRING
 
                 SurveyCardTag.SURVEY_TAG_DATE.tag ->
                     subTitle2 = survey.optionItems.first().selectedValue ?: BLANK_STRING
 
-                SurveyCardTag.SURVEY_TAG_NUMBER.tag ->
+                SurveyCardTag.SURVEY_TAG_MODE.tag ->
                     subTitle3 = survey.optionItems.first().selectedValue ?: BLANK_STRING
             }
         }
