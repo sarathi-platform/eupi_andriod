@@ -8,6 +8,7 @@ interface ISurveyRepository {
         surveyId: Int,
         subjectId: Int,
         sectionId: Int,
-        referenceId: String
+        referenceId: String,
+        activityConfigId: Int
     ): List<QuestionUiModel>
 }

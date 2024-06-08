@@ -160,6 +160,9 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_REFERENCE_ID) {
                     type = NavType.StringType
+                },
+                navArgument(name = ARG_ACTIVITY_CONFIG_ID) {
+                    type = NavType.IntType
                 })
         ) {
             SurveyScreen(
@@ -178,7 +181,10 @@ fun NavGraphBuilder.MatNavigation(
                 ) ?: BLANK_STRING,
                 referenceId = it.arguments?.getString(
                     ARG_REFERENCE_ID
-                ) ?: BLANK_STRING
+                ) ?: BLANK_STRING,
+                activityConfigId = it.arguments?.getInt(
+                    ARG_ACTIVITY_CONFIG_ID
+                ) ?: 0
 
                 )
         }
@@ -225,7 +231,7 @@ fun NavGraphBuilder.MatNavigation(
                     ARG_ACTIVITY_CONFIG_ID
                 ) ?: 0,
                 onSettingClick = onSettingIconClick,
-                onNavigateSurveyScreen = { referenceId ->
+                onNavigateSurveyScreen = { referenceId, activityConfigId ->
                     navigateToSurveyScreen(
                         navController, surveyId = it.arguments?.getInt(
                             ARG_SURVEY_ID
@@ -236,7 +242,9 @@ fun NavGraphBuilder.MatNavigation(
                         ) ?: 0, subjectType = it.arguments?.getString(
                             ARG_SUBJECT_TYPE
                         ) ?: BLANK_STRING,
-                        referenceId = referenceId
+                        referenceId = referenceId,
+                        activityConfigId = activityConfigId
+
                     )
                 }
             )
@@ -279,7 +287,7 @@ sealed class MATHomeScreens(val route: String) {
         MATHomeScreens(route = "$MEDIA_PLAYER_SCREEN_ROUTE_NAME/{$ARG_CONTENT_KEY}/{$ARG_CONTENT_TYPE}")
 
     object SurveyScreen :
-        MATHomeScreens(route = "$SURVEY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_REFERENCE_ID}")
+        MATHomeScreens(route = "$SURVEY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_REFERENCE_ID}/{$ARG_ACTIVITY_CONFIG_ID}")
 
     object DisbursementSurveyScreen :
         MATHomeScreens(route = "$GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_SUBJECT_NAME}/{$ARG_ACTIVITY_CONFIG_ID}")
@@ -301,9 +309,10 @@ fun navigateToSurveyScreen(
     sectionId: Int,
     taskId: Int,
     subjectType: String,
-    referenceId: String
+    referenceId: String,
+    activityConfigId: Int
 ) {
-    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$referenceId")
+    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$referenceId/$activityConfigId")
 }
 
 fun navigateToGrantSurveySummaryScreen(
