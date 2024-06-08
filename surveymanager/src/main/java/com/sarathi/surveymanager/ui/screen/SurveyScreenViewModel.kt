@@ -71,6 +71,7 @@ class SurveyScreenViewModel @Inject constructor(
             _questionUiModel.value = fetchDataUseCase.invoke(
                 surveyId = surveyId,
                 sectionId = sectionId,
+                referenceId = referenceId,
                 subjectId = taskEntity?.subjectId ?: DEFAULT_ID
             )
             checkButtonValidation()

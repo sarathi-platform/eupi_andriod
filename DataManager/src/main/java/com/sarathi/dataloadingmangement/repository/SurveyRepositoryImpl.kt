@@ -23,7 +23,8 @@ class SurveyRepositoryImpl @Inject constructor(
     override suspend fun getQuestion(
         surveyId: Int,
         subjectId: Int,
-        sectionId: Int
+        sectionId: Int,
+        referenceId: String,
     ): List<QuestionUiModel> {
 
 
@@ -42,6 +43,7 @@ class SurveyRepositoryImpl @Inject constructor(
         val surveyAnswerList = surveyAnswersDao.getSurveyAnswers(
             sectionId = sectionId,
             subjectId = subjectId,
+            referenceId = referenceId,
             userId = coreSharedPrefs.getUniqueUserIdentifier()
         )
 
@@ -100,7 +102,7 @@ class SurveyRepositoryImpl @Inject constructor(
 
         } else {
             return optionList
-    }
+        }
 
 
     }

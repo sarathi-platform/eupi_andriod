@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
+import com.sarathi.dataloadingmangement.data.entities.GrantComponentDTO
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
@@ -34,7 +35,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     private var subjectType: String = "Vo"
     private var activityConfigId: Int = 0
     var showDialog = mutableStateOf(Pair<Boolean, String?>(false, BLANK_STRING))
-
+    var grantComponentDTO = mutableStateOf(GrantComponentDTO(BLANK_STRING, BLANK_STRING))
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -67,6 +68,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
                     sectionId = sectionId,
                     taskId = taskId
                 ).groupBy { it.referenceId }
+            setGrantComponentDTO()
         }
     }
 
@@ -87,7 +89,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
         this.activityConfigId = activityConfigId
     }
 
-    fun getReferenceId(): String {
+    fun createReferenceId(): String {
         return UUID.randomUUID().toString()
     }
 
@@ -116,14 +118,30 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
         )
     }
 
-    fun deleteSurveyAnswer(referenceId: String) {
+    fun deleteSurveyAnswer(referenceId: String, onDeleteSuccess: (deleteCount: Int) -> Unit) {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            saveSurveyAnswerUseCase.deleteSurveyAnswer(
+            val deleteCount = saveSurveyAnswerUseCase.deleteSurveyAnswer(
                 surveyId = surveyId,
                 sectionId = sectionId,
                 taskId = taskId,
                 referenceId = referenceId,
             )
+            if (deleteCount > 0) {
+                onDeleteSuccess(deleteCount)
+            }
         }
+    }
+
+    fun setGrantComponentDTO() {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            val grantValue = grantConfigUseCase.getGrantComponentDTO(
+                surveyId = surveyId,
+                activityConfigId = activityConfigId
+            )
+            grantConfigUseCase.getGrantComponentValues(grantValue)?.let { value ->
+                grantComponentDTO.value = value
+            }
+        }
+
     }
 }

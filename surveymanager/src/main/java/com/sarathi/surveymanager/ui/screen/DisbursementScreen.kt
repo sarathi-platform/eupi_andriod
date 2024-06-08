@@ -46,8 +46,9 @@ fun DisbursementSummaryScreen(
         },
         onContentUI = { paddingValues ->
             CollapsibleCard(
+                title = viewModel.grantComponentDTO.value.grantComponentName ?: BLANK_STRING,
                 summaryCount = viewModel.taskList.value.entries.size, onClick = {
-                    onNavigateSurveyScreen(viewModel.getReferenceId())
+                    onNavigateSurveyScreen(viewModel.createReferenceId())
                 },
                 onContentUI = {
                     if (viewModel.taskList.value.isNotEmpty()) {
@@ -83,7 +84,9 @@ fun DisbursementSummaryScreen(
                                     viewModel.showDialog.value.second?.let {
                                         viewModel.deleteSurveyAnswer(
                                             referenceId = it
-                                        )
+                                        ) { deleteCount ->
+                                            viewModel.onEvent(InitDataEvent.InitDataState)
+                                        }
                                     }
                                     viewModel.showDialog.value = Pair(false, BLANK_STRING)
                                 }
