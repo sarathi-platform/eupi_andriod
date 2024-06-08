@@ -25,7 +25,7 @@ fun DisbursementSummaryScreen(
     subjectType: String,
     subjectName: String,
     activityConfigId: Int,
-    onNavigateSurveyScreen: (referenceId: String) -> Unit,
+    onNavigateSurveyScreen: (referenceId: String, activityConfigIs: Int) -> Unit,
 ) {
 
     LaunchedEffect(key1 = true) {
@@ -47,7 +47,7 @@ fun DisbursementSummaryScreen(
         onContentUI = { paddingValues ->
             CollapsibleCard(
                 summaryCount = viewModel.taskList.value.entries.size, onClick = {
-                    onNavigateSurveyScreen(viewModel.getReferenceId())
+                    onNavigateSurveyScreen(viewModel.getReferenceId(), activityConfigId)
                 },
                 onContentUI = {
                     if (viewModel.taskList.value.isNotEmpty()) {
@@ -61,7 +61,10 @@ fun DisbursementSummaryScreen(
                                     subTitle2 = surveyData.subTittle2,
                                     subTitle3 = surveyData.subTittle3,
                                     onEditSurvey = {
-                                        onNavigateSurveyScreen(surveyData.referenceId)
+                                        onNavigateSurveyScreen(
+                                            surveyData.referenceId,
+                                            activityConfigId
+                                        )
                                     },
                                     onDeleteSurvey = {
                                         viewModel.showDialog.value =

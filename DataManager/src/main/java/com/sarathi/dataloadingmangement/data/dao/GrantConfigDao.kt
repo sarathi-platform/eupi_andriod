@@ -14,4 +14,7 @@ interface GrantConfigDao {
 
     @Query("select * from grant_config_table where activityConfigId=:activityConfigId")
     fun getGrantConfig(activityConfigId: Int): List<GrantConfigEntity>
+
+    @Query("select * from grant_config_table where activityConfigId=:activityConfigId and grantId=:grantId")
+    fun getGrantConfigWithGrantId(activityConfigId: Int, grantId: Int): GrantConfigEntity
 }

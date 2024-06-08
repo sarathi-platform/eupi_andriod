@@ -23,14 +23,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.DEFAULT_ID
 import com.nudge.core.ui.events.theme.dimen_16_dp
 import com.nudge.core.ui.events.theme.dimen_8_dp
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.model.QuestionType
+import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
-import com.sarathi.surveymanager.constants.QuestionType
 import com.sarathi.surveymanager.ui.component.AddImageComponent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
 import com.sarathi.surveymanager.ui.component.DatePickerComponent
@@ -44,14 +46,22 @@ import kotlinx.coroutines.launch
 fun SurveyScreen(
     navController: NavController = rememberNavController(),
     viewModel: SurveyScreenViewModel,
-    surveyId: Int, sectionId: Int, taskId: Int, subjectType: String, referenceId: String
+    surveyId: Int, sectionId: Int, taskId: Int, subjectType: String, referenceId: String,
+    activityConfigId: Int
 ) {
     val outerState = rememberLazyListState()
     val innerState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = true) {
-        viewModel.setPreviousScreenData(surveyId, sectionId, taskId, subjectType, referenceId)
+        viewModel.setPreviousScreenData(
+            surveyId,
+            sectionId,
+            taskId,
+            subjectType,
+            referenceId,
+            activityConfigId
+        )
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(InitDataEvent.InitDataState)
     }
@@ -172,7 +182,7 @@ fun SurveyScreen(
                                 TypeDropDownComponent(
                                     title = question.questionDisplay,
                                     isMandatory = question.isMandatory,
-                                    sources = listOf()
+                                    sources = getOptionsValueDto(question.options ?: listOf())
                                 ) {
                                 }
                             }
@@ -181,7 +191,7 @@ fun SurveyScreen(
                                 TypeMultiSelectedDropDownComponent(
                                     title = question.questionDisplay,
                                     isMandatory = question.isMandatory,
-                                    sources = listOf(),
+                                    sources = getOptionsValueDto(question.options ?: listOf()),
                                     selectOptionText = BLANK_STRING
                                 ) {
                                 }
@@ -227,6 +237,22 @@ fun listToCommaSeparatedString(list: List<String>): String {
 
 fun commaSeparatedStringToList(commaSeparatedString: String): List<String> {
     return commaSeparatedString.split(",")
+
+
+}
+
+fun getOptionsValueDto(options: List<OptionsUiModel>): List<ValuesDto> {
+    val valuesDtoList = ArrayList<ValuesDto>()
+    options.forEach {
+        valuesDtoList.add(
+            ValuesDto(
+                id = it.optionId ?: DEFAULT_ID,
+                value = it.description ?: BLANK_STRING
+            )
+        )
+    }
+    return valuesDtoList
+
 }
 
 

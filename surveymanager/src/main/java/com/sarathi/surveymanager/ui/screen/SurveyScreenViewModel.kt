@@ -36,6 +36,7 @@ class SurveyScreenViewModel @Inject constructor(
     private var surveyId: Int = 0
     private var sectionId: Int = 0
     private var taskId: Int = 0
+    private var activityConfigId: Int = 0
     private var subjectType: String = BLANK_STRING
     private var referenceId: String = BLANK_STRING
     private var taskEntity: ActivityTaskEntity? = null
@@ -71,7 +72,8 @@ class SurveyScreenViewModel @Inject constructor(
             _questionUiModel.value = fetchDataUseCase.invoke(
                 surveyId = surveyId,
                 sectionId = sectionId,
-                subjectId = taskEntity?.subjectId ?: DEFAULT_ID
+                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+                activityConfigId = activityConfigId
             )
             checkButtonValidation()
             isTaskStatusCompleted()
@@ -155,13 +157,15 @@ class SurveyScreenViewModel @Inject constructor(
         sectionId: Int,
         taskId: Int,
         subjectType: String,
-        referenceId: String
+        referenceId: String,
+        activityConfigId: Int
     ) {
         this.surveyId = surveyId
         this.sectionId = sectionId
         this.taskId = taskId
         this.subjectType = subjectType
         this.referenceId = referenceId
+        this.activityConfigId = activityConfigId
     }
 
     private fun isTaskStatusCompleted() {

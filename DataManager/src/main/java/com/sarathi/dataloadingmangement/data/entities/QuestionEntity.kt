@@ -46,11 +46,6 @@ data class QuestionEntity(
     @ColumnInfo(name = "type")
     var type: String? = BLANK_STRING,
 
-    @SerializedName("questionDisplay")
-    @Expose
-    @ColumnInfo(name = "questionDisplay")
-    var questionDisplay: String? = BLANK_STRING,
-
     @SerializedName("questionSummary")
     @Expose
     @ColumnInfo(name = "questionSummary")
@@ -113,7 +108,8 @@ data class QuestionEntity(
                 tag = question.attributeTag ?: 0,
                 contentEntities = question.contentList,
                 parentQuestionId = parentId,
-                isMandatory = question.isMandatory
+                isMandatory = question.isMandatory,
+                questionSummary = question.originalValue
             )
         }
 

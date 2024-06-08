@@ -25,6 +25,7 @@ class QuestionUiEntity(
 
     var paraphrase: String? = BLANK_STRING,
 
+    var questionSummary: String? = BLANK_STRING,
 
     var description: String? = BLANK_STRING,
 

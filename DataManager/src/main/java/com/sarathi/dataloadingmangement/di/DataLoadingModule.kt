@@ -470,14 +470,16 @@ class DataLoadingModule {
         surveyAnswersDao: SurveyAnswersDao,
         optionItemDao: OptionItemDao,
         coreSharedPrefs: CoreSharedPrefs,
-        surveyDao: SurveyEntityDao
+        surveyDao: SurveyEntityDao,
+        grantConfigDao: GrantConfigDao
     ): ISurveyRepository {
         return SurveyRepositoryImpl(
             questionDao = questionEntityDao,
             surveyAnswersDao = surveyAnswersDao,
             optionItemDao = optionItemDao,
             coreSharedPrefs = coreSharedPrefs,
-            surveyEntityDao = surveyDao
+            surveyEntityDao = surveyDao,
+            grantConfigDao = grantConfigDao
 
         )
     }

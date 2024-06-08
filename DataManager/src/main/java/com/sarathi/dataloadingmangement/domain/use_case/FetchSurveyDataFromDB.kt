@@ -10,12 +10,14 @@ class FetchSurveyDataFromDB @Inject constructor(
     suspend fun invoke(
         surveyId: Int,
         subjectId: Int,
-        sectionId: Int
+        sectionId: Int,
+        activityConfigId: Int
     ): List<QuestionUiModel> {
         return repository.getQuestion(
             surveyId = surveyId,
             sectionId = sectionId,
-            subjectId = subjectId
+            subjectId = subjectId,
+            activityConfigId = activityConfigId
         )
     }
 }
