@@ -203,8 +203,7 @@ fun SurveyScreen(
                                         val selectedOptions =
                                             selectedItems.split(DELIMITER_MULTISELECT_OPTIONS)
                                         question.options?.forEach { options ->
-
-                                            if (selectedOptions.find { it == options.optionId.toString() } != null) {
+                                            if (selectedOptions.find { it == options.description.toString() } != null) {
                                                 options.isSelected = true
                                             } else {
                                                 options.isSelected = false
@@ -277,7 +276,8 @@ fun getOptionsValueDto(options: List<OptionsUiModel>): List<ValuesDto> {
         valuesDtoList.add(
             ValuesDto(
                 id = it.optionId ?: DEFAULT_ID,
-                value = it.description ?: BLANK_STRING
+                value = it.description ?: BLANK_STRING,
+                isSelected = it.isSelected
             )
         )
     }

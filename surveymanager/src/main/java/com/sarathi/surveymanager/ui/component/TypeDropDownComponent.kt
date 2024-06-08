@@ -24,7 +24,6 @@ fun TypeDropDownComponent(
     sources: List<ValuesDto>?,
     isMandatory: Boolean = false,
     isEditAllowed: Boolean = true,
-    selectOptionText: Int = 0,
     onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
 ) {
     val context = LocalContext.current
@@ -33,7 +32,7 @@ fun TypeDropDownComponent(
     var expanded by remember { mutableStateOf(false) }
     var selectedOptionText by remember {
         mutableStateOf(
-            if (selectOptionText == 0) hintText else defaultSourceList.find { it.id == selectOptionText }?.value
+            defaultSourceList.find { it.isSelected == true }?.value
                 ?: hintText
         )
     }
