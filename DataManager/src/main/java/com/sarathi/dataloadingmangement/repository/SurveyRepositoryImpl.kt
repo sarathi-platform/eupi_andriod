@@ -103,7 +103,6 @@ class SurveyRepositoryImpl @Inject constructor(
 
         val surveyAnswer = surveyAnswerList.filter { it.questionId == question.questionId }
         if (surveyAnswerList.isNotEmpty() && surveyAnswer.isNotEmpty()) {
-            val optionItemWithSaved = ArrayList<OptionsUiModel>()
             // if answer exist
             optionList.forEach { questionOptionItem ->
                 val savedOption =
@@ -112,18 +111,9 @@ class SurveyRepositoryImpl @Inject constructor(
                     questionOptionItem.selectedValue = savedOption.selectedValue
                     questionOptionItem.isSelected = savedOption.isSelected
                 }
-
             }
-
-
-            return optionItemWithSaved
-
-
-        } else {
-            return optionList
         }
-
-
+        return optionList
     }
 
     private suspend fun getOptionsForModeAndNature(
@@ -162,8 +152,6 @@ class SurveyRepositoryImpl @Inject constructor(
         return modeOrNatureOptions
 
     }
-
-
 
 
 }
