@@ -17,7 +17,6 @@ import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.GrantTaskCard
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
-import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.BasicContent
 
 @Composable
 fun GrantTaskList(
@@ -64,7 +63,7 @@ fun GrantTaskList(
                         )
                     },
                     title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name] ?: BLANK_STRING,
-                    subTitle = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name]
+                    subTitle1 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name]
                         ?: BLANK_STRING,
                     primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name]
                         ?: BLANK_STRING,
@@ -82,7 +81,6 @@ fun GrantTaskList(
                     subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name]
                         ?: BLANK_STRING
                 )
-
 
             }
         }

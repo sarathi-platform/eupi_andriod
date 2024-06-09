@@ -4,10 +4,15 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.DEFAULT_ID
+import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.GrantComponentDTO
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
+import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
@@ -24,7 +29,10 @@ import javax.inject.Inject
 @HiltViewModel
 class DisbursementSummaryScreenViewModel @Inject constructor(
     private val grantConfigUseCase: GrantConfigUseCase,
-    private val saveSurveyAnswerUseCase: SaveSurveyAnswerUseCase
+    private val saveSurveyAnswerUseCase: SaveSurveyAnswerUseCase,
+    private val taskStatusUseCase: UpdateTaskStatusUseCase,
+    private val getTaskUseCase: GetTaskUseCase,
+    private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
 ) : BaseViewModel() {
     private val _taskList = mutableStateOf<Map<String, List<SurveyAnswerEntity>>>(hashMapOf())
     val taskList: State<Map<String, List<SurveyAnswerEntity>>> get() = _taskList
@@ -36,6 +44,9 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     private var activityConfigId: Int = 0
     var showDialog = mutableStateOf(Pair<Boolean, String?>(false, BLANK_STRING))
     var grantComponentDTO = mutableStateOf(GrantComponentDTO(BLANK_STRING, BLANK_STRING))
+    val isButtonEnable = mutableStateOf<Boolean>(false)
+    private var taskEntity: ActivityTaskEntity? = null
+
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -69,6 +80,8 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
                     taskId = taskId
                 ).groupBy { it.referenceId }
             setGrantComponentDTO()
+            taskEntity = getTaskUseCase.getTask(taskId)
+            checkButtonValidation()
         }
     }
 
@@ -144,4 +157,28 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
         }
 
     }
+
+    fun saveButtonClicked() {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            taskStatusUseCase.markTaskCompleted(
+                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+                taskId = taskEntity?.taskId ?: DEFAULT_ID
+            )
+            taskEntity?.let {
+                matStatusEventWriterUseCase.updateTaskStatus(
+                    taskEntity = it,
+                    surveyName = "",
+                    subjectType = subjectType
+                )
+            }
+        }
+
+    }
+
+    private fun checkButtonValidation() {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            isButtonEnable.value = taskList.value.isNotEmpty()
+        }
+    }
+
 }

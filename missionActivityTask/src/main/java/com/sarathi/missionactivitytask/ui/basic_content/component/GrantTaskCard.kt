@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -52,7 +51,7 @@ import com.sarathi.missionactivitytask.utils.StatusEnum
 @Composable
 fun GrantTaskCard(
     title: String,
-    subTitle: String,
+    subTitle1: String,
     subtitle2: String,
     subtitle3: String,
     subtitle4: String,
@@ -92,7 +91,7 @@ fun GrantTaskCard(
                     horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    CircularImageViewComponent(modifier = Modifier)
+                    CircularImageViewComponent(modifier = Modifier, imagePath = imagePath)
                     Column(
                         modifier = Modifier
                             .weight(1f)
@@ -106,7 +105,7 @@ fun GrantTaskCard(
                             color = brownDark
                         )
                         androidx.compose.material3.Text(
-                            text = "subtitle",
+                            text = subTitle1,
                             style = smallTextStyleMediumWeight,
                             color = textColorDark80
                         )
@@ -161,7 +160,7 @@ fun GrantTaskCard(
                         )
                     } else if (status == StatusEnum.INPROGRESS.name) {
                         Text(
-                            text = "In Progress",
+                            text = stringResource(id = R.string.in_progress),
                             style = defaultTextStyle,
                             modifier = Modifier
                                 .padding(horizontal = 5.dp),
@@ -177,14 +176,14 @@ fun GrantTaskCard(
                     .padding(start = 16.dp, top = 5.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (subTitle.isNotBlank()) {
+                if (subtitle2.isNotBlank()) {
                     Icon(
                         painter = painterResource(id = R.drawable.home_icn),
                         contentDescription = "more action button",
                         tint = blueDark,
                     )
                     Text(
-                        text = subTitle,
+                        text = subtitle2,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 5.dp),
@@ -193,10 +192,8 @@ fun GrantTaskCard(
                     )
                 }
             }
-            if (status == (StatusEnum.COMPLETED.name) || status == (StatusEnum.INPROGRESS.name)) {
-                GrantAmountView(subtitle2, subtitle3, iconResId = R.drawable.ic_recieve_grant)
-                GrantAmountView(subtitle4, subtitle5, iconResId = R.drawable.ic_grant_sanction)
-            }
+            GrantAmountView(subtitle3, subtitle4, iconResId = R.drawable.ic_recieve_grant)
+            GrantAmountView(subtitle2 = subtitle5, iconResId = R.drawable.ic_grant_sanction)
             if (status == StatusEnum.NOT_STARTED.name) {
                 Row(
                     modifier = Modifier
@@ -264,8 +261,8 @@ fun GrantTaskCard(
 
 @Composable
 private fun GrantAmountView(
-    subtitle1: String,
-    subtitle2: String,
+    subtitle1: String = BLANK_STRING,
+    subtitle2: String = BLANK_STRING,
     iconResId: Int = R.drawable.ic_recieve_grant
 ) {
     Row(
@@ -282,20 +279,6 @@ private fun GrantAmountView(
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .padding(2.dp)
-                    .drawBehind {
-                        drawCircle(
-                            color = greyBorderColor,
-                            radius = this.size.maxDimension / 1.5f
-                        )
-                    },
-            )
-            Text(
-                text = "Didis",
-                color = blueDark,
-                style = newMediumTextStyle,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(dimen_5_dp)
             )
             Spacer(modifier = Modifier.weight(.3f))
         }

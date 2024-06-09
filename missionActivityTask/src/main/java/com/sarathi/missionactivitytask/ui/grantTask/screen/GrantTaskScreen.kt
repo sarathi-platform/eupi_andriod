@@ -121,9 +121,11 @@ fun GrantTaskScreen(
                                         )
                                     }
                                 },
+                                imagePath = task.value[GrantTaskCardSlots.GRANT_TASK_IMAGE.name]
+                                    ?: BLANK_STRING,
                                 title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name]
                                     ?: BLANK_STRING,
-                                subTitle = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name]
+                                subTitle1 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name]
                                     ?: BLANK_STRING,
                                 primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name]
                                     ?: BLANK_STRING,

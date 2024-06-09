@@ -198,7 +198,7 @@ fun SurveyScreen(
                                     title = question.questionDisplay,
                                     isMandatory = question.isMandatory,
                                     sources = getOptionsValueDto(question.options ?: listOf()),
-                                    selectOptionText = getSelectedOptionId(question.options),
+                                    //selectOptionText = getSelectedOptionId(question.options),
                                     onAnswerSelection = { selectedItems ->
                                         val selectedOptions =
                                             selectedItems.split(DELIMITER_MULTISELECT_OPTIONS)
