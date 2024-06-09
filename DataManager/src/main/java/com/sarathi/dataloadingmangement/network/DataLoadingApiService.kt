@@ -23,7 +23,7 @@ interface DataLoadingApiService {
     suspend fun getMissions(@Body missionRequest: MissionRequest): ApiResponseModel<List<ProgrameResponse>>
 
     @POST(SUB_PATH_CONTENT_MANAGER)
-    suspend fun fetchContentData(@Body contentMangerRequest: ContentRequest): ApiResponseModel<List<ContentResponse>>
+    suspend fun fetchContentData(@Body contentMangerRequest: List<ContentRequest>): ApiResponseModel<List<ContentResponse>>
 
     // @POST("http://10.0.2.2:3001/home") DateType
     @POST(SUBPATH_FETCH_SURVEY_FROM_NETWORK)

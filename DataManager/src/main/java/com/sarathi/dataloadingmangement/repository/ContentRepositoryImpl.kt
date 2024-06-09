@@ -16,7 +16,7 @@ class ContentRepositoryImpl @Inject constructor(
     val contentConfigDao: ContentConfigDao,
     val coreSharedPrefs: CoreSharedPrefs
 ) : IContentRepository {
-    override suspend fun fetchContentsFromServer(contentMangerRequest: ContentRequest): ApiResponseModel<List<ContentResponse>> {
+    override suspend fun fetchContentsFromServer(contentMangerRequest: List<ContentRequest>): ApiResponseModel<List<ContentResponse>> {
         return apiInterface.fetchContentData(contentMangerRequest)
     }
 
@@ -32,16 +32,17 @@ class ContentRepositoryImpl @Inject constructor(
         return contentDao.getContentData()
     }
 
-    override suspend fun getAllContentKeys(): List<String> {
-        val contentKeys = ArrayList<String>()
+    override suspend fun getAllContentRequest(): List<ContentRequest> {
+        val contentRequests = ArrayList<ContentRequest>()
         contentConfigDao.getAllContentKey(
             coreSharedPrefs.getUniqueUserIdentifier(),
-            coreSharedPrefs.getAppLanguage()
         ).forEach {
-            contentKeys.add(it.key)
+            contentRequests.add(ContentRequest(languageCode = it.languageCode, contentKey = it.key))
         }
-        return contentKeys
+        return contentRequests
     }
+
+
 
     override suspend fun getSelectedAppLanguage(): String {
         return coreSharedPrefs.getAppLanguage()

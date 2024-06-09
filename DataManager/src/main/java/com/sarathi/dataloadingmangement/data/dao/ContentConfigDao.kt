@@ -13,6 +13,6 @@ interface ContentConfigDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertContentConfig(contentConfigEntity: ContentConfigEntity)
 
-    @Query("Select * from content_config_table where userId=:userId  and contentCategory=1 and languageCode=:languageCode")
-    fun getAllContentKey(userId: String, languageCode: String): List<ContentConfigEntity>
+    @Query("Select * from content_config_table where userId=:userId ")
+    fun getAllContentKey(userId: String): List<ContentConfigEntity>
 }

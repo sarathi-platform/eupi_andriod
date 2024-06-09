@@ -2,7 +2,6 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.model.mapper.ContentMapper
-import com.sarathi.dataloadingmangement.network.request.ContentRequest
 import com.sarathi.dataloadingmangement.repository.IContentRepository
 import javax.inject.Inject
 
@@ -13,9 +12,8 @@ class FetchContentDataFromNetworkUseCase @Inject constructor(
     suspend fun invoke(): Boolean {
         try {
             val contentEntities = mutableListOf<Content>()
-            val contentMangerRequest =
-                ContentRequest(repository.getSelectedAppLanguage(), repository.getAllContentKeys())
-            val apiContentResponse = repository.fetchContentsFromServer(contentMangerRequest)
+            val apiContentResponse =
+                repository.fetchContentsFromServer(repository.getAllContentRequest())
             if (apiContentResponse.status.equals(
                     "200",
                     true
