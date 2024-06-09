@@ -33,6 +33,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
+import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
 import com.sarathi.surveymanager.ui.component.AddImageComponent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
 import com.sarathi.surveymanager.ui.component.DatePickerComponent
@@ -182,9 +183,14 @@ fun SurveyScreen(
                                 TypeDropDownComponent(
                                     title = question.questionDisplay,
                                     isMandatory = question.isMandatory,
-                                    sources = getOptionsValueDto(question.options ?: listOf())
-                                ) {
-                                }
+                                    sources = getOptionsValueDto(question.options ?: listOf()),
+                                    onAnswerSelection = { selectedValue ->
+                                        question.options?.forEach { option ->
+                                            option.isSelected = selectedValue.id == option.optionId
+                                        }
+
+                                    }
+                                )
                             }
 
                             QuestionType.MultiSelectDropDown.name -> {
@@ -192,9 +198,22 @@ fun SurveyScreen(
                                     title = question.questionDisplay,
                                     isMandatory = question.isMandatory,
                                     sources = getOptionsValueDto(question.options ?: listOf()),
-                                    selectOptionText = BLANK_STRING
-                                ) {
-                                }
+                                    selectOptionText = getSelectedOptionId(question.options),
+                                    onAnswerSelection = { selectedItems ->
+                                        val selectedOptions =
+                                            selectedItems.split(DELIMITER_MULTISELECT_OPTIONS)
+                                        question.options?.forEach { options ->
+                                            if (selectedOptions.find { it == options.description.toString() } != null) {
+                                                options.isSelected = true
+                                            } else {
+                                                options.isSelected = false
+                                            }
+
+
+                                        }
+
+                                    }
+                                )
                             }
                         }
                     }
@@ -205,6 +224,16 @@ fun SurveyScreen(
         },
         onSettingClick = {}
     )
+}
+
+fun getSelectedOptionId(options: List<OptionsUiModel>?): String {
+    var selectedItems = ""
+    options?.forEach { it ->
+        if (it.isSelected == true) {
+            selectedItems = "" + it.optionId + DELIMITER_MULTISELECT_OPTIONS
+        }
+    }
+    return selectedItems
 }
 
 private fun saveInputTypeAnswer(
@@ -247,11 +276,13 @@ fun getOptionsValueDto(options: List<OptionsUiModel>): List<ValuesDto> {
         valuesDtoList.add(
             ValuesDto(
                 id = it.optionId ?: DEFAULT_ID,
-                value = it.description ?: BLANK_STRING
+                value = it.description ?: BLANK_STRING,
+                isSelected = it.isSelected
             )
         )
     }
     return valuesDtoList
+
 
 }
 

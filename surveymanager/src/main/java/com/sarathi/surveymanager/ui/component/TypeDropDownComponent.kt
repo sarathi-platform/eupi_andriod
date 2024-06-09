@@ -24,8 +24,7 @@ fun TypeDropDownComponent(
     sources: List<ValuesDto>?,
     isMandatory: Boolean = false,
     isEditAllowed: Boolean = true,
-    selectOptionText: Int = 0,
-    onAnswerSelection: (selectValue: Int) -> Unit
+    onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
 ) {
     val context = LocalContext.current
     val defaultSourceList =
@@ -33,7 +32,7 @@ fun TypeDropDownComponent(
     var expanded by remember { mutableStateOf(false) }
     var selectedOptionText by remember {
         mutableStateOf(
-            if (selectOptionText == 0) hintText else defaultSourceList.find { it.id == selectOptionText }?.value
+            defaultSourceList.find { it.isSelected == true }?.value
                 ?: hintText
         )
     }
@@ -64,7 +63,7 @@ fun TypeDropDownComponent(
             if (isEditAllowed) {
                 selectedOptionText =
                     defaultSourceList[defaultSourceList.indexOf(it)].value
-                onAnswerSelection(it.id)
+                onAnswerSelection(defaultSourceList[defaultSourceList.indexOf(it)])
                 expanded = false
             } else {
                 showCustomToast(

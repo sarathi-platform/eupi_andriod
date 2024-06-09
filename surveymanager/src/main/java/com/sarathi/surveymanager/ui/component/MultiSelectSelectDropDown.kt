@@ -154,7 +154,7 @@ fun MultiSelectSelectDropDown(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                onItemSelected(item.value)
+                                onItemSelected(item.value.toString())
                             }
                     )
                 }
