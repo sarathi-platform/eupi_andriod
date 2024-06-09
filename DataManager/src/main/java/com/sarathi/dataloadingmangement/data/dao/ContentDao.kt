@@ -16,10 +16,10 @@ interface ContentDao {
     fun insertContent(contents: Content)
 
     @Query("SELECT * FROM $CONTENT_TABLE_NAME where contentKey=:contentkey and languageCode=:languageId")
-    fun getContentFromIds(contentkey: String, languageId: Int): Content
+    fun getContentFromIds(contentkey: String, languageId: String): Content
 
     @Query("SELECT contentValue FROM $CONTENT_TABLE_NAME where contentKey=:contentkey and languageCode=:languageId")
-    fun getContentValue(contentkey: String, languageId: Int): String
+    fun getContentValue(contentkey: String, languageId: String): String
 
     @Query("SELECT * FROM $CONTENT_TABLE_NAME")
     fun getContentData(): List<Content>

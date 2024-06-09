@@ -198,7 +198,6 @@ fun SurveyScreen(
                                     title = question.questionDisplay,
                                     isMandatory = question.isMandatory,
                                     sources = getOptionsValueDto(question.options ?: listOf()),
-                                    selectOptionText = getSelectedOptionId(question.options),
                                     onAnswerSelection = { selectedItems ->
                                         val selectedOptions =
                                             selectedItems.split(DELIMITER_MULTISELECT_OPTIONS)
@@ -226,15 +225,6 @@ fun SurveyScreen(
     )
 }
 
-fun getSelectedOptionId(options: List<OptionsUiModel>?): String {
-    var selectedItems = ""
-    options?.forEach { it ->
-        if (it.isSelected == true) {
-            selectedItems = "" + it.optionId + DELIMITER_MULTISELECT_OPTIONS
-        }
-    }
-    return selectedItems
-}
 
 private fun saveInputTypeAnswer(
     selectedValue: String,

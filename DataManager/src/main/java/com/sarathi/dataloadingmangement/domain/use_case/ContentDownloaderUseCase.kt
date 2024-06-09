@@ -17,12 +17,16 @@ class ContentDownloaderUseCase @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 repository.getContentDataFromDb().forEach { content ->
-                    when (content.contentType) {
-                        FileType.Video.name,
-                        FileType.Image.name,
-                        FileType.File.name,
-                        FileType.Audio.name -> {
+                    when (content.contentType.uppercase()) {
+                        FileType.VIDEO.name,
+                        FileType.IMAGE.name,
+                        FileType.FILE.name,
+                        FileType.AUDIO.name -> {
                             downloaderManager.downloadItem(content.contentValue)
+                        }
+
+                        else -> {
+
                         }
                     }
                 }
