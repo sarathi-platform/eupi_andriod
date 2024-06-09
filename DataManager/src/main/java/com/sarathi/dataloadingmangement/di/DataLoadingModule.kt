@@ -1,6 +1,5 @@
 package com.sarathi.dataloadingmangement.di
 
-import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import com.nudge.core.database.dao.EventDependencyDao
@@ -210,7 +209,6 @@ class DataLoadingModule {
     @Singleton
     fun provideFetchDataUseCaseUseCase(
         surveyRepo: SurveyDownloadRepository,
-        application: Application,
         missionRepositoryImpl: MissionRepositoryImpl,
         contentRepositoryImpl: ContentRepositoryImpl,
         activityConfigDao: ActivityConfigDao,
@@ -229,7 +227,6 @@ class DataLoadingModule {
             fetchSurveyDataFromDB = fetchSurveyDataFromDB,
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 contentRepositoryImpl,
-                application
             )
         )
 
@@ -278,9 +275,14 @@ class DataLoadingModule {
     fun provideContentRepository(
         contentDao: ContentDao,
         apiService: DataLoadingApiService,
+        coreSharedPrefs: CoreSharedPrefs,
+        contentConfigDao: ContentConfigDao
     ): IContentRepository {
         return ContentRepositoryImpl(
-            apiInterface = apiService, contentDao = contentDao
+            apiInterface = apiService,
+            contentDao = contentDao,
+            coreSharedPrefs = coreSharedPrefs,
+            contentConfigDao = contentConfigDao
         )
     }
 
@@ -313,9 +315,11 @@ class DataLoadingModule {
     @Singleton
     fun provideContentDownloaderRepositoryImpl(
         contentDao: ContentDao,
+        coreSharedPrefs: CoreSharedPrefs
     ): IContentDownloader {
         return ContentDownloaderRepositoryImpl(
-            contentDao
+            contentDao,
+            coreSharedPrefs = coreSharedPrefs
         )
     }
 
@@ -334,14 +338,11 @@ class DataLoadingModule {
     @Singleton
     fun provideFetchAllDataUseCase(
         surveyRepo: SurveyDownloadRepository,
-        application: Application,
         missionRepositoryImpl: MissionRepositoryImpl,
         contentRepositoryImpl: ContentRepositoryImpl,
         repository: IContentDownloader,
         downloaderManager: DownloaderManager,
-        fetchLanguageUseCase: FetchLanguageUseCase,
         languageRepository: LanguageRepositoryImpl,
-        fetchUserDetailUseCase: FetchUserDetailUseCase,
         userDetailRepository: UserDetailRepository,
         activityConfigDao: ActivityConfigDao,
         coreSharedPrefs: CoreSharedPrefs
@@ -352,7 +353,6 @@ class DataLoadingModule {
             ),
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 contentRepositoryImpl,
-                application
             ),
             fetchSurveyDataFromNetworkUseCase = FetchSurveyDataFromNetworkUseCase(
                 repository = surveyRepo,

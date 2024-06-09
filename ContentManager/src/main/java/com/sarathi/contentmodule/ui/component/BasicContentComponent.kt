@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nudge.core.ui.events.theme.black1
@@ -92,7 +93,12 @@ private fun ContentView(
             }
             if (contentTitle.isNotBlank()) {
                 Text(
-                    text = contentTitle,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    text = if (contentTitle.length > 15) contentTitle.substring(
+                        0,
+                        10
+                    ) else contentTitle,
                     fontSize = 10.sp,
                     style = smallTextStyleMediumWeight2.copy(color = blueDark)
                 )
@@ -103,22 +109,22 @@ private fun ContentView(
 
 @Composable
 fun ContentData(contentType: String) {
-    when (contentType) {
-        FileType.Image.name -> {
+    when (contentType.toUpperCase()) {
+        FileType.IMAGE.name -> {
             val painter: Painter = painterResource(id = R.drawable.ic_image_placeholder)
             Image(painter = painter, contentDescription = null)
         }
 
-        FileType.Audio.name -> {
+        FileType.AUDIO.name -> {
             val painter: Painter = painterResource(id = R.drawable.ic_audio_placeholder)
             Image(painter = painter, contentDescription = null)
         }
 
-        FileType.Video.name -> {
+        FileType.VIDEO.name -> {
             ImageOverlay(resId = R.drawable.ic_video_placeholder)
         }
 
-        FileType.File.name -> {
+        FileType.FILE.name -> {
             val painter: Painter =
                 painterResource(id = R.drawable.ic_file_place_holder_icon)
             Image(painter = painter, contentDescription = null)

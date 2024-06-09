@@ -20,6 +20,7 @@ data class ContentConfigEntity(
     var matId: Int,
     var key: String,
     var type: String,
+    val languageCode: String,
     var contentCategory: Int
 ) {
     companion object {
@@ -36,7 +37,8 @@ data class ContentConfigEntity(
                 matId = matId,
                 key = contents.contentKey,
                 type = contents.contentType,
-                contentCategory = contentCategory
+                contentCategory = contentCategory,
+                languageCode = contents.languageCode ?: BLANK_STRING
             )
         }
     }
