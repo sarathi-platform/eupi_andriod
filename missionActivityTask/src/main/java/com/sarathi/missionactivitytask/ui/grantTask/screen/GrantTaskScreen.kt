@@ -94,10 +94,14 @@ fun GrantTaskScreen(
                 if (isSearch) {
                     SearchWithFilterViewComponent(
                         placeholderString = viewModel.searchLabel.value,
-                        filterSelected = false,
+                        filterSelected = viewModel.filterSelected.value,
                         modifier = Modifier.padding(horizontal = 10.dp),
-                        showFilter = false,
-                        onFilterSelected = {},
+                        showFilter = true,
+                        onFilterSelected = {
+                            if (viewModel.filterList.value.isNotEmpty()) {
+                                viewModel.filterSelected.value = !it
+                            }
+                        },
                         onSearchValueChange = { queryTerm ->
                             viewModel.onEvent(
                                 SearchEvent.PerformSearch(

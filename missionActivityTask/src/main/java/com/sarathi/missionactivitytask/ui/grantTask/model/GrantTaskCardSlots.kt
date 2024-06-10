@@ -13,6 +13,7 @@ enum class GrantTaskCardSlots(val type: String) {
     GRANT_TASK_SECONDARY_BUTTON(type = "text"),
     GRANT_TASK_IMAGE(type = "image"),
     GRANT_SEARCH_ON(type = "text"),
+    GRANT_GROUP_ON(type = "text"),
 
 
     GRANT_TASK_STATUS(type = "text"),

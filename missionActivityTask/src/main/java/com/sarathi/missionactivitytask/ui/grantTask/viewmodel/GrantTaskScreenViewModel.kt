@@ -1,7 +1,9 @@
 package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.sarathi.contentmodule.utils.event.SearchEvent
@@ -42,6 +44,10 @@ class GrantTaskScreenViewModel @Inject constructor(
     val searchLabel = mutableStateOf<String>(BLANK_STRING)
     val isButtonEnable = mutableStateOf<Boolean>(false)
     var isDisbursement: Boolean = false
+    var filterSelected = mutableStateOf(false)
+
+    var filterContentMap by mutableStateOf(mapOf<String, HashMap<Int, HashMap<String, String>>>())
+
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -74,6 +80,13 @@ class GrantTaskScreenViewModel @Inject constructor(
                         it.status.toString(),
                         it.subjectId,
                         componentType = "Search"
+                    )[GrantTaskCardSlots.GRANT_SEARCH_LABEL.name]
+                        ?: BLANK_STRING
+                    searchLabel.value = getUiComponentValues(
+                        it.taskId,
+                        it.status.toString(),
+                        it.subjectId,
+                        componentType = "GroupBy"
                     )[GrantTaskCardSlots.GRANT_SEARCH_LABEL.name]
                         ?: BLANK_STRING
                 }
@@ -167,6 +180,7 @@ class GrantTaskScreenViewModel @Inject constructor(
         }
         _filterList.value = filteredList
     }
+
 
     private fun checkButtonValidation() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
