@@ -5,11 +5,15 @@ sealed class SmallGroupAttendanceEvent {
     data class LoadSmallGroupDetailsForSmallGroupIdEvent(val smallGroupId: Int) :
         SmallGroupAttendanceEvent()
 
-    data class MarkAttendanceForAll(val checked: Boolean) : SmallGroupAttendanceEvent()
+    data class MarkAttendanceForAllEvent(val checked: Boolean) : SmallGroupAttendanceEvent()
 
-    data class MarkAttendanceForSubject(val checked: Boolean, val subjectId: Int) :
+    data class MarkAttendanceForSubjectEvent(val checked: Boolean, val subjectId: Int) :
         SmallGroupAttendanceEvent()
 
-    object SubmitAttendanceForDate : SmallGroupAttendanceEvent()
+    object SubmitAttendanceForDateEvent : SmallGroupAttendanceEvent()
+
+    object SaveAttendanceForDateToDbEvent : SmallGroupAttendanceEvent()
+
+    object LoadSmallGroupAttendanceHistoryOnDateRangeUpdateEvent : SmallGroupAttendanceEvent()
 
 }

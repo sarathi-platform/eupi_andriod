@@ -5,5 +5,7 @@ import javax.inject.Inject
 
 data class SmallGroupAttendanceUserCase @Inject constructor(
     val fetchSmallGroupDetailsFromDbUseCase: FetchSmallGroupDetailsFromDbUseCase,
-    val fetchDidiListForSmallGroupFromDbUseCase: FetchDidiListForSmallGroupFromDbUseCase
+    val fetchDidiListForSmallGroupFromDbUseCase: FetchDidiListForSmallGroupFromDbUseCase,
+    val saveAttendanceToDbUseCase: SaveAttendanceToDbUseCase,
+    val fetchMarkedDatesUseCase: FetchMarkedDatesUseCase
 )

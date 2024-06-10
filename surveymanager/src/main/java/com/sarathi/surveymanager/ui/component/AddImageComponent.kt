@@ -43,9 +43,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.nudge.core.model.CoreAppDetails
-import com.nudge.core.ui.events.theme.borderGreyLight
-import com.nudge.core.ui.events.theme.largeTextStyle
-import com.nudge.core.ui.events.theme.white
+import com.nudge.core.ui.theme.borderGreyLight
+import com.nudge.core.ui.theme.largeTextStyle
+import com.nudge.core.ui.theme.white
 import com.nudge.core.uriFromFile
 import java.io.File
 

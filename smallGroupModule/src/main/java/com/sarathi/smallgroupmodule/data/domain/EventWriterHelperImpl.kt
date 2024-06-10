@@ -1,6 +1,7 @@
 package com.sarathi.smallgroupmodule.data.domain
 
 import android.net.Uri
+import com.nudge.core.ATTENDANCE_TAG_ID
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.Core
 import com.nudge.core.EventSyncStatus
@@ -170,21 +171,21 @@ class EventWriterHelperImpl @Inject constructor(
         date: Long
     ): Events {
 
-        val payloadData = listOf<PayloadData>(
+        val payloadData =
             PayloadData(
-                date = date.getDate(),
+                date = date.getDate(pattern = "yyyy-MM-dd"),
                 id = smallGroupSubTabUiModel.smallGroupId.toString(),
                 value = attendance.getAttendanceFromBoolean()
             )
-        )
+
 
         val saveAttendanceEventDto = SaveAttendanceEventDto(
             dateCreated = System.currentTimeMillis(),
             languageId = coreSharedPrefs.getSelectedLanguageId(),
             subjectId = subjectEntity.subjectId.value(),
-            subjectType = SubjectType.SUBJECT_TYPE_DIDI.name,
-            tagId = 94,
-            payloadType = PayloadType.PAYLOAD_TYPE_ATTENDANCE.name,
+            subjectType = SubjectType.SUBJECT_TYPE_DIDI.subjectName,
+            tagId = ATTENDANCE_TAG_ID,
+            payloadType = PayloadType.PAYLOAD_TYPE_ATTENDANCE.payloadType,
             payloadData = payloadData
         )
 

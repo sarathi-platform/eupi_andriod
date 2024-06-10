@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.nudge.core.ui.events.theme.blueDark
+import com.nudge.core.ui.theme.blueDark
 
 @Composable
 fun LoaderComponent(

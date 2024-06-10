@@ -45,8 +45,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.nudge.core.ui.events.theme.blueDark
-import com.nudge.core.ui.events.theme.white
+import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.R
 import com.sarathi.contentmodule.ui.component.BasicContentComponent
 import com.sarathi.contentmodule.ui.component.ButtonPositive

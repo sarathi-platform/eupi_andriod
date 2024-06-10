@@ -56,6 +56,9 @@ const val SUCCESS_CODE = "200"
 const val DEFAULT_LANGUAGE_CODE = "en"
 const val DEFAULT_LANGUAGE_ID = 2
 
+const val ATTENDANCE_TAG_ID = 94
+const val DEFAULT_DATE_RANGE_DURATION: Long = 30
+
 val eventWriters = listOf<IEventWriter>(
     TextFileEventWriter(),
     DbEventWrite(),

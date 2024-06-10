@@ -4,6 +4,8 @@ import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.syncmanager.EventWriterHelper
+import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
+import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
@@ -20,10 +22,19 @@ import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.FetchDidiDetailsF
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.FetchSmallGroupListsFromDbUseCase
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.FetchDidiListForSmallGroupFromDbRepository
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.FetchDidiListForSmallGroupFromDbRepositoryImpl
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.FetchMarkedDatesRepository
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.FetchMarkedDatesRepositoryImpl
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.SaveAttendanceToDbRepository
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.SaveAttendanceToDbRepositoryImpl
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.FetchDidiListForSmallGroupFromDbUseCase
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.FetchMarkedDatesUseCase
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.SaveAttendanceToDbUseCase
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.SmallGroupAttendanceUserCase
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.repository.FetchSmallGroupAttendanceHistoryFromDbRepository
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.repository.FetchSmallGroupAttendanceHistoryFromDbRepositoryImpl
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.repository.FetchSmallGroupDetailsFromDbRepository
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.repository.FetchSmallGroupDetailsFromDbRepositoryImpl
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.useCase.FetchSmallGroupAttendanceHistoryFromDbUseCase
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.useCase.FetchSmallGroupDetailsFromDbUseCase
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.useCase.SmallGroupAttendanceHistoryUseCase
 import dagger.Module
@@ -100,10 +111,16 @@ class SmallGroupModule {
 
     @Provides
     @Singleton
-    fun provideSmallGroupAttendanceHistoryUseCase(fetchSmallGroupDetailsFromDbRepository: FetchSmallGroupDetailsFromDbRepository): SmallGroupAttendanceHistoryUseCase {
+    fun provideSmallGroupAttendanceHistoryUseCase(
+        fetchSmallGroupDetailsFromDbRepository: FetchSmallGroupDetailsFromDbRepository,
+        fetchSmallGroupAttendanceHistoryFromDbRepository: FetchSmallGroupAttendanceHistoryFromDbRepository
+    ): SmallGroupAttendanceHistoryUseCase {
         return SmallGroupAttendanceHistoryUseCase(
             fetchSmallGroupDetailsFromDbUseCase = FetchSmallGroupDetailsFromDbUseCase(
                 fetchSmallGroupDetailsFromDbRepository
+            ),
+            fetchSmallGroupAttendanceHistoryFromDbUseCase = FetchSmallGroupAttendanceHistoryFromDbUseCase(
+                fetchSmallGroupAttendanceHistoryFromDbRepository
             )
         )
     }
@@ -132,6 +149,8 @@ class SmallGroupModule {
     fun provideSmallGroupAttendanceUserCase(
         fetchSmallGroupDetailsFromDbRepository: FetchSmallGroupDetailsFromDbRepository,
         fetchDidiListForSmallGroupFromDbRepository: FetchDidiListForSmallGroupFromDbRepository,
+        saveAttendanceToDbRepository: SaveAttendanceToDbRepository,
+        fetchMarkedDatesRepository: FetchMarkedDatesRepository
     ): SmallGroupAttendanceUserCase {
         return SmallGroupAttendanceUserCase(
             fetchSmallGroupDetailsFromDbUseCase = FetchSmallGroupDetailsFromDbUseCase(
@@ -139,7 +158,9 @@ class SmallGroupModule {
             ),
             fetchDidiListForSmallGroupFromDbUseCase = FetchDidiListForSmallGroupFromDbUseCase(
                 fetchDidiListForSmallGroupFromDbRepository
-            )
+            ),
+            saveAttendanceToDbUseCase = SaveAttendanceToDbUseCase(saveAttendanceToDbRepository),
+            fetchMarkedDatesUseCase = FetchMarkedDatesUseCase(fetchMarkedDatesRepository)
         )
     }
 
@@ -178,6 +199,78 @@ class SmallGroupModule {
             eventDependencyDao = eventDependencyDao,
             subjectEntityDao = subjectEntityDao,
             smallGroupDidiMappingDao = smallGroupDidiMappingDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSaveAttendanceToDbUseCase(saveAttendanceToDbRepository: SaveAttendanceToDbRepository): SaveAttendanceToDbUseCase {
+        return SaveAttendanceToDbUseCase(saveAttendanceToDbRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSaveAttendanceToDbRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        subjectEntityDao: SubjectEntityDao,
+        subjectAttributeDao: SubjectAttributeDao,
+        attributeValueReferenceDao: AttributeValueReferenceDao
+    ): SaveAttendanceToDbRepository {
+        return SaveAttendanceToDbRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            subjectEntityDao = subjectEntityDao,
+            subjectAttributeDao = subjectAttributeDao,
+            attributeValueReferenceDao = attributeValueReferenceDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchMarkedDatesUseCase(fetchMarkedDatesRepository: FetchMarkedDatesRepository): FetchMarkedDatesUseCase {
+        return FetchMarkedDatesUseCase(fetchMarkedDatesRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchMarkedDatesRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        subjectEntityDao: SubjectEntityDao,
+        subjectAttributeDao: SubjectAttributeDao,
+        attributeValueReferenceDao: AttributeValueReferenceDao
+    ): FetchMarkedDatesRepository {
+        return FetchMarkedDatesRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            subjectEntityDao = subjectEntityDao,
+            subjectAttributeDao = subjectAttributeDao,
+            attributeValueReferenceDao = attributeValueReferenceDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchSmallGroupAttendanceHistoryFromDbRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        smallGroupDidiMappingDao: SmallGroupDidiMappingDao,
+        subjectEntityDao: SubjectEntityDao,
+        subjectAttributeDao: SubjectAttributeDao,
+        attributeValueReferenceDao: AttributeValueReferenceDao
+    ): FetchSmallGroupAttendanceHistoryFromDbRepository {
+        return FetchSmallGroupAttendanceHistoryFromDbRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            smallGroupDidiMappingDao = smallGroupDidiMappingDao,
+            subjectEntityDao = subjectEntityDao,
+            subjectAttributeDao = subjectAttributeDao,
+            attributeValueReferenceDao = attributeValueReferenceDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchSmallGroupAttendanceHistoryFromDbUseCase(
+        fetchSmallGroupAttendanceHistoryFromDbRepository: FetchSmallGroupAttendanceHistoryFromDbRepository
+    ): FetchSmallGroupAttendanceHistoryFromDbUseCase {
+        return FetchSmallGroupAttendanceHistoryFromDbUseCase(
+            fetchSmallGroupAttendanceHistoryFromDbRepository
         )
     }
 

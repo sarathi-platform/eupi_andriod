@@ -13,7 +13,7 @@ val textColorBlueLight = Color(0x80271914)
 val languageItemActiveBg = Color(0xFFF7F7F7)
 
 val greenLight = Color(0xFFF4FFFC)
-val green = Color(0xFF46989A)
+val green = Color(0xFF439A86)
 val greenDark = Color(0xFF0B9A52)
 val GreyLight = Color(0xFFB5B6BA)
 val GreyDark = Color(0xFF60626C)
@@ -132,3 +132,5 @@ val trackLinearColor = Color(0xFFD1D5DE)
 val tabBgColor = Color(0xFFDCE2FF)
 
 val uncheckedTrackColor = Color(0xFFC0C6CE)
+
+val dateRangeFieldColor = Color(0xFFD9D9D9)

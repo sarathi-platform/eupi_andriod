@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.nudge.core.ui.events.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_10_dp
 
 @Composable
 fun LazyColumnWithVerticalPadding(

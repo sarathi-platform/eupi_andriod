@@ -25,10 +25,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.nudge.core.ui.events.theme.buttonTextStyle
-import com.nudge.core.ui.events.theme.greyColor
-import com.nudge.core.ui.events.theme.placeholderGrey
-import com.nudge.core.ui.events.theme.white
+import com.nudge.core.ui.theme.buttonTextStyle
+import com.nudge.core.ui.theme.greyColor
+import com.nudge.core.ui.theme.placeholderGrey
+import com.nudge.core.ui.theme.white
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)

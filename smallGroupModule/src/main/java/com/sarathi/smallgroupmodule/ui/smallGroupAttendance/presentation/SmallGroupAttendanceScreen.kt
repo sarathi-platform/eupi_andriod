@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
+import com.nudge.core.ui.events.DialogEvents
 import com.sarathi.dataloadingmangement.data.entities.getSubtitle
 import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.ButtonPositiveComponent
@@ -46,6 +47,7 @@ import com.sarathi.missionactivitytask.ui.components.TextProperties
 import com.sarathi.missionactivitytask.ui.components.TextWithIconComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.smallgroupmodule.R
+import com.sarathi.smallgroupmodule.ui.commonUi.CustomDialogComponent
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.viewModel.SmallGroupAttendanceScreenViewModel
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.event.SmallGroupAttendanceEvent
 import com.sarathi.smallgroupmodule.ui.theme.blueDark
@@ -70,7 +72,6 @@ import com.sarathi.smallgroupmodule.utils.getDate
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun SmallGroupAttendanceScreen(
-    modifier: Modifier = Modifier,
     smallGroupId: Int = 0,
     navHostController: NavHostController,
     smallGroupAttendanceScreenViewModel: SmallGroupAttendanceScreenViewModel,
@@ -78,13 +79,11 @@ fun SmallGroupAttendanceScreen(
 ) {
 
     LaunchedEffect(key1 = Unit) {
-
         smallGroupAttendanceScreenViewModel.onEvent(
             SmallGroupAttendanceEvent.LoadSmallGroupDetailsForSmallGroupIdEvent(
                 smallGroupId
             )
         )
-
     }
 
     val smallGroupAttendanceList =
@@ -95,7 +94,27 @@ fun SmallGroupAttendanceScreen(
         mutableStateOf(false)
     }
 
-    val datePickerState = rememberDatePickerState()
+    val datePickerState =
+        rememberDatePickerState(initialSelectedDateMillis = System.currentTimeMillis())
+
+    if (smallGroupAttendanceScreenViewModel.alertDialogState.value.isDialogVisible) {
+
+        CustomDialogComponent(
+            title = "Are you sure!",
+            message = "Do you want to mark all absent",
+            positiveButtonTitle = "Yes",
+            negativeButtonTitle = "No",
+            onPositiveButtonClick = {
+                smallGroupAttendanceScreenViewModel.onEvent(SmallGroupAttendanceEvent.SubmitAttendanceForDateEvent)
+                smallGroupAttendanceScreenViewModel.onEvent(DialogEvents.ShowDialogEvent(false))
+                navHostController.popBackStack()
+            },
+            onNegativeButtonClick = {
+                smallGroupAttendanceScreenViewModel.onEvent(DialogEvents.ShowDialogEvent(false))
+            }
+        )
+
+    }
 
     ToolBarWithMenuComponent(
         title = smallGroupAttendanceScreenViewModel.smallGroupDetails.value.smallGroupName,
@@ -119,8 +138,17 @@ fun SmallGroupAttendanceScreen(
                         buttonTitle = "Submit",
                         isActive = true
                     ) {
-                        smallGroupAttendanceScreenViewModel.onEvent(SmallGroupAttendanceEvent.SubmitAttendanceForDate)
-                        navHostController.popBackStack()
+                        if (smallGroupAttendanceScreenViewModel.selectedItems.value.filter { it.value }
+                                .isEmpty()) {
+                            smallGroupAttendanceScreenViewModel.onEvent(
+                                DialogEvents.ShowDialogEvent(
+                                    true
+                                )
+                            )
+                        } else {
+                            smallGroupAttendanceScreenViewModel.onEvent(SmallGroupAttendanceEvent.SubmitAttendanceForDateEvent)
+                            navHostController.popBackStack()
+                        }
                     }
                 }
 
@@ -156,9 +184,12 @@ fun SmallGroupAttendanceScreen(
                                 content = { Text("Ok") }
                             )
                         }) {
-                        DatePicker(state = datePickerState, dateValidator = { selectedDate ->
-                            selectedDate < System.currentTimeMillis()
-                        })
+                        DatePicker(
+                            state = datePickerState,
+                            dateValidator = { selectedDate ->
+                                smallGroupAttendanceScreenViewModel.dateValidator(selectedDate)
+                            }
+                        )
                     }
                 }
 
@@ -235,7 +266,9 @@ fun SmallGroupAttendanceScreen(
                                     ),
                                 onCheckedChange = { isAllSelected ->
                                     smallGroupAttendanceScreenViewModel.onEvent(
-                                        SmallGroupAttendanceEvent.MarkAttendanceForAll(isAllSelected)
+                                        SmallGroupAttendanceEvent.MarkAttendanceForAllEvent(
+                                            isAllSelected
+                                        )
                                     )
                                 }
                             )
@@ -245,30 +278,32 @@ fun SmallGroupAttendanceScreen(
 
                 }
 
-            LazyColumnWithVerticalPadding() {
+                LazyColumnWithVerticalPadding() {
 
-                itemsIndexed(smallGroupAttendanceList.value) { index, subjectState ->
-                    AttendanceItem(
-                        smallGroupAttendanceEntityState = subjectState,
-                        selectedItems = smallGroupAttendanceScreenViewModel.selectedItems
-                    ) {
-                        smallGroupAttendanceScreenViewModel.onEvent(
-                            SmallGroupAttendanceEvent.MarkAttendanceForSubject(
-                                it,
-                                subjectState.subjectId ?: 0
+                    itemsIndexed(smallGroupAttendanceList.value) { index, subjectState ->
+                        AttendanceItem(
+                            smallGroupAttendanceEntityState = subjectState,
+                            selectedItems = smallGroupAttendanceScreenViewModel.selectedItems
+                        ) {
+                            smallGroupAttendanceScreenViewModel.onEvent(
+                                SmallGroupAttendanceEvent.MarkAttendanceForSubjectEvent(
+                                    it,
+                                    subjectState.subjectId ?: 0
+                                )
                             )
+                        }
+
+                    }
+
+                    item {
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(dimen_100_dp)
                         )
                     }
 
                 }
-
-                item {
-                    Spacer(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(dimen_100_dp))
-                }
-
-            }
             }
         }
     )

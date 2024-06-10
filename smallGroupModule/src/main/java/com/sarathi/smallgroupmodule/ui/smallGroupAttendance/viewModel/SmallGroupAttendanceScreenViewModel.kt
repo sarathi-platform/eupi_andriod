@@ -7,23 +7,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.enums.EventType
+import com.nudge.core.ui.events.DialogEvents
+import com.nudge.core.utils.state.DialogState
+import com.nudge.core.value
 import com.nudge.syncmanager.EventWriterEvents
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import com.sarathi.smallgroupmodule.data.domain.EventWriterHelperImpl
+import com.sarathi.smallgroupmodule.data.model.SubjectAttendanceState
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.SmallGroupAttendanceUserCase
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation.SmallGroupAttendanceEntityState
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.event.SmallGroupAttendanceEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class SmallGroupAttendanceScreenViewModel @Inject constructor(
     private val smallGroupAttendanceUserCase: SmallGroupAttendanceUserCase,
-    private val eventWriterHelperImpl: EventWriterHelperImpl
+    private val eventWriterHelperImpl: EventWriterHelperImpl,
 ) : BaseViewModel() {
 
     private val _smallGroupDetails: MutableState<SmallGroupSubTabUiModel> =
@@ -33,10 +38,6 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
     private val _subjectList: MutableState<MutableList<SubjectEntity>> =
         mutableStateOf(mutableListOf())
     val subjectList: State<List<SubjectEntity>> get() = _subjectList
-
-    val isAllSelected = mutableStateOf(false)
-
-    val markedAttendanceList = mutableStateOf(mutableSetOf<Int?>())
 
     val selectedDate =
         mutableStateOf(System.currentTimeMillis())
@@ -53,9 +54,18 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
 
     val allSelected = mutableStateOf(false)
 
+    val alertDialogState: MutableState<DialogState> = mutableStateOf(DialogState())
+
+    var markedDatesList: List<Long> = emptyList()
+
     override fun <T> onEvent(event: T) {
 
         when (event) {
+
+            is DialogEvents.ShowDialogEvent -> {
+                alertDialogState.value = alertDialogState.value.copy(event.showDialog)
+            }
+
             is SmallGroupAttendanceEvent.LoadSmallGroupDetailsForSmallGroupIdEvent -> {
 
                 viewModelScope.launch(Dispatchers.IO) {
@@ -82,28 +92,21 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
                     allSelected.value = selectedItems.value.values.all {
                         it
                     } && selectedItems.value.isNotEmpty()
+
+                    markedDatesList = smallGroupAttendanceUserCase.fetchMarkedDatesUseCase.invoke()
                 }
             }
 
-            is SmallGroupAttendanceEvent.MarkAttendanceForAll -> {
+            is SmallGroupAttendanceEvent.MarkAttendanceForAllEvent -> {
 
                 val newSelection = selectedItems.value.mapValues { event.checked }
                 selectedItems.value = newSelection
                 allSelected.value =
                     selectedItems.value.values.filter { it == true }.size == selectedItems.value.size && selectedItems.value.isNotEmpty()
 
-                /*viewModelScope.launch(Dispatchers.IO) {
-                    smallGroupAttendanceEntityState.value.forEach { smallGroupAttendanceEntityState ->
-                        addSaveAttendanceEvent(
-                            smallGroupAttendanceEntityState,
-                            smallGroupDetails.value,
-                            event.checked
-                        )
-                    }
-                }*/
             }
 
-            is SmallGroupAttendanceEvent.MarkAttendanceForSubject -> {
+            is SmallGroupAttendanceEvent.MarkAttendanceForSubjectEvent -> {
 
                 if (event.subjectId == 0)
                     return
@@ -114,9 +117,6 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
                 allSelected.value =
                     selectedItems.value.values.filter { it == true }.size == selectedItems.value.size && selectedItems.value.isNotEmpty()
 
-                /*viewModelScope.launch(Dispatchers.IO) {
-
-                }*/
             }
 
             is EventWriterEvents.SaveAttendanceEvent -> {
@@ -129,21 +129,59 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
                 }
             }
 
-            is SmallGroupAttendanceEvent.SubmitAttendanceForDate -> {
+            is SmallGroupAttendanceEvent.SubmitAttendanceForDateEvent -> {
 
                 viewModelScope.launch(Dispatchers.IO) {
-                    smallGroupAttendanceEntityState.value.forEach { subjectState ->
-                        addSaveAttendanceEvent(
-                            smallGroupAttendanceEntityState = subjectState,
-                            smallGroupDetails = smallGroupDetails.value,
-                            checked = selectedItems.value[subjectState.subjectId] ?: false
-                        )
+
+                    val isAttendanceAllowedForDate = checkIsAttendanceAllowedForDate()
+
+                    if (isAttendanceAllowedForDate) {
+                        smallGroupAttendanceEntityState.value.forEach { subjectState ->
+                            addSaveAttendanceEvent(
+                                smallGroupAttendanceEntityState = subjectState,
+                                smallGroupDetails = smallGroupDetails.value,
+                                checked = selectedItems.value[subjectState.subjectId] ?: false
+                            )
+                        }
+
+                        onEvent(SmallGroupAttendanceEvent.SaveAttendanceForDateToDbEvent)
+                    } else {
+                        withContext(mainDispatcher) {
+//                            showCustomToast()
+                        }
                     }
+                }
+
+            }
+
+            is SmallGroupAttendanceEvent.SaveAttendanceForDateToDbEvent -> {
+
+                val finalAttendanceStateList = ArrayList<SubjectAttendanceState>()
+                smallGroupAttendanceEntityState.value.forEach { state ->
+                    finalAttendanceStateList.add(
+                        SubjectAttendanceState(
+                            state.subjectId.value(),
+                            selectedItems.value[state.subjectId].value(),
+                            date = selectedDate.value
+                        )
+                    )
+                }
+
+                ioViewModelScope {
+                    smallGroupAttendanceUserCase.saveAttendanceToDbUseCase.invoke(
+                        finalAttendanceStateList
+                    )
                 }
 
             }
         }
 
+    }
+
+    private suspend fun checkIsAttendanceAllowedForDate(): Boolean {
+        val updatedMarkedAttendanceList =
+            smallGroupAttendanceUserCase.fetchMarkedDatesUseCase.invoke()
+        return !updatedMarkedAttendanceList.contains(selectedDate.value)
     }
 
     private suspend fun addSaveAttendanceEvent(
@@ -183,6 +221,11 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
             "SmallGroupAttendanceScreen updateAttendanceForSubject: ${smallGroupAttendanceEntityState.value}"
         )
 
+    }
+
+    fun dateValidator(selectedDate: Long): Boolean {
+        return selectedDate < System.currentTimeMillis()
+                && !markedDatesList.contains(selectedDate)
     }
 
 }

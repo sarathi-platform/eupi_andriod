@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
-import com.nudge.core.ui.events.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_10_dp
 
 @Composable
 fun CustomVerticalSpacer(
@@ -24,7 +24,7 @@ fun CustomVerticalSpacer(
 
 
 @Composable
-fun CustomHorizontalSpacerSpacer(
+fun CustomHorizontalSpacer(
     modifier: Modifier = Modifier,
     size: Dp = dimen_10_dp,
 ) {

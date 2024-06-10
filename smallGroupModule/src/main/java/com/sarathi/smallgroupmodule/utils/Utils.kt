@@ -17,6 +17,6 @@ fun Boolean.getAttendanceFromBoolean(): String {
     return if (this) SmallGroupConstants.ATTENDANCE_PRESENT else SmallGroupConstants.ATTENDANCE_ABSENT
 }
 
-fun String.getBooleanValueFromAttendance(): Boolean {
-    return this.equals(SmallGroupConstants.ATTENDANCE_PRESENT)
+fun String?.getBooleanValueFromAttendance(): Boolean {
+    return this?.equals(SmallGroupConstants.ATTENDANCE_PRESENT) ?: false
 }

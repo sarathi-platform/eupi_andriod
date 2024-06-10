@@ -16,7 +16,7 @@ data class SaveAttendanceEventDto(
     val localTaskId: String,*/ // TODO ask where to get this
     @SerializedName("payloadData")
     @Expose
-    val payloadData: List<PayloadData>,
+    val payloadData: PayloadData,
     @SerializedName("payloadType")
     @Expose
     val payloadType: String,

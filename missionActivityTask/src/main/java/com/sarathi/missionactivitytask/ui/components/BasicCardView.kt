@@ -26,15 +26,15 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
-import com.nudge.core.ui.events.theme.brownDark
-import com.nudge.core.ui.events.theme.defaultCardElevation
-import com.nudge.core.ui.events.theme.dimen_10_dp
-import com.nudge.core.ui.events.theme.dimen_2_dp
-import com.nudge.core.ui.events.theme.dimen_4_dp
-import com.nudge.core.ui.events.theme.dimen_56_dp
-import com.nudge.core.ui.events.theme.roundedCornerRadiusDefault
-import com.nudge.core.ui.events.theme.white
-import com.nudge.core.ui.events.theme.yellowBg
+import com.nudge.core.ui.theme.brownDark
+import com.nudge.core.ui.theme.defaultCardElevation
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_2_dp
+import com.nudge.core.ui.theme.dimen_4_dp
+import com.nudge.core.ui.theme.dimen_56_dp
+import com.nudge.core.ui.theme.roundedCornerRadiusDefault
+import com.nudge.core.ui.theme.white
+import com.nudge.core.ui.theme.yellowBg
 import com.sarathi.dataloadingmangement.BLANK_STRING
 
 @Composable
@@ -53,6 +53,7 @@ fun BasicCardView(
         elevation = cardElevation,
         shape = cardShape,
         border = cardBorder,
+        colors = colors,
         modifier = Modifier
             .then(modifier),
     ) {
@@ -175,7 +176,6 @@ fun ImageCardWithBottomContent(
 
         }
     }
-
 
 }
 

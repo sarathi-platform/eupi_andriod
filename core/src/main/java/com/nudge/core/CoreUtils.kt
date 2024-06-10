@@ -17,6 +17,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import com.facebook.network.connectionclass.ConnectionQuality
@@ -40,6 +41,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 
 fun Long.toDate(dateFormat: Long = System.currentTimeMillis(), timeZone: TimeZone = TimeZone.getTimeZone("UTC")): Date {
@@ -665,6 +667,8 @@ fun Int?.value() = this ?: -1
 
 fun Long?.value() = this ?: -1
 
+fun Boolean?.value() = this ?: false
+
 fun String.getImagePathFromString(): String {
     return try {
         this.split("|").first()
@@ -672,4 +676,21 @@ fun String.getImagePathFromString(): String {
         Log.e("Utils", "String.getImagePathFromString(): exception: ${ex.message}", ex)
         BLANK_STRING
     }
+}
+
+fun getDayPriorCurrentTimeMillis(sourceDuration: Long): Long {
+    val currentTime = System.currentTimeMillis()
+    return currentTime - TimeUnit.MILLISECONDS.convert(sourceDuration, TimeUnit.DAYS)
+}
+
+fun getDayAfterCurrentTimeMillis(sourceDuration: Long): Long {
+    val currentTime = System.currentTimeMillis()
+    return currentTime + TimeUnit.MILLISECONDS.convert(sourceDuration, TimeUnit.DAYS)
+}
+
+fun showCustomToast(
+    context: Context?,
+    msg: String
+) {
+    Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
 }

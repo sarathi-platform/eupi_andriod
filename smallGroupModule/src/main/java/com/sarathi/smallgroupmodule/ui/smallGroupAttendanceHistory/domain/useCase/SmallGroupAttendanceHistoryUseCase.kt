@@ -3,5 +3,6 @@ package com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.useCa
 import javax.inject.Inject
 
 data class SmallGroupAttendanceHistoryUseCase @Inject constructor(
-    val fetchSmallGroupDetailsFromDbUseCase: FetchSmallGroupDetailsFromDbUseCase
+    val fetchSmallGroupDetailsFromDbUseCase: FetchSmallGroupDetailsFromDbUseCase,
+    val fetchSmallGroupAttendanceHistoryFromDbUseCase: FetchSmallGroupAttendanceHistoryFromDbUseCase
 )
