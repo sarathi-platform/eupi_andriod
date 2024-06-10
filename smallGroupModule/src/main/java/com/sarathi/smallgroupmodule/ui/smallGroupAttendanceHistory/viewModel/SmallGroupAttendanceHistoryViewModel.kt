@@ -3,7 +3,6 @@ package com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.viewModel
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.viewModelScope
 import com.nudge.core.DEFAULT_DATE_RANGE_DURATION
 import com.nudge.core.getDayPriorCurrentTimeMillis
 import com.nudge.core.ui.events.CommonEvents
@@ -12,9 +11,9 @@ import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import com.sarathi.smallgroupmodule.data.model.SubjectAttendanceHistoryState
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.useCase.SmallGroupAttendanceHistoryUseCase
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.event.SmallGroupAttendanceEvent
+import com.sarathi.smallgroupmodule.utils.getDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -52,7 +51,7 @@ class SmallGroupAttendanceHistoryViewModel @Inject constructor(
         when (event) {
             is SmallGroupAttendanceEvent.LoadSmallGroupDetailsForSmallGroupIdEvent -> {
 
-                viewModelScope.launch(Dispatchers.IO) {
+                ioViewModelScope {
 
                     val details =
                         smallGroupAttendanceHistoryUseCase.fetchSmallGroupDetailsFromDbUseCase.invoke(
@@ -68,10 +67,8 @@ class SmallGroupAttendanceHistoryViewModel @Inject constructor(
                     _subjectAttendanceHistoryStateMappingByDate.value =
                         subjectAttendanceHistoryStateList.value.groupBy { it.date }
 
-                    if (_subjectAttendanceHistoryStateMappingByDate.value.isEmpty())
-                        isAttendanceAvailable.value = false
-                    else
-                        isAttendanceAvailable.value = true
+                    isAttendanceAvailable.value =
+                        !_subjectAttendanceHistoryStateMappingByDate.value.isEmpty()
 
                     withContext(Dispatchers.Main) {
                         _smallGroupDetails.value = details
@@ -85,7 +82,7 @@ class SmallGroupAttendanceHistoryViewModel @Inject constructor(
                     _subjectAttendanceHistoryStateList.value =
                         smallGroupAttendanceHistoryUseCase
                             .fetchSmallGroupAttendanceHistoryFromDbUseCase
-                            .invoke(smallGroupDetails.value.smallGroupId, dateRangeFilter.value)
+                            .invoke(smallGroupDetails.value.smallGroupId, getFinalDateRangeFilter())
                     _subjectAttendanceHistoryStateMappingByDate.value =
                         subjectAttendanceHistoryStateList.value.groupBy { it.date }
                 }
@@ -96,10 +93,18 @@ class SmallGroupAttendanceHistoryViewModel @Inject constructor(
                 if (event.startDate != null && event.endDate != null) {
                     _dateRangeFilter.value =
                         _dateRangeFilter.value.copy(event.startDate!!, event.endDate!!)
-//                    Pair(event.startDate, event.endDate)
                 }
             }
         }
+    }
+
+    private fun getFinalDateRangeFilter(): Pair<Long, Long> {
+        val currentDateInMillis = System.currentTimeMillis()
+        return if (dateRangeFilter.value.second.getDate() == currentDateInMillis.getDate())
+            dateRangeFilter.value.copy(second = currentDateInMillis)
+        else
+            dateRangeFilter.value
+
     }
 
 }

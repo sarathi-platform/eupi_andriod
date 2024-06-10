@@ -20,16 +20,23 @@ import com.sarathi.smallgroupmodule.ui.didiTab.domain.repository.FetchSmallGroup
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.DidiTabUseCase
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.FetchDidiDetailsFromDbUseCase
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.FetchSmallGroupListsFromDbUseCase
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.FetchAttendanceHistoryForDateFromDbRepository
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.FetchAttendanceHistoryForDateFromDbRepositoryImpl
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.FetchDidiListForSmallGroupFromDbRepository
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.FetchDidiListForSmallGroupFromDbRepositoryImpl
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.FetchMarkedDatesRepository
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.FetchMarkedDatesRepositoryImpl
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.SaveAttendanceToDbRepository
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.SaveAttendanceToDbRepositoryImpl
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.UpdateAttendanceToDbRepository
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.UpdateAttendanceToDbRepositoryImpl
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.FetchAttendanceHistoryForDateFromDbUseCase
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.FetchDidiListForSmallGroupFromDbUseCase
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.FetchMarkedDatesUseCase
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.SaveAttendanceToDbUseCase
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.SmallGroupAttendanceEditUserCase
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.SmallGroupAttendanceUserCase
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.UpdateAttendanceToDbUseCase
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.repository.FetchSmallGroupAttendanceHistoryFromDbRepository
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.repository.FetchSmallGroupAttendanceHistoryFromDbRepositoryImpl
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.repository.FetchSmallGroupDetailsFromDbRepository
@@ -271,6 +278,74 @@ class SmallGroupModule {
     ): FetchSmallGroupAttendanceHistoryFromDbUseCase {
         return FetchSmallGroupAttendanceHistoryFromDbUseCase(
             fetchSmallGroupAttendanceHistoryFromDbRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSmallGroupAttendanceEditUserCase(
+        fetchSmallGroupDetailsFromDbRepository: FetchSmallGroupDetailsFromDbRepository,
+        fetchDidiListForSmallGroupFromDbRepository: FetchDidiListForSmallGroupFromDbRepository,
+        updateAttendanceToDbRepository: UpdateAttendanceToDbRepository,
+        fetchMarkedDatesRepository: FetchMarkedDatesRepository,
+        fetchAttendanceHistoryForDateFromDbRepository: FetchAttendanceHistoryForDateFromDbRepository
+    ): SmallGroupAttendanceEditUserCase {
+        return SmallGroupAttendanceEditUserCase(
+            fetchSmallGroupDetailsFromDbUseCase = FetchSmallGroupDetailsFromDbUseCase(
+                fetchSmallGroupDetailsFromDbRepository
+            ),
+            fetchDidiListForSmallGroupFromDbUseCase = FetchDidiListForSmallGroupFromDbUseCase(
+                fetchDidiListForSmallGroupFromDbRepository
+            ),
+            updateAttendanceToDbUseCase = UpdateAttendanceToDbUseCase(updateAttendanceToDbRepository),
+            fetchMarkedDatesUseCase = FetchMarkedDatesUseCase(fetchMarkedDatesRepository),
+            fetchAttendanceHistoryForDateFromDbUseCase = FetchAttendanceHistoryForDateFromDbUseCase(
+                fetchAttendanceHistoryForDateFromDbRepository
+            )
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchAttendanceHistoryForDateFromDbUseCase(
+        fetchAttendanceHistoryForDateFromDbRepository: FetchAttendanceHistoryForDateFromDbRepository
+    ): FetchAttendanceHistoryForDateFromDbUseCase {
+        return FetchAttendanceHistoryForDateFromDbUseCase(
+            fetchAttendanceHistoryForDateFromDbRepository = fetchAttendanceHistoryForDateFromDbRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchAttendanceHistoryForDateFromDbRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        subjectEntityDao: SubjectEntityDao,
+        smallGroupDidiMappingDao: SmallGroupDidiMappingDao,
+        subjectAttributeDao: SubjectAttributeDao,
+        attributeValueReferenceDao: AttributeValueReferenceDao
+    ): FetchAttendanceHistoryForDateFromDbRepository {
+        return FetchAttendanceHistoryForDateFromDbRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            smallGroupDidiMappingDao = smallGroupDidiMappingDao,
+            subjectEntityDao = subjectEntityDao,
+            subjectAttributeDao = subjectAttributeDao,
+            attributeValueReferenceDao = attributeValueReferenceDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideUpdateAttendanceToDbRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        subjectEntityDao: SubjectEntityDao,
+        subjectAttributeDao: SubjectAttributeDao,
+        attributeValueReferenceDao: AttributeValueReferenceDao
+    ): UpdateAttendanceToDbRepository {
+        return UpdateAttendanceToDbRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            subjectEntityDao = subjectEntityDao,
+            subjectAttributeDao = subjectAttributeDao,
+            attributeValueReferenceDao = attributeValueReferenceDao
         )
     }
 

@@ -16,4 +16,11 @@ sealed class SmallGroupAttendanceEvent {
 
     object LoadSmallGroupAttendanceHistoryOnDateRangeUpdateEvent : SmallGroupAttendanceEvent()
 
+    object UpdateAttendanceForDateEvent : SmallGroupAttendanceEvent()
+
+    data class LoadSmallGroupAttendanceForGroupForDateEvent(
+        val smallGroupId: Int,
+        val selectedDate: Long
+    )
+
 }

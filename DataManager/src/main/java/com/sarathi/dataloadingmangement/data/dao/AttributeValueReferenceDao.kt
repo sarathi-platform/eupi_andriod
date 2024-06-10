@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.sarathi.dataloadingmangement.ATTRIBUTE_VALUE_REFERENCE_ENTITY_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.entities.AttributeValueReferenceEntity
 import com.sarathi.dataloadingmangement.model.uiModel.MarkedDatesUiModel
 
@@ -30,5 +31,7 @@ interface AttributeValueReferenceDao {
     )
     suspend fun getMarkedDatesList(userId: String): List<MarkedDatesUiModel>
 
+    @Query("DELETE from $ATTRIBUTE_VALUE_REFERENCE_ENTITY_TABLE_NAME where parentReferenceId in (:parentRefIds)")
+    fun removeAttendanceAttributeFromReferenceTable(parentRefIds: List<Int>)
 
 }
