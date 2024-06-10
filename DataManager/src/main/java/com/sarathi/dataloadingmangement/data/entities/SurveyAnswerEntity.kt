@@ -9,6 +9,8 @@ import com.google.gson.annotations.SerializedName
 import com.sarathi.dataloadingmangement.ANSWER_TABLE
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.converters.QuestionsOptionsConverter
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 
 
 @Entity(tableName = ANSWER_TABLE)
@@ -42,7 +44,7 @@ data class SurveyAnswerEntity(
     @SerializedName("referenceId")
     @Expose
     @ColumnInfo(name = "referenceId")
-    var referenceId: Int,
+    var referenceId: String,
 
     @SerializedName("questionType")
     @Expose
@@ -53,6 +55,10 @@ data class SurveyAnswerEntity(
     @Expose
     @ColumnInfo(name = "taskId")
     var taskId: Int,
+    @SerializedName("taskId")
+    @Expose
+    @ColumnInfo(name = "tagId")
+    var tagId: Int,
 
     @SerializedName("answerValue")
     @Expose
@@ -63,7 +69,7 @@ data class SurveyAnswerEntity(
     @Expose
     @ColumnInfo("optionItems")
     @TypeConverters(QuestionsOptionsConverter::class)
-    var optionItems: List<OptionItemEntity>,
+    var optionItems: List<OptionsUiModel>,
 
     @SerializedName("questionSummary")
     @Expose
@@ -73,4 +79,35 @@ data class SurveyAnswerEntity(
     @Expose
     @ColumnInfo(name = "needsToPost")
     var needsToPost: Boolean = true,
-)
+) {
+    companion object {
+
+        fun getSurveyAnswerEntity(
+            question: QuestionUiModel,
+            userId: String,
+            referenceId: String,
+            taskId: Int,
+            subjectId: Int
+        ): SurveyAnswerEntity {
+            return SurveyAnswerEntity(
+                id = 0,
+                userId = userId,
+                questionId = question.questionId,
+                surveyId = question.surveyId,
+                sectionId = question.sectionId,
+                referenceId = referenceId,
+                questionType = question.type,
+                taskId = taskId,
+                answerValue = "",
+                questionSummary = question.questionSummary,
+                optionItems = question.options ?: listOf(),
+                subjectId = subjectId,
+                tagId = question.tagId
+
+
+            )
+        }
+
+
+    }
+}

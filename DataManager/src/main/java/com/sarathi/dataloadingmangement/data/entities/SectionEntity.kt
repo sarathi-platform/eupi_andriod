@@ -49,11 +49,6 @@ data class SectionEntity(
     @Expose
     @ColumnInfo(name = "sectionIcon")
     val sectionIcon: String = BLANK_STRING,
-
-    @SerializedName("languageId")
-    @Expose
-    @ColumnInfo(name = "languageId")
-    val languageId: String,
     val questionSize: Int = 0,
     @TypeConverters(ContentListConverter::class)
     val contentEntities: List<ContentList>
@@ -62,7 +57,6 @@ data class SectionEntity(
         fun getSectionEntity(
             userId: String,
             section: Sections,
-            languageCode: String,
             surveyId: Int
         ): SectionEntity {
             return SectionEntity(
@@ -70,11 +64,9 @@ data class SectionEntity(
                 userId = userId,
                 sectionId = section.sectionId,
                 surveyId = surveyId,
-                sectionName = section.sectionName,
+                sectionName = section.originalValue,
                 sectionOrder = section.sectionOrder,
-                sectionDetails = section.sectionDetails,
                 sectionIcon = section.sectionIcon,
-                languageId = languageCode,
                 questionSize = section.questionList.size,
                 contentEntities = section.contentList
             )

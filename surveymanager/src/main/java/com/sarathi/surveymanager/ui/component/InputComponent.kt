@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -20,19 +21,23 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.ui.theme.borderGrey
-import com.nudge.core.ui.theme.placeholderGrey
-import com.nudge.core.ui.theme.textColorDark
-import com.sarathi.surveymanager.MAXIMUM_RANGE_LENGTH
+import com.nudge.core.ui.events.theme.borderGrey
+import com.nudge.core.ui.events.theme.buttonTextStyle
+import com.nudge.core.ui.events.theme.placeholderGrey
+import com.nudge.core.ui.events.theme.textColorDark
+import com.sarathi.surveymanager.constants.MAXIMUM_RANGE_LENGTH
 import com.sarathi.surveymanager.utils.onlyNumberField
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun NumberTextComponent(
+fun InputComponent(
     title: String? = "select",
     defaultValue: String = BLANK_STRING,
     isOnlyNumber: Boolean = false,
     maxLength: Int = 150,
+    hintText: String = BLANK_STRING,
+    isMandatory: Boolean = true,
+    isEditable: Boolean = true,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
     val txt = remember {
@@ -47,20 +52,19 @@ fun NumberTextComponent(
             .padding(horizontal = 2.dp)
     ) {
         if (title?.isNotBlank() == true) {
-            QuestionComponent(title = title, isRequiredField = true)
+            QuestionComponent(title = title, isRequiredField = isMandatory)
         }
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 6.dp),
             value = txt.value,
+            enabled = isEditable,
             onValueChange = {
                 if (it.length <= maxLength) {
                     if (isOnlyNumber) {
-                        if (onlyNumberField(it)) {
-                            if (it.length <= MAXIMUM_RANGE_LENGTH) {
-                                txt.value = it
-                            }
+                        if (onlyNumberField(it) && it.length <= MAXIMUM_RANGE_LENGTH) {
+                            txt.value = it
                         }
                     } else {
                         txt.value = it
@@ -68,6 +72,7 @@ fun NumberTextComponent(
                 }
                 onAnswerSelection(txt.value)
             },
+            placeholder = { Text(hintText, style = buttonTextStyle.copy(color = placeholderGrey)) },
             keyboardOptions = if (isOnlyNumber) {
                 KeyboardOptions(
                     imeAction = ImeAction.Done,
@@ -91,7 +96,7 @@ fun NumberTextComponent(
                 focusedBorderColor = placeholderGrey,
                 unfocusedBorderColor = borderGrey,
                 textColor = textColorDark
-            )
+            ),
         )
 
     }
@@ -100,5 +105,5 @@ fun NumberTextComponent(
 @Preview(showSystemUi = true)
 @Composable
 fun NumberTextComponentPreview() {
-    NumberTextComponent(onAnswerSelection = {}, isOnlyNumber = true)
+    InputComponent(onAnswerSelection = {}, isOnlyNumber = true)
 }

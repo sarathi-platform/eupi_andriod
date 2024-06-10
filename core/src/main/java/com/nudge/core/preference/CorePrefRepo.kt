@@ -21,6 +21,12 @@ interface CorePrefRepo {
     fun getUniqueUserIdentifier(): String
     fun getAppLanguage(): String?
     fun saveAppLanguage(code: String?)
+    fun savePref(key: String, value: String)
+    fun savePref(key: String, value: Int)
+    fun getPref(key: String, defaultValue: Int): Int
+    fun getPref(key: String, defaultValue: String): String
+    fun getUserId(): String
+    fun setUserId(userId: String)
 
     fun getSelectedLanguageId(): Int
 

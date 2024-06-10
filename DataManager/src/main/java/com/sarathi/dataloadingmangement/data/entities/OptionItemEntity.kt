@@ -28,7 +28,6 @@ data class OptionItemEntity(
     @Expose
     @ColumnInfo(name = "sectionId")
     var sectionId: Int = 0,
-
     @SerializedName("surveyId")
     @Expose
     @ColumnInfo(name = "surveyId")
@@ -41,10 +40,6 @@ data class OptionItemEntity(
     @SerializedName("optionId")
     @Expose
     val optionId: Int? = null,
-
-    @SerializedName("description")
-    @ColumnInfo(name = "display")
-    val display: String? = null,
 
     @SerializedName("weight")
     val weight: Int? = null,
@@ -64,11 +59,6 @@ data class OptionItemEntity(
     @SerializedName("type")
     var optionType: String? = BLANK_STRING,
 
-    /*@SerializedName("questions")
-    @Expose
-    @TypeConverters(OptionQuestionConverter::class)
-    val questionList: List<QuestionList?>? = listOf(),*/
-
     @SerializedName("conditional")
     @Expose
     val conditional: Boolean = false,
@@ -81,11 +71,6 @@ data class OptionItemEntity(
     @Expose
     @TypeConverters(ValuesDtoConverter::class)
     val values: List<ValuesDto>? = listOf(),
-
-    @SerializedName("languageId")
-    @Expose
-    @ColumnInfo(name = "languageId")
-    var languageId: String? = BLANK_STRING,
 
     @SerializedName("optionTag")
     @Expose
@@ -129,7 +114,6 @@ data class OptionItemEntity(
             sectionId: Int,
             surveyId: Int,
             questionId: Int?,
-            languageId: String
         ): OptionItemEntity {
             return OptionItemEntity(
                 id = 0,
@@ -138,20 +122,17 @@ data class OptionItemEntity(
                 questionId = questionId,
                 sectionId = sectionId,
                 surveyId = surveyId,
-                display = optionsItem.display,
                 weight = optionsItem.weight,
                 optionValue = optionsItem.optionValue,
-                summary = optionsItem.summary,
                 count = optionsItem.count,
                 optionImage = optionsItem.optionImage,
                 optionType = optionsItem.optionType,
                 conditional = optionsItem.conditional,
                 order = optionsItem.order,
                 values = optionsItem.values,
-                languageId = languageId,
                 conditions = optionsItem.conditions,
                 optionTag = optionsItem.tag ?: 0,
-                contentEntities = optionsItem.contentList
+                contentEntities = optionsItem.contentList ?: listOf()
             )
         }
     }

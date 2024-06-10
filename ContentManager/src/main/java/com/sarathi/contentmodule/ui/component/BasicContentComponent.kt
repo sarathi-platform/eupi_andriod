@@ -105,12 +105,17 @@ private fun ContentView(
 fun ContentData(contentType: String) {
     when (contentType) {
         FileType.Image.name -> {
-            val painter: Painter = painterResource(id = R.drawable.ic_sarathi_logo)
+            val painter: Painter = painterResource(id = R.drawable.ic_image_placeholder)
+            Image(painter = painter, contentDescription = null)
+        }
+
+        FileType.Audio.name -> {
+            val painter: Painter = painterResource(id = R.drawable.ic_audio_placeholder)
             Image(painter = painter, contentDescription = null)
         }
 
         FileType.Video.name -> {
-            ImageOverlay(resId = R.drawable.ic_sarathi_logo)
+            ImageOverlay(resId = R.drawable.ic_video_placeholder)
         }
 
         FileType.File.name -> {

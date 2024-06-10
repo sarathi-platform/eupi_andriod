@@ -23,8 +23,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.nudge.core.ui.events.theme.buttonTextStyle
+import com.nudge.core.ui.events.theme.greyColor
+import com.nudge.core.ui.events.theme.placeholderGrey
+import com.nudge.core.ui.events.theme.white
+import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.surveymanager.R
 import com.nudge.core.ui.theme.buttonTextStyle
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.placeholderGrey
@@ -32,14 +37,25 @@ import com.nudge.core.ui.theme.white
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showSystemUi = true)
 @Composable
-fun DatePickerComponent() {
-    var text by remember { mutableStateOf("") }
+fun DatePickerComponent(
+    title: String = BLANK_STRING,
+    hintText: String = BLANK_STRING,
+    defaultValue: String = BLANK_STRING,
+    isMandatory: Boolean = false,
+    isEditable: Boolean = true,
+    onAnswerSelection: (selectValue: String) -> Unit,
+) {
+    var text by remember { mutableStateOf(defaultValue) }
     val context = LocalContext.current
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(10.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+    ) {
+        if (title.isNotBlank() == true) {
+            QuestionComponent(title = title, isRequiredField = isMandatory)
+        }
         TextField(
             modifier = Modifier
                 .fillMaxWidth()
@@ -47,22 +63,28 @@ fun DatePickerComponent() {
                 .border(1.dp, greyColor, shape = RoundedCornerShape(8.dp))
                 .padding(8.dp),
             value = text,
+            readOnly = true,
             onValueChange = { text = it },
             placeholder = {
                 Text(
-                    "DD/MM//YYYY",
+                    hintText,
                     style = buttonTextStyle.copy(color = placeholderGrey)
                 )
             },
             trailingIcon = {
                 IconButton(onClick = {
                     val calendar = Calendar.getInstance()
-                    val year = calendar.get(Calendar.YEAR)
-                    val month = calendar.get(Calendar.MONTH)
-                    val day = calendar.get(Calendar.DAY_OF_MONTH)
-                    DatePickerDialog(context, { _, selectedYear, selectedMonth, selectedDay ->
-                        text = "$selectedDay/${selectedMonth + 1}/$selectedYear"
-                    }, year, month, day).show()
+                    val year = calendar[Calendar.YEAR]
+                    val month = calendar[Calendar.MONTH]
+                    val day = calendar[Calendar.DAY_OF_MONTH]
+                    DatePickerDialog(
+                        context,
+                        R.style.my_dialog_theme,
+                        { _, selectedYear, selectedMonth, selectedDay ->
+                            text = "$selectedDay/${selectedMonth + 1}/$selectedYear"
+                            onAnswerSelection(text)
+                        }, year, month, day
+                    ).show()
                 }) {
                     Icon(
                         imageVector = Icons.Default.DateRange,
@@ -71,6 +93,7 @@ fun DatePickerComponent() {
                     )
                 }
             },
+            enabled = isEditable,
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color.White, // Background color
                 focusedIndicatorColor = Color.Transparent, // No underline when focused

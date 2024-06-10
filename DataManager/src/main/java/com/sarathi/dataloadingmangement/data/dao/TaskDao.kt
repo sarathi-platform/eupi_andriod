@@ -33,7 +33,7 @@ interface TaskDao {
     @Query("UPDATE $TASK_TABLE_NAME set isActive = 0 where userId=:userId and activityId=:activityId and missionId = :missionId ")
     fun softDeleteActivityTask(userId: String, activityId: Int, missionId: Int)
 
-    @Query("SELECT taskId, status FROM $TASK_TABLE_NAME where userId=:userId and missionId=:missionId and activityId = :activityId and isActive=1")
+    @Query("SELECT taskId,subjectId, status FROM $TASK_TABLE_NAME where userId=:userId and missionId=:missionId and activityId = :activityId and isActive=1")
     suspend fun getActiveTask(
         userId: String,
         missionId: Int,
@@ -44,13 +44,12 @@ interface TaskDao {
     suspend fun getActivityTaskFromIds(userId: String, activityId: Int): List<ActivityTaskEntity>
 
 
-    @Query("UPDATE $TASK_TABLE_NAME set status = :status where userId=:userId and taskId = :taskId AND activityId = :activityId AND missionId = :missionId")
+    @Query("UPDATE $TASK_TABLE_NAME set status = :status where userId=:userId and taskId = :taskId and subjectId=:subjectId")
     fun updateTaskStatus(
         userId: String,
         taskId: Int,
-        activityId: Int,
-        missionId: Int,
-        status: String
+        status: String,
+        subjectId: Int
     )
 
     @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId and  activityId=:activityId AND missionId = :missionId and taskId = :taskId")
@@ -59,19 +58,23 @@ interface TaskDao {
     @Query("UPDATE $TASK_TABLE_NAME SET actualStartDate = :actualStartDate where  userId=:userId and taskId = :taskId")
     fun updateTaskStartDate(userId: String, taskId: Int, actualStartDate: String)
 
-    @Query("UPDATE $TASK_TABLE_NAME SET actualCompletedDate = :actualCompletedDate where userId=:userId and  taskId = :taskId")
-    fun updateTaskCompletedDate(userId: String, taskId: Int, actualCompletedDate: String)
+    @Query("UPDATE $TASK_TABLE_NAME SET actualCompletedDate = :actualCompletedDate where userId=:userId and  taskId = :taskId and subjectId =:subjectId")
+    fun updateTaskCompletedDate(
+        userId: String,
+        taskId: Int,
+        actualCompletedDate: String,
+        subjectId: Int
+    )
 
     @Transaction
     fun markTaskInProgress(
         userId: String,
         taskId: Int,
-        activityId: Int,
-        missionId: Int,
         status: String,
+        subjectId: Int,
         actualStartDate: String
     ) {
-        updateTaskStatus(userId, taskId, activityId, missionId, status)
+        updateTaskStatus(userId, taskId, status, subjectId)
         updateTaskStartDate(userId, taskId, actualStartDate)
     }
 
@@ -79,13 +82,12 @@ interface TaskDao {
     fun markTaskCompleted(
         userId: String,
         taskId: Int,
-        activityId: Int,
-        missionId: Int,
+        subjectId: Int,
         status: String,
         actualCompletedDate: String
     ) {
-        updateTaskStatus(userId, taskId, activityId, missionId, status)
-        updateTaskCompletedDate(userId, taskId, actualCompletedDate)
+        updateTaskStatus(userId, taskId, status, subjectId)
+        updateTaskCompletedDate(userId, taskId, actualCompletedDate, subjectId)
     }
 
 
@@ -99,5 +101,14 @@ interface TaskDao {
     @Query("SELECT COUNT(*) from $TASK_TABLE_NAME where  userId=:userId and missionId = :missionId and activityId=:activityId and isActive=1")
     fun getTaskCountForActivity(userId: String, missionId: Int, activityId: Int): Int
 
+    @Query("SELECT status from $TASK_TABLE_NAME where  userId=:userId and taskId = :taskId and subjectId=:subjectId")
+    fun getTaskStatus(
+        userId: String,
+        taskId: Int,
+        subjectId: Int
+    ): String?
+
+    @Query("SELECT count(*) FROM $TASK_TABLE_NAME WHERE userId = :userId AND status IN (:statuses)")
+    suspend fun countTasksByStatus(userId: String, statuses: List<String>): Int
 
 }

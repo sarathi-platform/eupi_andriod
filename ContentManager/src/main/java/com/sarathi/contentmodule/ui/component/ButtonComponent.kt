@@ -21,6 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.smallerTextStyle
+import com.nudge.core.ui.events.theme.blueDark
+import com.nudge.core.ui.events.theme.lightGray2
+import com.nudge.core.ui.events.theme.smallerTextStyle
 import com.sarathi.dataloadingmangement.BLANK_STRING
 
 @Composable
@@ -44,10 +47,9 @@ fun ButtonComponent(title: String = BLANK_STRING) {
             Text(
                 text = title,
                 textAlign = TextAlign.Center,
-                style = smallerTextStyle.copy(fontSize = 10.sp),
+                style = smallerTextStyle.copy(fontSize = 10.sp, color = blueDark),
                 modifier = Modifier.padding(10.dp),
             )
-
         }
     }
 }

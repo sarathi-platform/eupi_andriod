@@ -20,6 +20,7 @@ import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
+import com.sarathi.dataloadingmangement.data.dao.LanguageDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
@@ -30,6 +31,7 @@ import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TaskAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
@@ -42,6 +44,7 @@ import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.AttributeValueReferenceEntity
 import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.data.entities.ContentConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.LanguageEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionLanguageEntity
 import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
@@ -52,6 +55,7 @@ import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyEntity
+import com.sarathi.dataloadingmangement.data.entities.SurveyLanguageAttributeEntity
 import com.sarathi.dataloadingmangement.data.entities.TaskAttributesEntity
 import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
@@ -79,6 +83,7 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
         OptionItemEntity::class,
         ProgrammeEntity::class,
         SurveyAnswerEntity::class,
+        SurveyLanguageAttributeEntity::class,
         SubjectEntity::class,
         SmallGroupDidiMappingEntity::class
     ],
@@ -101,6 +106,7 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun activityDao(): ActivityDao
     abstract fun taskDao(): TaskDao
     abstract fun contentDao(): ContentDao
+    abstract fun languageDao(): LanguageDao
     abstract fun activityConfigDao(): ActivityConfigDao
     abstract fun activityLanguageAttributeDao(): ActivityLanguageAttributeDao
     abstract fun activityLanguageDao(): ActivityLanguageDao
@@ -118,6 +124,7 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun optionItemDao(): OptionItemDao
     abstract fun programmeDao(): ProgrammeDao
     abstract fun surveyAnswersDao(): SurveyAnswersDao
+    abstract fun surveyLanguageAttributeDao(): SurveyLanguageAttributeDao
 
 
     abstract fun subjectEntityDao(): SubjectEntityDao

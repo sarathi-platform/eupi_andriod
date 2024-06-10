@@ -34,7 +34,7 @@ fun QuestionComponent(isRequiredField: Boolean = true, title: String = "") {
                         fontFamily = NotoSans
                     )
                 ) {
-                    append("title")
+                    append(title)
                 }
                 if (isRequiredField) {
                     withStyle(

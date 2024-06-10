@@ -7,15 +7,18 @@ import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
 import com.sarathi.dataloadingmangement.data.entities.QuestionEntity
 import com.sarathi.dataloadingmangement.data.entities.SectionEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyEntity
+import com.sarathi.dataloadingmangement.data.entities.SurveyLanguageAttributeEntity
 import com.sarathi.dataloadingmangement.model.survey.request.SurveyRequest
 import com.sarathi.dataloadingmangement.model.survey.response.ConditionDtoWithParentId
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.QuestionList
 import com.sarathi.dataloadingmangement.model.survey.response.Sections
+import com.sarathi.dataloadingmangement.model.survey.response.SurveyLanguageAttributes
 import com.sarathi.dataloadingmangement.model.survey.response.SurveyResponseModel
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import javax.inject.Inject
@@ -26,46 +29,63 @@ class SurveyDownloadRepository @Inject constructor(
     val sectionEntityDao: SectionEntityDao,
     val coreSharedPrefs: CoreSharedPrefs,
     val optionItemDao: OptionItemDao,
-    val questionEntityDao: QuestionEntityDao
+    val questionEntityDao: QuestionEntityDao,
+    val surveyLanguageAttributeDao: SurveyLanguageAttributeDao
 ) : ISurveyDownloadRepository {
-    override suspend fun fetchSurveyFromNetwork(surveyRequestBodyModel: SurveyRequest): ApiResponseModel<SurveyResponseModel> {
-        return dataLoadingApiService.getSurveyFromNetwork(surveyRequestBodyModel)
+    override suspend fun fetchSurveyFromNetwork(surveyRequest: SurveyRequest): ApiResponseModel<SurveyResponseModel> {
+        return dataLoadingApiService.getSurveyFromNetwork(surveyRequest)
     }
 
     override fun saveSurveyToDb(surveyApiResponse: SurveyResponseModel) {
-        surveyDao.deleteSurveyFroLanguage(
-            userId = coreSharedPrefs.getUniqueUserIdentifier(),
-            surveyApiResponse.surveyId,
+        try {
 
+
+            surveyDao.deleteSurvey(
+                userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                surveyApiResponse.surveyId
             )
-
-
-
-        surveyApiResponse.surveyLanguageAttributes.forEach { surveyLanguageAttributes ->
             surveyDao.insertSurvey(
                 SurveyEntity.getSurveyEntity(
                     coreSharedPrefs.getUniqueUserIdentifier(),
-                    surveyLanguageAttributes.surveyName,
-                    surveyLanguageAttributes.languageCode,
                     surveyApiResponseModel = surveyApiResponse
                 )
             )
 
-            surveyLanguageAttributes.sections.forEach { section ->
+            deleteSurveyLanguageAttribute(
+                surveyApiResponse.surveyId,
+                LanguageAttributeReferenceType.SURVEY.name
+            )
+
+            saveSurveyLanguageAttributes(
+                surveyApiResponse.surveyLanguageAttributes,
+                surveyApiResponse.surveyId,
+                LanguageAttributeReferenceType.SURVEY.name
+            )
+
+
+            surveyApiResponse.sections.forEach { section ->
+                deleteSurveyLanguageAttribute(
+                    section.sectionId,
+                    LanguageAttributeReferenceType.SECTION.name
+                )
+
+                saveSurveyLanguageAttributes(
+                    section.surveyLanguageAttributes,
+                    section.sectionId,
+                    LanguageAttributeReferenceType.SECTION.name
+                )
 
                 val contentLists = mutableListOf<ContentList>()
                 sectionEntityDao.deleteSurveySectionFroLanguage(
                     userId = coreSharedPrefs.getUniqueUserIdentifier(),
                     section.sectionId,
                     surveyApiResponse.surveyId,
-                    surveyLanguageAttributes.languageCode
                 )
                 contentLists.addAll(section.contentList)
                 sectionEntityDao.insertSection(
                     SectionEntity.getSectionEntity(
                         userId = coreSharedPrefs.getUniqueUserIdentifier(),
                         section = section,
-                        surveyLanguageAttributes.languageCode,
                         surveyApiResponse.surveyId
                     )
                 )
@@ -75,27 +95,47 @@ class SurveyDownloadRepository @Inject constructor(
                     mutableListOf<ConditionDtoWithParentId>()
 
                 section.questionList.forEach { question ->
+
                     conditionDtoWithParentIdList.add(ConditionDtoWithParentId(question!!, 0))
                 }
-
                 saveQuestionOptionsAtAllLevel(
                     conditionDtoWithParentIdList,
                     section,
                     surveyApiResponse,
-                    section.languageCode
                 )
             }
-
-
+        } catch (ex: Exception) {
+            Log.e("Exceptiom", ex.localizedMessage)
         }
 
     }
+
+    private fun saveSurveyLanguageAttributes(
+        surveyLanguageAttributes: List<SurveyLanguageAttributes>,
+        referenceId: Int,
+        referenceType: String
+    ) {
+        surveyLanguageAttributes.forEach {
+            surveyLanguageAttributeDao.insertSurveyLanguageAttribute(
+                SurveyLanguageAttributeEntity.getSurveyLanguageAttributeEntity(
+                    userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                    languageAttributes = it,
+                    referenceId = referenceId,
+                    type = referenceType
+                )
+            )
+        }
+    }
+
+    private fun deleteSurveyLanguageAttribute(referenceId: Int, referenceType: String) {
+        surveyLanguageAttributeDao.deleteSurveyLanguageAttribute(referenceId, referenceType)
+    }
+
 
     private fun saveQuestionOptionsAtAllLevel(
         questionList: List<ConditionDtoWithParentId?>,
         section: Sections,
         surveyResponseModel: SurveyResponseModel,
-        languageId: String,
         isSubQuestionList: Boolean = false
     ) {
         questionList.forEach { question ->
@@ -104,7 +144,6 @@ class SurveyDownloadRepository @Inject constructor(
                 question = question?.resultList,
                 section = section,
                 surveyResponseModel = surveyResponseModel,
-                languageId = languageId,
                 isSubQuestionList = isSubQuestionList
             )
             question?.resultList?.options?.forEach { opt ->
@@ -124,7 +163,6 @@ class SurveyDownloadRepository @Inject constructor(
                                 questionList = conditionDtoWithParentIdList,
                                 section = section,
                                 surveyResponseModel = surveyResponseModel,
-                                languageId = languageId,
                                 isSubQuestionList = true
                             )
                         }
@@ -139,7 +177,6 @@ class SurveyDownloadRepository @Inject constructor(
         question: QuestionList?,
         section: Sections,
         surveyResponseModel: SurveyResponseModel,
-        languageId: String,
         isSubQuestionList: Boolean = false,
         parentId: Int = 0
     ) {
@@ -150,7 +187,6 @@ class SurveyDownloadRepository @Inject constructor(
                     question.questionId!!,
                     section.sectionId,
                     surveyResponseModel.surveyId,
-                    languageId
                 )
                 if (existingQuestion != null) {
                     questionEntityDao.deleteSurveySectionQuestionFroLanguage(
@@ -158,21 +194,28 @@ class SurveyDownloadRepository @Inject constructor(
                         question.questionId!!,
                         section.sectionId,
                         surveyResponseModel.surveyId,
-                        languageId
                     )
                 }
-                Log.d("TAG", "saveQuestionAndOptionsToDb: question -> ${question.questionDisplay}")
+                //  Log.d("TAG", "saveQuestionAndOptionsToDb: question -> ${question.questionDisplay}")
 
                 questionEntityDao.insertQuestion(
                     QuestionEntity.getQuestionEntity(
                         userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                        languageId = languageId,
                         isCondition = isSubQuestionList,
                         question = question,
                         parentId = parentId,
                         surveyId = surveyResponseModel.surveyId,
                         sectionId = section.sectionId
                     )
+                )
+                deleteSurveyLanguageAttribute(
+                    question.questionId ?: 0, LanguageAttributeReferenceType.QUESTION.name
+                )
+
+                saveSurveyLanguageAttributes(
+                    question.surveyLanguageAttributes,
+                    question.questionId ?: 0,
+                    LanguageAttributeReferenceType.QUESTION.name
                 )
                 question.options?.forEach { optionsItem ->
                     if (optionsItem != null) {
@@ -181,9 +224,19 @@ class SurveyDownloadRepository @Inject constructor(
                             optionsItem.optionId!!,
                             question.questionId!!,
                             section.sectionId,
-                            surveyResponseModel.surveyId,
-                            languageId
+                            surveyResponseModel.surveyId
                         )
+                        deleteSurveyLanguageAttribute(
+                            optionsItem.optionId ?: 0,
+                            LanguageAttributeReferenceType.OPTION.name
+                        )
+
+                        saveSurveyLanguageAttributes(
+                            optionsItem.surveyLanguageAttributes,
+                            optionsItem.optionId ?: 0,
+                            LanguageAttributeReferenceType.OPTION.name
+                        )
+
                         optionItemDao.insertOption(
                             OptionItemEntity.getOptionItemEntity(
                                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
@@ -191,7 +244,6 @@ class SurveyDownloadRepository @Inject constructor(
                                 sectionId = section.sectionId,
                                 surveyId = surveyResponseModel.surveyId,
                                 questionId = question.questionId,
-                                languageId = languageId
                             )
                         )
                     }
@@ -215,4 +267,12 @@ enum class ResultType {
     Questions,
     Formula,
     NoneMarked
+}
+
+enum class LanguageAttributeReferenceType {
+    OPTION,
+    QUESTION,
+    SECTION,
+    SURVEY
+
 }

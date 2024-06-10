@@ -13,6 +13,8 @@ import com.sarathi.dataloadingmangement.model.survey.request.SurveyRequest
 import com.sarathi.dataloadingmangement.model.survey.response.SurveyResponseModel
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
 import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
+import com.sarathi.dataloadingmangement.network.response.ConfigResponseModel
+import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -27,11 +29,19 @@ interface DataLoadingApiService {
     @POST(SUB_PATH_CONTENT_MANAGER)
     suspend fun fetchContentData(@Body contentMangerRequest: ContentRequest): ApiResponseModel<List<ContentResponse>>
 
-    //  @POST("http://10.0.2.2:3001/home")
+    // @POST("http://10.0.2.2:3001/home") DateType
     @POST(SUBPATH_FETCH_SURVEY_FROM_NETWORK)
-    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    //  @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getSurveyFromNetwork(@Body request: SurveyRequest): ApiResponseModel<SurveyResponseModel>
 
+    @GET(SUBPATH_CONFIG_GET_LANGUAGE)
+    suspend fun fetchLanguageConfigDetailsFromNetwork(): ApiResponseModel<ConfigResponseModel?>
+
+    @GET(SUBPATH_USER_VIEW)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun userAndVillageListAPI(
+        @Query("languageId") languageId: String
+    ): ApiResponseModel<UserDetailsResponse>
 
 
     @POST(SUBPATH_GET_SMALL_GROUP_MAPPING)
@@ -41,11 +51,5 @@ interface DataLoadingApiService {
     @GET(SUBPATH_GET_DIDI_LIST)
 //    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getDidisFromNetwork(@Query("userId") userId: Int): ApiResponseModel<BeneficiaryApiResponse>
-
-    @GET(SUBPATH_USER_VIEW)
-    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun userAndVillageListAPI(
-        @Query("languageId") languageId: String
-    ): ApiResponseModel<UserDetailsResponse>
 
 }

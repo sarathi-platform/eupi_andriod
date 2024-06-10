@@ -12,6 +12,8 @@ import android.graphics.Canvas
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.media.ExifInterface
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -44,7 +46,10 @@ import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 
-fun Long.toDate(dateFormat: Long = System.currentTimeMillis(), timeZone: TimeZone = TimeZone.getTimeZone("UTC")): Date {
+fun Long.toDate(
+    dateFormat: Long = System.currentTimeMillis(),
+    timeZone: TimeZone = TimeZone.getTimeZone("UTC")
+): Date {
     val dateTime = Date(this)
     val parser = SimpleDateFormat("HH:mm:ss dd/MM/yyyy", Locale.ENGLISH)
     parser.timeZone = timeZone
@@ -334,7 +339,7 @@ private fun calculateInSampleSize(
     }
     return inSampleSize
 }
- suspend fun exportDbFile(appContext: Context,applicationID: String,databaseName:String): Uri? {
+ suspend fun exportDbFile(appContext: Context, applicationID: String,databaseName:String): Uri? {
     var backupDB: File? = null
     try {
         val sd = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
@@ -354,16 +359,20 @@ private fun calculateInSampleSize(
             dst.close()
         }
     } catch (e: java.lang.Exception) {
-        LogWriter.log(appContext,Level.SEVERE.intValue(), "Exporting Db", e.message ?: "")
+        LogWriter.log(appContext, Level.SEVERE.intValue(), "Exporting Db", e.message ?: "")
 
         e.printStackTrace()
     }
 
-    return backupDB?.let { uriFromFile(appContext, it,applicationID) }
+    return backupDB?.let { uriFromFile(appContext, it, applicationID) }
 
 }
 
-fun getAllFilesInDirectory(appContext: Context,directoryPath: String?,applicationID: String): MutableList<Pair<String, Uri>> {
+fun getAllFilesInDirectory(
+    appContext: Context,
+    directoryPath: String?,
+    applicationID: String
+): MutableList<Pair<String, Uri>> {
     val fileList: MutableList<Pair<String, Uri>> = ArrayList()
     val directory = File(directoryPath)
     if (directory.exists() && directory.isDirectory) {
@@ -374,7 +383,7 @@ fun getAllFilesInDirectory(appContext: Context,directoryPath: String?,applicatio
                     fileList.add(
                         Pair(
                             first = file.name,
-                            uriFromFile(appContext, file,applicationID)
+                            uriFromFile(appContext, file, applicationID)
                         )
                     )
                 }
@@ -389,7 +398,7 @@ suspend fun exportAllOldImages(
     appContext: Context,
     applicationID: String,
     mobileNo: String,
-    userName:String,
+    userName: String,
     timeInMillSec: String
 ): Uri? {
     try {
@@ -418,7 +427,7 @@ suspend fun exportAllOldImages(
                 srcFileUri = zipFileUri,
                 zipFileName = zipFileName,
                 mobileNo = mobileNo,
-                userName =userName
+                userName = userName
             )
         }
         return zipFileUri
@@ -430,6 +439,7 @@ suspend fun exportAllOldImages(
 
     }
 }
+
 fun exportOldData(
     appContext: Context,
     applicationID: String,
@@ -449,7 +459,8 @@ fun exportOldData(
             dbUri?.let {
                 fileUris.add(Pair(getFileNameFromURL(it.path ?: ""), it))
             }
-            val zipFileName = "${userName}_${mobileNo}_Sarathi_Database_${System.currentTimeMillis()}.zip"
+            val zipFileName =
+                "${userName}_${mobileNo}_Sarathi_Database_${System.currentTimeMillis()}.zip"
             val zipFileUri =
                 uriFromFile(appContext, File(zipFileDirectory, zipFileName), applicationID)
 
@@ -486,7 +497,7 @@ fun exportLogFile(
     mobileNo: String,
     userName: String,
     onExportSuccess: (zipUri: Uri) -> Unit
-){
+) {
 
     CoroutineScope(Dispatchers.IO).launch {
         val logDir = appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path
@@ -528,7 +539,7 @@ fun exportLogFile(
     }
 }
 
-fun uriFromFile(context:Context, file:File,applicationID:String): Uri {
+fun uriFromFile(context: Context, file: File, applicationID: String): Uri {
     try {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             FileProvider.getUriForFile(context, "$applicationID.provider", file)
@@ -541,28 +552,43 @@ fun uriFromFile(context:Context, file:File,applicationID:String): Uri {
     }
 }
 
-fun getFileNameFromURL(url: String): String{
+fun getFileNameFromURL(url: String): String {
     return url.substring(url.lastIndexOf('/') + 1, url.length)
 }
 
 @SuppressLint("SuspiciousIndentation")
-fun importDbFile(appContext: Context,deleteDBName:String,importedDbUri: Uri,applicationID: String,onImportSuccess:()->Unit) {
+fun importDbFile(
+    appContext: Context,
+    deleteDBName: String,
+    importedDbUri: Uri,
+    applicationID: String,
+    onImportSuccess: () -> Unit
+) {
     CoroutineScope(Dispatchers.IO).launch {
         try {
 
             val currentDBFile = appContext.getDatabasePath(deleteDBName)
-            val isDeleted= appContext.deleteDatabase(deleteDBName)
-            if(isDeleted){
+            val isDeleted = appContext.deleteDatabase(deleteDBName)
+            if (isDeleted) {
                 importedDbUri?.let {
-                    appContext.contentResolver.openInputStream(it).use { outputStream->
-                        copyUriToAnotherLocation(appContext.contentResolver, sourceUri = it, destinationUri = currentDBFile.toUri() )
+                    appContext.contentResolver.openInputStream(it).use { outputStream ->
+                        copyUriToAnotherLocation(
+                            appContext.contentResolver,
+                            sourceUri = it,
+                            destinationUri = currentDBFile.toUri()
+                        )
                     }
                 }
-                CoreLogger.d(appContext,"ImportDbFile", "Import completed")
+                CoreLogger.d(appContext, "ImportDbFile", "Import completed")
             }
             onImportSuccess()
         } catch (exception: Exception) {
-            LogWriter.log(appContext,Level.SEVERE.intValue(), "Exporting Db", exception.message ?: "")
+            LogWriter.log(
+                appContext,
+                Level.SEVERE.intValue(),
+                "Exporting Db",
+                exception.message ?: ""
+            )
             exception.printStackTrace()
         }
 
@@ -570,7 +596,13 @@ fun importDbFile(appContext: Context,deleteDBName:String,importedDbUri: Uri,appl
 }
 
 
-fun copyZipFile(appContext: Context,srcFileUri:Uri,zipFileName:String,mobileNo: String,userName: String){
+fun copyZipFile(
+    appContext: Context,
+    srcFileUri: Uri,
+    zipFileName: String,
+    mobileNo: String,
+    userName: String
+) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 
         // ContentValues for file
@@ -591,7 +623,11 @@ fun copyZipFile(appContext: Context,srcFileUri:Uri,zipFileName:String,mobileNo: 
         try {
             if (zipFileUri != null) {
                 appContext.contentResolver.openOutputStream(zipFileUri).use { outputStream ->
-                    copyUriToAnotherLocation(appContext.contentResolver,srcFileUri, destinationUri =zipFileUri )
+                    copyUriToAnotherLocation(
+                        appContext.contentResolver,
+                        srcFileUri,
+                        destinationUri = zipFileUri
+                    )
                 }
             }
         } catch (e: java.lang.Exception) {
@@ -613,7 +649,11 @@ fun copyZipFile(appContext: Context,srcFileUri:Uri,zipFileName:String,mobileNo: 
         val resolver = appContext.contentResolver
         try {
             resolver.openOutputStream(destURi).use { outputStream ->
-                copyUriToAnotherLocation(appContext.contentResolver,srcFileUri, destinationUri =destURi )
+                copyUriToAnotherLocation(
+                    appContext.contentResolver,
+                    srcFileUri,
+                    destinationUri = destURi
+                )
 
             }
         } catch (e: java.lang.Exception) {
@@ -634,7 +674,7 @@ fun copyUriToAnotherLocation(
 
     try {
         inputStream = contentResolver.openInputStream(sourceUri)
-        outputStream = contentResolver.openOutputStream(destinationUri,"wa")
+        outputStream = contentResolver.openOutputStream(destinationUri, "wa")
 
         if (inputStream != null && outputStream != null) {
             val buffer = ByteArray(1024)
@@ -656,7 +696,30 @@ fun copyUriToAnotherLocation(
 
 fun getFirstName(name: String): String {
     return name.trim().split(" ").first()
+}
 
+fun isOnline(context: Context): Boolean {
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        val network = connectivityManager.activeNetwork
+        val capabilities = connectivityManager.getNetworkCapabilities(network)
+        return capabilities != null && (
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+                )
+    } else {
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
+    }
+}
+
+fun showCustomToast(
+    context: Context?,
+    msg: String
+) {
+    Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
 }
 
 fun String?.value(): String {
@@ -686,11 +749,4 @@ fun getDayPriorCurrentTimeMillis(sourceDuration: Long): Long {
 fun getDayAfterCurrentTimeMillis(sourceDuration: Long): Long {
     val currentTime = System.currentTimeMillis()
     return currentTime + TimeUnit.MILLISECONDS.convert(sourceDuration, TimeUnit.DAYS)
-}
-
-fun showCustomToast(
-    context: Context?,
-    msg: String
-) {
-    Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
 }
