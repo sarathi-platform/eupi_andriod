@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.preference.CoreSharedPrefs
+import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
 import com.sarathi.dataloadingmangement.data.entities.Content
@@ -9,6 +10,7 @@ import javax.inject.Inject
 class ContentDownloaderRepositoryImpl @Inject constructor(
     private val contentDao: ContentDao,
     private val contentConfigDao: ContentConfigDao,
+    private val attributeValueReferenceDao: AttributeValueReferenceDao,
     private val coreSharedPrefs: CoreSharedPrefs
 ) :
     IContentDownloader {
@@ -42,6 +44,13 @@ class ContentDownloaderRepositoryImpl @Inject constructor(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             languageCode = coreSharedPrefs.getAppLanguage()
 
+        )
+    }
+
+    override suspend fun getDidiImagesUrl(): List<String> {
+        return attributeValueReferenceDao.getAttributeValue(
+            "didiImage",
+            coreSharedPrefs.getUniqueUserIdentifier()
         )
     }
 

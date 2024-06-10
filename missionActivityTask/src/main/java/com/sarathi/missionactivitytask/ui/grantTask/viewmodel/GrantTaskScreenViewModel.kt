@@ -1,9 +1,11 @@
 package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
+import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
+import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
@@ -30,7 +32,8 @@ class GrantTaskScreenViewModel @Inject constructor(
     private val surveyAnswerUseCase: SaveSurveyAnswerUseCase,
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
     private val getActivityConfigUseCase: GetActivityConfigUseCase,
-    private val grantConfigUseCase: GrantConfigUseCase
+    private val grantConfigUseCase: GrantConfigUseCase,
+    private val fetchContentUseCase: FetchContentUseCase
 ) : BaseViewModel() {
     private var missionId = 0
     private var activityId = 0
@@ -206,5 +209,10 @@ class GrantTaskScreenViewModel @Inject constructor(
 
         }
     }
+
+    fun getFilePathUri(filePath: String): Uri? {
+        return fetchContentUseCase.getFilePathUri(filePath)
+    }
+
 
 }

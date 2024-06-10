@@ -1,5 +1,6 @@
 package com.sarathi.missionactivitytask.ui.basic_content.component
 
+import android.net.Uri
 import android.text.TextUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -60,7 +61,7 @@ fun GrantTaskCard(
     onPrimaryButtonClick: (subjectName: String) -> Unit,
     secondaryButtonText: String,
     status: String,
-    imagePath: String = BLANK_STRING,
+    imagePath: Uri?,
     modifier: Modifier = Modifier,
     isHamletIcon: Boolean = false,
 ) {
@@ -90,7 +91,7 @@ fun GrantTaskCard(
                 horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (imagePath.isNotBlank()) {
+                if (imagePath != null) {
                     CircularImageViewComponent(modifier = Modifier, imagePath = imagePath)
                 }
                 Column(

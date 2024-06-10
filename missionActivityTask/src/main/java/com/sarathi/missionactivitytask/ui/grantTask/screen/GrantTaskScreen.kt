@@ -133,8 +133,10 @@ fun GrantTaskScreen(
                                         )
                                     }
                                 },
-                                imagePath = task.value[GrantTaskCardSlots.GRANT_TASK_IMAGE.name]
-                                    ?: BLANK_STRING,
+                                imagePath = viewModel.getFilePathUri(
+                                    task.value[GrantTaskCardSlots.GRANT_TASK_IMAGE.name]
+                                        ?: BLANK_STRING
+                                ),
                                 title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name]
                                     ?: BLANK_STRING,
                                 subTitle1 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name]
