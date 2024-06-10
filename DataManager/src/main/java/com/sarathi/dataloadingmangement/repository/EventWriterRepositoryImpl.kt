@@ -49,7 +49,7 @@ class EventWriterRepositoryImpl @Inject constructor(
 
         when (eventName) {
 
-            EventName.SAVE_RESPONSE_EVENT -> {
+            EventName.GRANT_SAVE_RESPONSE_EVENT -> {
                 requestPayload = (eventItem as SaveAnswerEventDto).json()
 
             }
@@ -59,15 +59,15 @@ class EventWriterRepositoryImpl @Inject constructor(
             }
 
 
-            EventName.UPDATE_TASK_STATUS_EVENT -> {
+            EventName.TASKS_STATUS_EVENT -> {
                 requestPayload = (eventItem as UpdateTaskStatusEventDto).json()
             }
 
-            EventName.UPDATE_ACTIVITY_STATUS_EVENT -> {
+            EventName.ACTIVITIES_STATUS_EVENT -> {
                 requestPayload = (eventItem as UpdateActivityStatusEventDto).json()
             }
 
-            EventName.UPDATE_MISSION_STATUS_EVENT -> {
+            EventName.MISSIONS_STATUS_EVENT -> {
                 requestPayload = (eventItem as UpdateMissionStatusEventDto).json()
 
             }
@@ -87,7 +87,7 @@ class EventWriterRepositoryImpl @Inject constructor(
         val event = Events(
             name = eventName.name,
             type = eventName.topicName,
-            createdBy = coreSharedPrefs.getUniqueUserIdentifier(),
+            createdBy = coreSharedPrefs.getUserName(),
             mobile_number = coreSharedPrefs.getMobileNo(),
             request_payload = requestPayload,
             status = EventSyncStatus.OPEN.name,

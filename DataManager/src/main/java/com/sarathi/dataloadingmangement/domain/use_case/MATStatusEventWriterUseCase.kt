@@ -20,7 +20,7 @@ class MATStatusEventWriterUseCase(
             taskEntity = taskEntity, subjectType = subjectType
         )
         eventWriterRepositoryImpl.createAndSaveEvent(
-            saveAnswerEventDto, EventName.UPDATE_TASK_STATUS_EVENT, EventType.STATEFUL, surveyName
+            saveAnswerEventDto, EventName.TASKS_STATUS_EVENT, EventType.STATEFUL, surveyName
         )?.let {
 
             eventWriterRepositoryImpl.saveEventToMultipleSources(
@@ -39,7 +39,7 @@ class MATStatusEventWriterUseCase(
         )
         eventWriterRepositoryImpl.createAndSaveEvent(
             saveAnswerEventDto,
-            EventName.UPDATE_ACTIVITY_STATUS_EVENT,
+            EventName.ACTIVITIES_STATUS_EVENT,
             EventType.STATEFUL,
             surveyName
         )?.let {
@@ -58,7 +58,7 @@ class MATStatusEventWriterUseCase(
 
         val saveAnswerEventDto = repository.writeMissionStatusEvent(missionEntity)
         eventWriterRepositoryImpl.createAndSaveEvent(
-            saveAnswerEventDto, EventName.UPDATE_MISSION_STATUS_EVENT, EventType.STATEFUL, ""
+            saveAnswerEventDto, EventName.MISSIONS_STATUS_EVENT, EventType.STATEFUL, ""
         )?.let {
 
             eventWriterRepositoryImpl.saveEventToMultipleSources(

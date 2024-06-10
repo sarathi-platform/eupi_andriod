@@ -11,7 +11,7 @@ data class SaveAnswerEventDto(
     @SerializedName("languageId")
     @Expose
     val languageId: String,
-    @SerializedName("referenceId")
+    @SerializedName("localReferenceId")
     @Expose
     val referenceId: String,
     @SerializedName("sectionId")

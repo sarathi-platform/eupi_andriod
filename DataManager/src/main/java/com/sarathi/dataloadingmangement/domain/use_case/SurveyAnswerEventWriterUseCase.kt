@@ -45,7 +45,7 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             )
             writeEventInFile(
                 saveAnswerEventDto,
-                EventName.SAVE_RESPONSE_EVENT,
+                EventName.GRANT_SAVE_RESPONSE_EVENT,
                 questionUiModel.surveyName,
                 uriList
             )

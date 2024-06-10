@@ -17,7 +17,7 @@ data class SaveAnswerMoneyJorunalEventDto(
     @SerializedName("sectionId")
     @Expose
     val sectionId: Int,
-    @SerializedName("question")
+    @SerializedName("questions")
     @Expose
     val question: List<SaveAnswerEventQuestionItemDto>,
     @SerializedName("subjectId")
