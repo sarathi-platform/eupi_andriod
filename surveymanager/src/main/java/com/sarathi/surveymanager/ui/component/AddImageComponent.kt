@@ -70,7 +70,7 @@ fun AddImageComponent(
     title: String = BLANK_STRING,
     isEditable: Boolean = true,
     filePaths: List<String> = listOf(),
-    onImageSelection: (selectValue: String) -> Unit,
+    onImageSelection: (selectValue: String, isDeleted: Boolean) -> Unit,
 
 
     ) {
@@ -85,11 +85,11 @@ fun AddImageComponent(
             if (success) {
 
                 imageList = (imageList + currentImageUri)
-                onImageSelection(currentImageUri?.path ?: BLANK_STRING)
+                onImageSelection(currentImageUri?.path ?: BLANK_STRING, false)
             }
         }
     )
-    Column {
+    Column(modifier = Modifier.padding(bottom = 30.dp)) {
         if (title.isNotBlank()) {
             QuestionComponent(title = title, isRequiredField = isMandatory)
         }
@@ -114,7 +114,19 @@ fun AddImageComponent(
             ) {
                 item {
                     Box(
-                        modifier = Modifier
+                        modifier =
+                        Modifier
+                            .clickable(enabled = isEditable) {
+                                currentImageUri = getImageUri(
+                                    context, "${
+                                        System.currentTimeMillis()
+                                    }.jpg"
+                                )
+
+                                cameraLauncher.launch(
+                                    currentImageUri
+                                )
+                            }
                             .size(150.dp)
                             .background(white)
                             .padding(10.dp)
@@ -126,23 +138,16 @@ fun AddImageComponent(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            "+ Add Image", style = largeTextStyle, modifier =
-                            Modifier.clickable(enabled = isEditable) {
-                                currentImageUri = getImageUri(
-                                    context, "${
-                                        System.currentTimeMillis()
-                                    }.jpg"
-                                )
-
-                                cameraLauncher.launch(
-                                    currentImageUri
-                                )
-                            })
+                            "+ Add Image", style = largeTextStyle,
+                        )
                     }
                 }
                 itemsIndexed(imageList) { _, image ->
                     image?.let {
                         ImageView(it) { uri ->
+                            imageList = (imageList - uri)
+
+                            onImageSelection(uri.path ?: BLANK_STRING, true)
                         }
                     }
                 }
@@ -169,7 +174,9 @@ fun getSavedImageUri(
 ): List<Uri?> {
     val uriList: ArrayList<Uri?> = ArrayList<Uri?>()
     filePaths.forEach {
-        uriList.add(getImageUri(context = context, getFileNameFromURL(it)))
+        if (it.isNotEmpty()) {
+            uriList.add(getImageUri(context = context, getFileNameFromURL(it)))
+        }
     }
     return uriList
 }
