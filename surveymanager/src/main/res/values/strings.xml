@@ -7,5 +7,6 @@
     <string name="in_progress">In Progress</string>
     <string name="select">Select</string>
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
+    <string name="submit">Submit</string>
 
 </resources>

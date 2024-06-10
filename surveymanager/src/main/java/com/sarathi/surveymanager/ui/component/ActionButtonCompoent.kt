@@ -210,7 +210,7 @@ fun ButtonPositiveComponent(
 fun ButtonPositive(
     modifier: Modifier = Modifier,
     buttonTitle: String,
-    isArrowRequired: Boolean = true,
+    isArrowRequired: Boolean = false,
     isLeftArrow: Boolean = false,
     isActive: Boolean = false,
     textColor: Color = Color.White,

@@ -1,5 +1,6 @@
 package com.sarathi.surveymanager.ui.screen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -11,34 +12,33 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.events.theme.black100Percent
+import com.nudge.core.ui.events.theme.blueDark
 import com.nudge.core.ui.events.theme.borderGreyLight
 import com.nudge.core.ui.events.theme.defaultTextStyle
 import com.nudge.core.ui.events.theme.dimen_10_dp
 import com.nudge.core.ui.events.theme.dimen_1_dp
-import com.nudge.core.ui.events.theme.dimen_20_dp
-import com.nudge.core.ui.events.theme.dimen_2_dp
 import com.nudge.core.ui.events.theme.dimen_40_dp
 import com.nudge.core.ui.events.theme.greyColor
 import com.nudge.core.ui.events.theme.quesOptionTextStyle
 import com.nudge.core.ui.events.theme.white
+import com.sarathi.surveymanager.R
 
 @Composable
 fun DisbursementCard(
-    subTitle1: String = "15 Jan",
-    subTitle2: String = "₹ 500",
-    subTitle3: String = "Backyard Poultry",
-    subTitle4: String = "Direct Bank Transfer",
+    subTitle1: String = BLANK_STRING,
+    subTitle2: String = BLANK_STRING,
+    subTitle3: String = BLANK_STRING,
+    subTitle4: String = BLANK_STRING,
+    subTitle5: String = BLANK_STRING,
     onEditSurvey: () -> Unit,
     onDeleteSurvey: () -> Unit
 
@@ -54,61 +54,38 @@ fun DisbursementCard(
             TextRow(text1 = "Date:", text2 = subTitle1)
             TextRow(text1 = "Amount:", text2 = subTitle2)
         }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimen_10_dp)
-        ) {
-            TextRow(text1 = "Nature:", text2 = subTitle3)
+        if (subTitle3.isNotBlank()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimen_10_dp)
+            ) {
+                TextRow(text1 = "Nature:", text2 = subTitle3)
+            }
         }
-        Row(
-            modifier = Modifier
-                .padding(dimen_10_dp)
-        ) {
-            TextRow(text1 = "Mode:", text2 = subTitle4)
+        if (subTitle4.isNotBlank()) {
+            Row(
+                modifier = Modifier
+                    .padding(dimen_10_dp)
+            ) {
+                TextRow(text1 = "Mode:", text2 = subTitle4)
+            }
+        }
+        if (subTitle5.isNotBlank()) {
+            Row(
+                modifier = Modifier
+                    .padding(dimen_10_dp)
+            ) {
+                TextRow(text1 = "No. of Didi's", text2 = subTitle5)
+            }
         }
         Row {
             Row(
                 modifier = Modifier
                     .weight(1.0f)
                     .height(dimen_40_dp)
-                    .clickable {
-                        onEditSurvey()
-                    }
-                    .background(
-                        color = white, shape = RoundedCornerShape(dimen_1_dp)
-                    )
-                    .border(
-                        width = 0.5.dp,
-                        color = borderGreyLight,
-                        shape = RoundedCornerShape(1.dp)
-                    ),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .size(dimen_20_dp)
-                        .padding(dimen_2_dp),
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Forward",
-                    tint = Color.Black
-                )
-                Text(
-                    text = "Edit", style = defaultTextStyle,
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .weight(1.0f)
-                    .height(dimen_40_dp)
-                    .clickable {
-                        onDeleteSurvey()
-                    }
-                    .background(
-                        color = white, shape = RoundedCornerShape(dimen_1_dp)
-                    )
+                    .clickable { onEditSurvey() }
+                    .background(color = white, shape = RoundedCornerShape(dimen_1_dp))
                     .border(
                         width = 0.5.dp,
                         color = borderGreyLight,
@@ -117,16 +94,49 @@ fun DisbursementCard(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
+                Image(
+                    painter = painterResource(id = R.drawable.ic_edit_icon),
+                    contentDescription = null,
                     modifier = Modifier
-                        .size(dimen_20_dp)
-                        .padding(dimen_2_dp),
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Forward",
-                    tint = Color.Black
+                        .padding(end = 4.dp)
+                        .size(16.dp)
+                        .align(Alignment.CenterVertically),
+                    colorFilter = ColorFilter.tint(blueDark)
                 )
                 Text(
-                    text = "Delete", style = defaultTextStyle,
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    text = "Edit",
+                    style = defaultTextStyle,
+                    color = blueDark,
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .weight(1.0f)
+                    .height(dimen_40_dp)
+                    .clickable { onDeleteSurvey() }
+                    .background(color = white, shape = RoundedCornerShape(dimen_1_dp))
+                    .border(
+                        width = 0.5.dp,
+                        color = borderGreyLight,
+                        shape = RoundedCornerShape(dimen_1_dp)
+                    ),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_delete_icon),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .size(16.dp)
+                        .align(Alignment.CenterVertically), // Adjust the size if needed
+                    colorFilter = ColorFilter.tint(blueDark)
+                )
+                Text(
+                    text = "Delete",
+                    style = defaultTextStyle,
+                    color = blueDark, // Ensure the text color is set
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
             }
@@ -137,7 +147,11 @@ fun DisbursementCard(
 @Composable
 private fun TextRow(text1: String, text2: String) {
     Row() {
-        Text(text = text1, style = quesOptionTextStyle.copy(color = greyColor))
-        Text(text = text2, style = quesOptionTextStyle.copy(color = black100Percent))
+        if (text1.isNotBlank()) {
+            Text(text = text1, style = quesOptionTextStyle.copy(color = greyColor))
+        }
+        if (text2.isNotBlank()) {
+            Text(text = text2, style = quesOptionTextStyle.copy(color = black100Percent))
+        }
     }
 }

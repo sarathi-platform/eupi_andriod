@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -33,6 +34,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
+import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
 import com.sarathi.surveymanager.ui.component.AddImageComponent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
@@ -84,7 +86,7 @@ fun SurveyScreen(
                     .padding(10.dp)
             ) {
                 ButtonPositive(
-                    buttonTitle = "Submit",
+                    buttonTitle = stringResource(R.string.submit),
                     isActive = viewModel.isButtonEnable.value,
                     isLeftArrow = false,
                     onClick = {

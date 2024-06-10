@@ -13,6 +13,8 @@ import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
+import com.sarathi.dataloadingmangement.model.QuestionType
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
@@ -110,25 +112,43 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
         var subTitle1 = BLANK_STRING
         var subTitle2 = BLANK_STRING
         var subTitle3 = BLANK_STRING
+        var subTitle4 = BLANK_STRING
+        var subTitle5 = BLANK_STRING
         surveyList.forEach { survey ->
+            val selectedValue = getSelectedValue(survey.optionItems)
             when (survey.tagId) {
-                SurveyCardTag.SURVEY_TAG_AMOUNT.tag ->
-                    subTitle1 = survey.optionItems.first().selectedValue ?: BLANK_STRING
-
-                SurveyCardTag.SURVEY_TAG_DATE.tag ->
-                    subTitle2 = survey.optionItems.first().selectedValue ?: BLANK_STRING
-
-                SurveyCardTag.SURVEY_TAG_MODE.tag ->
-                    subTitle3 = survey.optionItems.first().selectedValue ?: BLANK_STRING
+                SurveyCardTag.SURVEY_TAG_DATE.tag -> subTitle1 = selectedValue
+                SurveyCardTag.SURVEY_TAG_AMOUNT.tag -> subTitle2 = selectedValue
+                SurveyCardTag.SURVEY_TAG_NATURE.tag -> subTitle3 = selectedValue
+                SurveyCardTag.SURVEY_TAG_MODE.tag -> subTitle4 = selectedValue
+                SurveyCardTag.SURVEY_TAG_NO_OF_DIDI.tag -> subTitle5 = selectedValue
             }
         }
+        val referenceId = surveyList.firstOrNull()?.referenceId ?: ""
 
         return SurveyUIModel(
-            referenceId = surveyList.first().referenceId,
+            referenceId = referenceId,
             subTittle1 = subTitle1,
             subTittle2 = subTitle2,
-            subTittle3 = subTitle3
+            subTittle3 = subTitle3,
+            subTittle4 = subTitle4,
+            subTittle5 = subTitle5,
         )
+    }
+
+    private fun getSelectedValue(optionItems: List<OptionsUiModel>): String {
+        if (optionItems.isEmpty()) return BLANK_STRING
+
+        val selectedValues = optionItems.filter { it.isSelected == true }
+            .mapNotNull { item ->
+                when {
+                    item.optionType == QuestionType.DateType.name || item.optionType == QuestionType.InputNumber.name -> item.selectedValue
+                    item.description != null -> item.description
+                    else -> BLANK_STRING
+                }
+            }
+
+        return if (selectedValues.isEmpty()) BLANK_STRING else selectedValues.joinToString(",")
     }
 
     fun deleteSurveyAnswer(referenceId: String, onDeleteSuccess: (deleteCount: Int) -> Unit) {

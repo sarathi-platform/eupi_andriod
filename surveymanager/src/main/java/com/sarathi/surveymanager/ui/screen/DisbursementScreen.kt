@@ -82,6 +82,8 @@ fun DisbursementSummaryScreen(
                                     subTitle1 = surveyData.subTittle1,
                                     subTitle2 = surveyData.subTittle2,
                                     subTitle3 = surveyData.subTittle3,
+                                    subTitle4 = surveyData.subTittle4,
+                                    subTitle5 = surveyData.subTittle5,
                                     onEditSurvey = {
                                         onNavigateSurveyScreen(
                                             surveyData.referenceId,

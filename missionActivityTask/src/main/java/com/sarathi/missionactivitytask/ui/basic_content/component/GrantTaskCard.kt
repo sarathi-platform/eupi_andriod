@@ -83,92 +83,50 @@ fun GrantTaskCard(
                 .fillMaxWidth()
                 .background(white)
         ) {
-            if (imagePath.isNotBlank()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, top = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    CircularImageViewComponent(modifier = Modifier, imagePath = imagePath)
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.Start
-                    ) {
-                        androidx.compose.material3.Text(
-                            text = title,
-                            style = mediumTextStyle,
-                            color = brownDark
-                        )
-                        androidx.compose.material3.Text(
-                            text = subTitle1,
-                            style = smallTextStyleMediumWeight,
-                            color = textColorDark80
-                        )
-                    }
-                    if (status == (StatusEnum.COMPLETED.name)) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_check_circle),
-                            contentDescription = "more action button",
-                            modifier = Modifier.size(20.dp),
-                            tint = greenOnline,
-                        )
-                    } else if (status == StatusEnum.INPROGRESS.name) {
-                        Text(
-                            text = "In Progress",
-                            style = defaultTextStyle,
-                            modifier = Modifier
-                                .padding(horizontal = 5.dp),
-                            color = unmatchedOrangeColor
-                        )
-                    }
-                }
-            }
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, top = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (isHamletIcon) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_vo_name_icon),
-                        contentDescription = "more action button",
-                        modifier = Modifier.size(30.dp),
+                if (imagePath.isNotBlank()) {
+                    CircularImageViewComponent(modifier = Modifier, imagePath = imagePath)
+                }
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    androidx.compose.material3.Text(
+                        text = title,
+                        style = mediumTextStyle,
+                        color = brownDark
+                    )
+                    androidx.compose.material3.Text(
+                        text = subTitle1,
+                        style = smallTextStyleMediumWeight,
+                        color = textColorDark80
                     )
                 }
-                if (imagePath.isBlank()) {
+                if (status == (StatusEnum.COMPLETED.name)) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_check_circle),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                        tint = greenOnline,
+                    )
+                } else if (status == StatusEnum.INPROGRESS.name) {
                     Text(
-                        text = title,
+                        text = "In Progress",
                         style = defaultTextStyle,
                         modifier = Modifier
                             .padding(horizontal = 5.dp),
-                        color = blueDark
+                        color = unmatchedOrangeColor
                     )
-                    Spacer(modifier = Modifier.weight(1f))
-                    if (status == (StatusEnum.COMPLETED.name)) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_check_circle),
-                            contentDescription = "more action button",
-                            modifier = Modifier.size(20.dp),
-                            tint = greenOnline,
-                        )
-                    } else if (status == StatusEnum.INPROGRESS.name) {
-                        Text(
-                            text = stringResource(id = R.string.in_progress),
-                            style = defaultTextStyle,
-                            modifier = Modifier
-                                .padding(horizontal = 5.dp),
-                            color = unmatchedOrangeColor
-                        )
-                    }
                 }
-
             }
             Row(
                 modifier = Modifier
@@ -179,7 +137,7 @@ fun GrantTaskCard(
                 if (subtitle2.isNotBlank()) {
                     Icon(
                         painter = painterResource(id = R.drawable.home_icn),
-                        contentDescription = "more action button",
+                        contentDescription = "",
                         tint = blueDark,
                     )
                     Text(
@@ -239,7 +197,7 @@ fun GrantTaskCard(
                         Spacer(modifier = Modifier.weight(1f))
                         Icon(
                             imageVector = Icons.Default.ArrowForward,
-                            contentDescription = "more action button",
+                            contentDescription = "",
                             tint = blueDark,
                         )
                     } else {
@@ -255,7 +213,6 @@ fun GrantTaskCard(
                 }
             }
         }
-
     }
 }
 
