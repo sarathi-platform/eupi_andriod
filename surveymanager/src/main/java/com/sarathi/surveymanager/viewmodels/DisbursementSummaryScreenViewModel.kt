@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
-import com.sarathi.dataloadingmangement.data.entities.GrantComponentDTO
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
@@ -45,7 +44,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     private var subjectType: String = "Vo"
     private var activityConfigId: Int = 0
     var showDialog = mutableStateOf(Pair<Boolean, String?>(false, BLANK_STRING))
-    var grantComponentDTO = mutableStateOf(GrantComponentDTO(BLANK_STRING, BLANK_STRING))
+    var grantComponentTitle = mutableStateOf(BLANK_STRING)
     val isButtonEnable = mutableStateOf<Boolean>(false)
     private var taskEntity: ActivityTaskEntity? = null
 
@@ -172,7 +171,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
                 activityConfigId = activityConfigId
             )
             grantConfigUseCase.getGrantComponentValues(grantValue)?.let { value ->
-                grantComponentDTO.value = value
+                grantComponentTitle.value = value.grantComponentName
             }
         }
 

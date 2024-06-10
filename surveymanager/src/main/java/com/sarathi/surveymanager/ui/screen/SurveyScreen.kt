@@ -49,7 +49,12 @@ import kotlinx.coroutines.launch
 fun SurveyScreen(
     navController: NavController = rememberNavController(),
     viewModel: SurveyScreenViewModel,
-    surveyId: Int, sectionId: Int, taskId: Int, subjectType: String, referenceId: String,
+    surveyId: Int,
+    sectionId: Int,
+    taskId: Int,
+    subjectType: String,
+    referenceId: String,
+    subjectName: String,
     activityConfigId: Int
 ) {
     val outerState = rememberLazyListState()
@@ -69,8 +74,7 @@ fun SurveyScreen(
         viewModel.onEvent(InitDataEvent.InitDataState)
     }
     ToolBarWithMenuComponent(
-        title = "Receipt of funds - Ganbari" +
-                "Sikla (VO)",
+        title = "$subjectName (${subjectType})",
         modifier = Modifier.fillMaxSize(),
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
@@ -93,12 +97,8 @@ fun SurveyScreen(
                         viewModel.saveButtonClicked()
                         navController.popBackStack()
                     }
-
                 )
-
             }
-
-
         },
         onContentUI = {
             BoxWithConstraints(

@@ -148,7 +148,8 @@ fun NavGraphBuilder.MatNavigation(
                 type = NavType.IntType
             }
         )) {
-            ContentDetailScreen(navController = navController, viewModel = hiltViewModel(),
+            ContentDetailScreen(
+                navController = navController, viewModel = hiltViewModel(),
                 onNavigateToMediaScreen = { fileType, key ->
                     navigateToMediaPlayerScreen(
                         navController = navController,
@@ -178,6 +179,9 @@ fun NavGraphBuilder.MatNavigation(
                 navArgument(name = ARG_SUBJECT_TYPE) {
                     type = NavType.StringType
                 },
+                navArgument(name = ARG_SUBJECT_NAME) {
+                    type = NavType.StringType
+                },
                 navArgument(name = ARG_REFERENCE_ID) {
                     type = NavType.StringType
                 },
@@ -199,6 +203,9 @@ fun NavGraphBuilder.MatNavigation(
                 subjectType = it.arguments?.getString(
                     ARG_SUBJECT_TYPE
                 ) ?: BLANK_STRING,
+                subjectName = it.arguments?.getString(
+                    ARG_SUBJECT_NAME
+                ) ?: BLANK_STRING,
                 referenceId = it.arguments?.getString(
                     ARG_REFERENCE_ID
                 ) ?: BLANK_STRING,
@@ -206,7 +213,7 @@ fun NavGraphBuilder.MatNavigation(
                     ARG_ACTIVITY_CONFIG_ID
                 ) ?: 0
 
-                )
+            )
         }
         composable(
             route = MATHomeScreens.DisbursementSurveyScreen.route, arguments = listOf(
@@ -262,6 +269,7 @@ fun NavGraphBuilder.MatNavigation(
                         ) ?: 0, subjectType = it.arguments?.getString(
                             ARG_SUBJECT_TYPE
                         ) ?: BLANK_STRING,
+                        subjectName = it.arguments?.getString(ARG_SUBJECT_NAME) ?: BLANK_STRING,
                         referenceId = referenceId,
                         activityConfigId = activityConfigId
 
@@ -304,11 +312,12 @@ sealed class MATHomeScreens(val route: String) {
 
     object ContentDetailScreen :
         MATHomeScreens(route = "$CONTENT_DETAIL_SCREEN_ROUTE_NAME/{$ARG_MAT_ID}/{$ARG_CONTENT_SCREEN_CATEGORY}")
+
     object MediaPlayerScreen :
         MATHomeScreens(route = "$MEDIA_PLAYER_SCREEN_ROUTE_NAME/{$ARG_CONTENT_KEY}/{$ARG_CONTENT_TYPE}")
 
     object SurveyScreen :
-        MATHomeScreens(route = "$SURVEY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_REFERENCE_ID}/{$ARG_ACTIVITY_CONFIG_ID}")
+        MATHomeScreens(route = "$SURVEY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_SUBJECT_NAME}/{$ARG_REFERENCE_ID}/{$ARG_ACTIVITY_CONFIG_ID}")
 
     object DisbursementSurveyScreen :
         MATHomeScreens(route = "$GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_SUBJECT_NAME}/{$ARG_ACTIVITY_CONFIG_ID}")
@@ -334,10 +343,11 @@ fun navigateToSurveyScreen(
     sectionId: Int,
     taskId: Int,
     subjectType: String,
+    subjectName: String,
     referenceId: String,
     activityConfigId: Int
 ) {
-    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$referenceId/$activityConfigId")
+    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$subjectName/$referenceId/$activityConfigId")
 }
 
 fun navigateToGrantSurveySummaryScreen(

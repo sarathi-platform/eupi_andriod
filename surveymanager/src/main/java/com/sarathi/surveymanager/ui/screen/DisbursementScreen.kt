@@ -67,7 +67,7 @@ fun DisbursementSummaryScreen(
         },
         onContentUI = { paddingValues ->
             CollapsibleCard(
-                title = viewModel.grantComponentDTO.value.grantComponentName ?: BLANK_STRING,
+                title = viewModel.grantComponentTitle.value,
                 summaryCount = viewModel.taskList.value.entries.size, onClick = {
                     onNavigateSurveyScreen(viewModel.createReferenceId(), activityConfigId)
                 },
