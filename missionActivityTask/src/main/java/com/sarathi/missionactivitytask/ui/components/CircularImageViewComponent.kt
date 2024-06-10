@@ -22,9 +22,6 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.getImagePathFromString
 import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.yellowBg
-import com.nudge.core.ui.events.theme.brownDark
-import com.nudge.core.ui.events.theme.yellowBg
-import com.sarathi.missionactivitytask.utils.getImagePathFromString
 import com.sarathi.surveymanager.R
 import java.io.File
 

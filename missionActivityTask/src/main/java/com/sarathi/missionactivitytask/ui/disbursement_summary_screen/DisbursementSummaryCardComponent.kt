@@ -19,17 +19,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.ui.events.theme.black20
-import com.nudge.core.ui.events.theme.brownDark
-import com.nudge.core.ui.events.theme.defaultTextStyle
-import com.nudge.core.ui.events.theme.dimen_10_dp
-import com.nudge.core.ui.events.theme.dimen_16_dp
-import com.nudge.core.ui.events.theme.dimen_1_dp
-import com.nudge.core.ui.events.theme.dimen_4_dp
-import com.nudge.core.ui.events.theme.dimen_6_dp
-import com.nudge.core.ui.events.theme.dimen_8_dp
-import com.nudge.core.ui.events.theme.smallTextStyle
-import com.nudge.core.ui.events.theme.white
+import com.nudge.core.ui.theme.black20
+import com.nudge.core.ui.theme.brownDark
+import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_4_dp
+import com.nudge.core.ui.theme.dimen_6_dp
+import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.ui.theme.smallTextStyle
+import com.nudge.core.ui.theme.white
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
 
 

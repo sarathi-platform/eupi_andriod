@@ -20,7 +20,7 @@ class FetchSmallGroupDetailsFromNetworkRepositoryImpl @Inject constructor(
 
     override suspend fun fetchSmallGroupDetails() {
         try {
-            val userId = coreSharedPrefs.getUserId().toInt()
+            val userId = coreSharedPrefs.getUserName().toInt()
             val smallGroupApiRequest = SmallGroupApiRequest(userList = listOf(userId))
             val response =
                 dataLoadingApiService.getSmallGroupBeneficiaryMapping(smallGroupApiRequest)

@@ -20,7 +20,7 @@ class FetchDidiDetailsFromNetworkRepositoryImpl @Inject constructor(
 
     override suspend fun fetchDidiDetailsFromNetwork() {
         try {
-            val userId = corePrefRepo.getUserId().toInt()
+            val userId = corePrefRepo.getUserName().toInt()
             val response = dataLoadingApiService.getDidisFromNetwork(userId = userId)
 
             if (response.status.equals(SUCCESS)) {

@@ -12,7 +12,6 @@ import com.sarathi.dataloadingmangement.model.response.SmallGroupMappingResponse
 import com.sarathi.dataloadingmangement.model.survey.request.SurveyRequest
 import com.sarathi.dataloadingmangement.model.survey.response.SurveyResponseModel
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
-import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
 import com.sarathi.dataloadingmangement.network.response.ConfigResponseModel
 import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
 import retrofit2.http.Body

@@ -107,6 +107,7 @@ import com.sarathi.smallgroupmodule.ui.theme.white
 import com.sarathi.smallgroupmodule.utils.getAttendanceFromBoolean
 import com.sarathi.smallgroupmodule.utils.getDate
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -461,14 +462,10 @@ fun AttendanceSummaryCard(
         )
     }
 
-    val attendancePercentage = remember {
-        mutableStateOf(
-            (counts.value.first / counts.value.second) * 100
-        )
-    }
-    /* derivedStateOf {
-
- }*/
+    val attendancePercentage =
+        derivedStateOf {
+            ((counts.value.first.toFloat() / counts.value.second.toFloat()) * 100).roundToInt()
+        }
 
     BasicCardView(
         colors = CardDefaults.cardColors(

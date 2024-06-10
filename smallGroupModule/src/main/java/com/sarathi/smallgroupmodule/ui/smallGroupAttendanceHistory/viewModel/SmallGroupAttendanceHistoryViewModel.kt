@@ -27,7 +27,7 @@ class SmallGroupAttendanceHistoryViewModel @Inject constructor(
         mutableStateOf(SmallGroupSubTabUiModel.getEmptyModel())
     val smallGroupDetails: State<SmallGroupSubTabUiModel> get() = _smallGroupDetails
 
-    val isAttendanceAvailable: MutableState<Boolean> = mutableStateOf(true)
+    val isAttendanceAvailable: MutableState<Boolean> = mutableStateOf(false)
 
     private val _dateRangeFilter: MutableState<Pair<Long, Long>> = mutableStateOf(
         Pair(
@@ -64,9 +64,14 @@ class SmallGroupAttendanceHistoryViewModel @Inject constructor(
                         smallGroupAttendanceHistoryUseCase.fetchSmallGroupAttendanceHistoryFromDbUseCase.invoke(
                             event.smallGroupId,
                             dateRangeFilter.value
-                        )
+                        ).sortedByDescending { it.date }
                     _subjectAttendanceHistoryStateMappingByDate.value =
                         subjectAttendanceHistoryStateList.value.groupBy { it.date }
+
+                    if (_subjectAttendanceHistoryStateMappingByDate.value.isEmpty())
+                        isAttendanceAvailable.value = false
+                    else
+                        isAttendanceAvailable.value = true
 
                     withContext(Dispatchers.Main) {
                         _smallGroupDetails.value = details

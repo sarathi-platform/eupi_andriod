@@ -24,16 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.nudge.core.ui.events.theme.buttonTextStyle
-import com.nudge.core.ui.events.theme.greyColor
-import com.nudge.core.ui.events.theme.placeholderGrey
-import com.nudge.core.ui.events.theme.white
-import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.surveymanager.R
 import com.nudge.core.ui.theme.buttonTextStyle
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.white
+import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.surveymanager.R
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -93,7 +89,6 @@ fun DatePickerComponent(
                     )
                 }
             },
-            enabled = isEditable,
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color.White, // Background color
                 focusedIndicatorColor = Color.Transparent, // No underline when focused

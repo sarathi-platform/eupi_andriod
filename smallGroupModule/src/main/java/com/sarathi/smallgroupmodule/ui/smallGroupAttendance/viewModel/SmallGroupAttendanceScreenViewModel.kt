@@ -5,8 +5,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import com.nudge.core.Core
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.enums.EventType
+import com.nudge.core.showCustomToast
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.utils.state.DialogState
 import com.nudge.core.value
@@ -19,6 +21,8 @@ import com.sarathi.smallgroupmodule.data.model.SubjectAttendanceState
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.SmallGroupAttendanceUserCase
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation.SmallGroupAttendanceEntityState
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.event.SmallGroupAttendanceEvent
+import com.sarathi.smallgroupmodule.utils.getDate
+import com.sarathi.smallgroupmodule.utils.getDateInMillis
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,7 +44,7 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
     val subjectList: State<List<SubjectEntity>> get() = _subjectList
 
     val selectedDate =
-        mutableStateOf(System.currentTimeMillis())
+        mutableStateOf(System.currentTimeMillis().getDate().getDateInMillis())
 
     private val _smallGroupAttendanceEntityState: MutableState<MutableList<SmallGroupAttendanceEntityState>> =
         mutableStateOf(
@@ -147,7 +151,10 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
                         onEvent(SmallGroupAttendanceEvent.SaveAttendanceForDateToDbEvent)
                     } else {
                         withContext(mainDispatcher) {
-//                            showCustomToast()
+                            showCustomToast(
+                                Core.getContext(),
+                                "Attendance already marked for the date: ${selectedDate.value.getDate()}"
+                            )
                         }
                     }
                 }
@@ -181,7 +188,8 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
     private suspend fun checkIsAttendanceAllowedForDate(): Boolean {
         val updatedMarkedAttendanceList =
             smallGroupAttendanceUserCase.fetchMarkedDatesUseCase.invoke()
-        return !updatedMarkedAttendanceList.contains(selectedDate.value)
+        val markedListInString = updatedMarkedAttendanceList.map { it.getDate() }
+        return !markedListInString.contains(selectedDate.value.getDate())
     }
 
     private suspend fun addSaveAttendanceEvent(
