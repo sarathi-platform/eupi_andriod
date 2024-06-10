@@ -21,14 +21,17 @@ interface ContentDao {
     @Query("SELECT contentValue FROM $CONTENT_TABLE_NAME where contentKey=:contentkey and languageCode=:languageId")
     fun getContentValue(contentkey: String, languageId: String): String
 
-    @Query("SELECT * FROM $CONTENT_TABLE_NAME")
+    @Query("SELECT * FROM $CONTENT_TABLE_NAME ")
     fun getContentData(): List<Content>
 
-    @Query("SELECT * FROM $CONTENT_TABLE_NAME LIMIT :limit")
-    fun getLimitedData(limit: Int): List<Content>
+    @Query("SELECT * FROM $CONTENT_TABLE_NAME where contentKey in (:contentKeys)")
+    fun getContentData(contentKeys: List<String>): List<Content>
 
-    @Query("SELECT count(*) FROM $CONTENT_TABLE_NAME")
-    fun getContentCount(): Int
+    @Query("SELECT * FROM $CONTENT_TABLE_NAME  where contentKey in (:contentKeys) LIMIT :limit")
+    fun getLimitedData(limit: Int, contentKeys: List<String>): List<Content>
+
+    @Query("SELECT count(*) FROM $CONTENT_TABLE_NAME where contentKey in (:contentKeys)")
+    fun getContentCount(contentKeys: List<String>): Int
 
     @Query("DELETE FROM $CONTENT_TABLE_NAME")
     fun deleteContent()

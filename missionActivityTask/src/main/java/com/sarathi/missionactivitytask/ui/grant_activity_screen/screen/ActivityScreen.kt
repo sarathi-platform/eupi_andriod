@@ -66,6 +66,7 @@ fun ActivityScreen(
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
             if (viewModel.activityList.value.isNotEmpty()) {
                 ActivityRowCard(
+                    missionId = missionId,
                     activities = viewModel.activityList.value,
                     navController = navController
                 ) { contentValue, contentKey, contentType ->

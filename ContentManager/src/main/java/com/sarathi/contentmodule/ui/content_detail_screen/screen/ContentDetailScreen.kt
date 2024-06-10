@@ -65,11 +65,19 @@ fun ContentDetailScreen(
     outerState: LazyListState = rememberLazyListState(),
     innerState: LazyGridState = rememberLazyGridState(),
     queLazyState: LazyListState = rememberLazyListState(),
+    matId: Int,
+    contentType: Int,
     onNavigateToMediaScreen: (fileType: String, key: String) -> Unit
 ) {
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-        viewModel.onEvent(InitDataEvent.InitDataState)
+        viewModel.onEvent(
+            InitDataEvent.InitContentScreenState(
+                matId = matId,
+                contentCategory = contentType
+            )
+        )
+
     }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()

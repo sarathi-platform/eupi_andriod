@@ -315,11 +315,13 @@ class DataLoadingModule {
     @Singleton
     fun provideContentDownloaderRepositoryImpl(
         contentDao: ContentDao,
-        coreSharedPrefs: CoreSharedPrefs
+        coreSharedPrefs: CoreSharedPrefs,
+        contentConfigDao: ContentConfigDao
     ): IContentDownloader {
         return ContentDownloaderRepositoryImpl(
             contentDao,
-            coreSharedPrefs = coreSharedPrefs
+            coreSharedPrefs = coreSharedPrefs,
+            contentConfigDao = contentConfigDao
         )
     }
 

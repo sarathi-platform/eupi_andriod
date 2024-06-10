@@ -20,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
+import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToGrantSurveySummaryScreen
@@ -76,11 +77,18 @@ fun GrantTaskScreen(
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
 
             Column {
-                BaseContentScreen { contentValue, contentKey, contentType, isLimitContentData ->
+                BaseContentScreen(
+                    matId = activityId,
+                    contentScreenCategory = ContentCategoryEnum.ACTIVITY.ordinal
+                ) { contentValue, contentKey, contentType, isLimitContentData ->
                     if (!isLimitContentData) {
                         navigateToMediaPlayerScreen(navController, contentKey, contentType)
                     } else {
-                        navigateToContentDetailScreen(navController)
+                        navigateToContentDetailScreen(
+                            navController,
+                            matId = activityId,
+                            contentScreenCategory = ContentCategoryEnum.ACTIVITY.ordinal
+                        )
                     }
                 }
                 if (isSearch) {
