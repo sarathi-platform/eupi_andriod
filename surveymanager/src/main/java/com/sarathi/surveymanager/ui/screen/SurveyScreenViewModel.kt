@@ -37,6 +37,8 @@ class SurveyScreenViewModel @Inject constructor(
     private var sectionId: Int = 0
     private var taskId: Int = 0
     private var activityConfigId: Int = 0
+    private var grantID: Int = 0
+    private var granType: String = BLANK_STRING
     private var subjectType: String = BLANK_STRING
     private var referenceId: String = BLANK_STRING
     private var taskEntity: ActivityTaskEntity? = null
@@ -93,29 +95,32 @@ class SurveyScreenViewModel @Inject constructor(
                     taskId = taskId,
                     referenceId = referenceId
                 )
-                if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name) {
-                    taskStatusUseCase.markTaskInProgress(
-                        subjectId = taskEntity?.subjectId ?: DEFAULT_ID, taskId = taskId
-                    )
-                    taskEntity = getTaskUseCase.getTask(taskId)
-                    taskEntity?.let {
-                        matStatusEventWriterUseCase.updateTaskStatus(
-                            taskEntity = it,
-                            referenceId.toString(),
-                            subjectType
-                        )
-                    }
 
-                }
-                surveyAnswerEventWriterUseCase.invoke(
-                    questionUiModels = questionUiModel.value,
-                    subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
-                    subjectType = subjectType,
-                    taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
-                    referenceId = referenceId,
-                    uriList = listOf()
-                )
             }
+            if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name) {
+                taskStatusUseCase.markTaskInProgress(
+                    subjectId = taskEntity?.subjectId ?: DEFAULT_ID, taskId = taskId
+                )
+                taskEntity = getTaskUseCase.getTask(taskId)
+                taskEntity?.let {
+                    matStatusEventWriterUseCase.updateTaskStatus(
+                        taskEntity = it,
+                        referenceId.toString(),
+                        subjectType
+                    )
+                }
+
+            }
+            surveyAnswerEventWriterUseCase.invoke(
+                questionUiModels = questionUiModel.value,
+                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+                subjectType = subjectType,
+                taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
+                referenceId = referenceId,
+                uriList = listOf(),
+                grantId = grantID,
+                grantType = granType
+            )
 
         }
 
@@ -159,7 +164,9 @@ class SurveyScreenViewModel @Inject constructor(
         taskId: Int,
         subjectType: String,
         referenceId: String,
-        activityConfigId: Int
+        activityConfigId: Int,
+        grantId: Int,
+        grantType: String,
     ) {
         this.surveyId = surveyId
         this.sectionId = sectionId
@@ -167,6 +174,8 @@ class SurveyScreenViewModel @Inject constructor(
         this.subjectType = subjectType
         this.referenceId = referenceId
         this.activityConfigId = activityConfigId
+        this.grantID = grantId
+        this.granType = grantType
     }
 
     private fun isTaskStatusCompleted() {

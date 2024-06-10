@@ -69,7 +69,7 @@ class SurveyRepositoryImpl @Inject constructor(
                 sectionId = it.sectionId,
                 display = it.description ?: BLANK_STRING,
                 languageId = it.languageCode ?: BLANK_STRING,
-                questionSummary = it.description,
+                questionSummary = it.originalValue,
                 questionDisplay = it.description ?: BLANK_STRING,
                 type = it.type ?: BLANK_STRING,
                 options = getOptionItemsForQuestion(
@@ -97,7 +97,7 @@ class SurveyRepositoryImpl @Inject constructor(
         activityConfigId: Int
     ): List<OptionsUiModel> {
         var optionList = optionItems.filter { it.questionId == question.questionId }
-        if (question.questionSummary.equals(MODE) || question.questionSummary.equals(NATURE)) {
+        if (question.originalValue.equals(MODE) || question.originalValue.equals(NATURE)) {
 
             optionList = getOptionsForModeAndNature(activityConfigId, question)
         }
@@ -127,7 +127,7 @@ class SurveyRepositoryImpl @Inject constructor(
         val modeOrNatureOptions = ArrayList<OptionsUiModel>()
         val gson = Gson()
         val options = gson.fromJson<QuestionList>(
-            if (question.questionSummary == MODE) grantConfig.grantMode else grantConfig.grantNature,
+            if (question.originalValue == MODE) grantConfig.grantMode else grantConfig.grantNature,
             QuestionList::class.java
 
         ).options
@@ -140,6 +140,7 @@ class SurveyRepositoryImpl @Inject constructor(
                     optionId = option?.optionId,
                     optionTag = option?.tag ?: DEFAULT_ID,
                     optionType = option?.optionType,
+                    originalValue = option?.originalValue,
                     isSelected = false,
                     description = option?.surveyLanguageAttributes?.find { it.languageCode == coreSharedPrefs.getAppLanguage() }?.description,
                     paraphrase = option?.surveyLanguageAttributes?.find { it.languageCode == coreSharedPrefs.getAppLanguage() }?.paraphrase,

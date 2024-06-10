@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.sarathi.dataloadingmangement.data.entities.GrantComponentDTO
 import com.sarathi.dataloadingmangement.data.entities.GrantConfigEntity
+import com.sarathi.dataloadingmangement.model.uiModel.GrantConfigUiModel
 import com.sarathi.dataloadingmangement.repository.GrantConfigRepositoryImpl
 import javax.inject.Inject
 
@@ -12,10 +13,14 @@ class GrantConfigUseCase @Inject constructor(private val grantConfigRepositoryIm
     suspend fun getGrantConfig(activityConfigId: Int): List<GrantConfigEntity> =
         grantConfigRepositoryImpl.getGrantConfig(activityConfigId)
 
-    suspend fun getGrantComponentDTO(surveyId: Int, activityConfigId: Int): String {
-        return grantConfigRepositoryImpl.getGrantComponentDTO(
+    suspend fun getGrantComponentDTO(surveyId: Int, activityConfigId: Int): GrantConfigUiModel {
+        val grantConfigEntity = grantConfigRepositoryImpl.getGrantComponentDTO(
             surveyId = surveyId,
             activityConfigId = activityConfigId
+        )
+        return GrantConfigUiModel(
+            grantId = grantConfigEntity.grantId,
+            grantComponentDTO = getGrantComponentValues(grantConfigEntity.grantComponent)
         )
     }
 

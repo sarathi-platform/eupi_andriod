@@ -14,7 +14,10 @@ class GrantConfigRepositoryImpl @Inject constructor(
         return grantConfigDao.getGrantConfig(activityConfigId)
     }
 
-    override suspend fun getGrantComponentDTO(surveyId: Int, activityConfigId: Int): String {
+    override suspend fun getGrantComponentDTO(
+        surveyId: Int,
+        activityConfigId: Int
+    ): GrantConfigEntity {
         return grantConfigDao.getGrantComponent(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             surveyId = surveyId,

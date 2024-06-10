@@ -50,7 +50,7 @@ fun SurveyScreen(
     navController: NavController = rememberNavController(),
     viewModel: SurveyScreenViewModel,
     surveyId: Int, sectionId: Int, taskId: Int, subjectType: String, referenceId: String,
-    activityConfigId: Int
+    activityConfigId: Int, grantId: Int, grantType: String
 ) {
     val outerState = rememberLazyListState()
     val innerState = rememberLazyListState()
@@ -63,7 +63,9 @@ fun SurveyScreen(
             taskId,
             subjectType,
             referenceId,
-            activityConfigId
+            activityConfigId,
+            grantId = grantId,
+            grantType = grantType
         )
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(InitDataEvent.InitDataState)

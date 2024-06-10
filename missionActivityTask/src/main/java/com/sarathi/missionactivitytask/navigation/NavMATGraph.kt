@@ -20,6 +20,8 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_AC
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_KEY
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_SCREEN_CATEGORY
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_TYPE
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_ID
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_GRANT_TYPE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MAT_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_NAME
@@ -183,7 +185,14 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_ACTIVITY_CONFIG_ID) {
                     type = NavType.IntType
-                })
+                },
+                navArgument(name = ARG_GRANT_ID) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_GRANT_TYPE) {
+                    type = NavType.StringType
+                },
+            ),
         ) {
             SurveyScreen(
                 navController = navController, viewModel = hiltViewModel(),
@@ -204,7 +213,13 @@ fun NavGraphBuilder.MatNavigation(
                 ) ?: BLANK_STRING,
                 activityConfigId = it.arguments?.getInt(
                     ARG_ACTIVITY_CONFIG_ID
-                ) ?: 0
+                ) ?: 0,
+                grantId = it.arguments?.getInt(
+                    ARG_GRANT_ID
+                ) ?: 0,
+                grantType = it.arguments?.getString(
+                    ARG_GRANT_TYPE
+                ) ?: BLANK_STRING,
 
                 )
         }
@@ -251,7 +266,7 @@ fun NavGraphBuilder.MatNavigation(
                     ARG_ACTIVITY_CONFIG_ID
                 ) ?: 0,
                 onSettingClick = onSettingIconClick,
-                onNavigateSurveyScreen = { referenceId, activityConfigId ->
+                onNavigateSurveyScreen = { referenceId, activityConfigId, grantId, grantType ->
                     navigateToSurveyScreen(
                         navController, surveyId = it.arguments?.getInt(
                             ARG_SURVEY_ID
@@ -263,7 +278,9 @@ fun NavGraphBuilder.MatNavigation(
                             ARG_SUBJECT_TYPE
                         ) ?: BLANK_STRING,
                         referenceId = referenceId,
-                        activityConfigId = activityConfigId
+                        activityConfigId = activityConfigId,
+                        grantId = grantId,
+                        grantType = grantType
 
                     )
                 }
@@ -308,7 +325,7 @@ sealed class MATHomeScreens(val route: String) {
         MATHomeScreens(route = "$MEDIA_PLAYER_SCREEN_ROUTE_NAME/{$ARG_CONTENT_KEY}/{$ARG_CONTENT_TYPE}")
 
     object SurveyScreen :
-        MATHomeScreens(route = "$SURVEY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_REFERENCE_ID}/{$ARG_ACTIVITY_CONFIG_ID}")
+        MATHomeScreens(route = "$SURVEY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_REFERENCE_ID}/{$ARG_ACTIVITY_CONFIG_ID}/{$ARG_GRANT_ID}/{$ARG_GRANT_TYPE}")
 
     object DisbursementSurveyScreen :
         MATHomeScreens(route = "$GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_SUBJECT_NAME}/{$ARG_ACTIVITY_CONFIG_ID}")
@@ -335,9 +352,11 @@ fun navigateToSurveyScreen(
     taskId: Int,
     subjectType: String,
     referenceId: String,
-    activityConfigId: Int
+    activityConfigId: Int,
+    grantId: Int,
+    grantType: String
 ) {
-    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$referenceId/$activityConfigId")
+    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$referenceId/$activityConfigId/$grantId/$grantType")
 }
 
 fun navigateToGrantSurveySummaryScreen(

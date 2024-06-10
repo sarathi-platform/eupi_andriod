@@ -27,7 +27,7 @@ interface QuestionEntityDao {
                 " survey_language_attribute_table.description,\n" +
                 " survey_language_attribute_table.paraphrase,\n" +
                 " question_table.questionId,\n" +
-                " question_table.questionSummary,\n" +
+                " question_table.originalValue,\n" +
                 " question_table.sectionId,\n" +
                 " question_table.surveyId,\n" +
                 " question_table.formId,\n" +

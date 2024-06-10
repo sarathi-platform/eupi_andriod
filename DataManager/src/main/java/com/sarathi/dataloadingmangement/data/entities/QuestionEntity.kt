@@ -47,11 +47,6 @@ data class QuestionEntity(
     @ColumnInfo(name = "type")
     var type: String? = BLANK_STRING,
 
-    @SerializedName("questionSummary")
-    @Expose
-    @ColumnInfo(name = "questionSummary")
-    var questionSummary: String? = BLANK_STRING,
-
     @SerializedName("gotoQuestionId")
     @Expose
     @ColumnInfo(name = "gotoQuestionId")
@@ -66,6 +61,10 @@ data class QuestionEntity(
     @Expose
     @ColumnInfo(name = "languageId")
     var languageId: String? = BLANK_STRING,
+    @SerializedName("originalValue")
+    @Expose
+    @ColumnInfo(name = "originalValue")
+    var originalValue: String? = BLANK_STRING,
 
     @SerializedName("isConditional")
     @Expose
@@ -114,8 +113,8 @@ data class QuestionEntity(
                 contentEntities = question.contentList,
                 parentQuestionId = parentId,
                 isMandatory = question.isMandatory,
-                questionSummary = question.originalValue,
-                formId = question.formId ?: DEFAULT_ID
+                formId = question.formId ?: DEFAULT_ID,
+                originalValue = question.originalValue
             )
         }
 
