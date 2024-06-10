@@ -10,7 +10,9 @@ interface ISurveyAnswerEventRepository {
         subjectId: Int,
         subjectType: String,
         refrenceId: String,
-        taskLocalId: String
+        taskLocalId: String,
+        grantId: Int,
+        grantType: String
     ): SaveAnswerMoneyJorunalEventDto
 
     suspend fun writeSaveAnswerEvent(
@@ -18,7 +20,9 @@ interface ISurveyAnswerEventRepository {
         subjectId: Int,
         subjectType: String,
         refrenceId: String,
-        taskLocalId: String
+        taskLocalId: String,
+        grantId: Int,
+        grantType: String
     ): SaveAnswerEventDto
 
 

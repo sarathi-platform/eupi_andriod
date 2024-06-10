@@ -13,6 +13,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseC
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.QuestionType
+import com.sarathi.dataloadingmangement.model.uiModel.GrantConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -38,13 +39,13 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     private val _taskList = mutableStateOf<Map<String, List<SurveyAnswerEntity>>>(hashMapOf())
     val taskList: State<Map<String, List<SurveyAnswerEntity>>> get() = _taskList
 
-    private var surveyId: Int = 3
-    private var sectionId: Int = 1
-    private var taskId: Int = 1
-    private var subjectType: String = "Vo"
+    private var surveyId: Int = 0
+    private var sectionId: Int = 0
+    private var taskId: Int = 0
+    private var subjectType: String = ""
     private var activityConfigId: Int = 0
     var showDialog = mutableStateOf(Pair<Boolean, String?>(false, BLANK_STRING))
-    var grantComponentTitle = mutableStateOf(BLANK_STRING)
+    var grantConfigUi = mutableStateOf(GrantConfigUiModel(null, "", 0))
     val isButtonEnable = mutableStateOf<Boolean>(false)
     private var taskEntity: ActivityTaskEntity? = null
 
@@ -86,11 +87,6 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
         }
     }
 
-    suspend fun getGrantConfig() {
-        val grantConfigs = grantConfigUseCase.getGrantConfig(activityConfigId)
-
-
-    }
 
 
     fun setPreviousScreenData(
@@ -166,13 +162,11 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
 
     fun setGrantComponentDTO() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            val grantValue = grantConfigUseCase.getGrantComponentDTO(
+            grantConfigUi.value = grantConfigUseCase.getGrantComponentDTO(
                 surveyId = surveyId,
                 activityConfigId = activityConfigId
             )
-            grantConfigUseCase.getGrantComponentValues(grantValue)?.let { value ->
-                grantComponentTitle.value = value.grantComponentName
-            }
+
         }
 
     }

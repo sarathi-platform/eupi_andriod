@@ -15,7 +15,7 @@ interface IMATStatusEventRepository {
     ): UpdateTaskStatusEventDto
 
     suspend fun writeActivityStatusEvent(
-        activityEntity: ActivityEntity
+        activityID: ActivityEntity
     ): UpdateActivityStatusEventDto
 
     suspend fun writeMissionStatusEvent(

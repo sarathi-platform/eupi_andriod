@@ -19,6 +19,8 @@ object MissionActivityConstants {
     const val ARG_MISSION_NAME = "mission_name"
     const val ARG_ACTIVITY_NAME = "activity_name"
     const val ARG_TASK_ID = "task_id"
+    const val ARG_GRANT_ID = "grant_id"
+    const val ARG_GRANT_TYPE = "grant_type"
     const val ARG_SUBJECT_TYPE = "subject_type"
     const val ARG_SUBJECT_NAME = "subject_name"
 

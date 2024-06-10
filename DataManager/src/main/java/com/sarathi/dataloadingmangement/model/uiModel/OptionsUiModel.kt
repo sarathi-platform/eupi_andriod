@@ -30,6 +30,7 @@ data class OptionsUiModel(
     var isSelected: Boolean? = false,
 
     var selectedValue: String? = BLANK_STRING,
+    var originalValue: String? = BLANK_STRING,
 
     var selectedValueId: Int = 0,
 

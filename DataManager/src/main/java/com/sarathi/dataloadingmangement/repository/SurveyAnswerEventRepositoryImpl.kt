@@ -2,11 +2,11 @@ package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.model.QuestionType
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventOptionItemDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventQuestionItemDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerMoneyJorunalEventDto
-import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import javax.inject.Inject
 
@@ -20,7 +20,9 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
         subjectId: Int,
         subjectType: String,
         refrenceId: String,
-        taskLocalId: String
+        taskLocalId: String,
+        grantId: Int,
+        grantType: String
     ): SaveAnswerMoneyJorunalEventDto {
 
         return SaveAnswerMoneyJorunalEventDto(
@@ -32,7 +34,9 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
             sectionId = questionUiModels.first().sectionId,
             question = getQuestionEvent(questionUiModels),
             referenceId = refrenceId,
-            localTaskId = taskLocalId ?: BLANK_STRING
+            localTaskId = taskLocalId ?: BLANK_STRING,
+            grantId = grantId,
+            grantType = grantType
         )
 
 
@@ -43,7 +47,9 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
         subjectId: Int,
         subjectType: String,
         refrenceId: String,
-        taskLocalId: String
+        taskLocalId: String,
+        grantId: Int,
+        grantType: String
     ): SaveAnswerEventDto {
         return SaveAnswerEventDto(
             surveyId = questionUiModel.surveyId,
@@ -54,7 +60,10 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
             sectionId = questionUiModel.sectionId,
             question = getSaveAnswerEventQuestionItemDto(questionUiModel)!!,
             referenceId = refrenceId,
-            localTaskId = taskLocalId ?: BLANK_STRING
+            localTaskId = taskLocalId ?: BLANK_STRING,
+            grantId = grantId,
+            grantType = grantType
+
         )
 
     }
@@ -75,7 +84,7 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
         questionUiModel: QuestionUiModel,
     ): SaveAnswerEventQuestionItemDto? {
         var saveAnswerEventQuestionItemDto1: SaveAnswerEventQuestionItemDto? = null
-        val options = getOption(questionUiModel.options!!, "")
+        val options = getOption(questionUiModel, "")
 
         if (options.isNotEmpty()) {
 
@@ -84,7 +93,7 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                 questionType = questionUiModel.type,
                 tag = questionUiModel.tagId,
                 showQuestion = true,
-                questionDesc = questionUiModel.questionDisplay ?: BLANK_STRING,
+                questionDesc = questionUiModel.questionSummary ?: BLANK_STRING,
                 options = options,
                 formId = questionUiModel.formId
             )
@@ -94,22 +103,36 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
     }
 
     private fun getOption(
-        optionsItems: List<OptionsUiModel>,
+        questionUiModel: QuestionUiModel,
         referenceId: String
     ): List<SaveAnswerEventOptionItemDto> {
         val result = ArrayList<SaveAnswerEventOptionItemDto>()
-        optionsItems.forEach { optionItem ->
+        questionUiModel.options?.forEach { optionItem ->
             if (optionItem.isSelected == true) {
-                result.add(
+
+                if (questionUiModel.type == QuestionType.MultiSelectDropDown.name || questionUiModel.type == QuestionType.SingleSelectDropDown.name) {
+                    result.add(
                     SaveAnswerEventOptionItemDto(
                         optionId = optionItem.optionId ?: 0,
-                        selectedValue = optionItem.selectedValue,
+                        selectedValue = optionItem.description,
                         tag = optionItem.optionTag,
-                        optionDesc = optionItem.description ?: BLANK_STRING,
+                        optionDesc = optionItem.originalValue ?: BLANK_STRING,
                         referenceId = referenceId
 
                     )
-                )
+                    )
+                } else {
+                    result.add(
+                        SaveAnswerEventOptionItemDto(
+                            optionId = optionItem.optionId ?: 0,
+                            selectedValue = optionItem.selectedValue,
+                            tag = optionItem.optionTag,
+                            optionDesc = optionItem.description ?: BLANK_STRING,
+                            referenceId = referenceId
+
+                        )
+                    )
+                }
             }
         }
         return result

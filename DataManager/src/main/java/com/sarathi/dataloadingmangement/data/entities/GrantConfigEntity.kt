@@ -23,6 +23,7 @@ data class GrantConfigEntity(
     var grantName: String,
     var grantComponent: String,
     var grantMode: String,
+    var grantType: String,
     var grantNature: String,
     var activityConfigId: Long
 ) {
@@ -43,7 +44,8 @@ data class GrantConfigEntity(
                 grantMode = grantConfigResponse.grantMode,
                 grantComponent = grantConfigResponse.grantComponent,
                 grantNature = grantConfigResponse.grantNature,
-                surveyId = surveyId
+                surveyId = surveyId,
+                grantType = grantConfigResponse.grantType
             )
         }
     }

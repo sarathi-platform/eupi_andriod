@@ -30,7 +30,7 @@ fun DisbursementSummaryScreen(
     subjectType: String,
     subjectName: String,
     activityConfigId: Int,
-    onNavigateSurveyScreen: (referenceId: String, activityConfigIs: Int) -> Unit,
+    onNavigateSurveyScreen: (referenceId: String, activityConfigIs: Int, grantId: Int, grantType: String) -> Unit,
 ) {
 
     LaunchedEffect(key1 = true) {
@@ -67,9 +67,16 @@ fun DisbursementSummaryScreen(
         },
         onContentUI = { paddingValues ->
             CollapsibleCard(
-                title = viewModel.grantComponentTitle.value,
+                title = viewModel.grantConfigUi.value.grantComponentDTO?.grantComponentName
+                    ?: BLANK_STRING,
                 summaryCount = viewModel.taskList.value.entries.size, onClick = {
-                    onNavigateSurveyScreen(viewModel.createReferenceId(), activityConfigId)
+                    onNavigateSurveyScreen(
+                        viewModel.createReferenceId(),
+                        activityConfigId,
+                        viewModel.grantConfigUi.value.grantId,
+                        viewModel.grantConfigUi.value.grantType
+                            ?: BLANK_STRING
+                    )
                 },
                 onContentUI = {
                     if (viewModel.taskList.value.isNotEmpty()) {
@@ -87,7 +94,10 @@ fun DisbursementSummaryScreen(
                                     onEditSurvey = {
                                         onNavigateSurveyScreen(
                                             surveyData.referenceId,
-                                            activityConfigId
+                                            activityConfigId,
+                                            viewModel.grantConfigUi.value.grantId,
+                                            viewModel.grantConfigUi.value.grantType
+                                                ?: BLANK_STRING
                                         )
                                     },
                                     onDeleteSurvey = {

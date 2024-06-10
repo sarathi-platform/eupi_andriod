@@ -55,7 +55,9 @@ fun SurveyScreen(
     subjectType: String,
     referenceId: String,
     subjectName: String,
-    activityConfigId: Int
+    activityConfigId: Int,
+    grantId: Int,
+    grantType: String
 ) {
     val outerState = rememberLazyListState()
     val innerState = rememberLazyListState()
@@ -68,7 +70,9 @@ fun SurveyScreen(
             taskId,
             subjectType,
             referenceId,
-            activityConfigId
+            activityConfigId,
+            grantId = grantId,
+            grantType = grantType
         )
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(InitDataEvent.InitDataState)
@@ -175,8 +179,13 @@ fun SurveyScreen(
                                     isEditable = true,
                                     maxCustomHeight = maxHeight,
 
-                                    ) { selectedValue ->
-                                    saveMultiImageTypeAnswer(selectedValue, question.options)
+                                    ) { selectedValue, isDeleted ->
+
+                                    saveMultiImageTypeAnswer(
+                                        selectedValue,
+                                        question.options,
+                                        isDeleted
+                                    )
                                     viewModel.checkButtonValidation()
                                 }
                             }
@@ -253,12 +262,28 @@ private fun saveInputTypeAnswer(
     viewModel.checkButtonValidation()
 }
 
-fun saveMultiImageTypeAnswer(filePath: String, options: List<OptionsUiModel>?) {
+fun saveMultiImageTypeAnswer(filePath: String, options: List<OptionsUiModel>?, isDeleted: Boolean) {
+    val savedOptions =
+        commaSeparatedStringToList(options?.firstOrNull()?.selectedValue ?: BLANK_STRING)
     val list: ArrayList<String> = ArrayList<String>()
-    list.add(filePath)
-    list.addAll(commaSeparatedStringToList(options?.firstOrNull()?.selectedValue ?: BLANK_STRING))
+    list.addAll(savedOptions)
+
+    if (isDeleted) {
+        list.remove(filePath)
+    } else {
+        list.add(filePath)
+
+    }
     options?.firstOrNull()?.selectedValue = listToCommaSeparatedString(list)
-    options?.firstOrNull()?.isSelected = true
+    if (list.isEmpty()) {
+
+        options?.firstOrNull()?.isSelected = false
+
+    } else {
+        options?.firstOrNull()?.isSelected = true
+    }
+
+
 }
 
 
@@ -267,6 +292,9 @@ fun listToCommaSeparatedString(list: List<String>): String {
 }
 
 fun commaSeparatedStringToList(commaSeparatedString: String): List<String> {
+    if (commaSeparatedString.isEmpty()) {
+        return listOf()
+    }
     return commaSeparatedString.split(",")
 
 
