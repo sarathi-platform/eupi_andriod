@@ -18,7 +18,9 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_AC
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_MASSAGE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_KEY
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_SCREEN_CATEGORY
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_CONTENT_TYPE
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MAT_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_REFERENCE_ID
@@ -134,7 +136,18 @@ fun NavGraphBuilder.MatNavigation(
         }
 
 
-        composable(route = MATHomeScreens.ContentDetailScreen.route) {
+        composable(route = MATHomeScreens.ContentDetailScreen.route, arguments = listOf(
+            navArgument(
+                name = ARG_MAT_ID
+            ) {
+                type = NavType.IntType
+            },
+            navArgument(
+                name = ARG_CONTENT_SCREEN_CATEGORY
+            ) {
+                type = NavType.IntType
+            }
+        )) {
             ContentDetailScreen(navController = navController, viewModel = hiltViewModel(),
                 onNavigateToMediaScreen = { fileType, key ->
                     navigateToMediaPlayerScreen(
@@ -142,7 +155,14 @@ fun NavGraphBuilder.MatNavigation(
                         contentKey = key,
                         contentType = fileType
                     )
-                })
+
+                }, matId = it.arguments?.getInt(
+                    ARG_MAT_ID
+                ) ?: 0,
+                contentType = it.arguments?.getInt(
+                    ARG_CONTENT_SCREEN_CATEGORY
+                ) ?: 0
+            )
         }
         composable(
             route = MATHomeScreens.SurveyScreen.route, arguments = listOf(
@@ -282,7 +302,8 @@ sealed class MATHomeScreens(val route: String) {
     object GrantTaskScreen :
         MATHomeScreens(route = "$GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME/{$ARG_MISSION_ID}/{$ARG_ACTIVITY_ID}/{$ARG_ACTIVITY_NAME}")
 
-    object ContentDetailScreen : MATHomeScreens(route = CONTENT_DETAIL_SCREEN_ROUTE_NAME)
+    object ContentDetailScreen :
+        MATHomeScreens(route = "$CONTENT_DETAIL_SCREEN_ROUTE_NAME/{$ARG_MAT_ID}/{$ARG_CONTENT_SCREEN_CATEGORY}")
     object MediaPlayerScreen :
         MATHomeScreens(route = "$MEDIA_PLAYER_SCREEN_ROUTE_NAME/{$ARG_CONTENT_KEY}/{$ARG_CONTENT_TYPE}")
 
@@ -299,8 +320,12 @@ sealed class MATHomeScreens(val route: String) {
 
 }
 
-fun navigateToContentDetailScreen(navController: NavController) {
-    navController.navigate(CONTENT_DETAIL_SCREEN_ROUTE_NAME)
+fun navigateToContentDetailScreen(
+    navController: NavController,
+    matId: Int,
+    contentScreenCategory: Int
+) {
+    navController.navigate("$CONTENT_DETAIL_SCREEN_ROUTE_NAME/$matId/$contentScreenCategory")
 }
 
 fun navigateToSurveyScreen(

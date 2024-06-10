@@ -11,9 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
-import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
-import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
-import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.GrantTaskCard
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
@@ -29,14 +26,14 @@ fun GrantTaskList(
     onContentData: (contentValue: String, contentKey: String, contentType: String) -> Unit,
 ) {
     Column {
-        BaseContentScreen { contentValue, contentKey, contentType, isLimitContentData ->
-            if (!isLimitContentData) {
-                onContentData(contentValue, contentKey, contentType)
-                navigateToMediaPlayerScreen(navController, contentKey, contentType)
-            } else {
-                navigateToContentDetailScreen(navController)
-            }
-        }
+//        BaseContentScreen { contentValue, contentKey, contentType, isLimitContentData ->
+//            if (!isLimitContentData) {
+//                onContentData(contentValue, contentKey, contentType)
+//                navigateToMediaPlayerScreen(navController, contentKey, contentType)
+//            } else {
+//              //  navigateToContentDetailScreen(navController)
+//            }
+//        }
         if (isSearch) {
             SearchWithFilterViewComponent(
                 placeholderString = searchPlaceholder,

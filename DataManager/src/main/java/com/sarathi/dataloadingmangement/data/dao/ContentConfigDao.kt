@@ -15,4 +15,12 @@ interface ContentConfigDao {
 
     @Query("Select * from content_config_table where userId=:userId ")
     fun getAllContentKey(userId: String): List<ContentConfigEntity>
+
+    @Query("Select `key` from content_config_table where userId=:userId and languageCode =:languageCode and contentCategory=:referenceType and matId=:referenceID")
+    fun getAllContentKey(
+        referenceID: Int,
+        referenceType: Int,
+        userId: String,
+        languageCode: String
+    ): List<String>
 }

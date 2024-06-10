@@ -38,6 +38,7 @@ import com.sarathi.dataloadingmangement.model.mat.response.MissionResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.mat.response.TaskData
 import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
+import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import javax.inject.Inject
@@ -74,7 +75,11 @@ class MissionRepositoryImpl @Inject constructor(
             )
             if (missionCount == 0) {
                 saveMissionsLanguageAttributes(mission)
-                saveContentConfig(mission.id, mission.missionConfig?.contents ?: listOf(), 1)
+                saveContentConfig(
+                    mission.id,
+                    mission.missionConfig?.contents ?: listOf(),
+                    ContentCategoryEnum.MISSION.ordinal
+                )
                 missionDao.insertMission(
                     MissionEntity.getMissionEntity(
                         userId = sharedPrefs.getUniqueUserIdentifier(),
@@ -143,7 +148,7 @@ class MissionRepositoryImpl @Inject constructor(
                     saveContentConfig(
                         missionActivityModel.id,
                         missionActivityModel.activityConfig?.content ?: listOf(),
-                        2
+                        ContentCategoryEnum.ACTIVITY.ordinal
                     )
                     missionActivityModel.activityConfig?.let {
                         val activityConfigId = saveActivityConfig(
