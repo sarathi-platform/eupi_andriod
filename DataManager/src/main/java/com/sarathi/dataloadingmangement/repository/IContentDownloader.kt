@@ -10,4 +10,6 @@ interface IContentDownloader {
     suspend fun getLimitedContentData(limit: Int, contentKeys: List<String>): List<Content>
     suspend fun getContentCount(contentKeys: List<String>): Int
     fun getContentKeyFromContentConfig(referenceID: Int, referenceType: Int): List<String>
+    suspend fun getDidiImagesUrl(): List<String>
+
 }

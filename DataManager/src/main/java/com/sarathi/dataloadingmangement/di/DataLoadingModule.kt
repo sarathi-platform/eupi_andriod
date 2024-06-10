@@ -316,12 +316,14 @@ class DataLoadingModule {
     fun provideContentDownloaderRepositoryImpl(
         contentDao: ContentDao,
         coreSharedPrefs: CoreSharedPrefs,
-        contentConfigDao: ContentConfigDao
+        contentConfigDao: ContentConfigDao,
+        attributeValueReferenceDao: AttributeValueReferenceDao
     ): IContentDownloader {
         return ContentDownloaderRepositoryImpl(
             contentDao,
             coreSharedPrefs = coreSharedPrefs,
-            contentConfigDao = contentConfigDao
+            contentConfigDao = contentConfigDao,
+            attributeValueReferenceDao = attributeValueReferenceDao
         )
     }
 
@@ -330,7 +332,8 @@ class DataLoadingModule {
     fun provideContentUseCase(
         repository: ContentDownloaderRepositoryImpl,
         downloaderManager: DownloaderManager,
-    ): ContentUseCase {
+
+        ): ContentUseCase {
         return ContentUseCase(
             contentDownloaderUseCase = ContentDownloaderUseCase(repository, downloaderManager),
         )

@@ -24,5 +24,8 @@ class FetchAllDataUseCase @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             contentDownloaderUseCase.contentDownloader()
         }
+        CoroutineScope(Dispatchers.IO).launch {
+            contentDownloaderUseCase.surveyRelateContentDownlaod()
+        }
     }
 }

@@ -35,6 +35,17 @@ class ContentDownloaderUseCase @Inject constructor(
             }
         }
     }
+    suspend fun surveyRelateContentDownlaod() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                repository.getDidiImagesUrl().forEach {
+                    downloaderManager.downloadItem(url = it)
 
+                }
+            } catch (ex: Exception) {
+                Log.e("ContentDownloader", "downloadItem exception", ex)
+            }
+        }
+    }
 
 }
