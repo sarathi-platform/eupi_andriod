@@ -32,6 +32,7 @@ class QuestionUiEntity(
     var languageCode: String? = BLANK_STRING,
 
     var gotoQuestionId: Int? = 0,
+    var formId: Int? = 0,
 
 
     var order: Int? = 0,

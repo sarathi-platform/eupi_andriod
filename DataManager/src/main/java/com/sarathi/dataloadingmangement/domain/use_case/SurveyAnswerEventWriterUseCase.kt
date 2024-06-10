@@ -14,7 +14,7 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
     private val eventWriterRepositoryImpl: EventWriterRepositoryImpl
 ) {
     suspend operator fun invoke(
-        questionUiModel: List<QuestionUiModel>,
+        questionUiModels: List<QuestionUiModel>,
         subjectId: Int,
         subjectType: String,
         referenceId: String,
@@ -22,18 +22,47 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
         uriList: List<Uri>?
     ) {
 
-        val saveAnswerEventDto = repository.writeSaveAnswerEvent(
-            questionUiModel,
+        val saveAnswerMoneyJournalEventDto = repository.writeMoneyJournalSaveAnswerEvent(
+            questionUiModels,
             subjectId,
             subjectType,
             referenceId,
             taskLocalId
         )
+        writeEventInFile(
+            saveAnswerMoneyJournalEventDto,
+            EventName.MONEY_JOURNAL_EVENT,
+            questionUiModels.firstOrNull()?.surveyName ?: BLANK_STRING,
+            uriList
+        )
+        questionUiModels.forEach { questionUiModel ->
+            val saveAnswerEventDto = repository.writeSaveAnswerEvent(
+                questionUiModel,
+                subjectId,
+                subjectType,
+                referenceId,
+                taskLocalId
+            )
+            writeEventInFile(
+                saveAnswerEventDto,
+                EventName.SAVE_RESPONSE_EVENT,
+                questionUiModel.surveyName,
+                uriList
+            )
+        }
+    }
+
+    private suspend fun <T> writeEventInFile(
+        eventItem: T,
+        eventName: EventName,
+        surveyName: String,
+        uriList: List<Uri>?
+    ) {
         eventWriterRepositoryImpl.createAndSaveEvent(
-            saveAnswerEventDto,
-            EventName.SAVE_RESPONSE_EVENT,
+            eventItem,
+            eventName,
             EventType.STATEFUL,
-            questionUiModel.firstOrNull()?.surveyName ?: BLANK_STRING
+            surveyName
         )
             ?.let {
 

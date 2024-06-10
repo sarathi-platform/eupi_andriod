@@ -19,6 +19,9 @@ data class SaveAnswerEventQuestionItemDto(
     @SerializedName("questionId")
     @Expose
     val questionId: Int,
+    @SerializedName("formId")
+    @Expose
+    val formId: Int,
     @SerializedName("questionDesc")
     @Expose
     val questionDesc: String

@@ -1,15 +1,25 @@
 package com.sarathi.dataloadingmangement.repository
 
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventDto
+import com.sarathi.dataloadingmangement.model.events.SaveAnswerMoneyJorunalEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 
 interface ISurveyAnswerEventRepository {
+    suspend fun writeMoneyJournalSaveAnswerEvent(
+        questionUiModels: List<QuestionUiModel>,
+        subjectId: Int,
+        subjectType: String,
+        refrenceId: String,
+        taskLocalId: String
+    ): SaveAnswerMoneyJorunalEventDto
+
     suspend fun writeSaveAnswerEvent(
-        questionUiModel: List<QuestionUiModel>,
+        questionUiModel: QuestionUiModel,
         subjectId: Int,
         subjectType: String,
         refrenceId: String,
         taskLocalId: String
     ): SaveAnswerEventDto
+
 
 }

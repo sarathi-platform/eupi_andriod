@@ -80,7 +80,8 @@ class SurveyRepositoryImpl @Inject constructor(
                 ),
                 isMandatory = it.isMandatory,
                 tagId = it.tag,
-                surveyName = surveyName ?: BLANK_STRING
+                surveyName = surveyName ?: BLANK_STRING,
+                formId = it.formId ?: DEFAULT_ID
             )
             questionUiList.add(questionUiModel)
 

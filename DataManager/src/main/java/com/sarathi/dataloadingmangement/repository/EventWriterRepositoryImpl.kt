@@ -21,6 +21,7 @@ import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventDto
+import com.sarathi.dataloadingmangement.model.events.SaveAnswerMoneyJorunalEventDto
 import com.sarathi.dataloadingmangement.model.events.SectionStatusUpdateEventDto
 import com.sarathi.dataloadingmangement.model.events.UpdateActivityStatusEventDto
 import com.sarathi.dataloadingmangement.model.events.UpdateMissionStatusEventDto
@@ -50,6 +51,10 @@ class EventWriterRepositoryImpl @Inject constructor(
 
             EventName.SAVE_RESPONSE_EVENT -> {
                 requestPayload = (eventItem as SaveAnswerEventDto).json()
+
+            }
+            EventName.MONEY_JOURNAL_EVENT -> {
+                requestPayload = (eventItem as SaveAnswerMoneyJorunalEventDto).json()
 
             }
 

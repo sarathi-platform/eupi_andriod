@@ -7,6 +7,7 @@ import androidx.room.TypeConverters
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.QUESTION_TABLE
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ContentListConverter
@@ -80,6 +81,10 @@ data class QuestionEntity(
     @Expose
     @ColumnInfo(name = "tag")
     var tag: Int = 0,
+    @SerializedName("tag")
+    @Expose
+    @ColumnInfo(name = "formId")
+    var formId: Int = 0,
     @TypeConverters(ContentListConverter::class)
     val contentEntities: List<ContentList> = listOf(),
 
@@ -109,7 +114,8 @@ data class QuestionEntity(
                 contentEntities = question.contentList,
                 parentQuestionId = parentId,
                 isMandatory = question.isMandatory,
-                questionSummary = question.originalValue
+                questionSummary = question.originalValue,
+                formId = question.formId ?: DEFAULT_ID
             )
         }
 

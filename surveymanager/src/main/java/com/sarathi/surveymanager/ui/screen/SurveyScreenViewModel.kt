@@ -108,7 +108,7 @@ class SurveyScreenViewModel @Inject constructor(
 
                 }
                 surveyAnswerEventWriterUseCase.invoke(
-                    questionUiModel = questionUiModel.value,
+                    questionUiModels = questionUiModel.value,
                     subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
                     subjectType = subjectType,
                     taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
