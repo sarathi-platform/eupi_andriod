@@ -4,22 +4,22 @@ package com.sarathi.dataloadingmangement.model.events
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-data class SaveAnswerEventDto(
+data class SaveAnswerMoneyJorunalEventDto(
     @SerializedName("dateCreated")
     @Expose
     val dateCreated: Long,
     @SerializedName("languageId")
     @Expose
     val languageId: String,
-    @SerializedName("localReferenceId")
+    @SerializedName("referenceId")
     @Expose
     val referenceId: String,
     @SerializedName("sectionId")
     @Expose
     val sectionId: Int,
-    @SerializedName("question")
+    @SerializedName("questions")
     @Expose
-    val question: SaveAnswerEventQuestionItemDto,
+    val question: List<SaveAnswerEventQuestionItemDto>,
     @SerializedName("subjectId")
     @Expose
     val subjectId: Int,

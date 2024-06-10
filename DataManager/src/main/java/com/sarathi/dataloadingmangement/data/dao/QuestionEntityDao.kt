@@ -30,6 +30,7 @@ interface QuestionEntityDao {
                 " question_table.questionSummary,\n" +
                 " question_table.sectionId,\n" +
                 " question_table.surveyId,\n" +
+                " question_table.formId,\n" +
                 " question_table.questionImageUrl,\n" +
                 " question_table.type,\n" +
                 " question_table.gotoQuestionId,\n" +
