@@ -45,7 +45,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     private var subjectType: String = ""
     private var activityConfigId: Int = 0
     var showDialog = mutableStateOf(Pair<Boolean, String?>(false, BLANK_STRING))
-    var grantConfigUi = mutableStateOf(GrantConfigUiModel(null, 0))
+    var grantConfigUi = mutableStateOf(GrantConfigUiModel(null, "", 0))
     val isButtonEnable = mutableStateOf<Boolean>(false)
     private var taskEntity: ActivityTaskEntity? = null
 

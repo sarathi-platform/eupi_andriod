@@ -20,6 +20,7 @@ class GrantConfigUseCase @Inject constructor(private val grantConfigRepositoryIm
         )
         return GrantConfigUiModel(
             grantId = grantConfigEntity.grantId,
+            grantType = grantConfigEntity.grantType,
             grantComponentDTO = getGrantComponentValues(grantConfigEntity.grantComponent)
         )
     }

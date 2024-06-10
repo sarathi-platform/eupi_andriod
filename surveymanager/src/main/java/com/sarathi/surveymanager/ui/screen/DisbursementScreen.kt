@@ -74,7 +74,7 @@ fun DisbursementSummaryScreen(
                         viewModel.createReferenceId(),
                         activityConfigId,
                         viewModel.grantConfigUi.value.grantId,
-                        viewModel.grantConfigUi.value.grantComponentDTO?.grantComponentType
+                        viewModel.grantConfigUi.value.grantType
                             ?: BLANK_STRING
                     )
                 },
@@ -96,7 +96,7 @@ fun DisbursementSummaryScreen(
                                             surveyData.referenceId,
                                             activityConfigId,
                                             viewModel.grantConfigUi.value.grantId,
-                                            viewModel.grantConfigUi.value.grantComponentDTO?.grantComponentType
+                                            viewModel.grantConfigUi.value.grantType
                                                 ?: BLANK_STRING
                                         )
                                     },
