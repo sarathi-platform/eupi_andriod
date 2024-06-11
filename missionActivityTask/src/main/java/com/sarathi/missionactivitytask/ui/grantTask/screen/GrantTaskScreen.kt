@@ -31,6 +31,7 @@ import com.nudge.core.ui.events.theme.defaultTextStyle
 import com.nudge.core.ui.events.theme.dimen_10_dp
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
+import com.sarathi.dataloadingmangement.model.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
@@ -153,7 +154,7 @@ fun GrantTaskScreen(
                     }
                 } else {
                     if (viewModel.filterList.value.isNotEmpty()) {
-                        LazyColumn {
+                        LazyColumn(modifier = Modifier.padding(bottom = 50.dp)) {
                             itemsIndexed(
                                 items = viewModel.filterList.value.entries.toList()
                             ) { _, task ->
@@ -176,6 +177,15 @@ private fun TaskRowView(
 ) {
     GrantTaskCard(
         onPrimaryButtonClick = { subjectName ->
+            if (!viewModel.isActivityCompleted.value) {
+                task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name] =
+                    SurveyStatusEnum.INPROGRESS.name
+                viewModel.updateTaskAvailableStatus(
+                    taskId = task.key,
+                    status = SurveyStatusEnum.INPROGRESS.name,
+
+                    )
+            }
             viewModel.activityConfigUiModel?.let {
                 navigateToGrantSurveySummaryScreen(
                     navController,
@@ -186,6 +196,18 @@ private fun TaskRowView(
                     subjectName = subjectName,
                     activityConfigId = it.activityConfigId,
                 )
+            }
+        },
+        onNotAvailable = {
+            if (!viewModel.isActivityCompleted.value) {
+
+                task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name] =
+                    SurveyStatusEnum.NOT_AVAILABLE.name
+                viewModel.updateTaskAvailableStatus(
+                    taskId = task.key,
+                    status = SurveyStatusEnum.NOT_AVAILABLE.name
+                )
+                viewModel.checkButtonValidation()
             }
         },
         imagePath = viewModel.getFilePathUri(

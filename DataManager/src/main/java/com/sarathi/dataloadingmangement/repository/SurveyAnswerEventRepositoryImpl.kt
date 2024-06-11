@@ -22,7 +22,8 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
         refrenceId: String,
         taskLocalId: String,
         grantId: Int,
-        grantType: String
+        grantType: String,
+        taskId: Int
     ): SaveAnswerMoneyJorunalEventDto {
 
         return SaveAnswerMoneyJorunalEventDto(
@@ -36,7 +37,8 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
             referenceId = refrenceId,
             localTaskId = taskLocalId ?: BLANK_STRING,
             grantId = grantId,
-            grantType = grantType
+            grantType = grantType,
+            taskId = taskId
         )
 
 
@@ -49,7 +51,8 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
         refrenceId: String,
         taskLocalId: String,
         grantId: Int,
-        grantType: String
+        grantType: String,
+        taskId: Int
     ): SaveAnswerEventDto {
         return SaveAnswerEventDto(
             surveyId = questionUiModel.surveyId,
@@ -62,7 +65,9 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
             referenceId = refrenceId,
             localTaskId = taskLocalId ?: BLANK_STRING,
             grantId = grantId,
-            grantType = grantType
+            grantType = grantType,
+            taskId = taskId
+
 
         )
 

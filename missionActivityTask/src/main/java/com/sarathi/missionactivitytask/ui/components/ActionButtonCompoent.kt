@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -54,15 +55,16 @@ fun PrimaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier,
+    color: ButtonColors = ButtonDefaults.buttonColors(
+        containerColor = blueDark,
+        contentColor = white
+    ),
     isIcon: Boolean = true
 ){
         Button(
             onClick = onClick,
             shape = RoundedCornerShape(roundedCornerRadiusDefault),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = blueDark,
-                contentColor = white
-            ),
+            colors = color,
             modifier = modifier
         ) {
             Text(

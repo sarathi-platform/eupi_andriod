@@ -5,7 +5,9 @@ import com.sarathi.dataloadingmangement.KEY_HEADER_MOBILE
 import com.sarathi.dataloadingmangement.KEY_HEADER_TYPE
 import com.sarathi.dataloadingmangement.domain.MissionRequest
 import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
+import com.sarathi.dataloadingmangement.model.survey.request.GetSurveyAnswerRequest
 import com.sarathi.dataloadingmangement.model.survey.request.SurveyRequest
+import com.sarathi.dataloadingmangement.model.survey.response.QuestionAnswerResponseModel
 import com.sarathi.dataloadingmangement.model.survey.response.SurveyResponseModel
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
 import com.sarathi.dataloadingmangement.network.response.ConfigResponseModel
@@ -39,4 +41,7 @@ interface DataLoadingApiService {
         @Query("languageId") languageId: String
     ): ApiResponseModel<UserDetailsResponse>
 
+    @POST(SUBPATH_SURVEY_ANSWERS)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun getSurveyAnswers(@Body surveyAnswerRequest: GetSurveyAnswerRequest): ApiResponseModel<List<QuestionAnswerResponseModel>>
 }

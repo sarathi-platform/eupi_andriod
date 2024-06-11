@@ -6,9 +6,11 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.ANSWER_TABLE
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.converters.QuestionsOptionsConverter
+import com.sarathi.dataloadingmangement.model.survey.response.QuestionAnswerResponseModel
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 
@@ -55,7 +57,7 @@ data class SurveyAnswerEntity(
     @Expose
     @ColumnInfo(name = "taskId")
     var taskId: Int,
-    @SerializedName("taskId")
+    @SerializedName("tagId")
     @Expose
     @ColumnInfo(name = "tagId")
     var tagId: Int,
@@ -103,11 +105,32 @@ data class SurveyAnswerEntity(
                 optionItems = question.options ?: listOf(),
                 subjectId = subjectId,
                 tagId = question.tagId
-
-
             )
         }
 
+        fun getSurveyAnswerEntityFromQuestionAnswerResponse(
+            questionAnswerResponse: QuestionAnswerResponseModel,
+            userId: String,
+            questionSummary: String,
+            questionTag: Int,
+            optionsUiModel: List<OptionsUiModel>
 
+        ): SurveyAnswerEntity {
+            return SurveyAnswerEntity(
+                id = 0,
+                userId = userId,
+                questionId = questionAnswerResponse.question?.questionId ?: DEFAULT_ID,
+                surveyId = questionAnswerResponse.surveyId,
+                sectionId = questionAnswerResponse.sectionId.toInt(),
+                referenceId = questionAnswerResponse.localReferenceId,
+                questionType = questionAnswerResponse.question?.questionType ?: BLANK_STRING,
+                taskId = questionAnswerResponse.taskId,
+                answerValue = "",
+                questionSummary = questionSummary,
+                optionItems = optionsUiModel,
+                subjectId = questionAnswerResponse.subjectId,
+                tagId = questionTag
+            )
+        }
     }
 }

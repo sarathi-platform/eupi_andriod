@@ -11,6 +11,7 @@ fun statusColor(status: StatusEnum): Color = when (status) {
     StatusEnum.COMPLETED -> Color.Green
     StatusEnum.PENDING -> Color.Gray
     StatusEnum.NOT_STARTED -> Color.Gray
+    StatusEnum.NOT_AVAILABLE -> Color.Gray
 }
 
 fun String.getImagePathFromString(): String {

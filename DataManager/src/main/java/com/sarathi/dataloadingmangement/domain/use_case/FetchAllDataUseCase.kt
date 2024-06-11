@@ -13,6 +13,7 @@ class FetchAllDataUseCase @Inject constructor(
     val contentDownloaderUseCase: ContentDownloaderUseCase,
     val fetchLanguageUseCase: FetchLanguageUseCase,
     val fetchUserDetailUseCase: FetchUserDetailUseCase,
+    val fetchSurveyAnswerFromNetworkUseCase: FetchSurveyAnswerFromNetworkUseCase
 ) {
     suspend fun invoke(onComplete: (isSuccess: Boolean, successMsg: String) -> Unit) {
         fetchLanguageUseCase.invoke()
@@ -20,6 +21,7 @@ class FetchAllDataUseCase @Inject constructor(
         fetchMissionDataUseCase.invoke()
         fetchSurveyDataFromNetworkUseCase.invoke()
         fetchContentDataFromNetworkUseCase.invoke()
+        //   fetchSurveyAnswerFromNetworkUseCase.invoke()
         onComplete(true, BLANK_STRING)
         CoroutineScope(Dispatchers.IO).launch {
             contentDownloaderUseCase.contentDownloader()

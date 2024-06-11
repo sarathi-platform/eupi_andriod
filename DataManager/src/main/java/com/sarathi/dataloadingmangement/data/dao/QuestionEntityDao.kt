@@ -42,7 +42,7 @@ interface QuestionEntityDao {
                 " survey_language_attribute_table.languageCode,\n" +
                 " question_table.parentQuestionId\n" +
                 "  from question_table inner join survey_language_attribute_table on question_table.questionId = survey_language_attribute_table.referenceId where survey_language_attribute_table.referenceType =:referenceType \n" +
-                "and survey_language_attribute_table.languageCode=:languageId AND question_table.userId=:userId and question_table.sectionId = :sectionId and question_table.surveyId = :surveyId and question_table.userId=:userId "
+                "and survey_language_attribute_table.languageCode=:languageId AND question_table.userId=:userId and question_table.sectionId = :sectionId and question_table.surveyId = :surveyId and question_table.userId=:userId Order by question_table.`order` asc"
     )
     fun getSurveySectionQuestionForLanguage(
         userId: String,

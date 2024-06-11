@@ -20,4 +20,7 @@ interface GrantConfigDao {
 
     @Query("select * from grant_config_table where userId=:userId and surveyId=:surveyId and activityConfigId=:activityConfigId")
     fun getGrantComponent(userId: String, surveyId: Int, activityConfigId: Int): GrantConfigEntity
+
+    @Query("Delete from grant_config_table where activityConfigId=:activityConfigId and userId=:userId")
+    fun deleteGrantConfig(activityConfigId: Long, userId: String)
 }

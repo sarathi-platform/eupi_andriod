@@ -6,6 +6,7 @@ import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
+import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
@@ -32,6 +33,7 @@ class SurveyScreenViewModel @Inject constructor(
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
     private val getTaskUseCase: GetTaskUseCase,
+    private val getActivityUseCase: GetActivityUseCase
 ) : BaseViewModel() {
     private var surveyId: Int = 0
     private var sectionId: Int = 0
@@ -79,7 +81,6 @@ class SurveyScreenViewModel @Inject constructor(
                 referenceId = referenceId,
                 grantId = grantID
             )
-            checkButtonValidation()
             isTaskStatusCompleted()
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -98,16 +99,27 @@ class SurveyScreenViewModel @Inject constructor(
                 )
 
             }
-            if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name) {
+            if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name || taskEntity?.status == SurveyStatusEnum.NOT_AVAILABLE.name) {
                 taskStatusUseCase.markTaskInProgress(
-                    subjectId = taskEntity?.subjectId ?: DEFAULT_ID, taskId = taskId
+                    taskId = taskId
+                )
+                taskStatusUseCase.markActivityInProgress(
+                    missionId = taskEntity?.missionId ?: DEFAULT_ID,
+                    activityId = taskEntity?.activityId ?: DEFAULT_ID,
+                )
+                taskStatusUseCase.markMissionInProgress(
+                    missionId = taskEntity?.missionId ?: DEFAULT_ID,
                 )
                 taskEntity = getTaskUseCase.getTask(taskId)
                 taskEntity?.let {
-                    matStatusEventWriterUseCase.updateTaskStatus(
-                        taskEntity = it,
-                        referenceId.toString(),
-                        subjectType
+                    matStatusEventWriterUseCase.markMATStatus(
+                        surveyName = questionUiModel.value.firstOrNull()?.surveyName
+                            ?: BLANK_STRING,
+                        subjectType = subjectType,
+                        missionId = taskEntity?.missionId ?: DEFAULT_ID,
+                        activityId = taskEntity?.activityId ?: DEFAULT_ID,
+                        taskId = taskEntity?.taskId ?: DEFAULT_ID
+
                     )
                 }
 
@@ -120,7 +132,8 @@ class SurveyScreenViewModel @Inject constructor(
                 referenceId = referenceId,
                 uriList = listOf(),
                 grantId = grantID,
-                grantType = granType
+                grantType = granType,
+                taskId = taskId
             )
 
         }
@@ -138,7 +151,8 @@ class SurveyScreenViewModel @Inject constructor(
             }
 
         }
-        isButtonEnable.value = true
+        isButtonEnable.value = !isTaskCompleted.value
+
 
     }
 
@@ -181,12 +195,13 @@ class SurveyScreenViewModel @Inject constructor(
 
     private fun isTaskStatusCompleted() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            isTaskCompleted.value = !taskStatusUseCase.getTaskStatus(
-                userId = saveSurveyAnswerUseCase.getUserIdentifier(),
-                taskId = taskId,
-                subjectId = taskEntity?.subjectId ?: DEFAULT_ID
-            ).equals(SurveyStatusEnum.COMPLETED.name)
+            isTaskCompleted.value = !getActivityUseCase.isAllActivityCompleted(
+                missionId = taskEntity?.missionId ?: 0,
+                activityId = taskEntity?.activityId ?: 0
+            )
         }
+        checkButtonValidation()
+
 
 
     }

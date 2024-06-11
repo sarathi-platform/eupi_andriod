@@ -134,6 +134,9 @@ class DownloaderManager @Inject constructor(@ApplicationContext private val cont
     }
 
     fun getFilePathUri(filePath: String): Uri? {
+        if (filePath.isEmpty()) {
+            return null
+        }
         val isFilePathExists = isFilePathExists(filePath)
         return if (isFilePathExists) Uri.fromFile(getFilePath(filePath)) else null
     }
