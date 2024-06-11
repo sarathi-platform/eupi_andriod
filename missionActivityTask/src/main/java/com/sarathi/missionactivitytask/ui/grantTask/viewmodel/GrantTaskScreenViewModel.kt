@@ -193,9 +193,12 @@ class GrantTaskScreenViewModel @Inject constructor(
     }
 
 
-    private fun checkButtonValidation() {
+    fun checkButtonValidation() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            isButtonEnable.value = getTaskUseCase.isAllActivityCompleted()
+            isButtonEnable.value = getTaskUseCase.isAllActivityCompleted(
+                missionId = missionId,
+                activityId = activityId
+            )
         }
     }
 
@@ -220,5 +223,15 @@ class GrantTaskScreenViewModel @Inject constructor(
         return fetchContentUseCase.getFilePathUri(filePath)
     }
 
-
+    fun updateTaskAvailableStatus(
+        taskId: Int,
+        status: String,
+    ) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            getTaskUseCase.updateTaskStatus(
+                taskId = taskId,
+                status = status
+            )
+        }
+    }
 }

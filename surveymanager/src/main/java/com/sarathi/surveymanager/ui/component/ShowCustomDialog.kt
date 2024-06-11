@@ -38,7 +38,7 @@ import com.nudge.core.ui.events.theme.white
 
 @Composable
 fun ShowCustomDialog(
-    title: String,
+    title: String = BLANK_STRING,
     message: String,
     positiveButtonTitle: String? = BLANK_STRING,
     negativeButtonTitle: String? = BLANK_STRING,

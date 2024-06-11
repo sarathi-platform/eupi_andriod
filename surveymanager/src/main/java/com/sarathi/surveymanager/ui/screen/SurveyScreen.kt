@@ -26,6 +26,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.ui.events.theme.dimen_16_dp
+import com.nudge.core.ui.events.theme.dimen_56_dp
 import com.nudge.core.ui.events.theme.dimen_8_dp
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.QuestionType
@@ -126,14 +127,11 @@ fun SurveyScreen(
                     .fillMaxHeight()
             ) {
                 LazyColumn(
-                    userScrollEnabled = false,
                     state = outerState,
-
                     modifier = Modifier
                         .heightIn(maxHeight)
-                        .padding(
-                            horizontal = dimen_16_dp
-                        ), verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
+                        .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = dimen_56_dp),
+                    verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
                 ) {
                     itemsIndexed(
                         items = viewModel.questionUiModel.value
@@ -148,7 +146,8 @@ fun SurveyScreen(
                                         ?: BLANK_STRING,
                                     title = question.questionDisplay,
                                     isOnlyNumber = true,
-                                    hintText = question.display
+                                    hintText = question.options?.firstOrNull()?.description
+                                        ?: BLANK_STRING
                                 ) { selectedValue ->
                                     saveInputTypeAnswer(selectedValue, question, viewModel)
                                 }
@@ -161,7 +160,8 @@ fun SurveyScreen(
                                         ?: BLANK_STRING,
                                     title = question.questionDisplay,
                                     isEditable = viewModel.isTaskCompleted.value,
-                                    hintText = question.display,
+                                    hintText = question.options?.firstOrNull()?.description
+                                        ?: BLANK_STRING
                                 ) { selectedValue ->
                                     saveInputTypeAnswer(selectedValue, question, viewModel)
 
@@ -176,11 +176,9 @@ fun SurveyScreen(
                                     ),
                                     isMandatory = question.isMandatory,
                                     title = question.questionDisplay,
-                                    isEditable = true,
+                                    isEditable = viewModel.isTaskCompleted.value,
                                     maxCustomHeight = maxHeight,
-
-                                    ) { selectedValue, isDeleted ->
-
+                                ) { selectedValue, isDeleted ->
                                     saveMultiImageTypeAnswer(
                                         selectedValue,
                                         question.options,

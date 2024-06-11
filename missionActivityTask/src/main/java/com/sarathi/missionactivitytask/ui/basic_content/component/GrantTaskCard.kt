@@ -4,6 +4,7 @@ import android.net.Uri
 import android.text.TextUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,9 +18,13 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,6 +47,7 @@ import com.nudge.core.ui.events.theme.dimen_5_dp
 import com.nudge.core.ui.events.theme.dimen_6_dp
 import com.nudge.core.ui.events.theme.greenOnline
 import com.nudge.core.ui.events.theme.greyBorderColor
+import com.nudge.core.ui.events.theme.languageItemActiveBg
 import com.nudge.core.ui.events.theme.mediumTextStyle
 import com.nudge.core.ui.events.theme.newMediumTextStyle
 import com.nudge.core.ui.events.theme.smallTextStyleMediumWeight
@@ -69,7 +75,11 @@ fun GrantTaskCard(
     imagePath: Uri?,
     modifier: Modifier = Modifier,
     isHamletIcon: Boolean = false,
+    onNotAvailable: () -> Unit,
 ) {
+    val taskMarkedNotAvailable = remember {
+        mutableStateOf(status == StatusEnum.NOT_AVAILABLE.name)
+    }
     androidx.compose.material3.Card(
         elevation = CardDefaults.cardElevation(
             defaultElevation = dimen_30_dp
@@ -158,6 +168,7 @@ fun GrantTaskCard(
             }
             GrantAmountView(subtitle3, subtitle4, iconResId = R.drawable.ic_recieve_grant)
             GrantAmountView(subtitle2 = subtitle5, iconResId = R.drawable.ic_grant_sanction)
+
             if (status == StatusEnum.NOT_STARTED.name) {
                 Row(
                     modifier = Modifier
@@ -165,14 +176,15 @@ fun GrantTaskCard(
                         .padding(dimen_16_dp),
                     horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
                 ) {
-                    Spacer(modifier = Modifier.weight(1f))
-                    if (primaryButtonText.isNotBlank()) {
-                        PrimaryButton(
-                            text = primaryButtonText,
-                            onClick = { onPrimaryButtonClick(title) },
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
+                    PrimarySecondaryButtonView(
+                        modifier = Modifier.weight(1.0f),
+                        secondaryButtonText,
+                        taskMarkedNotAvailable,
+                        onNotAvailable,
+                        primaryButtonText,
+                        onPrimaryButtonClick,
+                        title
+                    )
                 }
             } else {
                 Row(
@@ -193,32 +205,87 @@ fun GrantTaskCard(
                     horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
                 ) {
                     if (status == StatusEnum.COMPLETED.name) {
-                        Text(
-                            text = stringResource(R.string.view),
-                            modifier = Modifier
-                                .padding(horizontal = dimen_5_dp),
-                            color = blueDark,
-                            style = newMediumTextStyle
-                        )
-                        Spacer(modifier = Modifier.weight(1f))
-                        Icon(
-                            imageVector = Icons.Default.ArrowForward,
-                            contentDescription = "",
-                            tint = blueDark,
-                        )
-                    } else {
-                        Spacer(modifier = Modifier.weight(1f))
-                        if (primaryButtonText.isNotBlank()) {
-                            PrimaryButton(
-                                text = stringResource(R.string.continue_text),
-                                onClick = { onPrimaryButtonClick(title) },
-                                modifier = Modifier.weight(1f)
+                        Row(modifier = Modifier.clickable {
+                            onPrimaryButtonClick(title)
+                        }) {
+                            Text(
+                                text = stringResource(R.string.view),
+                                modifier = Modifier
+                                    .padding(horizontal = dimen_5_dp),
+                                color = blueDark,
+                                style = newMediumTextStyle
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            Icon(
+                                imageVector = Icons.Default.ArrowForward,
+                                contentDescription = "",
+                                tint = blueDark,
                             )
                         }
+
+                    } else {
+                        PrimarySecondaryButtonView(
+                            modifier = Modifier.weight(1.0f),
+                            secondaryButtonText,
+                            taskMarkedNotAvailable,
+                            onNotAvailable,
+                            primaryButtonText = stringResource(R.string.continue_text),
+                            onPrimaryButtonClick,
+                            title
+                        )
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun PrimarySecondaryButtonView(
+    modifier: Modifier = Modifier,
+    secondaryButtonText: String,
+    taskMarkedNotAvailable: MutableState<Boolean>,
+    onNotAvailable: () -> Unit,
+    primaryButtonText: String,
+    onPrimaryButtonClick: (subjectName: String) -> Unit,
+    title: String
+) {
+    if (secondaryButtonText.isNotBlank()) {
+        PrimaryButton(
+            text = secondaryButtonText,
+            isIcon = false,
+            onClick = {
+                taskMarkedNotAvailable.value = true
+                onNotAvailable()
+            },
+            color = if (taskMarkedNotAvailable.value) ButtonDefaults.buttonColors(
+                containerColor = blueDark,
+                contentColor = white
+            ) else ButtonDefaults.buttonColors(
+                containerColor = languageItemActiveBg,
+                contentColor = blueDark
+            ),
+            modifier = Modifier
+        )
+    } else {
+        Spacer(modifier = modifier)
+    }
+    if (primaryButtonText.isNotBlank()) {
+        PrimaryButton(
+            text = primaryButtonText,
+            color = if (taskMarkedNotAvailable.value) ButtonDefaults.buttonColors(
+                containerColor = languageItemActiveBg,
+                contentColor = blueDark
+            ) else ButtonDefaults.buttonColors(
+                containerColor = blueDark,
+                contentColor = white
+            ),
+            onClick = {
+                taskMarkedNotAvailable.value = false
+                onPrimaryButtonClick(title)
+            },
+            modifier = modifier
+        )
     }
 }
 
@@ -253,7 +320,7 @@ private fun GrantAmountView(
                 tint = greenOnline
             )
             Text(
-                text = "${stringResource(R.string.received)}$subtitle2",
+                text = subtitle2,
                 modifier = Modifier
                     .weight(.4f)
                     .padding(horizontal = dimen_5_dp),

@@ -4,8 +4,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
-import com.sarathi.missionactivitytask.ui.grant_activity_screen.domain.usecase.GetActivityUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
@@ -61,7 +61,6 @@ class ActivityScreenViewModel @Inject constructor(
 
     private fun checkButtonValidation() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            isButtonEnable.value = getActivityUseCase.isAllActivityCompleted()
         }
     }
 

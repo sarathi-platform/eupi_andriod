@@ -6,6 +6,7 @@ import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
+import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
@@ -32,6 +33,7 @@ class SurveyScreenViewModel @Inject constructor(
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
     private val getTaskUseCase: GetTaskUseCase,
+    private val getActivityUseCase: GetActivityUseCase
 ) : BaseViewModel() {
     private var surveyId: Int = 0
     private var sectionId: Int = 0
@@ -193,11 +195,10 @@ class SurveyScreenViewModel @Inject constructor(
 
     private fun isTaskStatusCompleted() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            isTaskCompleted.value = !taskStatusUseCase.getTaskStatus(
-                userId = saveSurveyAnswerUseCase.getUserIdentifier(),
-                taskId = taskId,
-                subjectId = taskEntity?.subjectId ?: DEFAULT_ID
-            ).equals(SurveyStatusEnum.COMPLETED.name)
+            isTaskCompleted.value = getActivityUseCase.isAllActivityCompleted(
+                missionId = taskEntity?.missionId ?: 0,
+                activityId = taskEntity?.activityId ?: 0
+            )
         }
 
 

@@ -17,8 +17,11 @@ class GetTaskUseCase @Inject constructor(private val taskRepositoryImpl: GetTask
         return taskRepositoryImpl.getTask(taskId)
     }
 
-    suspend fun isAllActivityCompleted(): Boolean {
-        return taskRepositoryImpl.isAllActivityCompleted()
+    suspend fun isAllActivityCompleted(missionId: Int, activityId: Int): Boolean {
+        return taskRepositoryImpl.isAllActivityCompleted(
+            missionId = missionId,
+            activityId = activityId
+        )
     }
 
     suspend fun markActivityCompleteStatus(missionId: Int, activityId: Int) {
@@ -26,6 +29,16 @@ class GetTaskUseCase @Inject constructor(private val taskRepositoryImpl: GetTask
             missionId = missionId,
             activityId = activityId,
             status = SurveyStatusEnum.COMPLETED.name
+        )
+    }
+
+    suspend fun updateTaskStatus(
+        taskId: Int,
+        status: String
+    ) {
+        taskRepositoryImpl.updateTaskStatus(
+            taskId = taskId,
+            status = status
         )
     }
 }

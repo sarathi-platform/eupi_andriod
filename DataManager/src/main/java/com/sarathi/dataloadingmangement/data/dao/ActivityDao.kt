@@ -128,8 +128,13 @@ interface ActivityDao {
     }
 
 
-    @Query("SELECT count(*) FROM $ACTIVITY_TABLE_NAME WHERE userId = :userId AND status IN (:statuses)")
-    suspend fun countActivityByStatus(userId: String, statuses: List<String>): Int
+    @Query("SELECT count(*) FROM $ACTIVITY_TABLE_NAME WHERE userId = :userId AND missionId=:missionId AND activityId=:activityId AND status IN (:statuses)")
+    suspend fun countActivityByStatus(
+        userId: String,
+        missionId: Int,
+        activityId: Int,
+        statuses: List<String>
+    ): Int
 
 
     @Query("Select * from activity_table where userId=:userId and activityId=:activityId and missionId=:missionId")

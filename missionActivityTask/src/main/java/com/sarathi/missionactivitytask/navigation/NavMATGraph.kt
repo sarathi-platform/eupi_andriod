@@ -168,7 +168,8 @@ fun NavGraphBuilder.MatNavigation(
             )
         }
         composable(
-            route = MATHomeScreens.SurveyScreen.route, arguments = listOf(
+            route = MATHomeScreens.SurveyScreen.route,
+            arguments = listOf(
                 navArgument(name = ARG_TASK_ID) {
                     type = NavType.IntType
                 },
@@ -228,7 +229,7 @@ fun NavGraphBuilder.MatNavigation(
                     ARG_GRANT_TYPE
                 ) ?: BLANK_STRING,
 
-            )
+                )
         }
         composable(
             route = MATHomeScreens.DisbursementSurveyScreen.route, arguments = listOf(
@@ -289,8 +290,10 @@ fun NavGraphBuilder.MatNavigation(
                         activityConfigId = activityConfigId,
                         grantId = grantId,
                         grantType = grantType
-
                     )
+                },
+                onNavigateSuccessScreen = { msg ->
+                    navigateToActivityCompletionScreen(navController, msg)
                 }
             )
         }
@@ -303,7 +306,13 @@ fun NavGraphBuilder.MatNavigation(
             }
         )) {
             ActivitySuccessScreen(
-                navController = navController, messages = it.arguments?.getString(
+                onNavigateBack = {
+                    navController.popBackStack(
+                        MATHomeScreens.GrantTaskScreen.route,
+                        inclusive = false
+                    )
+                },
+                navController = navController, message = it.arguments?.getString(
                     ARG_ACTIVITY_MASSAGE
                 ) ?: BLANK_STRING
             )
@@ -311,7 +320,6 @@ fun NavGraphBuilder.MatNavigation(
 
         composable(route = MATHomeScreens.FinalStepCompletionScreen.route) {
             FinalStepCompletionScreen(navController = navController) {
-
             }
         }
     }

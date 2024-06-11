@@ -1,8 +1,8 @@
-package com.sarathi.missionactivitytask.ui.grant_activity_screen.domain.usecase
+package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.sarathi.dataloadingmangement.model.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
-import com.sarathi.missionactivitytask.ui.grant_activity_screen.domain.repository.GetActivityRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.GetActivityRepositoryImpl
 import javax.inject.Inject
 
 
@@ -11,8 +11,11 @@ class GetActivityUseCase @Inject constructor(private val activityRepositoryImpl:
     suspend fun getActivities(missionId: Int): List<ActivityUiModel> =
         activityRepositoryImpl.getActivity(missionId)
 
-    suspend fun isAllActivityCompleted(): Boolean {
-        return activityRepositoryImpl.isAllActivityCompleted()
+    suspend fun isAllActivityCompleted(missionId: Int, activityId: Int): Boolean {
+        return activityRepositoryImpl.isAllActivityCompleted(
+            missionId = missionId,
+            activityId = activityId
+        )
     }
 
     suspend fun markMissionCompleteStatus(missionId: Int) {
