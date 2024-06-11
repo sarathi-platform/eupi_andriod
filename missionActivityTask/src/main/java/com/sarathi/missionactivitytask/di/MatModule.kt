@@ -1,8 +1,8 @@
 package com.sarathi.missionactivitytask.di
 
+import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
+import com.sarathi.dataloadingmangement.repository.GetActivityRepositoryImpl
 import com.sarathi.missionactivitytask.network.MatApiService
-import com.sarathi.missionactivitytask.ui.grant_activity_screen.domain.repository.GetActivityRepositoryImpl
-import com.sarathi.missionactivitytask.ui.grant_activity_screen.domain.usecase.GetActivityUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

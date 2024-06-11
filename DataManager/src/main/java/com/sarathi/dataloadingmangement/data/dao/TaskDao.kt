@@ -52,6 +52,13 @@ interface TaskDao {
         subjectId: Int
     )
 
+    @Query("UPDATE $TASK_TABLE_NAME set status = :status where userId=:userId and taskId = :taskId")
+    fun updateTaskStatus(
+        userId: String,
+        taskId: Int,
+        status: String
+    )
+
     @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId and  activityId=:activityId AND missionId = :missionId and taskId = :taskId")
     fun getTask(userId: String, activityId: Int, missionId: Int, taskId: Int): ActivityTaskEntity
 
@@ -108,7 +115,12 @@ interface TaskDao {
         subjectId: Int
     ): String?
 
-    @Query("SELECT count(*) FROM $TASK_TABLE_NAME WHERE userId = :userId AND status IN (:statuses)")
-    suspend fun countTasksByStatus(userId: String, statuses: List<String>): Int
+    @Query("SELECT count(*) FROM $TASK_TABLE_NAME WHERE userId = :userId AND activityId=:activityId AND missionId=:missionId AND status IN (:statuses)")
+    suspend fun countTasksByStatus(
+        userId: String,
+        activityId: Int,
+        missionId: Int,
+        statuses: List<String>
+    ): Int
 
 }

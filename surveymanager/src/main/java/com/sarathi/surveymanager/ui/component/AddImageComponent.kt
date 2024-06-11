@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -43,6 +42,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -93,23 +93,20 @@ fun AddImageComponent(
         if (title.isNotBlank()) {
             QuestionComponent(title = title, isRequiredField = isMandatory)
         }
+
         BoxWithConstraints(
             modifier = Modifier
                 .scrollable(
                     state = outerState,
                     Orientation.Vertical,
                 )
+                .heightIn(min = 100.dp, maxCustomHeight)
         ) {
             LazyVerticalGrid(
-                userScrollEnabled = false,
                 state = innerState,
                 columns = GridCells.Fixed(2),
                 modifier = Modifier
-                    .wrapContentWidth()
-                    .heightIn(
-                        min = 110.dp,
-                        max = maxCustomHeight
-                    ),
+                    .heightIn(min = 110.dp, max = maxCustomHeight),
                 horizontalArrangement = Arrangement.Center
             ) {
                 item {
@@ -138,7 +135,7 @@ fun AddImageComponent(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            "+ Add Image", style = largeTextStyle,
+                            stringResource(R.string.add_image), style = largeTextStyle,
                         )
                     }
                 }

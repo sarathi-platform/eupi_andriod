@@ -9,11 +9,13 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
+import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.ui.component.ButtonPositive
 import com.sarathi.surveymanager.ui.component.ShowCustomDialog
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
@@ -31,6 +33,7 @@ fun DisbursementSummaryScreen(
     subjectName: String,
     activityConfigId: Int,
     onNavigateSurveyScreen: (referenceId: String, activityConfigIs: Int, grantId: Int, grantType: String) -> Unit,
+    onNavigateSuccessScreen: (mag: String) -> Unit
 ) {
 
     LaunchedEffect(key1 = true) {
@@ -59,7 +62,7 @@ fun DisbursementSummaryScreen(
                     isLeftArrow = false,
                     onClick = {
                         viewModel.saveButtonClicked()
-                        navController.popBackStack()
+                        onNavigateSuccessScreen("cdkkdsj")
                     }
                 )
 
@@ -109,10 +112,9 @@ fun DisbursementSummaryScreen(
                         }
                         if (viewModel.showDialog.value.first) {
                             ShowCustomDialog(
-                                "Main Title",
-                                message = "New Message You wealth ranking for",
-                                negativeButtonTitle = "No",
-                                positiveButtonTitle = "Yes",
+                                message = stringResource(R.string.are_you_sure_you_want_to_delete),
+                                negativeButtonTitle = stringResource(R.string.no),
+                                positiveButtonTitle = stringResource(R.string.yes),
                                 onNegativeButtonClick = {
                                     viewModel.showDialog.value = Pair(false, BLANK_STRING)
                                 },

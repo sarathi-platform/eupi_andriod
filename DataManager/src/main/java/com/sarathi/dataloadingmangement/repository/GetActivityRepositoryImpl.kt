@@ -1,11 +1,10 @@
-package com.sarathi.missionactivitytask.ui.grant_activity_screen.domain.repository
+package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.model.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
-import com.sarathi.missionactivitytask.domain.repository.BaseRepository
 import javax.inject.Inject
 
 
@@ -14,7 +13,6 @@ class GetActivityRepositoryImpl @Inject constructor(
     val missionDao: MissionDao,
     val coreSharedPrefs: CoreSharedPrefs
 ) :
-    BaseRepository(),
     IActivityRepository {
     override suspend fun getActivity(missionId: Int): List<ActivityUiModel> {
         return activityDao.getActivities(
@@ -24,9 +22,11 @@ class GetActivityRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun isAllActivityCompleted(): Boolean {
+    override suspend fun isAllActivityCompleted(missionId: Int, activityId: Int): Boolean {
         return activityDao.countActivityByStatus(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            missionId = missionId,
+            activityId = activityId,
             statuses = listOf(SurveyStatusEnum.NOT_STARTED.name, SurveyStatusEnum.INPROGRESS.name)
         ) == 0
     }
