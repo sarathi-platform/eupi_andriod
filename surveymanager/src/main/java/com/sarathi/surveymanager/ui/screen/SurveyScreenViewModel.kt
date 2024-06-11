@@ -100,9 +100,9 @@ class SurveyScreenViewModel @Inject constructor(
                 )
 
             }
-            if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name) {
+            if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name || taskEntity?.status == SurveyStatusEnum.NOT_AVAILABLE.name) {
                 taskStatusUseCase.markTaskInProgress(
-                    subjectId = taskEntity?.subjectId ?: DEFAULT_ID, taskId = taskId
+                    taskId = taskId
                 )
                 taskStatusUseCase.markActivityInProgress(
                     missionId = taskEntity?.missionId ?: DEFAULT_ID,
@@ -195,7 +195,7 @@ class SurveyScreenViewModel @Inject constructor(
 
     private fun isTaskStatusCompleted() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            isTaskCompleted.value = getActivityUseCase.isAllActivityCompleted(
+            isTaskCompleted.value = !getActivityUseCase.isAllActivityCompleted(
                 missionId = taskEntity?.missionId ?: 0,
                 activityId = taskEntity?.activityId ?: 0
             )

@@ -46,6 +46,7 @@ fun CollapsibleCard(
     title: String = BLANK_STRING,
     summaryCount: Int = 0,
     onContentUI: @Composable () -> Unit,
+    isEditable: Boolean = true,
     onClick: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -72,7 +73,7 @@ fun CollapsibleCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(dimen_10_dp)
-                    .clickable {
+                    .clickable(enabled = isEditable) {
                         onClick()
                     },
                 horizontalArrangement = Arrangement.Center,

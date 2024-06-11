@@ -31,6 +31,14 @@ class GetActivityRepositoryImpl @Inject constructor(
         ) == 0
     }
 
+    override suspend fun isAllActivityCompleted(missionId: Int): Boolean {
+        return activityDao.countActivityByStatus(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            missionId = missionId,
+            statuses = listOf(SurveyStatusEnum.NOT_STARTED.name, SurveyStatusEnum.INPROGRESS.name)
+        ) == 0
+    }
+
     override suspend fun updateMissionStatus(missionId: Int, status: String) {
         missionDao.updateMissionStatus(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),

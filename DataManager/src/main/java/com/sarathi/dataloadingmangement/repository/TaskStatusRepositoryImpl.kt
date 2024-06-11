@@ -28,13 +28,20 @@ class TaskStatusRepositoryImpl @Inject constructor(
     }
 
 
-    override fun markInProgressTaskStatus(subjectId: Int, taskId: Int) {
+    override fun markInProgressTaskStatus(taskId: Int) {
         taskDao.markTaskInProgress(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             taskId = taskId,
             actualStartDate = System.currentTimeMillis().toDate().toString(),
             status = SurveyStatusEnum.INPROGRESS.name,
-            subjectId = subjectId
+        )
+    }
+
+    override fun markNotAvailableTaskStatus(taskId: Int) {
+        taskDao.updateTaskStatus(
+            taskId = taskId,
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            status = SurveyStatusEnum.NOT_AVAILABLE.name
         )
     }
 

@@ -38,7 +38,7 @@ interface ActivityDao {
     @Query(
         "select activity_table.missionId,activity_table.activityId,  activity_language_attribute_table.description,  activity_table.status , \n" +
                 "count(task_table.taskId) as taskCount,\n" +
-                " SUM(CASE WHEN task_table.status =:surveyStatus  THEN 1 ELSE 0 END) AS pendingTaskCount\n" +
+                " SUM(CASE WHEN task_table.status  in(:surveyStatus)  THEN 1 ELSE 0 END) AS pendingTaskCount\n" +
                 " from activity_table\n" +
                 "inner join activity_language_attribute_table on activity_table.activityId = activity_language_attribute_table.activityId  \n" +
                 "left join task_table on activity_table.activityId = task_table.activityId \n" +
@@ -48,7 +48,10 @@ interface ActivityDao {
         userId: String,
         languageCode: String,
         missionId: Int,
-        surveyStatus: String = SurveyStatusEnum.COMPLETED.name
+        surveyStatus: List<String> = listOf(
+            SurveyStatusEnum.COMPLETED.name,
+            SurveyStatusEnum.NOT_AVAILABLE.name
+        )
     ): List<ActivityUiModel>
 
     @Query("SELECT COUNT(*) from $ACTIVITY_TABLE_NAME where userId=:userId and missionId = :missionId AND status NOT in (:status) and isActive=1")
@@ -133,6 +136,14 @@ interface ActivityDao {
         userId: String,
         missionId: Int,
         activityId: Int,
+        statuses: List<String>
+    ): Int
+
+
+    @Query("SELECT count(*) FROM $ACTIVITY_TABLE_NAME WHERE userId = :userId AND missionId=:missionId AND status IN (:statuses)")
+    suspend fun countActivityByStatus(
+        userId: String,
+        missionId: Int,
         statuses: List<String>
     ): Int
 

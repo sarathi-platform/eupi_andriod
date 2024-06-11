@@ -72,7 +72,8 @@ fun DisbursementSummaryScreen(
             CollapsibleCard(
                 title = viewModel.grantConfigUi.value.grantComponentDTO?.grantComponentName
                     ?: BLANK_STRING,
-                summaryCount = viewModel.taskList.value.entries.size, onClick = {
+                summaryCount = viewModel.taskList.value.entries.size,
+                onClick = {
                     onNavigateSurveyScreen(
                         viewModel.createReferenceId(),
                         activityConfigId,
@@ -81,6 +82,7 @@ fun DisbursementSummaryScreen(
                             ?: BLANK_STRING
                     )
                 },
+                isEditable = viewModel.isButtonEnable.value,
                 onContentUI = {
                     if (viewModel.taskList.value.isNotEmpty()) {
                         LazyColumn {
@@ -104,8 +106,10 @@ fun DisbursementSummaryScreen(
                                         )
                                     },
                                     onDeleteSurvey = {
+                                        if (viewModel.isButtonEnable.value) {
                                         viewModel.showDialog.value =
                                             Pair(true, surveyData.referenceId)
+                                        }
                                     }
                                 )
                             }

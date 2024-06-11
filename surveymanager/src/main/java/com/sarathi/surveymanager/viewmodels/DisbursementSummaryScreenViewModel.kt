@@ -7,6 +7,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
+import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
@@ -35,6 +36,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     private val taskStatusUseCase: UpdateTaskStatusUseCase,
     private val getTaskUseCase: GetTaskUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
+    private val getActivityUseCase: GetActivityUseCase
 ) : BaseViewModel() {
     private val _taskList = mutableStateOf<Map<String, List<SurveyAnswerEntity>>>(hashMapOf())
     val taskList: State<Map<String, List<SurveyAnswerEntity>>> get() = _taskList
@@ -48,6 +50,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     var grantConfigUi = mutableStateOf(GrantConfigUiModel(null, "", 0))
     val isButtonEnable = mutableStateOf<Boolean>(false)
     private var taskEntity: ActivityTaskEntity? = null
+    var isActivityCompleted = mutableStateOf(false)
 
 
     override fun <T> onEvent(event: T) {
@@ -83,7 +86,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
                 ).groupBy { it.referenceId }
             setGrantComponentDTO()
             taskEntity = getTaskUseCase.getTask(taskId)
-            checkButtonValidation()
+            isActivityCompleted()
         }
     }
 
@@ -190,8 +193,20 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
 
     private fun checkButtonValidation() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            isButtonEnable.value = taskList.value.isNotEmpty()
+            isButtonEnable.value = taskList.value.isNotEmpty() && !isActivityCompleted.value
         }
+    }
+
+    private fun isActivityCompleted() {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            isActivityCompleted.value = getActivityUseCase.isAllActivityCompleted(
+                missionId = taskEntity?.missionId ?: 0,
+                activityId = taskEntity?.activityId ?: 0
+            )
+            checkButtonValidation()
+        }
+
+
     }
 
 }

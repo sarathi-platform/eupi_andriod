@@ -65,12 +65,11 @@ interface TaskDao {
     @Query("UPDATE $TASK_TABLE_NAME SET actualStartDate = :actualStartDate where  userId=:userId and taskId = :taskId")
     fun updateTaskStartDate(userId: String, taskId: Int, actualStartDate: String)
 
-    @Query("UPDATE $TASK_TABLE_NAME SET actualCompletedDate = :actualCompletedDate where userId=:userId and  taskId = :taskId and subjectId =:subjectId")
+    @Query("UPDATE $TASK_TABLE_NAME SET actualCompletedDate = :actualCompletedDate where userId=:userId and  taskId = :taskId ")
     fun updateTaskCompletedDate(
         userId: String,
         taskId: Int,
         actualCompletedDate: String,
-        subjectId: Int
     )
 
     @Transaction
@@ -78,10 +77,9 @@ interface TaskDao {
         userId: String,
         taskId: Int,
         status: String,
-        subjectId: Int,
         actualStartDate: String
     ) {
-        updateTaskStatus(userId, taskId, status, subjectId)
+        updateTaskStatus(userId, taskId, status)
         updateTaskStartDate(userId, taskId, actualStartDate)
     }
 
@@ -93,8 +91,8 @@ interface TaskDao {
         status: String,
         actualCompletedDate: String
     ) {
-        updateTaskStatus(userId, taskId, status, subjectId)
-        updateTaskCompletedDate(userId, taskId, actualCompletedDate, subjectId)
+        updateTaskStatus(userId, taskId, status)
+        updateTaskCompletedDate(userId, taskId, actualCompletedDate)
     }
 
 
