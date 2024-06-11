@@ -2,7 +2,9 @@ package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
 import android.net.Uri
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
@@ -45,10 +47,9 @@ class GrantTaskScreenViewModel @Inject constructor(
     val searchLabel = mutableStateOf<String>(BLANK_STRING)
     val isButtonEnable = mutableStateOf<Boolean>(false)
     var isDisbursement: Boolean = false
-    var filterSelected = mutableStateOf(false)
-
-    var filterContentMap =
-        mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, java.util.HashMap<String, String>>>>())
+    var isGroupByEnable = mutableStateOf(false)
+    var isFilerEnable = mutableStateOf(false)
+    var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, String>>>>())
 
 
     override fun <T> onEvent(event: T) {
@@ -84,13 +85,17 @@ class GrantTaskScreenViewModel @Inject constructor(
                         componentType = "Search"
                     )[GrantTaskCardSlots.GRANT_SEARCH_LABEL.name]
                         ?: BLANK_STRING
-                    searchLabel.value = getUiComponentValues(
-                        it.taskId,
-                        it.status.toString(),
-                        it.subjectId,
-                        componentType = "GroupBy"
-                    )[GrantTaskCardSlots.GRANT_SEARCH_LABEL.name]
-                        ?: BLANK_STRING
+
+                    if ((getUiComponentValues(
+                            it.taskId,
+                            it.status.toString(),
+                            it.subjectId,
+                            componentType = "Card"
+                        )[GrantTaskCardSlots.GRANT_GROUP_BY.name]
+                            ?: BLANK_STRING).isNotBlank()
+                    ) {
+                        isFilerEnable.value = true
+                    }
                 }
                 _taskList.value[it.taskId] =
                     getUiComponentValues(
@@ -104,7 +109,7 @@ class GrantTaskScreenViewModel @Inject constructor(
 
             _filterList.value.putAll(_taskList.value)
 
-            filterContentMap.value =
+            filterTaskMap =
                 _taskList.value.entries.groupBy { it.value[GrantTaskCardSlots.GRANT_GROUP_BY.name] }
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
