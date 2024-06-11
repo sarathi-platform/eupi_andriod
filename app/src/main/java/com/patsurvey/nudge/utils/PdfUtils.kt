@@ -620,9 +620,8 @@ object PdfUtils {
             getSimplePdfDocument(context,stateId, villageEntity, FORM_C_PDF_NAME, "Digital Form C")
 
         // simplyPdfDocument.text.write("Digital Form C", titleTextProperties)
-
         simplyPdfDocument.text.write(
-            "Final list of Ultra Poor families endorsed by VO (Village Organization)",
+            getVoNameForState(context,stateId, R.plurals.final_list_of_user),
             subTitleTextProperties
         )
 
@@ -634,7 +633,7 @@ object PdfUtils {
         simplyPdfDocument.text.write("Date of CRP Drive: $completionDate", contentTextProperties)
 
         simplyPdfDocument.text.write(
-            "Total no. Ultra-Poor families endorsed by VO: ${didiDetailList.size}",
+            "${getVoNameForState(context,stateId, R.plurals.total_no_of_ultra_poor)} ${didiDetailList.size}",
             contentTextProperties
         )
 
@@ -729,7 +728,7 @@ object PdfUtils {
         // simplyPdfDocument.text.write("Digital Form C", titleTextProperties)
 
         simplyPdfDocument.text.write(
-            "Final list of Ultra Poor families endorsed by VO (Village Organization)",
+            getVoNameForState(context,stateId, R.plurals.final_list_of_user),
             subTitleTextProperties
         )
 
@@ -741,7 +740,7 @@ object PdfUtils {
         simplyPdfDocument.text.write("Date of CRP Drive: $completionDate", contentTextProperties)
 
         simplyPdfDocument.text.write(
-            "Total no. Ultra-Poor families endorsed by VO: ${didiDetailList.size}",
+            "${ getVoNameForState(context,stateId, R.plurals.total_no_of_ultra_poor)} ${didiDetailList.size}",
             contentTextProperties
         )
 
