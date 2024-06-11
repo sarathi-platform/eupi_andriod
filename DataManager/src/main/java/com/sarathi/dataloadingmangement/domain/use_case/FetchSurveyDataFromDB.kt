@@ -12,14 +12,16 @@ class FetchSurveyDataFromDB @Inject constructor(
         subjectId: Int,
         sectionId: Int,
         referenceId: String,
-        activityConfigId: Int
+        activityConfigId: Int,
+        grantId: Int
     ): List<QuestionUiModel> {
         return repository.getQuestion(
             surveyId = surveyId,
             sectionId = sectionId,
             subjectId = subjectId,
             referenceId = referenceId,
-            activityConfigId = activityConfigId
+            activityConfigId = activityConfigId,
+            grantId = grantId
         )
     }
 }
