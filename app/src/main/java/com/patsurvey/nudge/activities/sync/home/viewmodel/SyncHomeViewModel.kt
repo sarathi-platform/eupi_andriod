@@ -2,11 +2,8 @@ package com.patsurvey.nudge.activities.sync.home.viewmodel
 
 import android.util.Log
 import androidx.compose.runtime.State
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.text.toLowerCase
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.nrlm.baselinesurvey.base.BaseViewModel
@@ -15,12 +12,10 @@ import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.states.LoaderState
-import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.NetworkSpeed
 import com.nudge.syncmanager.utils.WORKER_RESULT
 import com.patsurvey.nudge.activities.sync.home.domain.use_case.SyncHomeUseCase
-import com.patsurvey.nudge.utils.IMAGE_STRING
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.ZERO
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,6 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 @HiltViewModel
 class SyncHomeViewModel @Inject constructor(
     val syncHomeUseCase: SyncHomeUseCase,
@@ -60,14 +56,14 @@ class SyncHomeViewModel @Inject constructor(
     fun getAllEvents(current: Locale) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val list =syncHomeUseCase.getSyncEventsUseCase.getTotalEvents()
-                evList.emit(list)
-                _eventList.value=list
-                eventListMutableLiveData.postValue(list)
-                totalDataEventCount.value =eventList.value.filter { !it.name.toLowerCase(current).contains(IMAGE_STRING) }.size
-                successDataEventCount.value =eventList.value.filter { !it.name.toLowerCase(current).contains(IMAGE_STRING) && it.status==EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus}.size
-                totalImageEventCount.value =eventList.value.filter { it.name.toLowerCase(current).contains(IMAGE_STRING) }.size
-                successImageEventCount.value =eventList.value.filter { it.name.toLowerCase(current).contains(IMAGE_STRING) && it.status==EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus}.size
+//                val list =syncHomeUseCase.getSyncEventsUseCase.getTotalEvents()
+//                evList.emit(list)
+//                _eventList.value=list
+//                eventListMutableLiveData.postValue(list)
+//                totalDataEventCount.value =eventList.value.filter { !it.name.toLowerCase(current).contains(IMAGE_STRING) }.size
+//                successDataEventCount.value =eventList.value.filter { !it.name.toLowerCase(current).contains(IMAGE_STRING) && it.status==EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus}.size
+//                totalImageEventCount.value =eventList.value.filter { it.name.toLowerCase(current).contains(IMAGE_STRING) }.size
+//                successImageEventCount.value =eventList.value.filter { it.name.toLowerCase(current).contains(IMAGE_STRING) && it.status==EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus}.size
 
             }catch (ex:Exception){
                 BaselineLogger.d("SyncEventViewModel"," syncAllEvent: ${ex.printStackTrace()} ")

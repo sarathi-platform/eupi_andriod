@@ -12,10 +12,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -29,13 +25,11 @@ import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.ui.common_components.ToolbarWithMenuComponent
 import com.nrlm.baselinesurvey.utils.ConnectionMonitor
 import com.nudge.core.EventSyncStatus
-import com.nudge.core.database.entities.Events
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.sync.home.viewmodel.SyncHomeViewModel
@@ -43,6 +37,7 @@ import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.newMediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.utils.IMAGE_STRING
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.showCustomToast
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -51,54 +46,64 @@ fun SyncHomeScreen(
     navController: NavController,
     viewModel: SyncHomeViewModel
 ) {
-    val eventList by viewModel.evList.collectAsState()
     val context = LocalContext.current
-    val locale=Locale.current
-   val lifeCycleOwner= LocalLifecycleOwner.current
-    val eventMutableList = remember {
-        mutableStateOf((mutableListOf<Events>()))
-    }
+
+    val lifeCycleOwner = LocalLifecycleOwner.current
+
     val totalDataEventCount = remember {
-        derivedStateOf {
-            eventMutableList.value.filter {!it.name.toLowerCase(Locale.current).contains(
-                IMAGE_STRING
-            ) }.size
-        }
+        mutableStateOf(0)
     }
 
     val successDataEventCount = remember {
-        derivedStateOf {
-            eventMutableList.value.filter { !it.name.toLowerCase(Locale.current).contains(
-                IMAGE_STRING
-            ) && it.status== EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus}.size
-        }
+        mutableStateOf(0)
     }
+
 
     val totalImageEventCount = remember {
-        derivedStateOf {
-            eventMutableList.value.filter { it.name.toLowerCase(Locale.current).contains(
-                IMAGE_STRING
-            ) }.size
-        }
+        mutableStateOf(0)
     }
 
+
     val successImageEventCount = remember {
-        derivedStateOf {
-            eventMutableList.value.filter { it.name.toLowerCase(Locale.current).contains(
-                IMAGE_STRING
-            ) && it.status== EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus}.size
-        }
+        mutableStateOf(0)
     }
-    DisposableEffect(key1 = Unit) {
-        val list = viewModel.syncHomeUseCase.getSyncEventsUseCase.getTotalEvents()
-        list.observe(lifeCycleOwner){
-            eventMutableList.value.addAll(it)
-//            viewModel.totalDataEventCount.value =eventList.filter { !it.name.toLowerCase(locale).contains(IMAGE_STRING) }.size
-//            viewModel.successDataEventCount.value =eventList.filter { !it.name.toLowerCase(locale).contains(IMAGE_STRING) && it.status==EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus}.size
-//            viewModel.totalImageEventCount.value =eventList.filter { it.name.toLowerCase(locale).contains(IMAGE_STRING) }.size
-//            viewModel.successImageEventCount.value =eventList.filter { it.name.toLowerCase(locale).contains(IMAGE_STRING) && it.status==EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus}.size
+
+    DisposableEffect(key1 = lifeCycleOwner) {
+        val eventListLive = viewModel.syncHomeUseCase.getSyncEventsUseCase.getTotalEvents()
+        eventListLive.observe(lifeCycleOwner) { eventList ->
+
+            totalDataEventCount.value = eventList.filter {
+                !it.name.toLowerCase(Locale.current).contains(
+                    IMAGE_STRING
+                )
+            }.size
+
+            successDataEventCount.value = eventList.filter {
+                !it.name.toLowerCase(Locale.current).contains(
+                    IMAGE_STRING
+                ) && it.status == EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus
+            }.size
+
+            totalImageEventCount.value = eventList.filter {
+                it.name.toLowerCase(Locale.current).contains(
+                    IMAGE_STRING
+                )
+            }.size
+
+            successImageEventCount.value = eventList.filter {
+                it.name.toLowerCase(Locale.current).contains(
+                    IMAGE_STRING
+                ) && it.status == EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus
+            }.size
+            NudgeLogger.d(
+                "SyncHomeScreen",
+                "DisposableEffect-> totalDataEventCount: ${totalDataEventCount.value}, successDataEventCount: ${successDataEventCount.value}, totalImageEventCount: ${totalImageEventCount.value}" +
+                        " successImageEventCount: ${successImageEventCount.value}"
+            )
         }
+
         onDispose {
+            eventListLive.removeObservers(lifeCycleOwner)
         }
     }
 
