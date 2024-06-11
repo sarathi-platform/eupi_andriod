@@ -112,7 +112,8 @@ class SurveyScreenViewModel @Inject constructor(
                 taskEntity = getTaskUseCase.getTask(taskId)
                 taskEntity?.let {
                     matStatusEventWriterUseCase.markMATStatus(
-                        surveyName = "",
+                        surveyName = questionUiModel.value.firstOrNull()?.surveyName
+                            ?: BLANK_STRING,
                         subjectType = subjectType,
                         missionId = taskEntity?.missionId ?: DEFAULT_ID,
                         activityId = taskEntity?.activityId ?: DEFAULT_ID,
