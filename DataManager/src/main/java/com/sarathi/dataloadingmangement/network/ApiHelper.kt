@@ -6,3 +6,5 @@ const val SUBPATH_FETCH_SURVEY_FROM_NETWORK = "/survey-engine/survey/v1/getSurve
 
 const val SUBPATH_CONFIG_GET_LANGUAGE = "/read-api/config/language/get"
 const val SUBPATH_USER_VIEW = "/read-api/user/view"
+const val SUBPATH_SURVEY_ANSWERS = "/survey-service/getSurveyAnswers"
+

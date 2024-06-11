@@ -102,12 +102,22 @@ class SurveyScreenViewModel @Inject constructor(
                 taskStatusUseCase.markTaskInProgress(
                     subjectId = taskEntity?.subjectId ?: DEFAULT_ID, taskId = taskId
                 )
+                taskStatusUseCase.markActivityInProgress(
+                    missionId = taskEntity?.missionId ?: DEFAULT_ID,
+                    activityId = taskEntity?.activityId ?: DEFAULT_ID,
+                )
+                taskStatusUseCase.markMissionInProgress(
+                    missionId = taskEntity?.missionId ?: DEFAULT_ID,
+                )
                 taskEntity = getTaskUseCase.getTask(taskId)
                 taskEntity?.let {
-                    matStatusEventWriterUseCase.updateTaskStatus(
-                        taskEntity = it,
-                        referenceId.toString(),
-                        subjectType
+                    matStatusEventWriterUseCase.markMATStatus(
+                        surveyName = "",
+                        subjectType = subjectType,
+                        missionId = taskEntity?.missionId ?: DEFAULT_ID,
+                        activityId = taskEntity?.activityId ?: DEFAULT_ID,
+                        taskId = taskEntity?.taskId ?: DEFAULT_ID
+
                     )
                 }
 
@@ -120,7 +130,8 @@ class SurveyScreenViewModel @Inject constructor(
                 referenceId = referenceId,
                 uriList = listOf(),
                 grantId = grantID,
-                grantType = granType
+                grantType = granType,
+                taskId = taskId
             )
 
         }

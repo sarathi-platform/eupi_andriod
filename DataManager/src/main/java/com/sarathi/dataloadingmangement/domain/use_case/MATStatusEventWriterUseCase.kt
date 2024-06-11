@@ -52,6 +52,23 @@ class MATStatusEventWriterUseCase(
         }
     }
 
+    suspend fun markMATStatus(
+        missionId: Int,
+        activityId: Int,
+        taskId: Int,
+        surveyName: String,
+        subjectType: String
+    ) {
+        updateMissionStatus(repository.getMissionEntity(missionId))
+        repository.getActivityEntity(missionId = missionId, activityId = activityId)
+            ?.let { updateActivityStatus(it, surveyName) }
+        updateTaskStatus(
+            repository.getTaskEntity(taskId),
+            surveyName = surveyName,
+            subjectType = subjectType
+        )
+    }
+
     suspend fun updateMissionStatus(
         missionEntity: MissionEntity,
     ) {
