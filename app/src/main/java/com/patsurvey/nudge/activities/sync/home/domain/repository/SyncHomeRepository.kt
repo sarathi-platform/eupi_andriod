@@ -1,9 +1,11 @@
 package com.patsurvey.nudge.activities.sync.home.domain.repository
 
+import androidx.lifecycle.LiveData
 import com.nudge.core.database.entities.Events
+import kotlinx.coroutines.flow.Flow
 
 interface SyncHomeRepository {
-    fun getTotalEvents():List<Events>
+    fun getTotalEvents():LiveData<List<Events>>
 
     fun getUserMobileNumber(): String
     fun getUserID(): String

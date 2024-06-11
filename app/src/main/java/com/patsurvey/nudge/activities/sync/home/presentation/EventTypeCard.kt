@@ -25,6 +25,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_20_dp
 import com.nrlm.baselinesurvey.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.greenDark
 import com.patsurvey.nudge.activities.ui.theme.syncItemCountStyle
 import com.patsurvey.nudge.activities.ui.theme.syncProgressBg
@@ -59,6 +60,7 @@ fun EventTypeCard(
             Text(
                 text = title,
                 style = mediumTextStyle,
+                color = blueDark    ,
                 modifier = Modifier.constrainAs(titleText) {
                  start.linkTo(parent.start)
                  top.linkTo(parent.top)
@@ -75,6 +77,7 @@ fun EventTypeCard(
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_sync_24),
+                        tint = blueDark,
                         contentDescription = "Refresh Button"
                     )
                 }

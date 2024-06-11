@@ -87,7 +87,6 @@ class SyncUploadWorker @AssistedInject constructor(
 
             fetchConsumerStatus(syncApiRepository, syncApiRepository.getLoggedInMobileNumber())
             CoreLogger.d(applicationContext, TAG, "doWork: success totalPendingEventCount: $totalPendingEventCount")
-
             Result.success(Data.Builder().putString(WORKER_RESULT, "Success: All Producer Completed and Count 0").build())
         } catch (ex: Exception) {
             handleException(ex, mPendingEventList)
@@ -112,14 +111,17 @@ class SyncUploadWorker @AssistedInject constructor(
     }
 
     private fun handleEmptyEventListResponse(mPendingEventList: List<Events>) {
+        CoreLogger.d(applicationContext, TAG, "doWork: Producer Response list Empty error")
         syncApiRepository.updateFailedEventStatus(createEventResponseList(mPendingEventList, RESPONSE_DATA_LIST_IS_EMPTY_EXCEPTION))
     }
 
     private fun handleNullApiResponse(mPendingEventList: List<Events>) {
+        CoreLogger.d(applicationContext, TAG, "doWork: Getting API response Null")
         syncApiRepository.updateFailedEventStatus(createEventResponseList(mPendingEventList, RESPONSE_DATA_IS_NULL_EXCEPTION))
     }
 
     private fun handleFailedApiResponse(mPendingEventList: List<Events>) {
+        CoreLogger.d(applicationContext, TAG, "doWork: Getting API Failed")
         syncApiRepository.updateFailedEventStatus(createEventResponseList(mPendingEventList, RESPONSE_STATUS_FAILED_EXCEPTION))
     }
 

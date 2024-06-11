@@ -1,6 +1,7 @@
 package com.nudge.core.database.dao
 
 import android.annotation.SuppressLint
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -14,6 +15,7 @@ import com.nudge.core.database.entities.Events
 import com.nudge.core.model.response.EventConsumerResponse
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.toDate
+import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
 @Dao
@@ -93,7 +95,7 @@ interface EventsDao {
     }
 
     @Query("SELECT * FROM $EventsTable WHERE mobile_number= :mobileNumber")
-    fun getTotalEventCount(mobileNumber:String):List<Events>
+    fun getTotalSyncEvent(mobileNumber:String):LiveData<List<Events>>
 
     @Query("SELECT * FROM $EventsTable WHERE status= :status AND mobile_number= :mobileNumber")
     fun getSuccessEventCount(status:String,mobileNumber:String):List<Events>

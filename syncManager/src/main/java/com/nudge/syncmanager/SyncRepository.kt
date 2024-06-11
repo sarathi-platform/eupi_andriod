@@ -106,7 +106,7 @@ class SyncApiRepository @Inject constructor(
                     clientId = it.clientId,
                     errorMessage = it.errorMessage,
                     status = it.status,
-                    mobileNumber = it.mobileNumber,
+                    mobileNumber = prefRepo.getMobileNumber(),
                     createdBy = prefRepo.getUserId(),
                     eventStatusId = 0
                 )

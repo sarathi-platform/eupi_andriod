@@ -11,26 +11,38 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.ui.common_components.ToolbarWithMenuComponent
 import com.nrlm.baselinesurvey.utils.ConnectionMonitor
+import com.nudge.core.EventSyncStatus
+import com.nudge.core.database.entities.Events
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.sync.home.viewmodel.SyncHomeViewModel
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.newMediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.white
+import com.patsurvey.nudge.utils.IMAGE_STRING
 import com.patsurvey.nudge.utils.showCustomToast
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -39,10 +51,58 @@ fun SyncHomeScreen(
     navController: NavController,
     viewModel: SyncHomeViewModel
 ) {
+    val eventList by viewModel.evList.collectAsState()
     val context = LocalContext.current
-    LaunchedEffect(key1 = Unit) {
-        viewModel.getAllEvents(Locale.current)
+    val locale=Locale.current
+   val lifeCycleOwner= LocalLifecycleOwner.current
+    val eventMutableList = remember {
+        mutableStateOf((mutableListOf<Events>()))
     }
+    val totalDataEventCount = remember {
+        derivedStateOf {
+            eventMutableList.value.filter {!it.name.toLowerCase(Locale.current).contains(
+                IMAGE_STRING
+            ) }.size
+        }
+    }
+
+    val successDataEventCount = remember {
+        derivedStateOf {
+            eventMutableList.value.filter { !it.name.toLowerCase(Locale.current).contains(
+                IMAGE_STRING
+            ) && it.status== EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus}.size
+        }
+    }
+
+    val totalImageEventCount = remember {
+        derivedStateOf {
+            eventMutableList.value.filter { it.name.toLowerCase(Locale.current).contains(
+                IMAGE_STRING
+            ) }.size
+        }
+    }
+
+    val successImageEventCount = remember {
+        derivedStateOf {
+            eventMutableList.value.filter { it.name.toLowerCase(Locale.current).contains(
+                IMAGE_STRING
+            ) && it.status== EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus}.size
+        }
+    }
+    DisposableEffect(key1 = Unit) {
+        val list = viewModel.syncHomeUseCase.getSyncEventsUseCase.getTotalEvents()
+        list.observe(lifeCycleOwner){
+            eventMutableList.value.addAll(it)
+//            viewModel.totalDataEventCount.value =eventList.filter { !it.name.toLowerCase(locale).contains(IMAGE_STRING) }.size
+//            viewModel.successDataEventCount.value =eventList.filter { !it.name.toLowerCase(locale).contains(IMAGE_STRING) && it.status==EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus}.size
+//            viewModel.totalImageEventCount.value =eventList.filter { it.name.toLowerCase(locale).contains(IMAGE_STRING) }.size
+//            viewModel.successImageEventCount.value =eventList.filter { it.name.toLowerCase(locale).contains(IMAGE_STRING) && it.status==EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus}.size
+        }
+        onDispose {
+        }
+    }
+
+
     ToolbarWithMenuComponent(
         title = stringResource(id = R.string.sync_all_data),
         modifier = Modifier.fillMaxSize(),
@@ -86,17 +146,17 @@ fun SyncHomeScreen(
 
             EventTypeCard(
                 title = stringResource(id = R.string.sync_data),
-                totalEventCount = viewModel.totalDataEventCount.intValue,
-                successEventCount = viewModel.successDataEventCount.intValue,
-                isRefreshRequired = viewModel.successDataEventCount.intValue < viewModel.totalDataEventCount.intValue,
+                totalEventCount = totalDataEventCount.value,
+                successEventCount = successDataEventCount.value,
+                isRefreshRequired = false,
                 onRefreshClick = {},
                 onCardClick = {}
             )
             EventTypeCard(
                 title = stringResource(id = R.string.sync_images),
-                totalEventCount = viewModel.totalImageEventCount.intValue,
-                successEventCount = viewModel.successImageEventCount.intValue,
-                isRefreshRequired = viewModel.successImageEventCount.intValue < viewModel.totalImageEventCount.intValue,
+                totalEventCount = totalImageEventCount.value,
+                successEventCount = successImageEventCount.value,
+                isRefreshRequired = false,
                 onRefreshClick = {},
                 onCardClick = {}
             )
