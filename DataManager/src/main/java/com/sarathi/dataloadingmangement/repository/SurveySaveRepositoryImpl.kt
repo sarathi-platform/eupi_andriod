@@ -1,7 +1,6 @@
 package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.preference.CoreSharedPrefs
-import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
@@ -12,17 +11,20 @@ class SurveySaveRepositoryImpl @Inject constructor(
     val coreSharedPrefs: CoreSharedPrefs
 ) :
     ISurveySaveRepository {
-
-
-    override suspend fun saveSurveyAnswer(question: QuestionUiModel, subjectId: Int) {
+    override suspend fun saveSurveyAnswer(
+        question: QuestionUiModel,
+        subjectId: Int,
+        taskId: Int,
+        referenceId: String
+    ) {
 
         surveyAnswersDao.insertOrModifySurveyAnswer(
             SurveyAnswerEntity.getSurveyAnswerEntity(
                 question = question,
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
                 subjectId = subjectId,
-                referenceId = "",
-                taskId = 0
+                referenceId = referenceId,
+                taskId = taskId
             )
         )
     }
@@ -35,8 +37,8 @@ class SurveySaveRepositoryImpl @Inject constructor(
             coreSharedPrefs.getUniqueUserIdentifier()
         )
         val result = ArrayList<String>()
-        surveyAnswerEntity.optionItems.forEach {
-            result.add(it.selectedValue ?: BLANK_STRING)
+        surveyAnswerEntity?.optionItems?.forEach {
+            result.add("${it.paraphrase} ${it.selectedValue}")
         }
         return result.joinToString(",")
     }
@@ -45,5 +47,32 @@ class SurveySaveRepositoryImpl @Inject constructor(
         return coreSharedPrefs.getUniqueUserIdentifier()
     }
 
+    override suspend fun getAllSaveAnswer(
+        surveyId: Int,
+        taskId: Int,
+        sectionId: Int
+    ): List<SurveyAnswerEntity> {
+        return surveyAnswersDao.getSurveyAnswersForSummary(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            sectionId = sectionId,
+            surveyId = surveyId,
+            taskId = taskId
+        )
+    }
+
+    override suspend fun deleteSurveyAnswer(
+        sectionId: Int,
+        surveyId: Int,
+        referenceId: String,
+        taskId: Int
+    ): Int {
+        return surveyAnswersDao.deleteSurveyAnswer(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            sectionId = sectionId,
+            surveyId = surveyId,
+            taskId = taskId,
+            referenceId = referenceId
+        )
+    }
 
 }

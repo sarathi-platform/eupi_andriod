@@ -1,5 +1,6 @@
 package com.sarathi.missionactivitytask.ui.disbursement_summary_screen
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.events.theme.black20
 import com.nudge.core.ui.events.theme.brownDark
 import com.nudge.core.ui.events.theme.defaultTextStyle
@@ -94,7 +94,7 @@ private fun makeTaskCard() {
             horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CircularImageViewComponent(modifier = Modifier, BLANK_STRING)
+            CircularImageViewComponent(modifier = Modifier, Uri.EMPTY)
             Column(
                 modifier = Modifier
                     .weight(1f)

@@ -7,6 +7,7 @@ import androidx.room.TypeConverters
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.QUESTION_TABLE
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ContentListConverter
@@ -46,16 +47,6 @@ data class QuestionEntity(
     @ColumnInfo(name = "type")
     var type: String? = BLANK_STRING,
 
-    @SerializedName("questionDisplay")
-    @Expose
-    @ColumnInfo(name = "questionDisplay")
-    var questionDisplay: String? = BLANK_STRING,
-
-    @SerializedName("questionSummary")
-    @Expose
-    @ColumnInfo(name = "questionSummary")
-    var questionSummary: String? = BLANK_STRING,
-
     @SerializedName("gotoQuestionId")
     @Expose
     @ColumnInfo(name = "gotoQuestionId")
@@ -70,6 +61,10 @@ data class QuestionEntity(
     @Expose
     @ColumnInfo(name = "languageId")
     var languageId: String? = BLANK_STRING,
+    @SerializedName("originalValue")
+    @Expose
+    @ColumnInfo(name = "originalValue")
+    var originalValue: String? = BLANK_STRING,
 
     @SerializedName("isConditional")
     @Expose
@@ -85,6 +80,10 @@ data class QuestionEntity(
     @Expose
     @ColumnInfo(name = "tag")
     var tag: Int = 0,
+    @SerializedName("tag")
+    @Expose
+    @ColumnInfo(name = "formId")
+    var formId: Int = 0,
     @TypeConverters(ContentListConverter::class)
     val contentEntities: List<ContentList> = listOf(),
 
@@ -94,7 +93,6 @@ data class QuestionEntity(
     companion object {
         fun getQuestionEntity(
             userId: String,
-            languageId: String,
             sectionId: Int,
             surveyId: Int,
             isCondition: Boolean,
@@ -107,17 +105,16 @@ data class QuestionEntity(
                 questionId = question.questionId,
                 sectionId = sectionId,
                 surveyId = surveyId,
-                questionDisplay = question.questionDisplay,
-                questionSummary = question.questionSummary,
                 gotoQuestionId = question.gotoQuestionId,
                 order = question.order,
                 type = question.type,
-                languageId = languageId,
                 isConditional = isCondition,
                 tag = question.attributeTag ?: 0,
                 contentEntities = question.contentList,
                 parentQuestionId = parentId,
-                isMandatory = question.isMandatory
+                isMandatory = question.isMandatory,
+                formId = question.formId ?: DEFAULT_ID,
+                originalValue = question.originalValue
             )
         }
 

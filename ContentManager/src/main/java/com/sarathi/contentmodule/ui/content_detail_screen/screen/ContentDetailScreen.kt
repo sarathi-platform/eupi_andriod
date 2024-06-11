@@ -1,6 +1,7 @@
 package com.sarathi.contentmodule.ui.content_detail_screen.screen
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
@@ -53,6 +54,7 @@ import com.sarathi.contentmodule.ui.component.ButtonPositive
 import com.sarathi.contentmodule.ui.component.SearchWithFilterViewComponent
 import com.sarathi.contentmodule.ui.content_detail_screen.viewmodel.ContentDetailViewModel
 import com.sarathi.contentmodule.utils.event.SearchEvent
+import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import kotlinx.coroutines.launch
@@ -65,11 +67,19 @@ fun ContentDetailScreen(
     outerState: LazyListState = rememberLazyListState(),
     innerState: LazyGridState = rememberLazyGridState(),
     queLazyState: LazyListState = rememberLazyListState(),
+    matId: Int,
+    contentType: Int,
     onNavigateToMediaScreen: (fileType: String, key: String) -> Unit
 ) {
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-        viewModel.onEvent(InitDataEvent.InitDataState)
+        viewModel.onEvent(
+            InitDataEvent.InitContentScreenState(
+                matId = matId,
+                contentCategory = contentType
+            )
+        )
+
     }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -192,24 +202,12 @@ fun ContentDetailScreen(
                                         itemsIndexed(
                                             items = itemsInCategory
                                         ) { index, item ->
-                                            BasicContentComponent(contentType = item.contentType,
-                                                contentTitle = item.contentName,
-                                                contentValue = item.contentValue,
-                                                onClick = {
-                                                    if (viewModel.isFilePathExists(item.contentValue)) {
-                                                        onNavigateToMediaScreen(
-                                                            item.contentType,
-                                                            item.contentKey
-                                                        )
-                                                    } else {
-                                                        Toast.makeText(
-                                                            context,
-                                                            "file not Exists ",
-                                                            Toast.LENGTH_SHORT
-                                                        ).show()
-                                                    }
-
-                                                })
+                                            ContentRowView(
+                                                item,
+                                                viewModel,
+                                                onNavigateToMediaScreen,
+                                                context
+                                            )
                                         }
                                     }
                                 }
@@ -223,23 +221,12 @@ fun ContentDetailScreen(
                             itemsIndexed(
                                 items = viewModel.filterContentList.value
                             ) { index, item ->
-                                BasicContentComponent(contentType = item.contentType,
-                                    contentTitle = item.contentName,
-                                    contentValue = item.contentValue,
-                                    onClick = {
-                                        if (viewModel.isFilePathExists(item.contentValue)) {
-                                            onNavigateToMediaScreen(
-                                                item.contentType,
-                                                item.contentKey
-                                            )
-                                        } else {
-                                            Toast.makeText(
-                                                context,
-                                                "file not Exists ",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    })
+                                ContentRowView(
+                                    item,
+                                    viewModel,
+                                    onNavigateToMediaScreen,
+                                    context
+                                )
                             }
                         }
                     }
@@ -250,4 +237,31 @@ fun ContentDetailScreen(
     }
 
 
+}
+
+@Composable
+private fun ContentRowView(
+    item: Content,
+    viewModel: ContentDetailViewModel,
+    onNavigateToMediaScreen: (fileType: String, key: String) -> Unit,
+    context: Context
+) {
+    BasicContentComponent(contentType = item.contentType,
+        contentTitle = item.contentName,
+        contentValue = item.contentValue,
+        onClick = {
+            if (viewModel.isFilePathExists(item.contentValue)) {
+                onNavigateToMediaScreen(
+                    item.contentType,
+                    item.contentKey
+                )
+            } else {
+                Toast.makeText(
+                    context,
+                    "file not Exists ",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+        })
 }

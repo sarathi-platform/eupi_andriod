@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
@@ -20,18 +21,26 @@ import com.sarathi.missionactivitytask.ui.components.StepsBoxGrantComponent
 
 @Composable
 fun ActivityRowCard(
+    missionId: Int,
     navController: NavController,
     contents: List<BasicContent> = listOf(),
     activities: List<ActivityUiModel>,
     onContentData: (contentValue: String, contentKey: String, contentType: String) -> Unit
 ) {
     Column {
-        BaseContentScreen { contentValue, contentKey, contentType, isLimitContentData ->
+        BaseContentScreen(
+            matId = missionId,
+            contentScreenCategory = ContentCategoryEnum.MISSION.ordinal
+        ) { contentValue, contentKey, contentType, isLimitContentData ->
             if (!isLimitContentData) {
                 onContentData(contentValue, contentKey, contentType)
                 navigateToMediaPlayerScreen(navController, contentKey, contentType)
             } else {
-                navigateToContentDetailScreen(navController)
+                navigateToContentDetailScreen(
+                    navController,
+                    matId = missionId,
+                    contentScreenCategory = ContentCategoryEnum.MISSION.ordinal
+                )
             }
         }
         Spacer(modifier = Modifier.height(20.dp))

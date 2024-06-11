@@ -5,10 +5,6 @@ import com.google.gson.annotations.SerializedName
 import com.nudge.core.BLANK_STRING
 
 data class OptionsItem(
-
-    @SerializedName("description")
-    val display: String? = null,
-
     @SerializedName("weight")
     val weight: Int? = null,
 
@@ -18,12 +14,8 @@ data class OptionsItem(
     @SerializedName("optionValue")
     val optionValue: Int? = null,
 
-    @SerializedName("paraphrase")
-    val summary: String? = null,
-
     @SerializedName("count")
     var count: Int? = 0,
-
 
     @SerializedName("optionImage")
     var optionImage: String? = BLANK_STRING,
@@ -56,5 +48,11 @@ data class OptionsItem(
     val tag: Int? = 0,
     @SerializedName("contents")
     @Expose
-    val contentList: List<ContentList> = listOf()
+    val contentList: List<ContentList>? = listOf(),
+    @SerializedName("languages")
+    @Expose
+    val surveyLanguageAttributes: List<SurveyLanguageAttributes>,
+    @SerializedName("originalValue")
+    @Expose
+    val originalValue: String = BLANK_STRING,
 )

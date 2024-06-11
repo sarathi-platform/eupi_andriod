@@ -46,7 +46,9 @@ fun ToolBarWithMenuComponent(
     onSearchValueChange: (String) -> Unit,
     isDataAvailable: Boolean = true,
     onBottomUI: @Composable () -> Unit,
-    onContentUI: @Composable (PaddingValues) -> Unit
+    onContentUI: @Composable (PaddingValues) -> Unit,
+    onSettingClick: () -> Unit
+
 ) {
     val dataAvailableState = mutableStateOf(isDataAvailable)
 
@@ -85,6 +87,7 @@ fun ToolBarWithMenuComponent(
                 },
                 actions = {
                     IconButton(onClick = {
+                        onSettingClick()
                     }) {
                         Icon(
                             painter = painterResource(id = R.drawable.more_icon),
@@ -143,7 +146,6 @@ fun ToolBarWithMenuComponent(
                         })
                 }
             } else {
-
                 onContentUI(it)
             }
         }

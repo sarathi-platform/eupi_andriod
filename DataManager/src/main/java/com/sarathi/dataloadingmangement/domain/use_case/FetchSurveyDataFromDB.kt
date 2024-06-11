@@ -7,15 +7,21 @@ import javax.inject.Inject
 class FetchSurveyDataFromDB @Inject constructor(
     private val repository: ISurveyRepository
 ) {
-    suspend operator fun invoke(
+    suspend fun invoke(
         surveyId: Int,
         subjectId: Int,
-        sectionId: Int
+        sectionId: Int,
+        referenceId: String,
+        activityConfigId: Int,
+        grantId: Int
     ): List<QuestionUiModel> {
         return repository.getQuestion(
             surveyId = surveyId,
             sectionId = sectionId,
-            subjectId = subjectId
+            subjectId = subjectId,
+            referenceId = referenceId,
+            activityConfigId = activityConfigId,
+            grantId = grantId
         )
     }
 }

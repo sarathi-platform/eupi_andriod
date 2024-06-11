@@ -1,6 +1,5 @@
 package com.sarathi.dataloadingmangement.di
 
-import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import com.nudge.core.database.dao.EventDependencyDao
@@ -13,6 +12,7 @@ import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
+import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
 import com.sarathi.dataloadingmangement.data.dao.LanguageDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
@@ -23,6 +23,7 @@ import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
 import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
@@ -167,6 +168,16 @@ class DataLoadingModule {
     @Singleton
     fun provideSurveyAnswersDao(db: NudgeGrantDatabase) = db.surveyAnswersDao()
 
+
+    @Provides
+    @Singleton
+    fun provideGrantConfigDao(db: NudgeGrantDatabase) = db.grantConfigDao()
+
+    @Provides
+    @Singleton
+    fun provideSurveyLanguageAttributeDao(db: NudgeGrantDatabase) = db.surveyLanguageAttributeDao()
+
+
     @Provides
     @Singleton
     fun provideSurveyDownloadRepository(
@@ -175,7 +186,8 @@ class DataLoadingModule {
         sectionEntityDao: SectionEntityDao,
         coreSharedPrefs: CoreSharedPrefs,
         optionItemDao: OptionItemDao,
-        questionEntityDao: QuestionEntityDao
+        questionEntityDao: QuestionEntityDao,
+        surveyLanguageAttributeDao: SurveyLanguageAttributeDao
     ): ISurveyDownloadRepository {
         return SurveyDownloadRepository(
             dataLoadingApiService = dataLoadingApiService,
@@ -183,7 +195,8 @@ class DataLoadingModule {
             sectionEntityDao = sectionEntityDao,
             coreSharedPrefs = coreSharedPrefs,
             optionItemDao = optionItemDao,
-            questionEntityDao = questionEntityDao
+            questionEntityDao = questionEntityDao,
+            surveyLanguageAttributeDao = surveyLanguageAttributeDao
 
         )
     }
@@ -196,7 +209,6 @@ class DataLoadingModule {
     @Singleton
     fun provideFetchDataUseCaseUseCase(
         surveyRepo: SurveyDownloadRepository,
-        application: Application,
         missionRepositoryImpl: MissionRepositoryImpl,
         contentRepositoryImpl: ContentRepositoryImpl,
         activityConfigDao: ActivityConfigDao,
@@ -215,7 +227,6 @@ class DataLoadingModule {
             fetchSurveyDataFromDB = fetchSurveyDataFromDB,
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 contentRepositoryImpl,
-                application
             )
         )
 
@@ -237,6 +248,7 @@ class DataLoadingModule {
         uiConfigDao: UiConfigDao,
         apiService: DataLoadingApiService,
         sharedPrefs: CoreSharedPrefs,
+        grantConfigDao: GrantConfigDao
     ): IMissionRepository {
         return MissionRepositoryImpl(
             apiInterface = apiService,
@@ -251,7 +263,10 @@ class DataLoadingModule {
             missionDao = missionDao,
             contentConfigDao = contentConfigDao,
             missionLanguageAttributeDao = missionLanguageAttributeDao,
-            sharedPrefs = sharedPrefs
+            sharedPrefs = sharedPrefs,
+            grantConfigDao = grantConfigDao
+
+
         )
     }
 
@@ -260,9 +275,14 @@ class DataLoadingModule {
     fun provideContentRepository(
         contentDao: ContentDao,
         apiService: DataLoadingApiService,
+        coreSharedPrefs: CoreSharedPrefs,
+        contentConfigDao: ContentConfigDao
     ): IContentRepository {
         return ContentRepositoryImpl(
-            apiInterface = apiService, contentDao = contentDao
+            apiInterface = apiService,
+            contentDao = contentDao,
+            coreSharedPrefs = coreSharedPrefs,
+            contentConfigDao = contentConfigDao
         )
     }
 
@@ -295,9 +315,15 @@ class DataLoadingModule {
     @Singleton
     fun provideContentDownloaderRepositoryImpl(
         contentDao: ContentDao,
+        coreSharedPrefs: CoreSharedPrefs,
+        contentConfigDao: ContentConfigDao,
+        attributeValueReferenceDao: AttributeValueReferenceDao
     ): IContentDownloader {
         return ContentDownloaderRepositoryImpl(
-            contentDao
+            contentDao,
+            coreSharedPrefs = coreSharedPrefs,
+            contentConfigDao = contentConfigDao,
+            attributeValueReferenceDao = attributeValueReferenceDao
         )
     }
 
@@ -306,7 +332,8 @@ class DataLoadingModule {
     fun provideContentUseCase(
         repository: ContentDownloaderRepositoryImpl,
         downloaderManager: DownloaderManager,
-    ): ContentUseCase {
+
+        ): ContentUseCase {
         return ContentUseCase(
             contentDownloaderUseCase = ContentDownloaderUseCase(repository, downloaderManager),
         )
@@ -316,14 +343,11 @@ class DataLoadingModule {
     @Singleton
     fun provideFetchAllDataUseCase(
         surveyRepo: SurveyDownloadRepository,
-        application: Application,
         missionRepositoryImpl: MissionRepositoryImpl,
         contentRepositoryImpl: ContentRepositoryImpl,
         repository: IContentDownloader,
         downloaderManager: DownloaderManager,
-        fetchLanguageUseCase: FetchLanguageUseCase,
         languageRepository: LanguageRepositoryImpl,
-        fetchUserDetailUseCase: FetchUserDetailUseCase,
         userDetailRepository: UserDetailRepository,
         activityConfigDao: ActivityConfigDao,
         coreSharedPrefs: CoreSharedPrefs
@@ -334,7 +358,6 @@ class DataLoadingModule {
             ),
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 contentRepositoryImpl,
-                application
             ),
             fetchSurveyDataFromNetworkUseCase = FetchSurveyDataFromNetworkUseCase(
                 repository = surveyRepo,
@@ -452,14 +475,16 @@ class DataLoadingModule {
         surveyAnswersDao: SurveyAnswersDao,
         optionItemDao: OptionItemDao,
         coreSharedPrefs: CoreSharedPrefs,
-        surveyDao: SurveyEntityDao
+        surveyDao: SurveyEntityDao,
+        grantConfigDao: GrantConfigDao
     ): ISurveyRepository {
         return SurveyRepositoryImpl(
             questionDao = questionEntityDao,
             surveyAnswersDao = surveyAnswersDao,
             optionItemDao = optionItemDao,
             coreSharedPrefs = coreSharedPrefs,
-            surveyEntityDao = surveyDao
+            surveyEntityDao = surveyDao,
+            grantConfigDao = grantConfigDao
 
         )
     }
