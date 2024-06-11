@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.preference.CoreSharedPrefs
+import com.sarathi.dataloadingmangement.DIDI_IMAGE_ATTRIBUTE
 import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
@@ -49,7 +50,7 @@ class ContentDownloaderRepositoryImpl @Inject constructor(
 
     override suspend fun getDidiImagesUrl(): List<String> {
         return attributeValueReferenceDao.getAttributeValue(
-            "didiImage",
+            DIDI_IMAGE_ATTRIBUTE,
             coreSharedPrefs.getUniqueUserIdentifier()
         )
     }

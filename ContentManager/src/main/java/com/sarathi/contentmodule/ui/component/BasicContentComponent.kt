@@ -97,7 +97,7 @@ private fun ContentView(
                     overflow = TextOverflow.Ellipsis,
                     text = if (contentTitle.length > 15) contentTitle.substring(
                         0,
-                        10
+                        15
                     ) else contentTitle,
                     fontSize = 10.sp,
                     style = smallTextStyleMediumWeight2.copy(color = blueDark)

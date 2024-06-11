@@ -9,6 +9,7 @@ interface ISurveyRepository {
         subjectId: Int,
         sectionId: Int,
         referenceId: String,
-        activityConfigId: Int
+        activityConfigId: Int,
+        grantId: Int
     ): List<QuestionUiModel>
 }
