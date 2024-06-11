@@ -81,7 +81,6 @@ class SurveyScreenViewModel @Inject constructor(
                 referenceId = referenceId,
                 grantId = grantID
             )
-            checkButtonValidation()
             isTaskStatusCompleted()
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -152,7 +151,8 @@ class SurveyScreenViewModel @Inject constructor(
             }
 
         }
-        isButtonEnable.value = true
+        isButtonEnable.value = !isTaskCompleted.value
+
 
     }
 
@@ -200,6 +200,8 @@ class SurveyScreenViewModel @Inject constructor(
                 activityId = taskEntity?.activityId ?: 0
             )
         }
+        checkButtonValidation()
+
 
 
     }

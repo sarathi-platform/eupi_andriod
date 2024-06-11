@@ -36,9 +36,6 @@ fun TypeDropDownComponent(
                 ?: hintText
         )
     }
-//    if (!defaultSourceList.contains(selectedOptionText.)) {
-//        selectedOptionText = BLANK_STRING
-//    }
 
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
@@ -51,7 +48,15 @@ fun TypeDropDownComponent(
         isMandatory = isMandatory,
         selectedItem = selectedOptionText,
         onExpandedChange = {
-            expanded = !it
+            if (isEditAllowed) {
+                expanded = !it
+            } else {
+                showCustomToast(
+                    context,
+                    context.getString(R.string.edit_disable_message)
+                )
+            }
+
         },
         onDismissRequest = {
             expanded = false
@@ -60,17 +65,11 @@ fun TypeDropDownComponent(
             textFieldSize = coordinates.size.toSize()
         },
         onItemSelected = {
-            if (isEditAllowed) {
-                selectedOptionText =
-                    defaultSourceList[defaultSourceList.indexOf(it)].value
-                onAnswerSelection(defaultSourceList[defaultSourceList.indexOf(it)])
-                expanded = false
-            } else {
-                showCustomToast(
-                    context,
-                    context.getString(R.string.edit_disable_message)
-                )
-            }
+            selectedOptionText =
+                defaultSourceList[defaultSourceList.indexOf(it)].value
+            onAnswerSelection(defaultSourceList[defaultSourceList.indexOf(it)])
+            expanded = false
+
         })
 
 }

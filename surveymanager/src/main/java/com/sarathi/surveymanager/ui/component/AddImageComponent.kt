@@ -141,7 +141,7 @@ fun AddImageComponent(
                 }
                 itemsIndexed(imageList) { _, image ->
                     image?.let {
-                        ImageView(it) { uri ->
+                        ImageView(it, isEditable) { uri ->
                             imageList = (imageList - uri)
 
                             onImageSelection(uri.path ?: BLANK_STRING, true)
@@ -179,7 +179,7 @@ fun getSavedImageUri(
 }
 
 @Composable
-fun ImageView(uri: Uri, onDelete: (fileUri: Uri) -> Unit) {
+fun ImageView(uri: Uri, isEditable: Boolean, onDelete: (fileUri: Uri) -> Unit) {
     Box(
         modifier = Modifier
             .size(150.dp)
@@ -201,7 +201,7 @@ fun ImageView(uri: Uri, onDelete: (fileUri: Uri) -> Unit) {
             modifier = Modifier
                 .padding(dimen_10_dp)
                 .align(Alignment.BottomEnd)
-                .clickable {
+                .clickable(enabled = isEditable) {
                     onDelete(uri)
                 }
                 .size(dimen_24_dp),
