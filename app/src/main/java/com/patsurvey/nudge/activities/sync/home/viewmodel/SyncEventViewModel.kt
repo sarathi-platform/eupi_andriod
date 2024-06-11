@@ -1,4 +1,4 @@
-package com.patsurvey.nudge.activities.sync_event.viewmodel
+package com.patsurvey.nudge.activities.sync.home.viewmodel
 
 import android.util.Log
 import androidx.compose.runtime.State

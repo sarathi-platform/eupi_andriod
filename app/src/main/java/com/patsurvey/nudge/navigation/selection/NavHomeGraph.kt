@@ -34,7 +34,7 @@ import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
 import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.survey.SingleQuestionScreen
 import com.patsurvey.nudge.activities.survey.SurveySummary
-import com.patsurvey.nudge.activities.sync_event.presentation.SyncEventScreen
+import com.patsurvey.nudge.activities.sync.home.presentation.SyncEventScreen
 import com.patsurvey.nudge.activities.ui.bpc.bpc_add_more_did_screens.BpcAddMoreDidiScreen
 import com.patsurvey.nudge.activities.ui.bpc.bpc_didi_list_screens.BpcDidiListScreen
 import com.patsurvey.nudge.activities.ui.bpc.progress_screens.BpcProgressScreen

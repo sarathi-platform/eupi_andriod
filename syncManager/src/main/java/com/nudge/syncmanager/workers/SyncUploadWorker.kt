@@ -158,7 +158,12 @@ fun createEventResponseList(eventList:List<Events>,errorMessage:String): List<Sy
 @SuppressLint("SimpleDateFormat")
 suspend fun fetchConsumerStatus(syncApiRepository:SyncApiRepository, mobileNumber:String){
     val date= SimpleDateFormat("yyyy-MM-dd").format(Date())
-    val eventConsumerRequest= EventConsumerRequest(requestId = BLANK_STRING, mobile = mobileNumber, endDate = date, startDate = date)
+    val eventConsumerRequest = EventConsumerRequest(
+        requestId = BLANK_STRING,
+        mobile = mobileNumber,
+        endDate = date,
+        startDate = date
+    )
     val consumerAPIResponse= syncApiRepository.fetchConsumerEventStatus(eventConsumerRequest)
     if(consumerAPIResponse.status == SUCCESS){
             consumerAPIResponse.data?.let {

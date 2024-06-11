@@ -40,6 +40,7 @@ import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 fun ToolbarWithMenuComponent(title:String,
                              modifier: Modifier,
                              navController:NavController?= rememberNavController(),
+                             isMenuIconRequired:Boolean ?= true,
                              onBackIconClick:()->Unit,
                              onBottomUI: @Composable ()->Unit,
                              onContentUI: @Composable (PaddingValues)->Unit){
@@ -71,17 +72,19 @@ fun ToolbarWithMenuComponent(title:String,
                     }
                 },
                 actions = {
-                    IconButton(onClick = {
-                        navController?.navigate(NudgeNavigationGraph.SETTING_GRAPH)
-                    }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.more_icon),
-                            contentDescription = "more action button",
-                            tint = blueDark,
-                            modifier = Modifier
-                                .padding(10.dp)
-                        )
-                    }
+                    if (isMenuIconRequired == true){
+                        IconButton(onClick = {
+                            navController?.navigate(NudgeNavigationGraph.SETTING_GRAPH)
+                        }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.more_icon),
+                                contentDescription = "more action button",
+                                tint = blueDark,
+                                modifier = Modifier
+                                    .padding(10.dp)
+                            )
+                        }
+                }
                 },
                 backgroundColor = Color.White,
                 elevation = 10.dp
@@ -98,7 +101,7 @@ fun ToolbarWithMenuComponent(title:String,
 @Preview(showBackground = true)
 @Composable
 fun ToolbarWithMenuComponent(){
-    ToolbarWithMenuComponent(title = "Mission Summary", modifier = Modifier, onBackIconClick = {
+    ToolbarWithMenuComponent(title = "Mission Summary", isMenuIconRequired = false,modifier = Modifier, onBackIconClick = {
 
     }, onContentUI = {
 

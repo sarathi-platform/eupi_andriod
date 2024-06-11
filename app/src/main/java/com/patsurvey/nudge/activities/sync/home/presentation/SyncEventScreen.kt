@@ -1,4 +1,4 @@
-package com.patsurvey.nudge.activities.sync_event.presentation
+package com.patsurvey.nudge.activities.sync.home.presentation
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -39,7 +39,7 @@ import androidx.navigation.NavController
 import androidx.work.WorkInfo
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
-import com.patsurvey.nudge.activities.sync_event.viewmodel.SyncEventViewModel
+import com.patsurvey.nudge.activities.sync.home.viewmodel.SyncEventViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
