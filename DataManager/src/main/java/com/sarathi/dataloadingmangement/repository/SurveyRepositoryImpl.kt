@@ -32,7 +32,8 @@ class SurveyRepositoryImpl @Inject constructor(
         subjectId: Int,
         sectionId: Int,
         referenceId: String,
-        activityConfigId: Int
+        activityConfigId: Int,
+        grantId: Int
     ): List<QuestionUiModel> {
 
 
@@ -76,7 +77,8 @@ class SurveyRepositoryImpl @Inject constructor(
                     it,
                     optionItems,
                     surveyAnswerList,
-                    activityConfigId
+                    activityConfigId,
+                    grantId
                 ),
                 isMandatory = it.isMandatory,
                 tagId = it.tag,
@@ -94,12 +96,13 @@ class SurveyRepositoryImpl @Inject constructor(
         question: QuestionUiEntity,
         optionItems: List<OptionsUiModel>,
         surveyAnswerList: List<SurveyAnswerEntity>,
-        activityConfigId: Int
+        activityConfigId: Int,
+        grantId: Int
     ): List<OptionsUiModel> {
         var optionList = optionItems.filter { it.questionId == question.questionId }
         if (question.originalValue.equals(MODE) || question.originalValue.equals(NATURE)) {
 
-            optionList = getOptionsForModeAndNature(activityConfigId, question)
+            optionList = getOptionsForModeAndNature(activityConfigId, grantId, question)
         }
 
         val surveyAnswer = surveyAnswerList.filter { it.questionId == question.questionId }
@@ -119,11 +122,12 @@ class SurveyRepositoryImpl @Inject constructor(
 
     private suspend fun getOptionsForModeAndNature(
         activityConfigId: Int,
+        grantId: Int,
         question: QuestionUiEntity
     ): List<OptionsUiModel> {
 
-//        @Todo add grant id from previous screen
-        val grantConfig = grantConfigDao.getGrantConfigWithGrantId(activityConfigId, grantId = 1)
+        val grantConfig =
+            grantConfigDao.getGrantConfigWithGrantId(activityConfigId, grantId = grantId)
         val modeOrNatureOptions = ArrayList<OptionsUiModel>()
         val gson = Gson()
         val options = gson.fromJson<QuestionList>(
