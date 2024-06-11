@@ -32,7 +32,8 @@ import com.sarathi.smallgroupmodule.R as Res
 fun DidiTabScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
-    didiTabViewModel: DidiTabViewModel = hiltViewModel()
+    didiTabViewModel: DidiTabViewModel = hiltViewModel(),
+    onSettingClicked: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -66,7 +67,9 @@ fun DidiTabScreen(
              *Not required as no bottom UI present for this screen
              **/
         },
-        onSettingClick = {},
+        onSettingClick = {
+            onSettingClicked()
+        },
         onContentUI = { paddingValues, b, function ->
             Column(
                 modifier = Modifier
