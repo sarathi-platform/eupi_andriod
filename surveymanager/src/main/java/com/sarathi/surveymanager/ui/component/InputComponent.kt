@@ -59,7 +59,7 @@ fun InputComponent(
                 .fillMaxWidth()
                 .padding(top = 6.dp),
             value = txt.value,
-            enabled = isEditable,
+            // enabled = isEditable,
             onValueChange = {
                 if (it.length <= maxLength) {
                     if (isOnlyNumber) {

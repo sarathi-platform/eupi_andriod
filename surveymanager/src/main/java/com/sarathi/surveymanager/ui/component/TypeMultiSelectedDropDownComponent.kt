@@ -14,27 +14,26 @@ import androidx.compose.ui.unit.toSize
 import com.nudge.core.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.surveymanager.R
-import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
 
 @Composable
 fun TypeMultiSelectedDropDownComponent(
+    title: String = BLANK_STRING,
+    isMandatory: Boolean = false,
     hintText: String = stringResource(R.string.select),
-    sources: List<ValuesDto>?,
-    selectOptionText: String = BLANK_STRING,
+    sources: List<ValuesDto>,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
 
-    val defaultSourceList = sources ?: listOf(ValuesDto(id = 1, "Yes"), ValuesDto(id = 2, "No"))
+    val defaultSourceList = sources
     var expanded by remember { mutableStateOf(false) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
     var selectedItems by remember {
-        if (selectOptionText.equals(BLANK_STRING, true))
-            mutableStateOf(emptyList())
-        else
-            mutableStateOf(selectOptionText.split(DELIMITER_MULTISELECT_OPTIONS))
+        mutableStateOf(getSelectedOptionsValue(sources))
     }
 
     MultiSelectSelectDropDown(
+        title = title,
+        isMandatory = isMandatory,
         hint = hintText,
         items = defaultSourceList,
         modifier = Modifier.fillMaxWidth(),
@@ -59,4 +58,15 @@ fun TypeMultiSelectedDropDownComponent(
             onAnswerSelection(selectedItems.joinToString(", "))
         }
     )
+}
+
+fun getSelectedOptionsValue(values: List<ValuesDto>): List<String> {
+    val selectedText = ArrayList<String>()
+    values.forEach {
+        if (it.isSelected == true) {
+            selectedText.add(it.value)
+        }
+    }
+    return selectedText
+
 }

@@ -27,8 +27,8 @@ class BaseContentScreenViewModel @Inject constructor(
 
     override fun <T> onEvent(event: T) {
         when (event) {
-            is InitDataEvent.InitDataState -> {
-                initContentScreen()
+            is InitDataEvent.InitContentScreenState -> {
+                initContentScreen(event.matId, event.contentCategory)
             }
 
             is LoaderEvent.UpdateLoaderState -> {
@@ -39,10 +39,14 @@ class BaseContentScreenViewModel @Inject constructor(
         }
     }
 
-    private fun initContentScreen() {
+    private fun initContentScreen(matId: Int, contentCategory: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            contentCount.value = fetchContentUseCase.getContentCount()
-            _contentList.value = fetchContentUseCase.getLimitedContentData(CONTENT_LIMIT_DATA)
+            contentCount.value = fetchContentUseCase.getContentCount(matId, contentCategory)
+            _contentList.value = fetchContentUseCase.getLimitedContentData(
+                CONTENT_LIMIT_DATA,
+                matId,
+                contentCategory
+            )
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }

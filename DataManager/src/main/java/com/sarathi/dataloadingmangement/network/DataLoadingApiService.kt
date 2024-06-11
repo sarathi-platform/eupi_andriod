@@ -4,12 +4,12 @@ import com.nudge.core.model.ApiResponseModel
 import com.sarathi.dataloadingmangement.KEY_HEADER_MOBILE
 import com.sarathi.dataloadingmangement.KEY_HEADER_TYPE
 import com.sarathi.dataloadingmangement.domain.MissionRequest
-import com.sarathi.dataloadingmangement.model.mat.response.ContentResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.survey.request.SurveyRequest
 import com.sarathi.dataloadingmangement.model.survey.response.SurveyResponseModel
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
 import com.sarathi.dataloadingmangement.network.response.ConfigResponseModel
+import com.sarathi.dataloadingmangement.network.response.ContentResponse
 import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -23,7 +23,7 @@ interface DataLoadingApiService {
     suspend fun getMissions(@Body missionRequest: MissionRequest): ApiResponseModel<List<ProgrameResponse>>
 
     @POST(SUB_PATH_CONTENT_MANAGER)
-    suspend fun fetchContentData(@Body contentMangerRequest: ContentRequest): ApiResponseModel<List<ContentResponse>>
+    suspend fun fetchContentData(@Body contentMangerRequest: List<ContentRequest>): ApiResponseModel<List<ContentResponse>>
 
     // @POST("http://10.0.2.2:3001/home") DateType
     @POST(SUBPATH_FETCH_SURVEY_FROM_NETWORK)

@@ -2,10 +2,11 @@ package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.model.QuestionType
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventOptionItemDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventQuestionItemDto
-import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
+import com.sarathi.dataloadingmangement.model.events.SaveAnswerMoneyJorunalEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import javax.inject.Inject
 
@@ -14,15 +15,17 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
 ) :
     ISurveyAnswerEventRepository {
 
-    override suspend fun writeSaveAnswerEvent(
+    override suspend fun writeMoneyJournalSaveAnswerEvent(
         questionUiModels: List<QuestionUiModel>,
         subjectId: Int,
         subjectType: String,
-        refrenceId: Int,
-        taskLocalId: String
-    ): SaveAnswerEventDto {
+        refrenceId: String,
+        taskLocalId: String,
+        grantId: Int,
+        grantType: String
+    ): SaveAnswerMoneyJorunalEventDto {
 
-        return SaveAnswerEventDto(
+        return SaveAnswerMoneyJorunalEventDto(
             surveyId = questionUiModels.first().surveyId,
             dateCreated = System.currentTimeMillis(),
             languageId = questionUiModels.first().languageId,
@@ -30,54 +33,106 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
             subjectType = subjectType,
             sectionId = questionUiModels.first().sectionId,
             question = getQuestionEvent(questionUiModels),
-
             referenceId = refrenceId,
-            localTaskId = taskLocalId ?: BLANK_STRING
+            localTaskId = taskLocalId ?: BLANK_STRING,
+            grantId = grantId,
+            grantType = grantType
         )
 
 
     }
 
+    override suspend fun writeSaveAnswerEvent(
+        questionUiModel: QuestionUiModel,
+        subjectId: Int,
+        subjectType: String,
+        refrenceId: String,
+        taskLocalId: String,
+        grantId: Int,
+        grantType: String
+    ): SaveAnswerEventDto {
+        return SaveAnswerEventDto(
+            surveyId = questionUiModel.surveyId,
+            dateCreated = System.currentTimeMillis(),
+            languageId = questionUiModel.languageId,
+            subjectId = subjectId,
+            subjectType = subjectType,
+            sectionId = questionUiModel.sectionId,
+            question = getSaveAnswerEventQuestionItemDto(questionUiModel)!!,
+            referenceId = refrenceId,
+            localTaskId = taskLocalId ?: BLANK_STRING,
+            grantId = grantId,
+            grantType = grantType
+
+        )
+
+    }
+
 
     private fun getQuestionEvent(questionUiModels: List<QuestionUiModel>): List<SaveAnswerEventQuestionItemDto> {
-        var questionAnsweList = ArrayList<SaveAnswerEventQuestionItemDto>()
+        val questionAnsweList = ArrayList<SaveAnswerEventQuestionItemDto>()
         questionUiModels.forEach { questionUiModel ->
 
-
-            val options = getOption(questionUiModel.options!!, "")
-            if (options.isNotEmpty()) {
-                questionAnsweList.add(
-                    SaveAnswerEventQuestionItemDto(
-            questionId = questionUiModel.questionId,
-            questionType = questionUiModel.type,
-            tag = questionUiModel.tagId,
-            showQuestion = true,
-            questionDesc = questionUiModel.questionDisplay ?: BLANK_STRING,
-                        options = options
-                    )
-                )
-            }
+            val saveAnswerEventQuestionItemDto =
+                getSaveAnswerEventQuestionItemDto(questionUiModel)
+            saveAnswerEventQuestionItemDto?.let { questionAnsweList.add(it) }
         }
         return questionAnsweList
     }
 
+    private fun getSaveAnswerEventQuestionItemDto(
+        questionUiModel: QuestionUiModel,
+    ): SaveAnswerEventQuestionItemDto? {
+        var saveAnswerEventQuestionItemDto1: SaveAnswerEventQuestionItemDto? = null
+        val options = getOption(questionUiModel, "")
+
+        if (options.isNotEmpty()) {
+
+            saveAnswerEventQuestionItemDto1 = SaveAnswerEventQuestionItemDto(
+                questionId = questionUiModel.questionId,
+                questionType = questionUiModel.type,
+                tag = questionUiModel.tagId,
+                showQuestion = true,
+                questionDesc = questionUiModel.questionSummary ?: BLANK_STRING,
+                options = options,
+                formId = questionUiModel.formId
+            )
+
+        }
+        return saveAnswerEventQuestionItemDto1
+    }
+
     private fun getOption(
-        optionsItems: List<OptionsUiModel>,
+        questionUiModel: QuestionUiModel,
         referenceId: String
     ): List<SaveAnswerEventOptionItemDto> {
         val result = ArrayList<SaveAnswerEventOptionItemDto>()
-        optionsItems.forEach { optionItem ->
+        questionUiModel.options?.forEach { optionItem ->
             if (optionItem.isSelected == true) {
-                result.add(
+
+                if (questionUiModel.type == QuestionType.MultiSelectDropDown.name || questionUiModel.type == QuestionType.SingleSelectDropDown.name) {
+                    result.add(
                     SaveAnswerEventOptionItemDto(
                         optionId = optionItem.optionId ?: 0,
-                        selectedValue = optionItem.selectedValue,
+                        selectedValue = optionItem.description,
                         tag = optionItem.optionTag,
-                        optionDesc = optionItem.description ?: BLANK_STRING,
+                        optionDesc = optionItem.originalValue ?: BLANK_STRING,
                         referenceId = referenceId
 
                     )
-                )
+                    )
+                } else {
+                    result.add(
+                        SaveAnswerEventOptionItemDto(
+                            optionId = optionItem.optionId ?: 0,
+                            selectedValue = optionItem.selectedValue,
+                            tag = optionItem.optionTag,
+                            optionDesc = optionItem.description ?: BLANK_STRING,
+                            referenceId = referenceId
+
+                        )
+                    )
+                }
             }
         }
         return result

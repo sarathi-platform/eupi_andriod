@@ -16,5 +16,6 @@ class QuestionUiModel(
     var summary: String? = "",
     val tagId: Int,
     val surveyName: String,
+    val formId: Int
     )
 

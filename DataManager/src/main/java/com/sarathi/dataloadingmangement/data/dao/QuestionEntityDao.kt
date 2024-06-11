@@ -27,8 +27,10 @@ interface QuestionEntityDao {
                 " survey_language_attribute_table.description,\n" +
                 " survey_language_attribute_table.paraphrase,\n" +
                 " question_table.questionId,\n" +
+                " question_table.originalValue,\n" +
                 " question_table.sectionId,\n" +
                 " question_table.surveyId,\n" +
+                " question_table.formId,\n" +
                 " question_table.questionImageUrl,\n" +
                 " question_table.type,\n" +
                 " question_table.gotoQuestionId,\n" +
@@ -81,13 +83,6 @@ interface QuestionEntityDao {
     @Query("SELECT tag from $QUESTION_TABLE where  userId=:userid and surveyId = :surveyId and sectionId = :sectionId and questionId = :questionId")
     fun getQuestionTag(userid: String, surveyId: Int, sectionId: Int, questionId: Int): Int
 
-    @Query("SELECT questionDisplay from $QUESTION_TABLE where  userId=:userid and surveyId = :surveyId and sectionId = :sectionId and questionId = :questionId")
-    fun getQuestionDisplayName(
-        userid: String,
-        surveyId: Int,
-        sectionId: Int,
-        questionId: Int
-    ): String
 
     @Query("SELECT * from $QUESTION_TABLE where  userId=:userid and surveyId = :surveyId and sectionId = :sectionId and questionId = :questionId")
     fun getQuestionEntity(

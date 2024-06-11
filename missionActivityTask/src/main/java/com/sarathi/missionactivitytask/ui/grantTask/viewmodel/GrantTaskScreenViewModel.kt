@@ -1,17 +1,23 @@
 package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
+import android.net.Uri
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
+import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityUiConfigUseCase
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
 import com.sarathi.missionactivitytask.ui.grantTask.model.UiConfigAttributeType
+import com.sarathi.missionactivitytask.utils.ComponentEnum
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
@@ -28,7 +34,9 @@ class GrantTaskScreenViewModel @Inject constructor(
     private val getTaskUseCase: GetTaskUseCase,
     private val surveyAnswerUseCase: SaveSurveyAnswerUseCase,
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
-    private val getActivityConfigUseCase: GetActivityConfigUseCase
+    private val getActivityConfigUseCase: GetActivityConfigUseCase,
+    private val grantConfigUseCase: GrantConfigUseCase,
+    private val fetchContentUseCase: FetchContentUseCase
 ) : BaseViewModel() {
     private var missionId = 0
     private var activityId = 0
@@ -39,6 +47,11 @@ class GrantTaskScreenViewModel @Inject constructor(
     val filterList: State<HashMap<Int, HashMap<String, String>>> get() = _filterList
     val searchLabel = mutableStateOf<String>(BLANK_STRING)
     val isButtonEnable = mutableStateOf<Boolean>(false)
+    var isDisbursement: Boolean = false
+    var isGroupByEnable = mutableStateOf(false)
+    var isFilerEnable = mutableStateOf(false)
+    var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, String>>>>())
+
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -70,20 +83,35 @@ class GrantTaskScreenViewModel @Inject constructor(
                         it.taskId,
                         it.status.toString(),
                         it.subjectId,
-                        componentType = "Search"
+                        componentType = ComponentEnum.Search.name
                     )[GrantTaskCardSlots.GRANT_SEARCH_LABEL.name]
                         ?: BLANK_STRING
+
+                    if ((getUiComponentValues(
+                            it.taskId,
+                            it.status.toString(),
+                            it.subjectId,
+                            componentType = ComponentEnum.Card.name
+                        )[GrantTaskCardSlots.GRANT_GROUP_BY.name]
+                            ?: BLANK_STRING).isNotBlank()
+                    ) {
+                        isFilerEnable.value = true
+                    }
                 }
                 _taskList.value[it.taskId] =
                     getUiComponentValues(
                         it.taskId,
                         it.status.toString(),
                         it.subjectId,
-                        componentType = "Card"
+                        componentType = ComponentEnum.Card.name
                     )
             }
+            getGrantConfig()
 
             _filterList.value.putAll(_taskList.value)
+
+            filterTaskMap =
+                _taskList.value.entries.groupBy { it.value[GrantTaskCardSlots.GRANT_GROUP_BY.name] }
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
@@ -164,6 +192,7 @@ class GrantTaskScreenViewModel @Inject constructor(
         _filterList.value = filteredList
     }
 
+
     private fun checkButtonValidation() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             isButtonEnable.value = getTaskUseCase.isAllActivityCompleted()
@@ -178,5 +207,18 @@ class GrantTaskScreenViewModel @Inject constructor(
             )
         }
     }
+
+    suspend fun getGrantConfig() {
+        activityConfigUiModel?.activityConfigId?.let {
+            val grantConfigs = grantConfigUseCase.getGrantConfig(it)
+            isDisbursement = grantConfigs.isNotEmpty()
+
+        }
+    }
+
+    fun getFilePathUri(filePath: String): Uri? {
+        return fetchContentUseCase.getFilePathUri(filePath)
+    }
+
 
 }

@@ -15,12 +15,14 @@ import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 
 @Composable
 fun BaseContentScreen(
+    matId: Int,
+    contentScreenCategory: Int,
     viewModel: BaseContentScreenViewModel = hiltViewModel(),
     onClick: (contentValue: String, contentKey: String, contentType: String, isLimitContentData: Boolean) -> Unit
 ) {
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-        viewModel.onEvent(InitDataEvent.InitDataState)
+        viewModel.onEvent(InitDataEvent.InitContentScreenState(matId, contentScreenCategory))
     }
     if (viewModel.contentList.value.isNotEmpty()) {
         Row(modifier = Modifier.padding(top = 10.dp, bottom = 10.dp, start = 20.dp, end = 20.dp)) {

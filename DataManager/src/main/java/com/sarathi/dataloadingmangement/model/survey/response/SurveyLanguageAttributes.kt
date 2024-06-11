@@ -10,7 +10,7 @@ data class SurveyLanguageAttributes(
 
     @SerializedName("paraphrase")
     @Expose
-    val paraphrase: String = BLANK_STRING,
+    val paraphrase: String? = BLANK_STRING,
 
     @SerializedName("description")
     @Expose

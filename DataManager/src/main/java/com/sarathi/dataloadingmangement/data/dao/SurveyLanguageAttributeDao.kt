@@ -13,7 +13,7 @@ interface SurveyLanguageAttributeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertSurveyLanguageAttribute(languageAttributes: SurveyLanguageAttributeEntity)
 
-    @Query(" delete from survey_language_attribute_table where referenceId =:referenceId and referenceId =:referenceType")
+    @Query(" delete from survey_language_attribute_table where referenceId =:referenceId and referenceType =:referenceType")
     fun deleteSurveyLanguageAttribute(referenceId: Int, referenceType: String)
 
 

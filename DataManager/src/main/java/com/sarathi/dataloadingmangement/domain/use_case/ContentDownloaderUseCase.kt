@@ -17,20 +17,33 @@ class ContentDownloaderUseCase @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 repository.getContentDataFromDb().forEach { content ->
-                    when (content.contentType) {
-                        FileType.Video.name,
-                        FileType.Image.name,
-                        FileType.File.name,
-                        FileType.Audio.name -> {
+                    when (content.contentType.uppercase()) {
+                        FileType.VIDEO.name,
+                        FileType.IMAGE.name,
+                        FileType.FILE.name,
+                        FileType.AUDIO.name -> {
                             downloaderManager.downloadItem(content.contentValue)
                         }
                     }
+                }
+            } catch (ex: Exception) {
+                //  CoreLogger.e(this,tag="ContentDownloader",msg="downloadItem exception")
+                Log.e("ContentDownloader", "downloadItem exception", ex)
+            }
+        }
+    }
+
+    suspend fun surveyRelateContentDownlaod() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                repository.getDidiImagesUrl().forEach {
+                    downloaderManager.downloadItem(url = it)
+
                 }
             } catch (ex: Exception) {
                 Log.e("ContentDownloader", "downloadItem exception", ex)
             }
         }
     }
-
 
 }

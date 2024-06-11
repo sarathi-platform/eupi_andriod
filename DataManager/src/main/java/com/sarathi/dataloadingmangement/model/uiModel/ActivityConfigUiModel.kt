@@ -1,3 +1,8 @@
 package com.sarathi.dataloadingmangement.model.uiModel
 
-data class ActivityConfigUiModel(val surveyId: Int, val sectionId: Int, val subject: String)
+data class ActivityConfigUiModel(
+    val surveyId: Int,
+    val sectionId: Int,
+    val subject: String,
+    val activityConfigId: Int
+)

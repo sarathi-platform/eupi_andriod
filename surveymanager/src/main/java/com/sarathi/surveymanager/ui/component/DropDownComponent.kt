@@ -46,6 +46,8 @@ import com.sarathi.surveymanager.R
 fun <T> DropDownComponent(
     hint: String = stringResource(R.string.select),
     items: List<T>,
+    title: String = BLANK_STRING,
+    isMandatory: Boolean = false,
     modifier: Modifier,
     dropDownBorder: Color = borderGrey,
     dropDownBackground: Color = white,
@@ -71,6 +73,9 @@ fun <T> DropDownComponent(
         modifier = modifier,
         horizontalAlignment = Alignment.Start
     ) {
+        if (title.isNotBlank()) {
+            QuestionComponent(title = title, isRequiredField = isMandatory)
+        }
         CustomOutlineTextField(
             value = selectedItem,
             onValueChange = {

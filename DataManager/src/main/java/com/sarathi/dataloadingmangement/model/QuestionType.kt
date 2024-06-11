@@ -1,4 +1,4 @@
-package com.sarathi.surveymanager.constants
+package com.sarathi.dataloadingmangement.model
 
 enum class QuestionType {
     InputNumber,
