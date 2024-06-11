@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.events.theme.black100Percent
@@ -25,8 +26,10 @@ import com.nudge.core.ui.events.theme.blueDark
 import com.nudge.core.ui.events.theme.borderGreyLight
 import com.nudge.core.ui.events.theme.defaultTextStyle
 import com.nudge.core.ui.events.theme.dimen_10_dp
+import com.nudge.core.ui.events.theme.dimen_16_dp
 import com.nudge.core.ui.events.theme.dimen_1_dp
 import com.nudge.core.ui.events.theme.dimen_40_dp
+import com.nudge.core.ui.events.theme.dimen_4_dp
 import com.nudge.core.ui.events.theme.greyColor
 import com.nudge.core.ui.events.theme.quesOptionTextStyle
 import com.nudge.core.ui.events.theme.white
@@ -51,8 +54,8 @@ fun DisbursementCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TextRow(text1 = "Date:", text2 = subTitle1)
-            TextRow(text1 = "Amount:", text2 = subTitle2)
+            TextRow(text1 = stringResource(R.string.date), text2 = subTitle1)
+            TextRow(text1 = stringResource(R.string.amount), text2 = subTitle2)
         }
         if (subTitle3.isNotBlank()) {
             Row(
@@ -60,7 +63,7 @@ fun DisbursementCard(
                     .fillMaxWidth()
                     .padding(dimen_10_dp)
             ) {
-                TextRow(text1 = "Nature:", text2 = subTitle3)
+                TextRow(text1 = stringResource(R.string.nature), text2 = subTitle3)
             }
         }
         if (subTitle4.isNotBlank()) {
@@ -68,7 +71,7 @@ fun DisbursementCard(
                 modifier = Modifier
                     .padding(dimen_10_dp)
             ) {
-                TextRow(text1 = "Mode:", text2 = subTitle4)
+                TextRow(text1 = stringResource(R.string.mode), text2 = subTitle4)
             }
         }
         if (subTitle5.isNotBlank()) {
@@ -76,7 +79,7 @@ fun DisbursementCard(
                 modifier = Modifier
                     .padding(dimen_10_dp)
             ) {
-                TextRow(text1 = "No. of Didi's", text2 = subTitle5)
+                TextRow(text1 = stringResource(R.string.no_of_didi_s), text2 = subTitle5)
             }
         }
         Row {
@@ -98,14 +101,14 @@ fun DisbursementCard(
                     painter = painterResource(id = R.drawable.ic_edit_icon),
                     contentDescription = null,
                     modifier = Modifier
-                        .padding(end = 4.dp)
-                        .size(16.dp)
+                        .padding(end = dimen_4_dp)
+                        .size(dimen_16_dp)
                         .align(Alignment.CenterVertically),
                     colorFilter = ColorFilter.tint(blueDark)
                 )
                 Text(
                     modifier = Modifier.align(Alignment.CenterVertically),
-                    text = "Edit",
+                    text = stringResource(R.string.edit),
                     style = defaultTextStyle,
                     color = blueDark,
                 )
@@ -128,15 +131,15 @@ fun DisbursementCard(
                     painter = painterResource(id = R.drawable.ic_delete_icon),
                     contentDescription = null,
                     modifier = Modifier
-                        .padding(end = 4.dp)
-                        .size(16.dp)
-                        .align(Alignment.CenterVertically), // Adjust the size if needed
+                        .padding(end = dimen_4_dp)
+                        .size(dimen_16_dp)
+                        .align(Alignment.CenterVertically),
                     colorFilter = ColorFilter.tint(blueDark)
                 )
                 Text(
-                    text = "Delete",
+                    text = stringResource(R.string.delete),
                     style = defaultTextStyle,
-                    color = blueDark, // Ensure the text color is set
+                    color = blueDark,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
             }

@@ -1,5 +1,7 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import com.sarathi.dataloadingmangement.SUCCESS
+import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.model.mapper.ContentMapper
 import com.sarathi.dataloadingmangement.repository.IContentRepository
@@ -15,9 +17,9 @@ class FetchContentDataFromNetworkUseCase @Inject constructor(
             val apiContentResponse =
                 repository.fetchContentsFromServer(repository.getAllContentRequest())
             if (apiContentResponse.status.equals(
-                    "200",
+                    SUCCESS_CODE,
                     true
-                ) || apiContentResponse.status.equals("SUCCESS", true)
+                ) || apiContentResponse.status.equals(SUCCESS, true)
             ) {
                 apiContentResponse.data?.let { contentResponse ->
                     repository.deleteContentFromDB()

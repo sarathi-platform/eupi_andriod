@@ -25,7 +25,7 @@ class GrantConfigUseCase @Inject constructor(private val grantConfigRepositoryIm
         )
     }
 
-    fun getGrantComponentValues(grantString: String): GrantComponentDTO? {
+    private fun getGrantComponentValues(grantString: String): GrantComponentDTO? {
         val gson = Gson()
         val type = object :
             TypeToken<GrantComponentDTO>() {}.type

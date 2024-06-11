@@ -7,4 +7,6 @@
     <string name="received">Received: ₹</string>
     <string name="complete_activity">Complete Activity</string>
     <string name="complete_mission">Complete Mission</string>
+    <string name="view">View</string>
+    <string name="continue_text">Continue</string>
 </resources>

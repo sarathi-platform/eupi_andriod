@@ -74,23 +74,20 @@ fun GrantTaskScreen(
                     .fillMaxWidth()
                     .padding(10.dp)
             ) {
-                ButtonPositive(
-                    buttonTitle = stringResource(R.string.complete_activity),
+                ButtonPositive(buttonTitle = stringResource(R.string.complete_activity),
                     isActive = viewModel.isButtonEnable.value,
                     isArrowRequired = false,
                     onClick = {
                         viewModel.markActivityCompleteStatus()
                         navController.popBackStack()
-                    }
-                )
+                    })
             }
         },
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
 
             Column {
                 BaseContentScreen(
-                    matId = activityId,
-                    contentScreenCategory = ContentCategoryEnum.ACTIVITY.ordinal
+                    matId = activityId, contentScreenCategory = ContentCategoryEnum.ACTIVITY.ordinal
                 ) { contentValue, contentKey, contentType, isLimitContentData ->
                     if (!isLimitContentData) {
                         navigateToMediaPlayerScreen(navController, contentKey, contentType)
@@ -116,9 +113,7 @@ fun GrantTaskScreen(
                         onSearchValueChange = { queryTerm ->
                             viewModel.onEvent(
                                 SearchEvent.PerformSearch(
-                                    queryTerm,
-                                    false,
-                                    BLANK_STRING
+                                    queryTerm, false, BLANK_STRING
                                 )
                             )
                         })
@@ -148,54 +143,11 @@ fun GrantTaskScreen(
                                         style = defaultTextStyle.copy(color = blueDark)
                                     )
                                 }
-                                Text(
-                                    text = category ?: BLANK_STRING,
-                                    style = defaultTextStyle,
-                                    modifier = Modifier.padding(8.dp)
-                                )
                             }
                             itemsIndexed(
                                 items = itemsInCategory
-                            ) { index, task ->
-
-                                GrantTaskCard(
-                                    onPrimaryButtonClick = { subjectName ->
-                                        viewModel.activityConfigUiModel?.let {
-                                            navigateToGrantSurveySummaryScreen(
-                                                navController,
-                                                taskId = task.key,
-                                                surveyId = it.surveyId,
-                                                sectionId = it.sectionId,
-                                                subjectType = it.subject,
-                                                subjectName = subjectName,
-                                                activityConfigId = it.activityConfigId,
-                                            )
-                                        }
-                                    },
-                                    imagePath = viewModel.getFilePathUri(
-                                        task.value[GrantTaskCardSlots.GRANT_TASK_IMAGE.name]
-                                            ?: BLANK_STRING
-                                    ),
-                                    title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name]
-                                        ?: BLANK_STRING,
-                                    subTitle1 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name]
-                                        ?: BLANK_STRING,
-                                    primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name]
-                                        ?: BLANK_STRING,
-                                    secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_SECONDARY_BUTTON.name]
-                                        ?: BLANK_STRING,
-                                    status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]
-                                        ?: BLANK_STRING,
-
-                                    subtitle2 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_2.name]
-                                        ?: BLANK_STRING,
-                                    subtitle3 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_3.name]
-                                        ?: BLANK_STRING,
-                                    subtitle4 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]
-                                        ?: BLANK_STRING,
-                                    subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name]
-                                        ?: BLANK_STRING
-                                )
+                            ) { _, task ->
+                                TaskRowView(viewModel, navController, task)
                             }
                         }
                     }
@@ -204,46 +156,8 @@ fun GrantTaskScreen(
                         LazyColumn {
                             itemsIndexed(
                                 items = viewModel.filterList.value.entries.toList()
-                            ) { index, task ->
-
-                                GrantTaskCard(
-                                    onPrimaryButtonClick = { subjectName ->
-                                        viewModel.activityConfigUiModel?.let {
-                                            navigateToGrantSurveySummaryScreen(
-                                                navController,
-                                                taskId = task.key,
-                                                surveyId = it.surveyId,
-                                                sectionId = it.sectionId,
-                                                subjectType = it.subject,
-                                                subjectName = subjectName,
-                                                activityConfigId = it.activityConfigId,
-                                            )
-                                        }
-                                    },
-                                    imagePath = viewModel.getFilePathUri(
-                                        task.value[GrantTaskCardSlots.GRANT_TASK_IMAGE.name]
-                                            ?: BLANK_STRING
-                                    ),
-                                    title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name]
-                                        ?: BLANK_STRING,
-                                    subTitle1 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name]
-                                        ?: BLANK_STRING,
-                                    primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name]
-                                        ?: BLANK_STRING,
-                                    secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_SECONDARY_BUTTON.name]
-                                        ?: BLANK_STRING,
-                                    status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]
-                                        ?: BLANK_STRING,
-
-                                    subtitle2 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_2.name]
-                                        ?: BLANK_STRING,
-                                    subtitle3 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_3.name]
-                                        ?: BLANK_STRING,
-                                    subtitle4 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]
-                                        ?: BLANK_STRING,
-                                    subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name]
-                                        ?: BLANK_STRING
-                                )
+                            ) { _, task ->
+                                TaskRowView(viewModel, navController, task)
                             }
                         }
                     }
@@ -251,6 +165,44 @@ fun GrantTaskScreen(
             }
         },
         onSettingClick = onSettingClick
+    )
+}
+
+@Composable
+private fun TaskRowView(
+    viewModel: GrantTaskScreenViewModel,
+    navController: NavController,
+    task: MutableMap.MutableEntry<Int, HashMap<String, String>>
+) {
+    GrantTaskCard(
+        onPrimaryButtonClick = { subjectName ->
+            viewModel.activityConfigUiModel?.let {
+                navigateToGrantSurveySummaryScreen(
+                    navController,
+                    taskId = task.key,
+                    surveyId = it.surveyId,
+                    sectionId = it.sectionId,
+                    subjectType = it.subject,
+                    subjectName = subjectName,
+                    activityConfigId = it.activityConfigId,
+                )
+            }
+        },
+        imagePath = viewModel.getFilePathUri(
+            task.value[GrantTaskCardSlots.GRANT_TASK_IMAGE.name] ?: BLANK_STRING
+        ),
+        title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name] ?: BLANK_STRING,
+        subTitle1 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name] ?: BLANK_STRING,
+        primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name]
+            ?: BLANK_STRING,
+        secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_SECONDARY_BUTTON.name]
+            ?: BLANK_STRING,
+        status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name] ?: BLANK_STRING,
+
+        subtitle2 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_2.name] ?: BLANK_STRING,
+        subtitle3 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_3.name] ?: BLANK_STRING,
+        subtitle4 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name] ?: BLANK_STRING,
+        subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name] ?: BLANK_STRING
     )
 }
 

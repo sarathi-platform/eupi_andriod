@@ -33,8 +33,13 @@ import com.nudge.core.ui.events.theme.blueDark
 import com.nudge.core.ui.events.theme.brownDark
 import com.nudge.core.ui.events.theme.defaultTextStyle
 import com.nudge.core.ui.events.theme.dimen_10_dp
+import com.nudge.core.ui.events.theme.dimen_12_dp
 import com.nudge.core.ui.events.theme.dimen_16_dp
+import com.nudge.core.ui.events.theme.dimen_1_dp
+import com.nudge.core.ui.events.theme.dimen_20_dp
+import com.nudge.core.ui.events.theme.dimen_30_dp
 import com.nudge.core.ui.events.theme.dimen_5_dp
+import com.nudge.core.ui.events.theme.dimen_6_dp
 import com.nudge.core.ui.events.theme.greenOnline
 import com.nudge.core.ui.events.theme.greyBorderColor
 import com.nudge.core.ui.events.theme.mediumTextStyle
@@ -67,15 +72,15 @@ fun GrantTaskCard(
 ) {
     androidx.compose.material3.Card(
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 30.dp
+            defaultElevation = dimen_30_dp
         ), modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
-            .clip(RoundedCornerShape(6.dp))
+            .padding(dimen_16_dp)
+            .clip(RoundedCornerShape(dimen_6_dp))
             .border(
-                width = 1.dp,
+                width = dimen_1_dp,
                 color = if (status == StatusEnum.COMPLETED.name) greenOnline else greyBorderColor,
-                shape = RoundedCornerShape(6.dp)
+                shape = RoundedCornerShape(dimen_6_dp)
             )
             .background(Color.Transparent)
     ) {
@@ -87,7 +92,7 @@ fun GrantTaskCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, top = 16.dp),
+                    .padding(dimen_16_dp),
                 horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -116,15 +121,15 @@ fun GrantTaskCard(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_check_circle),
                         contentDescription = null,
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.size(dimen_20_dp),
                         tint = greenOnline,
                     )
                 } else if (status == StatusEnum.INPROGRESS.name) {
                     Text(
-                        text = "In Progress",
+                        text = stringResource(id = R.string.in_progress),
                         style = defaultTextStyle,
                         modifier = Modifier
-                            .padding(horizontal = 5.dp),
+                            .padding(horizontal = dimen_5_dp),
                         color = unmatchedOrangeColor
                     )
                 }
@@ -132,20 +137,20 @@ fun GrantTaskCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, top = 5.dp),
+                    .padding(start = dimen_16_dp, top = dimen_5_dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (subtitle2.isNotBlank()) {
                     Icon(
                         painter = painterResource(id = R.drawable.home_icn),
-                        contentDescription = "",
+                        contentDescription = null,
                         tint = blueDark,
                     )
                     Text(
                         text = subtitle2,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 5.dp),
+                            .padding(horizontal = dimen_5_dp),
                         color = blueDark,
                         style = newMediumTextStyle
                     )
@@ -173,11 +178,11 @@ fun GrantTaskCard(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 5.dp, bottom = 5.dp)
+                        .padding(top = dimen_5_dp, bottom = dimen_5_dp)
                 ) {
                     Divider(
                         modifier = Modifier
-                            .height(1.dp)
+                            .height(dimen_1_dp)
                             .weight(1f)
                     )
                 }
@@ -189,9 +194,9 @@ fun GrantTaskCard(
                 ) {
                     if (status == StatusEnum.COMPLETED.name) {
                         Text(
-                            text = "View",
+                            text = stringResource(R.string.view),
                             modifier = Modifier
-                                .padding(horizontal = 5.dp),
+                                .padding(horizontal = dimen_5_dp),
                             color = blueDark,
                             style = newMediumTextStyle
                         )
@@ -205,7 +210,7 @@ fun GrantTaskCard(
                         Spacer(modifier = Modifier.weight(1f))
                         if (primaryButtonText.isNotBlank()) {
                             PrimaryButton(
-                                text = "Continue",
+                                text = stringResource(R.string.continue_text),
                                 onClick = { onPrimaryButtonClick(title) },
                                 modifier = Modifier.weight(1f)
                             )
@@ -226,7 +231,7 @@ private fun GrantAmountView(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, top = 12.dp),
+            .padding(start = dimen_16_dp, end = dimen_16_dp, top = dimen_12_dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (!TextUtils.isEmpty(subtitle1)) {
@@ -244,7 +249,7 @@ private fun GrantAmountView(
         if (!TextUtils.isEmpty(subtitle2)) {
             Icon(
                 painter = painterResource(id = iconResId),
-                contentDescription = "",
+                contentDescription = null,
                 tint = greenOnline
             )
             Text(

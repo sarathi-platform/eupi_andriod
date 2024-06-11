@@ -17,6 +17,7 @@ import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityC
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityUiConfigUseCase
 import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
 import com.sarathi.missionactivitytask.ui.grantTask.model.UiConfigAttributeType
+import com.sarathi.missionactivitytask.utils.ComponentEnum
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
@@ -82,7 +83,7 @@ class GrantTaskScreenViewModel @Inject constructor(
                         it.taskId,
                         it.status.toString(),
                         it.subjectId,
-                        componentType = "Search"
+                        componentType = ComponentEnum.Search.name
                     )[GrantTaskCardSlots.GRANT_SEARCH_LABEL.name]
                         ?: BLANK_STRING
 
@@ -90,7 +91,7 @@ class GrantTaskScreenViewModel @Inject constructor(
                             it.taskId,
                             it.status.toString(),
                             it.subjectId,
-                            componentType = "Card"
+                            componentType = ComponentEnum.Card.name
                         )[GrantTaskCardSlots.GRANT_GROUP_BY.name]
                             ?: BLANK_STRING).isNotBlank()
                     ) {
@@ -102,7 +103,7 @@ class GrantTaskScreenViewModel @Inject constructor(
                         it.taskId,
                         it.status.toString(),
                         it.subjectId,
-                        componentType = "Card"
+                        componentType = ComponentEnum.Card.name
                     )
             }
             getGrantConfig()

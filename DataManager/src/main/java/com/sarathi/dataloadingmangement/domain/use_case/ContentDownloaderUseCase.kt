@@ -24,17 +24,15 @@ class ContentDownloaderUseCase @Inject constructor(
                         FileType.AUDIO.name -> {
                             downloaderManager.downloadItem(content.contentValue)
                         }
-
-                        else -> {
-
-                        }
                     }
                 }
             } catch (ex: Exception) {
+                //  CoreLogger.e(this,tag="ContentDownloader",msg="downloadItem exception")
                 Log.e("ContentDownloader", "downloadItem exception", ex)
             }
         }
     }
+
     suspend fun surveyRelateContentDownlaod() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
