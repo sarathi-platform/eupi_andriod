@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName
 data class AttendanceHistoryResponse(
     @SerializedName("date")
     @Expose
-    val date: String, // 2024-05-26T18:30:00.000+00:00
+    val date: Long, // 2024-05-26T18:30:00.000+00:00
     @SerializedName("didiAttendanceDetailList")
     @Expose
     val didiAttendanceDetailList: List<DidiAttendanceDetail>,

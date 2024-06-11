@@ -75,7 +75,6 @@ import com.sarathi.dataloadingmangement.data.entities.getSubtitle
 import com.sarathi.missionactivitytask.ui.components.BasicCardView
 import com.sarathi.missionactivitytask.ui.components.ButtonPositiveComponent
 import com.sarathi.missionactivitytask.ui.components.ContentWithImage
-import com.sarathi.missionactivitytask.ui.components.CustomHorizontalSpacer
 import com.sarathi.missionactivitytask.ui.components.CustomVerticalSpacer
 import com.sarathi.missionactivitytask.ui.components.IconProperties
 import com.sarathi.missionactivitytask.ui.components.ImageProperties
@@ -294,7 +293,7 @@ fun SmallGroupAttendanceHistoryScreen(
                                                         sheetState.show()
                                                     }
                                                 },
-                                            value = smallGroupAttendanceHistoryViewModel.dateRangeFilter.value.first.getDate(),
+                                            value = "${smallGroupAttendanceHistoryViewModel.dateRangeFilter.value.first.getDate()} - ${smallGroupAttendanceHistoryViewModel.dateRangeFilter.value.second.getDate()}",
                                             enabled = true,
                                             readOnly = true,
                                             textStyle = defaultTextStyle,
@@ -307,10 +306,10 @@ fun SmallGroupAttendanceHistoryScreen(
                                                 focusedContainerColor = white,
                                             ),
                                             label = {
-                                                Text(text = "From", color = otpBorderColor)
+                                                Text(text = "From - To", color = otpBorderColor)
                                             },
                                             placeholder = {
-                                                Text(text = "From", color = otpBorderColor)
+                                                Text(text = "From - To", color = otpBorderColor)
                                             },
                                             trailingIcon = {
                                                 IconButton(onClick = {
@@ -320,7 +319,7 @@ fun SmallGroupAttendanceHistoryScreen(
                                                 }) {
                                                     Icon(
                                                         painter = painterResource(id = R.drawable.calendar),
-                                                        contentDescription = "Start Date"
+                                                        contentDescription = "Date Range"
                                                     )
                                                 }
 
@@ -328,7 +327,7 @@ fun SmallGroupAttendanceHistoryScreen(
                                             onValueChange = {}
                                         )
 
-                                        CustomHorizontalSpacer()
+                                        /*CustomHorizontalSpacer()
 
                                         OutlinedTextField(
                                             modifier = Modifier
@@ -371,7 +370,7 @@ fun SmallGroupAttendanceHistoryScreen(
                                                 }
                                             },
                                             onValueChange = {}
-                                        )
+                                        )*/
                                     }
 
                                 }

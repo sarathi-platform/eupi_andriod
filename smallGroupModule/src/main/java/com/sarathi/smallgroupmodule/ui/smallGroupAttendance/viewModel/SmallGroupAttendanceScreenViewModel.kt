@@ -12,6 +12,7 @@ import com.nudge.core.value
 import com.nudge.syncmanager.EventWriterEvents
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
+import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import com.sarathi.smallgroupmodule.data.domain.EventWriterHelperImpl
 import com.sarathi.smallgroupmodule.data.model.SubjectAttendanceState
@@ -20,6 +21,7 @@ import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation.SmallGr
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.event.SmallGroupAttendanceEvent
 import com.sarathi.smallgroupmodule.utils.getDate
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -68,6 +70,10 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
 
             is DialogEvents.ShowDialogEvent -> {
                 alertDialogState.value = alertDialogState.value.copy(event.showDialog)
+            }
+
+            is LoaderEvent.UpdateLoaderState -> {
+                _loaderState.value = _loaderState.value.copy(event.showLoader)
             }
 
             is SmallGroupAttendanceEvent.LoadSmallGroupDetailsForSmallGroupIdEvent -> {
@@ -135,11 +141,13 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
                             )
                         }
                         onEvent(SmallGroupAttendanceEvent.SaveAttendanceForDateToDbEvent)
+                        delay(200)
                         withContext(mainDispatcher) {
                             event.result(true)
                         }
 
                     } else {
+                        delay(200)
                         withContext(mainDispatcher) {
                             event.result(false)
                         }

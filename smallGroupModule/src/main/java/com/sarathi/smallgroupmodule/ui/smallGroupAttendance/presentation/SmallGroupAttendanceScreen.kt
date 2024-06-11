@@ -39,8 +39,9 @@ import com.nudge.core.showCustomToast
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
 import com.sarathi.dataloadingmangement.data.entities.getSubtitle
+import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.missionactivitytask.ui.components.BasicCardView
-import com.sarathi.missionactivitytask.ui.components.ButtonPositiveComponent
+import com.sarathi.missionactivitytask.ui.components.ButtonPositiveWithLoaderComponent
 import com.sarathi.missionactivitytask.ui.components.ContentWithImage
 import com.sarathi.missionactivitytask.ui.components.CustomVerticalSpacer
 import com.sarathi.missionactivitytask.ui.components.IconProperties
@@ -51,6 +52,7 @@ import com.sarathi.missionactivitytask.ui.components.TextProperties
 import com.sarathi.missionactivitytask.ui.components.TextWithIconComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.smallgroupmodule.R
+import com.sarathi.smallgroupmodule.navigation.SMALL_GROUP_ATTENDANCE_HISTORY_SCREEN_ROUTE
 import com.sarathi.smallgroupmodule.ui.commonUi.CustomDialogComponent
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.viewModel.SmallGroupAttendanceScreenViewModel
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.event.SmallGroupAttendanceEvent
@@ -85,6 +87,7 @@ fun SmallGroupAttendanceScreen(
     val context = LocalContext.current
 
     LaunchedEffect(key1 = Unit) {
+        smallGroupAttendanceScreenViewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
         smallGroupAttendanceScreenViewModel.onEvent(
             SmallGroupAttendanceEvent.LoadSmallGroupDetailsForSmallGroupIdEvent(
                 smallGroupId
@@ -111,11 +114,22 @@ fun SmallGroupAttendanceScreen(
             positiveButtonTitle = "Yes",
             negativeButtonTitle = "No",
             onPositiveButtonClick = {
+                smallGroupAttendanceScreenViewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
                 smallGroupAttendanceScreenViewModel.onEvent(SmallGroupAttendanceEvent.SubmitAttendanceForDateEvent {
                     smallGroupAttendanceScreenViewModel.onEvent(DialogEvents.ShowDialogEvent(false))
                     if (it) {
+                        smallGroupAttendanceScreenViewModel.onEvent(
+                            LoaderEvent.UpdateLoaderState(
+                                false
+                            )
+                        )
                         navHostController.popBackStack()
                     } else {
+                        smallGroupAttendanceScreenViewModel.onEvent(
+                            LoaderEvent.UpdateLoaderState(
+                                false
+                            )
+                        )
                         showCustomToast(
                             context = context,
                             msg = "Attendance already marked for the date: ${smallGroupAttendanceScreenViewModel.selectedDate.value.getDate()}"
@@ -149,9 +163,10 @@ fun SmallGroupAttendanceScreen(
                         .fillMaxSize()
                         .padding(dimen_10_dp)
                 ) {
-                    ButtonPositiveComponent(
+                    ButtonPositiveWithLoaderComponent(
                         buttonTitle = "Submit",
-                        isActive = true
+                        isActive = true,
+                        showLoader = smallGroupAttendanceScreenViewModel.loaderState.value.isLoaderVisible
                     ) {
                         if (smallGroupAttendanceScreenViewModel.selectedItems.value.filter { it.value }
                                 .isEmpty()) {
@@ -162,10 +177,29 @@ fun SmallGroupAttendanceScreen(
                             )
                         } else {
                             smallGroupAttendanceScreenViewModel.onEvent(
+                                LoaderEvent.UpdateLoaderState(
+                                    true
+                                )
+                            )
+                            smallGroupAttendanceScreenViewModel.onEvent(
                                 SmallGroupAttendanceEvent.SubmitAttendanceForDateEvent {
                                     if (it) {
+                                        smallGroupAttendanceScreenViewModel.onEvent(
+                                            LoaderEvent.UpdateLoaderState(
+                                                false
+                                            )
+                                        )
                                         navHostController.popBackStack()
+                                        navHostController.popBackStack()
+                                        navHostController.navigate(
+                                            "$SMALL_GROUP_ATTENDANCE_HISTORY_SCREEN_ROUTE/$smallGroupId"
+                                        )
                                     } else {
+                                        smallGroupAttendanceScreenViewModel.onEvent(
+                                            LoaderEvent.UpdateLoaderState(
+                                                false
+                                            )
+                                        )
                                         showCustomToast(
                                             context = context,
                                             msg = "Attendance already marked for the date: ${smallGroupAttendanceScreenViewModel.selectedDate.value.getDate()}"

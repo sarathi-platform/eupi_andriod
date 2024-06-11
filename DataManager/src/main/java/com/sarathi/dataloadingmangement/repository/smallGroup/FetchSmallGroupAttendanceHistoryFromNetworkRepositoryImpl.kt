@@ -4,7 +4,6 @@ import com.nudge.core.ATTENDANCE_TAG_ID
 import com.nudge.core.enums.AttributesType
 import com.nudge.core.enums.SubjectType
 import com.nudge.core.enums.ValueTypes
-import com.nudge.core.getDateInMillis
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
@@ -62,8 +61,6 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
 
     override suspend fun saveSmallGroupAttendanceHistoryToDb(attendanceHistoryResponse: AttendanceHistoryResponse) {
         val date = attendanceHistoryResponse.date
-            .getDateFromResponse()
-            .getDateInMillis()
         attendanceHistoryResponse.didiAttendanceDetailList.forEach { didiAttendanceDetail ->
             val isHistoryAvailable = checkIfHistoryAvailable(didiAttendanceDetail.id, date)
             if (isHistoryAvailable == 0) {
