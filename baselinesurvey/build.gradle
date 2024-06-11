@@ -10,7 +10,7 @@ plugins {
     id("org.sonarqube")
 }
 
-def version = "2.0.17"
+def version = "2.0.20"
 android {
     namespace 'com.nrlm.baselinesurvey'
     compileSdk 34
@@ -19,7 +19,7 @@ android {
         applicationId "com.nrlm.sarathi"
         minSdk 23
         targetSdk 33
-        versionCode 21
+        versionCode 24
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -120,6 +120,10 @@ kapt {
 android.applicationVariants.all {
     def aptOutputDir = new File(buildDir, "generated/source/kapt/${it.unitTestVariant.dirName}")
     it.unitTestVariant.addJavaSourceFoldersToModel(aptOutputDir)
+}
+
+configurations {
+    all*.exclude group: 'commons-logging', module: 'commons-logging'
 }
 
 dependencies {
