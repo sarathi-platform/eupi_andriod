@@ -83,6 +83,7 @@ import com.sarathi.missionactivitytask.ui.components.TextProperties
 import com.sarathi.missionactivitytask.ui.components.TextWithIconComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.smallgroupmodule.R
+import com.sarathi.smallgroupmodule.constatns.SmallGroupConstants.HISTORY_SUMMARY_MAX_ITEM_COUNT_IN_COLLAPSE_MODE
 import com.sarathi.smallgroupmodule.data.model.SubjectAttendanceHistoryState
 import com.sarathi.smallgroupmodule.navigation.SMALL_GROUP_ATTENDANCE_SCREEN_ROUTE
 import com.sarathi.smallgroupmodule.navigation.navigateToAttendanceEditScreen
@@ -566,7 +567,7 @@ fun AttendanceSummaryCard(
             val isExpanded = remember { mutableStateOf(false) }
 
 
-            DisplayItem(
+            HistorySummaryCard(
                 modifier = Modifier.padding(horizontal = dimen_10_dp),
                 outerState = outerState,
                 innerState = innerState,
@@ -629,7 +630,9 @@ fun AttendanceSummaryCard(
                         .padding(horizontal = dimen_10_dp)
                         .weight(1f),
                     onClick = {
-                        isExpanded.value = !isExpanded.value
+                        if (subjectAttendanceHistoryStateMappingByDate.value.size > HISTORY_SUMMARY_MAX_ITEM_COUNT_IN_COLLAPSE_MODE) {
+                            isExpanded.value = !isExpanded.value
+                        }
                     }) {
 
                     TextWithIconComponent(
@@ -656,7 +659,7 @@ fun AttendanceSummaryCard(
 }
 
 @Composable
-fun DisplayItem(
+fun HistorySummaryCard(
     modifier: Modifier,
     outerState: LazyListState = rememberLazyListState(),
     innerState: LazyListState = rememberLazyListState(),
@@ -673,89 +676,74 @@ fun DisplayItem(
             )
             .heightIn(min = 100.dp, maxCustomHeight)
     ) {
-        LazyColumn {
-            itemsIndexed(subjectAttendanceHistoryStateList.take(2)) { index, subjectAttendanceHistoryState ->
-                ContentWithImage(
-                    imageProperties = ImageProperties(
-                        path = BLANK_STRING,
-                        contentDescription = "Didi Image"
-                    )
-                ) {
-
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.Start
-                    ) {
-
-                        Text(
-                            text = subjectAttendanceHistoryState.subjectEntity.subjectName,
-                            style = mediumTextStyle,
-                            color = com.sarathi.smallgroupmodule.ui.theme.blueDark
-                        )
-                        Text(
-                            text = subjectAttendanceHistoryState.subjectEntity.getSubtitle(),
-                            style = smallTextStyleMediumWeight,
-                            color = textColorDark80
-                        )
-
-                    }
-
-                    Text(
-                        text = subjectAttendanceHistoryState.attendance.getAttendanceFromBoolean(),
-                        style = defaultTextStyle,
-                        color = if (subjectAttendanceHistoryState.attendance) green else redOffline
-                    )
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        AnimatedVisibility(
-            visible = isExpanded,
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically()
-        ) {
+        Column {
             LazyColumn {
-                itemsIndexed(subjectAttendanceHistoryStateList) { index, subjectAttendanceHistoryState ->
-                    ContentWithImage(
-                        imageProperties = ImageProperties(
-                            path = BLANK_STRING,
-                            contentDescription = "Didi Image"
-                        )
-                    ) {
-
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.Start
-                        ) {
-
-                            Text(
-                                text = subjectAttendanceHistoryState.subjectEntity.subjectName,
-                                style = mediumTextStyle,
-                                color = com.sarathi.smallgroupmodule.ui.theme.blueDark
-                            )
-                            Text(
-                                text = subjectAttendanceHistoryState.subjectEntity.getSubtitle(),
-                                style = smallTextStyleMediumWeight,
-                                color = textColorDark80
-                            )
-
-                        }
-
-                        Text(
-                            text = subjectAttendanceHistoryState.attendance.getAttendanceFromBoolean(),
-                            style = defaultTextStyle,
-                            color = if (subjectAttendanceHistoryState.attendance) green else redOffline
-                        )
+                itemsIndexed(
+                    subjectAttendanceHistoryStateList.take(
+                        HISTORY_SUMMARY_MAX_ITEM_COUNT_IN_COLLAPSE_MODE
+                    )
+                ) { index, subjectAttendanceHistoryState ->
+                    HistorySummaryCardItem(subjectAttendanceHistoryState = subjectAttendanceHistoryState)
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
+                LazyColumn {
+                    itemsIndexed(
+                        subjectAttendanceHistoryStateList
+                            .drop(HISTORY_SUMMARY_MAX_ITEM_COUNT_IN_COLLAPSE_MODE)
+                    ) { index, subjectAttendanceHistoryState ->
+                        HistorySummaryCardItem(subjectAttendanceHistoryState = subjectAttendanceHistoryState)
                     }
                 }
             }
         }
+    }
+
+}
+
+@Composable
+fun HistorySummaryCardItem(
+    subjectAttendanceHistoryState: SubjectAttendanceHistoryState
+) {
+
+    ContentWithImage(
+        imageProperties = ImageProperties(
+            path = BLANK_STRING,
+            contentDescription = "Didi Image"
+        )
+    ) {
+
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.Start
+        ) {
+
+            Text(
+                text = subjectAttendanceHistoryState.subjectEntity.subjectName,
+                style = mediumTextStyle,
+                color = com.sarathi.smallgroupmodule.ui.theme.blueDark
+            )
+            Text(
+                text = subjectAttendanceHistoryState.subjectEntity.getSubtitle(),
+                style = smallTextStyleMediumWeight,
+                color = textColorDark80
+            )
+
+        }
+
+        Text(
+            text = subjectAttendanceHistoryState.attendance.getAttendanceFromBoolean(),
+            style = defaultTextStyle,
+            color = if (subjectAttendanceHistoryState.attendance) green else redOffline
+        )
     }
 
 }

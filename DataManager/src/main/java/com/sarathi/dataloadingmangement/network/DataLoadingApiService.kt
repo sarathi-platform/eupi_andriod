@@ -11,7 +11,9 @@ import com.sarathi.dataloadingmangement.model.response.BeneficiaryApiResponse
 import com.sarathi.dataloadingmangement.model.response.SmallGroupMappingResponseModel
 import com.sarathi.dataloadingmangement.model.survey.request.SurveyRequest
 import com.sarathi.dataloadingmangement.model.survey.response.SurveyResponseModel
+import com.sarathi.dataloadingmangement.network.request.AttendanceHistoryRequest
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
+import com.sarathi.dataloadingmangement.network.response.AttendanceHistoryResponse
 import com.sarathi.dataloadingmangement.network.response.ConfigResponseModel
 import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
 import retrofit2.http.Body
@@ -44,11 +46,13 @@ interface DataLoadingApiService {
 
 
     @POST(SUBPATH_GET_SMALL_GROUP_MAPPING)
-//    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getSmallGroupBeneficiaryMapping(@Body smallGroupApiRequest: SmallGroupApiRequest): ApiResponseModel<List<SmallGroupMappingResponseModel>>
 
     @GET(SUBPATH_GET_DIDI_LIST)
-//    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getDidisFromNetwork(@Query("userId") userId: Int): ApiResponseModel<BeneficiaryApiResponse>
+
+    @POST(SUBPATH_GET_ATTENDANCE_HISTORY_FROM_NETWORK)
+    suspend fun getAttendanceHistoryFromNetwork(@Body attendanceHistoryRequest: AttendanceHistoryRequest): ApiResponseModel<List<AttendanceHistoryResponse>>
+
 
 }

@@ -25,11 +25,12 @@ interface AttributeValueReferenceDao {
                 "from subject_attribute_table subAtt \n" +
                 "join attribute_value_reference_table attRef on subAtt.id = attRef.parentReferenceId \n" +
                 "where subAtt.userId = :userId \n" +
+                "and subAtt.subjectId in (:subjectIds)\n" +
                 "and subAtt.attribute = 'Attendance'\n" +
                 "and attRef.`key` = 'AttendanceDate'\n" +
                 "group by attRef.value"
     )
-    suspend fun getMarkedDatesList(userId: String): List<MarkedDatesUiModel>
+    suspend fun getMarkedDatesList(userId: String, subjectIds: List<Int>): List<MarkedDatesUiModel>
 
     @Query("DELETE from $ATTRIBUTE_VALUE_REFERENCE_ENTITY_TABLE_NAME where parentReferenceId in (:parentRefIds)")
     fun removeAttendanceAttributeFromReferenceTable(parentRefIds: List<Int>)

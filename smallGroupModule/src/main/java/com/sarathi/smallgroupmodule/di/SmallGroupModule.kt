@@ -9,8 +9,10 @@ import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupFromNetworkUseCase
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkRepository
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepository
 import com.sarathi.smallgroupmodule.data.domain.EventWriterHelperImpl
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.repository.FetchDidiDetailsFromDbRepository
@@ -81,7 +83,8 @@ class SmallGroupModule {
         fetchDidiDetailsFromDbRepository: FetchDidiDetailsFromDbRepository,
         fetchSmallGroupListFromDbRepository: FetchSmallGroupListFromDbRepository,
         fetchDidiDetailsFromNetworkRepository: FetchDidiDetailsFromNetworkRepository,
-        fetchSmallGroupDetailsFromNetworkRepository: FetchSmallGroupDetailsFromNetworkRepository
+        fetchSmallGroupDetailsFromNetworkRepository: FetchSmallGroupDetailsFromNetworkRepository,
+        fetchSmallGroupAttendanceHistoryFromNetworkRepository: FetchSmallGroupAttendanceHistoryFromNetworkRepository
     ): DidiTabUseCase {
         return DidiTabUseCase(
             fetchDidiDetailsFromDbUseCase = FetchDidiDetailsFromDbUseCase(
@@ -95,6 +98,9 @@ class SmallGroupModule {
             ),
             fetchSmallGroupFromNetworkUseCase = FetchSmallGroupFromNetworkUseCase(
                 fetchSmallGroupDetailsFromNetworkRepository
+            ),
+            fetchSmallGroupAttendanceHistoryFromNetworkUseCase = FetchSmallGroupAttendanceHistoryFromNetworkUseCase(
+                fetchSmallGroupAttendanceHistoryFromNetworkRepository
             )
         )
     }

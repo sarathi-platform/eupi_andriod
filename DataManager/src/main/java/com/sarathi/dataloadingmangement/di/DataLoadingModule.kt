@@ -21,8 +21,8 @@ import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
-import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
@@ -42,18 +42,16 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
-import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
-import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailsUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupFromNetworkUseCase
+import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.ContentDownloaderRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.ContentRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.IContentDownloader
 import com.sarathi.dataloadingmangement.repository.IContentRepository
-import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepository
-import com.sarathi.dataloadingmangement.repository.IDataLoadingScreenRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.IEventWriterRepository
 import com.sarathi.dataloadingmangement.repository.ILanguageRepository
 import com.sarathi.dataloadingmangement.repository.IMATStatusEventRepository
@@ -69,14 +67,16 @@ import com.sarathi.dataloadingmangement.repository.MATStatusEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MissionRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyAnswerEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyDownloadRepository
-import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepository
-import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepositoryImpl
-import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepository
-import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveyRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.SurveySaveRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.TaskStatusRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.UserDetailRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -535,6 +535,34 @@ class DataLoadingModule {
         fetchSmallGroupDetailsFromNetworkRepository: FetchSmallGroupDetailsFromNetworkRepository
     ): FetchSmallGroupFromNetworkUseCase {
         return FetchSmallGroupFromNetworkUseCase(fetchSmallGroupDetailsFromNetworkRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchSmallGroupAttendanceHistoryFromNetworkUseCase(
+        fetchSmallGroupAttendanceHistoryFromNetworkRepository: FetchSmallGroupAttendanceHistoryFromNetworkRepository
+    ): FetchSmallGroupAttendanceHistoryFromNetworkUseCase {
+        return FetchSmallGroupAttendanceHistoryFromNetworkUseCase(
+            fetchSmallGroupAttendanceHistoryFromNetworkRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchSmallGroupAttendanceHistoryFromNetworkRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        dataLoadingApiService: DataLoadingApiService,
+        subjectEntityDao: SubjectEntityDao,
+        subjectAttributeDao: SubjectAttributeDao,
+        attributeValueReferenceDao: AttributeValueReferenceDao
+    ): FetchSmallGroupAttendanceHistoryFromNetworkRepository {
+        return FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            dataLoadingApiService = dataLoadingApiService,
+            subjectEntityDao = subjectEntityDao,
+            subjectAttributeDao = subjectAttributeDao,
+            attributeValueReferenceDao = attributeValueReferenceDao
+        )
     }
 
 }

@@ -90,11 +90,12 @@ class UpdateAttendanceToDbRepositoryImpl @Inject constructor(
         removeAttendanceFromSubjectAttributeTable(
             finalAttendanceStateList,
             selectedDate
-        ) //TODO Check if this is required
+        )
+
         removeAttendanceAttributeFromReferenceTable(
             finalAttendanceStateList,
             oldSubjectAttributeRefMap
-        ) //TODO Check if this is required
+        )
 
     }
 

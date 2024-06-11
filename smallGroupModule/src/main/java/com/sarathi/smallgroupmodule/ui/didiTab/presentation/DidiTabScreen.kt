@@ -7,12 +7,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.nudge.core.ui.events.CommonEvents
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
+import com.sarathi.missionactivitytask.ui.components.CustomVerticalSpacer
+import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.smallgroupmodule.SmallGroupCore
 import com.sarathi.smallgroupmodule.ui.TabItem
@@ -37,7 +42,11 @@ fun DidiTabScreen(
 
     }
 
-    val didiList = didiTabViewModel.didiList
+    val isSearchActive = remember {
+        mutableStateOf(false)
+    }
+
+    val didiList = didiTabViewModel.filteredDidiList
 
     val tabs = listOf("Didi", "Small Group")
 
@@ -48,11 +57,15 @@ fun DidiTabScreen(
         isSearch = true,
         iconResId = Res.drawable.ic_sarathi_logo,
         onBackIconClick = { /*TODO*/ },
-        isDataAvailable = didiList.value.isNotEmpty(),
+        isDataAvailable = didiList.value.isNotEmpty() || isSearchActive.value,
         onSearchValueChange = {
 
         },
-        onBottomUI = { /*TODO*/ },
+        onBottomUI = {
+            /**
+             *Not required as no bottom UI present for this screen
+             **/
+        },
         onSettingClick = {},
         onContentUI = { paddingValues, b, function ->
             Column(
@@ -81,14 +94,44 @@ fun DidiTabScreen(
 
                 }
 
-                when (SmallGroupCore.tabIndex.value) {
-                    0 -> DidiSubTab(didiTabViewModel = didiTabViewModel, didiList = didiList.value)
-                    1 -> SmallGroupSubTab(
-                        didiTabViewModel = didiTabViewModel,
-                        smallGroupList = didiTabViewModel.smallGroupList.value,
-                        navHostController = navHostController
+                Column {
+                    SearchWithFilterViewComponent(
+                        placeholderString = when (SmallGroupCore.tabIndex.value) {
+                            0 -> "Search by didis"
+                            1 -> "Search by small groups"
+                            else -> "Search by didis"
+                        },
+                        showFilter = false,
+                        onFilterSelected = {
+
+                        },
+                        onSearchValueChange = { searchQuery ->
+                            isSearchActive.value = searchQuery.isNotEmpty()
+                            didiTabViewModel.onEvent(
+                                CommonEvents.SearchValueChangedEvent(
+                                    searchQuery,
+                                    (SmallGroupCore.tabIndex.value as Int)
+                                )
+                            )
+                        }
                     )
+                    CustomVerticalSpacer()
+                    when (SmallGroupCore.tabIndex.value) {
+                        0 -> {
+                            DidiSubTab(
+                                didiTabViewModel = didiTabViewModel,
+                                didiList = didiList.value
+                            )
+                        }
+
+                        1 -> SmallGroupSubTab(
+                            didiTabViewModel = didiTabViewModel,
+                            smallGroupList = didiTabViewModel.filteredSmallGroupList.value,
+                            navHostController = navHostController
+                        )
+                    }
                 }
+
 
             }
         }

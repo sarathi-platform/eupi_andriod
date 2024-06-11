@@ -9,4 +9,6 @@ object SmallGroupConstants {
     const val ATTENDANCE_PRESENT = "Present"
     const val ATTENDANCE_ABSENT = "Absent"
 
+    const val HISTORY_SUMMARY_MAX_ITEM_COUNT_IN_COLLAPSE_MODE = 2
+
 }

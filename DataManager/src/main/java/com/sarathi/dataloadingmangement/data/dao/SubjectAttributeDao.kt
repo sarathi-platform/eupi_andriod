@@ -47,6 +47,14 @@ interface SubjectAttributeDao {
         date: String
     )
 
+    @Query("SELECT Count(*) from $SUBJECT_ATTRIBUTE_TABLE_NAME where subjectId = :subjectId and subjectType = :subjectType and attribute = :attribute and date = :date")
+    fun isAttendanceHistoryAvailable(
+        subjectId: Int,
+        subjectType: String,
+        attribute: String,
+        date: String
+    ): Int
+
     @Transaction
     fun removeAttendanceFromSubjectAttributeTable(
         subjectIds: List<Int>,

@@ -7,8 +7,8 @@ class FetchMarkedDatesUseCase @Inject constructor(
     private val fetchMarkedDatesRepository: FetchMarkedDatesRepository
 ) {
 
-    suspend operator fun invoke(): List<Long> {
-        return fetchMarkedDatesRepository.fetchMarkedDates()
+    suspend operator fun invoke(subjectIds: List<Int>): List<Long> {
+        return fetchMarkedDatesRepository.fetchMarkedDates(subjectIds)
     }
 
 }

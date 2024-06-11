@@ -14,10 +14,10 @@ class FetchMarkedDatesRepositoryImpl @Inject constructor(
     private val attributeValueReferenceDao: AttributeValueReferenceDao
 ) : FetchMarkedDatesRepository {
 
-    override suspend fun fetchMarkedDates(): List<Long> {
+    override suspend fun fetchMarkedDates(subjectIds: List<Int>): List<Long> {
         val uniqueUserId = coreSharedPrefs.getUniqueUserIdentifier()
         val markedDatesList = ArrayList<Long>()
-        attributeValueReferenceDao.getMarkedDatesList(userId = uniqueUserId).apply {
+        attributeValueReferenceDao.getMarkedDatesList(userId = uniqueUserId, subjectIds).apply {
             for (markedDatesUiModel in this) {
                 val convertedDate =
                     markedDatesUiModel.value.convertToDataType(markedDatesUiModel.valueType)

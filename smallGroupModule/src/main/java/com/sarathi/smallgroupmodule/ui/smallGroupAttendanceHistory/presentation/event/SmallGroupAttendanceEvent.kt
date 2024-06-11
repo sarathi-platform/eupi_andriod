@@ -10,7 +10,8 @@ sealed class SmallGroupAttendanceEvent {
     data class MarkAttendanceForSubjectEvent(val checked: Boolean, val subjectId: Int) :
         SmallGroupAttendanceEvent()
 
-    object SubmitAttendanceForDateEvent : SmallGroupAttendanceEvent()
+    data class SubmitAttendanceForDateEvent(val result: (Boolean) -> Unit) :
+        SmallGroupAttendanceEvent()
 
     object SaveAttendanceForDateToDbEvent : SmallGroupAttendanceEvent()
 

@@ -32,8 +32,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
+import com.nudge.core.showCustomToast
+import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
 import com.sarathi.dataloadingmangement.data.entities.getSubtitle
 import com.sarathi.missionactivitytask.ui.components.BasicCardView
@@ -43,6 +46,7 @@ import com.sarathi.missionactivitytask.ui.components.CustomVerticalSpacer
 import com.sarathi.missionactivitytask.ui.components.IconProperties
 import com.sarathi.missionactivitytask.ui.components.ImageProperties
 import com.sarathi.missionactivitytask.ui.components.LazyColumnWithVerticalPadding
+import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.TextProperties
 import com.sarathi.missionactivitytask.ui.components.TextWithIconComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
@@ -78,6 +82,8 @@ fun SmallGroupAttendanceScreen(
     onSettingIconClicked: () -> Unit
 ) {
 
+    val context = LocalContext.current
+
     LaunchedEffect(key1 = Unit) {
         smallGroupAttendanceScreenViewModel.onEvent(
             SmallGroupAttendanceEvent.LoadSmallGroupDetailsForSmallGroupIdEvent(
@@ -87,7 +93,7 @@ fun SmallGroupAttendanceScreen(
     }
 
     val smallGroupAttendanceList =
-        smallGroupAttendanceScreenViewModel.smallGroupAttendanceEntityState
+        smallGroupAttendanceScreenViewModel.filteredSmallGroupAttendanceEntityState
 
 
     val showDatePickerDialog = remember {
@@ -105,9 +111,18 @@ fun SmallGroupAttendanceScreen(
             positiveButtonTitle = "Yes",
             negativeButtonTitle = "No",
             onPositiveButtonClick = {
-                smallGroupAttendanceScreenViewModel.onEvent(SmallGroupAttendanceEvent.SubmitAttendanceForDateEvent)
-                smallGroupAttendanceScreenViewModel.onEvent(DialogEvents.ShowDialogEvent(false))
-                navHostController.popBackStack()
+                smallGroupAttendanceScreenViewModel.onEvent(SmallGroupAttendanceEvent.SubmitAttendanceForDateEvent {
+                    smallGroupAttendanceScreenViewModel.onEvent(DialogEvents.ShowDialogEvent(false))
+                    if (it) {
+                        navHostController.popBackStack()
+                    } else {
+                        showCustomToast(
+                            context = context,
+                            msg = "Attendance already marked for the date: ${smallGroupAttendanceScreenViewModel.selectedDate.value.getDate()}"
+                        )
+                    }
+                })
+
             },
             onNegativeButtonClick = {
                 smallGroupAttendanceScreenViewModel.onEvent(DialogEvents.ShowDialogEvent(false))
@@ -146,8 +161,18 @@ fun SmallGroupAttendanceScreen(
                                 )
                             )
                         } else {
-                            smallGroupAttendanceScreenViewModel.onEvent(SmallGroupAttendanceEvent.SubmitAttendanceForDateEvent)
-                            navHostController.popBackStack()
+                            smallGroupAttendanceScreenViewModel.onEvent(
+                                SmallGroupAttendanceEvent.SubmitAttendanceForDateEvent {
+                                    if (it) {
+                                        navHostController.popBackStack()
+                                    } else {
+                                        showCustomToast(
+                                            context = context,
+                                            msg = "Attendance already marked for the date: ${smallGroupAttendanceScreenViewModel.selectedDate.value.getDate()}"
+                                        )
+                                    }
+                                }
+                            )
                         }
                     }
                 }
@@ -192,6 +217,24 @@ fun SmallGroupAttendanceScreen(
                         )
                     }
                 }
+
+                SearchWithFilterViewComponent(
+                    placeholderString = "Search Didi",
+                    showFilter = false,
+                    onFilterSelected = {
+
+                    },
+                    onSearchValueChange = { searchQuery ->
+                        smallGroupAttendanceScreenViewModel.onEvent(
+                            CommonEvents.SearchValueChangedEvent(
+                                searchQuery,
+                                null
+                            )
+                        )
+                    }
+                )
+
+                CustomVerticalSpacer()
 
                 Row(
                     modifier = Modifier

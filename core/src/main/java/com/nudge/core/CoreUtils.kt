@@ -20,6 +20,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import com.facebook.network.connectionclass.ConnectionQuality
@@ -40,6 +41,10 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -749,4 +754,30 @@ fun getDayPriorCurrentTimeMillis(sourceDuration: Long): Long {
 fun getDayAfterCurrentTimeMillis(sourceDuration: Long): Long {
     val currentTime = System.currentTimeMillis()
     return currentTime + TimeUnit.MILLISECONDS.convert(sourceDuration, TimeUnit.DAYS)
+}
+
+@RequiresApi(Build.VERSION_CODES.N)
+fun String.getDateTimeInMillis(): Long {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+        val offsetDateTime = OffsetDateTime.parse(this, formatter)
+        offsetDateTime.toInstant().toEpochMilli()
+    } else {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.getDefault())
+        dateFormat.timeZone = TimeZone.getTimeZone("UTC")
+        val date = dateFormat.parse(this)
+        date?.time ?: 0L
+    }
+}
+
+fun String.getDateInMillis(): Long {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val localDate = LocalDate.parse(this)
+        val zonedDateTime = localDate.atStartOfDay(ZoneId.systemDefault())
+        zonedDateTime.toInstant().toEpochMilli()
+    } else {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val date = dateFormat.parse(this)
+        date?.time ?: 0L
+    }
 }

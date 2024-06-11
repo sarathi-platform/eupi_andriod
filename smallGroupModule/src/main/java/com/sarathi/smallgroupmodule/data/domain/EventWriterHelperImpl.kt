@@ -64,7 +64,7 @@ class EventWriterHelperImpl @Inject constructor(
                 var event = Events(
                     name = eventName.name,
                     type = eventName.topicName,
-                    createdBy = coreSharedPrefs.getUserId(),
+                    createdBy = coreSharedPrefs.getUserName(),
                     mobile_number = coreSharedPrefs.getMobileNo() ?: BLANK_STRING,
                     request_payload = requestPayload.json(),
                     status = EventSyncStatus.OPEN.name,
