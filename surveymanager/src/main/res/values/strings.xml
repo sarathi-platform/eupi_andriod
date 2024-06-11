@@ -15,5 +15,9 @@
     <string name="mode">Mode:</string>
     <string name="no_of_didi_s">No. of Didi\'s</string>
     <string name="edit">Edit</string>
+    <string name="add_image">+ Add Image</string>
+    <string name="are_you_sure_you_want_to_delete">Are you sure you want to delete?</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
 
 </resources>

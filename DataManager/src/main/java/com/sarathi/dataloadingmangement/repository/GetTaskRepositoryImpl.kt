@@ -33,9 +33,11 @@ class GetTaskRepositoryImpl @Inject constructor(
         return taskDao.getTaskById(coreSharedPrefs.getUniqueUserIdentifier(), taskId)
     }
 
-    override suspend fun isAllActivityCompleted(): Boolean {
+    override suspend fun isAllActivityCompleted(missionId: Int, activityId: Int): Boolean {
         return taskDao.countTasksByStatus(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            missionId = missionId,
+            activityId = activityId,
             statuses = listOf(SurveyStatusEnum.NOT_STARTED.name, SurveyStatusEnum.INPROGRESS.name)
         ) == 0
     }
@@ -49,5 +51,14 @@ class GetTaskRepositoryImpl @Inject constructor(
         )
     }
 
-
+    override suspend fun updateTaskStatus(
+        taskId: Int,
+        status: String
+    ) {
+        taskDao.updateTaskStatus(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            taskId = taskId,
+            status = status
+        )
+    }
 }
