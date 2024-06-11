@@ -619,7 +619,6 @@ object PdfUtils {
         val simplyPdfDocument =
             getSimplePdfDocument(context,stateId, villageEntity, FORM_C_PDF_NAME, "Digital Form C")
 
-        // simplyPdfDocument.text.write("Digital Form C", titleTextProperties)
         simplyPdfDocument.text.write(
             getVoNameForState(context,stateId, R.plurals.final_list_of_user),
             subTitleTextProperties
