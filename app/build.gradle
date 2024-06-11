@@ -10,7 +10,7 @@ plugins {
     id("org.sonarqube")
 
 }
-def version = "2.0.18"
+def version = "2.0.18_dic"
 def prodVersion = "1.1.9"
 android {
     compileSdk 34
@@ -79,7 +79,7 @@ android {
                     appIcon: "@mipmap/ic_launcher_uat",
                     appIconRound: "@mipmap/ic_launcher_uat_round"
             ]
-            buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
+            buildConfigField 'String', 'BASE_URL', '"https://dev.eupi-sarthi.in/"'
         }
         staging{
             applicationIdSuffix = ".stage"
@@ -88,7 +88,7 @@ android {
                     appIcon: "@mipmap/ic_launcher_uat",
                     appIconRound: "@mipmap/ic_launcher_uat_round"
             ]
-            buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
+            buildConfigField 'String', 'BASE_URL', '"https://dev.eupi-sarthi.in/"'
         }
         production{
             versionName prodVersion
