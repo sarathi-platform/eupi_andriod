@@ -91,4 +91,10 @@ interface EventsDao {
             )
         }
     }
+
+    @Query("SELECT * FROM $EventsTable WHERE mobile_number= :mobileNumber")
+    fun getTotalEventCount(mobileNumber:String):List<Events>
+
+    @Query("SELECT * FROM $EventsTable WHERE status= :status AND mobile_number= :mobileNumber")
+    fun getSuccessEventCount(status:String,mobileNumber:String):List<Events>
 }

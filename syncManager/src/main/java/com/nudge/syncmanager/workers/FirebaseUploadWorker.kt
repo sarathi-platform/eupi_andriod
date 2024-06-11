@@ -23,11 +23,8 @@ class FirebaseUploadWorker @AssistedInject constructor(
             try {
                 var totalPendingEventCount = syncApiRepository.getPendingEventCount()
                 while (totalPendingEventCount > 0) {
-                    val pendingEvents = syncApiRepository.getPendingEventFromDb(5,5)
-//                    firebaseRepository.addEventsToFirebase(pendingEvents)
                     totalPendingEventCount = syncApiRepository.getPendingEventCount()
                 }
-                // do long running work
             } catch (ex: SocketTimeoutException) {
                 Result.retry()
             }

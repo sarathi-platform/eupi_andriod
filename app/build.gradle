@@ -295,4 +295,8 @@ dependencies {
     //FCM
     implementation 'com.google.firebase:firebase-messaging:23.4.0'
     implementation 'de.charlex.compose.material:material-html-text:2.0.0-beta01'
+    implementation 'androidx.compose.material3:material3'
+    implementation "androidx.compose.material:material:1.5.3"
+    implementation("androidx.compose.material3:material3:1.1.2")
+
 }

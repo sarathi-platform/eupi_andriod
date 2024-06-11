@@ -119,7 +119,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
         }
 
         composable(route = SettingScreens.SYNC_DATA_NOW_SCREEN.route){
-            SyncHomeScreen(navController = navController)
+            SyncHomeScreen(navController = navController, viewModel = hiltViewModel())
         }
     }
 }

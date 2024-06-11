@@ -108,4 +108,6 @@ val greyBorderColor = Color(0xFFD5D5D5)
 val lightGrayTranslucent = Color(0xB2B1B1B1)
 val greyTransparentColor = Color(0xc6c5b9)
 val syncProgressBg = Color(0xFFB4B4B4)
+val dateRangeFieldColor = Color(0xFFD9D9D9)
+
 

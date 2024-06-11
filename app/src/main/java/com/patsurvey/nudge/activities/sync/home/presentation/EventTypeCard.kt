@@ -34,6 +34,7 @@ fun EventTypeCard(
     title: String,
     totalEventCount:Int,
     successEventCount:Int,
+    isRefreshRequired:Boolean,
     onCardClick: () -> Unit,
     onRefreshClick:() -> Unit
 ) {
@@ -64,16 +65,19 @@ fun EventTypeCard(
                     bottom.linkTo(refreshIcon.bottom)
                 }
             )
-            IconButton(onClick = { onRefreshClick()
-            }, modifier =  Modifier.constrainAs(refreshIcon) {
-                end.linkTo(parent.end)
-                top.linkTo(parent.top)
-            }
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.baseline_sync_24),
-                    contentDescription = "Refresh Button"
-                )
+            if(isRefreshRequired) {
+                IconButton(onClick = {
+                    onRefreshClick()
+                }, modifier = Modifier.constrainAs(refreshIcon) {
+                    end.linkTo(parent.end)
+                    top.linkTo(parent.top)
+                }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_sync_24),
+                        contentDescription = "Refresh Button"
+                    )
+                }
             }
 
             LinearProgressIndicator(
@@ -115,6 +119,7 @@ fun CommonSyncScreenPreview() {
         title = "Sync Data",
         totalEventCount = 1100,
         successEventCount = 190,
+        isRefreshRequired = true,
         onCardClick = {},
         onRefreshClick = {}
     )

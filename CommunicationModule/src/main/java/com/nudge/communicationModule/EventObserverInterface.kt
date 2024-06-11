@@ -1,7 +1,6 @@
 package com.nudge.communicationModule
 
 import android.content.Context
-import androidx.lifecycle.LiveData
 import androidx.work.WorkInfo
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events

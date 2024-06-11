@@ -7,6 +7,8 @@ import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_repository.EventsWriterRepository
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.EventsWriterUserCase
+import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.preference.CorePrefRepo
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepositoryImpl
 import com.patsurvey.nudge.activities.backup.domain.use_case.ClearLocalDBExportUseCase
@@ -27,6 +29,11 @@ import com.patsurvey.nudge.activities.settings.domain.use_case.GetUserDetailsUse
 import com.patsurvey.nudge.activities.settings.domain.use_case.LogoutUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SaveLanguageScreenOpenFromUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
+import com.patsurvey.nudge.activities.sync.home.domain.repository.SyncHomeRepository
+import com.patsurvey.nudge.activities.sync.home.domain.repository.SyncHomeRepositoryImpl
+import com.patsurvey.nudge.activities.sync.home.domain.use_case.GetSyncEventsUseCase
+import com.patsurvey.nudge.activities.sync.home.domain.use_case.GetUserDetailsSyncUseCase
+import com.patsurvey.nudge.activities.sync.home.domain.use_case.SyncHomeUseCase
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.NudgeDatabase
 import com.patsurvey.nudge.database.dao.CasteListDao
@@ -121,5 +128,30 @@ object UseCaseModule {
         missionActivityDao: MissionActivityDao
     ): GetSummaryFileRepository {
         return GetSummaryFileRepositoryImpl(activityTaskDao, missionActivityDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncHomeRepository(
+        prefRepo: PrefRepo,
+        corePrefRepo: CorePrefRepo,
+        eventsDao: EventsDao
+    ): SyncHomeRepository {
+        return SyncHomeRepositoryImpl(
+            prefRepo = prefRepo,
+            corePrefRepo = corePrefRepo,
+            eventsDao = eventsDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncHomeUseCase(
+        repository: SyncHomeRepository
+    ):SyncHomeUseCase{
+        return SyncHomeUseCase(
+            getUserDetailsSyncUseCase = GetUserDetailsSyncUseCase(repository),
+            getSyncEventsUseCase = GetSyncEventsUseCase(repository)
+        )
     }
 }
