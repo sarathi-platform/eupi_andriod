@@ -21,7 +21,8 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
         taskLocalId: String,
         uriList: List<Uri>?,
         grantId: Int,
-        grantType: String
+        grantType: String,
+        taskId: Int
     ) {
 
         val saveAnswerMoneyJournalEventDto = repository.writeMoneyJournalSaveAnswerEvent(
@@ -31,7 +32,8 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             referenceId,
             taskLocalId,
             grantId,
-            grantType
+            grantType,
+            taskId
         )
         writeEventInFile(
             saveAnswerMoneyJournalEventDto,
@@ -47,7 +49,8 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
                 referenceId,
                 taskLocalId,
                 grantId,
-                grantType
+                grantType,
+                taskId
             )
             writeEventInFile(
                 saveAnswerEventDto,

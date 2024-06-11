@@ -13,12 +13,13 @@ data class QuestionAnswerResponseModel(
     @SerializedName("referenceType") var referenceType: String? = BLANK_STRING,
     @SerializedName("subjectId") var subjectId: Int = DEFAULT_ID,
     @SerializedName("subjectType") var subjectType: String? = BLANK_STRING,
-    @SerializedName("didiId") var didiId: Int = DEFAULT_ID,
+    @SerializedName("taskId") var taskId: Int = DEFAULT_ID,
     @SerializedName("sectionId") var sectionId: String = BLANK_STRING,
     @SerializedName("status") var status: String = BLANK_STRING,
     @SerializedName("tag") var tag: String? = BLANK_STRING,
     @SerializedName("topicName") var topicName: String = BLANK_STRING,
     @SerializedName("clientId") var clientId: String = BLANK_STRING,
     @SerializedName("payload") var payload: String = BLANK_STRING,
+    @SerializedName("localReferenceId") var localReferenceId: String = BLANK_STRING,
     @SerializedName("question") var question: QuestionResponsModel? = null
 )

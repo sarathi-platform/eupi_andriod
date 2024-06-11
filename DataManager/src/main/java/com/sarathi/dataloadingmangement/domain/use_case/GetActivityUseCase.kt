@@ -17,6 +17,11 @@ class GetActivityUseCase @Inject constructor(private val activityRepositoryImpl:
             activityId = activityId
         )
     }
+    suspend fun isAllActivityCompleted(missionId: Int): Boolean {
+        return activityRepositoryImpl.isAllActivityCompleted(
+            missionId = missionId,
+        )
+    }
 
     suspend fun markMissionCompleteStatus(missionId: Int) {
         activityRepositoryImpl.updateMissionStatus(

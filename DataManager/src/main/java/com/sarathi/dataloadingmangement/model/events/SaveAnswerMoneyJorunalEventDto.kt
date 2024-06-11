@@ -32,6 +32,9 @@ data class SaveAnswerMoneyJorunalEventDto(
     @SerializedName("grantId")
     @Expose
     val grantId: Int,
+    @SerializedName("taskId")
+    @Expose
+    val taskId: Int,
     @SerializedName("grantType")
     @Expose
     val grantType: String,

@@ -12,7 +12,8 @@ interface ISurveyAnswerEventRepository {
         refrenceId: String,
         taskLocalId: String,
         grantId: Int,
-        grantType: String
+        grantType: String,
+        taskId: Int
     ): SaveAnswerMoneyJorunalEventDto
 
     suspend fun writeSaveAnswerEvent(
@@ -22,7 +23,8 @@ interface ISurveyAnswerEventRepository {
         refrenceId: String,
         taskLocalId: String,
         grantId: Int,
-        grantType: String
+        grantType: String,
+        taskId: Int
     ): SaveAnswerEventDto
 
 

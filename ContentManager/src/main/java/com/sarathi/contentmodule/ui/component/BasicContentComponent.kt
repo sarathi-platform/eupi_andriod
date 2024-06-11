@@ -70,9 +70,11 @@ private fun ContentView(
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable {
-            onClick()
-        }
+        modifier = Modifier
+            .padding(bottom = 16.dp)
+            .clickable {
+                onClick()
+            }
     ) {
         if (isLimitContentData) {
             ButtonComponent(title = "+${totalContent} More")

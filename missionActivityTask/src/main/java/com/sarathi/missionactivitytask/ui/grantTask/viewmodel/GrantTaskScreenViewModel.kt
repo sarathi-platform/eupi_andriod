@@ -9,9 +9,13 @@ import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.contentmodule.utils.event.SearchEvent
+import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
+import com.sarathi.dataloadingmangement.model.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityUiConfigUseCase
@@ -36,7 +40,10 @@ class GrantTaskScreenViewModel @Inject constructor(
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
     private val getActivityConfigUseCase: GetActivityConfigUseCase,
     private val grantConfigUseCase: GrantConfigUseCase,
-    private val fetchContentUseCase: FetchContentUseCase
+    private val fetchContentUseCase: FetchContentUseCase,
+    private val taskStatusUseCase: UpdateTaskStatusUseCase,
+    private val eventWriterUseCase: MATStatusEventWriterUseCase,
+    private val getActivityUseCase: GetActivityUseCase
 ) : BaseViewModel() {
     private var missionId = 0
     private var activityId = 0
@@ -50,6 +57,7 @@ class GrantTaskScreenViewModel @Inject constructor(
     var isDisbursement: Boolean = false
     var isGroupByEnable = mutableStateOf(false)
     var isFilerEnable = mutableStateOf(false)
+    var isActivityCompleted = mutableStateOf(false)
     var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, String>>>>())
 
 
@@ -76,7 +84,7 @@ class GrantTaskScreenViewModel @Inject constructor(
             val taskUiModel =
                 getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
             getSurveyDetail()
-            checkButtonValidation()
+            isActivityCompleted()
             taskUiModel.forEachIndexed { index, it ->
                 if (index == 0) {
                     searchLabel.value = getUiComponentValues(
@@ -195,18 +203,23 @@ class GrantTaskScreenViewModel @Inject constructor(
 
     fun checkButtonValidation() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+
             isButtonEnable.value = getTaskUseCase.isAllActivityCompleted(
                 missionId = missionId,
                 activityId = activityId
-            )
+            ) && !isActivityCompleted.value
         }
     }
 
     fun markActivityCompleteStatus() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            getTaskUseCase.markActivityCompleteStatus(
+            taskStatusUseCase.markActivityCompleted(
                 missionId = missionId,
                 activityId = activityId
+            )
+            eventWriterUseCase.updateActivityStatus(
+                missionId = missionId,
+                activityId = activityId, surveyName = "CSG"
             )
         }
     }
@@ -228,10 +241,38 @@ class GrantTaskScreenViewModel @Inject constructor(
         status: String,
     ) {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            if (status == SurveyStatusEnum.NOT_AVAILABLE.name) {
+                taskStatusUseCase.markTaskNotAvailable(taskId = taskId)
+            } else {
+                taskStatusUseCase.markTaskInProgress(taskId = taskId)
+            }
+            taskStatusUseCase.markActivityInProgress(missionId, activityId)
+            taskStatusUseCase.markMissionInProgress(missionId)
+            eventWriterUseCase.markMATStatus(
+                missionId = missionId,
+                activityId = activityId,
+                taskId = taskId,
+                subjectType = activityConfigUiModel?.subject ?: BLANK_STRING,
+                surveyName = "CSG"
+            )
             getTaskUseCase.updateTaskStatus(
                 taskId = taskId,
                 status = status
             )
+
+
         }
+    }
+
+    private fun isActivityCompleted() {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            isActivityCompleted.value = getActivityUseCase.isAllActivityCompleted(
+                missionId = missionId ?: 0,
+                activityId = activityId ?: 0
+            )
+            checkButtonValidation()
+        }
+
+
     }
 }

@@ -81,7 +81,6 @@ class SurveyScreenViewModel @Inject constructor(
                 referenceId = referenceId,
                 grantId = grantID
             )
-            checkButtonValidation()
             isTaskStatusCompleted()
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -100,16 +99,27 @@ class SurveyScreenViewModel @Inject constructor(
                 )
 
             }
-            if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name) {
+            if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name || taskEntity?.status == SurveyStatusEnum.NOT_AVAILABLE.name) {
                 taskStatusUseCase.markTaskInProgress(
-                    subjectId = taskEntity?.subjectId ?: DEFAULT_ID, taskId = taskId
+                    taskId = taskId
+                )
+                taskStatusUseCase.markActivityInProgress(
+                    missionId = taskEntity?.missionId ?: DEFAULT_ID,
+                    activityId = taskEntity?.activityId ?: DEFAULT_ID,
+                )
+                taskStatusUseCase.markMissionInProgress(
+                    missionId = taskEntity?.missionId ?: DEFAULT_ID,
                 )
                 taskEntity = getTaskUseCase.getTask(taskId)
                 taskEntity?.let {
-                    matStatusEventWriterUseCase.updateTaskStatus(
-                        taskEntity = it,
-                        referenceId.toString(),
-                        subjectType
+                    matStatusEventWriterUseCase.markMATStatus(
+                        surveyName = questionUiModel.value.firstOrNull()?.surveyName
+                            ?: BLANK_STRING,
+                        subjectType = subjectType,
+                        missionId = taskEntity?.missionId ?: DEFAULT_ID,
+                        activityId = taskEntity?.activityId ?: DEFAULT_ID,
+                        taskId = taskEntity?.taskId ?: DEFAULT_ID
+
                     )
                 }
 
@@ -122,7 +132,8 @@ class SurveyScreenViewModel @Inject constructor(
                 referenceId = referenceId,
                 uriList = listOf(),
                 grantId = grantID,
-                grantType = granType
+                grantType = granType,
+                taskId = taskId
             )
 
         }
@@ -140,7 +151,8 @@ class SurveyScreenViewModel @Inject constructor(
             }
 
         }
-        isButtonEnable.value = true
+        isButtonEnable.value = !isTaskCompleted.value
+
 
     }
 
@@ -183,11 +195,13 @@ class SurveyScreenViewModel @Inject constructor(
 
     private fun isTaskStatusCompleted() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            isTaskCompleted.value = getActivityUseCase.isAllActivityCompleted(
+            isTaskCompleted.value = !getActivityUseCase.isAllActivityCompleted(
                 missionId = taskEntity?.missionId ?: 0,
                 activityId = taskEntity?.activityId ?: 0
             )
         }
+        checkButtonValidation()
+
 
 
     }

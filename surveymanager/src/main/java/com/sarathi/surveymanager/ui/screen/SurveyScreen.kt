@@ -190,6 +190,7 @@ fun SurveyScreen(
 
                             QuestionType.SingleSelectDropDown.name -> {
                                 TypeDropDownComponent(
+                                    isEditAllowed = viewModel.isTaskCompleted.value,
                                     title = question.questionDisplay,
                                     isMandatory = question.isMandatory,
                                     sources = getOptionsValueDto(question.options ?: listOf()),
@@ -207,7 +208,7 @@ fun SurveyScreen(
                                     title = question.questionDisplay,
                                     isMandatory = question.isMandatory,
                                     sources = getOptionsValueDto(question.options ?: listOf()),
-                                    //selectOptionText = getSelectedOptionId(question.options),
+                                    isEditAllowed = viewModel.isTaskCompleted.value,
                                     onAnswerSelection = { selectedItems ->
                                         val selectedOptions =
                                             selectedItems.split(DELIMITER_MULTISELECT_OPTIONS)

@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
@@ -20,7 +22,9 @@ import javax.inject.Inject
 @HiltViewModel
 class ActivityScreenViewModel @Inject constructor(
     private val getActivityUseCase: GetActivityUseCase,
-    private val fetchContentUseCase: FetchContentUseCase
+    private val fetchContentUseCase: FetchContentUseCase,
+    private val taskStatusUseCase: UpdateTaskStatusUseCase,
+    private val eventWriterUseCase: MATStatusEventWriterUseCase
 ) : BaseViewModel() {
     var missionId: Int = 0
     private val _activityList = mutableStateOf<List<ActivityUiModel>>(emptyList())
@@ -61,14 +65,15 @@ class ActivityScreenViewModel @Inject constructor(
 
     private fun checkButtonValidation() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            isButtonEnable.value = getActivityUseCase.isAllActivityCompleted(missionId = missionId)
         }
     }
 
     fun markMissionCompleteStatus() {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            getActivityUseCase.markMissionCompleteStatus(
-                missionId = missionId
-            )
+            taskStatusUseCase.markMissionCompleted(missionId = missionId)
+            eventWriterUseCase.updateMissionStatus(missionId = missionId, surveyName = "CSG")
+
         }
     }
 }

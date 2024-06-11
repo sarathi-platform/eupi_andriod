@@ -177,10 +177,15 @@ private fun TaskRowView(
 ) {
     GrantTaskCard(
         onPrimaryButtonClick = { subjectName ->
-            viewModel.updateTaskAvailableStatus(
-                taskId = task.key,
-                status = SurveyStatusEnum.NOT_STARTED.name
-            )
+            if (!viewModel.isActivityCompleted.value) {
+                task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name] =
+                    SurveyStatusEnum.INPROGRESS.name
+                viewModel.updateTaskAvailableStatus(
+                    taskId = task.key,
+                    status = SurveyStatusEnum.INPROGRESS.name,
+
+                    )
+            }
             viewModel.activityConfigUiModel?.let {
                 navigateToGrantSurveySummaryScreen(
                     navController,
@@ -194,11 +199,16 @@ private fun TaskRowView(
             }
         },
         onNotAvailable = {
-            viewModel.updateTaskAvailableStatus(
-                taskId = task.key,
-                status = SurveyStatusEnum.NOT_AVAILABLE.name
-            )
-            viewModel.checkButtonValidation()
+            if (!viewModel.isActivityCompleted.value) {
+
+                task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name] =
+                    SurveyStatusEnum.NOT_AVAILABLE.name
+                viewModel.updateTaskAvailableStatus(
+                    taskId = task.key,
+                    status = SurveyStatusEnum.NOT_AVAILABLE.name
+                )
+                viewModel.checkButtonValidation()
+            }
         },
         imagePath = viewModel.getFilePathUri(
             task.value[GrantTaskCardSlots.GRANT_TASK_IMAGE.name] ?: BLANK_STRING

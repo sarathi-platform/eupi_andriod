@@ -22,4 +22,9 @@ interface IMATStatusEventRepository {
         missionEntity: MissionEntity
     ): UpdateMissionStatusEventDto
 
+    suspend fun getMissionEntity(missionId: Int): MissionEntity
+    suspend fun getTaskEntity(taskId: Int): ActivityTaskEntity
+    suspend fun getActivityEntity(missionId: Int, activityId: Int): ActivityEntity?
+
+
 }
