@@ -30,6 +30,7 @@ import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.ui.common_components.ToolbarWithMenuComponent
 import com.nrlm.baselinesurvey.utils.ConnectionMonitor
 import com.nudge.core.EventSyncStatus
+import com.nudge.navigationmanager.routes.SYNC_HISTORY_ROUTE_NAME
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.sync.home.viewmodel.SyncHomeViewModel
@@ -38,6 +39,8 @@ import com.patsurvey.nudge.activities.ui.theme.newMediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.utils.IMAGE_STRING
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.SYNC_DATA
+import com.patsurvey.nudge.utils.SYNC_IMAGE
 import com.patsurvey.nudge.utils.showCustomToast
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -155,7 +158,12 @@ fun SyncHomeScreen(
                 successEventCount = successDataEventCount.value,
                 isRefreshRequired = false,
                 onRefreshClick = {},
-                onCardClick = {}
+                onCardClick = {
+                    if(successDataEventCount.value>1) {
+                        navController.navigate("$SYNC_HISTORY_ROUTE_NAME/$SYNC_DATA")
+                    }else showCustomToast(context,context.getString(R.string.history_is_not_available_because_data_is_not_synced))
+
+                }
             )
             EventTypeCard(
                 title = stringResource(id = R.string.sync_images),
@@ -163,7 +171,11 @@ fun SyncHomeScreen(
                 successEventCount = successImageEventCount.value,
                 isRefreshRequired = false,
                 onRefreshClick = {},
-                onCardClick = {}
+                onCardClick = {
+                    if(successImageEventCount.value>1) {
+                        navController.navigate("$SYNC_HISTORY_ROUTE_NAME/$SYNC_IMAGE")
+                    }else showCustomToast(context,context.getString(R.string.history_is_not_available_because_data_is_not_synced))
+                }
             )
 
         }

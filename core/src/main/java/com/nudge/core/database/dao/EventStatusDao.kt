@@ -17,4 +17,10 @@ interface EventStatusDao {
 
     @Query("SELECT * FROM $EventsStatusTable")
     fun getAllEventStatus():List<EventStatusEntity>
+
+    @Query("SELECT * FROM $EventsStatusTable WHERE mobile_number =:mobileNumber AND created_date BETWEEN :startDate AND :endDate")
+    fun getAllEventStatusBetweenDates(startDate:String,endDate:String,mobileNumber:String):List<EventStatusEntity>
+
+    @Query("SELECT * FROM $EventsStatusTable WHERE mobile_number =:mobileNumber GROUP BY created_date")
+    fun getAllEventStatusForUser(mobileNumber:String):List<EventStatusEntity>
 }

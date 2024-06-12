@@ -250,4 +250,5 @@ const val TOTAL_FAMILY_MEMBERS_OPTION_VALUE=1
 const val EARNING_FAMILY_MEMBERS_OPTION_VALUE=2
 const val UPCM_USER="Ultra Poor change maker (UPCM)"
 const val IMAGE_STRING="image"
-
+const val SYNC_IMAGE="IMAGE"
+const val SYNC_DATA="DATA"

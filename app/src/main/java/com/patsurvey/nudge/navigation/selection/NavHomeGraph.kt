@@ -19,6 +19,7 @@ import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.LogoutScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
+import com.nudge.navigationmanager.utils.NavigationParams
 import com.patsurvey.nudge.activities.AddDidiScreen
 import com.patsurvey.nudge.activities.DidiScreen
 import com.patsurvey.nudge.activities.FinalStepCompletionScreen
@@ -34,6 +35,7 @@ import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
 import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.survey.SingleQuestionScreen
 import com.patsurvey.nudge.activities.survey.SurveySummary
+import com.patsurvey.nudge.activities.sync.history.presentation.SyncHistoryScreen
 import com.patsurvey.nudge.activities.sync.home.presentation.SyncHomeScreen
 import com.patsurvey.nudge.activities.ui.bpc.bpc_add_more_did_screens.BpcAddMoreDidiScreen
 import com.patsurvey.nudge.activities.ui.bpc.bpc_didi_list_screens.BpcDidiListScreen
@@ -80,6 +82,7 @@ import com.patsurvey.nudge.utils.ARG_STEP_ID
 import com.patsurvey.nudge.utils.ARG_VIDEO_ID
 import com.patsurvey.nudge.utils.ARG_VILLAGE_ID
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.SYNC_DATA
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 
 @Composable
@@ -688,6 +691,21 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
         }
         composable(route = SettingScreens.SYNC_DATA_NOW_SCREEN.route){
             SyncHomeScreen(navController = navController, viewModel = hiltViewModel())
+        }
+        composable(route = SettingScreens.SYNC_HISTORY_SCREEN.route,
+            arguments = listOf(
+                navArgument(NavigationParams.ARG_SYNC_TYPE.value){
+                    type=NavType.StringType
+                }
+            )
+        ){
+            SyncHistoryScreen(
+                navController = navController,
+                syncType = it.arguments?.getString(
+                    NavigationParams.ARG_SYNC_TYPE.value
+                ) ?: SYNC_DATA,
+                viewModel = hiltViewModel()
+            )
         }
 
     }

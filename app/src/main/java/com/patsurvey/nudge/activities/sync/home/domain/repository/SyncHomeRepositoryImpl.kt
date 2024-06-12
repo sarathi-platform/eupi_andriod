@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.flow
 
 class SyncHomeRepositoryImpl(
     val prefRepo: PrefRepo,
-    val corePrefRepo: CorePrefRepo,
     val eventsDao: EventsDao
 ):SyncHomeRepository {
     override fun getTotalEvents(): LiveData<List<Events>>{

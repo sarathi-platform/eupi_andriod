@@ -524,6 +524,14 @@
     <string name="sync_data" translatable="false">Data</string>
     <string name="sync_images" translatable="false">Images</string>
     <string name="sync_all_data" translatable="false">Sync All Data</string>
-
+    <string name="sync_data_history" translatable="false">Sync Data History</string>
+    <string name="sync_image_history" translatable="false">Sync Image History</string>
+    <string name="consumer_success_event_count" translatable="false">Consumer Success Event Count</string>
+    <string name="producer_success_event_count" translatable="false">Producer Success Event Count</string>
+    <string name="consumer_inprogress_event_count" translatable="false">Consumer Inprogress Event Count</string>
+    <string name="producer_inprogress_event_count" translatable="false">Producer Inprogress Event Count</string>
+    <string name="consumer_failed_event_count" translatable="false">Consumer Failed Event Count</string>
+    <string name="producer_failed_event_count" translatable="false">Producer Failed Event Count</string>
+    <string name="history_is_not_available_because_data_is_not_synced" translatable="false">History is not available right not because data is not synced</string>
 
 </resources>

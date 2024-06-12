@@ -14,11 +14,13 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreen
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
+import com.nudge.navigationmanager.utils.NavigationParams
 import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.VillageScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportImportScreen
 import com.patsurvey.nudge.activities.settings.BugLogggingMechanismScreen
 import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
+import com.patsurvey.nudge.activities.sync.history.presentation.SyncHistoryScreen
 import com.patsurvey.nudge.activities.sync.home.presentation.SyncHomeScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
@@ -28,6 +30,7 @@ import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
 import com.patsurvey.nudge.utils.ARG_VIDEO_ID
+import com.patsurvey.nudge.utils.SYNC_DATA
 
 fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
     navigation(
@@ -120,6 +123,21 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
 
         composable(route = SettingScreens.SYNC_DATA_NOW_SCREEN.route){
             SyncHomeScreen(navController = navController, viewModel = hiltViewModel())
+        }
+
+        composable(route = SettingScreens.SYNC_HISTORY_SCREEN.route,
+            arguments = listOf(
+                navArgument(NavigationParams.ARG_SYNC_TYPE.value){
+                    type=NavType.StringType
+                }
+            )
+        ){
+            SyncHistoryScreen(
+                navController = navController,
+                syncType = it.arguments?.getString(NavigationParams.ARG_SYNC_TYPE.value)
+                    ?: SYNC_DATA,
+                viewModel = hiltViewModel()
+            )
         }
     }
 }

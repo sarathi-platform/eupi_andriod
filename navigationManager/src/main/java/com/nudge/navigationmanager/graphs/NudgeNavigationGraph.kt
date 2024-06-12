@@ -155,6 +155,7 @@ sealed class SettingScreens(val route: String) {
 
     object BACKUP_RECOVERY_SCREEN : SettingScreens(route = BACKUP_RECOVERY_SCREEN_ROUTE_NAME)
     object SYNC_DATA_NOW_SCREEN : SettingScreens(route = SYNC_HOME_ROUTE_NAME)
+    object SYNC_HISTORY_SCREEN : SettingScreens(route = "$SYNC_HISTORY_ROUTE_NAME/{${NavigationParams.ARG_SYNC_TYPE.value}}")
 }
 
 sealed class LogoutScreens(val route: String){
