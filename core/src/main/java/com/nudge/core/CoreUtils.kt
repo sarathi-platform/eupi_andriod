@@ -721,3 +721,7 @@ fun showCustomToast(
 ) {
     Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
 }
+
+fun String.capitalizeFirstLetter(): String {
+    return this.lowercase().replaceFirstChar { it.uppercase() }
+}

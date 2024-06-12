@@ -24,11 +24,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nudge.core.ui.events.theme.black1
 import com.nudge.core.ui.events.theme.blueDark
+import com.nudge.core.ui.events.theme.dimen_100_dp
+import com.nudge.core.ui.events.theme.dimen_16_dp
+import com.nudge.core.ui.events.theme.dimen_1_dp
 import com.nudge.core.ui.events.theme.lightGray2
 import com.nudge.core.ui.events.theme.smallTextStyleMediumWeight2
 import com.nudge.core.ui.events.theme.textColorDark
@@ -71,21 +75,21 @@ private fun ContentView(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .padding(bottom = 16.dp)
+            .padding(bottom = dimen_16_dp)
             .clickable {
                 onClick()
             }
     ) {
         if (isLimitContentData) {
-            ButtonComponent(title = "+${totalContent} More")
+            ButtonComponent(title = stringResource(R.string.more, totalContent))
         } else {
             Box(
                 modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp)
+                    .padding(start = dimen_16_dp, end = dimen_16_dp)
                     .size(60.dp)
                     .clip(shape = CircleShape)
                     .border(
-                        1.dp, color = lightGray2, RoundedCornerShape(100.dp)
+                        dimen_1_dp, color = lightGray2, RoundedCornerShape(dimen_100_dp)
                     )
                     .background(color = Color.Transparent)
                     .fillMaxSize(),
