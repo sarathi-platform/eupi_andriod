@@ -160,6 +160,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
             if (deleteCount > 0) {
                 onDeleteSuccess(deleteCount)
             }
+
         }
     }
 

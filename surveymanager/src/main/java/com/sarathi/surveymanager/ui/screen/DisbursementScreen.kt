@@ -82,7 +82,7 @@ fun DisbursementSummaryScreen(
                             ?: BLANK_STRING
                     )
                 },
-                isEditable = viewModel.isButtonEnable.value,
+                isEditable = !viewModel.isActivityCompleted.value,
                 onContentUI = {
                     if (viewModel.taskList.value.isNotEmpty()) {
                         LazyColumn {
@@ -106,7 +106,7 @@ fun DisbursementSummaryScreen(
                                         )
                                     },
                                     onDeleteSurvey = {
-                                        if (viewModel.isButtonEnable.value) {
+                                        if (!viewModel.isActivityCompleted.value) {
                                         viewModel.showDialog.value =
                                             Pair(true, surveyData.referenceId)
                                         }

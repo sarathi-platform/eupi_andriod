@@ -58,7 +58,6 @@ fun BasicMissionCard(
     secondaryButtonText: String = BLANK_STRING,
     topHeaderText: String = BLANK_STRING,
     prefixIcon: Int = R.drawable.ic_group_icon,
-    suffixIcon: Int = R.drawable.ic_arrow_forward_ios_24,
     onPrimaryClick: () -> Unit
 ) {
     Card(
@@ -90,8 +89,7 @@ fun BasicMissionCard(
             }
             ContentBody(
                 title = title,
-                prefixIcon = prefixIcon,
-                suffixIcon = suffixIcon
+                prefixIcon = prefixIcon
             )
             if (needToShowProgressBar && totalCount > 0) {
                 Column(
@@ -133,7 +131,7 @@ fun TopHeader(text: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ContentBody(title: String, prefixIcon: Int, suffixIcon: Int) {
+fun ContentBody(title: String, prefixIcon: Int) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -157,11 +155,6 @@ fun ContentBody(title: String, prefixIcon: Int, suffixIcon: Int) {
 
         Spacer(modifier = Modifier.width(dimen_5_dp))
 
-        Icon(
-            painter = painterResource(id = suffixIcon),
-            contentDescription = null,  // Provide descriptions
-            modifier = Modifier.size(dimen_24_dp)
-        )
     }
 }
 
