@@ -30,7 +30,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,11 +41,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.capitalizeFirstLetter
 import com.nudge.core.ui.events.theme.blueDark
+import com.nudge.core.ui.events.theme.dimen_100_dp
+import com.nudge.core.ui.events.theme.dimen_10_dp
+import com.nudge.core.ui.events.theme.dimen_16_dp
+import com.nudge.core.ui.events.theme.dimen_20_dp
+import com.nudge.core.ui.events.theme.dimen_5_dp
+import com.nudge.core.ui.events.theme.mediumTextStyle
 import com.nudge.core.ui.events.theme.white
 import com.sarathi.contentmodule.R
 import com.sarathi.contentmodule.ui.component.BasicContentComponent
@@ -108,10 +115,10 @@ fun ContentDetailScreen(
                     painter = painterResource(id = R.drawable.more_icon),
                     contentDescription = "more action button",
                     tint = blueDark,
-                    modifier = Modifier.padding(10.dp)
+                    modifier = Modifier.padding(dimen_10_dp)
                 )
             }
-        }, backgroundColor = Color.White, elevation = 10.dp
+        }, backgroundColor = Color.White, elevation = dimen_10_dp
         )
     }, bottomBar = {
         Box(
@@ -120,7 +127,7 @@ fun ContentDetailScreen(
                 .padding(10.dp)
         ) {
             ButtonPositive(
-                buttonTitle = "Go Back", isActive = true, isLeftArrow = false
+                buttonTitle = stringResource(R.string.go_back), isActive = true, isLeftArrow = false
 
             ) {
                 navController.popBackStack()
@@ -134,7 +141,7 @@ fun ContentDetailScreen(
         ) {
             SearchWithFilterViewComponent(placeholderString = "Search",
                 filterSelected = viewModel.filterSelected.value,
-                modifier = Modifier.padding(horizontal = 10.dp),
+                modifier = Modifier.padding(horizontal = dimen_10_dp),
                 showFilter = true,
                 onFilterSelected = {
                     if (viewModel.filterContentList.value.isNotEmpty()) {
@@ -150,11 +157,11 @@ fun ContentDetailScreen(
                         )
                     )
                 })
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(dimen_16_dp))
             if (viewModel.filterContentList.value.isNotEmpty()) {
                 BoxWithConstraints(
                     modifier = Modifier
-                        .padding(top = 20.dp)
+                        .padding(top = dimen_20_dp)
                         .scrollable(
                             state = rememberScrollableState {
                                 scope.launch {
@@ -186,22 +193,28 @@ fun ContentDetailScreen(
                             viewModel.filterContentMap.forEach { (category, itemsInCategory) ->
                                 item {
                                     Text(
-                                        text = category,
-                                        style = MaterialTheme.typography.titleLarge,
+                                        text = category.capitalizeFirstLetter(),
+                                        style = mediumTextStyle,
                                         color = Color.Black,
-                                        modifier = Modifier.padding(8.dp)
+                                        modifier = Modifier.padding(
+                                            horizontal = dimen_16_dp,
+                                            vertical = dimen_5_dp
+                                        )
                                     )
                                 }
                                 item {
                                     LazyVerticalGrid(
                                         state = innerState,
-                                        modifier = Modifier.heightIn(min = 100.dp, max = maxHeight),
+                                        modifier = Modifier.heightIn(
+                                            min = dimen_100_dp,
+                                            max = maxHeight
+                                        ),
                                         columns = GridCells.Fixed(4),
                                         horizontalArrangement = Arrangement.Center
                                     ) {
                                         itemsIndexed(
                                             items = itemsInCategory
-                                        ) { index, item ->
+                                        ) { _, item ->
                                             ContentRowView(
                                                 item,
                                                 viewModel,
