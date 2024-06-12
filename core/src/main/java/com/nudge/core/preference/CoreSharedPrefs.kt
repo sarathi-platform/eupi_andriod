@@ -31,6 +31,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_TYPE_NAME = "type_name"
         const val PREF_CASTE_LIST = "caste_list"
         const val PREF_KEY_USER_ID = "user_id"
+        const val PREF_KEY_DATA_LOADED = "is_data_loaded"
 
 
         @Volatile
@@ -126,6 +127,14 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
 
     override fun setUserId(userId: String) {
         prefs.edit().putString(PREF_KEY_USER_ID, userId).apply()
+    }
+
+    override fun setDataLoaded(isDataLoaded: Boolean) {
+        prefs.edit().putBoolean(PREF_KEY_DATA_LOADED, isDataLoaded).apply()
+    }
+
+    override fun isDataLoaded(): Boolean {
+        return prefs.getBoolean(PREF_KEY_DATA_LOADED, false)
     }
 
     fun setUserName(userName: String) {

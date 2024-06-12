@@ -8,7 +8,7 @@ data class QuestionAnswerResponseModel(
     @SerializedName("id") var id: String = BLANK_STRING,
     @SerializedName("surveyId") var surveyId: Int = DEFAULT_ID,
     @SerializedName("referenceId") var referenceId: Int = DEFAULT_ID,
-    @SerializedName("languageId") var languageId: Int = DEFAULT_ID,
+    @SerializedName("languageId") var languageId: String = BLANK_STRING,
     @SerializedName("dateCreated") var dateCreated: Long = DEFAULT_ID.toLong(),
     @SerializedName("referenceType") var referenceType: String? = BLANK_STRING,
     @SerializedName("subjectId") var subjectId: Int = DEFAULT_ID,

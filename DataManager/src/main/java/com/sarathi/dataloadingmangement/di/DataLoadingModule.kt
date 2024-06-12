@@ -372,7 +372,8 @@ class DataLoadingModule {
             contentDownloaderUseCase = ContentDownloaderUseCase(repository, downloaderManager),
             fetchLanguageUseCase = FetchLanguageUseCase(languageRepository),
             fetchUserDetailUseCase = FetchUserDetailUseCase(userDetailRepository),
-            fetchSurveyAnswerFromNetworkUseCase = fetchSurveyAnswerFromNetworkUseCase
+            fetchSurveyAnswerFromNetworkUseCase = fetchSurveyAnswerFromNetworkUseCase,
+            coreSharedPrefs = coreSharedPrefs
         )
     }
 
@@ -493,6 +494,7 @@ class DataLoadingModule {
         optionItemDao: OptionItemDao,
         dataLoadingApiService: DataLoadingApiService,
         coreSharedPrefs: CoreSharedPrefs,
+        grantConfigDao: GrantConfigDao
     ): ISurveySaveNetworkRepository {
         return SurveySaveNetworkRepositoryImpl(
             coreSharedPrefs = coreSharedPrefs,
@@ -500,7 +502,8 @@ class DataLoadingModule {
             questionEntityDao = questionEntityDao,
             optionItemDao = optionItemDao,
             dataLoadingApiService = dataLoadingApiService,
-            surveyAnswersDao = surveyAnswersDao
+            surveyAnswersDao = surveyAnswersDao,
+            grantConfigDao = grantConfigDao
 
         )
     }

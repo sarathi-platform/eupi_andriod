@@ -22,5 +22,7 @@ interface CorePrefRepo {
     fun getPref(key: String, defaultValue: String): String
     fun getUserId(): String
     fun setUserId(userId: String)
+    fun setDataLoaded(isDataLoaded: Boolean)
+    fun isDataLoaded(): Boolean
 
 }
