@@ -47,7 +47,7 @@ fun DatePickerComponent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp)
+            .padding(vertical = 10.dp)
     ) {
         if (title.isNotBlank()) {
             QuestionComponent(title = title, isRequiredField = isMandatory)

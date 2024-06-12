@@ -181,6 +181,8 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
                 subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
                 taskId = taskEntity?.taskId ?: DEFAULT_ID
             )
+            taskEntity = getTaskUseCase.getTask(taskId)
+
             taskEntity?.let {
                 matStatusEventWriterUseCase.updateTaskStatus(
                     taskEntity = it,

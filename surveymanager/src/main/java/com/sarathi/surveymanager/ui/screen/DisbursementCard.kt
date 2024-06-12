@@ -21,7 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.ui.events.theme.black100Percent
+import com.nudge.core.ui.events.theme.black1
 import com.nudge.core.ui.events.theme.blueDark
 import com.nudge.core.ui.events.theme.borderGreyLight
 import com.nudge.core.ui.events.theme.defaultTextStyle
@@ -149,12 +149,15 @@ fun DisbursementCard(
 
 @Composable
 private fun TextRow(text1: String, text2: String) {
-    Row() {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
         if (text1.isNotBlank()) {
             Text(text = text1, style = quesOptionTextStyle.copy(color = greyColor))
         }
         if (text2.isNotBlank()) {
-            Text(text = text2, style = quesOptionTextStyle.copy(color = black100Percent))
+            Text(text = text2, style = defaultTextStyle.copy(color = black1))
         }
     }
 }

@@ -34,7 +34,7 @@ interface MissionDao {
     fun deleteMissions(userId: String)
 
     @Query(
-        "select mission_table.missionId, mission_language_table.description,  mission_table.missionStatus , \n" +
+        "select mission_table.missionId, mission_language_table.description,  mission_table.status as missionStatus , \n" +
                 "count(activity_table.activityId) as activityCount,\n" +
                 " SUM(CASE WHEN activity_table.status = :status THEN 1 ELSE 0 END) AS pendingActivityCount\n" +
                 " from mission_table\n" +

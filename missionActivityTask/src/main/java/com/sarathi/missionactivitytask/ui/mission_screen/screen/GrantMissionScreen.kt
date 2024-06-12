@@ -23,6 +23,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.isOnline
 import com.nudge.core.ui.events.theme.blueDark
 import com.sarathi.missionactivitytask.R
@@ -107,8 +108,9 @@ fun GrantMissionScreen(
                     LazyColumn {
                         items(viewModel.filterMissionList.value) { mission ->
                             BasicMissionCard(
+                                status = mission.missionStatus ?: BLANK_STRING,
                                 countStatusText = "Activities Completed",
-                                topHeaderText = "Due by 22 March",
+                                topHeaderText = "Due by 28 May",
                                 totalCount = mission.activityCount,
                                 pendingCount = mission.pendingActivityCount,
                                 title = mission.description,
