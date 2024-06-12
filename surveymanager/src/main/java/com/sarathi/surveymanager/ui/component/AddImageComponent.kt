@@ -50,8 +50,11 @@ import coil.compose.rememberAsyncImagePainter
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.ui.events.theme.borderGreyLight
+import com.nudge.core.ui.events.theme.dimen_100_dp
 import com.nudge.core.ui.events.theme.dimen_10_dp
 import com.nudge.core.ui.events.theme.dimen_24_dp
+import com.nudge.core.ui.events.theme.dimen_30_dp
+import com.nudge.core.ui.events.theme.dimen_5_dp
 import com.nudge.core.ui.events.theme.largeTextStyle
 import com.nudge.core.ui.events.theme.redDark
 import com.nudge.core.ui.events.theme.white
@@ -89,7 +92,7 @@ fun AddImageComponent(
             }
         }
     )
-    Column(modifier = Modifier.padding(bottom = 30.dp)) {
+    Column(modifier = Modifier.padding(bottom = dimen_30_dp, start = dimen_5_dp)) {
         if (title.isNotBlank()) {
             QuestionComponent(title = title, isRequiredField = isMandatory)
         }
@@ -100,7 +103,7 @@ fun AddImageComponent(
                     state = outerState,
                     Orientation.Vertical,
                 )
-                .heightIn(min = 100.dp, maxCustomHeight)
+                .heightIn(min = dimen_100_dp, maxCustomHeight)
         ) {
             LazyVerticalGrid(
                 state = innerState,
