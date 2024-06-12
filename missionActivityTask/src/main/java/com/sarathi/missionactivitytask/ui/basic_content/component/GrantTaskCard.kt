@@ -119,7 +119,7 @@ fun GrantTaskCard(
                         style = mediumTextStyle,
                         color = brownDark
                     )
-                    extracted(subTitle1, R.drawable.home_icn)
+                    SubContainerView(subTitle1, R.drawable.home_icn)
                 }
                 if (status == (StatusEnum.COMPLETED.name)) {
                     Icon(
@@ -158,9 +158,9 @@ fun GrantTaskCard(
             Column(modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)) {
-                extracted(subtitle3)
-                extracted(subtitle4, R.drawable.ic_recieve_grant)
-                extracted(subtitle5, R.drawable.ic_grant_sanction)
+                SubContainerView(subtitle3)
+                SubContainerView(subtitle4, R.drawable.ic_recieve_grant)
+                SubContainerView(subtitle5, R.drawable.ic_grant_sanction)
             }
 
 //            GrantAmountView(subtitle3, subtitle4, iconResId = R.drawable.ic_recieve_grant)
@@ -238,7 +238,7 @@ fun GrantTaskCard(
 }
 
 @Composable
-private fun extracted(subTitle1: String = BLANK_STRING, resId: Int = 0) {
+private fun SubContainerView(subTitle1: String = BLANK_STRING, resId: Int = 0) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),
