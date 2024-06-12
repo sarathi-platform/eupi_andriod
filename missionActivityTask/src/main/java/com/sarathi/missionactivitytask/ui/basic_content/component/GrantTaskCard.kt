@@ -50,9 +50,7 @@ import com.nudge.core.ui.events.theme.greyBorderColor
 import com.nudge.core.ui.events.theme.languageItemActiveBg
 import com.nudge.core.ui.events.theme.mediumTextStyle
 import com.nudge.core.ui.events.theme.newMediumTextStyle
-import com.nudge.core.ui.events.theme.smallTextStyleMediumWeight
 import com.nudge.core.ui.events.theme.smallerTextStyleNormalWeight
-import com.nudge.core.ui.events.theme.textColorDark80
 import com.nudge.core.ui.events.theme.unmatchedOrangeColor
 import com.nudge.core.ui.events.theme.white
 import com.sarathi.missionactivitytask.R
@@ -121,11 +119,7 @@ fun GrantTaskCard(
                         style = mediumTextStyle,
                         color = brownDark
                     )
-                    androidx.compose.material3.Text(
-                        text = subTitle1,
-                        style = smallTextStyleMediumWeight,
-                        color = textColorDark80
-                    )
+                    SubContainerView(subTitle1, R.drawable.home_icn)
                 }
                 if (status == (StatusEnum.COMPLETED.name)) {
                     Icon(
@@ -151,11 +145,6 @@ fun GrantTaskCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (subtitle2.isNotBlank()) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.home_icn),
-                        contentDescription = null,
-                        tint = blueDark,
-                    )
                     Text(
                         text = subtitle2,
                         modifier = Modifier
@@ -166,8 +155,16 @@ fun GrantTaskCard(
                     )
                 }
             }
-            GrantAmountView(subtitle3, subtitle4, iconResId = R.drawable.ic_recieve_grant)
-            GrantAmountView(subtitle2 = subtitle5, iconResId = R.drawable.ic_grant_sanction)
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)) {
+                SubContainerView(subtitle3)
+                SubContainerView(subtitle4, R.drawable.ic_recieve_grant)
+                SubContainerView(subtitle5, R.drawable.ic_grant_sanction)
+            }
+
+//            GrantAmountView(subtitle3, subtitle4, iconResId = R.drawable.ic_recieve_grant)
+//            GrantAmountView(subtitle2 = subtitle5, iconResId = R.drawable.ic_grant_sanction)
 
             if (status == StatusEnum.NOT_STARTED.name) {
                 Row(
@@ -236,6 +233,33 @@ fun GrantTaskCard(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun SubContainerView(subTitle1: String = BLANK_STRING, resId: Int = 0) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (subTitle1.isNotBlank()) {
+            if (resId != 0) {
+                Icon(
+                    painter = painterResource(id = resId),
+                    contentDescription = null,
+                    tint = blueDark,
+                )
+            }
+            Text(
+                text = subTitle1,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = dimen_5_dp),
+                color = blueDark,
+                style = newMediumTextStyle
+            )
         }
     }
 }
