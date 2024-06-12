@@ -46,7 +46,7 @@ class SurveyScreenViewModel @Inject constructor(
     private var taskEntity: ActivityTaskEntity? = null
 
     val isButtonEnable = mutableStateOf<Boolean>(false)
-    val isTaskCompleted = mutableStateOf<Boolean>(false)
+    val isActivityNotCompleted = mutableStateOf<Boolean>(false)
     private val _questionUiModel = mutableStateOf<List<QuestionUiModel>>(emptyList())
     val questionUiModel: State<List<QuestionUiModel>> get() = _questionUiModel
     override fun <T> onEvent(event: T) {
@@ -151,7 +151,7 @@ class SurveyScreenViewModel @Inject constructor(
             }
 
         }
-        isButtonEnable.value = !isTaskCompleted.value
+        isButtonEnable.value = true
 
 
     }
@@ -195,7 +195,7 @@ class SurveyScreenViewModel @Inject constructor(
 
     private fun isTaskStatusCompleted() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            isTaskCompleted.value = !getActivityUseCase.isAllActivityCompleted(
+            isActivityNotCompleted.value = !getActivityUseCase.isAllActivityCompleted(
                 missionId = taskEntity?.missionId ?: 0,
                 activityId = taskEntity?.activityId ?: 0
             )

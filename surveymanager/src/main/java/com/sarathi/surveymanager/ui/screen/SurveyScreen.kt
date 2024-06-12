@@ -96,7 +96,7 @@ fun SurveyScreen(
             ) {
                 ButtonPositive(
                     buttonTitle = stringResource(R.string.submit),
-                    isActive = viewModel.isButtonEnable.value,
+                    isActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
                     isLeftArrow = false,
                     onClick = {
                         viewModel.saveButtonClicked()
@@ -141,7 +141,7 @@ fun SurveyScreen(
                             QuestionType.InputNumber.name -> {
                                 InputComponent(
                                     isMandatory = question.isMandatory,
-                                    isEditable = viewModel.isTaskCompleted.value,
+                                    isEditable = viewModel.isActivityNotCompleted.value,
                                     defaultValue = question.options?.firstOrNull()?.selectedValue
                                         ?: BLANK_STRING,
                                     title = question.questionDisplay,
@@ -159,7 +159,7 @@ fun SurveyScreen(
                                     defaultValue = question.options?.firstOrNull()?.selectedValue
                                         ?: BLANK_STRING,
                                     title = question.questionDisplay,
-                                    isEditable = viewModel.isTaskCompleted.value,
+                                    isEditable = viewModel.isActivityNotCompleted.value,
                                     hintText = question.options?.firstOrNull()?.description
                                         ?: BLANK_STRING
                                 ) { selectedValue ->
@@ -176,7 +176,7 @@ fun SurveyScreen(
                                     ),
                                     isMandatory = question.isMandatory,
                                     title = question.questionDisplay,
-                                    isEditable = viewModel.isTaskCompleted.value,
+                                    isEditable = viewModel.isActivityNotCompleted.value,
                                     maxCustomHeight = maxHeight,
                                 ) { selectedValue, isDeleted ->
                                     saveMultiImageTypeAnswer(
@@ -190,7 +190,7 @@ fun SurveyScreen(
 
                             QuestionType.SingleSelectDropDown.name -> {
                                 TypeDropDownComponent(
-                                    isEditAllowed = viewModel.isTaskCompleted.value,
+                                    isEditAllowed = viewModel.isActivityNotCompleted.value,
                                     title = question.questionDisplay,
                                     isMandatory = question.isMandatory,
                                     sources = getOptionsValueDto(question.options ?: listOf()),
@@ -208,7 +208,7 @@ fun SurveyScreen(
                                     title = question.questionDisplay,
                                     isMandatory = question.isMandatory,
                                     sources = getOptionsValueDto(question.options ?: listOf()),
-                                    isEditAllowed = viewModel.isTaskCompleted.value,
+                                    isEditAllowed = viewModel.isActivityNotCompleted.value,
                                     onAnswerSelection = { selectedItems ->
                                         val selectedOptions =
                                             selectedItems.split(DELIMITER_MULTISELECT_OPTIONS)
