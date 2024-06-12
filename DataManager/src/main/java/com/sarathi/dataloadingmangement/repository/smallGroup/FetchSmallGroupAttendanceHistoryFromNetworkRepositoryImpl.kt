@@ -130,7 +130,7 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
         date: Long,
         uniqueUserId: String,
         referenceId: Long
-    ): AttributeValueReferenceEntity {
+    ): List<AttributeValueReferenceEntity> {
         val attributeValueReferenceEntityForSubjectList = ArrayList<AttributeValueReferenceEntity>()
 
 
@@ -156,8 +156,9 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
             taskData = dateTaskData,
             referenceId = referenceId
         )
+        attributeValueReferenceEntityForSubjectList.add(dateAttributeValueReferenceEntity)
 
-        return dateAttributeValueReferenceEntity
+        return attributeValueReferenceEntityForSubjectList
     }
 
     private fun getAttributeValueReferenceEntity(
