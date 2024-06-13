@@ -23,8 +23,6 @@ class SyncHistoryRepositoryImpl @Inject constructor(
 
     override fun getAllEventsBetweenDates(startDate:String,endDate:String): List<EventStatusEntity> {
         return eventStatusDao.getAllEventStatusBetweenDates(
-            startDate = startDate,
-            endDate = endDate,
             mobileNumber = prefRepo.getMobileNumber()
         )
     }

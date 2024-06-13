@@ -132,6 +132,7 @@ fun SyncHomeScreen(
                 Button(
                     onClick = {
                         if((context as MainActivity).isOnline.value){
+                            showCustomToast(context,context.getString(R.string.sync_started))
                             viewModel.syncAllPending(
                                 ConnectionMonitor.DoesNetworkHaveInternet.getNetworkStrength(),
                             )
@@ -159,9 +160,7 @@ fun SyncHomeScreen(
                 isRefreshRequired = false,
                 onRefreshClick = {},
                 onCardClick = {
-                    if(successDataEventCount.value>1) {
                         navController.navigate("$SYNC_HISTORY_ROUTE_NAME/$SYNC_DATA")
-                    }else showCustomToast(context,context.getString(R.string.history_is_not_available_because_data_is_not_synced))
 
                 }
             )
@@ -172,9 +171,7 @@ fun SyncHomeScreen(
                 isRefreshRequired = false,
                 onRefreshClick = {},
                 onCardClick = {
-                    if(successImageEventCount.value>1) {
                         navController.navigate("$SYNC_HISTORY_ROUTE_NAME/$SYNC_IMAGE")
-                    }else showCustomToast(context,context.getString(R.string.history_is_not_available_because_data_is_not_synced))
                 }
             )
 

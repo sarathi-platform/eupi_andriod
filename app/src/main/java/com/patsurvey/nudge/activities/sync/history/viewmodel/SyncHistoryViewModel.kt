@@ -69,8 +69,9 @@ class SyncHistoryViewModel @Inject constructor(
                         if(failedProducerCount>1){
                                 tempList.add(Pair(context.getString(R.string.producer_failed_event_count),failedProducerCount))
                         }
-
                         _countList.value=tempList
+                        Log.d("TAG", "getAllEventsBetweenDates: ${countList.value.json()} ")
+
 
 
                 }

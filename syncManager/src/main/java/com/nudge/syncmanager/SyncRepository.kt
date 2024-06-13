@@ -4,6 +4,7 @@ package com.nudge.syncmanager
 import android.util.Log
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventSyncStatus
+import com.nudge.core.SOMETHING_WENT_WRONG
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.EventStatusEntity
@@ -88,9 +89,9 @@ class SyncApiRepository @Inject constructor(
             eventStatusDao.insert(
                 EventStatusEntity(
                     clientId = it.clientId,
-                    errorMessage = it.errorMessage,
+                    errorMessage = if(it.errorMessage.isNullOrEmpty()) SOMETHING_WENT_WRONG else it.errorMessage,
                     status = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
-                    mobileNumber = it.mobileNumber,
+                    mobileNumber = prefRepo.getMobileNumber(),
                     createdBy = prefRepo.getUserId(),
                     eventStatusId = 0
                 )

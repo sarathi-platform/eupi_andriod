@@ -45,8 +45,13 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -60,9 +65,11 @@ import com.nrlm.baselinesurvey.ui.theme.smallTextStyleWithNormalWeight
 import com.nudge.core.database.converters.DateConverter
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.sync.history.viewmodel.SyncHistoryViewModel
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.dateRangeFieldColor
 import com.patsurvey.nudge.activities.ui.theme.otpBorderColor
+import com.patsurvey.nudge.activities.ui.theme.smallTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -230,6 +237,36 @@ fun SyncHistoryScreen(
                         eventStatusList = viewModel.countList.value,
                         onCardClick = {}
                     )
+                }else {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Column(
+                            modifier = Modifier
+                                .padding(vertical = (screenHeight / 4))
+                                .align(
+                                    Alignment.TopCenter
+                                ),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            androidx.compose.material.Text(
+                                text = buildAnnotatedString {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = textColorDark,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.Normal,
+                                            fontFamily = NotoSans
+                                        )
+                                    ) {
+                                        append(
+                                            "No History Available Right Now"
+                                        )
+                                    }
+                                },
+                                modifier = Modifier.padding(top = 32.dp)
+                            )
+                        }
+                    }
+
                 }
             }
         }
@@ -241,5 +278,9 @@ fun SyncHistoryScreen(
 @Preview(showBackground = true)
 @Composable
 fun SyncHistoryScreenPreview() {
-    SyncHistoryScreen(navController = rememberNavController(), syncType = SYNC_DATA, viewModel = hiltViewModel())
+    SyncHistoryScreen(
+        navController = rememberNavController(),
+        syncType = SYNC_DATA,
+        viewModel = hiltViewModel()
+    )
 }

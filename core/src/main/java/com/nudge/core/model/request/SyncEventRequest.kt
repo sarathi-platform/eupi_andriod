@@ -1,6 +1,7 @@
 package com.nudge.core.model.request
 
 import com.google.gson.annotations.SerializedName
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.database.entities.Events
 
 
