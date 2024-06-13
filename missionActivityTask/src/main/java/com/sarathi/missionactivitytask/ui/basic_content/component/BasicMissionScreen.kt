@@ -2,6 +2,7 @@ package com.sarathi.missionactivitytask.ui.basic_content.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -50,7 +51,7 @@ import com.sarathi.missionactivitytask.utils.statusColor
 fun BasicMissionCard(
     title: String = BLANK_STRING,
     needToShowProgressBar: Boolean = false,
-    status: StatusEnum = StatusEnum.PENDING,
+    status: String = StatusEnum.PENDING.name,
     pendingCount: Int = 0,
     totalCount: Int = 0,
     countStatusText: String = BLANK_STRING,
@@ -63,6 +64,9 @@ fun BasicMissionCard(
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = dimen_10_dp),
         modifier = Modifier
+            .clickable {
+                onPrimaryClick()
+            }
             .fillMaxWidth()
             .padding(dimen_16_dp)
             .clip(RoundedCornerShape(dimen_6_dp))
@@ -106,14 +110,15 @@ fun BasicMissionCard(
                     )
                 }
             }
-
-            ActionButtons(
-                primaryButtonText,
-                secondaryButtonText,
-                onPrimaryClick = {
-                    onPrimaryClick()
-                }
-            )
+            if (status != StatusEnum.COMPLETED.name) {
+                ActionButtons(
+                    primaryButtonText,
+                    secondaryButtonText,
+                    onPrimaryClick = {
+                        onPrimaryClick()
+                    }
+                )
+            }
         }
     }
 }

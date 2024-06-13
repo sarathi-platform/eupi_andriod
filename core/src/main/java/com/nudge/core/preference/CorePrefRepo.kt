@@ -18,9 +18,13 @@ interface CorePrefRepo {
     fun saveAppLanguage(code: String?)
     fun savePref(key: String, value: String)
     fun savePref(key: String, value: Int)
+    fun savePref(key: String, value: Boolean)
     fun getPref(key: String, defaultValue: Int): Int
     fun getPref(key: String, defaultValue: String): String
+    fun getPref(key: String, defaultValue: Boolean): Boolean
     fun getUserId(): String
     fun setUserId(userId: String)
+    fun setDataLoaded(isDataLoaded: Boolean)
+    fun isDataLoaded(): Boolean
 
 }
