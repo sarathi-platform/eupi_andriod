@@ -1,5 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
+import com.nudge.core.getDefaultBackUpFileName
+import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.LanguageDao
@@ -22,6 +24,11 @@ class UserDetailRepository @Inject constructor(
     }
 
     override fun saveUserDetails(userDetailsResponse: UserDetailsResponse) {
+
+        val mobileNo = sharedPrefs.getMobileNo()
+        sharedPrefs.setBackupFileName(getDefaultBackUpFileName(mobileNo))
+        sharedPrefs.setImageBackupFileName(getDefaultImageBackUpFileName(mobileNo))
+
         userDetailsResponse.username?.let { sharedPrefs.setUserName(it) }
         userDetailsResponse.email?.let { sharedPrefs.setUserEmail(it) }
         userDetailsResponse.roleName?.let { sharedPrefs.setUserRole(it) }

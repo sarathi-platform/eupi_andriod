@@ -52,7 +52,6 @@ import com.sarathi.missionactivitytask.ui.components.TextProperties
 import com.sarathi.missionactivitytask.ui.components.TextWithIconComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.smallgroupmodule.R
-import com.sarathi.smallgroupmodule.navigation.SMALL_GROUP_ATTENDANCE_HISTORY_SCREEN_ROUTE
 import com.sarathi.smallgroupmodule.ui.commonUi.CustomDialogComponent
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.viewModel.SmallGroupAttendanceScreenViewModel
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.event.SmallGroupAttendanceEvent
@@ -189,11 +188,11 @@ fun SmallGroupAttendanceScreen(
                                                 false
                                             )
                                         )
-                                        navHostController.popBackStack()
-                                        navHostController.popBackStack()
-                                        navHostController.navigate(
-                                            "$SMALL_GROUP_ATTENDANCE_HISTORY_SCREEN_ROUTE/$smallGroupId"
-                                        )
+                                        navHostController.navigateUp()
+//                                        navHostController.popBackStack()
+//                                        navHostController.navigate(
+//                                            "$SMALL_GROUP_ATTENDANCE_HISTORY_SCREEN_ROUTE/$smallGroupId"
+//                                        )
                                     } else {
                                         smallGroupAttendanceScreenViewModel.onEvent(
                                             LoaderEvent.UpdateLoaderState(

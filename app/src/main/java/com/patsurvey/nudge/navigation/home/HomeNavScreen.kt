@@ -47,7 +47,9 @@ fun HomeNavScreen(navController: NavHostController = rememberNavController(), pr
 fun BottomBar(navController: NavHostController, prefRepo: PrefRepo) {
     val screens = listOf(
         BottomNavItem(
-            stringResource(R.string.progress_item_text),
+            if (prefRepo.getLoggedInUserType() == UPCM_USER) stringResource(id = R.string.mission) else stringResource(
+                R.string.progress_item_text
+            ),
             if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true))
                 HomeScreens.BPC_PROGRESS_SCREEN.route
             else

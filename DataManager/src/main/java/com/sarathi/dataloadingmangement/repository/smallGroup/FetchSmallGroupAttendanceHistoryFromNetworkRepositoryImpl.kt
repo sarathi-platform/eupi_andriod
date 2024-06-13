@@ -4,6 +4,7 @@ import com.nudge.core.ATTENDANCE_TAG_ID
 import com.nudge.core.enums.AttributesType
 import com.nudge.core.enums.SubjectType
 import com.nudge.core.enums.ValueTypes
+import com.nudge.core.enums.ValueTypes.Companion.convertToDataType
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
@@ -20,6 +21,8 @@ import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.network.request.AttendanceHistoryRequest
 import com.sarathi.dataloadingmangement.network.response.AttendanceHistoryResponse
 import com.sarathi.dataloadingmangement.network.response.DidiAttendanceDetail
+import java.text.SimpleDateFormat
+import java.util.Date
 import javax.inject.Inject
 
 class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject constructor(
@@ -61,6 +64,8 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
 
     override suspend fun saveSmallGroupAttendanceHistoryToDb(attendanceHistoryResponse: AttendanceHistoryResponse) {
         val date = attendanceHistoryResponse.date
+        /*.getDateFromResponse()
+        .getDateInMillis()*/
         attendanceHistoryResponse.didiAttendanceDetailList.forEach { didiAttendanceDetail ->
             val isHistoryAvailable = checkIfHistoryAvailable(didiAttendanceDetail.id, date)
             if (isHistoryAvailable == 0) {
@@ -109,12 +114,30 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
     }
 
     override suspend fun checkIfHistoryAvailable(subjectId: Int, date: Long): Int {
-        return subjectAttributeDao.isAttendanceHistoryAvailable(
+
+        val historyForDidi = subjectAttributeDao.isAttendanceHistoryAvailableForDidi(
+            subjectId,
+            subjectType = SubjectType.SUBJECT_TYPE_DIDI.subjectName,
+            attribute = AttributesType.ATTRIBUTE_ATTENDANCE.attributeType,
+        )
+        val historyDate = ArrayList<String>()
+        historyForDidi.forEach {
+            val dateInLong = (it.convertToDataType(ValueTypes.LONG.dataType) as Long)
+            historyDate.add(dateInLong.getDate())
+        }
+
+        var count = 0
+        if (historyDate.contains(date.getDate()))
+            count = 1
+
+        count += subjectAttributeDao.isAttendanceHistoryAvailable(
             subjectId = subjectId,
             subjectType = SubjectType.SUBJECT_TYPE_DIDI.subjectName,
             attribute = AttributesType.ATTRIBUTE_ATTENDANCE.attributeType,
             date = date.toString()
         )
+
+        return count
     }
 
     private fun String.getDateFromResponse(): String {
@@ -212,6 +235,14 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
     private fun String.getAttendanceFromInt(): String {
         return if (this == "0")
             "Absent" else "Present"
+    }
+
+    private fun Long?.getDate(pattern: String = "dd/MM/yyyy"): String {
+        if (this == null)
+            return com.nudge.core.BLANK_STRING
+
+        val formatter = SimpleDateFormat(pattern)
+        return formatter.format(Date(this))
     }
 
 }

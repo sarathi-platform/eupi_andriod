@@ -55,6 +55,13 @@ interface SubjectAttributeDao {
         date: String
     ): Int
 
+    @Query("SELECT date from $SUBJECT_ATTRIBUTE_TABLE_NAME where subjectId = :subjectId and subjectType = :subjectType and attribute = :attribute")
+    fun isAttendanceHistoryAvailableForDidi(
+        subjectId: Int,
+        subjectType: String,
+        attribute: String,
+    ): List<String>
+
     @Transaction
     fun removeAttendanceFromSubjectAttributeTable(
         subjectIds: List<Int>,
