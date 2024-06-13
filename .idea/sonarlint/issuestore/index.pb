@@ -45,3 +45,5 @@ W
 'CommunicationModule/detekt/baseline.xml,a/e/ae6d1d924af653203958195892c02317d7f11cbe
 Q
 !baselinesurvey/detekt/report.html,a/7/a7bd0b545c83bde504a20f1b9af45a979553e39b
+è
+_baselinesurvey/src/main/java/com/nrlm/baselinesurvey/ui/setting/viewmodel/SettingBSViewModel.kt,e/6/e68ba212203bad59318d07f4b4995caf2315a105
