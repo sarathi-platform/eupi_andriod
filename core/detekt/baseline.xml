@@ -1,0 +1,325 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+    <ManuallySuppressedIssues></ManuallySuppressedIssues>
+    <CurrentIssues>
+        <ID>ComplexCondition:CoreLogger.kt$LogWriter$isInitializing.compareAndSet( false, true )
+            &amp;&amp; !isQuitting &amp;&amp; (syslogThread == null || !syslogThread!!.isAlive)
+        </ID>
+        <ID>
+            ConstructorParameterNaming:EventDependencyEntity.kt$EventDependencyEntity$@ColumnInfo("dependent_event_id")
+            // @TypeConverters(ListConvertor::class) val dependent_event_id: String
+        </ID>
+        <ID>
+            ConstructorParameterNaming:EventDependencyEntity.kt$EventDependencyEntity$@PrimaryKey(autoGenerate
+            = false) @ColumnInfo("id") val event_id: String
+        </ID>
+        <ID>ConstructorParameterNaming:EventName.kt$EventName$val depends_on: List&lt;Int&gt; =
+            emptyList()
+        </ID>
+        <ID>ConstructorParameterNaming:Events.kt$Events$@ColumnInfo("consumer_status") //TODO Remove
+            this val consumer_status: String
+        </ID>
+        <ID>ConstructorParameterNaming:Events.kt$Events$@ColumnInfo("created_date")
+            @TypeConverters(DateConverter::class) val created_date: Date =
+            System.currentTimeMillis().toDate()
+        </ID>
+        <ID>ConstructorParameterNaming:Events.kt$Events$@ColumnInfo("error_message") val
+            error_message: String? = BLANK_STRING
+        </ID>
+        <ID>ConstructorParameterNaming:Events.kt$Events$@ColumnInfo("mobile_number") val
+            mobile_number: String
+        </ID>
+        <ID>ConstructorParameterNaming:Events.kt$Events$@ColumnInfo("modified_date")
+            @TypeConverters(DateConverter::class) val modified_date: Date
+        </ID>
+        <ID>ConstructorParameterNaming:Events.kt$Events$@ColumnInfo("request_payload") val
+            request_payload: String?
+        </ID>
+        <ID>ConstructorParameterNaming:Events.kt$Events$@ColumnInfo("retry_count") // TODO val
+            retry_count: Int = 0
+        </ID>
+        <ID>ConstructorParameterNaming:MetadataDto.kt$MetadataDto$@Expose
+            @SerializedName("depends_on") val depends_on: List&lt;String&gt;?
+        </ID>
+        <ID>ConstructorParameterNaming:MetadataDto.kt$MetadataDto$@Expose
+            @SerializedName("request_payload_size") val request_payload_size: Long
+        </ID>
+        <ID>CyclomaticComplexMethod:CoreLogger.kt$LogWriter$private suspend fun getSyslogFile(
+            context: Context, output: File, after: String = "", logFileNames: ArrayList&lt;String&gt;?
+            = null ): Boolean
+        </ID>
+        <ID>CyclomaticComplexMethod:FileUtils.kt$FileUtils$private fun getPath(context: Context,
+            uri: Uri): String?
+        </ID>
+        <ID>CyclomaticComplexMethod:TextFileEventWriter.kt$TextFileEventWriter$private fun
+            writeEventInFile(context: Context, content: String, mobileNo: String, uri: Uri?)
+        </ID>
+        <ID>EmptyClassBlock:Exportable.kt$Exportable${ }</ID>
+        <ID>EmptyClassBlock:SyncEventRequest.kt$EventRequest${ }</ID>
+        <ID>EmptyDefaultConstructor:DbEventWriter.kt$DbEventWrite$()</ID>
+        <ID>EmptyDefaultConstructor:LogEventWriter.kt$LogEventWriter$()</ID>
+        <ID>ForbiddenComment:ZipFileCompression.kt$ZipFileCompression$//TODO: Need to pass Filter
+            data/File Type condition using parameter
+        </ID>
+        <ID>LongMethod:CoreLogger.kt$LogWriter$fun cleanup(context: Context, checkForSize:
+            Boolean)
+        </ID>
+        <ID>LongMethod:CoreLogger.kt$LogWriter$fun log(context: Context, level: Int, tag: String,
+            message: String)
+        </ID>
+        <ID>LongMethod:CoreLogger.kt$LogWriter$private suspend fun getSyslogFile( context: Context,
+            output: File, after: String = "", logFileNames: ArrayList&lt;String&gt;? = null ):
+            Boolean
+        </ID>
+        <ID>LongMethod:CoreUtils.kt$fun compressImage(imageUri: String, activity: Context, name:
+            String): String?
+        </ID>
+        <ID>LongMethod:FileUtils.kt$FileUtils$private fun getPath(context: Context, uri: Uri):
+            String?
+        </ID>
+        <ID>LongMethod:TextFileEventWriter.kt$TextFileEventWriter$private fun
+            writeEventInFile(context: Context, content: String, mobileNo: String, uri: Uri?)
+        </ID>
+        <ID>LongMethod:ZipFileCompression.kt$ZipFileCompression$fun compressData( context: Context,
+            zipFileName: String, filePathToZipped: String, extraUris: List&lt;Pair&lt;String, Uri?&gt;&gt;,
+            folderName: String ): Uri?
+        </ID>
+        <ID>LongMethod:ZipFileCompression.kt$ZipFileCompression$private fun
+            deleteOldImageZipFilesFromAppDirectory( context: Context, contentResolver:
+            ContentResolver?, fileNameReference: String, applicationId: String )
+        </ID>
+        <ID>LongParameterList:CoreLogger.kt$CoreLogger$( context: Context, tag: String, msg: String,
+            ex: Throwable?, stackTrace: Boolean = DEBUG, lineCount: Int = 60 )
+        </ID>
+        <ID>LongParameterList:CoreUtils.kt$( appContext: Context, applicationID: String, mobileNo:
+            String, databaseName: String, userName: String, onExportSuccess: (zipUri: Uri) -&gt;
+            Unit )
+        </ID>
+        <ID>LongParameterList:CoreUtils.kt$( logFile: File, appContext: Context, applicationID:
+            String, mobileNo: String, userName: String, onExportSuccess: (zipUri: Uri) -&gt; Unit )
+        </ID>
+        <ID>LongParameterList:IEventWriter.kt$IEventWriter$( context: Context, event: Events,
+            mobileNo: String, uri: Uri?, dependencyEntity: List&lt;EventDependencyEntity&gt;,
+            eventsDao: EventsDao, eventDependencyDao: EventDependencyDao )
+        </ID>
+        <ID>LongParameterList:IFileCompressor.kt$IFileCompressor$( context: Context,
+            fileNameReference: String, folderName: String, fileType: String, applicationId: String?
+            = null, checkInAppDirectory: Boolean = false )
+        </ID>
+        <ID>LoopWithTooManyJumpStatements:CoreLogger.kt$LogWriter$for</ID>
+        <ID>MagicNumber:CoreLogger.kt$LogWriter$1024</ID>
+        <ID>MagicNumber:CoreLogger.kt$LogWriter$10L</ID>
+        <ID>MagicNumber:CoreLogger.kt$LogWriter$1234L</ID>
+        <ID>MagicNumber:CoreLogger.kt$LogWriter$20L</ID>
+        <ID>MagicNumber:CoreLogger.kt$LogWriter$256</ID>
+        <ID>MagicNumber:CoreLogger.kt$LogWriter$32</ID>
+        <ID>MagicNumber:CoreLogger.kt$LogWriter$8192</ID>
+        <ID>MagicNumber:CoreUtils.kt$10</ID>
+        <ID>MagicNumber:CoreUtils.kt$100</ID>
+        <ID>MagicNumber:CoreUtils.kt$1024</ID>
+        <ID>MagicNumber:CoreUtils.kt$15</ID>
+        <ID>MagicNumber:CoreUtils.kt$16</ID>
+        <ID>MagicNumber:CoreUtils.kt$180F</ID>
+        <ID>MagicNumber:CoreUtils.kt$20</ID>
+        <ID>MagicNumber:CoreUtils.kt$270F</ID>
+        <ID>MagicNumber:CoreUtils.kt$3</ID>
+        <ID>MagicNumber:CoreUtils.kt$5</ID>
+        <ID>MagicNumber:CoreUtils.kt$6</ID>
+        <ID>MagicNumber:CoreUtils.kt$612.0f</ID>
+        <ID>MagicNumber:CoreUtils.kt$8</ID>
+        <ID>MagicNumber:CoreUtils.kt$80</ID>
+        <ID>MagicNumber:CoreUtils.kt$816.0f</ID>
+        <ID>MagicNumber:CoreUtils.kt$90F</ID>
+        <ID>MagicNumber:EventName.kt$EventName.ADD_DIDI$4</ID>
+        <ID>MagicNumber:EventName.kt$EventName.ADD_SECTION_PROGRESS_FOR_DIDI_EVENT$19</ID>
+        <ID>MagicNumber:EventName.kt$EventName.BPC_IMAGE$13</ID>
+        <ID>MagicNumber:EventName.kt$EventName.BPC_IMAGE$4</ID>
+        <ID>MagicNumber:EventName.kt$EventName.BPC_IMAGE$5</ID>
+        <ID>MagicNumber:EventName.kt$EventName.COMPLETED_PAT_SCORE$10</ID>
+        <ID>MagicNumber:EventName.kt$EventName.COMPLETED_PAT_SCORE$4</ID>
+        <ID>MagicNumber:EventName.kt$EventName.COMPLETED_PAT_SCORE$7</ID>
+        <ID>MagicNumber:EventName.kt$EventName.COMPLETED_PAT_SCORE$9</ID>
+        <ID>MagicNumber:EventName.kt$EventName.CRP_IMAGE$13</ID>
+        <ID>MagicNumber:EventName.kt$EventName.CRP_IMAGE$4</ID>
+        <ID>MagicNumber:EventName.kt$EventName.CRP_IMAGE$5</ID>
+        <ID>MagicNumber:EventName.kt$EventName.DELETE_DIDI$4</ID>
+        <ID>MagicNumber:EventName.kt$EventName.DELETE_DIDI$5</ID>
+        <ID>MagicNumber:EventName.kt$EventName.DELETE_DIDI$6</ID>
+        <ID>MagicNumber:EventName.kt$EventName.DELETE_TOLA$3</ID>
+        <ID>MagicNumber:EventName.kt$EventName.FORM_A_TOPIC$12</ID>
+        <ID>MagicNumber:EventName.kt$EventName.FORM_A_TOPIC$14</ID>
+        <ID>MagicNumber:EventName.kt$EventName.FORM_B_TOPIC$12</ID>
+        <ID>MagicNumber:EventName.kt$EventName.FORM_B_TOPIC$14</ID>
+        <ID>MagicNumber:EventName.kt$EventName.FORM_C_TOPIC$12</ID>
+        <ID>MagicNumber:EventName.kt$EventName.FORM_C_TOPIC$14</ID>
+        <ID>MagicNumber:EventName.kt$EventName.FORM_D_TOPIC$12</ID>
+        <ID>MagicNumber:EventName.kt$EventName.FORM_D_TOPIC$14</ID>
+        <ID>MagicNumber:EventName.kt$EventName.INPROGRESS_PAT_SCORE$4</ID>
+        <ID>MagicNumber:EventName.kt$EventName.INPROGRESS_PAT_SCORE$7</ID>
+        <ID>MagicNumber:EventName.kt$EventName.INPROGRESS_PAT_SCORE$9</ID>
+        <ID>MagicNumber:EventName.kt$EventName.NOT_AVAILBLE_PAT_SCORE$18</ID>
+        <ID>MagicNumber:EventName.kt$EventName.NOT_AVAILBLE_PAT_SCORE$4</ID>
+        <ID>MagicNumber:EventName.kt$EventName.NOT_AVAILBLE_PAT_SCORE$7</ID>
+        <ID>MagicNumber:EventName.kt$EventName.RANKING_FLAG_EDIT$17</ID>
+        <ID>MagicNumber:EventName.kt$EventName.REJECTED_PAT_SCORE$11</ID>
+        <ID>MagicNumber:EventName.kt$EventName.REJECTED_PAT_SCORE$4</ID>
+        <ID>MagicNumber:EventName.kt$EventName.REJECTED_PAT_SCORE$7</ID>
+        <ID>MagicNumber:EventName.kt$EventName.REJECTED_PAT_SCORE$9</ID>
+        <ID>MagicNumber:EventName.kt$EventName.SAVE_BPC_MATCH_SCORE$15</ID>
+        <ID>MagicNumber:EventName.kt$EventName.SAVE_PAT_ANSWERS$4</ID>
+        <ID>MagicNumber:EventName.kt$EventName.SAVE_PAT_ANSWERS$7</ID>
+        <ID>MagicNumber:EventName.kt$EventName.SAVE_PAT_ANSWERS$8</ID>
+        <ID>MagicNumber:EventName.kt$EventName.SAVE_RESPONSE_EVENT$21</ID>
+        <ID>MagicNumber:EventName.kt$EventName.SAVE_VO_ENDORSEMENT$12</ID>
+        <ID>MagicNumber:EventName.kt$EventName.SAVE_VO_ENDORSEMENT$4</ID>
+        <ID>MagicNumber:EventName.kt$EventName.SAVE_VO_ENDORSEMENT$7</ID>
+        <ID>MagicNumber:EventName.kt$EventName.SAVE_VO_ENDORSEMENT$9</ID>
+        <ID>MagicNumber:EventName.kt$EventName.SAVE_WEALTH_RANKING$4</ID>
+        <ID>MagicNumber:EventName.kt$EventName.SAVE_WEALTH_RANKING$5</ID>
+        <ID>MagicNumber:EventName.kt$EventName.SAVE_WEALTH_RANKING$7</ID>
+        <ID>MagicNumber:EventName.kt$EventName.UPDATE_ACTIVITY_STATUS_EVENT$23</ID>
+        <ID>MagicNumber:EventName.kt$EventName.UPDATE_DIDI$4</ID>
+        <ID>MagicNumber:EventName.kt$EventName.UPDATE_DIDI$5</ID>
+        <ID>MagicNumber:EventName.kt$EventName.UPDATE_MISSION_STATUS_EVENT$24</ID>
+        <ID>MagicNumber:EventName.kt$EventName.UPDATE_SECTION_PROGRESS_FOR_DIDI_EVENT$20</ID>
+        <ID>MagicNumber:EventName.kt$EventName.UPDATE_TASK_STATUS_EVENT$22</ID>
+        <ID>MagicNumber:EventName.kt$EventName.UPLOAD_IMAGE_RESPONSE_EVENT$25</ID>
+        <ID>MagicNumber:EventName.kt$EventName.WORKFLOW_STATUS_UPDATE$16</ID>
+        <ID>MagicNumber:FileUtils.kt$FileUtils$1024</ID>
+        <ID>MagicNumber:FileUtils.kt$FileUtils$4</ID>
+        <ID>MagicNumber:ImageEventWriter.kt$ImageEventWriter$100</ID>
+        <ID>MatchingDeclarationName:CoreStorageModule.kt$StorageModule</ID>
+        <ID>MatchingDeclarationName:DbEventWriter.kt$DbEventWrite : IEventWriter</ID>
+        <ID>MatchingDeclarationName:SyncEventRequest.kt$EventRequest</ID>
+        <ID>MaxLineLength:ApiStatusDao.kt$ApiStatusDao$@Query("update $ApiStatusTable set status
+            =:status, error_message =:errorMessage, error_code=:errorCode where api_end_point
+            =:apiEndpoint ")
+        </ID>
+        <ID>MaxLineLength:CoreLogger.kt$CoreLogger$return if (ex != null) "
+            ${ex.javaClass.simpleName}${if (ex.message != null) ": \"${ex.message}\"" else ""}" else
+            ""
+        </ID>
+        <ID>
+            MaxLineLength:CoreLogger.kt$LogWriter$"${syslogMessageTimeStampFormat.format(packet.timestamp)}
+            ${packet.tag} ${packet.message}\n".toByteArray()
+        </ID>
+        <ID>MaxLineLength:CoreLogger.kt$LogWriter$/*if (bytesToSkipAtStartOfLogFile &gt; 0) { //For
+            a long log file just log the preamble and then the end of the log file. val preamble =
+            getPreamble() for(log in preamble) { val preambleLog = "$log\n"
+            output.appendBytes(preambleLog.toByteArray()) totalBytes += preambleLog.length } }*/
+        </ID>
+        <ID>MaxLineLength:CoreLogger.kt$LogWriter$//delete oldest files where the newer files total
+            &gt; SUPPORT_LOG_SIZE_MAX, except for the current file
+        </ID>
+        <ID>MaxLineLength:CoreUtils.kt$copyUriToAnotherLocation(appContext.contentResolver,
+            sourceUri = it, destinationUri = currentDBFile.toUri() )
+        </ID>
+        <ID>MaxLineLength:CoreUtils.kt$fun</ID>
+        <ID>MaxLineLength:ZipFileCompression.kt$ZipFileCompression$File(commonFilePath.path + "/" +
+            Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME + "/" + folderName)
+        </ID>
+        <ID>MaxLineLength:ZipFileCompression.kt$ZipFileCompression$File(commonFilePath.path + "/" +
+            Environment.DIRECTORY_DOCUMENTS + SARATHI_DIRECTORY_NAME+"/"+folderName)
+        </ID>
+        <ID>MaxLineLength:ZipFileCompression.kt$ZipFileCompression$val</ID>
+        <ID>NestedBlockDepth:CoreLogger.kt$LogWriter$fun cleanup(context: Context, checkForSize:
+            Boolean)
+        </ID>
+        <ID>NestedBlockDepth:CoreUtils.kt$fun copyZipFile(appContext:
+            Context,srcFileUri:Uri,zipFileName:String,mobileNo: String,userName: String)
+        </ID>
+        <ID>NestedBlockDepth:CoreUtils.kt$fun getAllFilesInDirectory(appContext:
+            Context,directoryPath: String?,applicationID: String): MutableList&lt;Pair&lt;String,
+            Uri&gt;&gt;
+        </ID>
+        <ID>NestedBlockDepth:CoreUtils.kt$fun getUriUsingDisplayName(context: Context, oldName:
+            String): Uri?
+        </ID>
+        <ID>NestedBlockDepth:FileUtils.kt$FileUtils$private fun getPath(context: Context, uri: Uri):
+            String?
+        </ID>
+        <ID>NestedBlockDepth:ImageEventWriter.kt$ImageEventWriter$private fun saveImageToMediaStore(
+            context: Context, contentImageUri: Uri, mobileNo: String, )
+        </ID>
+        <ID>NestedBlockDepth:TextFileEventWriter.kt$TextFileEventWriter$private fun
+            writeEventInFile(context: Context, content: String, mobileNo: String, uri: Uri?)
+        </ID>
+        <ID>
+            NestedBlockDepth:ZipFileCompression.kt$ZipFileCompression$@RequiresApi(Build.VERSION_CODES.Q)
+            private fun deleteOldFilesFromExternalDirectoryForQ( context: Context, contentResolver:
+            ContentResolver?, fileNameReference: String, folderName: String, fileType: String )
+        </ID>
+        <ID>NestedBlockDepth:ZipFileCompression.kt$ZipFileCompression$fun compressData( context:
+            Context, zipFileName: String, filePathToZipped: String, extraUris: List&lt;Pair&lt;String,
+            Uri?&gt;&gt;, folderName: String ): Uri?
+        </ID>
+        <ID>NestedBlockDepth:ZipFileCompression.kt$ZipFileCompression$private fun
+            deleteOldFilesFromExternalDirectory( context: Context, fileNameReference: String,
+            folderName: String, fileType: String )
+        </ID>
+        <ID>NestedBlockDepth:ZipFileCompression.kt$ZipFileCompression$private fun
+            deleteOldImageZipFilesFromAppDirectory( context: Context, contentResolver:
+            ContentResolver?, fileNameReference: String, applicationId: String )
+        </ID>
+        <ID>NestedBlockDepth:ZipManager.kt$ZipManager$@Throws(IOException::class) fun zip(files:
+            List&lt;Pair&lt;String, Uri?&gt;&gt;, zipFile: Uri?, context: Context)
+        </ID>
+        <ID>PrintStackTrace:CoreUtils.kt$e</ID>
+        <ID>PrintStackTrace:CoreUtils.kt$ex</ID>
+        <ID>PrintStackTrace:CoreUtils.kt$exception</ID>
+        <ID>PrintStackTrace:FileUtils.kt$FileUtils$e</ID>
+        <ID>PrintStackTrace:ImageEventWriter.kt$ImageEventWriter$e</ID>
+        <ID>PrintStackTrace:ZipFileCompression.kt$ZipFileCompression$e</ID>
+        <ID>RethrowCaughtException:TextFileEventWriter.kt$TextFileEventWriter$throw exception</ID>
+        <ID>ReturnCount:CoreUtils.kt$fun getBatchSize(connectionQuality: ConnectionQuality): Int
+        </ID>
+        <ID>ReturnCount:CoreUtils.kt$fun renameFile(context: Context, oldName: String, newName:
+            String, mobileNumber: String): Boolean
+        </ID>
+        <ID>ReturnCount:FileUtils.kt$FileUtils$private fun generateFileName(name: String?,
+            directory: File): File?
+        </ID>
+        <ID>ReturnCount:FileUtils.kt$FileUtils$private fun getPath(context: Context, uri: Uri):
+            String?
+        </ID>
+        <ID>ReturnCount:ZipFileCompression.kt$ZipFileCompression$fun compressData( context: Context,
+            zipFileName: String, filePathToZipped: String, extraUris: List&lt;Pair&lt;String, Uri?&gt;&gt;,
+            folderName: String ): Uri?
+        </ID>
+        <ID>
+            ThrowingExceptionsWithoutMessageOrCause:ZipFileCompression.kt$ZipFileCompression$NullPointerException()
+        </ID>
+        <ID>TooGenericExceptionCaught:CoreLogger.kt$LogWriter$e: Exception</ID>
+        <ID>TooGenericExceptionCaught:CoreLogger.kt$LogWriter$ex: Exception</ID>
+        <ID>TooGenericExceptionCaught:CoreLogger.kt$LogWriter$fault: Exception</ID>
+        <ID>TooGenericExceptionCaught:CoreLogger.kt$LogWriter$fault: Throwable</ID>
+        <ID>TooGenericExceptionCaught:CoreUtils.kt$e: Exception</ID>
+        <ID>TooGenericExceptionCaught:CoreUtils.kt$ex: Exception</ID>
+        <ID>TooGenericExceptionCaught:CoreUtils.kt$exception: Exception</ID>
+        <ID>TooGenericExceptionCaught:TextFileEventWriter.kt$TextFileEventWriter$exception:
+            Exception
+        </ID>
+        <ID>TooGenericExceptionCaught:ZipFileCompression.kt$ZipFileCompression$e: Exception</ID>
+        <ID>TooGenericExceptionCaught:ZipFileCompression.kt$ZipFileCompression$ex: Exception</ID>
+        <ID>TooManyFunctions:CoreUtils.kt$com.nudge.core.CoreUtils.kt</ID>
+        <ID>TooManyFunctions:FileUtils.kt$FileUtils</ID>
+        <ID>UnusedParameter:Core.kt$Core$context: Context</ID>
+        <ID>UnusedParameter:CoreUtils.kt$applicationID: String</ID>
+        <ID>UnusedParameter:CoreUtils.kt$dateFormat: Long = System.currentTimeMillis()</ID>
+        <ID>UnusedParameter:CoreUtils.kt$timeInMillSec: String</ID>
+        <ID>UnusedParameter:CoreUtils.kt$timeZone: TimeZone = TimeZone.getTimeZone("UTC")</ID>
+        <ID>UnusedParameter:CoreUtils.kt$userName: String</ID>
+        <ID>UnusedParameter:ZipFileCompression.kt$ZipFileCompression$fileType: String</ID>
+        <ID>UnusedPrivateMember:CoreLogger.kt$LogWriter$private suspend fun getSyslogFile( context:
+            Context, output: File, after: String = "", logFileNames: ArrayList&lt;String&gt;? = null
+            ): Boolean
+        </ID>
+        <ID>UnusedPrivateProperty:CoreLogger.kt$LogWriter$private val LOG_SEPARATOR_DOUBLE =
+            "=".repeat(256)
+        </ID>
+        <ID>VariableNaming:ZipFileCompression.kt$ZipFileCompression$private val TAG =
+            ZipFileCompression::class.java.simpleName
+        </ID>
+        <ID>WildcardImport:ExampleUnitTest.kt$import org.junit.Assert.*</ID>
+    </CurrentIssues>
+</SmellBaseline>

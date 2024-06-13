@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+    <ManuallySuppressedIssues></ManuallySuppressedIssues>
+    <CurrentIssues>
+        <ID>
+            ConstructorParameterNaming:ConfigResponseModel.kt$ConfigResponseModel$@SerializedName("questionImageUrlList")
+            @Expose val image_profile_link: List&lt;String&gt;
+        </ID>
+        <ID>EmptyFunctionBlock:EventObserverInterfaceImpl.kt$EventObserverInterfaceImpl${ }</ID>
+        <ID>MagicNumber:EventObserverInterfaceImpl.kt$EventObserverInterfaceImpl$10</ID>
+        <ID>MagicNumber:EventObserverInterfaceImpl.kt$EventObserverInterfaceImpl$10000</ID>
+        <ID>MagicNumber:EventObserverInterfaceImpl.kt$EventObserverInterfaceImpl$15</ID>
+        <ID>MagicNumber:EventObserverInterfaceImpl.kt$EventObserverInterfaceImpl$20</ID>
+        <ID>MagicNumber:EventObserverInterfaceImpl.kt$EventObserverInterfaceImpl$3</ID>
+        <ID>MagicNumber:EventObserverInterfaceImpl.kt$EventObserverInterfaceImpl$5</ID>
+        <ID>MagicNumber:FirebaseUploadWorker.kt$FirebaseUploadWorker$5</ID>
+        <ID>MagicNumber:SyncUploadWorker.kt$SyncUploadWorker$10</ID>
+        <ID>MagicNumber:SyncUploadWorker.kt$SyncUploadWorker$5</ID>
+        <ID>MatchingDeclarationName:SyncRepository.kt$SyncApiRepository</ID>
+        <ID>ReturnCount:EventObserverInterfaceImpl.kt$EventObserverInterfaceImpl$fun
+            getBatchSize(networkSpeed: NetworkSpeed): Int
+        </ID>
+        <ID>SwallowedException:FirebaseUploadWorker.kt$FirebaseUploadWorker$ex:
+            SocketTimeoutException
+        </ID>
+        <ID>SwallowedException:SyncUploadWorker.kt$SyncUploadWorker$ex: SocketTimeoutException</ID>
+        <ID>UnusedParameter:Utils.kt$dateFormat: Long = System.currentTimeMillis()</ID>
+        <ID>WildcardImport:ExampleUnitTest.kt$import org.junit.Assert.*</ID>
+    </CurrentIssues>
+</SmellBaseline>
