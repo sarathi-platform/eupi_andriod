@@ -5,6 +5,8 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
+import com.sarathi.dataloadingmangement.MODE_TAG
+import com.sarathi.dataloadingmangement.NATURE_TAG
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
 import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
@@ -87,34 +89,8 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
         val optionList = ArrayList<OptionsUiModel>()
         val mergedOptionItem = ArrayList<OptionsUiModel>()
         mergedOptionItem.addAll(optionItems)
-        if (tag == "89" || tag == "90") {
-            val grantConfig = grantConfigDao.getGrantModeNature()
-
-            val gson = Gson()
-            val options = gson.fromJson<QuestionList>(
-                if (tag == "89") grantConfig?.grantMode else grantConfig?.grantNature,
-                QuestionList::class.java
-
-            ).options
-            options?.forEach { option ->
-                mergedOptionItem.add(
-                    OptionsUiModel(
-                        sectionId = sectionId,
-                        surveyId = surveyId,
-                        questionId = questionId,
-                        optionId = option?.optionId,
-                        optionTag = option?.tag ?: DEFAULT_ID,
-                        optionType = option?.optionType,
-                        originalValue = option?.originalValue,
-                        isSelected = false,
-                        description = option?.surveyLanguageAttributes?.find { it.languageCode == coreSharedPrefs.getAppLanguage() }?.description,
-                        paraphrase = option?.surveyLanguageAttributes?.find { it.languageCode == coreSharedPrefs.getAppLanguage() }?.paraphrase,
-                        contentEntities = option?.contentList ?: listOf(),
-                        conditions = option?.conditions
-                    )
-                )
-
-            }
+        if (tag == MODE_TAG || tag == NATURE_TAG) {
+            getOptionsForModeAndNature(tag, mergedOptionItem, sectionId, surveyId, questionId)
         }
         optionsFromServer.forEach { optionFromServer ->
             val selectedOption =
@@ -127,6 +103,41 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
         }
 
         return optionList
+    }
+
+    private fun getOptionsForModeAndNature(
+        tag: String,
+        mergedOptionItem: ArrayList<OptionsUiModel>,
+        sectionId: Int,
+        surveyId: Int,
+        questionId: Int
+    ) {
+        val grantConfig = grantConfigDao.getGrantModeNature()
+
+        val options = Gson().fromJson<QuestionList>(
+            if (tag == MODE_TAG) grantConfig?.grantMode else grantConfig?.grantNature,
+            QuestionList::class.java
+
+        ).options
+        options?.forEach { option ->
+            mergedOptionItem.add(
+                OptionsUiModel(
+                    sectionId = sectionId,
+                    surveyId = surveyId,
+                    questionId = questionId,
+                    optionId = option?.optionId,
+                    optionTag = option?.tag ?: DEFAULT_ID,
+                    optionType = option?.optionType,
+                    originalValue = option?.originalValue,
+                    isSelected = false,
+                    description = option?.surveyLanguageAttributes?.find { it.languageCode == coreSharedPrefs.getAppLanguage() }?.description,
+                    paraphrase = option?.surveyLanguageAttributes?.find { it.languageCode == coreSharedPrefs.getAppLanguage() }?.paraphrase,
+                    contentEntities = option?.contentList ?: listOf(),
+                    conditions = option?.conditions
+                )
+            )
+
+        }
     }
 
 }

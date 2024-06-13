@@ -4,8 +4,8 @@ import com.google.gson.Gson
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.MODE
-import com.sarathi.dataloadingmangement.NATURE
+import com.sarathi.dataloadingmangement.MODE_TAG
+import com.sarathi.dataloadingmangement.NATURE_TAG
 import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
 import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
@@ -100,7 +100,7 @@ class SurveyRepositoryImpl @Inject constructor(
         grantId: Int
     ): List<OptionsUiModel> {
         var optionList = optionItems.filter { it.questionId == question.questionId }
-        if (question.originalValue.equals(MODE) || question.originalValue.equals(NATURE)) {
+        if (question.tag.toString() == (MODE_TAG) || question.tag.toString() == NATURE_TAG) {
 
             optionList = getOptionsForModeAndNature(activityConfigId, grantId, question)
         }
@@ -131,7 +131,7 @@ class SurveyRepositoryImpl @Inject constructor(
         val modeOrNatureOptions = ArrayList<OptionsUiModel>()
         val gson = Gson()
         val options = gson.fromJson<QuestionList>(
-            if (question.originalValue == MODE) grantConfig.grantMode else grantConfig.grantNature,
+            if (question.tag.toString() == MODE_TAG) grantConfig.grantMode else grantConfig.grantNature,
             QuestionList::class.java
 
         ).options
