@@ -130,11 +130,11 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     }
 
     override fun setDataLoaded(isDataLoaded: Boolean) {
-        prefs.edit().putBoolean(PREF_KEY_DATA_LOADED, isDataLoaded).apply()
+        savePref(PREF_KEY_DATA_LOADED, isDataLoaded)
     }
 
     override fun isDataLoaded(): Boolean {
-        return prefs.getBoolean(PREF_KEY_DATA_LOADED, false)
+        return getPref(PREF_KEY_DATA_LOADED, false)
     }
 
     fun setUserName(userName: String) {
@@ -177,12 +177,20 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         prefs.edit().putInt(key, value).apply()
     }
 
+    override fun savePref(key: String, value: Boolean) {
+        prefs.edit().putBoolean(key, value).apply()
+    }
+
     override fun getPref(key: String, defaultValue: Int): Int {
         return prefs.getInt(key, defaultValue)
     }
 
     override fun getPref(key: String, defaultValue: String): String {
         return prefs.getString(key, defaultValue) ?: BLANK_STRING
+    }
+
+    override fun getPref(key: String, defaultValue: Boolean): Boolean {
+        return prefs.getBoolean(key, defaultValue)
     }
 
 }
