@@ -50,6 +50,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.ui.events.theme.borderGreyLight
+import com.nudge.core.ui.events.theme.dimen_100_dp
 import com.nudge.core.ui.events.theme.dimen_10_dp
 import com.nudge.core.ui.events.theme.dimen_24_dp
 import com.nudge.core.ui.events.theme.dimen_30_dp
@@ -102,7 +103,7 @@ fun AddImageComponent(
                     state = outerState,
                     Orientation.Vertical,
                 )
-                .heightIn(min = 100.dp, maxCustomHeight)
+                .heightIn(min = dimen_100_dp, maxCustomHeight)
         ) {
             LazyVerticalGrid(
                 state = innerState,
