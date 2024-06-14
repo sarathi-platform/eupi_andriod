@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.sarathi.dataloadingmangement.ATTRIBUTE_VALUE_REFERENCE_ENTITY_TABLE_NAME
-import androidx.room.Query
 import com.sarathi.dataloadingmangement.data.entities.AttributeValueReferenceEntity
 import com.sarathi.dataloadingmangement.model.uiModel.MarkedDatesUiModel
 

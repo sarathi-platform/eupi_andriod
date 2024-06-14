@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
 import com.nudge.core.ui.theme.largeTextStyle
 import com.nudge.core.ui.theme.textColorDark
 import com.sarathi.missionactivitytask.R

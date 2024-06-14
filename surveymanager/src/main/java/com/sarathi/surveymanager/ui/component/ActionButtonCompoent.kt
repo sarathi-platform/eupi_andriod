@@ -54,6 +54,7 @@ import com.nudge.core.ui.theme.smallTextStyleMediumWeight
 import com.nudge.core.ui.theme.smallTextStyleNormalWeight
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.white
+import com.sarathi.surveymanager.R
 
 @Composable
 fun PrimaryButton(

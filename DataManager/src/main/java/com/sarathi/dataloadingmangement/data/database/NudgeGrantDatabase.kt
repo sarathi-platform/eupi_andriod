@@ -88,7 +88,6 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
         SurveyAnswerEntity::class,
         GrantConfigEntity::class,
         SurveyLanguageAttributeEntity::class,
-        LanguageEntity::class,
         SubjectEntity::class,
         SmallGroupDidiMappingEntity::class
     ],
