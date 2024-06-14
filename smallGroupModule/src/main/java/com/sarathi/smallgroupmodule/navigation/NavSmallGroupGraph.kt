@@ -106,6 +106,14 @@ fun NavHostController.navigateToAttendanceEditScreen(smallGroupId: Int, selected
     this.navigate("$SMALL_GROUP_ATTENDANCE_EDIT_SCREEN_ROUTE/$smallGroupId/$selectedDate")
 }
 
+//TODO Find correct way to navigate back and reload screen with updated state.
+fun NavHostController.navigateToHistoryScreenFromAttendance(smallGroupId: Int) {
+    this.apply {
+        navigateUp()
+        navigateUp()
+        navigate("$SMALL_GROUP_ATTENDANCE_HISTORY_SCREEN_ROUTE/$smallGroupId")
+    }
+}
 
 //TODO Temp code remove after fixing navigation
 const val SMALL_GROUP_ATTENDANCE_HISTORY_SCREEN =
