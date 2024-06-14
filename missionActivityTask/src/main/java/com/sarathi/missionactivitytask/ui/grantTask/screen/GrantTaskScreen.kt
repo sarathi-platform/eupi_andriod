@@ -195,6 +195,7 @@ private fun TaskRowView(
                     subjectType = it.subject,
                     subjectName = subjectName,
                     activityConfigId = it.activityConfigId,
+                    sanctionedAmount = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.toInt(),
                 )
             }
         },

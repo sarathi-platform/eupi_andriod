@@ -19,5 +19,6 @@
     <string name="are_you_sure_you_want_to_delete">Are you sure you want to delete?</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
+    <string name="amount_limit">Amount limit is %1$d</string>
 
 </resources>

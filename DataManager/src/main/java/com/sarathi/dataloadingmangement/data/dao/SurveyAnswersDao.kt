@@ -99,6 +99,6 @@ interface SurveyAnswersDao {
         subjectId: Int,
         tagId: Int,
         uniqueUserIdentifier: String
-    ): SurveyAnswerEntity?
+    ): List<SurveyAnswerEntity>
 
 }

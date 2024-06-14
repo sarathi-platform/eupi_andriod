@@ -1,5 +1,6 @@
 package com.sarathi.surveymanager.ui.screen
 
+import android.text.TextUtils
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.DEFAULT_ID
@@ -40,6 +41,8 @@ class SurveyScreenViewModel @Inject constructor(
     private var taskId: Int = 0
     private var activityConfigId: Int = 0
     private var grantID: Int = 0
+    private var sanctionAmount: Int = 0
+    var totalSubmittedAmount: Int = 0
     private var granType: String = BLANK_STRING
     private var subjectType: String = BLANK_STRING
     private var referenceId: String = BLANK_STRING
@@ -143,7 +146,14 @@ class SurveyScreenViewModel @Inject constructor(
 
     fun checkButtonValidation() {
         questionUiModel.value.filter { it.isMandatory }.forEach { questionUiModel ->
-
+            if (questionUiModel.tagId == 86) {
+                val disbursedAmount =
+                    if (TextUtils.isEmpty(questionUiModel.options?.firstOrNull()?.selectedValue)) 0 else questionUiModel.options?.firstOrNull()?.selectedValue?.toInt()
+                if (disbursedAmount?.plus(totalSubmittedAmount)!! > sanctionAmount) {
+                    isButtonEnable.value = false
+                    return
+                }
+            }
             val result = (questionUiModel.options?.filter { it.isSelected == true }?.size ?: 0) > 0
             if (!result) {
                 isButtonEnable.value = false
@@ -159,17 +169,6 @@ class SurveyScreenViewModel @Inject constructor(
     fun saveButtonClicked() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             saveAnswerIntoDB()
-//            taskStatusUseCase.markTaskCompleted(
-//                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
-//                taskId = taskEntity?.taskId ?: DEFAULT_ID
-//            )
-//            taskEntity?.let {
-//                matStatusEventWriterUseCase.updateTaskStatus(
-//                    taskEntity = it,
-//                    referenceId.toString(),
-//                    subjectType
-//                )
-//            }
         }
     }
 
@@ -182,6 +181,8 @@ class SurveyScreenViewModel @Inject constructor(
         activityConfigId: Int,
         grantId: Int,
         grantType: String,
+        sanctionedAmount: Int,
+        totalSubmittedAmount: Int,
     ) {
         this.surveyId = surveyId
         this.sectionId = sectionId
@@ -191,6 +192,8 @@ class SurveyScreenViewModel @Inject constructor(
         this.activityConfigId = activityConfigId
         this.grantID = grantId
         this.granType = grantType
+        this.sanctionAmount = sanctionedAmount
+        this.totalSubmittedAmount = totalSubmittedAmount
     }
 
     private fun isTaskStatusCompleted() {
@@ -201,7 +204,6 @@ class SurveyScreenViewModel @Inject constructor(
             )
         }
         checkButtonValidation()
-
 
 
     }
