@@ -1,17 +1,53 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.repository.ISurveySaveRepository
-import javax.inject.Inject
 
 class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
-    suspend fun saveSurveyAnswer(questionUiModel: QuestionUiModel, subjectId: Int, taskId: Int) {
-        return repository.saveSurveyAnswer(questionUiModel, subjectId, taskId)
+    suspend fun saveSurveyAnswer(
+        questionUiModel: QuestionUiModel,
+        subjectId: Int,
+        taskId: Int,
+        referenceId: String
+    ) {
+        return repository.saveSurveyAnswer(
+            questionUiModel,
+            subjectId,
+            taskId,
+            referenceId = referenceId
+        )
     }
 
     fun getAnswerForTag(taskId: Int, subjectId: Int, tagId: String): String {
         return repository.getSurveyAnswerForTag(taskId, subjectId, tagId)
     }
 
+    suspend fun getAllSaveAnswer(
+        surveyId: Int,
+        taskId: Int,
+        sectionId: Int
+    ): List<SurveyAnswerEntity> {
+        return repository.getAllSaveAnswer(
+            taskId = taskId,
+            surveyId = surveyId,
+            sectionId = sectionId
+        )
+    }
+
     fun getUserIdentifier(): String = repository.getUserIdentifier()
+
+    suspend fun deleteSurveyAnswer(
+        sectionId: Int,
+        surveyId: Int,
+        referenceId: String,
+        taskId: Int
+    ): Int {
+        return repository.deleteSurveyAnswer(
+            sectionId = sectionId,
+            surveyId = surveyId,
+            taskId = taskId,
+            referenceId = referenceId
+        )
+    }
 }

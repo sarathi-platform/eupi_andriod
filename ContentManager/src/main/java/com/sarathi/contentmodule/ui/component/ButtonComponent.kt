@@ -20,6 +20,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.dimen_100_dp
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -32,11 +37,11 @@ fun ButtonComponent(title: String = BLANK_STRING) {
     ) {
         Box(
             modifier = Modifier
-                .padding(end = 16.dp, top = 2.dp)
+                .padding(end = dimen_16_dp, top = dimen_2_dp)
                 .size(60.dp)
                 .clip(shape = CircleShape)
                 .border(
-                    1.dp, color = lightGray2, RoundedCornerShape(100.dp)
+                    dimen_1_dp, color = lightGray2, RoundedCornerShape(dimen_100_dp)
                 )
                 .background(color = Color.Transparent)
                 .fillMaxSize(),
@@ -45,8 +50,8 @@ fun ButtonComponent(title: String = BLANK_STRING) {
             Text(
                 text = title,
                 textAlign = TextAlign.Center,
-                style = smallerTextStyle.copy(fontSize = 10.sp, color = blueDark),
-                modifier = Modifier.padding(10.dp),
+                style = smallerTextStyle.copy(fontSize = 12.sp, color = blueDark),
+                modifier = Modifier.padding(dimen_10_dp),
             )
         }
     }

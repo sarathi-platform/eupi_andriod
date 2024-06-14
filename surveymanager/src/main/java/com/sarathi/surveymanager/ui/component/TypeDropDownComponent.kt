@@ -13,16 +13,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.toSize
 import com.nudge.core.showCustomToast
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.surveymanager.R
 
 @Composable
 fun TypeDropDownComponent(
+    title: String = BLANK_STRING,
     hintText: String = stringResource(R.string.select),
     sources: List<ValuesDto>?,
+    isMandatory: Boolean = false,
     isEditAllowed: Boolean = true,
-    selectOptionText: Int = 0,
-    onAnswerSelection: (selectValue: Int) -> Unit
+    onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
 ) {
     val context = LocalContext.current
     val defaultSourceList =
@@ -30,13 +32,10 @@ fun TypeDropDownComponent(
     var expanded by remember { mutableStateOf(false) }
     var selectedOptionText by remember {
         mutableStateOf(
-            if (selectOptionText == 0) hintText else defaultSourceList.find { it.id == selectOptionText }?.value
+            defaultSourceList.find { it.isSelected == true }?.value
                 ?: hintText
         )
     }
-//    if (!defaultSourceList.contains(selectedOptionText.)) {
-//        selectedOptionText = BLANK_STRING
-//    }
 
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
@@ -45,9 +44,19 @@ fun TypeDropDownComponent(
         modifier = Modifier.fillMaxWidth(),
         mTextFieldSize = textFieldSize,
         expanded = expanded,
+        title = title,
+        isMandatory = isMandatory,
         selectedItem = selectedOptionText,
         onExpandedChange = {
-            expanded = !it
+            if (isEditAllowed) {
+                expanded = !it
+            } else {
+                showCustomToast(
+                    context,
+                    context.getString(R.string.edit_disable_message)
+                )
+            }
+
         },
         onDismissRequest = {
             expanded = false
@@ -56,17 +65,11 @@ fun TypeDropDownComponent(
             textFieldSize = coordinates.size.toSize()
         },
         onItemSelected = {
-            if (isEditAllowed) {
-                selectedOptionText =
-                    defaultSourceList[defaultSourceList.indexOf(it)].value
-                onAnswerSelection(it.id)
-                expanded = false
-            } else {
-                showCustomToast(
-                    context,
-                    context.getString(R.string.edit_disable_message)
-                )
-            }
+            selectedOptionText =
+                defaultSourceList[defaultSourceList.indexOf(it)].value
+            onAnswerSelection(defaultSourceList[defaultSourceList.indexOf(it)])
+            expanded = false
+
         })
 
 }

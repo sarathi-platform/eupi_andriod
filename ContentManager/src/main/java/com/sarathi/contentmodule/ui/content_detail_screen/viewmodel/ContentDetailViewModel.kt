@@ -31,8 +31,8 @@ class ContentDetailViewModel @Inject constructor(
 
     override fun <T> onEvent(event: T) {
         when (event) {
-            is InitDataEvent.InitDataState -> {
-                initContentScreen()
+            is InitDataEvent.InitContentScreenState -> {
+                initContentScreen(event.matId, event.contentCategory)
             }
 
             is SearchEvent.PerformSearch -> {
@@ -47,11 +47,11 @@ class ContentDetailViewModel @Inject constructor(
         }
     }
 
-    private fun initContentScreen() {
+    private fun initContentScreen(matId: Int, contentCategory: Int) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            contentCount.value = fetchContentUseCase.getContentCount()
-            _contentList.value = fetchContentUseCase.getContentData()
-            _filterContentList.value = fetchContentUseCase.getContentData()
+            contentCount.value = fetchContentUseCase.getContentCount(matId, contentCategory)
+            _contentList.value = fetchContentUseCase.getContentData(matId, contentCategory)
+            _filterContentList.value = fetchContentUseCase.getContentData(matId, contentCategory)
             filterContentMap = contentList.value.groupBy { it.contentType }
 
             withContext(Dispatchers.Main) {

@@ -4,4 +4,6 @@
     <string name="offline_text">Offline</string>
     <string name="not_able_to_load">Not able to load data please try again..</string>
     <string name="retry">Retry</string>
+    <string name="more">+%1$s More</string>
+    <string name="go_back">Go Back</string>
 </resources>

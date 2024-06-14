@@ -27,8 +27,10 @@ interface QuestionEntityDao {
                 " survey_language_attribute_table.description,\n" +
                 " survey_language_attribute_table.paraphrase,\n" +
                 " question_table.questionId,\n" +
+                " question_table.originalValue,\n" +
                 " question_table.sectionId,\n" +
                 " question_table.surveyId,\n" +
+                " question_table.formId,\n" +
                 " question_table.questionImageUrl,\n" +
                 " question_table.type,\n" +
                 " question_table.gotoQuestionId,\n" +
@@ -40,7 +42,7 @@ interface QuestionEntityDao {
                 " survey_language_attribute_table.languageCode,\n" +
                 " question_table.parentQuestionId\n" +
                 "  from question_table inner join survey_language_attribute_table on question_table.questionId = survey_language_attribute_table.referenceId where survey_language_attribute_table.referenceType =:referenceType \n" +
-                "and survey_language_attribute_table.languageCode=:languageId AND question_table.userId=:userId and question_table.sectionId = :sectionId and question_table.surveyId = :surveyId and question_table.userId=:userId "
+                "and survey_language_attribute_table.languageCode=:languageId AND question_table.userId=:userId and question_table.sectionId = :sectionId and question_table.surveyId = :surveyId and question_table.userId=:userId Order by question_table.`order` asc"
     )
     fun getSurveySectionQuestionForLanguage(
         userId: String,
@@ -81,13 +83,6 @@ interface QuestionEntityDao {
     @Query("SELECT tag from $QUESTION_TABLE where  userId=:userid and surveyId = :surveyId and sectionId = :sectionId and questionId = :questionId")
     fun getQuestionTag(userid: String, surveyId: Int, sectionId: Int, questionId: Int): Int
 
-    @Query("SELECT questionDisplay from $QUESTION_TABLE where  userId=:userid and surveyId = :surveyId and sectionId = :sectionId and questionId = :questionId")
-    fun getQuestionDisplayName(
-        userid: String,
-        surveyId: Int,
-        sectionId: Int,
-        questionId: Int
-    ): String
 
     @Query("SELECT * from $QUESTION_TABLE where  userId=:userid and surveyId = :surveyId and sectionId = :sectionId and questionId = :questionId")
     fun getQuestionEntity(

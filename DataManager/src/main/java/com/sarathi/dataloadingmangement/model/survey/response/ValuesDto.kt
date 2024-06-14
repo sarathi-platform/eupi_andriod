@@ -10,7 +10,9 @@ data class ValuesDto(
 
     @SerializedName("value")
     @Expose
-    val value: String
+    val value: String,
+
+    val isSelected: Boolean? = false
 )
 
 fun List<ValuesDto>.contains(element: String): Boolean {

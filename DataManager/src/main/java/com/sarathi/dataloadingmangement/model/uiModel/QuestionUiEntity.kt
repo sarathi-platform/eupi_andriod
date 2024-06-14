@@ -25,12 +25,14 @@ class QuestionUiEntity(
 
     var paraphrase: String? = BLANK_STRING,
 
+    var originalValue: String? = BLANK_STRING,
 
     var description: String? = BLANK_STRING,
 
     var languageCode: String? = BLANK_STRING,
 
     var gotoQuestionId: Int? = 0,
+    var formId: Int? = 0,
 
 
     var order: Int? = 0,

@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.newMediumTextStyle
@@ -44,6 +45,8 @@ import com.sarathi.surveymanager.R
 
 @Composable
 fun MultiSelectSelectDropDown(
+    title: String = BLANK_STRING,
+    isMandatory: Boolean = false,
     items: List<ValuesDto>,
     selectedItems: List<String>,
     onItemSelected: (String) -> Unit,
@@ -72,6 +75,9 @@ fun MultiSelectSelectDropDown(
             selectedItems.joinToString(", ")
         } else {
             stringResource(R.string.select)
+        }
+        if (title.isNotBlank()) {
+            QuestionComponent(title = title, isRequiredField = isMandatory)
         }
         CustomOutlineTextField(
             value = txt,
@@ -148,7 +154,7 @@ fun MultiSelectSelectDropDown(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                onItemSelected(item.value)
+                                onItemSelected(item.value.toString())
                             }
                     )
                 }

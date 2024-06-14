@@ -2,6 +2,9 @@ package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.preference.CoreSharedPrefs
+import com.sarathi.dataloadingmangement.data.dao.ActivityDao
+import com.sarathi.dataloadingmangement.data.dao.MissionDao
+import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
@@ -12,7 +15,10 @@ import com.sarathi.dataloadingmangement.model.events.UpdateTaskStatusEventDto
 import javax.inject.Inject
 
 class MATStatusEventRepositoryImpl @Inject constructor(
-    val coreSharedPrefs: CoreSharedPrefs
+    val coreSharedPrefs: CoreSharedPrefs,
+    val missionDao: MissionDao,
+    val activityDao: ActivityDao,
+    val taskDao: TaskDao
 ) : IMATStatusEventRepository {
     override suspend fun writeTaskStatusEvent(
         taskEntity: ActivityTaskEntity,
@@ -52,6 +58,30 @@ class MATStatusEventRepositoryImpl @Inject constructor(
             status = missionEntity.status
         )
     }
+
+    override suspend fun getMissionEntity(missionId: Int): MissionEntity {
+        return missionDao.getMission(
+            missionId = missionId,
+            userId = coreSharedPrefs.getUniqueUserIdentifier()
+        )
+    }
+
+    override suspend fun getTaskEntity(taskId: Int): ActivityTaskEntity {
+        return taskDao.getTaskById(
+            taskId = taskId,
+            userId = coreSharedPrefs.getUniqueUserIdentifier()
+        )
+    }
+
+    override suspend fun getActivityEntity(missionId: Int, activityId: Int): ActivityEntity? {
+        return activityDao.getActivity(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            missionId = missionId,
+            activityId = activityId
+        )
+    }
+
+
 
 
 }

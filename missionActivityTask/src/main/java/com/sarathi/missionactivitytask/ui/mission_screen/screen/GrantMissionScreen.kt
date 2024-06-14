@@ -23,6 +23,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.isOnline
 import com.nudge.core.ui.theme.blueDark
 import com.sarathi.missionactivitytask.R
@@ -69,14 +70,25 @@ fun GrantMissionScreen(
         iconResId = R.drawable.ic_sarathi_logo,
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
-        isSearch = false,
-        isDataAvailable = !viewModel.loaderState.value.isLoaderVisible && viewModel.filterMissionList.value.isEmpty(),
+        isSearch = true,
+        isDataAvailable = !viewModel.loaderState.value.isLoaderVisible && viewModel.missionList.value.isEmpty(),
         onSearchValueChange = { searchedTerm ->
             viewModel.onEvent(SearchEvent.PerformSearch(searchedTerm, true))
         },
         onBottomUI = {
         },
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
+            if (isSearch) {
+                SearchWithFilterViewComponent(placeholderString = "Search",
+                    filterSelected = false,
+                    modifier = Modifier.padding(horizontal = 10.dp),
+                    showFilter = false,
+                    onFilterSelected = {},
+                    onSearchValueChange = { queryTerm ->
+                        onSearchValueChanged(queryTerm)
+                    })
+            }
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -91,24 +103,14 @@ fun GrantMissionScreen(
                         .zIndex(1f),
                     contentColor = blueDark,
                 )
-                if (viewModel.missionList.value.isNotEmpty()) {
-                    if (isSearch) {
-                        SearchWithFilterViewComponent(placeholderString = "Search",
-                            filterSelected = false,
-                            modifier = Modifier.padding(horizontal = 10.dp),
-                            showFilter = false,
-                            onFilterSelected = {},
-                            onSearchValueChange = { queryTerm ->
-                                onSearchValueChanged(queryTerm)
-
-                            })
-                    }
+                if (viewModel.filterMissionList.value.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(10.dp))
                     LazyColumn {
                         items(viewModel.filterMissionList.value) { mission ->
                             BasicMissionCard(
+                                status = mission.missionStatus ?: BLANK_STRING,
                                 countStatusText = "Activities Completed",
-                                topHeaderText = "Due by 22 March",
+                                topHeaderText = "Due by 28 May",
                                 totalCount = mission.activityCount,
                                 pendingCount = mission.pendingActivityCount,
                                 title = mission.description,

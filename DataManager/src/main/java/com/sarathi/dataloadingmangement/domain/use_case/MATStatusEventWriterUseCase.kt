@@ -20,7 +20,7 @@ class MATStatusEventWriterUseCase(
             taskEntity = taskEntity, subjectType = subjectType
         )
         eventWriterRepositoryImpl.createAndSaveEvent(
-            saveAnswerEventDto, EventName.UPDATE_TASK_STATUS_EVENT, EventType.STATEFUL, surveyName
+            saveAnswerEventDto, EventName.TASKS_STATUS_EVENT, EventType.STATEFUL, surveyName
         )?.let {
 
             eventWriterRepositoryImpl.saveEventToMultipleSources(
@@ -39,7 +39,7 @@ class MATStatusEventWriterUseCase(
         )
         eventWriterRepositoryImpl.createAndSaveEvent(
             saveAnswerEventDto,
-            EventName.UPDATE_ACTIVITY_STATUS_EVENT,
+            EventName.ACTIVITIES_STATUS_EVENT,
             EventType.STATEFUL,
             surveyName
         )?.let {
@@ -52,13 +52,44 @@ class MATStatusEventWriterUseCase(
         }
     }
 
-    suspend fun updateMissionStatus(
+    suspend fun markMATStatus(
+        missionId: Int,
+        activityId: Int,
+        taskId: Int,
+        surveyName: String,
+        subjectType: String
+    ) {
+        updateMissionStatus(repository.getMissionEntity(missionId), surveyName)
+        repository.getActivityEntity(missionId = missionId, activityId = activityId)
+            ?.let { updateActivityStatus(it, surveyName) }
+        updateTaskStatus(
+            repository.getTaskEntity(taskId),
+            surveyName = surveyName,
+            subjectType = subjectType
+        )
+    }
+
+    suspend fun updateMissionStatus(missionId: Int, surveyName: String) {
+        updateMissionStatus(repository.getMissionEntity(missionId), surveyName)
+    }
+
+    suspend fun updateActivityStatus(missionId: Int, activityId: Int, surveyName: String) {
+        repository.getActivityEntity(missionId = missionId, activityId = activityId)
+            ?.let { updateActivityStatus(it, surveyName) }
+    }
+
+
+    private suspend fun updateMissionStatus(
         missionEntity: MissionEntity,
+        surveyName: String
     ) {
 
         val saveAnswerEventDto = repository.writeMissionStatusEvent(missionEntity)
         eventWriterRepositoryImpl.createAndSaveEvent(
-            saveAnswerEventDto, EventName.UPDATE_MISSION_STATUS_EVENT, EventType.STATEFUL, ""
+            saveAnswerEventDto,
+            EventName.MISSIONS_STATUS_EVENT,
+            EventType.STATEFUL,
+            surveyName = surveyName
         )?.let {
 
             eventWriterRepositoryImpl.saveEventToMultipleSources(

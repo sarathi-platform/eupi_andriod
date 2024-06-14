@@ -9,32 +9,34 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.toSize
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.showCustomToast
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.surveymanager.R
-import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
 
 @Composable
 fun TypeMultiSelectedDropDownComponent(
+    title: String = BLANK_STRING,
+    isMandatory: Boolean = false,
+    isEditAllowed: Boolean = true,
     hintText: String = stringResource(R.string.select),
-    sources: List<ValuesDto>?,
-    selectOptionText: String = BLANK_STRING,
+    sources: List<ValuesDto>,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
-
-    val defaultSourceList = sources ?: listOf(ValuesDto(id = 1, "Yes"), ValuesDto(id = 2, "No"))
+    val context = LocalContext.current
+    val defaultSourceList = sources
     var expanded by remember { mutableStateOf(false) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
     var selectedItems by remember {
-        if (selectOptionText.equals(BLANK_STRING, true))
-            mutableStateOf(emptyList())
-        else
-            mutableStateOf(selectOptionText.split(DELIMITER_MULTISELECT_OPTIONS))
+        mutableStateOf(getSelectedOptionsValue(sources))
     }
 
     MultiSelectSelectDropDown(
+        title = title,
+        isMandatory = isMandatory,
         hint = hintText,
         items = defaultSourceList,
         modifier = Modifier.fillMaxWidth(),
@@ -42,7 +44,14 @@ fun TypeMultiSelectedDropDownComponent(
         expanded = expanded,
         selectedItems = selectedItems,
         onExpandedChange = {
-            expanded = !it
+            if (isEditAllowed) {
+                expanded = !it
+            } else {
+                showCustomToast(
+                    context,
+                    context.getString(R.string.edit_disable_message)
+                )
+            }
         },
         onDismissRequest = {
             expanded = false
@@ -57,6 +66,19 @@ fun TypeMultiSelectedDropDownComponent(
                 selectedItems + selectedItem
             }
             onAnswerSelection(selectedItems.joinToString(", "))
+
         }
+
     )
+}
+
+fun getSelectedOptionsValue(values: List<ValuesDto>): List<String> {
+    val selectedText = ArrayList<String>()
+    values.forEach {
+        if (it.isSelected == true) {
+            selectedText.add(it.value)
+        }
+    }
+    return selectedText
+
 }

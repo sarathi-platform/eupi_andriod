@@ -6,6 +6,7 @@ import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
+import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
@@ -32,16 +33,20 @@ class SurveyScreenViewModel @Inject constructor(
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
     private val getTaskUseCase: GetTaskUseCase,
+    private val getActivityUseCase: GetActivityUseCase
 ) : BaseViewModel() {
     private var surveyId: Int = 0
     private var sectionId: Int = 0
     private var taskId: Int = 0
+    private var activityConfigId: Int = 0
+    private var grantID: Int = 0
+    private var granType: String = BLANK_STRING
     private var subjectType: String = BLANK_STRING
-    private var referenceId: Int = 0
+    private var referenceId: String = BLANK_STRING
     private var taskEntity: ActivityTaskEntity? = null
 
     val isButtonEnable = mutableStateOf<Boolean>(false)
-    val isTaskCompleted = mutableStateOf<Boolean>(false)
+    val isActivityNotCompleted = mutableStateOf<Boolean>(false)
     private val _questionUiModel = mutableStateOf<List<QuestionUiModel>>(emptyList())
     val questionUiModel: State<List<QuestionUiModel>> get() = _questionUiModel
     override fun <T> onEvent(event: T) {
@@ -55,6 +60,7 @@ class SurveyScreenViewModel @Inject constructor(
                     isLoaderVisible = event.showLoader
                 )
             }
+
 
             is EventWriterEvents.SaveAnswerEvent -> {
                 CoroutineScope(Dispatchers.IO).launch {
@@ -70,9 +76,11 @@ class SurveyScreenViewModel @Inject constructor(
             _questionUiModel.value = fetchDataUseCase.invoke(
                 surveyId = surveyId,
                 sectionId = sectionId,
-                subjectId = taskEntity?.subjectId ?: DEFAULT_ID
+                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+                activityConfigId = activityConfigId,
+                referenceId = referenceId,
+                grantId = grantID
             )
-            checkButtonValidation()
             isTaskStatusCompleted()
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -80,44 +88,60 @@ class SurveyScreenViewModel @Inject constructor(
         }
     }
 
-    fun saveAnswerIntoDB(
-        question: QuestionUiModel
-    ) {
+    fun saveAnswerIntoDB() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            saveSurveyAnswerUseCase.saveSurveyAnswer(
-                question,
-                taskEntity?.subjectId ?: DEFAULT_ID,
-                taskId = taskId
-            )
-            if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name) {
+            questionUiModel.value.forEach { question ->
+                saveSurveyAnswerUseCase.saveSurveyAnswer(
+                    question,
+                    taskEntity?.subjectId ?: DEFAULT_ID,
+                    taskId = taskId,
+                    referenceId = referenceId
+                )
+
+            }
+            if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name || taskEntity?.status == SurveyStatusEnum.NOT_AVAILABLE.name) {
                 taskStatusUseCase.markTaskInProgress(
-                    subjectId = taskEntity?.subjectId ?: DEFAULT_ID, taskId = taskId
+                    taskId = taskId
+                )
+                taskStatusUseCase.markActivityInProgress(
+                    missionId = taskEntity?.missionId ?: DEFAULT_ID,
+                    activityId = taskEntity?.activityId ?: DEFAULT_ID,
+                )
+                taskStatusUseCase.markMissionInProgress(
+                    missionId = taskEntity?.missionId ?: DEFAULT_ID,
                 )
                 taskEntity = getTaskUseCase.getTask(taskId)
                 taskEntity?.let {
-                    matStatusEventWriterUseCase.updateTaskStatus(
-                        taskEntity = it,
-                        referenceId.toString(),
-                        subjectType
+                    matStatusEventWriterUseCase.markMATStatus(
+                        surveyName = questionUiModel.value.firstOrNull()?.surveyName
+                            ?: BLANK_STRING,
+                        subjectType = subjectType,
+                        missionId = taskEntity?.missionId ?: DEFAULT_ID,
+                        activityId = taskEntity?.activityId ?: DEFAULT_ID,
+                        taskId = taskEntity?.taskId ?: DEFAULT_ID
+
                     )
                 }
 
             }
             surveyAnswerEventWriterUseCase.invoke(
-                questionUiModel = questionUiModel.value,
+                questionUiModels = questionUiModel.value,
                 subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
                 subjectType = subjectType,
                 taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
                 referenceId = referenceId,
-                uriList = listOf()
+                uriList = listOf(),
+                grantId = grantID,
+                grantType = granType,
+                taskId = taskId
             )
-            checkButtonValidation()
+
         }
 
     }
 
 
-    private fun checkButtonValidation() {
+    fun checkButtonValidation() {
         questionUiModel.value.filter { it.isMandatory }.forEach { questionUiModel ->
 
             val result = (questionUiModel.options?.filter { it.isSelected == true }?.size ?: 0) > 0
@@ -125,41 +149,60 @@ class SurveyScreenViewModel @Inject constructor(
                 isButtonEnable.value = false
                 return
             }
+
         }
         isButtonEnable.value = true
+
 
     }
 
     fun saveButtonClicked() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            taskStatusUseCase.markTaskCompleted(
-                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
-                taskId = taskEntity?.taskId ?: DEFAULT_ID
-            )
-            taskEntity?.let {
-                matStatusEventWriterUseCase.updateTaskStatus(
-                    taskEntity = it,
-                    referenceId.toString(),
-                    subjectType
-                )
-            }
+            saveAnswerIntoDB()
+//            taskStatusUseCase.markTaskCompleted(
+//                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+//                taskId = taskEntity?.taskId ?: DEFAULT_ID
+//            )
+//            taskEntity?.let {
+//                matStatusEventWriterUseCase.updateTaskStatus(
+//                    taskEntity = it,
+//                    referenceId.toString(),
+//                    subjectType
+//                )
+//            }
         }
     }
 
-    fun setPreviousScreenData(surveyId: Int, sectionId: Int, taskId: Int, subjectType: String) {
+    fun setPreviousScreenData(
+        surveyId: Int,
+        sectionId: Int,
+        taskId: Int,
+        subjectType: String,
+        referenceId: String,
+        activityConfigId: Int,
+        grantId: Int,
+        grantType: String,
+    ) {
         this.surveyId = surveyId
         this.sectionId = sectionId
         this.taskId = taskId
         this.subjectType = subjectType
+        this.referenceId = referenceId
+        this.activityConfigId = activityConfigId
+        this.grantID = grantId
+        this.granType = grantType
     }
 
     private fun isTaskStatusCompleted() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            isTaskCompleted.value = !taskStatusUseCase.getTaskStatus(
-                userId = saveSurveyAnswerUseCase.getUserIdentifier(),
-                taskId = taskId,
-                subjectId = taskEntity?.subjectId ?: DEFAULT_ID
-            ).equals(SurveyStatusEnum.COMPLETED.name)
+            isActivityNotCompleted.value = !getActivityUseCase.isAllActivityCompleted(
+                missionId = taskEntity?.missionId ?: 0,
+                activityId = taskEntity?.activityId ?: 0
+            )
         }
+        checkButtonValidation()
+
+
+
     }
 }

@@ -11,15 +11,15 @@ data class SaveAnswerEventDto(
     @SerializedName("languageId")
     @Expose
     val languageId: String,
-    @SerializedName("referenceId")
+    @SerializedName("localReferenceId")
     @Expose
-    val referenceId: Int,
+    val referenceId: String,
     @SerializedName("sectionId")
     @Expose
     val sectionId: Int,
     @SerializedName("question")
     @Expose
-    val question: List<SaveAnswerEventQuestionItemDto>,
+    val question: SaveAnswerEventQuestionItemDto,
     @SerializedName("subjectId")
     @Expose
     val subjectId: Int,
@@ -29,6 +29,15 @@ data class SaveAnswerEventDto(
     @SerializedName("surveyId")
     @Expose
     val surveyId: Int,
+    @SerializedName("grantId")
+    @Expose
+    val grantId: Int,
+    @SerializedName("taskId")
+    @Expose
+    val taskId: Int,
+    @SerializedName("grantType")
+    @Expose
+    val grantType: String,
     @SerializedName("localTaskId")
     @Expose
     val localTaskId: String,

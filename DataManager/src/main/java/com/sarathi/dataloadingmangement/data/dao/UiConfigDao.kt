@@ -19,5 +19,11 @@ interface UiConfigDao {
         uniqueUserIdentifier: String
     ): List<UiConfigEntity>
 
+    @Query("Delete from  ui_config_table where  missionId=:missionId and activityId=:activityId and userId=:uniqueUserIdentifier")
+    fun deleteActivityUiConfig(
+        missionId: Int,
+        activityId: Int,
+        uniqueUserIdentifier: String
+    )
 
 }

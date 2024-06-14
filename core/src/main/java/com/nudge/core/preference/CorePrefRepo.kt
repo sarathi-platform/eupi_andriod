@@ -39,9 +39,13 @@ interface CorePrefRepo {
 
     fun getPref(key: String, defaultValue: Int): Int
 
-    fun getPref(key: String, defaultValue: String): String?
+    fun getPref(key: String, defaultValue: String): String
 
     fun getPref(key: String, defaultValue: Boolean): Boolean
+
+    fun setDataLoaded(isDataLoaded: Boolean)
+
+    fun isDataLoaded(): Boolean
 
     fun getPref(key: String, defaultValue: Long): Long
 

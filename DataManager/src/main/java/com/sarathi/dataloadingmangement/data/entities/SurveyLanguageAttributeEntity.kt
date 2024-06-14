@@ -35,7 +35,7 @@ data class SurveyLanguageAttributeEntity(
             return SurveyLanguageAttributeEntity(
                 id = 0,
                 userId = userId,
-                paraphrase = languageAttributes.paraphrase,
+                paraphrase = languageAttributes.paraphrase ?: BLANK_STRING,
                 description = languageAttributes.description,
                 languageCode = languageAttributes.languageCode,
                 referenceId = referenceId,

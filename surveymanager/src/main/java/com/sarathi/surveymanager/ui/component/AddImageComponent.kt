@@ -16,10 +16,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -36,9 +36,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -48,8 +52,18 @@ import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.ui.theme.borderGreyLight
 import com.nudge.core.ui.theme.largeTextStyle
 import com.nudge.core.ui.theme.white
+import com.nudge.core.ui.theme.borderGreyLight
+import com.nudge.core.ui.theme.dimen_100_dp
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_24_dp
+import com.nudge.core.ui.theme.dimen_30_dp
+import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.largeTextStyle
+import com.nudge.core.ui.theme.redDark
+import com.nudge.core.ui.theme.white
 import com.nudge.core.uriFromFile
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.surveymanager.R
 import java.io.File
 
 
@@ -62,7 +76,7 @@ fun AddImageComponent(
     title: String = BLANK_STRING,
     isEditable: Boolean = true,
     filePaths: List<String> = listOf(),
-    onImageSelection: (selectValue: String) -> Unit,
+    onImageSelection: (selectValue: String, isDeleted: Boolean) -> Unit,
 
 
     ) {
@@ -77,36 +91,45 @@ fun AddImageComponent(
             if (success) {
 
                 imageList = (imageList + currentImageUri)
-                onImageSelection(currentImageUri?.path ?: BLANK_STRING)
+                onImageSelection(currentImageUri?.path ?: BLANK_STRING, false)
             }
         }
     )
-    Column {
+    Column(modifier = Modifier.padding(bottom = dimen_30_dp, start = dimen_5_dp)) {
         if (title.isNotBlank()) {
             QuestionComponent(title = title, isRequiredField = isMandatory)
         }
+
         BoxWithConstraints(
             modifier = Modifier
                 .scrollable(
                     state = outerState,
                     Orientation.Vertical,
                 )
+                .heightIn(min = dimen_100_dp, maxCustomHeight)
         ) {
             LazyVerticalGrid(
-                userScrollEnabled = false,
                 state = innerState,
                 columns = GridCells.Fixed(2),
                 modifier = Modifier
-                    .wrapContentWidth()
-                    .heightIn(
-                        min = 110.dp,
-                        max = maxCustomHeight
-                    ),
+                    .heightIn(min = 110.dp, max = maxCustomHeight),
                 horizontalArrangement = Arrangement.Center
             ) {
                 item {
                     Box(
-                        modifier = Modifier
+                        modifier =
+                        Modifier
+                            .clickable(enabled = isEditable) {
+                                currentImageUri = getImageUri(
+                                    context, "${
+                                        System.currentTimeMillis()
+                                    }.jpg"
+                                )
+
+                                cameraLauncher.launch(
+                                    currentImageUri
+                                )
+                            }
                             .size(150.dp)
                             .background(white)
                             .padding(10.dp)
@@ -118,22 +141,18 @@ fun AddImageComponent(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            "+ Add Image", style = largeTextStyle, modifier =
-                            Modifier.clickable(enabled = isEditable) {
-                            currentImageUri = getImageUri(
-                                context, "${
-                                    System.currentTimeMillis()
-                                }.jpg"
-                            )
-
-                            cameraLauncher.launch(
-                                currentImageUri
-                            )
-                        })
+                            stringResource(R.string.add_image), style = largeTextStyle,
+                        )
                     }
                 }
                 itemsIndexed(imageList) { _, image ->
-                    image?.let { ImageView(it) }
+                    image?.let {
+                        ImageView(it, isEditable) { uri ->
+                            imageList = (imageList - uri)
+
+                            onImageSelection(uri.path ?: BLANK_STRING, true)
+                        }
+                    }
                 }
             }
         }
@@ -158,21 +177,42 @@ fun getSavedImageUri(
 ): List<Uri?> {
     val uriList: ArrayList<Uri?> = ArrayList<Uri?>()
     filePaths.forEach {
-        uriList.add(getImageUri(context = context, getFileNameFromURL(it)))
+        if (it.isNotEmpty()) {
+            uriList.add(getImageUri(context = context, getFileNameFromURL(it)))
+        }
     }
     return uriList
 }
 
 @Composable
-fun ImageView(uri: Uri) {
-    Image(
-        painter = rememberAsyncImagePainter(uri),
-        contentDescription = null,
+fun ImageView(uri: Uri, isEditable: Boolean, onDelete: (fileUri: Uri) -> Unit) {
+    Box(
         modifier = Modifier
             .size(150.dp)
             .padding(10.dp)
-            .background(Color.Gray, shape = RoundedCornerShape(8.dp)),
-        contentScale = ContentScale.Crop
-    )
+    ) {
+        Image(
+            painter = rememberAsyncImagePainter(uri),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color.Gray),
+            contentScale = ContentScale.Crop
+        )
+
+        Image(
+            painter = painterResource(id = R.drawable.ic_delete_icon),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(dimen_10_dp)
+                .align(Alignment.BottomEnd)
+                .clickable(enabled = isEditable) {
+                    onDelete(uri)
+                }
+                .size(dimen_24_dp),
+            colorFilter = ColorFilter.tint(redDark)
+        )
+    }
 }
 

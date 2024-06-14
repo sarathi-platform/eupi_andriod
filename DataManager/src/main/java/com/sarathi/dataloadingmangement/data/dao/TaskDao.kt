@@ -52,18 +52,24 @@ interface TaskDao {
         subjectId: Int
     )
 
+    @Query("UPDATE $TASK_TABLE_NAME set status = :status where userId=:userId and taskId = :taskId")
+    fun updateTaskStatus(
+        userId: String,
+        taskId: Int,
+        status: String
+    )
+
     @Query("SELECT * FROM $TASK_TABLE_NAME where userId=:userId and  activityId=:activityId AND missionId = :missionId and taskId = :taskId")
     fun getTask(userId: String, activityId: Int, missionId: Int, taskId: Int): ActivityTaskEntity
 
     @Query("UPDATE $TASK_TABLE_NAME SET actualStartDate = :actualStartDate where  userId=:userId and taskId = :taskId")
     fun updateTaskStartDate(userId: String, taskId: Int, actualStartDate: String)
 
-    @Query("UPDATE $TASK_TABLE_NAME SET actualCompletedDate = :actualCompletedDate where userId=:userId and  taskId = :taskId and subjectId =:subjectId")
+    @Query("UPDATE $TASK_TABLE_NAME SET actualCompletedDate = :actualCompletedDate where userId=:userId and  taskId = :taskId ")
     fun updateTaskCompletedDate(
         userId: String,
         taskId: Int,
         actualCompletedDate: String,
-        subjectId: Int
     )
 
     @Transaction
@@ -71,10 +77,9 @@ interface TaskDao {
         userId: String,
         taskId: Int,
         status: String,
-        subjectId: Int,
         actualStartDate: String
     ) {
-        updateTaskStatus(userId, taskId, status, subjectId)
+        updateTaskStatus(userId, taskId, status)
         updateTaskStartDate(userId, taskId, actualStartDate)
     }
 
@@ -86,8 +91,8 @@ interface TaskDao {
         status: String,
         actualCompletedDate: String
     ) {
-        updateTaskStatus(userId, taskId, status, subjectId)
-        updateTaskCompletedDate(userId, taskId, actualCompletedDate, subjectId)
+        updateTaskStatus(userId, taskId, status)
+        updateTaskCompletedDate(userId, taskId, actualCompletedDate)
     }
 
 
@@ -108,7 +113,12 @@ interface TaskDao {
         subjectId: Int
     ): String?
 
-    @Query("SELECT count(*) FROM $TASK_TABLE_NAME WHERE userId = :userId AND status IN (:statuses)")
-    suspend fun countTasksByStatus(userId: String, statuses: List<String>): Int
+    @Query("SELECT count(*) FROM $TASK_TABLE_NAME WHERE userId = :userId AND activityId=:activityId AND missionId=:missionId AND status IN (:statuses)")
+    suspend fun countTasksByStatus(
+        userId: String,
+        activityId: Int,
+        missionId: Int,
+        statuses: List<String>
+    ): Int
 
 }

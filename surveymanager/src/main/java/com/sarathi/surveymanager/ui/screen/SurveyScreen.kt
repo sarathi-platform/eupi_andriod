@@ -20,17 +20,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.DEFAULT_ID
 import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.model.QuestionType
+import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
-import com.sarathi.surveymanager.constants.QuestionType
+import com.sarathi.surveymanager.R
+import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
 import com.sarathi.surveymanager.ui.component.AddImageComponent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
 import com.sarathi.surveymanager.ui.component.DatePickerComponent
@@ -44,20 +50,36 @@ import kotlinx.coroutines.launch
 fun SurveyScreen(
     navController: NavController = rememberNavController(),
     viewModel: SurveyScreenViewModel,
-    surveyId: Int, sectionId: Int, taskId: Int, subjectType: String
+    surveyId: Int,
+    sectionId: Int,
+    taskId: Int,
+    subjectType: String,
+    referenceId: String,
+    subjectName: String,
+    activityConfigId: Int,
+    grantId: Int,
+    grantType: String
 ) {
     val outerState = rememberLazyListState()
     val innerState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = true) {
-        viewModel.setPreviousScreenData(surveyId, sectionId, taskId, subjectType)
+        viewModel.setPreviousScreenData(
+            surveyId,
+            sectionId,
+            taskId,
+            subjectType,
+            referenceId,
+            activityConfigId,
+            grantId = grantId,
+            grantType = grantType
+        )
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(InitDataEvent.InitDataState)
     }
     ToolBarWithMenuComponent(
-        title = "Receipt of funds - Ganbari" +
-                "Sikla (VO)",
+        title = "$subjectName (${subjectType})",
         modifier = Modifier.fillMaxSize(),
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
@@ -73,18 +95,15 @@ fun SurveyScreen(
                     .padding(10.dp)
             ) {
                 ButtonPositive(
-                    buttonTitle = "Submit",
-                    isActive = viewModel.isButtonEnable.value,
+                    buttonTitle = stringResource(R.string.submit),
+                    isActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
                     isLeftArrow = false,
                     onClick = {
                         viewModel.saveButtonClicked()
+                        navController.popBackStack()
                     }
-
                 )
-
             }
-
-
         },
         onContentUI = {
             BoxWithConstraints(
@@ -108,14 +127,11 @@ fun SurveyScreen(
                     .fillMaxHeight()
             ) {
                 LazyColumn(
-                    userScrollEnabled = false,
                     state = outerState,
-
                     modifier = Modifier
                         .heightIn(maxHeight)
-                        .padding(
-                            horizontal = dimen_16_dp
-                        ), verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
+                        .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = dimen_56_dp),
+                    verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
                 ) {
                     itemsIndexed(
                         items = viewModel.questionUiModel.value
@@ -125,12 +141,13 @@ fun SurveyScreen(
                             QuestionType.InputNumber.name -> {
                                 InputComponent(
                                     isMandatory = question.isMandatory,
-                                    isEditable = viewModel.isTaskCompleted.value,
+                                    isEditable = viewModel.isActivityNotCompleted.value,
                                     defaultValue = question.options?.firstOrNull()?.selectedValue
                                         ?: BLANK_STRING,
                                     title = question.questionDisplay,
                                     isOnlyNumber = true,
-                                    hintText = question.display
+                                    hintText = question.options?.firstOrNull()?.description
+                                        ?: BLANK_STRING
                                 ) { selectedValue ->
                                     saveInputTypeAnswer(selectedValue, question, viewModel)
                                 }
@@ -142,8 +159,9 @@ fun SurveyScreen(
                                     defaultValue = question.options?.firstOrNull()?.selectedValue
                                         ?: BLANK_STRING,
                                     title = question.questionDisplay,
-                                    isEditable = viewModel.isTaskCompleted.value,
-                                    hintText = question.display,
+                                    isEditable = viewModel.isActivityNotCompleted.value,
+                                    hintText = question.options?.firstOrNull()?.description
+                                        ?: BLANK_STRING
                                 ) { selectedValue ->
                                     saveInputTypeAnswer(selectedValue, question, viewModel)
 
@@ -158,26 +176,54 @@ fun SurveyScreen(
                                     ),
                                     isMandatory = question.isMandatory,
                                     title = question.questionDisplay,
-                                    isEditable = viewModel.isTaskCompleted.value,
+                                    isEditable = viewModel.isActivityNotCompleted.value,
                                     maxCustomHeight = maxHeight,
-
-                                    ) { selectedValue ->
-                                    saveMultiImageTypeAnswer(selectedValue, question.options)
-                                    viewModel.saveAnswerIntoDB(question)
+                                ) { selectedValue, isDeleted ->
+                                    saveMultiImageTypeAnswer(
+                                        selectedValue,
+                                        question.options,
+                                        isDeleted
+                                    )
+                                    viewModel.checkButtonValidation()
                                 }
                             }
 
                             QuestionType.SingleSelectDropDown.name -> {
-                                TypeDropDownComponent(sources = listOf()) {
-                                }
+                                TypeDropDownComponent(
+                                    isEditAllowed = viewModel.isActivityNotCompleted.value,
+                                    title = question.questionDisplay,
+                                    isMandatory = question.isMandatory,
+                                    sources = getOptionsValueDto(question.options ?: listOf()),
+                                    onAnswerSelection = { selectedValue ->
+                                        question.options?.forEach { option ->
+                                            option.isSelected = selectedValue.id == option.optionId
+                                        }
+
+                                    }
+                                )
                             }
 
                             QuestionType.MultiSelectDropDown.name -> {
                                 TypeMultiSelectedDropDownComponent(
-                                    sources = listOf(),
-                                    selectOptionText = BLANK_STRING
-                                ) {
-                                }
+                                    title = question.questionDisplay,
+                                    isMandatory = question.isMandatory,
+                                    sources = getOptionsValueDto(question.options ?: listOf()),
+                                    isEditAllowed = viewModel.isActivityNotCompleted.value,
+                                    onAnswerSelection = { selectedItems ->
+                                        val selectedOptions =
+                                            selectedItems.split(DELIMITER_MULTISELECT_OPTIONS)
+                                        question.options?.forEach { options ->
+                                            if (selectedOptions.find { it == options.description.toString() } != null) {
+                                                options.isSelected = true
+                                            } else {
+                                                options.isSelected = false
+                                            }
+
+
+                                        }
+
+                                    }
+                                )
                             }
                         }
                     }
@@ -185,8 +231,19 @@ fun SurveyScreen(
 
                 }
             }
-        }
+        },
+        onSettingClick = {}
     )
+}
+
+fun getSelectedOptionId(options: List<OptionsUiModel>?): String {
+    var selectedItems = ""
+    options?.forEach { it ->
+        if (it.isSelected == true) {
+            selectedItems = "" + it.optionId + DELIMITER_MULTISELECT_OPTIONS
+        }
+    }
+    return selectedItems
 }
 
 private fun saveInputTypeAnswer(
@@ -201,18 +258,30 @@ private fun saveInputTypeAnswer(
 
     }
     question.options?.firstOrNull()?.selectedValue = selectedValue
-    viewModel.saveAnswerIntoDB(question)
+    viewModel.checkButtonValidation()
 }
 
-fun saveMultiImageTypeAnswer(filePath: String, options: List<OptionsUiModel>?) {
+fun saveMultiImageTypeAnswer(filePath: String, options: List<OptionsUiModel>?, isDeleted: Boolean) {
+    val savedOptions =
+        commaSeparatedStringToList(options?.firstOrNull()?.selectedValue ?: BLANK_STRING)
     val list: ArrayList<String> = ArrayList<String>()
-    list.add(filePath)
-    list.addAll(commaSeparatedStringToList(options?.firstOrNull()?.selectedValue ?: BLANK_STRING))
+    list.addAll(savedOptions)
 
+    if (isDeleted) {
+        list.remove(filePath)
+    } else {
+        list.add(filePath)
 
-
+    }
     options?.firstOrNull()?.selectedValue = listToCommaSeparatedString(list)
-    options?.firstOrNull()?.isSelected = true
+    if (list.isEmpty()) {
+
+        options?.firstOrNull()?.isSelected = false
+
+    } else {
+        options?.firstOrNull()?.isSelected = true
+    }
+
 
 }
 
@@ -222,7 +291,28 @@ fun listToCommaSeparatedString(list: List<String>): String {
 }
 
 fun commaSeparatedStringToList(commaSeparatedString: String): List<String> {
+    if (commaSeparatedString.isEmpty()) {
+        return listOf()
+    }
     return commaSeparatedString.split(",")
+
+
+}
+
+fun getOptionsValueDto(options: List<OptionsUiModel>): List<ValuesDto> {
+    val valuesDtoList = ArrayList<ValuesDto>()
+    options.forEach {
+        valuesDtoList.add(
+            ValuesDto(
+                id = it.optionId ?: DEFAULT_ID,
+                value = it.description ?: BLANK_STRING,
+                isSelected = it.isSelected
+            )
+        )
+    }
+    return valuesDtoList
+
+
 }
 
 

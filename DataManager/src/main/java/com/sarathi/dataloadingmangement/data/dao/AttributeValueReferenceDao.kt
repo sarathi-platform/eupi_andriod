@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.sarathi.dataloadingmangement.ATTRIBUTE_VALUE_REFERENCE_ENTITY_TABLE_NAME
+import androidx.room.Query
 import com.sarathi.dataloadingmangement.data.entities.AttributeValueReferenceEntity
 import com.sarathi.dataloadingmangement.model.uiModel.MarkedDatesUiModel
 
@@ -14,6 +15,9 @@ import com.sarathi.dataloadingmangement.model.uiModel.MarkedDatesUiModel
 interface AttributeValueReferenceDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAttributesValueReferences(attributeValueReferenceEntity: AttributeValueReferenceEntity)
+
+    @Query("select value from attribute_value_reference_table where `key`=:attributeKey and userId=:userId")
+    fun getAttributeValue(attributeKey: String, userId: String): List<String>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAttributesValueReferences(attributeValueReferenceEntity: List<AttributeValueReferenceEntity>)

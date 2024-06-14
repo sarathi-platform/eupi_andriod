@@ -88,6 +88,9 @@ data class OptionItemEntity(
     @SerializedName("selectedValue")
     var selectedValue: String? = BLANK_STRING,
 
+    @SerializedName("originalValue")
+    var originalValue: String? = BLANK_STRING,
+
     var selectedValueId: Int = 0,
 
     @TypeConverters(ContentListConverter::class)
@@ -132,6 +135,7 @@ data class OptionItemEntity(
                 values = optionsItem.values,
                 conditions = optionsItem.conditions,
                 optionTag = optionsItem.tag ?: 0,
+                originalValue = optionsItem.originalValue,
                 contentEntities = optionsItem.contentList ?: listOf()
             )
         }

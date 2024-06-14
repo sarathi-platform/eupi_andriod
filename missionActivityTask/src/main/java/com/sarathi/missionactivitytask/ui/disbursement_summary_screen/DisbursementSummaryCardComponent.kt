@@ -1,5 +1,6 @@
 package com.sarathi.missionactivitytask.ui.disbursement_summary_screen
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -94,7 +95,7 @@ private fun makeTaskCard() {
             horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CircularImageViewComponent(modifier = Modifier, BLANK_STRING)
+            CircularImageViewComponent(modifier = Modifier, Uri.EMPTY)
             Column(
                 modifier = Modifier
                     .weight(1f)

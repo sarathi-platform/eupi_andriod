@@ -47,9 +47,9 @@ fun DatePickerComponent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp)
+            .padding(vertical = 10.dp)
     ) {
-        if (title.isNotBlank() == true) {
+        if (title.isNotBlank()) {
             QuestionComponent(title = title, isRequiredField = isMandatory)
         }
         TextField(
@@ -94,7 +94,6 @@ fun DatePickerComponent(
                 focusedIndicatorColor = Color.Transparent, // No underline when focused
                 unfocusedIndicatorColor = Color.Transparent // No underline when not focused
             ),
-
-            )
+        )
     }
 }

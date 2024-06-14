@@ -39,6 +39,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
 
         const val PREF_CASTE_LIST = "caste_list"
         const val PREF_KEY_USER_ID = "user_id"
+        const val PREF_KEY_DATA_LOADED = "is_data_loaded"
 
 
         @Volatile
@@ -140,6 +141,14 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         prefs.edit().putString(PREF_KEY_USER_ID, userId).apply()
     }
 
+    override fun setDataLoaded(isDataLoaded: Boolean) {
+        savePref(PREF_KEY_DATA_LOADED, isDataLoaded)
+    }
+
+    override fun isDataLoaded(): Boolean {
+        return getPref(PREF_KEY_DATA_LOADED, false)
+    }
+
     override fun getSelectedLanguageCode(): String {
         return prefs.getString(PREF_KEY_LANGUAGE_CODE, DEFAULT_LANGUAGE_CODE)
             ?: DEFAULT_LANGUAGE_CODE
@@ -190,7 +199,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     }
 
     override fun savePref(key: String, value: Boolean) {
-        TODO("Not yet implemented")
+        prefs.edit().putBoolean(key, value).apply()
     }
 
     override fun savePref(key: String, value: Long) {

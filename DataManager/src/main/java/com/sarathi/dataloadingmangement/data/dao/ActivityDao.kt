@@ -5,9 +5,11 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.sarathi.dataloadingmangement.ACTIVITY_TABLE_NAME
 import com.sarathi.dataloadingmangement.TASK_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
+import com.sarathi.dataloadingmangement.model.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 
 
@@ -36,7 +38,7 @@ interface ActivityDao {
     @Query(
         "select activity_table.missionId,activity_table.activityId,  activity_language_attribute_table.description,  activity_table.status , \n" +
                 "count(task_table.taskId) as taskCount,\n" +
-                " SUM(CASE WHEN task_table.status = 'completed' THEN 1 ELSE 0 END) AS pendingTaskCount\n" +
+                " SUM(CASE WHEN task_table.status  in(:surveyStatus)  THEN 1 ELSE 0 END) AS pendingTaskCount\n" +
                 " from activity_table\n" +
                 "inner join activity_language_attribute_table on activity_table.activityId = activity_language_attribute_table.activityId  \n" +
                 "left join task_table on activity_table.activityId = task_table.activityId \n" +
@@ -45,7 +47,11 @@ interface ActivityDao {
     suspend fun getActivities(
         userId: String,
         languageCode: String,
-        missionId: Int
+        missionId: Int,
+        surveyStatus: List<String> = listOf(
+            SurveyStatusEnum.COMPLETED.name,
+            SurveyStatusEnum.NOT_AVAILABLE.name
+        )
     ): List<ActivityUiModel>
 
     @Query("SELECT COUNT(*) from $ACTIVITY_TABLE_NAME where userId=:userId and missionId = :missionId AND status NOT in (:status) and isActive=1")
@@ -64,7 +70,85 @@ interface ActivityDao {
         missionId: Int
     )
 
-    @Query("SELECT count(*) FROM $ACTIVITY_TABLE_NAME WHERE userId = :userId AND status IN (:statuses)")
-    suspend fun countActivityByStatus(userId: String, statuses: List<String>): Int
+    @Query("UPDATE $ACTIVITY_TABLE_NAME set actualStartDate = :actualStartDate where userId=:userId and missionId = :missionId and activityId=:activityId and isActive=1")
+    fun updateActivityActualStartDate(
+        userId: String,
+        activityId: Int,
+        actualStartDate: String,
+        missionId: Int
+    )
+
+    @Query("UPDATE $ACTIVITY_TABLE_NAME set actualEndDate = :actualEndDate where userId=:userId and missionId = :missionId and activityId=:activityId and isActive=1")
+    fun updateActivityActualCompletedDate(
+        userId: String,
+        activityId: Int,
+        actualEndDate: String,
+        missionId: Int
+    )
+
+
+    @Transaction
+    fun markActivityCompleted(
+        userId: String,
+        activityId: Int,
+        actualEndDate: String,
+        missionId: Int
+    ) {
+        updateActivityStatus(
+            userId = userId,
+            activityId = activityId,
+            missionId = missionId,
+            status = SurveyStatusEnum.COMPLETED.name
+        )
+
+        updateActivityActualCompletedDate(
+            userId = userId,
+            activityId = activityId,
+            missionId = missionId,
+            actualEndDate = actualEndDate
+        )
+    }
+
+    @Transaction
+    fun markActivityInProgress(
+        userId: String,
+        activityId: Int,
+        actualStartDate: String,
+        missionId: Int
+    ) {
+        updateActivityStatus(
+            userId = userId,
+            activityId = activityId,
+            missionId = missionId,
+            status = SurveyStatusEnum.INPROGRESS.name
+        )
+        updateActivityActualStartDate(
+            userId = userId,
+            activityId = activityId,
+            missionId = missionId,
+            actualStartDate = actualStartDate
+        )
+    }
+
+
+    @Query("SELECT count(*) FROM $ACTIVITY_TABLE_NAME WHERE userId = :userId AND missionId=:missionId AND activityId=:activityId AND status IN (:statuses)")
+    suspend fun countActivityByStatus(
+        userId: String,
+        missionId: Int,
+        activityId: Int,
+        statuses: List<String>
+    ): Int
+
+
+    @Query("SELECT count(*) FROM $ACTIVITY_TABLE_NAME WHERE userId = :userId AND missionId=:missionId AND status IN (:statuses)")
+    suspend fun countActivityByStatus(
+        userId: String,
+        missionId: Int,
+        statuses: List<String>
+    ): Int
+
+
+    @Query("Select * from activity_table where userId=:userId and activityId=:activityId and missionId=:missionId")
+    suspend fun getActivity(userId: String, missionId: Int, activityId: Int): ActivityEntity?
 
 }

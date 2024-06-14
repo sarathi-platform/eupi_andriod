@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.nudge.core.BLANK_STRING
@@ -26,7 +25,7 @@ import com.sarathi.surveymanager.R
 import java.io.File
 
 @Composable
-fun CircularImageViewComponent(modifier: Modifier = Modifier, imagePath: String = BLANK_STRING) {
+fun CircularImageViewComponent(modifier: Modifier = Modifier, imagePath: Uri) {
     Box(
         modifier = modifier
             .border(width = 2.dp, shape = CircleShape, color = brownDark)
@@ -36,14 +35,9 @@ fun CircularImageViewComponent(modifier: Modifier = Modifier, imagePath: String 
             .background(color = yellowBg)
             .then(modifier)
     ) {
-        if (imagePath != BLANK_STRING) {
             Image(
                 painter = rememberImagePainter(
-                    Uri.fromFile(
-                        File(
-                            imagePath.getImagePathFromString()
-                        )
-                    )
+                    imagePath
                 ),
                 contentDescription = "didi image",
                 contentScale = ContentScale.FillBounds,
@@ -53,16 +47,6 @@ fun CircularImageViewComponent(modifier: Modifier = Modifier, imagePath: String 
                     .width(45.dp)
                     .height(45.dp)
             )
-        } else {
-            Image(
-                painter = painterResource(id = R.drawable.ic_mission_inprogress),
-                contentDescription = "didi image placeholder",
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .width(45.dp)
-                    .height(48.dp)
-            )
         }
 
     }
-}

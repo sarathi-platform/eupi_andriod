@@ -781,3 +781,7 @@ fun String.getDateInMillis(): Long {
         date?.time ?: 0L
     }
 }
+
+fun String.capitalizeFirstLetter(): String {
+    return this.lowercase().replaceFirstChar { it.uppercase() }
+}

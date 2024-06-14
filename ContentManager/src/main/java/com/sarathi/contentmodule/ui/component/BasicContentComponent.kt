@@ -24,6 +24,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nudge.core.ui.theme.black1
@@ -32,6 +34,9 @@ import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.smallTextStyleMediumWeight2
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
+import com.nudge.core.ui.theme.dimen_100_dp
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_1_dp
 import com.sarathi.contentmodule.R
 import com.sarathi.contentmodule.constants.Constants.BLANK_STRING
 import com.sarathi.contentmodule.download_manager.FileType
@@ -69,20 +74,22 @@ private fun ContentView(
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable {
-            onClick()
-        }
+        modifier = Modifier
+            .padding(bottom = dimen_16_dp)
+            .clickable {
+                onClick()
+            }
     ) {
         if (isLimitContentData) {
-            ButtonComponent(title = "+${totalContent} More")
+            ButtonComponent(title = stringResource(R.string.more, totalContent))
         } else {
             Box(
                 modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp)
+                    .padding(start = dimen_16_dp, end = dimen_16_dp)
                     .size(60.dp)
                     .clip(shape = CircleShape)
                     .border(
-                        1.dp, color = lightGray2, RoundedCornerShape(100.dp)
+                        dimen_1_dp, color = lightGray2, RoundedCornerShape(dimen_100_dp)
                     )
                     .background(color = Color.Transparent)
                     .fillMaxSize(),
@@ -92,7 +99,12 @@ private fun ContentView(
             }
             if (contentTitle.isNotBlank()) {
                 Text(
-                    text = contentTitle,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    text = if (contentTitle.length > 15) contentTitle.substring(
+                        0,
+                        15
+                    ) else contentTitle,
                     fontSize = 10.sp,
                     style = smallTextStyleMediumWeight2.copy(color = blueDark)
                 )
@@ -103,22 +115,22 @@ private fun ContentView(
 
 @Composable
 fun ContentData(contentType: String) {
-    when (contentType) {
-        FileType.Image.name -> {
+    when (contentType.toUpperCase()) {
+        FileType.IMAGE.name -> {
             val painter: Painter = painterResource(id = R.drawable.ic_image_placeholder)
             Image(painter = painter, contentDescription = null)
         }
 
-        FileType.Audio.name -> {
+        FileType.AUDIO.name -> {
             val painter: Painter = painterResource(id = R.drawable.ic_audio_placeholder)
             Image(painter = painter, contentDescription = null)
         }
 
-        FileType.Video.name -> {
+        FileType.VIDEO.name -> {
             ImageOverlay(resId = R.drawable.ic_video_placeholder)
         }
 
-        FileType.File.name -> {
+        FileType.FILE.name -> {
             val painter: Painter =
                 painterResource(id = R.drawable.ic_file_place_holder_icon)
             Image(painter = painter, contentDescription = null)

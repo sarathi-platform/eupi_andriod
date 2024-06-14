@@ -2,6 +2,7 @@ package com.sarathi.missionactivitytask.ui.basic_content.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -50,7 +51,7 @@ import com.sarathi.missionactivitytask.utils.statusColor
 fun BasicMissionCard(
     title: String = BLANK_STRING,
     needToShowProgressBar: Boolean = false,
-    status: StatusEnum = StatusEnum.PENDING,
+    status: String = StatusEnum.PENDING.name,
     pendingCount: Int = 0,
     totalCount: Int = 0,
     countStatusText: String = BLANK_STRING,
@@ -58,12 +59,14 @@ fun BasicMissionCard(
     secondaryButtonText: String = BLANK_STRING,
     topHeaderText: String = BLANK_STRING,
     prefixIcon: Int = R.drawable.ic_group_icon,
-    suffixIcon: Int = R.drawable.ic_arrow_forward_ios_24,
     onPrimaryClick: () -> Unit
 ) {
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = dimen_10_dp),
         modifier = Modifier
+            .clickable {
+                onPrimaryClick()
+            }
             .fillMaxWidth()
             .padding(dimen_16_dp)
             .clip(RoundedCornerShape(dimen_6_dp))
@@ -90,8 +93,7 @@ fun BasicMissionCard(
             }
             ContentBody(
                 title = title,
-                prefixIcon = prefixIcon,
-                suffixIcon = suffixIcon
+                prefixIcon = prefixIcon
             )
             if (needToShowProgressBar && totalCount > 0) {
                 Column(
@@ -108,14 +110,15 @@ fun BasicMissionCard(
                     )
                 }
             }
-
-            ActionButtons(
-                primaryButtonText,
-                secondaryButtonText,
-                onPrimaryClick = {
-                    onPrimaryClick()
-                }
-            )
+            if (status != StatusEnum.COMPLETED.name) {
+                ActionButtons(
+                    primaryButtonText,
+                    secondaryButtonText,
+                    onPrimaryClick = {
+                        onPrimaryClick()
+                    }
+                )
+            }
         }
     }
 }
@@ -133,7 +136,7 @@ fun TopHeader(text: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ContentBody(title: String, prefixIcon: Int, suffixIcon: Int) {
+fun ContentBody(title: String, prefixIcon: Int) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -157,11 +160,6 @@ fun ContentBody(title: String, prefixIcon: Int, suffixIcon: Int) {
 
         Spacer(modifier = Modifier.width(dimen_5_dp))
 
-        Icon(
-            painter = painterResource(id = suffixIcon),
-            contentDescription = null,  // Provide descriptions
-            modifier = Modifier.size(dimen_24_dp)
-        )
     }
 }
 

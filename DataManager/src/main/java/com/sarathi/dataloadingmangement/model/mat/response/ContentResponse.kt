@@ -7,5 +7,7 @@ data class ContentResponse(
     @SerializedName("contentKey")
     val contentKey: String,
     @SerializedName("contentType")
-    val contentType: String
+    val contentType: String,
+    @SerializedName("languageCode")
+    val languageCode: String?
 )

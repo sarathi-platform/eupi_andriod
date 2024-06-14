@@ -99,5 +99,6 @@ dependencies {
     implementation("com.airbnb.android:lottie-compose:6.1.0")
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
+    implementation("nl.dionsegijn:konfetti-compose:2.0.2")
 
 }

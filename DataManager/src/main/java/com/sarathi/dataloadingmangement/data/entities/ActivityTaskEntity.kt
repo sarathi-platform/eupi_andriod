@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.TASK_TABLE_NAME
 import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
+import java.util.UUID
 
 
 @Entity(tableName = TASK_TABLE_NAME)
@@ -46,7 +47,7 @@ data class ActivityTaskEntity(
                 subjectId = task.subjectId,
                 startOffset = task.startOffset,
                 endOffset = task.endOffset,
-                localTaskId = "",
+                localTaskId = UUID.randomUUID().toString(),
                 actualStartDate = task.actualStartDate ?: BLANK_STRING,
                 actualCompletedDate = task.actualEndDate ?: BLANK_STRING
             )
