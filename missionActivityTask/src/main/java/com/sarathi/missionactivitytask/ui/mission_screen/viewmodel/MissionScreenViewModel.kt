@@ -35,7 +35,7 @@ class MissionScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
-                loadAllData()
+                loadAllData(false)
             }
 
             is SearchEvent.PerformSearch -> {
@@ -51,7 +51,7 @@ class MissionScreenViewModel @Inject constructor(
     }
 
     override fun refreshData() {
-        loadAllData()
+        loadAllData(true)
     }
 
     private fun performSearchQuery(searchTerm: String, searchApplied: Boolean) {
@@ -78,12 +78,12 @@ class MissionScreenViewModel @Inject constructor(
         }
     }
 
-    private fun loadAllData() {
+    private fun loadAllData(isRefresh: Boolean) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            fetchAllDataUseCase.invoke { isSuccess, successMsg ->
+            fetchAllDataUseCase.invoke({ isSuccess, successMsg ->
                 initMissionScreen()
-            }
+            }, isRefresh = isRefresh)
         }
     }
 
