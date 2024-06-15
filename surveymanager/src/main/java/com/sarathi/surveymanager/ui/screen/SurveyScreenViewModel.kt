@@ -6,6 +6,7 @@ import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
+import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
@@ -33,7 +34,8 @@ class SurveyScreenViewModel @Inject constructor(
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
     private val getTaskUseCase: GetTaskUseCase,
-    private val getActivityUseCase: GetActivityUseCase
+    private val getActivityUseCase: GetActivityUseCase,
+    private val fromEUseCase: FormUseCase
 ) : BaseViewModel() {
     private var surveyId: Int = 0
     private var sectionId: Int = 0
@@ -97,7 +99,13 @@ class SurveyScreenViewModel @Inject constructor(
                     taskId = taskId,
                     referenceId = referenceId
                 )
-
+                fromEUseCase.saveFormEData(
+                    subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+                    taskId = taskId,
+                    surveyId = surveyId,
+                    subjectType = subjectType,
+                    referenceId = referenceId
+                )
             }
             if (taskEntity?.status == SurveyStatusEnum.NOT_STARTED.name || taskEntity?.status == SurveyStatusEnum.NOT_AVAILABLE.name) {
                 taskStatusUseCase.markTaskInProgress(
@@ -159,17 +167,6 @@ class SurveyScreenViewModel @Inject constructor(
     fun saveButtonClicked() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             saveAnswerIntoDB()
-//            taskStatusUseCase.markTaskCompleted(
-//                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
-//                taskId = taskEntity?.taskId ?: DEFAULT_ID
-//            )
-//            taskEntity?.let {
-//                matStatusEventWriterUseCase.updateTaskStatus(
-//                    taskEntity = it,
-//                    referenceId.toString(),
-//                    subjectType
-//                )
-//            }
         }
     }
 

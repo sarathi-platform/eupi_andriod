@@ -32,6 +32,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SU
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SURVEY_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TASK_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.CONTENT_DETAIL_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MAT_GRAPH
@@ -39,6 +40,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MEDIA_
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MISSION_FINAL_STEP_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MISSION_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.SURVEY_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.DisbursementFormSummaryScreen
 import com.sarathi.missionactivitytask.ui.grantTask.screen.GrantTaskScreen
 import com.sarathi.missionactivitytask.ui.grant_activity_screen.screen.ActivityScreen
 import com.sarathi.missionactivitytask.ui.mission_screen.screen.GrantMissionScreen
@@ -322,8 +324,13 @@ fun NavGraphBuilder.MatNavigation(
             FinalStepCompletionScreen(navController = navController) {
             }
         }
+        composable(route = MATHomeScreens.DisbursmentSummaryScreen.route) {
+            DisbursementFormSummaryScreen(
+                navController = navController,
+                viewModel = hiltViewModel()
+            )
+        }
     }
-
 }
 
 
@@ -351,6 +358,8 @@ sealed class MATHomeScreens(val route: String) {
         MATHomeScreens(route = "$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/{$ARG_ACTIVITY_MASSAGE}")
 
     object FinalStepCompletionScreen : MATHomeScreens(route = MISSION_FINAL_STEP_SCREEN_ROUTE_NAME)
+    object DisbursmentSummaryScreen : MATHomeScreens(route = DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME)
+
 
 }
 
@@ -360,6 +369,12 @@ fun navigateToContentDetailScreen(
     contentScreenCategory: Int
 ) {
     navController.navigate("$CONTENT_DETAIL_SCREEN_ROUTE_NAME/$matId/$contentScreenCategory")
+}
+
+fun navigateToDisbursmentSummaryScreen(
+    navController: NavController
+) {
+    navController.navigate(DISBURSEMENT_SUMMARY_SCREEN_ROUTE_NAME)
 }
 
 fun navigateToSurveyScreen(

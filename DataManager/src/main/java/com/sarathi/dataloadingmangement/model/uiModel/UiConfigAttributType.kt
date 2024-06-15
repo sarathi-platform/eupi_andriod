@@ -1,4 +1,4 @@
-package com.sarathi.missionactivitytask.ui.grantTask.model
+package com.sarathi.dataloadingmangement.model.uiModel
 
 enum class UiConfigAttributeType {
     DYNAMIC,

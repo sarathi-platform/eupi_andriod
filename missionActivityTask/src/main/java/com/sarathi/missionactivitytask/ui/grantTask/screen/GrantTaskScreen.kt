@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Text
@@ -33,14 +34,15 @@ import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.model.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
+import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
+import com.sarathi.missionactivitytask.navigation.navigateToDisbursmentSummaryScreen
 import com.sarathi.missionactivitytask.navigation.navigateToGrantSurveySummaryScreen
 import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.GrantTaskCard
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
-import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.GrantTaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
@@ -70,18 +72,40 @@ fun GrantTaskScreen(
 
         },
         onBottomUI = {
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp)
             ) {
-                ButtonPositive(buttonTitle = stringResource(R.string.complete_activity),
-                    isActive = viewModel.isButtonEnable.value,
-                    isArrowRequired = false,
-                    onClick = {
-                        viewModel.markActivityCompleteStatus()
-                        navController.popBackStack()
-                    })
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    ButtonPositive(
+                        modifier = Modifier.weight(0.4f),
+                        buttonTitle = stringResource(R.string.complete_activity),
+                        isActive = viewModel.isButtonEnable.value,
+                        isArrowRequired = false,
+                        onClick = {
+                            viewModel.markActivityCompleteStatus()
+                            navController.popBackStack()
+                        })
+                    Spacer(modifier = Modifier.width(10.dp))
+                    ButtonPositive(modifier = Modifier.weight(0.4f),
+                        buttonTitle = "Generate Form E",
+                        isActive = true,
+                        isArrowRequired = false,
+                        onClick = {
+                            navigateToDisbursmentSummaryScreen(navController)
+                        })
+                }
+//                ButtonPositive(buttonTitle = stringResource(R.string.complete_activity),
+//                    isActive = viewModel.isButtonEnable.value,
+//                    isArrowRequired = false,
+//                    onClick = {
+//                        viewModel.markActivityCompleteStatus()
+//                        navController.popBackStack()
+//                    })
             }
         },
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->

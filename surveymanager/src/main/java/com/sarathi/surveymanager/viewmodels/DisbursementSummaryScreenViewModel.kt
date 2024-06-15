@@ -7,6 +7,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
+import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
@@ -36,7 +37,8 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     private val taskStatusUseCase: UpdateTaskStatusUseCase,
     private val getTaskUseCase: GetTaskUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
-    private val getActivityUseCase: GetActivityUseCase
+    private val getActivityUseCase: GetActivityUseCase,
+    private val formUseCase: FormUseCase
 ) : BaseViewModel() {
     private val _taskList = mutableStateOf<Map<String, List<SurveyAnswerEntity>>>(hashMapOf())
     val taskList: State<Map<String, List<SurveyAnswerEntity>>> get() = _taskList
@@ -89,7 +91,6 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
             isActivityCompleted()
         }
     }
-
 
 
     fun setPreviousScreenData(
@@ -160,7 +161,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
             if (deleteCount > 0) {
                 onDeleteSuccess(deleteCount)
             }
-
+            formUseCase.deleteFormE(taskId = taskId, referenceId = referenceId)
         }
     }
 

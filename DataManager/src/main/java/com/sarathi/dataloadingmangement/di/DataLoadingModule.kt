@@ -38,6 +38,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyAnswerFromNet
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
@@ -46,6 +47,7 @@ import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.ContentDownloaderRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.ContentRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.FormRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.IContentDownloader
 import com.sarathi.dataloadingmangement.repository.IContentRepository
 import com.sarathi.dataloadingmangement.repository.IEventWriterRepository
@@ -108,6 +110,10 @@ class DataLoadingModule {
     @Provides
     @Singleton
     fun provideActivityConfigDao(db: NudgeGrantDatabase) = db.activityConfigDao()
+
+    @Provides
+    @Singleton
+    fun provideFormEDao(db: NudgeGrantDatabase) = db.formEDao()
 
     @Provides
     @Singleton
@@ -330,6 +336,16 @@ class DataLoadingModule {
         )
     }
 
+//    @Provides
+//    @Singleton
+//    fun provideFormERepositoryImpl(
+//        formEDao: FormEDao
+//    ): IFormERepository {
+//        return FormERepositoryImpl(
+//            formEDao
+//        )
+//    }
+
     @Provides
     @Singleton
     fun provideContentUseCase(
@@ -340,6 +356,14 @@ class DataLoadingModule {
         return ContentUseCase(
             contentDownloaderUseCase = ContentDownloaderUseCase(repository, downloaderManager),
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideFormUseCase(
+        repository: FormRepositoryImpl,
+    ): FormUseCase {
+        return FormUseCase(repository = repository)
     }
 
     @Provides

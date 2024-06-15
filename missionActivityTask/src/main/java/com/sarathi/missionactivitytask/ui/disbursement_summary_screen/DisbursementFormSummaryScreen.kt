@@ -14,11 +14,14 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.nudge.core.ui.events.theme.black20
 import com.nudge.core.ui.events.theme.brownDark
 import com.nudge.core.ui.events.theme.defaultTextStyle
@@ -31,11 +34,22 @@ import com.nudge.core.ui.events.theme.dimen_8_dp
 import com.nudge.core.ui.events.theme.smallTextStyle
 import com.nudge.core.ui.events.theme.white
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
+import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.viewmodel.DisbursementFormSummaryScreenViewModel
+import com.sarathi.missionactivitytask.utils.event.InitDataEvent
+import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 
 
 @Preview(showSystemUi = true)
 @Composable
-fun DisbursementSummaryCardComponent() {
+fun DisbursementFormSummaryScreen(
+    navController: NavController = rememberNavController(),
+    viewModel: DisbursementFormSummaryScreenViewModel
+) {
+
+    LaunchedEffect(key1 = true) {
+        viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
+        viewModel.onEvent(InitDataEvent.InitDataState)
+    }
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = dimen_10_dp),
         modifier = Modifier
