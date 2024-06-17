@@ -8,6 +8,7 @@ import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -49,10 +50,13 @@ import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.uiModel.DisbursementFormSummaryUiModel
+import com.sarathi.missionactivitytask.navigation.navigateToAddImageScreen
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
+import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.viewmodel.DisbursementFormSummaryScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
+import com.sarathi.surveymanager.ui.component.ButtonPositive
 import kotlinx.coroutines.launch
 
 
@@ -69,122 +73,150 @@ fun DisbursementFormSummaryScreen(
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(InitDataEvent.InitDataState)
     }
-    if (viewModel.formList.value.isNotEmpty()) {
-
-        Card(
-            elevation = CardDefaults.cardElevation(defaultElevation = dimen_30_dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimen_16_dp)
-                .clip(RoundedCornerShape(dimen_6_dp))
-                .border(
-                    width = dimen_1_dp,
-                    color = black20,
-                    shape = RoundedCornerShape(dimen_6_dp)
+    ToolBarWithMenuComponent(
+        title = "Disbursement summary",
+        modifier = Modifier,
+        onBackIconClick = { navController.popBackStack() },
+        onSearchValueChange = {},
+        onBottomUI = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+            ) {
+                ButtonPositive(
+                    buttonTitle = "Attach physical form E",
+                    isActive = true,
+                    isArrowRequired = false,
+                    onClick = {
+                        navigateToAddImageScreen(navController)
+                    }
                 )
-                .background(Color.Transparent)
-        ) {
-            Column(modifier = Modifier.background(white)) {
-                BoxWithConstraints(
+            }
+        },
+        onSettingClick = {},
+        onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
+            if (viewModel.formList.value.isNotEmpty()) {
+
+                Card(
+                    elevation = CardDefaults.cardElevation(defaultElevation = dimen_30_dp),
                     modifier = Modifier
-                        .scrollable(
-                            state = rememberScrollableState {
-                                scope.launch {
-                                    val toDown = it <= 0
-                                    if (toDown) {
-                                        if (outerState.run { firstVisibleItemIndex == layoutInfo.totalItemsCount - 1 }) {
-                                            innerState.scrollBy(-it)
-                                        } else {
-                                            outerState.scrollBy(-it)
+                        .fillMaxWidth()
+                        .padding(dimen_16_dp)
+                        .clip(RoundedCornerShape(dimen_6_dp))
+                        .border(
+                            width = dimen_1_dp,
+                            color = black20,
+                            shape = RoundedCornerShape(dimen_6_dp)
+                        )
+                        .background(Color.Transparent)
+                ) {
+                    Column(modifier = Modifier.background(white)) {
+                        BoxWithConstraints(
+                            modifier = Modifier
+                                .scrollable(
+                                    state = rememberScrollableState {
+                                        scope.launch {
+                                            val toDown = it <= 0
+                                            if (toDown) {
+                                                if (outerState.run { firstVisibleItemIndex == layoutInfo.totalItemsCount - 1 }) {
+                                                    innerState.scrollBy(-it)
+                                                } else {
+                                                    outerState.scrollBy(-it)
+                                                }
+                                            }
                                         }
+                                        it
+                                    },
+                                    Orientation.Vertical,
+                                )
+                        ) {
+                            LazyColumn(
+                                state = outerState,
+                                verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
+                            ) {
+                                item {
+                                    Column(modifier = Modifier.background(greyTransparentColor)) {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(dimen_6_dp),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(
+                                                "VO - ${
+                                                    viewModel.formList.value.keys.toString()
+                                                        .replace("[", "").replace("]", "")
+                                                }", style = defaultTextStyle
+                                            )
+                                            Text("", style = quesOptionTextStyle)
+                                        }
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(dimen_6_dp),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text("CSG Disbursed", style = quesOptionTextStyle)
+                                            Text("", style = quesOptionTextStyle)
+                                        }
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(dimen_6_dp),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text("Number of Didis", style = quesOptionTextStyle)
+                                            Text(
+                                                viewModel.formList.value.size.toString(),
+                                                style = quesOptionTextStyle
+                                            )
+                                        }
+                                        Divider(
+                                            color = borderGreyLight,
+                                            thickness = dimen_1_dp,
+                                            modifier = Modifier.padding(vertical = dimen_8_dp)
+                                        )
                                     }
                                 }
-                                it
-                            },
-                            Orientation.Vertical,
-                        )
-                ) {
-                    LazyColumn(
-                        state = outerState,
-                        verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
-                    ) {
-                        item {
-                            Column(modifier = Modifier.background(greyTransparentColor)) {
-                                // val villageName = viewModel.formList.value.keys.toString()
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(dimen_6_dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        "VO - ${
-                                            viewModel.formList.value.keys.toString()
-                                                .replace("[", "").replace("]", "")
-                                        }", style = defaultTextStyle
-                                    )
-                                    Text("", style = quesOptionTextStyle)
-                                }
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(dimen_6_dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text("CSG Disbursed", style = quesOptionTextStyle)
-                                    Text("", style = quesOptionTextStyle)
-                                }
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(dimen_6_dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text("Number of Didis", style = quesOptionTextStyle)
-                                    Text(
-                                        viewModel.formList.value.size.toString(),
-                                        style = quesOptionTextStyle
-                                    )
-                                }
-                                Divider(
-                                    color = borderGreyLight,
-                                    thickness = dimen_1_dp,
-                                    modifier = Modifier.padding(vertical = dimen_8_dp)
-                                )
-                            }
-                        }
-                        itemsIndexed(
-                            items = viewModel.formList.value.entries.toList()
-                        ) { _, form ->
-                            BoxWithConstraints(
-                                modifier = Modifier
-                                    .scrollable(
-                                        state = outerState,
-                                        Orientation.Vertical,
-                                    )
-                                    .heightIn(dimen_100_dp, maxHeight)
-                            ) {
-                                LazyColumn(modifier = Modifier.padding(bottom = 50.dp)) {
-                                    itemsIndexed(
-                                        items = form.value
-                                    ) { _, disbursementFormSummaryUiModel ->
-                                        MakeTaskCard(
-                                            disbursementFormSummaryUiModel,
-                                            viewModel.getFilePathUri(disbursementFormSummaryUiModel.didiImage)
-                                        )
+                                itemsIndexed(
+                                    items = viewModel.formList.value.entries.toList()
+                                ) { _, form ->
+                                    BoxWithConstraints(
+                                        modifier = Modifier
+                                            .scrollable(
+                                                state = outerState,
+                                                Orientation.Vertical,
+                                            )
+                                            .heightIn(dimen_100_dp, maxHeight)
+                                    ) {
+                                        LazyColumn(modifier = Modifier.padding(bottom = 50.dp)) {
+                                            itemsIndexed(
+                                                items = form.value
+                                            ) { _, disbursementFormSummaryUiModel ->
+                                                MakeTaskCard(
+                                                    disbursementFormSummaryUiModel,
+                                                    viewModel.getFilePathUri(
+                                                        disbursementFormSummaryUiModel.didiImage
+                                                    )
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
+
             }
         }
+    )
 
-    }
+
 }
 
 
