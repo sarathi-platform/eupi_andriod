@@ -93,7 +93,8 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
         return getUiComponentValues(
             taskId = form.taskid,
             subjectId = form.subjectid,
-            componentType = ComponentEnum.Form.name
+            componentType = ComponentEnum.Form.name,
+            referenceId = form.localReferenceId
         )
     }
 
@@ -106,11 +107,12 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
     private suspend fun getUiComponentValues(
         taskId: Int,
         subjectId: Int,
-        componentType: String
+        componentType: String,
+        referenceId: String
     ): HashMap<String, String> {
         val cardAttributesWithValue = HashMap<String, String>()
         val activityConfig = getFormUiConfigUseCase.getFormUiConfig()
-        val cardConfig = activityConfig.filter { it.componentType == componentType }
+        val cardConfig = activityConfig.filter { it.componentType.equals(componentType, true) }
         cardConfig.forEach { cardAttribute ->
             cardAttributesWithValue[cardAttribute.key] = when (cardAttribute.type.toUpperCase()) {
                 UiConfigAttributeType.STATIC.name -> cardAttribute.value
@@ -118,10 +120,11 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
                     cardAttribute.value, taskId
                 )
 
-                UiConfigAttributeType.TAG.name -> surveyAnswerUseCase.getAnswerForTag(
-                    taskId,
-                    subjectId,
-                    getTaskAttributeValue(
+                UiConfigAttributeType.TAG.name -> surveyAnswerUseCase.getAnswerForFormTag(
+                    taskId = taskId,
+                    subjectId = subjectId,
+                    referenceId = referenceId,
+                    tagId = getTaskAttributeValue(
                         cardAttribute.value, taskId
                     )
                 )

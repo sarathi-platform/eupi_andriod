@@ -250,7 +250,7 @@ private fun SubContainerView(taskCard: GrantTaskCardModel?) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (taskCard?.icon != null) {
-            ImageViewer(taskCard.icon)
+            ImageViewer(taskCard.icon!!)
             Spacer(modifier = Modifier.width(6.dp))
 
         }

@@ -124,7 +124,7 @@ fun DisbursementFormSummaryScreen(
                                                 .replace("[", "").replace("]", "")
                                         }", style = defaultTextStyle
                                     )
-                                    Text("15 Apr, 2024", style = quesOptionTextStyle)
+                                    Text("", style = quesOptionTextStyle)
                                 }
                                 Row(
                                     modifier = Modifier
@@ -134,7 +134,7 @@ fun DisbursementFormSummaryScreen(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text("CSG Disbursed", style = quesOptionTextStyle)
-                                    Text("₹36,000", style = quesOptionTextStyle)
+                                    Text("", style = quesOptionTextStyle)
                                 }
                                 Row(
                                     modifier = Modifier
@@ -144,7 +144,10 @@ fun DisbursementFormSummaryScreen(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text("Number of Didis", style = quesOptionTextStyle)
-                                    Text("4", style = quesOptionTextStyle)
+                                    Text(
+                                        viewModel.formList.value.size.toString(),
+                                        style = quesOptionTextStyle
+                                    )
                                 }
                                 Divider(
                                     color = borderGreyLight,

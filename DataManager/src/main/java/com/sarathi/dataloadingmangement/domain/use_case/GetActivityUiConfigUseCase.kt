@@ -1,7 +1,7 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
-import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
-import com.sarathi.missionactivitytask.ui.grantTask.domain.repository.GetActivityUiConfigRepositoryImpl
+import com.sarathi.dataloadingmangement.model.uiModel.UiConfigModel
+import com.sarathi.dataloadingmangement.repository.GetActivityUiConfigRepositoryImpl
 import javax.inject.Inject
 
 
