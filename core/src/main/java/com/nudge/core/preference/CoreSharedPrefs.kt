@@ -166,6 +166,10 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         return getPref(PREF_KEY_USER_NAME, BLANK_STRING)
     }
 
+    override fun getUserNameInInt(): Int {
+        return getPref(PREF_KEY_USER_NAME, BLANK_STRING).toInt()
+    }
+
     fun setUserEmail(email: String) {
         savePref(PREF_KEY_EMAIL, email)
     }

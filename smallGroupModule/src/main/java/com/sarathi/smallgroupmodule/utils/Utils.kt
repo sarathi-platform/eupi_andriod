@@ -1,7 +1,8 @@
 package com.sarathi.smallgroupmodule.utils
 
+import com.nudge.core.ATTENDANCE_ABSENT
+import com.nudge.core.ATTENDANCE_PRESENT
 import com.nudge.core.BLANK_STRING
-import com.sarathi.smallgroupmodule.constatns.SmallGroupConstants
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -22,9 +23,9 @@ fun String.getDateInMillis(): Long {
 }
 
 fun Boolean.getAttendanceFromBoolean(): String {
-    return if (this) SmallGroupConstants.ATTENDANCE_PRESENT else SmallGroupConstants.ATTENDANCE_ABSENT
+    return if (this) ATTENDANCE_PRESENT else ATTENDANCE_ABSENT
 }
 
 fun String?.getBooleanValueFromAttendance(): Boolean {
-    return this?.equals(SmallGroupConstants.ATTENDANCE_PRESENT) ?: false
+    return this?.equals(ATTENDANCE_PRESENT) ?: false
 }

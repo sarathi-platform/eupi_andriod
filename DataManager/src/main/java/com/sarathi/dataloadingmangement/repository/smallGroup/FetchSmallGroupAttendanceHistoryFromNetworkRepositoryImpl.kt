@@ -1,5 +1,7 @@
 package com.sarathi.dataloadingmangement.repository.smallGroup
 
+import com.nudge.core.ATTENDANCE_ABSENT
+import com.nudge.core.ATTENDANCE_PRESENT
 import com.nudge.core.ATTENDANCE_TAG_ID
 import com.nudge.core.enums.AttributesType
 import com.nudge.core.enums.SubjectType
@@ -39,7 +41,7 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
     override suspend fun fetchSmallGroupAttendanceHistoryFromNetwork(smallGroupId: Int) {
 
         try {
-            val userId = coreSharedPrefs.getUserName().toInt()
+            val userId = coreSharedPrefs.getUserNameInInt()
             val request = AttendanceHistoryRequest.getRequest(smallGroupId, userId)
             val response = dataLoadingApiService.getAttendanceHistoryFromNetwork(request)
             if (response.status.equals(SUCCESS_CODE)) {
@@ -64,8 +66,7 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
 
     override suspend fun saveSmallGroupAttendanceHistoryToDb(attendanceHistoryResponse: AttendanceHistoryResponse) {
         val date = attendanceHistoryResponse.date
-        /*.getDateFromResponse()
-        .getDateInMillis()*/
+
         attendanceHistoryResponse.didiAttendanceDetailList.forEach { didiAttendanceDetail ->
             val isHistoryAvailable = checkIfHistoryAvailable(didiAttendanceDetail.id, date)
             if (isHistoryAvailable == 0) {
@@ -234,7 +235,7 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
 
     private fun String.getAttendanceFromInt(): String {
         return if (this == "0")
-            "Absent" else "Present"
+            ATTENDANCE_ABSENT else ATTENDANCE_PRESENT
     }
 
     private fun Long?.getDate(pattern: String = "dd/MM/yyyy"): String {
