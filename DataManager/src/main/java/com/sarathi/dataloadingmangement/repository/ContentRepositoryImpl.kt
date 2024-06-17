@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.repository
 
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
@@ -43,7 +44,12 @@ class ContentRepositoryImpl @Inject constructor(
         }
 
         uiConfigDao.getAllIconsKey().forEach {
-            contentRequests.add(ContentRequest(languageCode = "en", contentKey = it))
+            contentRequests.add(
+                ContentRequest(
+                    languageCode = DEFAULT_LANGUAGE_CODE,
+                    contentKey = it
+                )
+            )
 
         }
         return contentRequests

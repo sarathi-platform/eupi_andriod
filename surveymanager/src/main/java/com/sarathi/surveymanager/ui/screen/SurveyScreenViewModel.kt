@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
@@ -146,10 +147,10 @@ class SurveyScreenViewModel @Inject constructor(
 
     fun checkButtonValidation() {
         questionUiModel.value.filter { it.isMandatory }.forEach { questionUiModel ->
-            if (questionUiModel.tagId == 86) {
+            if (questionUiModel.tagId.toString() == DISBURSED_AMOUNT_TAG) {
                 val disbursedAmount =
                     if (TextUtils.isEmpty(questionUiModel.options?.firstOrNull()?.selectedValue)) 0 else questionUiModel.options?.firstOrNull()?.selectedValue?.toInt()
-                if (disbursedAmount?.plus(totalSubmittedAmount)!! > sanctionAmount) {
+                if (disbursedAmount ?: 0 + totalSubmittedAmount > sanctionAmount) {
                     isButtonEnable.value = false
                     return
                 }
