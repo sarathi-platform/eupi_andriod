@@ -1,4 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+import io.gitlab.arturbosch.detekt.Detekt
+
 buildscript {
     ext {
         compose_ui_version = '1.4.1'
@@ -11,6 +13,7 @@ buildscript {
         }
         mavenCentral()
         jcenter()
+        gradlePluginPortal()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.3.1'
@@ -20,12 +23,45 @@ buildscript {
         classpath 'com.google.gms:google-services:4.3.15'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.5'
         classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:4.2.1.3168"
+        classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.3"
+
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
+allprojects { project ->
+    apply plugin: "io.gitlab.arturbosch.detekt"
+
+    dependencies {
+        detektPlugins "com.twitter.compose.rules:detekt:0.0.26"
+    }
+
+    detekt {
+        toolVersion = "1.23.3"
+        config.setFrom("$rootDir/codequality/detekt/detekt.yml")
+        buildUponDefaultConfig = false
+        allRules = false
+        baseline = file("detekt/baseline.xml")
+        basePath = projectDir
+    }
+
+    // If not set, all file paths reported will be absolute file path.
+    tasks.withType(Detekt).configureEach {
+        jvmTarget = "1.8"
+        reports {
+            xml.required = false
+            html.required = true
+            html.outputLocation = file("detekt/report.html")
+            txt.required = false
+            sarif.required = false
+            md.required = false
+        }
+        basePath = rootDir.absolutePath
+    }
+}
 
 apply from: 'dependencies.gradle'
+apply plugin: "io.gitlab.arturbosch.detekt"
 
 task clean(type: Delete) {
     delete rootProject.buildDir
