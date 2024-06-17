@@ -4,6 +4,7 @@ import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
+import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
 import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
@@ -14,6 +15,7 @@ class ContentRepositoryImpl @Inject constructor(
     val apiInterface: DataLoadingApiService,
     val contentDao: ContentDao,
     val contentConfigDao: ContentConfigDao,
+    val uiConfigDao: UiConfigDao,
     val coreSharedPrefs: CoreSharedPrefs
 ) : IContentRepository {
     override suspend fun fetchContentsFromServer(contentMangerRequest: List<ContentRequest>): ApiResponseModel<List<ContentResponse>> {
@@ -38,6 +40,11 @@ class ContentRepositoryImpl @Inject constructor(
             coreSharedPrefs.getUniqueUserIdentifier(),
         ).forEach {
             contentRequests.add(ContentRequest(languageCode = it.languageCode, contentKey = it.key))
+        }
+
+        uiConfigDao.getAllIconsKey().forEach {
+            contentRequests.add(ContentRequest(languageCode = "en", contentKey = it))
+
         }
         return contentRequests
     }
