@@ -26,11 +26,13 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MA
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_REFERENCE_ID
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SANCTIONED_AMOUNT
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SECTION_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SUBJECT_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SUBJECT_TYPE
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SURVEY_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TASK_ID
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TOTAL_SUBMITTED_AMOUNT
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.CONTENT_DETAIL_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME
@@ -197,6 +199,12 @@ fun NavGraphBuilder.MatNavigation(
                 navArgument(name = ARG_GRANT_TYPE) {
                     type = NavType.StringType
                 },
+                navArgument(name = ARG_SANCTIONED_AMOUNT) {
+                    type = NavType.IntType
+                },
+                navArgument(name = ARG_TOTAL_SUBMITTED_AMOUNT) {
+                    type = NavType.IntType
+                },
             ),
         ) {
             SurveyScreen(
@@ -228,6 +236,12 @@ fun NavGraphBuilder.MatNavigation(
                 grantType = it.arguments?.getString(
                     ARG_GRANT_TYPE
                 ) ?: BLANK_STRING,
+                sanctionedAmount = it.arguments?.getInt(
+                    ARG_SANCTIONED_AMOUNT
+                ) ?: 0,
+                totalSubmittedAmount = it.arguments?.getInt(
+                    ARG_TOTAL_SUBMITTED_AMOUNT
+                ) ?: 0,
 
                 )
         }
@@ -251,7 +265,9 @@ fun NavGraphBuilder.MatNavigation(
                 navArgument(name = ARG_ACTIVITY_CONFIG_ID) {
                     type = NavType.IntType
                 },
-
+                navArgument(name = ARG_SANCTIONED_AMOUNT) {
+                    type = NavType.IntType
+                },
 
                 )
         ) {
@@ -274,7 +290,7 @@ fun NavGraphBuilder.MatNavigation(
                     ARG_ACTIVITY_CONFIG_ID
                 ) ?: 0,
                 onSettingClick = onSettingIconClick,
-                onNavigateSurveyScreen = { referenceId, activityConfigId, grantId, grantType ->
+                onNavigateSurveyScreen = { referenceId, activityConfigId, grantId, grantType, sanctionAmount, totalSubmittedAmount ->
                     navigateToSurveyScreen(
                         navController, surveyId = it.arguments?.getInt(
                             ARG_SURVEY_ID
@@ -289,12 +305,17 @@ fun NavGraphBuilder.MatNavigation(
                         referenceId = referenceId,
                         activityConfigId = activityConfigId,
                         grantId = grantId,
-                        grantType = grantType
+                        grantType = grantType,
+                        sanctionedAmount = sanctionAmount,
+                        totalSubmittedAmount = totalSubmittedAmount
                     )
                 },
                 onNavigateSuccessScreen = { msg ->
                     navigateToActivityCompletionScreen(navController, msg)
-                }
+                },
+                sanctionedAmount = it.arguments?.getInt(
+                    ARG_SANCTIONED_AMOUNT
+                ) ?: 0,
             )
         }
 
@@ -342,10 +363,10 @@ sealed class MATHomeScreens(val route: String) {
         MATHomeScreens(route = "$MEDIA_PLAYER_SCREEN_ROUTE_NAME/{$ARG_CONTENT_KEY}/{$ARG_CONTENT_TYPE}")
 
     object SurveyScreen :
-        MATHomeScreens(route = "$SURVEY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_SUBJECT_NAME}/{$ARG_REFERENCE_ID}/{$ARG_ACTIVITY_CONFIG_ID}/{$ARG_GRANT_ID}/{$ARG_GRANT_TYPE}")
+        MATHomeScreens(route = "$SURVEY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_SUBJECT_NAME}/{$ARG_REFERENCE_ID}/{$ARG_ACTIVITY_CONFIG_ID}/{$ARG_GRANT_ID}/{$ARG_GRANT_TYPE}/{$ARG_SANCTIONED_AMOUNT}/{$ARG_TOTAL_SUBMITTED_AMOUNT}")
 
     object DisbursementSurveyScreen :
-        MATHomeScreens(route = "$GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_SUBJECT_NAME}/{$ARG_ACTIVITY_CONFIG_ID}")
+        MATHomeScreens(route = "$GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME/{$ARG_SURVEY_ID}/{$ARG_TASK_ID}/{$ARG_SECTION_ID}/{$ARG_SUBJECT_TYPE}/{$ARG_SUBJECT_NAME}/{$ARG_ACTIVITY_CONFIG_ID}/{$ARG_SANCTIONED_AMOUNT}")
 
     object ActivityCompletionScreen :
         MATHomeScreens(route = "$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/{$ARG_ACTIVITY_MASSAGE}")
@@ -372,9 +393,11 @@ fun navigateToSurveyScreen(
     referenceId: String,
     activityConfigId: Int,
     grantId: Int,
-    grantType: String
+    grantType: String,
+    sanctionedAmount: Int?,
+    totalSubmittedAmount: Int?,
 ) {
-    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$subjectName/$referenceId/$activityConfigId/$grantId/$grantType")
+    navController.navigate("$SURVEY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$subjectName/$referenceId/$activityConfigId/$grantId/$grantType/$sanctionedAmount/$totalSubmittedAmount")
 }
 
 fun navigateToGrantSurveySummaryScreen(
@@ -385,8 +408,9 @@ fun navigateToGrantSurveySummaryScreen(
     subjectType: String,
     subjectName: String,
     activityConfigId: Int,
+    sanctionedAmount: Int?,
 ) {
-    navController.navigate("$GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$subjectName/$activityConfigId")
+    navController.navigate("$GRANT_SURVEY_SUMMARY_SCREEN_ROUTE_NAME/$surveyId/$taskId/$sectionId/$subjectType/$subjectName/$activityConfigId/$sanctionedAmount")
 }
 
 

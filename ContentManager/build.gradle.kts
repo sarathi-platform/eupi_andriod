@@ -105,7 +105,6 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer:1.0.2")
     implementation("androidx.media3:media3-exoplayer-dash:1.0.2")
     implementation("androidx.media3:media3-ui:1.0.2")
-
     implementation("com.github.barteksc:android-pdf-viewer:3.2.0-beta.1")
     implementation("com.google.accompanist:accompanist-coil:0.15.0")
     implementation("io.coil-kt:coil-compose:2.1.0")
