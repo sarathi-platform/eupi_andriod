@@ -785,3 +785,7 @@ fun String.getDateInMillis(): Long {
 fun String.capitalizeFirstLetter(): String {
     return this.lowercase().replaceFirstChar { it.uppercase() }
 }
+
+fun getCurrentTimeInMillis(): Long {
+    return System.currentTimeMillis()
+}

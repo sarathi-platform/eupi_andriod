@@ -239,11 +239,11 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
     }
 
     private fun Long?.getDate(pattern: String = "dd/MM/yyyy"): String {
-        if (this == null)
-            return com.nudge.core.BLANK_STRING
+        this?.let {
+            val formatter = SimpleDateFormat(pattern)
+            return formatter.format(Date(this))
+        } ?: return BLANK_STRING
 
-        val formatter = SimpleDateFormat(pattern)
-        return formatter.format(Date(this))
     }
 
 }

@@ -32,6 +32,7 @@ import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.Sa
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.SaveAttendanceToDbRepositoryImpl
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.UpdateAttendanceToDbRepository
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.UpdateAttendanceToDbRepositoryImpl
+import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.DeleteAttendanceToDbUseCase
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.FetchAttendanceHistoryForDateFromDbUseCase
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.FetchDidiListForSmallGroupFromDbUseCase
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.useCase.FetchMarkedDatesUseCase
@@ -126,7 +127,8 @@ class SmallGroupModule {
     @Singleton
     fun provideSmallGroupAttendanceHistoryUseCase(
         fetchSmallGroupDetailsFromDbRepository: FetchSmallGroupDetailsFromDbRepository,
-        fetchSmallGroupAttendanceHistoryFromDbRepository: FetchSmallGroupAttendanceHistoryFromDbRepository
+        fetchSmallGroupAttendanceHistoryFromDbRepository: FetchSmallGroupAttendanceHistoryFromDbRepository,
+        updateAttendanceToDbRepository: UpdateAttendanceToDbRepository
     ): SmallGroupAttendanceHistoryUseCase {
         return SmallGroupAttendanceHistoryUseCase(
             fetchSmallGroupDetailsFromDbUseCase = FetchSmallGroupDetailsFromDbUseCase(
@@ -134,7 +136,8 @@ class SmallGroupModule {
             ),
             fetchSmallGroupAttendanceHistoryFromDbUseCase = FetchSmallGroupAttendanceHistoryFromDbUseCase(
                 fetchSmallGroupAttendanceHistoryFromDbRepository
-            )
+            ),
+            deleteAttendanceToDbUseCase = DeleteAttendanceToDbUseCase(updateAttendanceToDbRepository)
         )
     }
 

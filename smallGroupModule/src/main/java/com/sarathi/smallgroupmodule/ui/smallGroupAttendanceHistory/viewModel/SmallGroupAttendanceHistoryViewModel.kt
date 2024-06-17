@@ -4,11 +4,17 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.DEFAULT_DATE_RANGE_DURATION
+import com.nudge.core.enums.EventType
 import com.nudge.core.getDayPriorCurrentTimeMillis
 import com.nudge.core.ui.events.CommonEvents
+import com.nudge.core.ui.events.DialogEvents
+import com.nudge.core.utils.state.DialogState
+import com.nudge.syncmanager.EventWriterEvents
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
+import com.sarathi.smallgroupmodule.data.domain.EventWriterHelperImpl
 import com.sarathi.smallgroupmodule.data.model.SubjectAttendanceHistoryState
+import com.sarathi.smallgroupmodule.data.model.convertToSubjectAttendanceStateList
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.domain.useCase.SmallGroupAttendanceHistoryUseCase
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.event.SmallGroupAttendanceEvent
 import com.sarathi.smallgroupmodule.utils.getDate
@@ -19,7 +25,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SmallGroupAttendanceHistoryViewModel @Inject constructor(
-    private val smallGroupAttendanceHistoryUseCase: SmallGroupAttendanceHistoryUseCase
+    private val smallGroupAttendanceHistoryUseCase: SmallGroupAttendanceHistoryUseCase,
+    private val eventWriterHelperImpl: EventWriterHelperImpl
 ) : BaseViewModel() {
 
     private val _smallGroupDetails: MutableState<SmallGroupSubTabUiModel> =
@@ -41,14 +48,25 @@ class SmallGroupAttendanceHistoryViewModel @Inject constructor(
         )
     val subjectAttendanceHistoryStateList: State<List<SubjectAttendanceHistoryState>> get() = _subjectAttendanceHistoryStateList
 
-    private val _subjectAttendanceHistoryStateMappingByDate: MutableState<Map<Long, List<SubjectAttendanceHistoryState>>> =
+    private val _subjectAttendanceHistoryStateMappingByDate: MutableState<MutableMap<Long, List<SubjectAttendanceHistoryState>>> =
         mutableStateOf(
             mutableMapOf()
         )
     val subjectAttendanceHistoryStateMappingByDate: State<Map<Long, List<SubjectAttendanceHistoryState>>> get() = _subjectAttendanceHistoryStateMappingByDate
 
+    private val _alertDialogState: MutableState<DialogState> = mutableStateOf(DialogState())
+    val alertDialogState: State<DialogState> get() = _alertDialogState
+
+    private var deleteHistoryForDateState: Pair<Int, Long>? = null
+
     override fun <T> onEvent(event: T) {
         when (event) {
+
+            is DialogEvents.ShowDialogEvent -> {
+                _alertDialogState.value =
+                    _alertDialogState.value.copy(isDialogVisible = event.showDialog)
+            }
+
             is SmallGroupAttendanceEvent.LoadSmallGroupDetailsForSmallGroupIdEvent -> {
 
                 ioViewModelScope {
@@ -65,7 +83,7 @@ class SmallGroupAttendanceHistoryViewModel @Inject constructor(
                             dateRangeFilter.value
                         ).sortedByDescending { it.date }
                     _subjectAttendanceHistoryStateMappingByDate.value =
-                        subjectAttendanceHistoryStateList.value.groupBy { it.date }
+                        subjectAttendanceHistoryStateList.value.groupBy { it.date }.toMutableMap()
 
                     isAttendanceAvailable.value =
                         !_subjectAttendanceHistoryStateMappingByDate.value.isEmpty()
@@ -83,8 +101,9 @@ class SmallGroupAttendanceHistoryViewModel @Inject constructor(
                         smallGroupAttendanceHistoryUseCase
                             .fetchSmallGroupAttendanceHistoryFromDbUseCase
                             .invoke(smallGroupDetails.value.smallGroupId, getFinalDateRangeFilter())
+                            .sortedByDescending { it.date }
                     _subjectAttendanceHistoryStateMappingByDate.value =
-                        subjectAttendanceHistoryStateList.value.groupBy { it.date }
+                        subjectAttendanceHistoryStateList.value.groupBy { it.date }.toMutableMap()
                 }
 
             }
@@ -95,7 +114,62 @@ class SmallGroupAttendanceHistoryViewModel @Inject constructor(
                         _dateRangeFilter.value.copy(event.startDate!!, event.endDate!!)
                 }
             }
+
+            is SmallGroupAttendanceEvent.DeleteAttendanceForDateEvent -> {
+                ioViewModelScope {
+                    deleteHistoryForDateState?.let { deleteHistoryForDate ->
+                        val subjectAttendanceHistoryStateList =
+                            subjectAttendanceHistoryStateMappingByDate.value.get(
+                                deleteHistoryForDate.second
+                            )
+                        val subjectAttendanceStateList =
+                            subjectAttendanceHistoryStateList.convertToSubjectAttendanceStateList()
+
+                        removeAttendanceForDateFromUi(deleteHistoryForDate.second)
+
+                        subjectAttendanceHistoryStateList?.forEach { subjectAttendanceHistoryState ->
+                            addDeleteAttendanceEvent(
+                                subjectAttendanceHistoryState,
+                                deleteHistoryForDate.second
+                            )
+                        }
+
+                        smallGroupAttendanceHistoryUseCase.deleteAttendanceToDbUseCase.invoke(
+                            deleteHistoryForDate.first,
+                            deleteHistoryForDate.second,
+                            subjectAttendanceStateList
+                        ) {
+                            event.onSuccess()
+                        }
+                    }
+                }
+            }
+
+            is EventWriterEvents.SaveAttendanceEvent -> {
+                ioViewModelScope {
+                    eventWriterHelperImpl.saveEventToMultipleSources(
+                        event = event.events,
+                        eventType = EventType.STATEFUL,
+                        eventDependencies = event.dependencyEntityList
+                    )
+                }
+            }
+
+            is SmallGroupAttendanceEvent.InitiateDeleteForDateEvent -> {
+                deleteHistoryForDateState = event.deleteHistoryForDateState
+            }
+
+            is SmallGroupAttendanceEvent.TerminateDeleteForDateEvent -> {
+                deleteHistoryForDateState = null
+            }
         }
+    }
+
+    private fun removeAttendanceForDateFromUi(date: Long) {
+        val tempList = _subjectAttendanceHistoryStateMappingByDate.value
+        tempList.remove(date)
+        _subjectAttendanceHistoryStateMappingByDate.value = tempList
+
     }
 
     private fun getFinalDateRangeFilter(): Pair<Long, Long> {
@@ -105,6 +179,18 @@ class SmallGroupAttendanceHistoryViewModel @Inject constructor(
         else
             dateRangeFilter.value
 
+    }
+
+    private suspend fun addDeleteAttendanceEvent(
+        subjectAttendanceHistoryState: SubjectAttendanceHistoryState,
+        date: Long
+    ) {
+        val event = eventWriterHelperImpl.createDeleteAttendanceEvent(
+            subjectEntity = subjectAttendanceHistoryState.subjectEntity,
+            smallGroupSubTabUiModel = smallGroupDetails.value,
+            date = date
+        )
+        onEvent(EventWriterEvents.SaveAttendanceEvent(event, listOf()))
     }
 
 }

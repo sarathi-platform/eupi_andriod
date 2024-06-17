@@ -43,7 +43,9 @@ fun CustomDialogComponent(
     onNegativeButtonClick: () -> Unit
 ) {
     Dialog(
-        onDismissRequest = { }, properties = DialogProperties(
+        onDismissRequest = {
+            onNegativeButtonClick()
+        }, properties = DialogProperties(
             dismissOnClickOutside = false,
             dismissOnBackPress = dismissOnBackPress ?: true
         )

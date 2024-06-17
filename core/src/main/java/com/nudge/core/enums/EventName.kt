@@ -46,6 +46,7 @@ enum class EventName(val id: Int, val depends_on: List<Int> = emptyList(), val t
     TASKS_STATUS_EVENT(29, topicName = "MISSION_ACTIVITY_TASK_STATUS_TOPIC"),
     GRANT_SAVE_RESPONSE_EVENT(30, topicName = "SAVE_RESPONSE_EVENT"),
     SAVE_SUBJECT_ATTENDANCE_EVENT(31, topicName = "SMALL_GROUP_ATTENDANCE_TOPIC"),
+    DELETE_SUBJECT_ATTENDANCE_EVENT(32, topicName = "SMALL_GROUP_ATTENDANCE_TOPIC")
     ;
 }
 
