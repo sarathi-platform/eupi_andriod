@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -38,6 +39,7 @@ fun InputComponent(
     hintText: String = BLANK_STRING,
     isMandatory: Boolean = true,
     isEditable: Boolean = true,
+    hintMessage: String = BLANK_STRING,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
     val txt = remember {
@@ -98,6 +100,9 @@ fun InputComponent(
                 textColor = textColorDark
             ),
         )
+        if (hintMessage.isNotBlank()) {
+            Text(hintMessage, style = smallTextStyleMediumWeight, color = Color.Gray)
+        }
 
     }
 }

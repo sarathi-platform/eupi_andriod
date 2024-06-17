@@ -16,12 +16,17 @@ import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
+import com.sarathi.dataloadingmangement.model.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.util.constants.ComponentEnum
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
+import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityUiConfigUseCase
+import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
+import com.sarathi.missionactivitytask.ui.grantTask.model.UiConfigAttributeType
+import com.sarathi.missionactivitytask.utils.ComponentEnum
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
@@ -48,17 +53,19 @@ class GrantTaskScreenViewModel @Inject constructor(
     private var missionId = 0
     private var activityId = 0
     var activityConfigUiModel: ActivityConfigUiModel? = null
-    private val _taskList = mutableStateOf<HashMap<Int, HashMap<String, String>>>(hashMapOf())
-    private val taskList: State<HashMap<Int, HashMap<String, String>>> get() = _taskList
-    private val _filterList = mutableStateOf<HashMap<Int, HashMap<String, String>>>(hashMapOf())
-    val filterList: State<HashMap<Int, HashMap<String, String>>> get() = _filterList
+    private val _taskList =
+        mutableStateOf<HashMap<Int, HashMap<String, GrantTaskCardModel>>>(hashMapOf())
+    private val taskList: State<HashMap<Int, HashMap<String, GrantTaskCardModel>>> get() = _taskList
+    private val _filterList =
+        mutableStateOf<HashMap<Int, HashMap<String, GrantTaskCardModel>>>(hashMapOf())
+    val filterList: State<HashMap<Int, HashMap<String, GrantTaskCardModel>>> get() = _filterList
     val searchLabel = mutableStateOf<String>(BLANK_STRING)
     val isButtonEnable = mutableStateOf<Boolean>(false)
     var isDisbursement: Boolean = false
     var isGroupByEnable = mutableStateOf(false)
     var isFilerEnable = mutableStateOf(false)
     var isActivityCompleted = mutableStateOf(false)
-    var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, String>>>>())
+    var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, GrantTaskCardModel>>>>())
 
 
     override fun <T> onEvent(event: T) {
@@ -92,7 +99,7 @@ class GrantTaskScreenViewModel @Inject constructor(
                         it.status.toString(),
                         it.subjectId,
                         componentType = ComponentEnum.Search.name
-                    )[GrantTaskCardSlots.GRANT_SEARCH_LABEL.name]
+                    )[GrantTaskCardSlots.GRANT_SEARCH_LABEL.name]?.value
                         ?: BLANK_STRING
 
                     if ((getUiComponentValues(
@@ -100,7 +107,7 @@ class GrantTaskScreenViewModel @Inject constructor(
                             it.status.toString(),
                             it.subjectId,
                             componentType = ComponentEnum.Card.name
-                        )[GrantTaskCardSlots.GRANT_GROUP_BY.name]
+                        )[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value
                             ?: BLANK_STRING).isNotBlank()
                     ) {
                         isFilerEnable.value = true
@@ -119,7 +126,7 @@ class GrantTaskScreenViewModel @Inject constructor(
             _filterList.value.putAll(_taskList.value)
 
             filterTaskMap =
-                _taskList.value.entries.groupBy { it.value[GrantTaskCardSlots.GRANT_GROUP_BY.name] }
+                _taskList.value.entries.groupBy { it.value[GrantTaskCardSlots.GRANT_GROUP_BY.name]?.value }
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
@@ -132,30 +139,41 @@ class GrantTaskScreenViewModel @Inject constructor(
         taskStatus: String,
         subjectId: Int,
         componentType: String
-    ): HashMap<String, String> {
-        val cardAttributesWithValue = HashMap<String, String>()
-        cardAttributesWithValue[GrantTaskCardSlots.GRANT_TASK_STATUS.name] = taskStatus
+    ): HashMap<String, GrantTaskCardModel> {
+        val cardAttributesWithValue = HashMap<String, GrantTaskCardModel>()
+        cardAttributesWithValue[GrantTaskCardSlots.GRANT_TASK_STATUS.name] =
+            GrantTaskCardModel(value = taskStatus, label = BLANK_STRING, icon = null)
         val activityConfig = getActivityUiConfigUseCase.getActivityUiConfig(
             missionId = missionId, activityId = activityId
         )
         val cardConfig = activityConfig.filter { it.componentType == componentType }
         cardConfig.forEach { cardAttribute ->
             cardAttributesWithValue[cardAttribute.key] = when (cardAttribute.type.toUpperCase()) {
-                UiConfigAttributeType.STATIC.name -> cardAttribute.value
-                UiConfigAttributeType.DYNAMIC.name, UiConfigAttributeType.ATTRIBUTE.name -> getTaskAttributeValue(
-                    cardAttribute.value, taskId
+                UiConfigAttributeType.STATIC.name -> getGrantTaskCardModel(
+                    value = cardAttribute.value,
+                    activityUiConfig = cardAttribute
                 )
 
-                UiConfigAttributeType.TAG.name -> surveyAnswerUseCase.getAnswerForTag(
+                UiConfigAttributeType.DYNAMIC.name, UiConfigAttributeType.ATTRIBUTE.name -> getGrantTaskCardModel(
+                    value = getTaskAttributeValue(
+                        cardAttribute.value,
+                        taskId
+                    ), activityUiConfig = cardAttribute
+                )
+
+                UiConfigAttributeType.TAG.name -> getGrantTaskCardModel(
+                    activityUiConfig = cardAttribute, value = surveyAnswerUseCase.getAnswerForTag(
                     taskId,
                     subjectId,
                     getTaskAttributeValue(
                         cardAttribute.value, taskId
                     )
+                    )
                 )
 
+
                 else -> {
-                    BLANK_STRING
+                    getGrantTaskCardModel(activityUiConfig = cardAttribute, BLANK_STRING)
                 }
             }
 
@@ -185,10 +203,10 @@ class GrantTaskScreenViewModel @Inject constructor(
     private fun performSearchQuery(
         queryTerm: String, isFilterApplied: Boolean, fromScreen: String
     ) {
-        val filteredList = HashMap<Int, HashMap<String, String>>()
+        val filteredList = HashMap<Int, HashMap<String, GrantTaskCardModel>>()
         if (queryTerm.isNotEmpty()) {
             taskList.value.entries.forEach { task ->
-                if (task.value[GrantTaskCardSlots.GRANT_SEARCH_ON.name]?.lowercase()
+                if (task.value[GrantTaskCardSlots.GRANT_SEARCH_ON.name]?.value?.lowercase()
                         ?.contains(queryTerm.lowercase()) == true
                 ) {
                     filteredList[task.key] = task.value
@@ -273,6 +291,18 @@ class GrantTaskScreenViewModel @Inject constructor(
             checkButtonValidation()
         }
 
+
+    }
+
+    private fun getGrantTaskCardModel(
+        activityUiConfig: UiConfigModel,
+        value: String
+    ): GrantTaskCardModel {
+        return GrantTaskCardModel(
+            label = activityUiConfig.label,
+            value = value,
+            icon = getFilePathUri(activityUiConfig.icon ?: BLANK_STRING)
+        )
 
     }
 }

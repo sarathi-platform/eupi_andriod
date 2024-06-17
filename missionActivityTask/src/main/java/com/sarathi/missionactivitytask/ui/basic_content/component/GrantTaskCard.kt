@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -33,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.brownDark
@@ -56,27 +58,28 @@ import com.nudge.core.ui.theme.white
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
 import com.sarathi.missionactivitytask.ui.components.PrimaryButton
+import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardModel
 import com.sarathi.missionactivitytask.utils.StatusEnum
 
 @Composable
 fun GrantTaskCard(
-    title: String,
-    subTitle1: String,
-    subtitle2: String,
-    subtitle3: String,
-    subtitle4: String,
-    subtitle5: String,
-    primaryButtonText: String,
+    title: GrantTaskCardModel?,
+    subTitle1: GrantTaskCardModel?,
+    subtitle2: GrantTaskCardModel?,
+    subtitle3: GrantTaskCardModel?,
+    subtitle4: GrantTaskCardModel?,
+    subtitle5: GrantTaskCardModel?,
+    primaryButtonText: GrantTaskCardModel?,
     onPrimaryButtonClick: (subjectName: String) -> Unit,
-    secondaryButtonText: String,
-    status: String,
+    secondaryButtonText: GrantTaskCardModel?,
+    status: GrantTaskCardModel?,
     imagePath: Uri?,
     modifier: Modifier = Modifier,
     isHamletIcon: Boolean = false,
     onNotAvailable: () -> Unit,
 ) {
     val taskMarkedNotAvailable = remember {
-        mutableStateOf(status == StatusEnum.NOT_AVAILABLE.name)
+        mutableStateOf(status?.value == StatusEnum.NOT_AVAILABLE.name)
     }
     androidx.compose.material3.Card(
         elevation = CardDefaults.cardElevation(
@@ -87,7 +90,7 @@ fun GrantTaskCard(
             .clip(RoundedCornerShape(dimen_6_dp))
             .border(
                 width = dimen_1_dp,
-                color = if (status == StatusEnum.COMPLETED.name) greenOnline else greyBorderColor,
+                color = if (status?.value == StatusEnum.COMPLETED.name) greenOnline else greyBorderColor,
                 shape = RoundedCornerShape(dimen_6_dp)
             )
             .background(Color.Transparent)
@@ -114,21 +117,21 @@ fun GrantTaskCard(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.Start
                 ) {
-                    androidx.compose.material3.Text(
-                        text = title,
+                    Text(
+                        text = title?.value ?: BLANK_STRING,
                         style = mediumTextStyle,
                         color = brownDark
                     )
-                    SubContainerView(subTitle1, R.drawable.home_icn)
+                    SubContainerView(subTitle1)
                 }
-                if (status == (StatusEnum.COMPLETED.name)) {
+                if (status?.value == (StatusEnum.COMPLETED.name)) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_check_circle),
                         contentDescription = null,
                         modifier = Modifier.size(dimen_20_dp),
                         tint = greenOnline,
                     )
-                } else if (status == StatusEnum.INPROGRESS.name) {
+                } else if (status?.value == StatusEnum.INPROGRESS.name) {
                     Text(
                         text = stringResource(id = R.string.in_progress),
                         style = defaultTextStyle,
@@ -144,9 +147,9 @@ fun GrantTaskCard(
                     .padding(start = dimen_16_dp, top = dimen_5_dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (subtitle2.isNotBlank()) {
+                if (subtitle2?.value?.isNotBlank() == true) {
                     Text(
-                        text = subtitle2,
+                        text = subtitle2.value,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = dimen_5_dp),
@@ -155,18 +158,20 @@ fun GrantTaskCard(
                     )
                 }
             }
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
                 SubContainerView(subtitle3)
-                SubContainerView(subtitle4, R.drawable.ic_recieve_grant)
-                SubContainerView(subtitle5, R.drawable.ic_grant_sanction)
+                SubContainerView(subtitle4)
+                SubContainerView(subtitle5)
             }
 
 //            GrantAmountView(subtitle3, subtitle4, iconResId = R.drawable.ic_recieve_grant)
 //            GrantAmountView(subtitle2 = subtitle5, iconResId = R.drawable.ic_grant_sanction)
 
-            if (status == StatusEnum.NOT_STARTED.name) {
+            if (status?.value == StatusEnum.NOT_STARTED.name) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -175,12 +180,12 @@ fun GrantTaskCard(
                 ) {
                     PrimarySecondaryButtonView(
                         modifier = Modifier.weight(1.0f),
-                        secondaryButtonText,
+                        secondaryButtonText?.value ?: BLANK_STRING,
                         taskMarkedNotAvailable,
                         onNotAvailable,
-                        primaryButtonText,
+                        primaryButtonText?.value ?: BLANK_STRING,
                         onPrimaryButtonClick,
-                        title
+                        title?.value ?: BLANK_STRING
                     )
                 }
             } else {
@@ -201,9 +206,9 @@ fun GrantTaskCard(
                         .padding(dimen_16_dp),
                     horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
                 ) {
-                    if (status == StatusEnum.COMPLETED.name) {
+                    if (status?.value == StatusEnum.COMPLETED.name) {
                         Row(modifier = Modifier.clickable {
-                            onPrimaryButtonClick(title)
+                            onPrimaryButtonClick(title?.value ?: BLANK_STRING)
                         }) {
                             Text(
                                 text = stringResource(R.string.view),
@@ -223,12 +228,12 @@ fun GrantTaskCard(
                     } else {
                         PrimarySecondaryButtonView(
                             modifier = Modifier.weight(1.0f),
-                            secondaryButtonText,
+                            secondaryButtonText?.value ?: BLANK_STRING,
                             taskMarkedNotAvailable,
                             onNotAvailable,
                             primaryButtonText = stringResource(R.string.continue_text),
                             onPrimaryButtonClick,
-                            title
+                            title?.value ?: BLANK_STRING
                         )
                     }
                 }
@@ -238,22 +243,24 @@ fun GrantTaskCard(
 }
 
 @Composable
-private fun SubContainerView(subTitle1: String = BLANK_STRING, resId: Int = 0) {
+private fun SubContainerView(taskCard: GrantTaskCardModel?) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (subTitle1.isNotBlank()) {
-            if (resId != 0) {
-                Icon(
-                    painter = painterResource(id = resId),
-                    contentDescription = null,
-                    tint = blueDark,
-                )
-            }
+        if (taskCard?.icon != null) {
+            ImageViewer(taskCard.icon)
+            Spacer(modifier = Modifier.width(6.dp))
+
+        }
+        if (!TextUtils.isEmpty(taskCard?.label)) {
+            Text(text = taskCard?.label!!, color = blueDark, style = newMediumTextStyle)
+        }
+        if (!TextUtils.isEmpty(taskCard?.value)) {
+
             Text(
-                text = subTitle1,
+                text = taskCard?.value!!,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = dimen_5_dp),
@@ -262,6 +269,18 @@ private fun SubContainerView(subTitle1: String = BLANK_STRING, resId: Int = 0) {
             )
         }
     }
+}
+
+@Composable
+fun ImageViewer(uri: Uri) {
+
+
+    AsyncImage(
+        model = uri,
+        contentDescription = "Loaded Image",
+        modifier = Modifier.size(22.dp)
+    )
+
 }
 
 @Composable

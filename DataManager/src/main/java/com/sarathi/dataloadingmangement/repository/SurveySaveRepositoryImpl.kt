@@ -31,20 +31,31 @@ class SurveySaveRepositoryImpl @Inject constructor(
     }
 
     override fun getSurveyAnswerForTag(taskId: Int, subjectId: Int, tagId: String): String {
-        val surveyAnswerEntity = surveyAnswersDao.getSurveyAnswerForTag(
+        val result = ArrayList<String>()
+
+        val surveyAnswerEntities = surveyAnswersDao.getSurveyAnswerForTag(
             taskId,
             subjectId,
             tagId.toInt(),
             coreSharedPrefs.getUniqueUserIdentifier()
         )
-        val result = ArrayList<String>()
-        surveyAnswerEntity?.optionItems?.forEach {
-            if (it.isSelected == true) {
-                if (it.selectedValue?.isNotBlank() == true) {
-                    result.add(it.selectedValue ?: BLANK_STRING)
-                } else {
-                    result.add(it.description ?: BLANK_STRING)
+        if (tagId == DISBURSED_AMOUNT_TAG || tagId == NO_OF_POOR_DIDI_TAG || tagId == RECEIVED_AMOUNT_TAG) {
+            var totalAmount = 0
+            surveyAnswerEntities.forEach { surveyAnswerEntity ->
+
+                surveyAnswerEntity?.optionItems?.forEach {
+                    totalAmount += it.selectedValue?.toInt() ?: 0
                 }
+
+            }
+            result.add(totalAmount.toString())
+        } else {
+            surveyAnswerEntities.forEach { surveyAnswerEntity ->
+
+                surveyAnswerEntity?.optionItems?.forEach {
+                    result.add(it.selectedValue ?: BLANK_STRING)
+                }
+
             }
         }
         return result.joinToString(",")

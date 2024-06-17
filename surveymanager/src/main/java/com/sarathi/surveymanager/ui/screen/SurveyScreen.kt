@@ -20,15 +20,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.DEFAULT_ID
-import com.nudge.core.ui.theme.dimen_16_dp
-import com.nudge.core.ui.theme.dimen_56_dp
-import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.ui.events.theme.dimen_16_dp
+import com.nudge.core.ui.events.theme.dimen_56_dp
+import com.nudge.core.ui.events.theme.dimen_8_dp
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.model.QuestionType
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
@@ -58,12 +60,14 @@ fun SurveyScreen(
     subjectName: String,
     activityConfigId: Int,
     grantId: Int,
-    grantType: String
+    grantType: String,
+    sanctionedAmount: Int,
+    totalSubmittedAmount: Int
 ) {
     val outerState = rememberLazyListState()
     val innerState = rememberLazyListState()
     val scope = rememberCoroutineScope()
-
+    val context = LocalContext.current
     LaunchedEffect(key1 = true) {
         viewModel.setPreviousScreenData(
             surveyId,
@@ -73,7 +77,9 @@ fun SurveyScreen(
             referenceId,
             activityConfigId,
             grantId = grantId,
-            grantType = grantType
+            grantType = grantType.toString(),
+            sanctionedAmount,
+            totalSubmittedAmount
         )
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(InitDataEvent.InitDataState)
@@ -99,8 +105,16 @@ fun SurveyScreen(
                     isActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
                     isLeftArrow = false,
                     onClick = {
-                        viewModel.saveButtonClicked()
-                        navController.popBackStack()
+                        if (viewModel.totalSubmittedAmount <= sanctionedAmount) {
+                            viewModel.saveButtonClicked()
+                            navController.popBackStack()
+                        } else {
+                            showCustomToast(
+                                context = context,
+                                context.getString(R.string.amount_limit_message, sanctionedAmount)
+                            )
+
+                        }
                     }
                 )
             }
@@ -140,6 +154,10 @@ fun SurveyScreen(
                         when (question.type) {
                             QuestionType.InputNumber.name -> {
                                 InputComponent(
+                                    hintMessage = getSanctionedAmountMessage(
+                                        question,
+                                        sanctionedAmount - totalSubmittedAmount
+                                    ),
                                     isMandatory = question.isMandatory,
                                     isEditable = viewModel.isActivityNotCompleted.value,
                                     defaultValue = question.options?.firstOrNull()?.selectedValue
@@ -234,6 +252,15 @@ fun SurveyScreen(
         },
         onSettingClick = {}
     )
+}
+
+@Composable
+fun getSanctionedAmountMessage(question: QuestionUiModel, remainingAmount: Int): String {
+    if (question.tagId.toString() == DISBURSED_AMOUNT_TAG) {
+        return LocalContext.current.getString(R.string.amount_limit, remainingAmount)
+    }
+    return BLANK_STRING
+
 }
 
 fun getSelectedOptionId(options: List<OptionsUiModel>?): String {

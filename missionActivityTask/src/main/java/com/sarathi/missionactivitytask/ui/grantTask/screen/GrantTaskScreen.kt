@@ -32,6 +32,7 @@ import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.contentmodule.utils.event.SearchEvent
+import com.sarathi.dataloadingmangement.model.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.dataloadingmangement.model.uiModel.GrantTaskCardSlots
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
@@ -43,6 +44,8 @@ import com.sarathi.missionactivitytask.navigation.navigateToMediaPlayerScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.GrantTaskCard
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
+import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardModel
+import com.sarathi.missionactivitytask.ui.grantTask.model.GrantTaskCardSlots
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.GrantTaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
@@ -72,7 +75,6 @@ fun GrantTaskScreen(
 
         },
         onBottomUI = {
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -197,12 +199,12 @@ fun GrantTaskScreen(
 private fun TaskRowView(
     viewModel: GrantTaskScreenViewModel,
     navController: NavController,
-    task: MutableMap.MutableEntry<Int, HashMap<String, String>>
+    task: MutableMap.MutableEntry<Int, HashMap<String, GrantTaskCardModel>>
 ) {
     GrantTaskCard(
         onPrimaryButtonClick = { subjectName ->
             if (!viewModel.isActivityCompleted.value) {
-                task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name] =
+                task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value =
                     SurveyStatusEnum.INPROGRESS.name
                 viewModel.updateTaskAvailableStatus(
                     taskId = task.key,
@@ -219,13 +221,14 @@ private fun TaskRowView(
                     subjectType = it.subject,
                     subjectName = subjectName,
                     activityConfigId = it.activityConfigId,
+                    sanctionedAmount = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name]?.value?.toInt(),
                 )
             }
         },
         onNotAvailable = {
             if (!viewModel.isActivityCompleted.value) {
 
-                task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name] =
+                task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name]?.value =
                     SurveyStatusEnum.NOT_AVAILABLE.name
                 viewModel.updateTaskAvailableStatus(
                     taskId = task.key,
@@ -235,20 +238,18 @@ private fun TaskRowView(
             }
         },
         imagePath = viewModel.getFilePathUri(
-            task.value[GrantTaskCardSlots.GRANT_TASK_IMAGE.name] ?: BLANK_STRING
+            task.value[GrantTaskCardSlots.GRANT_TASK_IMAGE.name]?.value ?: BLANK_STRING
         ),
-        title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name] ?: BLANK_STRING,
-        subTitle1 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name] ?: BLANK_STRING,
-        primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name]
-            ?: BLANK_STRING,
-        secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_SECONDARY_BUTTON.name]
-            ?: BLANK_STRING,
-        status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name] ?: BLANK_STRING,
+        title = task.value[GrantTaskCardSlots.GRANT_TASK_TITLE.name],
+        subTitle1 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE.name],
+        primaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_PRIMARY_BUTTON.name],
+        secondaryButtonText = task.value[GrantTaskCardSlots.GRANT_TASK_SECONDARY_BUTTON.name],
+        status = task.value[GrantTaskCardSlots.GRANT_TASK_STATUS.name],
 
-        subtitle2 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_2.name] ?: BLANK_STRING,
-        subtitle3 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_3.name] ?: BLANK_STRING,
-        subtitle4 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name] ?: BLANK_STRING,
-        subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name] ?: BLANK_STRING
+        subtitle2 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_2.name],
+        subtitle3 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_3.name],
+        subtitle4 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_4.name],
+        subtitle5 = task.value[GrantTaskCardSlots.GRANT_TASK_SUBTITLE_5.name]
     )
 }
 

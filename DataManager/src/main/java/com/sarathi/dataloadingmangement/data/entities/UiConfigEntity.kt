@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.UI_CONFIG_TABLE_NAME
 import com.sarathi.dataloadingmangement.model.mat.response.AttributeResponse
 @Entity(tableName = UI_CONFIG_TABLE_NAME)
@@ -17,6 +18,8 @@ data class UiConfigEntity(
     var key: String,
     var type: String,
     var value: String,
+    var icon: String,
+    var label: String,
     var componentType: String,
     var language: String,
     var activityId: Int,
@@ -40,7 +43,9 @@ data class UiConfigEntity(
                 missionId = missionId,
                 activityId = activityId,
                 language = attributes.languageCode ?: "en",
-                userId = userId
+                userId = userId,
+                label = attributes.label ?: BLANK_STRING,
+                icon = attributes.icon ?: BLANK_STRING
             )
 
         }

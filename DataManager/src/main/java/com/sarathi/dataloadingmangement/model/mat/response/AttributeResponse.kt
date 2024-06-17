@@ -13,5 +13,9 @@ data class AttributeResponse(
     @SerializedName("value")
     val value: String,
     @SerializedName("languageId")
-    val languageCode: String?
+    val languageCode: String?,
+    @SerializedName("label")
+    val label: String?,
+    @SerializedName("icon")
+    val icon: String?
 )
