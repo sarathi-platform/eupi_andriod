@@ -1,4 +1,4 @@
-package com.nudge.core.ui.events.theme
+package com.nudge.core.ui.theme
 
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme

@@ -12,6 +12,7 @@ import com.sarathi.dataloadingmangement.data.dao.ActivityLanguageDao
 import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
+import com.sarathi.dataloadingmangement.data.dao.FormUiConfigDao
 import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
 import com.sarathi.dataloadingmangement.data.dao.LanguageDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
@@ -155,6 +156,10 @@ class DataLoadingModule {
 
     @Provides
     @Singleton
+    fun provideFormUiConfigDao(db: NudgeGrantDatabase) = db.formUiConfigDao()
+
+    @Provides
+    @Singleton
     fun provideSurveyEntityDao(db: NudgeGrantDatabase) = db.surveyEntityDao()
 
     @Provides
@@ -257,7 +262,8 @@ class DataLoadingModule {
         uiConfigDao: UiConfigDao,
         apiService: DataLoadingApiService,
         sharedPrefs: CoreSharedPrefs,
-        grantConfigDao: GrantConfigDao
+        grantConfigDao: GrantConfigDao,
+        formUiConfigDao: FormUiConfigDao
     ): IMissionRepository {
         return MissionRepositoryImpl(
             apiInterface = apiService,
@@ -273,9 +279,8 @@ class DataLoadingModule {
             contentConfigDao = contentConfigDao,
             missionLanguageAttributeDao = missionLanguageAttributeDao,
             sharedPrefs = sharedPrefs,
-            grantConfigDao = grantConfigDao
-
-
+            grantConfigDao = grantConfigDao,
+            formUiConfigDao = formUiConfigDao
         )
     }
 
@@ -336,16 +341,6 @@ class DataLoadingModule {
         )
     }
 
-//    @Provides
-//    @Singleton
-//    fun provideFormERepositoryImpl(
-//        formEDao: FormEDao
-//    ): IFormERepository {
-//        return FormERepositoryImpl(
-//            formEDao
-//        )
-//    }
-
     @Provides
     @Singleton
     fun provideContentUseCase(
@@ -362,8 +357,9 @@ class DataLoadingModule {
     @Singleton
     fun provideFormUseCase(
         repository: FormRepositoryImpl,
+        downloaderManager: DownloaderManager,
     ): FormUseCase {
-        return FormUseCase(repository = repository)
+        return FormUseCase(repository = repository, downloaderManager = downloaderManager)
     }
 
     @Provides

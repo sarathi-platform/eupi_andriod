@@ -1,4 +1,4 @@
-package com.sarathi.surveymanager.ui.screen.model
+package com.sarathi.dataloadingmangement.model.uiModel
 
 data class SurveyUIModel(
     var referenceId: String,

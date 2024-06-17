@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.preference.CoreSharedPrefs
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
@@ -38,7 +39,13 @@ class SurveySaveRepositoryImpl @Inject constructor(
         )
         val result = ArrayList<String>()
         surveyAnswerEntity?.optionItems?.forEach {
-            result.add("${it.paraphrase} ${it.selectedValue}")
+            if (it.isSelected == true) {
+                if (it.selectedValue?.isNotBlank() == true) {
+                    result.add(it.selectedValue ?: BLANK_STRING)
+                } else {
+                    result.add(it.description ?: BLANK_STRING)
+                }
+            }
         }
         return result.joinToString(",")
     }

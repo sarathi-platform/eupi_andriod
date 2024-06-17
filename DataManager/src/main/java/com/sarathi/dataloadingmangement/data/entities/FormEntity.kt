@@ -24,6 +24,8 @@ data class FormEntity(
     var userId: String? = BLANK_STRING,
     var isFormGenerated: Boolean,
     var localReferenceId: String,
+    var missionId: Int,
+    var activityId: Int
 ) {
     companion object {
         fun getFormEntity(
@@ -32,7 +34,9 @@ data class FormEntity(
             taskId: Int,
             subjectType: String,
             subjectId: Int,
-            surveyId: Int
+            surveyId: Int,
+            missionId: Int,
+            activityId: Int
         ): FormEntity {
             return FormEntity(
                 id = 0,
@@ -42,6 +46,8 @@ data class FormEntity(
                 formType = "Form_E",
                 surveyId = surveyId,
                 userId = userId,
+                missionId = missionId,
+                activityId = activityId,
                 formGenerateDate = BLANK_STRING,
                 isFormGenerated = false,
                 localReferenceId = referenceId,

@@ -14,14 +14,14 @@ import com.sarathi.dataloadingmangement.domain.use_case.GrantConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
-import com.sarathi.dataloadingmangement.model.QuestionType
 import com.sarathi.dataloadingmangement.model.uiModel.GrantConfigUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyUIModel
+import com.sarathi.dataloadingmangement.util.constants.QuestionType
+import com.sarathi.dataloadingmangement.util.constants.SurveyCardTag
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
-import com.sarathi.surveymanager.ui.screen.model.SurveyCardTag
-import com.sarathi.surveymanager.ui.screen.model.SurveyUIModel
 import com.sarathi.surveymanager.utils.events.EventWriterEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope

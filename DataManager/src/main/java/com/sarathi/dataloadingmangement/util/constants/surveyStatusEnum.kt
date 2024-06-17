@@ -1,4 +1,4 @@
-package com.sarathi.dataloadingmangement.model
+package com.sarathi.dataloadingmangement.util.constants
 
 enum class SurveyStatusEnum {
     NOT_STARTED,

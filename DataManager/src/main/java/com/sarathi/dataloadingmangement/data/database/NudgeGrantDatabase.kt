@@ -21,6 +21,7 @@ import com.sarathi.dataloadingmangement.data.dao.AttributeValueReferenceDao
 import com.sarathi.dataloadingmangement.data.dao.ContentConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ContentDao
 import com.sarathi.dataloadingmangement.data.dao.FormDao
+import com.sarathi.dataloadingmangement.data.dao.FormUiConfigDao
 import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
 import com.sarathi.dataloadingmangement.data.dao.LanguageDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
@@ -45,6 +46,7 @@ import com.sarathi.dataloadingmangement.data.entities.AttributeValueReferenceEnt
 import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.data.entities.ContentConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.FormEntity
+import com.sarathi.dataloadingmangement.data.entities.FormUiConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.GrantConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.LanguageEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
@@ -86,6 +88,7 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
         SurveyAnswerEntity::class,
         GrantConfigEntity::class,
         FormEntity::class,
+        FormUiConfigEntity::class,
         SurveyLanguageAttributeEntity::class
     ],
     version = NUDGE_GRANT_DATABASE_VERSION,
@@ -101,7 +104,7 @@ const val NUDGE_GRANT_DATABASE_VERSION = 1
     ContentMapConverter::class,
     ValuesDtoConverter::class,
 
-)
+    )
 abstract class NudgeGrantDatabase : RoomDatabase() {
 
     abstract fun missionDao(): MissionDao
@@ -119,6 +122,7 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun subjectAttributeDao(): SubjectAttributeDao
     abstract fun taskAttributeDao(): TaskAttributeDao
     abstract fun uiConfigDao(): UiConfigDao
+    abstract fun formUiConfigDao(): FormUiConfigDao
     abstract fun surveyEntityDao(): SurveyEntityDao
 
     abstract fun sectionEntityDao(): SectionEntityDao

@@ -13,8 +13,8 @@ import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseC
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateTaskStatusUseCase
-import com.sarathi.dataloadingmangement.model.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
@@ -103,6 +103,8 @@ class SurveyScreenViewModel @Inject constructor(
                     subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
                     taskId = taskId,
                     surveyId = surveyId,
+                    missionId = taskEntity?.missionId ?: -1,
+                    activityId = taskEntity?.activityId ?: -1,
                     subjectType = subjectType,
                     referenceId = referenceId
                 )
@@ -198,7 +200,6 @@ class SurveyScreenViewModel @Inject constructor(
             )
         }
         checkButtonValidation()
-
 
 
     }

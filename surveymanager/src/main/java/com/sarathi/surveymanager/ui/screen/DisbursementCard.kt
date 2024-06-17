@@ -21,18 +21,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.ui.events.theme.black1
-import com.nudge.core.ui.events.theme.blueDark
-import com.nudge.core.ui.events.theme.borderGreyLight
-import com.nudge.core.ui.events.theme.defaultTextStyle
-import com.nudge.core.ui.events.theme.dimen_10_dp
-import com.nudge.core.ui.events.theme.dimen_16_dp
-import com.nudge.core.ui.events.theme.dimen_1_dp
-import com.nudge.core.ui.events.theme.dimen_40_dp
-import com.nudge.core.ui.events.theme.dimen_4_dp
-import com.nudge.core.ui.events.theme.greyColor
-import com.nudge.core.ui.events.theme.quesOptionTextStyle
-import com.nudge.core.ui.events.theme.white
+import com.nudge.core.ui.theme.black1
+import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.borderGreyLight
+import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_40_dp
+import com.nudge.core.ui.theme.dimen_4_dp
+import com.nudge.core.ui.theme.greyColor
+import com.nudge.core.ui.theme.quesOptionTextStyle
+import com.nudge.core.ui.theme.white
 import com.sarathi.surveymanager.R
 
 @Composable

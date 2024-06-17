@@ -6,7 +6,7 @@ import com.nudge.core.toTimeDateString
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
-import com.sarathi.dataloadingmangement.model.SurveyStatusEnum
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import javax.inject.Inject
 
 class TaskStatusRepositoryImpl @Inject constructor(

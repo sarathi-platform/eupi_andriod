@@ -1,4 +1,4 @@
-package com.sarathi.surveymanager.ui.screen.model
+package com.sarathi.dataloadingmangement.util.constants
 
 
 enum class SurveyCardTag(val tag: Int) {

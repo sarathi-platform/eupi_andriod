@@ -1,8 +1,8 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
-import com.sarathi.dataloadingmangement.model.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.repository.GetActivityRepositoryImpl
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import javax.inject.Inject
 
 

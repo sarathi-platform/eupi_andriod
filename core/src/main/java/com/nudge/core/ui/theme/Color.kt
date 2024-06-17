@@ -1,4 +1,4 @@
-package com.nudge.core.ui.events.theme
+package com.nudge.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
@@ -123,6 +123,7 @@ val greyTransparentColor = Color(0xc6c5b9)
 val greyLightColor = Color(0xFFDCDCDC)
 val greyColor = Color(0xFFA3A5AB)
 val liteRed = Color(0xFFFCF3E2)
+val liteBgColor = Color(0xF7F7F7)
 
 val searchSectionTitleColor = Color(0xFF7D7572)
 

@@ -1,14 +1,14 @@
 package com.sarathi.dataloadingmangement.repository
 
 import com.sarathi.dataloadingmangement.data.entities.FormEntity
-import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
-import com.sarathi.dataloadingmangement.model.uiModel.SubjectAttributes
 
 interface IFormRepository {
     suspend fun saveFromToDB(
         subjectId: Int,
         taskId: Int,
         surveyId: Int,
+        missionId: Int,
+        activityId: Int,
         referenceId: String,
         subjectType: String
     )
@@ -18,14 +18,8 @@ interface IFormRepository {
         taskId: Int
     ): Int
 
-    suspend fun getFormData(): List<FormEntity>
-    suspend fun getFormUiConfig(
-        missionId: Int,
-        activityId: Int
-    ): List<UiConfigEntity>
+    suspend fun getFormSummaryData(): List<FormEntity>
 
-    suspend fun getTaskAttributes(taskId: Int): List<SubjectAttributes>
-    fun getSurveyAnswerForTag(taskId: Int, subjectId: Int, tagId: String): String
 
 
 }
