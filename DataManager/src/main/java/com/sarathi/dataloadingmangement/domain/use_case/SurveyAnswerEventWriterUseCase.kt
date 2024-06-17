@@ -93,4 +93,36 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             }
     }
 
+    suspend fun deleteDisbursementOrReceiptOfFundEvent(
+        surveyID: Int,
+        surveyName: String,
+        sectionId: Int,
+        subjectId: Int,
+        subjectType: String,
+        referenceId: String,
+        taskLocalId: String,
+        uriList: List<Uri>?,
+        grantId: Int,
+        grantType: String,
+        taskId: Int
+    ) {
+        val saveAnswerMoneyJournalEventDto = repository.writeDeleteSaveAnswerEvent(
+            surveyID,
+            sectionId,
+            subjectId,
+            subjectType,
+            referenceId,
+            taskLocalId,
+            grantId,
+            grantType,
+            taskId
+        )
+        writeEventInFile(
+            saveAnswerMoneyJournalEventDto,
+            EventName.GRANT_DELETE_RESPONSE_EVENT,
+            surveyName ?: BLANK_STRING,
+            uriList
+        )
+    }
+
 }

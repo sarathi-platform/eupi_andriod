@@ -20,6 +20,7 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.model.events.DeleteAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerMoneyJorunalEventDto
 import com.sarathi.dataloadingmangement.model.events.SectionStatusUpdateEventDto
@@ -57,7 +58,10 @@ class EventWriterRepositoryImpl @Inject constructor(
                 requestPayload = (eventItem as SaveAnswerMoneyJorunalEventDto).json()
 
             }
+            EventName.GRANT_DELETE_RESPONSE_EVENT -> {
+                requestPayload = (eventItem as DeleteAnswerEventDto).json()
 
+            }
 
             EventName.TASKS_STATUS_EVENT -> {
                 requestPayload = (eventItem as UpdateTaskStatusEventDto).json()

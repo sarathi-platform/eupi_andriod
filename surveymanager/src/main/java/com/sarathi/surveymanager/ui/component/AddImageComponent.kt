@@ -10,8 +10,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -50,7 +48,6 @@ import coil.compose.rememberAsyncImagePainter
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.ui.events.theme.borderGreyLight
-import com.nudge.core.ui.events.theme.dimen_100_dp
 import com.nudge.core.ui.events.theme.dimen_10_dp
 import com.nudge.core.ui.events.theme.dimen_24_dp
 import com.nudge.core.ui.events.theme.dimen_30_dp
@@ -99,11 +96,6 @@ fun AddImageComponent(
 
         BoxWithConstraints(
             modifier = Modifier
-                .scrollable(
-                    state = outerState,
-                    Orientation.Vertical,
-                )
-                .heightIn(min = dimen_100_dp, maxCustomHeight)
         ) {
             LazyVerticalGrid(
                 state = innerState,
