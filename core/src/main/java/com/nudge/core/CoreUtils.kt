@@ -725,3 +725,11 @@ fun showCustomToast(
 fun String.capitalizeFirstLetter(): String {
     return this.lowercase().replaceFirstChar { it.uppercase() }
 }
+
+fun <T> checkStringNullOrEmpty(value: T?): String {
+    return when (value) {
+        null -> BLANK_STRING
+        is String -> value.ifEmpty { BLANK_STRING }
+        else -> BLANK_STRING
+    }
+}
