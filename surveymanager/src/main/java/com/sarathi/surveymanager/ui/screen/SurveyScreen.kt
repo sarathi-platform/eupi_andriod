@@ -112,8 +112,9 @@ fun SurveyScreen(
                         } else {
                             showCustomToast(
                                 context = context,
-                                "Amount is greater than sanctioned amount :${sanctionedAmount}"
+                                context.getString(R.string.amount_limit_message, sanctionedAmount)
                             )
+
                         }
                     }
                 )
