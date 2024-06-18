@@ -7,7 +7,10 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollBy
@@ -39,18 +42,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_24_dp
+import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_4_dp
+import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_8_dp
@@ -93,20 +102,83 @@ fun DisbursementFormSummaryScreen(
         onBackIconClick = { navController.popBackStack() },
         onSearchValueChange = {},
         onBottomUI = {
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(10.dp)
+                    .padding(dimen_10_dp)
             ) {
-                ButtonPositive(
-                    buttonTitle = "Attach physical form E",
-                    isActive = true,
-                    isArrowRequired = false,
-                    onClick = {
-                        navigateToAddImageScreen(navController)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = dimen_10_dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .weight(1.0f)
+                            .height(dimen_56_dp)
+                            .clickable {
+
+                            }
+                            .border(width = dimen_1_dp, color = borderGrey)
+                            .background(white),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = com.sarathi.missionactivitytask.R.drawable.ic_share_icon),
+                            contentDescription = "Negative Button",
+                            modifier = Modifier.padding(horizontal = dimen_2_dp),
+                            colorFilter = ColorFilter.tint(blueDark)
+                        )
+                        Text(
+                            stringResource(com.sarathi.missionactivitytask.R.string.share),
+                            style = defaultTextStyle
+                        )
+
                     }
-                )
+                    Row(
+                        modifier = Modifier
+                            .padding(start = dimen_10_dp)
+                            .weight(1.0f)
+                            .clickable {
+
+                            }
+                            .height(dimen_56_dp)
+                            .border(width = dimen_1_dp, color = borderGrey)
+                            .background(white),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+
+                    ) {
+                        Image(
+                            painter = painterResource(id = com.sarathi.missionactivitytask.R.drawable.ic_download_icon),
+                            contentDescription = "Negative Button",
+                            modifier = Modifier.padding(horizontal = dimen_2_dp),
+                            colorFilter = ColorFilter.tint(blueDark)
+                        )
+                        Text(
+                            stringResource(com.sarathi.missionactivitytask.R.string.download),
+                            style = defaultTextStyle
+                        )
+
+                    }
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                ) {
+                    ButtonPositive(
+                        buttonTitle = "Attach physical form E",
+                        isActive = true,
+                        isArrowRequired = false,
+                        onClick = {
+                            navigateToAddImageScreen(navController)
+                        }
+                    )
+                }
             }
+
         },
         onSettingClick = {},
         onContentUI = { a, b, c ->
