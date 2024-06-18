@@ -42,7 +42,7 @@ interface FormDao {
         taskId: Int
     ): Int
 
-    @Query("select * from form_table where userId =:userId and isFormGenerated=:isFormGenerated")
+    @Query("select * from form_table where userId =:userId and isFormGenerated=:isFormGenerated order by createdDate DESC")
     suspend fun getFormSummaryData(
         userId: String,
         isFormGenerated: Boolean

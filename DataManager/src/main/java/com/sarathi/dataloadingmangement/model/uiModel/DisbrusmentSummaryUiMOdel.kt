@@ -9,5 +9,7 @@ data class DisbursementFormSummaryUiModel(
     var mode: String,
     var nature: String,
     var amount: String,
-    var didiImage: String
+    var didiImage: String,
+    var subjectId: Int,
+    var voName: String
 )

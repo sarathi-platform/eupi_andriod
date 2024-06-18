@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.formatTo
 import com.sarathi.dataloadingmangement.data.entities.FormEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetFormUiConfigUseCase
@@ -35,8 +36,8 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
         mutableStateOf<List<DisbursementFormSummaryUiModel>>(emptyList())
     val disbursementFormList: State<List<DisbursementFormSummaryUiModel>> get() = _disbursementFormList
     private val _formList =
-        mutableStateOf<Map<String, List<DisbursementFormSummaryUiModel>>>(hashMapOf())
-    val formList: State<Map<String, List<DisbursementFormSummaryUiModel>>> get() = _formList
+        mutableStateOf<Map<Pair<String, String>, List<DisbursementFormSummaryUiModel>>>(hashMapOf())
+    val formList: State<Map<Pair<String, String>, List<DisbursementFormSummaryUiModel>>> get() = _formList
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -54,7 +55,7 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
 
     private fun initDisbursementSummaryScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            _formList.value = getFormData().groupBy { it.subjectName }
+            _formList.value = getFormData().groupBy { Pair(it.date, it.voName) }
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
@@ -66,13 +67,15 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
         val list = ArrayList<DisbursementFormSummaryUiModel>()
         fromData.forEach { form ->
             val _data = getFormAttributeDate(form)
+
             list.add(
                 DisbursementFormSummaryUiModel(
                     subjectType = form.subjectType,
-                    date = form.formGenerateDate,
+                    date = form.createdDate.formatTo("dd/MM/yyyy"),
                     noOfDidi = 1,
                     subjectName = _data[GrantTaskFormSlots.GRANT_TASK_TITLE_FORM.name]
                         ?: BLANK_STRING,
+                    subjectId = form.subjectid,
                     villageName = _data[GrantTaskFormSlots.GRANT_TASK_SUBTITLE_2_FORM.name]
                         ?: BLANK_STRING,
                     mode = _data[GrantTaskFormSlots.GRANT_TASK_SUBTITLE_4_FORM.name]
@@ -82,6 +85,8 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
                     amount = _data[GrantTaskFormSlots.GRANT_TASK_SUBTITLE_5_FORM.name]
                         ?: BLANK_STRING,
                     didiImage = _data[GrantTaskFormSlots.GRANT_TASK_IMAGE_FORM.name]
+                        ?: BLANK_STRING,
+                    voName = _data[GrantTaskFormSlots.GRANT_TASK_SUBTITLE_3_FORM.name]
                         ?: BLANK_STRING,
                 )
             )

@@ -2,7 +2,6 @@ package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toDate
-import com.nudge.core.toTimeDateString
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
@@ -21,7 +20,7 @@ class TaskStatusRepositoryImpl @Inject constructor(
         taskDao.markTaskCompleted(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             taskId = taskId,
-            actualCompletedDate = System.currentTimeMillis().toTimeDateString(),
+            actualCompletedDate = System.currentTimeMillis().toDate().toString(),
             status = SurveyStatusEnum.COMPLETED.name,
             subjectId = subjectId
         )
