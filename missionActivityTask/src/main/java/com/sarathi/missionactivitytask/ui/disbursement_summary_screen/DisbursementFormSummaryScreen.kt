@@ -14,7 +14,6 @@ import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -63,11 +62,9 @@ import com.sarathi.dataloadingmangement.model.uiModel.DisbursementFormSummaryUiM
 import com.sarathi.missionactivitytask.navigation.navigateToAddImageScreen
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
-import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.disbursement_summary_screen.viewmodel.DisbursementFormSummaryScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
-import com.sarathi.surveymanager.ui.component.ButtonPositive
 import com.sarathi.surveymanager.ui.component.ButtonPositive
 import kotlinx.coroutines.launch
 
@@ -112,44 +109,44 @@ fun DisbursementFormSummaryScreen(
             }
         },
         onSettingClick = {},
-        onContentUI = {
+        onContentUI = { a, b, c ->
             BoxWithConstraints(
-        modifier = Modifier
-            .scrollable(
-                state = rememberScrollableState {
-                    scope.launch {
-                        val toDown = it <= 0
-                        if (toDown) {
-                            if (outerState.run { firstVisibleItemIndex == layoutInfo.totalItemsCount - 1 }) {
-                                innerState.scrollBy(-it)
-                            } else {
-                                outerState.scrollBy(-it)
+                modifier = Modifier
+                    .scrollable(
+                        state = rememberScrollableState {
+                            scope.launch {
+                                val toDown = it <= 0
+                                if (toDown) {
+                                    if (outerState.run { firstVisibleItemIndex == layoutInfo.totalItemsCount - 1 }) {
+                                        innerState.scrollBy(-it)
+                                    } else {
+                                        outerState.scrollBy(-it)
+                                    }
+                                } else {
+                                    if (innerFirstVisibleItemIndex == 0 && innerState.firstVisibleItemScrollOffset == 0) {
+                                        outerState.scrollBy(-it)
+                                    } else {
+                                        innerState.scrollBy(-it)
+                                    }
+                                }
                             }
-                        } else {
-                            if (innerFirstVisibleItemIndex == 0 && innerState.firstVisibleItemScrollOffset == 0) {
-                                outerState.scrollBy(-it)
-                            } else {
-                                innerState.scrollBy(-it)
-                            }
-                        }
-                    }
-                    it
-                },
-                Orientation.Vertical,
-            )
-    ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = dimen_16_dp),
-            verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
-        ) {
+                            it
+                        },
+                        Orientation.Vertical,
+                    )
+            ) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = dimen_16_dp),
+                    verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
+                ) {
 
 
-            viewModel.formList.value.forEach {
-                item {
-                    FormMainSummaryCard(
-                        maxCustomHeight = maxHeight,
+                    viewModel.formList.value.forEach {
+                        item {
+                            FormMainSummaryCard(
+                                maxCustomHeight = maxHeight,
                         formDisburesmentMap = it,
                         viewmodel = viewModel
                     )
@@ -160,7 +157,7 @@ fun DisbursementFormSummaryScreen(
         }
     }
 }
-}
+    )
 
 }
 
@@ -262,11 +259,11 @@ fun FormMainSummaryCard(
                     .padding(top = dimen_8_dp), horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
+                Text(formDisburesmentMap.key.second, style = quesOptionTextStyle)
                 Text(
                     formDisburesmentMap.key.first, style = defaultTextStyle
                 )
-                Text(formDisburesmentMap.key.second, style = quesOptionTextStyle)
-
 
             }
             Row(
