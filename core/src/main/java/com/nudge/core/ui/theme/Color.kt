@@ -131,4 +131,7 @@ val summaryCardViewBlue = Color(0xFF325DF6)
 val trackLinearColor = Color(0xFFD1D5DE)
 val greyBorder = Color(0xFF707070)
 val blue = Color(0xFF205EFF)
+val lightBg = Color(0xFFF7F7F7)
+
+
 
